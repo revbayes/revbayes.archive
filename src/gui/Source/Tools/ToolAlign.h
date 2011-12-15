@@ -17,14 +17,6 @@
     NSFileHandle*               alignClustalFromClustal;
     NSFileHandle*               alignClustalErrorData;
     
-    NSString*                   alignClustalReduceConsoleOutputAr;    // clustal variables set in the tool
-    NSString*                   alignClustalMultipleAlignAr;
-    NSString*                   alignClustalInfileAr;
-    NSString*                   alignClustalOutfileAr;
-    NSString*                   alignClustalOutputAr;
-    NSString*                   alignClustalGuideTreeAr;
-    NSMutableArray*             alignClustalArguments;
-
     NSString*                   alignClustalAlign;                    // Clustal variables received from window controller
     int                         alignClustalWordLength;
     int                         alignClustalWindow;

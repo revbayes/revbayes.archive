@@ -195,6 +195,8 @@
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd {
 
     std::string fn = cd->getFileName();
+    
+    
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
     RbData* m = [[RbData alloc] init];
     [m setNumTaxa:(int)(cd->getNumberOfTaxa())];
@@ -465,6 +467,10 @@
         [dataTypeField           setEnabled:NO];
         [dataAlignmentField      setEnabled:NO]; 
         [interleavedFormatField  setEnabled:NO];
+        [dataFormatField        setTextColor:[NSColor grayColor]];
+        [dataTypeField          setTextColor:[NSColor grayColor]];
+        [dataAlignmentField     setTextColor:[NSColor grayColor]];
+        [interleavedFormatField setTextColor:[NSColor grayColor]];
         }
     else 
         {
@@ -476,7 +482,8 @@
         [dataTypeField           setEnabled:YES];
         [dataAlignmentField      setEnabled:YES]; 
         [interleavedFormatField  setEnabled:YES];
-
+        
+        [dataFormatField setTextColor:[NSColor blackColor]];
         [dataAlignmentButton setEnabled:NO];
         [dataAlignmentField setTextColor:[NSColor grayColor]];
         

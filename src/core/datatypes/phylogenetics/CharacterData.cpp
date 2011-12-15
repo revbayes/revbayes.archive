@@ -361,6 +361,7 @@ RbPtr<RbObject> CharacterData::getElement(size_t row, size_t col) {
 
 
 const std::string& CharacterData::getFileName(void) const {
+
     return fileName;
 }
 

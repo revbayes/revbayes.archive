@@ -160,7 +160,8 @@ std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::st
             
 			if (m != NULL)
                 {
-                m->setFileName( fnv[k++] );
+               std::string tempFileName = findFileNameFromPath(fnv[k++]);
+                m->setFileName( tempFileName );
 				cmv.push_back( m );
                 }
             }

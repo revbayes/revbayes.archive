@@ -1,6 +1,10 @@
+#import "Connection.h"
+#import "RbData.h"
+#import "Inlet.h"
 #import "InOutlet.h"
 #import "RevBayes.h"
 #import "ToolAlign.h"
+#import "ToolReadData.h"
 #import "WindowControllerAlign.h"
 
 
@@ -37,13 +41,6 @@
     if (alignClustalTask != nil)
         [alignClustalTask release];
         
-    [alignClustalReduceConsoleOutputAr release];
-    [alignClustalMultipleAlignAr release];
-    [alignClustalInfileAr release];
-    [alignClustalOutfileAr release];
-    [alignClustalOutputAr release];
-    [alignClustalGuideTreeAr release];
-    
     [alignClustalAlign release];
     [alignClustalScoreType release];
     [alignClustalMatrix release];
@@ -55,13 +52,6 @@
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-
-	[aCoder encodeObject:alignClustalReduceConsoleOutputAr forKey:@"alignClustalReduceConsoleOutput"];
-	[aCoder encodeObject:alignClustalMultipleAlignAr       forKey:@"alignClustalMultipleAlign"];
-	[aCoder encodeObject:alignClustalInfileAr              forKey:@"alignClustalInfile"];
-	[aCoder encodeObject:alignClustalOutfileAr             forKey:@"alignClustalOutfile"];
-	[aCoder encodeObject:alignClustalOutputAr              forKey:@"alignClustalOutput"];
-	[aCoder encodeObject:alignClustalGuideTreeAr           forKey:@"alignClustalGuideTree"];
     
 	[aCoder encodeObject:alignClustalAlign forKey:@"alignClustalAlign"];
 	[aCoder encodeInt:alignClustalWordLength forKey:@"alignClustalWordLength"];
@@ -100,7 +90,7 @@
         [self setInletLocations];
         [self setOutletLocations];
             
-        // initialize Clustal variables here
+        // initialize clustal variables here
         // Default values taken from http://www.ebi.ac.uk/Tools/msa/clustalw2/help/
         alignClustalTask = nil;
         [self setAlignClustalAlign: @"Full"];
@@ -132,20 +122,6 @@
         [self setImageWithSize:itemSize];
             
         // resuscitate Clustal variables here before recreating new windowcontroller
-
-        alignClustalReduceConsoleOutputAr = [aDecoder decodeObjectForKey:@"alignClustalReduceConsoleOutput"];
-            [alignClustalReduceConsoleOutputAr retain];
-        alignClustalMultipleAlignAr = [aDecoder decodeObjectForKey:@"alignClustalMultipleAlign"];
-            [alignClustalMultipleAlignAr retain];
-        alignClustalInfileAr = [aDecoder decodeObjectForKey:@"alignClustalInfile"];
-            [alignClustalInfileAr retain];
-        alignClustalOutfileAr = [aDecoder decodeObjectForKey:@"alignClustalOutfile"];
-            [alignClustalOutfileAr retain];
-        alignClustalOutputAr = [aDecoder decodeObjectForKey:@"alignClustalOutput"];
-            [alignClustalOutputAr retain];
-        alignClustalGuideTreeAr = [aDecoder decodeObjectForKey:@"alignClustalGuideTree"];
-            [alignClustalGuideTreeAr retain];
-        
         alignClustalAlign = [aDecoder decodeObjectForKey:@"alignClustalAlign"];
             [alignClustalAlign retain];
         alignClustalWordLength = [aDecoder decodeIntForKey:@"alignClustalWordLength"];
@@ -224,25 +200,211 @@
 
 - (void)helperRunClustal: (id)sender {
 
+    // find the parent of this tool, which should be an instance of ToolReadData
+    ToolReadData* dataTool = nil;
+    for (int i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (int j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            NSString* className = NSStringFromClass([t class]); 
+            if ( [className isEqualToString:@"ToolReadData"] == YES )
+                dataTool = (ToolReadData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return;
+        
+    // calculate how many unaligned data matrices exist
+    NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == NO )
+            [unalignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+    if ( [unalignedData count] == 0)
+        return;
+        
+    // align each of the unaligned data files in the ToolReadData object
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+    for (int i=0; i<[unalignedData count]; i++)
+        {
+        // have the data object save a fasta file to the temporary directory
+        RbData* d = [unalignedData objectAtIndex:i];
+        NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
+        dFilePath = [dFilePath stringByAppendingString:[d name]];
+        [d writeToFile:dFilePath];
+        
+        // collect the clustal arguments
+        NSString* clustalReduceConsoleOutputArg  = [NSString stringWithString: @"-QUIET"];
+        NSString* clustalMultipleAlignArg        = [NSString stringWithString: @"-ALIGN"];
+        NSString* clustalInfileArg               = [NSString stringWithString: @"-INFILE="];
+        clustalInfileArg                         = [clustalInfileArg stringByAppendingString:dFilePath];
+        NSString* clustalOutfileArg              = [NSString stringWithString: @"-OUTFILE="];
+        clustalOutfileArg                        = [clustalOutfileArg stringByAppendingString: temporaryDirectory];
+        clustalOutfileArg                        = [clustalOutfileArg stringByAppendingString: @"clustaloutput.fasta"];
+        NSString* clustalOutputArg               = [NSString stringWithString: @"-OUTPUT=FASTA"];    
+        NSString* clustalGuideTreeArg            = [NSString stringWithString: @"-NEWTREE="];
+        clustalGuideTreeArg                      = [clustalGuideTreeArg stringByAppendingString: temporaryDirectory];
+        clustalGuideTreeArg                      = [clustalGuideTreeArg stringByAppendingString: @"clustaltree.dnd"];
+        NSString* clustalAlignArg                = [NSString stringWithString: @"-QUICKTREE"];
+        NSString* clustalWordLengthArg           = [NSString stringWithString:@"-KTUPLE="];
+        clustalWordLengthArg                     = [clustalWordLengthArg stringByAppendingFormat:@"%i", alignClustalWordLength];
+        NSString* clustalWindowArg               = [NSString stringWithString: @"-WINDOW="];
+        clustalWindowArg                         = [clustalWindowArg stringByAppendingFormat: @"%i", alignClustalWindow];
+        NSString* clustalScoreTypeArg            = [NSString stringWithString: @"-SCORE="];
+        clustalScoreTypeArg                      = [clustalScoreTypeArg stringByAppendingString: alignClustalScoreType];
+        NSString* clustalNumberDiagonalsArg      = [NSString stringWithString: @"-TOPDIAGS="];
+        clustalNumberDiagonalsArg                = [clustalNumberDiagonalsArg stringByAppendingFormat: @"%i", alignClustalNumberDiagonals];
+        NSString* clustalPairGapPenaltyArg       = [NSString stringWithString: @"-PAIRGAP="];
+        clustalPairGapPenaltyArg                 = [clustalPairGapPenaltyArg stringByAppendingFormat: @"%i", alignClustalPairGapPenalty];
+        NSString* clustalMatrixArg               = [NSString stringWithString: @"-PWMATRIX="];
+        clustalMatrixArg                         = [clustalMatrixArg stringByAppendingString: alignClustalMatrix];
+        NSString* clustalGapOpenPenaltyAr        = [NSString stringWithString: @"-PWGAPEXT="];
+        clustalGapOpenPenaltyAr                  = [clustalGapOpenPenaltyAr stringByAppendingFormat: @"%f", alignClustalGapOpenPenalty];
+        NSString* clustalEndGapsArg              = [NSString stringWithString: @"-ENDGAPS="];
+        clustalEndGapsArg                        = [clustalEndGapsArg stringByAppendingString: alignClustalEndGaps];
+        NSString* clustalGapExtensionCostArg     = [NSString stringWithString: @"-GAPEXT="];
+        clustalGapExtensionCostArg               = [clustalGapExtensionCostArg stringByAppendingFormat: @"%f", alignClustalGapExtensionCost];
+        NSString* clustalGapSeparationPenaltyArg = [NSString stringWithString: @"-GAPDIST="];
+        clustalGapSeparationPenaltyArg           = [clustalGapSeparationPenaltyArg stringByAppendingFormat: @"%i", alignClustalGapSeparationPenalty];
+        NSString* clustalIterationArg            = [NSString stringWithString: @"-ITERATION="];
+        clustalIterationArg                      = [clustalIterationArg stringByAppendingString: alignClustalIteration];
+        NSString* clustalNumberOfIterationsArg   = [NSString stringWithString: @"-NUMITER="];
+        clustalNumberOfIterationsArg             = [clustalNumberOfIterationsArg stringByAppendingFormat: @"%i", alignClustalNumberOfIterations];
+        
+        // set up an array with the clustal arguments
+        NSArray* clustalArguments;
+        if ( [alignClustalAlign isEqualToString: @"Fast"] == YES )
+            {
+            clustalArguments = [NSArray arrayWithObjects: 
+                                     clustalReduceConsoleOutputArg, 
+                                     clustalInfileArg, 
+                                     clustalOutfileArg, 
+                                     clustalOutputArg,
+                                     clustalGuideTreeArg, 
+                                     clustalAlignArg, 
+                                     clustalWordLengthArg, 
+                                     clustalWindowArg, 
+                                     clustalScoreTypeArg, 
+                                     clustalNumberDiagonalsArg, 
+                                     clustalPairGapPenaltyArg, 
+                                     clustalMatrixArg, 
+                                     clustalGapOpenPenaltyAr, 
+                                     clustalEndGapsArg,
+                                     clustalGapExtensionCostArg,
+                                     clustalGapSeparationPenaltyArg,
+                                     clustalIterationArg,
+                                     clustalNumberOfIterationsArg,
+                                     clustalMultipleAlignArg,
+                                     nil];
+            }
+        else
+            {
+            clustalArguments = [NSArray arrayWithObjects: 
+                                     clustalReduceConsoleOutputArg, 
+                                     clustalInfileArg, 
+                                     clustalOutfileArg, 
+                                     clustalOutputArg,
+                                     clustalGuideTreeArg, 
+                                     clustalWordLengthArg, 
+                                     clustalWindowArg, 
+                                     clustalScoreTypeArg, 
+                                     clustalNumberDiagonalsArg, 
+                                     clustalPairGapPenaltyArg, 
+                                     clustalMatrixArg, 
+                                     clustalGapOpenPenaltyAr, 
+                                     clustalEndGapsArg,
+                                     clustalGapExtensionCostArg,
+                                     clustalGapSeparationPenaltyArg,
+                                     clustalIterationArg,
+                                     clustalNumberOfIterationsArg,
+                                     clustalMultipleAlignArg,
+                                     nil];
+            }
+            
+        NSLog(@"clustalAgurments = %@", clustalArguments);
+            
+            
+        currentHelper = @"clustal";
+        
+        // allocate a task for clustal
+        alignClustalTask = [[NSTask alloc] init];
+
+        // find the temporary directory
+        NSFileManager* clustalFileManager = [[NSFileManager alloc] init];
+        NSDictionary* clustalTemporaryDirectoryAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"alignClustalTemporaryDirectory"];
+        [clustalFileManager createDirectoryAtPath:temporaryDirectory withIntermediateDirectories:NO attributes:clustalTemporaryDirectoryAttributes error:NULL];
+            
+        // find the clustal executable in the application bundle
+        NSString* clustalPath = [[NSBundle mainBundle] pathForResource:@"clustalw2" ofType:nil];
+        NSLog(@"clustalPath = %@", clustalPath);
+        
+        // set the launch path for the task
+        [alignClustalTask setCurrentDirectoryPath:clustalPath];
+        [alignClustalTask setLaunchPath:clustalPath];
+
+        [alignClustalTask setArguments:clustalArguments];
+        
+        alignClustalFromPipe = [NSPipe pipe];
+        alignClustalFromClustal = [alignClustalFromPipe fileHandleForReading];
+        [alignClustalTask setStandardOutput: alignClustalFromPipe];
+        
+        
+        NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+        [defaultCenter addObserver: self
+                          selector: @selector(receiveData:)
+                              name: NSFileHandleReadCompletionNotification
+                            object: alignClustalFromClustal];
+
+        alignClustalToPipe = [NSPipe pipe];
+        alignClustalToClustal = [alignClustalToPipe fileHandleForWriting];
+        [alignClustalTask setStandardInput: alignClustalToPipe];
+        
+        alignClustalErrorPipe = [NSPipe pipe];
+        alignClustalErrorData = [alignClustalErrorPipe fileHandleForReading];
+        [alignClustalTask setStandardError: alignClustalErrorPipe];
+        
+        NSNotification *taskLaunchedNotification;
+        taskLaunchedNotification = [NSNotification notificationWithName:@"taskLaunchedNotification" object:currentHelper];
+        [defaultCenter postNotification:taskLaunchedNotification];
+
+        [alignClustalTask launch];
+        
+        [alignClustalFromClustal readInBackgroundAndNotify];
+        [alignClustalErrorData readInBackgroundAndNotify];
+        }
+        
+        
+        
+        
+        
+        
+    //return;
+
+
+
+
+#if 0
+
+
+
+
     // set the current helper app to clustal, which lives in the application bundle
     currentHelper = @"clustal";
     
-    // allocate a task for Clustal
-    alignClustalTask = [[NSTask alloc] init];
+    // allocate a task for clustal
+    if (alignClustalTask == nil)
+        alignClustalTask = [[NSTask alloc] init];
     
     // find the temporary directory
     NSFileManager* alignClustalFileManager = [[NSFileManager alloc] init];
-    
     NSDictionary* alignClustalTemporaryDirectoryAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"alignClustalTemporaryDirectory"];
-    
     NSString* alignClustalUserTemporaryDirectory = NSTemporaryDirectory();
-    
     [alignClustalFileManager createDirectoryAtPath:alignClustalUserTemporaryDirectory withIntermediateDirectories:NO attributes:alignClustalTemporaryDirectoryAttributes error:NULL];
-    
-
-    //NSString *alignClustalPath = @"";
-    //NSString *alignClustalExecutable = @"clustalw2";
-    
+        
     // find the clustal executable in the application bundle
     NSString* alignClustalPath = [[NSBundle mainBundle] pathForResource:@"clustalw2" ofType:nil];
     NSLog (@"alignClustalPath = %@", alignClustalPath);
@@ -254,58 +416,11 @@
     // set the arguments for clustal
     
     // string values for clustal arguments (set in the tool)
-    alignClustalReduceConsoleOutputAr = [NSString stringWithString: @"-QUIET"];
-    alignClustalMultipleAlignAr = [NSString stringWithString: @"-ALIGN"];
-    alignClustalInfileAr = [NSString stringWithString: @"-INFILE=/Users/edna/Documents/Cocoa_projects/Clustal/nYAL001C.fas"];
-    alignClustalOutfileAr = [NSString stringWithString: @"-OUTFILE="];
-    alignClustalOutfileAr = [alignClustalOutfileAr stringByAppendingString: alignClustalUserTemporaryDirectory];
-    alignClustalOutfileAr = [alignClustalOutfileAr stringByAppendingString: @"clustaloutput.fasta"];
-    alignClustalOutputAr = [NSString stringWithString: @"-OUTPUT=FASTA"];    
-    alignClustalGuideTreeAr = [NSString stringWithString: @"-NEWTREE="];
-    alignClustalGuideTreeAr = [alignClustalGuideTreeAr stringByAppendingString: alignClustalUserTemporaryDirectory];
-    alignClustalGuideTreeAr = [alignClustalGuideTreeAr stringByAppendingString: @"clustaltree.dnd"];
         
     // arguments that come from the Window Controller for this tool
-    NSString *alignClustalAlignAr = [NSString stringWithString: @""];
- 
-    if ([alignClustalAlign isEqualToString: @"Fast"] == YES)
-        alignClustalAlignAr = [alignClustalAlignAr stringByAppendingString: @"-QUICKTREE"];
     
-    NSString* alignClustalWordLengthAr = [NSString stringWithString:@"-KTUPLE="];
-    alignClustalWordLengthAr = [alignClustalWordLengthAr stringByAppendingFormat:@"%i", alignClustalWordLength];
     
-    NSString *alignClustalWindowAr = [NSString stringWithString: @"-WINDOW="];
-    alignClustalWindowAr = [alignClustalWindowAr stringByAppendingFormat: @"%i", alignClustalWindow];
     
-    NSString *alignClustalScoreTypeAr = [NSString stringWithString: @"-SCORE="];
-    alignClustalScoreTypeAr = [alignClustalScoreTypeAr stringByAppendingString: alignClustalScoreType];
-        
-    NSString *alignClustalNumberDiagonalsAr = [NSString stringWithString: @"-TOPDIAGS="];
-    alignClustalNumberDiagonalsAr = [alignClustalNumberDiagonalsAr stringByAppendingFormat: @"%i", alignClustalNumberDiagonals];
-
-    NSString *alignClustalPairGapPenaltyAr = [NSString stringWithString: @"-PAIRGAP="];
-    alignClustalPairGapPenaltyAr = [alignClustalPairGapPenaltyAr stringByAppendingFormat: @"%i", alignClustalPairGapPenalty];
-
-    NSString *alignClustalMatrixAr = [NSString stringWithString: @"-PWMATRIX="];
-    alignClustalMatrixAr = [alignClustalMatrixAr stringByAppendingString: alignClustalMatrix];
-
-    NSString *alignClustalGapOpenPenaltyAr = [NSString stringWithString: @"-PWGAPEXT="];
-    alignClustalGapOpenPenaltyAr = [alignClustalGapOpenPenaltyAr stringByAppendingFormat: @"%f", alignClustalGapOpenPenalty];
-
-    NSString *alignClustalEndGapsAr = [NSString stringWithString: @"-ENDGAPS="];
-    alignClustalEndGapsAr = [alignClustalEndGapsAr stringByAppendingString: alignClustalEndGaps];
-
-    NSString *alignClustalGapExtensionCostAr = [NSString stringWithString: @"-GAPEXT="];
-    alignClustalGapExtensionCostAr = [alignClustalGapExtensionCostAr stringByAppendingFormat: @"%f", alignClustalGapExtensionCost];
-    
-    NSString *alignClustalGapSeparationPenaltyAr = [NSString stringWithString: @"-GAPDIST="];
-    alignClustalGapSeparationPenaltyAr = [alignClustalGapSeparationPenaltyAr stringByAppendingFormat: @"%i", alignClustalGapSeparationPenalty];
-
-    NSString *alignClustalIterationAr = [NSString stringWithString: @"-ITERATION="];
-    alignClustalIterationAr = [alignClustalIterationAr stringByAppendingString: alignClustalIteration];
-    
-    NSString *alignClustalNumberOfIterationsAr = [NSString stringWithString: @"-NUMITER="];
-    alignClustalNumberOfIterationsAr = [alignClustalNumberOfIterationsAr stringByAppendingFormat: @"%i", alignClustalNumberOfIterations];
     
 
     
@@ -367,7 +482,6 @@
     
     
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-   
     [defaultCenter addObserver: self
                       selector: @selector(receiveData:)
                           name: NSFileHandleReadCompletionNotification
@@ -392,6 +506,7 @@
 
     
     NSLog(@"Running Clustal from ToolAlign");
+#   endif
 }
 
 
@@ -417,9 +532,9 @@
     completionText = @"FASTA file created!";
     
     if ([incomingText rangeOfString: completionText].length > 0)
-    {
+        {
         [self taskCompleted];
-    }
+        }
      
     [incomingText release];
 }
