@@ -87,6 +87,7 @@
 #include "Dist_birthdeath.h"
 #include "Dist_cat.h"
 #include "Dist_ctmm.h"
+#include "Dist_dtmm.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
 #include "Dist_logis.h"
@@ -156,7 +157,7 @@
 #include "Func_gtr.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrees.h"
-#include "Func_tiprobs.h"
+#include "Func_CtmmTransitionProbabilities.h"
 
 
 #include <sstream>
@@ -234,12 +235,13 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "birthdeath",   new Dist_birthdeath()  );
         addDistribution( "cat",          new Dist_cat()         );
         addDistribution( "ctmc",         new Dist_ctmm()        );
+        addDistribution( "dtmm",         new Dist_dtmm()        );
         addDistribution( "dirichlet",    RbPtr<DistributionContinuous>( new Dist_dirichlet() )   );
         addDistribution( "exp",          RbPtr<DistributionContinuous>( new Dist_exp() )         );
         addDistribution( "logis",        RbPtr<DistributionContinuous>( new Dist_logis() )       );
         addDistribution( "multinomial",  RbPtr<DistributionContinuous>( new Dist_multinomial() ) );
         addDistribution( "norm",         RbPtr<DistributionContinuous>( new Dist_norm() )        );
-		    addDistribution( "lnorm",        RbPtr<DistributionContinuous>( new Dist_lnorm() )       );
+        addDistribution( "lnorm",        RbPtr<DistributionContinuous>( new Dist_lnorm() )       );
         addDistribution( "unifTopology", new Dist_topologyunif());
         addDistribution( "unif",         RbPtr<DistributionContinuous>( new Dist_unif() )        );
 
@@ -383,7 +385,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "gtr",       new Func_gtr()               );
         addFunction( "read",      new Func_readCharacterData() );
         addFunction( "readTrees", new Func_readTrees()         );
-        addFunction( "tiprobs",   new Func_tiprobs()           );
+        addFunction( "ctmmtp",    new Func_CtmmTransitionProbabilities()           );
+        addFunction( "ctmmTransitionProbabilities",   new Func_CtmmTransitionProbabilities());
 
         /* Add builtin templated functions */
 //        addFunction( "simplex",   new Func_simplex<         Integer                                                         >() );
