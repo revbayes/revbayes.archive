@@ -1,17 +1,9 @@
-#include_directories(
-#    ${PROJECT_SOURCE_DIR}/parser
-#    ${PROJECT_SOURCE_DIR}/parser/functions
-#    ${PROJECT_SOURCE_DIR}/parser/parser
-#)
-
-set(PARSER_FILES
+set(CORE_FILES
+${PROJECT_SOURCE_DIR}/parser/RbMain.cpp
 ${PROJECT_SOURCE_DIR}/parser/functions/Func_source.cpp
 ${PROJECT_SOURCE_DIR}/parser/functions/Func_source.h
 ${PROJECT_SOURCE_DIR}/parser/functions/UserFunction.cpp
 ${PROJECT_SOURCE_DIR}/parser/functions/UserFunction.h
-${PROJECT_SOURCE_DIR}/parser/parser/grammar.tab.cpp
-${PROJECT_SOURCE_DIR}/parser/parser/grammar.tab.h
-${PROJECT_SOURCE_DIR}/parser/parser/lex.yy.cpp
 ${PROJECT_SOURCE_DIR}/parser/parser/Parser.cpp
 ${PROJECT_SOURCE_DIR}/parser/parser/Parser.h
 ${PROJECT_SOURCE_DIR}/parser/parser/SyntaxAssignExpr.cpp
@@ -42,7 +34,41 @@ ${PROJECT_SOURCE_DIR}/parser/parser/SyntaxVariable.cpp
 ${PROJECT_SOURCE_DIR}/parser/parser/SyntaxVariable.h
 ${PROJECT_SOURCE_DIR}/parser/parser/SyntaxVariableDecl.cpp
 ${PROJECT_SOURCE_DIR}/parser/parser/SyntaxVariableDecl.h
-#${PROJECT_SOURCE_DIR}/parser/RbMain.cpp
+${PROJECT_SOURCE_DIR}/parser/parser/grammar.tab.cpp
+${PROJECT_SOURCE_DIR}/parser/parser/grammar.tab.h
+${PROJECT_SOURCE_DIR}/parser/parser/lex.yy.cpp
+${PROJECT_SOURCE_DIR}//Parser.cpp
+${PROJECT_SOURCE_DIR}//Parser.h
+${PROJECT_SOURCE_DIR}//SyntaxAssignExpr.cpp
+${PROJECT_SOURCE_DIR}//SyntaxAssignExpr.h
+${PROJECT_SOURCE_DIR}//SyntaxBinaryExpr.cpp
+${PROJECT_SOURCE_DIR}//SyntaxBinaryExpr.h
+${PROJECT_SOURCE_DIR}//SyntaxClassDef.cpp
+${PROJECT_SOURCE_DIR}//SyntaxClassDef.h
+${PROJECT_SOURCE_DIR}//SyntaxConstant.cpp
+${PROJECT_SOURCE_DIR}//SyntaxConstant.h
+${PROJECT_SOURCE_DIR}//SyntaxElement.cpp
+${PROJECT_SOURCE_DIR}//SyntaxElement.h
+${PROJECT_SOURCE_DIR}//SyntaxForCondition.cpp
+${PROJECT_SOURCE_DIR}//SyntaxForCondition.h
+${PROJECT_SOURCE_DIR}//SyntaxFormal.cpp
+${PROJECT_SOURCE_DIR}//SyntaxFormal.h
+${PROJECT_SOURCE_DIR}//SyntaxFunctionCall.cpp
+${PROJECT_SOURCE_DIR}//SyntaxFunctionCall.h
+${PROJECT_SOURCE_DIR}//SyntaxFunctionDef.cpp
+${PROJECT_SOURCE_DIR}//SyntaxFunctionDef.h
+${PROJECT_SOURCE_DIR}//SyntaxLabeledExpr.cpp
+${PROJECT_SOURCE_DIR}//SyntaxLabeledExpr.h
+${PROJECT_SOURCE_DIR}//SyntaxStatement.cpp
+${PROJECT_SOURCE_DIR}//SyntaxStatement.h
+${PROJECT_SOURCE_DIR}//SyntaxUnaryExpr.cpp
+${PROJECT_SOURCE_DIR}//SyntaxUnaryExpr.h
+${PROJECT_SOURCE_DIR}//SyntaxVariable.cpp
+${PROJECT_SOURCE_DIR}//SyntaxVariable.h
+${PROJECT_SOURCE_DIR}//SyntaxVariableDecl.cpp
+${PROJECT_SOURCE_DIR}//SyntaxVariableDecl.h
+${PROJECT_SOURCE_DIR}//grammar.tab.cpp
+${PROJECT_SOURCE_DIR}//grammar.tab.h
+${PROJECT_SOURCE_DIR}//lex.yy.cpp
 )
-
-add_library(rb-parser ${PARSER_FILES})
+add_library(rb-core ${CORE_FILES})

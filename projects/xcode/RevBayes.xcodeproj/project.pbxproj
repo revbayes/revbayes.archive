@@ -760,6 +760,7 @@
 		227B0EF71499208300B5F8B4 /* RegistrationPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 227B0DBA1499208300B5F8B4 /* RegistrationPanel.xib */; };
 		227B0EF81499208300B5F8B4 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 227B0DBB1499208300B5F8B4 /* TextEditorWindow.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
+		85CCD85214993A1700A60300 /* Simulate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDDB61498D99F007792CD /* Simulate.cpp */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 

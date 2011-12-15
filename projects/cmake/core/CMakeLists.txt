@@ -426,5 +426,6 @@ ${PROJECT_SOURCE_DIR}/core/workspace/VariableSlot.cpp
 ${PROJECT_SOURCE_DIR}/core/workspace/VariableSlot.h
 ${PROJECT_SOURCE_DIR}/core/workspace/Workspace.cpp
 ${PROJECT_SOURCE_DIR}/core/workspace/Workspace.h
+core
 )
 add_library(rb-core ${CORE_FILES})
