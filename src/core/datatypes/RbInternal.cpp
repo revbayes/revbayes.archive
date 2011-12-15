@@ -23,15 +23,6 @@
 #include <sstream>
 
 
-/** Brief info about object: use static class attribute */
-std::string RbInternal::briefInfo(void) const {
-    
-    std::ostringstream o;
-    o << "Object of type ";
-    getClass().printValue(o);
-    return o.str();
-}
-
 /** Get class vector describing type of object */
 const VectorString& RbInternal::getClass(void) const { 
 
@@ -43,19 +34,11 @@ const VectorString& RbInternal::getClass(void) const {
 /** Print info about object simply by using richInfo function */
 void RbInternal::printValue(std::ostream& o) const {
     
-    o << richInfo() << std::endl;
+    o << "Instance of RbInternal:" << std::endl;
+    o << getType() << std::endl;
 }
 
 
-/** Complete info about object */
-std::string RbInternal::richInfo(void) const {
-    
-    std::ostringstream o;
-    o <<  "RbInternal:\t" << getType() << std::endl;
-//    printValue(o);
-    
-    return o.str();
-}
 
 
 

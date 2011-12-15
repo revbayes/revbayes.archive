@@ -26,14 +26,6 @@
 
 #include <sstream>
 
-/** Brief info about object: use static class attribute */
-std::string RbLanguageObject::briefInfo(void) const {
-    
-    std::ostringstream o;
-    o << "Object of type ";
-    getClass().printValue(o);
-    return o.str();
-}
 
 /** Convert to type and dim. The caller manages the returned object. */
 RbObject* RbLanguageObject::convertTo(const TypeSpec& type) const {
@@ -59,7 +51,25 @@ const VectorString& RbLanguageObject::getClass(void) const {
 }
 
 
-/** Is convertible to type and dim? */
+/** Return member rules (no members) */
+RbPtr<const MemberRules> RbLanguageObject::getMemberRules(void) const {
+    
+    static RbPtr<const MemberRules> rules( new MemberRules());
+    
+    return rules;
+}
+
+
+/** 
+ * Initialize this instance with the parameters given. 
+ * The ordering of the parameters is specified by the member rules. 
+ */
+void RbLanguageObject::initialize(const RbPtr<Vector> &) {
+    // do nothing because we do not have any parameters. Some derived classes might have ...
+}
+
+
+/** Is convertible to type? */
 bool RbLanguageObject::isConvertibleTo(const TypeSpec& type) const {
     
     return RbObject::isConvertibleTo(type);

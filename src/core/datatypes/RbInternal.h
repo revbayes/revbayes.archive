@@ -37,9 +37,7 @@ class RbInternal : public RbObject {
 
     
         // Basic utility functions you can overwrite
-        virtual std::string             briefInfo(void) const;                  //!< Brief info about object
         virtual void                    printValue(std::ostream& o) const;      //!< Print value for user
-        virtual std::string             richInfo(void) const;                   //!< Complete info about object
 
    protected:
                                         RbInternal(void) {}                     //!< No objects of this class

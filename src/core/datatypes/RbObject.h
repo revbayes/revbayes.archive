@@ -38,20 +38,20 @@ class RbObject {
         virtual                            ~RbObject(void);                                                         //!< Virtual destructor
 
         // Basic utility functions you have to override (also getClass()!)
-        virtual std::string                 briefInfo(void) const = 0;                                              //!< Brief info about object
         virtual RbObject*                   clone(void) const = 0;                                                  //!< Clone object
         virtual RbPtr<XmlElement>           encode(RbPtr<XmlDocument> doc, const std::string& name);                //!< Function to encode this object into an XML string
         virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
-        virtual const TypeSpec&             getTypeSpec(void) const ;                                            //!< Get language type of the object
+        virtual const TypeSpec&             getTypeSpec(void) const ;                                               //!< Get language type of the object
         virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
-        virtual std::string                 richInfo(void) const = 0;                                               //!< Complete info about object
 
         // Basic utility functions you may want to override
         virtual bool                        allowsVariableInsertion(void) const { return false; }                   //!< Do we allow variable to be inserted in this object (only appicable for some container, e.g. DagNodeContainer)
+        virtual std::string                 briefInfo(void) const;                                              //!< Brief info about object
         virtual RbObject*                   convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         virtual RbPtr<const RbObject>       getElement(size_t index) const;                                         //!< Get element or subcontainer
         virtual RbPtr<RbObject>             getElement(size_t index);                                               //!< Get element or subcontainer
         virtual bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        virtual std::string                 richInfo(void) const;                                               //!< Complete info about object
         virtual bool                        supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]
       
 
