@@ -199,20 +199,18 @@ void MatrixReal::printValue(std::ostream& o) const {
         
     // print the matrix with each column of equal width and each column centered on the decimal
     for (size_t i=0; i<size(); i++) {
-        std::string lineStr = "";
         if (i == 0)
-            lineStr += "[ ";
+            o << "[ ";
         else 
-            lineStr += "  ";
+            o << "  ";
         
         const VectorReal *vec = static_cast<const VectorReal*>( (const RbLanguageObject*)elements[i]);
-        lineStr += vec->briefInfo();
+        vec->printValue(o);
         if (i == size()-1)
-            lineStr += " ]";
+            o << " ]";
         else 
-            lineStr += " ,\n";
+            o << " ,\n";
 
-        o << lineStr;
         //RBOUT(lineStr);
     }
     

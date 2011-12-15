@@ -356,9 +356,11 @@ RbPtr<const MethodTable> RateMatrix::getMethods(void) const {
 void RateMatrix::printValue(std::ostream& o) const {
 
     o << "Rate matrix:" << std::endl;
-    o << theRateMatrix->richInfo() << std::endl;
+    theRateMatrix->printValue(o);
+    o << std::endl;
     o << "Stationary frequencies: ";
-    o << theStationaryFreqs->richInfo() << std::endl;
+    theStationaryFreqs->printValue(o);
+    o << std::endl;
 }
 
 

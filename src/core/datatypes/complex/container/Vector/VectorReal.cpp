@@ -216,7 +216,7 @@ void VectorReal::printValue(std::ostream& o) const {
 
     o << "[ ";
     o << std::fixed;
-    o << std::setprecision(1);
+    o << std::setprecision(4);
     for (std::vector<double>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
         {
         if (i != elements.begin())
