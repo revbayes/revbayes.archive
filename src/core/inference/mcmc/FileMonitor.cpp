@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Monitor, used to hold
- * information about the monitoring of a variable DAG node.
+ * This file contains the implementation of FileMonitor, used to save
+ * information to file about the monitoring of a variable DAG node.
  *
- * @brief Implementation of Monitor
+ * @brief Implementation of FileMonitor
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -18,7 +18,7 @@
 #include "DagNodeContainer.h"
 #include "Ellipsis.h"
 #include "Integer.h"
-#include "Monitor.h"
+#include "FileMonitor.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "ValueRule.h"
@@ -29,43 +29,42 @@
 
 
 // Definition of the static type spec member
-const TypeSpec Monitor::typeSpec(Monitor_name);
+const TypeSpec FileMonitor::typeSpec(FileMonitor_name);
 
 /** Constructor */
-Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()) {
-
+FileMonitor::FileMonitor(void) : Monitor(getMemberRules() ) {
+    
 }
 
 /** Copy Constructor */
-Monitor::Monitor(const Monitor &x) : ConstantMemberObject(x) {
+FileMonitor::FileMonitor(const FileMonitor &x) : Monitor(x) {
     
     // shallow copy
-    nodes = x.nodes;
     separator = x.separator;
     
 }
 
-Monitor::~Monitor() {
+FileMonitor::~FileMonitor() {
    
 }
 
 
 /** Clone the object */
-Monitor* Monitor::clone(void) const {
+FileMonitor* FileMonitor::clone(void) const {
 
-    return new Monitor(*this);
+    return new FileMonitor(*this);
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& Monitor::getClass() const {
+const VectorString& FileMonitor::getClass() const {
 
-    static VectorString rbClass = VectorString(Monitor_name) + ConstantMemberObject::getClass();
+    static VectorString rbClass = VectorString(FileMonitor_name) + ConstantMemberObject::getClass();
     return rbClass;
 }
 
 /** Return member rules */
-RbPtr<const MemberRules> Monitor::getMemberRules( void ) const {
+RbPtr<const MemberRules> FileMonitor::getMemberRules( void ) const {
     
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -85,13 +84,13 @@ RbPtr<const MemberRules> Monitor::getMemberRules( void ) const {
 
 
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Monitor::getTypeSpec(void) const {
+const TypeSpec& FileMonitor::getTypeSpec(void) const {
     return typeSpec;
 }
 
 
 /** Monitor value unconditionally */
-void Monitor::monitor(void) {
+void FileMonitor::monitor(void) {
 
     for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
@@ -109,7 +108,7 @@ void Monitor::monitor(void) {
 
 
 /** Monitor value at generation gen */
-void Monitor::monitor(int gen) {
+void FileMonitor::monitor(int gen) {
 
     // get the printing frequency
     int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
@@ -132,7 +131,7 @@ void Monitor::monitor(int gen) {
 
 
 /** open the file stream for printing */
-void Monitor::openStream(void) {
+void FileMonitor::openStream(void) {
 
     // get the filename
     std::string filename = dynamic_cast<const RbString*>( (const RbObject*)getMemberValue("filename") )->getValue();
@@ -143,7 +142,7 @@ void Monitor::openStream(void) {
 }
 
 /** Print header for monitored values */
-void Monitor::printHeader() {
+void FileMonitor::printHeader() {
   
     // print one column for the iteration number
     outStream << "Sample";
@@ -166,7 +165,7 @@ void Monitor::printHeader() {
 
 
 /** Print value for user */
-void Monitor::printValue(std::ostream& o) const {
+void FileMonitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
     int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
@@ -175,24 +174,8 @@ void Monitor::printValue(std::ostream& o) const {
 }
 
 
-void Monitor::replaceDagNodes(std::vector<RbPtr<VariableNode> > &n) {
-    
-    // release all nodes
-    nodes.clear();
-    
-    // add all nodes
-    for (size_t i=0; i<n.size(); i++) {
-        RbPtr<VariableNode> theNode = n[i];
-        if (theNode != NULL) {
-            nodes.push_back(theNode);
-        }
-    }
-    
-}
-
-
 /** Complete info about object */
-std::string Monitor::richInfo(void) const {
+std::string FileMonitor::richInfo(void) const {
     
     // get the printing frequency
     int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
@@ -203,7 +186,7 @@ std::string Monitor::richInfo(void) const {
     return o.str();
 }
 
-void Monitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
+void FileMonitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {

@@ -22,7 +22,7 @@
 #include "Mcmc.h"
 #include "MemberFunction.h"
 #include "Model.h"
-#include "Monitor.h"
+#include "FileMonitor.h"
 #include "Move.h"
 #include "MoveSchedule.h"
 #include "Natural.h"
@@ -97,7 +97,7 @@ RbPtr<const MemberRules> Mcmc::getMemberRules(void) const {
 
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "model"    , Model_name    ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "moves"    , TypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(Move_name) ) ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "monitors" , TypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(Monitor_name) ) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "monitors" , TypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(FileMonitor_name) ) ) ) ) );
 
         rulesSet = true;
     }
@@ -178,10 +178,10 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
         // get the DAG nodes
         const RbPtr<Model> theModel( static_cast<Model*>( (RbObject*)getMemberValue("model") ) );
         
-        RbPtr<Vector> monitors( static_cast<Vector*>(var->getValue()->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(Monitor_name) ) ) ) ) );
+        RbPtr<Vector> monitors( static_cast<Vector*>(var->getValue()->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(FileMonitor_name) ) ) ) ) );
         for (size_t i=0; i<monitors->size(); i++) {
             // get the monitor #i
-            RbPtr<Monitor> theMonitor( static_cast<Monitor*>( (RbObject*)monitors->getElement(i) ) );
+            RbPtr<FileMonitor> theMonitor( static_cast<FileMonitor*>( (RbObject*)monitors->getElement(i) ) );
             
             // get the DAG node for this monitor
             std::vector<RbPtr<VariableNode> > &theOldNodes = theMonitor->getDagNodes();
@@ -195,7 +195,7 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             std::vector<RbPtr<DAGNode> > theNewNodes = theModel->getClonedDagNodes(oldNodes);
             
             // clone the move and replace the node
-            RbPtr<Monitor> newMonitor( theMonitor->clone() );
+            RbPtr<FileMonitor> newMonitor( theMonitor->clone() );
             // convert the new nodes from DAGNode to Stochastic Nodes
             std::vector<RbPtr<VariableNode> > newNodes;
             for (std::vector<RbPtr<DAGNode> >::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
@@ -235,7 +235,7 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Opening file and printing headers ..." << std::endl;
     for (size_t i=0; i<monitors->size(); i++) {
         // get the monitor
-        RbPtr<Monitor> theMonitor( static_cast<Monitor*>( (RbObject*)monitors->getElement(i) ) );
+        RbPtr<FileMonitor> theMonitor( static_cast<FileMonitor*>( (RbObject*)monitors->getElement(i) ) );
         
         // open the file stream for the monitor
         theMonitor->openStream();
@@ -315,7 +315,7 @@ void Mcmc::run(size_t ngen) {
 
         /* Monitor */
         for (size_t i=0; i<monitors->size(); i++) {
-            static_cast<Monitor*>( (RbObject*)monitors->getElement(i) )->monitor(gen);
+            static_cast<FileMonitor*>( (RbObject*)monitors->getElement(i) )->monitor(gen);
         }
 
         /* Print to screen */

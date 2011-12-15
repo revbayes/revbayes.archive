@@ -74,12 +74,13 @@
 #include "TopologyNode.h"
 
 /* MemberObject types with auto-generated constructors (alphabetic order) */
+#include "FileMonitor.h"
 #include "Mcmc.h"
-#include "Monitor.h"
 #include "Move_mmultinomial.h"
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
 #include "Move_mslide.h"
+#include "ObjectMonitor.h"
 #include "Simulate.h"
 #include "TreePlate.h"
 
@@ -233,6 +234,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "mscale",       RbPtr<MemberObject>( new Move_mscale() )       );
         addTypeWithConstructor( "simulate",     RbPtr<MemberObject>( new Simulate() )          );
         addTypeWithConstructor( "treeplate",    RbPtr<MemberObject>( new TreePlate() )         );
+
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
         addDistribution( "beta",         RbPtr<DistributionContinuous>( new Dist_beta() )  );

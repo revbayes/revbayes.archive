@@ -21,6 +21,8 @@
 #define Simulate_H
 
 #include "ConstantMemberObject.h"
+#include "RbString.h"
+#include "Vector.h"
 
 #include <set>
 #include <string>
@@ -40,7 +42,7 @@ public:
     virtual                    ~Simulate(void) {}                                                                   //!< Destructor
     
     // Basic utility functions
-    Simulate*                       clone(void) const;                                                              //!< Clone object
+    Simulate*                   clone(void) const;                                                              //!< Clone object
     const VectorString&         getClass(void) const;                                                           //!< Get class vector  
     const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object 
     
@@ -53,6 +55,8 @@ public:
     
     // Simulate functions
     void                        run(size_t ndata);                                                               //!< Simulates ndata data elements
+    RbPtr<Vector>               getValues(RbString varName);                                                  //!< Get the values for variable with name varName
+    
     
 protected:
     RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);//!< Execute method

@@ -487,7 +487,7 @@
 		BD8DE020149A0DF8007792CD /* Help.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDEF2149A0DF7007792CD /* Help.cpp */; };
 		BD8DE021149A0DF8007792CD /* HelpNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDEF4149A0DF7007792CD /* HelpNode.cpp */; };
 		BD8DE022149A0DF8007792CD /* Mcmc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDEF8149A0DF7007792CD /* Mcmc.cpp */; };
-		BD8DE023149A0DF8007792CD /* Monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDEFA149A0DF7007792CD /* Monitor.cpp */; };
+		BD8DE023149A0DF8007792CD /* FileMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDEFA149A0DF7007792CD /* FileMonitor.cpp */; };
 		BD8DE024149A0DF8007792CD /* NclReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDEFD149A0DF7007792CD /* NclReader.cpp */; };
 		BD8DE025149A0DF8007792CD /* DistributionBeta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDF01149A0DF7007792CD /* DistributionBeta.cpp */; };
 		BD8DE026149A0DF8007792CD /* DistributionBinomial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDF03149A0DF7007792CD /* DistributionBinomial.cpp */; };
@@ -564,6 +564,8 @@
 		BD8DE06D149A0DF9007792CD /* XmlElementTextNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDFA3149A0DF7007792CD /* XmlElementTextNode.cpp */; };
 		BD8DE06E149A0DF9007792CD /* XmlParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDFA5149A0DF7007792CD /* XmlParser.cpp */; };
 		BD8DE06F149A0DF9007792CD /* XmlTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDFA7149A0DF7007792CD /* XmlTag.cpp */; };
+		BD8DE071149A0F52007792CD /* Monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DE070149A0F51007792CD /* Monitor.cpp */; };
+		BD8DE075149A29EF007792CD /* ObjectMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DE074149A29EE007792CD /* ObjectMonitor.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1341,8 +1343,8 @@
 		BD8DDEF5149A0DF7007792CD /* HelpNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelpNode.h; sourceTree = "<group>"; };
 		BD8DDEF8149A0DF7007792CD /* Mcmc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mcmc.cpp; sourceTree = "<group>"; };
 		BD8DDEF9149A0DF7007792CD /* Mcmc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mcmc.h; sourceTree = "<group>"; };
-		BD8DDEFA149A0DF7007792CD /* Monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Monitor.cpp; sourceTree = "<group>"; };
-		BD8DDEFB149A0DF7007792CD /* Monitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Monitor.h; sourceTree = "<group>"; };
+		BD8DDEFA149A0DF7007792CD /* FileMonitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileMonitor.cpp; path = ../inference/mcmc/FileMonitor.cpp; sourceTree = "<group>"; };
+		BD8DDEFB149A0DF7007792CD /* FileMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileMonitor.h; path = ../inference/mcmc/FileMonitor.h; sourceTree = "<group>"; };
 		BD8DDEFD149A0DF7007792CD /* NclReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NclReader.cpp; sourceTree = "<group>"; };
 		BD8DDEFE149A0DF7007792CD /* NclReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NclReader.h; sourceTree = "<group>"; };
 		BD8DDF01149A0DF7007792CD /* DistributionBeta.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DistributionBeta.cpp; sourceTree = "<group>"; };
@@ -1504,6 +1506,10 @@
 		BD8DDFA6149A0DF7007792CD /* XmlParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlParser.h; sourceTree = "<group>"; };
 		BD8DDFA7149A0DF7007792CD /* XmlTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XmlTag.cpp; sourceTree = "<group>"; };
 		BD8DDFA8149A0DF7007792CD /* XmlTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlTag.h; sourceTree = "<group>"; };
+		BD8DE070149A0F51007792CD /* Monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Monitor.cpp; sourceTree = "<group>"; };
+		BD8DE072149A0F82007792CD /* Monitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Monitor.h; sourceTree = "<group>"; };
+		BD8DE073149A29DC007792CD /* ObjectMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectMonitor.h; sourceTree = "<group>"; };
+		BD8DE074149A29EE007792CD /* ObjectMonitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectMonitor.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2758,8 +2764,6 @@
 			children = (
 				BD8DDEF8149A0DF7007792CD /* Mcmc.cpp */,
 				BD8DDEF9149A0DF7007792CD /* Mcmc.h */,
-				BD8DDEFA149A0DF7007792CD /* Monitor.cpp */,
-				BD8DDEFB149A0DF7007792CD /* Monitor.h */,
 			);
 			path = mcmc;
 			sourceTree = "<group>";
@@ -2948,6 +2952,12 @@
 		BD8DDF78149A0DF7007792CD /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				BD8DDEFA149A0DF7007792CD /* FileMonitor.cpp */,
+				BD8DDEFB149A0DF7007792CD /* FileMonitor.h */,
+				BD8DE070149A0F51007792CD /* Monitor.cpp */,
+				BD8DE072149A0F82007792CD /* Monitor.h */,
+				BD8DE074149A29EE007792CD /* ObjectMonitor.cpp */,
+				BD8DE073149A29DC007792CD /* ObjectMonitor.h */,
 				BD8DDF79149A0DF7007792CD /* RbConstants.h */,
 				BD8DDF7A149A0DF7007792CD /* RbException.cpp */,
 				BD8DDF7B149A0DF7007792CD /* RbException.h */,
@@ -3429,7 +3439,7 @@
 				BD8DE020149A0DF8007792CD /* Help.cpp in Sources */,
 				BD8DE021149A0DF8007792CD /* HelpNode.cpp in Sources */,
 				BD8DE022149A0DF8007792CD /* Mcmc.cpp in Sources */,
-				BD8DE023149A0DF8007792CD /* Monitor.cpp in Sources */,
+				BD8DE023149A0DF8007792CD /* FileMonitor.cpp in Sources */,
 				BD8DE024149A0DF8007792CD /* NclReader.cpp in Sources */,
 				BD8DE025149A0DF8007792CD /* DistributionBeta.cpp in Sources */,
 				BD8DE026149A0DF8007792CD /* DistributionBinomial.cpp in Sources */,
@@ -3506,6 +3516,8 @@
 				BD8DE06D149A0DF9007792CD /* XmlElementTextNode.cpp in Sources */,
 				BD8DE06E149A0DF9007792CD /* XmlParser.cpp in Sources */,
 				BD8DE06F149A0DF9007792CD /* XmlTag.cpp in Sources */,
+				BD8DE071149A0F52007792CD /* Monitor.cpp in Sources */,
+				BD8DE075149A29EF007792CD /* ObjectMonitor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
