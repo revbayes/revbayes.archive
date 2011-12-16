@@ -96,7 +96,7 @@ const TypeSpec Move_mmultinomial::getVariableType( void ) const {
 
 
 /** Perform the move */
-double Move_mmultinomial::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
+double Move_mmultinomial::perform( void ) {
 
     // Get random number generator    
     RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
@@ -218,7 +218,7 @@ double Move_mmultinomial::perform( std::set<RbPtr<StochasticNode> >& affectedNod
     for ( size_t i = 0; i < valPtr->size(); i++ )
         newVal[i] *= sum;
 		
-    nodePtr->setValue( RbPtr<RbLanguageObject>( new VectorReal( newVal ) ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( new VectorReal( newVal ) ) );
 	
     return lnProposalRatio;
 }

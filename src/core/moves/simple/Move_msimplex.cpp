@@ -95,7 +95,7 @@ const TypeSpec Move_msimplex::getVariableType( void ) const {
 
 
 /** Perform the move */
-double Move_msimplex::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
+double Move_msimplex::perform( void ) {
 
     // Get random number generator    
     RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
@@ -206,7 +206,7 @@ double Move_msimplex::perform( std::set<RbPtr<StochasticNode> >& affectedNodes )
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
 		
-    nodePtr->setValue( RbPtr<RbLanguageObject>( new Simplex( newVal ) ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( new Simplex( newVal ) ) );
 	
     return lnProposalRatio;
 }

@@ -36,12 +36,12 @@
 const TypeSpec StochasticNode::typeSpec(StochasticNode_name);
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.getType() ), clamped( false ), distribution( NULL ), instantiated( true ) {
+StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.getType() ), clamped( false ), distribution( NULL ), instantiated( true ), needsRecalculation( true ) {
 }
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( RbPtr<Distribution> dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ) {
+StochasticNode::StochasticNode( RbPtr<Distribution> dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ) {
 
     // increment the reference count for myself
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
@@ -95,17 +95,18 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
         theParam->addChildNode(this);
     }
 
-    clamped      = x.clamped;
-    instantiated = x.instantiated;
-    value        = RbPtr<RbLanguageObject>( x.value->clone() );
-    touched      = x.touched;
+    clamped             = x.clamped;
+    instantiated        = x.instantiated;
+    needsRecalculation  = x.needsRecalculation;
+    value               = RbPtr<RbLanguageObject>( x.value->clone() );
+    touched             = x.touched;
     if ( x.touched == true ) {
-        storedValue  = RbPtr<RbLanguageObject>( x.storedValue->clone() );
+        storedValue     = RbPtr<RbLanguageObject>( x.storedValue->clone() );
     } else
-        storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+        storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
     
-    lnProb       = x.lnProb;
-    storedLnProb = x.storedLnProb;
+    lnProb              = x.lnProb;
+    storedLnProb        = x.storedLnProb;
 }
 
 
@@ -149,14 +150,15 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
             theParam->addChildNode(this);
         }
 
-        clamped      = x.clamped;
-        instantiated = x.instantiated;
+        clamped             = x.clamped;
+        instantiated        = x.instantiated;
+        needsRecalculation  = x.needsRecalculation;
         
-        value        = x.value;
-        touched      = x.touched;
-        storedValue  = x.storedValue;
-        lnProb       = x.lnProb;
-        storedLnProb = x.storedLnProb;
+        value               = x.value;
+        touched             = x.touched;
+        storedValue         = x.storedValue;
+        lnProb              = x.lnProb;
+        storedLnProb        = x.storedLnProb;
         
         // set the name
         name = x.name;
@@ -244,8 +246,9 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
     else {
         copy->storedValue = RbPtr<RbLanguageObject>( storedValue->clone() );
     }
-    copy->lnProb       = lnProb;
-    copy->storedLnProb = storedLnProb;
+    copy->lnProb             = lnProb;
+    copy->storedLnProb       = storedLnProb;
+    copy->needsRecalculation = needsRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
     RbPtr<Environment> params     = distribution->getMembers();
@@ -277,22 +280,22 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
 }
 
 
-/** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
-void StochasticNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
-
-    /* If we have already touched this node, we are done; otherwise, get the affected children */
-//    if ( !touched ) {
-//        touched = true;
-        affected.insert( RbPtr<StochasticNode>( this ) );
-        
-        // if this node is integrated out, then we need to add the children too
-        if (!instantiated) {
-            for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-                (*i)->getAffected( affected );
-            }
-        }
-//    }
-}
+///** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
+//void StochasticNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
+//
+//    /* If we have already touched this node, we are done; otherwise, get the affected children */
+////    if ( !touched ) {
+////        touched = true;
+//        affected.insert( RbPtr<StochasticNode>( this ) );
+//        
+//        // if this node is integrated out, then we need to add the children too
+//        if (!instantiated) {
+//            for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
+//                (*i)->getAffected( affected );
+//            }
+//        }
+////    }
+//}
 
 
 /** Get class vector describing type of DAG node */
@@ -312,16 +315,39 @@ const TypeSpec& StochasticNode::getTypeSpec(void) const {
 /** Get the conditional ln probability of the node; do not rely on stored values */
 double StochasticNode::calculateLnProbability( void ) {
 
-    if (instantiated) {
-        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) );
+    if (needsRecalculation) {
+        if (instantiated) {
+            lnProb = distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) );
+        }
+        else {
+            // we need to iterate over my states
+            DistributionDiscrete* d = static_cast<DistributionDiscrete*>( (Distribution*)distribution );
+            d->getNumberOfStates();
+        }
+        
+        needsRecalculation = false;
     }
-    else {
-        // we need to iterate over my states
-        DistributionDiscrete* d = static_cast<DistributionDiscrete*>( (Distribution*)distribution );
-        d->getNumberOfStates();
-    }
+    
+    return lnProb;
 }
 
+
+/** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
+void StochasticNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
+    
+    /* If we have already touched this node, we are done; otherwise, get the affected children */
+    //    if ( !touched ) {
+    //        touched = true;
+    affected.insert( RbPtr<StochasticNode>( this ) );
+    
+    // if this node is integrated out, then we need to add the children too
+    if (!instantiated) {
+        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
+            (*i)->getAffected( affected );
+        }
+    }
+    //    }
+}
 
 
 RbPtr<const Distribution> StochasticNode::getDistribution(void) const {
@@ -335,23 +361,16 @@ RbPtr<Distribution> StochasticNode::getDistribution(void) {
 
 
 /** Get the ln probability ratio of this node */
-double StochasticNode::getLnProbabilityRatio( void ) const {
-
-    if ( !isTouched() && !areDistributionParamsTouched() ) {
+double StochasticNode::getLnProbabilityRatio( void ) {
+    
+    if ( !isTouched() ) {
 
         return 0.0;
     }
-    else if ( isTouched() && !areDistributionParamsTouched() ) {
-
-        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - storedLnProb;
-    }
-    else if ( !isTouched() && areDistributionParamsTouched() ) {
-
-        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - lnProb;
-    }
-    else /* if ( isTouched() && areDistributionParamsTouched() ) */ {
-
-        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - storedLnProb;
+    else {
+//        assert( !areDistributionParamsTouched() );
+        
+        return calculateLnProbability() - storedLnProb;
     }
 }
 
@@ -381,32 +400,22 @@ RbPtr<RbLanguageObject> StochasticNode::getValue( void ) {
 
 
 /**
- * Keep the current value of the node and tell affected. At this point,
- * we also need to make sure we update the stored ln probability.
+ * Keep the current value of the node. 
+ * At this point, we also need to make sure we update the stored ln probability.
  */
-void StochasticNode::keep() {
+void StochasticNode::keepMe() {
 
     if ( touched ) {
-
+        
         storedValue = RbPtr<RbLanguageObject>::getNullPtr();
         storedLnProb = 1.0E6;       // An almost impossible value for the density
-        lnProb = calculateLnProbability();
+        if (needsRecalculation) {
+            lnProb = calculateLnProbability();
+        }
     }
 
     touched = false;
 
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-        (*i)->keepAffected();
-}
-
-
-/**
- * Tell affected variable nodes to keep the current value: stop the recursion here.
- * We also need to update our probability.
- */
-void StochasticNode::keepAffected() {
-
-    lnProb = calculateLnProbability();
 }
 
 
@@ -449,7 +458,7 @@ void StochasticNode::printValue( std::ostream& o ) const {
 
 
 /** Restore the old value of the node and tell affected */
-void StochasticNode::restore() {
+void StochasticNode::restoreMe() {
 
     if ( touched ) {
         
@@ -457,17 +466,11 @@ void StochasticNode::restore() {
         storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
+        
+        needsRecalculation = false;
     }
 
     touched = false;
- 
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-        (*i)->restoreAffected();
-}
-
-
-/** Tell affected variable nodes to restore the old value: stop the recursion here */
-void StochasticNode::restoreAffected() {
 }
 
 
@@ -498,30 +501,16 @@ std::string StochasticNode::richInfo(void) const {
  * Set value: same as clamp, but do not clamp. This function will
  * also be used by moves to propose a new value.
  */
-void StochasticNode::setValue( RbPtr<RbLanguageObject> val, std::set<RbPtr<StochasticNode> >& affected ) {
+void StochasticNode::setValue( RbPtr<RbLanguageObject> val ) {
 
     if ( clamped )
         throw RbException( "Cannot change value of clamped node" );
 
-    if ( !touched ) {
-
-        // Store the current value and replace with val
-        touched      = true;
-        
-        storedValue  = value;
-        storedLnProb = lnProb;
-        value        = val;
-
-    }
-    else /* if ( touched ) */ {
-
-        value        = val;
-        
-    }
-
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-        (*i)->touch();
-//        (*i)->getAffected( affected);
+    // touch the node (which will store the lnProb)
+    touch();
+    
+    // set the value
+    value = val;
 }
 
 
@@ -553,14 +542,22 @@ void StochasticNode::swapParentNode( RbPtr<DAGNode> oldNode, RbPtr<DAGNode> newN
         // if they are interested.
     }
 
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-        (*i)->touch();
+    //for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    //    (*i)->touch();
 }
 
 
 /** touch this node for recalculation */
-void StochasticNode::touch( void ) {
-    touched = true;
+void StochasticNode::touchMe( void ) {
+    if (!touched) {
+        // Store the current lnProb 
+        touched      = true;
+    
+        storedLnProb = lnProb;
+        storedValue  = value;
+    }
+    
+    needsRecalculation = true;
 }
 
 /** Unclamp the value; use the clamped value as initial value */

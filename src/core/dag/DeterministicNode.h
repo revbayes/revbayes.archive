@@ -53,12 +53,7 @@ public:
     std::string                             richInfo(void) const;                                               //!< Complete info about object
 
     // DAG functions implemented here
-    void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
-    void                                    keep(void);                                                         //!< Update and then keep current value
-    void                                    keepAffected(void);                                                 //!< Keep value of affected nodes
-    void                                    restoreAffected(void);                                              //!< Restore value of affected nodes
     void                                    swapParentNode(RbPtr<DAGNode> oldP, RbPtr<DAGNode> newP);           //!< Swap a parent node
-    void                                    touch(void);                                                        //!< Tell affected nodes value is reset
 
     // DAG function you have to override
     virtual RbPtr<DAGNode>                  cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;//!< Clone entire graph
@@ -66,10 +61,14 @@ public:
 protected:
 
     // Utility function you have to override
+    void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
+    void                                    keepMe(void);                                                       //!< Keep value of this and affected nodes
+    void                                    restoreMe(void);                                                    //!< Restore value of this nodes
+    void                                    touchMe(void);                                                      //!< Tell affected nodes value is reset
     virtual void                            update(void);                                                       //!< Update value and storedValue
 
     // Member variable
-    bool                                    changed;                                                            //!< True when value updated after touch
+    bool                                    needsUpdate;                                                        //!< True when value after touch but before update; if then updated set to false
     RbPtr<RbFunction>                       function;
     
 private:

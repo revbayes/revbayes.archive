@@ -53,7 +53,7 @@ protected:
     MoveSimple(const MoveSimple &ms);                                                                   //!< Copy constructor
 
     // Functions you have to override
-    virtual double                      perform(std::set<RbPtr<StochasticNode> >& affectedNodes) = 0;   //!< Perform the move and fill in the affected stochastic nodes for probability calculations
+    virtual double                      perform(void) = 0;                                              //!< Perform the move and fill in the affected stochastic nodes for probability calculations
     virtual const TypeSpec              getVariableType(void) const = 0;                                //!< Get type of random variable appropriate for move
 
     // Functions you may want to override for additional statistics purposes, e.g.

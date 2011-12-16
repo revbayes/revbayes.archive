@@ -97,7 +97,7 @@ const TypeSpec Move_mslide::getVariableType( void ) const {
 
 
 /** Perform the move */
-double Move_mslide::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
+double Move_mslide::perform( void ) {
 
     // Get random number generator    
     RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
@@ -125,7 +125,7 @@ double Move_mslide::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
 
     // FIXME: not the most efficient way of handling multiple reflections :-P
 
-    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ) );
 	
     return 0.0;
 }

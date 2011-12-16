@@ -30,7 +30,7 @@
 #include <set>
 #include <string>
 
-class ContainerNode;
+class StochasticNode;
 class Variable;
 class VariableNode;
 class VectorNatural;
@@ -61,16 +61,13 @@ class DAGNode : public RbLanguageObject {
         virtual RbPtr<RbLanguageObject>                     getValue(void) = 0;                                                     //!< Get value (non-const to return non-const value)
         virtual void                                        printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
-        virtual std::string                                 richInfo(void) const = 0;                                               //!< Complete info about object
     
         // DAG function you have to override
         virtual RbPtr<DAGNode>                              cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;//!< Clone graph
-        virtual void                                        keep(void) = 0;                                                         //!< Keep current state
-        virtual void                                        keepAffected(void) = 0;                                                 //!< Keep value of affected nodes
-        virtual void                                        touch(void) = 0;                                                        //!< Tell affected nodes value is reset
 
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                          //!< Add child node
+        void                                                getAffectedNodes(std::set<RbPtr<StochasticNode> >& affected);           //!< Mark and get affected nodes
         const std::set<VariableNode*>&                      getChildren(void) const { return children; }                            //!< Return children
         RbPtr<const RbObject>                               getElement(size_t index) const ;                                        //!< Get element at index (container function)
         RbPtr<RbObject>                                     getElement(size_t index);                                               //!< Get element at index (container function)
@@ -78,13 +75,16 @@ class DAGNode : public RbLanguageObject {
 		const std::set<RbPtr<DAGNode> >&                    getParents(void) const { return parents; }                              //!< Return parents
         Variable*                                           getVariable(void) const { return variable; }                            //!< Get the variable owning this node
         bool                                                isParentInDAG(const RbPtr<DAGNode> x, std::list<DAGNode*>& done) const; //!< Is node x a parent of the caller in the DAG?
+        void                                                keep(void);                                                             //!< Keep current state of this node and all affected nodes
         size_t                                              numberOfChildren(void) const { return children.size(); }                //!< Number of children
         size_t                                              numberOfParents(void) const { return parents.size(); }                  //!< Number of parents
         void                                                printChildren(std::ostream& o) const;                                   //!< Print children DAG nodes
         void                                                printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
         void                                                removeChildNode(VariableNode *c);                                       //!< Remove a child node
+        void                                                restore(void);                                                          //!< Restore value of this and affected nodes
         void                                                setName(const std::string &n) { name = n; }                             //!< Replace the name of the variable
         void                                                setVariable(Variable* var);                                             //!< Set the variable owning this node
+        void                                                touch(void);                                                            //!< Tell affected nodes value is reset
 
 
 
@@ -92,7 +92,15 @@ class DAGNode : public RbLanguageObject {
                                                             DAGNode(RbPtr<RbLanguageObject> value);                                 //!< Constructor of filled node
                                                             DAGNode(const std::string& valType);                                    //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                              //!< Copy constructor
-
+    
+        virtual void                                        getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                    //!< Mark and get affected nodes
+        virtual void                                        keepAffected(void);                                                     //!< Keep value of affected nodes
+        virtual void                                        keepMe(void) = 0;                                                           //!< Keep value of myself
+        virtual void                                        restoreAffected(void);                                                  //!< Restore value of affected nodes recursively
+        virtual void                                        restoreMe(void) = 0;                                                        //!< Restore value of this nodes
+        virtual void                                        touchAffected(void);                                                    //!< Touch affected nodes (flag for recalculation)
+        virtual void                                        touchMe(void) = 0;                                                          //!< Touch myself (flag for recalculation)
+        
 
         // Member variables keeping track of references
         std::set<VariableNode* >                            children;                                                               //!< Set of children nodes

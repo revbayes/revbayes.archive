@@ -64,7 +64,6 @@ RbPtr<RbLanguageObject> Func_setval::executeFunction( void ) {
     }
     
     // The following call will throw an error if the value type is wrong
-    std::set<RbPtr<StochasticNode> > affected;
     RbPtr<RbLanguageObject> newVal = (*args)[1]->getValue();
     if (!newVal->isTypeSpec(theNode->getDistribution()->getVariableType() ) ) {
         if (newVal->isConvertibleTo(theNode->getDistribution()->getVariableType())) {
@@ -73,11 +72,10 @@ RbPtr<RbLanguageObject> Func_setval::executeFunction( void ) {
             throw RbException( "Cannot set the value of the stochastic node because the types do not match." );
         }
     }
-    theNode->setValue( RbPtr<RbLanguageObject>( newVal ), affected );
+    theNode->setValue( RbPtr<RbLanguageObject>( newVal ) );
 
     // todo: Do we want to update the affected nodes?
     theNode->keep();
-    theNode->keepAffected();
 
     return RbPtr<RbLanguageObject>::getNullPtr();
 }

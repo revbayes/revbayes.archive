@@ -118,6 +118,18 @@ const VectorString& DAGNode::getClass() const {
     return rbClass;
 }
 
+
+/**
+ * Restore all affected nodes this DAGNode.
+ * This means we call restoreMe() of all children. restoreMe() is pure virtual.
+ */
+void DAGNode::getAffectedNodes(std::set<RbPtr<StochasticNode> > &affected) {
+    
+    // get all my affected children
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
+        (*i)->getAffected(affected);
+}
+
 RbPtr<const RbObject> DAGNode::getElement(size_t index) const {
     
     // test whether the value supports indexing, i.e. is a container
@@ -187,6 +199,29 @@ bool DAGNode::isValueOfTypeSpec( const TypeSpec& typeSp ) const {
     return value->isTypeSpec( typeSp );
 }
 
+
+/**
+ * Keep the value of the node.
+ * This function delegates the call to keepMe() and calls keepAffected() too.
+ */
+void DAGNode::keep(void) {
+    // keep myself first
+    keepMe();
+    
+    // next, keep all my children
+    keepAffected();
+}
+
+/**
+ * Tell affected variable nodes to keep the current value.
+ */
+void DAGNode::keepAffected() {
+    
+    // keep all my children
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
+        (*i)->keepMe();
+}
+
 /** Print children */
 void DAGNode::printChildren( std::ostream& o ) const {
 
@@ -245,5 +280,55 @@ void DAGNode::removeChildNode(VariableNode *c) {
         // remove the child from our list
         children.erase(c);
     }
+}
+
+
+/**
+ * Restore this DAGNode.
+ * This means we call restoreMe() and restoreAffected(). There is a default implementation of restoreAffected()
+ * which call restoreMe() of all children of this node. restoreMe() is pure virtual.
+ */
+void DAGNode::restore(void) {
+    // first restore myself
+    restoreMe();
+    
+    // next, restore all my children
+    restoreAffected();
+}
+
+
+/**
+ * Restore all affected nodes this DAGNode.
+ * This means we call restoreMe() of all children. restoreMe() is pure virtual.
+ */
+void DAGNode::restoreAffected(void) {
+    
+    // next, restore all my children
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
+        (*i)->restoreMe();
+}
+
+
+/**
+ * Tell affected variable nodes to keep the current value: stop the recursion here.
+ * We also need to update our probability.
+ */
+void DAGNode::touch() {
+    // first touch myself
+    touchMe();
+    
+    // next, touch all my children
+    touchAffected();
+}
+
+
+/**
+ * Tell affected variable nodes to touch themselves (i.e. that they've been touched).
+ */
+void DAGNode::touchAffected() {
+    
+    // touch all my children
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
+        (*i)->touchMe();
 }
 

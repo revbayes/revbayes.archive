@@ -48,7 +48,7 @@ class Move_mslide : public MoveSimple {
         const TypeSpec              getVariableType(void) const;                                            //!< Get move variable type
 
 	protected:
-        double                      perform(std::set<RbPtr<StochasticNode> >& affectedNodes);                      //!< Perform move
+        double                      perform(void);                                                          //!< Perform move
     
     private:
         static const TypeSpec       typeSpec;

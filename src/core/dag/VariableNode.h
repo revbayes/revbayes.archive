@@ -44,7 +44,6 @@ public:
     virtual RbPtr<RbLanguageObject>             getValue(void) = 0;                                                             //!< Get value (non-const to return non-const value)
     virtual void                                printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
     virtual void                                printValue(std::ostream& o) const = 0;                                          //!< Print value for user
-    virtual std::string                         richInfo(void) const = 0;                                                       //!< Complete info about object
 
     // DAG function you should not override
     void                                        addParentNode(RbPtr<DAGNode> p);                                                //!< Add parent node
@@ -56,17 +55,19 @@ public:
 
     // DAG functions you have to override
     virtual RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;        //!< Clone entire graph
-    virtual void                                getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                    //!< Mark and get affected nodes
-    virtual void                                keep(void) = 0;                                                                 //!< Keep current state
-    virtual void                                keepAffected(void) = 0;                                                         //!< Keep value of affected nodes
-    virtual void                                restoreAffected(void) = 0;                                                      //!< Restore value of affected nodes
     virtual void                                swapParentNode(RbPtr<DAGNode> oldP, RbPtr<DAGNode> newP) = 0;                   //!< Swap a parent node
-    virtual void                                touch(void) = 0;                                                                //!< Tell affected nodes value is reset
 
 protected:
     VariableNode(const std::string& valType);                                                                       //!< Constructor of empty node
     VariableNode(const VariableNode &v);                                                                            //!< Copy Constructor
 
+//    virtual void                                getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                    //!< Mark and get affected nodes
+
+//    virtual void                                        keepMe(void) = 0;                                                           //!< Keep value of myself
+//    virtual void                                        restoreMe(void) = 0;                                                        //!< Restore value of this nodes
+//    virtual void                                        touchMe(void) = 0;                                                          //!< Touch myself (flag for recalculation)
+
+    
     // Member variables
     bool                                        touched;                                                                        //!< Is touched by move?
     RbPtr<RbLanguageObject>                     storedValue;                                                                    //!< Stored value

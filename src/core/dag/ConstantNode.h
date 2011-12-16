@@ -53,10 +53,15 @@ public:
     // DAG functions
     RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;        //!< Clone entire graph
     bool                                isTouched (void) const { return false; }                                    //!< Touched by a move?
-    void                                keep(void);                                                                 //!< Keep current state
-    void                                keepAffected(void);                                                         //!< Keep value of affected nodes
-    void                                touch(void);                                                                //!< Tell affected nodes value is reset
-    
+   
+
+protected:
+
+    void                                getAffected(std::set<RbPtr<StochasticNode> >& affected);                    //!< Mark and get affected nodes
+    void                                keepMe(void);                                                               //!< Keep value of this and affected nodes
+    void                                restoreMe(void);                                                            //!< Restore value of this nodes
+    void                                touchMe(void);                                                              //!< Tell affected nodes value is reset
+
 private:
     static const TypeSpec               typeSpec;
 };

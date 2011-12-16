@@ -43,7 +43,8 @@ MoveSimple::MoveSimple(const MoveSimple &ms) : Move(ms) {
 void MoveSimple::acceptMove(void) {
 
 //    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
-
+    
+//    std::cout << "Accept move\n";
     accept();
     numAccepted++;
     for (std::vector<RbPtr<StochasticNode> >::iterator it=nodes.begin(); it!=nodes.end(); it++) {
@@ -83,13 +84,22 @@ RbPtr<const MemberRules> MoveSimple::getMemberRules( void ) const {
 double MoveSimple::performMove(double& lnProbabilityRatio) {
 
     RbPtr<StochasticNode> nodePtr( static_cast<StochasticNode*>( (VariableNode*)nodes[0] ) );
-    std::set<RbPtr<StochasticNode> > affectedNodes;
+    
+//    std::cout << "Perform simple move (" << getClass()[0] << ") on node \"" << nodePtr->getName() << "\"\n";
 
-    double lnHastingsRatio    = perform(affectedNodes);
+    double lnHastingsRatio    = perform();
+    
+    // touch the current node and the affected ones
+//    nodePtr->touch();
+    
     lnProbabilityRatio = nodePtr->getLnProbabilityRatio();
-
-    for (std::set<RbPtr<StochasticNode> >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++)
-        lnProbabilityRatio += (*i)->getLnProbabilityRatio();
+    
+    std::set<RbPtr<StochasticNode> > affectedNodes;
+    nodePtr->getAffectedNodes(affectedNodes);
+    for (std::set<RbPtr<StochasticNode> >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++) {
+        RbPtr<StochasticNode> theNode = *i;
+        lnProbabilityRatio += theNode->getLnProbabilityRatio();
+    }
 
     numTried++;
     
@@ -102,7 +112,7 @@ void MoveSimple::rejectMove(void) {
 
     reject();
     for (size_t i=0; i<nodes.size(); i++) {
-        static_cast<StochasticNode*>((VariableNode*)nodes[i])->restore();
+        nodes[i]->restore();
     }
 }
 

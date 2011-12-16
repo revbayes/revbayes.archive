@@ -78,6 +78,16 @@ RbPtr<DAGNode> ConstantNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >
 }
 
 
+/** 
+ * Get the affected nodes.
+ * This call is started by the parent and since we don't have one this is a dummy implementation!
+ */
+void ConstantNode::getAffected(std::set<RbPtr<StochasticNode> > &affected) {
+    // do nothing
+    throw RbException("You should never call getAffected() of a constant node!!!");
+}
+
+
 /** Get class vector describing type of DAG node */
 const VectorString& ConstantNode::getClass() const {
 
@@ -107,19 +117,9 @@ RbPtr<RbLanguageObject> ConstantNode::getValue(void) {
     return ( value );
 }
 
-
-
-/** Keep the value. This should be only called when the variable is reassigned. We only call keep affected which calls keep for all children. */
-void ConstantNode::keep(void) {
-    keepAffected();
-}
-
-/** Keep value of node and affected variable nodes */
-void ConstantNode::keepAffected( void ) {
-    
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-        (*i)->keepAffected();
-    }
+/** Keep value of node */
+void ConstantNode::keepMe( void ) {
+    // do nothing
 }
 
 /** Print value for user */
@@ -146,6 +146,11 @@ void ConstantNode::printStruct(std::ostream &o) const {
     o << std::endl;
 }
 
+/** Restore value of node */
+void ConstantNode::restoreMe( void ) {
+    // do nothing
+}
+
 
 /** Complete info on object */
 std::string ConstantNode::richInfo( void ) const {
@@ -156,11 +161,8 @@ std::string ConstantNode::richInfo( void ) const {
     return o.str();
 }
 
-/** Touch value of node and touch affected variable nodes */
-void ConstantNode::touch( void ) {
-    
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-        (*i)->touch();
-    }
+/** Touch value of node */
+void ConstantNode::touchMe( void ) {
+    // do nothing
 }
 

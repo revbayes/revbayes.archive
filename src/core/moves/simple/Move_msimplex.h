@@ -48,7 +48,7 @@ class Move_msimplex : public MoveSimple {
         const TypeSpec              getVariableType(void) const;                                                        //!< Get variable type for move
 
     protected:
-        double                      perform(std::set<RbPtr<StochasticNode> >& affectedNodes);                           //!< Perform move
+        double                      perform(void);                                                                      //!< Perform move
     
     private:
         static const TypeSpec       typeSpec;

@@ -89,7 +89,7 @@ const TypeSpec Move_mscale::getVariableType( void ) const {
 
 
 /** Perform the move */
-double Move_mscale::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
+double Move_mscale::perform( void ) {
 
     // Get random number generator    
     RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
@@ -105,7 +105,7 @@ double Move_mscale::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
     RealPos newVal = curVal * std::exp( lambda * ( u - 0.5 ) );
 
     // Propose new value
-    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ) );
 
     // Return Hastings ratio
     return log( newVal / curVal );
