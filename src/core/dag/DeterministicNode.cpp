@@ -37,11 +37,11 @@
 const TypeSpec DeterministicNode::typeSpec(DeterministicNode_name);
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( const std::string& valType ) : VariableNode( valType ), changed( false ) {
+DeterministicNode::DeterministicNode( const std::string& valType ) : VariableNode( valType ), needsUpdate( true ) {
 }
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(func->getReturnType()), changed( false ) {
+DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(func->getReturnType()), needsUpdate( true ) {
     
     // increment the reference count for myself
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
@@ -82,7 +82,7 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     
     function         = RbPtr<RbFunction>( x.function->clone() );
     touched          = x.touched;
-    changed          = x.changed;
+    needsUpdate      = x.needsUpdate;
     if ( x.storedValue != NULL ) {
         storedValue  = RbPtr<RbLanguageObject>( x.storedValue->clone() );
     }
@@ -132,9 +132,9 @@ RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNo
     copy->setName(name);
     
     /* Set the copy member variables */
-    copy->function = RbPtr<RbFunction>( function->clone() );
-    copy->touched  = touched;
-    copy->changed  = changed;
+    copy->function      = RbPtr<RbFunction>( function->clone() );
+    copy->touched       = touched;
+    copy->needsUpdate   = needsUpdate;
     if (value != NULL)
         copy->value    = RbPtr<RbLanguageObject>( value->clone() );
     if (storedValue == NULL)
@@ -168,16 +168,11 @@ RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNo
 
 
 
-/** Get affected nodes: touch and pass through to next stochastic node */
+/** Get affected nodes: pass through to next stochastic node */
 void DeterministicNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
 
-    /* If we have already touched this node, we are done; otherwise, get the affected children */
-    if ( !touched ) {
-        touched = true;
-        changed = false;
-        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-            (*i)->getAffected( affected );
-        }
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
+        (*i)->getAffected( affected );
     }
     
 }
@@ -222,7 +217,7 @@ RbPtr<const RbLanguageObject> DeterministicNode::getStoredValue( void ) const {
 /** Get value */
 RbPtr<const RbLanguageObject> DeterministicNode::getValue( void ) const {
     
-    if ( touched && !changed )
+    if ( touched && needsUpdate )
         const_cast<DeterministicNode*>(this)->update();
     
     return RbPtr<const RbLanguageObject>(value);
@@ -231,7 +226,7 @@ RbPtr<const RbLanguageObject> DeterministicNode::getValue( void ) const {
 /** Get value */
 RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
     
-    if ( touched && !changed )
+    if ( touched && needsUpdate )
         update();
     
     return RbPtr<RbLanguageObject>(value);
@@ -239,33 +234,26 @@ RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
 
 
 /** Keep value of node and affected variable nodes */
-void DeterministicNode::keep( void ) {
-
-    keepAffected();
-}
-
-
-/** Keep value of node and affected variable nodes */
-void DeterministicNode::keepAffected( void ) {
-
+void DeterministicNode::keepMe( void ) {
+    
     if ( touched ) {
-        if ( !changed )
+        if ( needsUpdate )
             update();
         
         storedValue = RbPtr<RbLanguageObject>::getNullPtr();
         
-        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-            (*i)->keepAffected();
-        }
     }
-    touched = changed = false;
+    touched = false;
+    
+    keepAffected();
+    
 }
 
 
 /** Print value for user */
 void DeterministicNode::printValue( std::ostream& o ) const {
 
-    if ( touched && !changed )
+    if ( touched && needsUpdate )
         const_cast<DeterministicNode*>(this)->update();
 
     if (value != NULL) 
@@ -277,13 +265,13 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
     
     o << "_DAGClass    = " << getClass() << std::endl;
     o << "_value       = " << value->briefInfo() << std::endl;
-    if ( touched && changed )
+    if ( touched && !needsUpdate )
         o << "_storedValue = " << storedValue->briefInfo() << std::endl;
     
     o << "_valueType   = " << getValueType() << std::endl;
     o << "_function    = " << function->getType() << std::endl;
     o << "_touched     = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
-    o << "_changed     = " << ( changed ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
+    o << "_needsUpdate = " << ( needsUpdate ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
     
     o << "_parents     = ";
     printParents(o);
@@ -305,7 +293,7 @@ std::string DeterministicNode::richInfo( void ) const {
     o << "Deterministic Node:" << std::endl;
     
     o << "touched     = " << (touched ? "true" : "false") << std::endl;
-    o << "changed     = " << (changed ? "true" : "false") << std::endl;
+    o << "needsUpdate = " << (needsUpdate ? "true" : "false") << std::endl;
     
     o << "function    = ";
     function->printValue(o);
@@ -324,19 +312,22 @@ std::string DeterministicNode::richInfo( void ) const {
 
 
 
-/** Restore value of node and affected variable nodes */
-void DeterministicNode::restoreAffected( void ) {
+/** 
+ * Restore value of node
+ * We also need to restore the affected variable nodes */
+void DeterministicNode::restoreMe( void ) {
 
     if ( touched ) {
-        if ( changed ) {
-            value       = storedValue;
-            storedValue = RbPtr<RbLanguageObject>::getNullPtr();
-        }
+        // no matter if this node has been changed we just set it back to its stored value
+        value       = storedValue;
+        storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+        
+        // restore all children
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-            (*i)->restoreAffected();
+            (*i)->restoreMe();
         }
     }
-    touched = changed = false;
+    touched = false;
 }
 
 
@@ -356,35 +347,44 @@ void DeterministicNode::swapParentNode( RbPtr<DAGNode> oldParent, RbPtr<DAGNode>
 
 
 /** Tell affected nodes that upstream value has been reset */
-void DeterministicNode::touch( void ) {
+void DeterministicNode::touchMe( void ) {
     
     // only if this node is not touched we start touching all affected nodes
     // this pervents infinite recursion in statement like "a <- a + b"
     if (!touched) {
-        touched = true;
-        changed = false;
-        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-            (*i)->touch();
+        // flag myself as being touched
+        touched     = true;
+        
+        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
+        storedValue = value;
     }
+        
+    // flag myself for an update
+    needsUpdate = true;
+    
+    // touch all my children because they are affected too
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
+        (*i)->touchMe();
+//    }
     
 }
 
 /** Update value and stored value after node and its surroundings have been touched by a move */
 void DeterministicNode::update( void ) {
     
-    if ( touched && !changed ) {
+    if ( touched && needsUpdate ) {
         
 //        assert( storedValue == NULL );
         
         
-        // set the stored value and release the old stored value
-        storedValue     = value;
+//        // set the stored value and release the old stored value
+//        storedValue     = value;
         
         // compute a new value
         value = function->execute();
         
         // mark as changed
-        changed         = true;
+        needsUpdate = false;
         
     }
 }

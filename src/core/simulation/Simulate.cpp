@@ -304,12 +304,10 @@ void Simulate::run(size_t ndata) {
 
         //Random draws from the ordered stochastic nodes
         for (size_t i = 0; i < orderedStochasticNodes.size() ; i++) {
-            std::set<RbPtr<StochasticNode> > affectedNodes;
             RbPtr<Distribution> dist = orderedStochasticNodes[i]->getDistribution();
-            orderedStochasticNodes[i]->setValue( dist->rv(), affectedNodes );
+            orderedStochasticNodes[i]->setValue( dist->rv() );
             // we need to call keep so that the values get recalculated properly
             orderedStochasticNodes[i]->keep();
-            orderedStochasticNodes[i]->keepAffected();
         }
         
         /* Monitor */
