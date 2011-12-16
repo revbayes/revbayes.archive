@@ -52,7 +52,7 @@ lambda <- 1.0
 nodeCount <- tree.nnodes()
 siteCount <- D.nsites()
 
-for (i in 1:nodeCount) {
+for (i in nodeCount:1) {
 
    	node <- tree.node(i)
    
@@ -63,19 +63,19 @@ for (i in 1:nodeCount) {
    		}
    		else {
    			parent <- node.ancestor()
-   			parentIndex <- tree.index(parent)	
+   			parentIndex[i] <- tree.index(parent)	
    			bl[i] ~ exp(lambda)
    			Q[i] := gtr(pi, exchange)
 
    			if (node.isTip()) {
             	for (j in 1:siteCount) {
-            		dna_state[i][j] ~ ctmc(Q[i], bl[i]*rate_unique[cluster_rate[j]], dna_state[parentIndex][j])
+            		dna_state[i][j] ~ ctmc(Q[i], bl[i]*rate_unique[cluster_rate[j]], dna_state[parentIndex[i]][j])
             		clamp(dna_state[i][j], D[i][j])
             	}
         	}
     		else {
     			for (j in 1:siteCount) {
-	    			dna_state[i][j] ~ ctmc(Q[i], bl[i]*rate_unique[cluster_rate[j]], dna_state[parentIndex][j])
+	    			dna_state[i][j] ~ ctmc(Q[i], bl[i]*rate_unique[cluster_rate[j]], dna_state[parentIndex[i]][j])
 	    		
 	    		}
    			}	

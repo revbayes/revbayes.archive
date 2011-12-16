@@ -76,6 +76,7 @@
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "FileMonitor.h"
 #include "Mcmc.h"
+#include "Mixture.h"
 #include "Move_mmultinomial.h"
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
@@ -227,12 +228,13 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         RbPtr<MemberObject>( new Mcmc() )              );
         addTypeWithConstructor( "fileMonitor",      RbPtr<MemberObject>( new FileMonitor() )   );
-        addTypeWithConstructor( "objectMonitor",      RbPtr<MemberObject>( new ObjectMonitor()));
+        addTypeWithConstructor( "mixture",      RbPtr<MemberObject>( new Mixture() )           );
         addTypeWithConstructor( "mmultinomial", RbPtr<MemberObject>( new Move_mmultinomial() ) );
         addTypeWithConstructor( "model",        RbPtr<MemberObject>( new Model() )             );
         addTypeWithConstructor( "msimplex",     RbPtr<MemberObject>( new Move_msimplex() )     );
         addTypeWithConstructor( "mslide",       RbPtr<MemberObject>( new Move_mslide() )       );
         addTypeWithConstructor( "mscale",       RbPtr<MemberObject>( new Move_mscale() )       );
+        addTypeWithConstructor( "objectMonitor",      RbPtr<MemberObject>( new ObjectMonitor()));
         addTypeWithConstructor( "simulate",     RbPtr<MemberObject>( new Simulate() )          );
         addTypeWithConstructor( "treeplate",    RbPtr<MemberObject>( new TreePlate() )         );
 
@@ -348,6 +350,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "dppSeat",                  new Func_dppSeat()                  );
         addFunction( "dppServe",                 new Func_dppServe()                 );
         addFunction( "ls",                       new Func_ls()                       );
+        addFunction( "memory",                   new Func_memoryAllocations()        );
         addFunction( "normalize",                new Func_normalizeVector()          );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
@@ -361,6 +364,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "unique",                   new Func_unique<VectorRealPos>()    );
         addFunction( "unique",                   new Func_unique<VectorComplex>()    );
         addFunction( "unique",                   new Func_unique<VectorString>()     );
+        addFunction( "size",                     new Func_size<DagNodeContainer>()   );
         addFunction( "size",                     new Func_size<VectorBoolean>()      );
         addFunction( "size",                     new Func_size<VectorInteger>()      );
         addFunction( "size",                     new Func_size<VectorNatural>()      );
