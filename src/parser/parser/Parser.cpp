@@ -299,11 +299,11 @@ void Parser::reset(void) {
 
 
 /** Global call-back function for the flex-generated code in lex.yy.cpp */
-void rrinput(char* buf, int& result, int maxsize) {
+void rrinput(char* buf, size_t& result, size_t maxsize) {
 
     buf[0] = '\0';
     Parser::getParser().getline(buf, maxsize);
-    result = int(strlen(buf));
+    result = strlen(buf);
 }
 
 

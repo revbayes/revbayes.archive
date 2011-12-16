@@ -65,7 +65,7 @@ class Parser {
 
 
 // Global call-back function for flex-generated code
-void rrinput(char* buf, int& result, int maxsize);
+void rrinput(char* buf, size_t& result, size_t maxsize);
 
 // Global flag indicating whether flex found newline
 extern bool foundNewline;

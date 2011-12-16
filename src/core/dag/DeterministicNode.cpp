@@ -108,7 +108,6 @@ DeterministicNode::~DeterministicNode( void ) {
     for ( std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++ ) {
         RbPtr<DAGNode> node = *i;
         node->removeChildNode(this);
-        removeParentNode(node);
     }
     parents.clear();
 
