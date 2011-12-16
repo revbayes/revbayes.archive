@@ -29,8 +29,8 @@ class Mixture: public MutableMemberObject {
     
 public:
     Mixture(void);                                                                                          //!< Default constructor
-    Mixture(VectorNatural& allocationVector, Vector& parameters);                                             //!< constructor
-    Mixture(VectorNatural& allocationVector, Vector& parameters, VectorRealPos& classProbabilities);        //!< constructor
+    Mixture(VectorNatural& allocationVector, std::vector<RbPtr<Vector> >& parameters);                      //!< constructor
+    Mixture(VectorNatural& allocationVector, std::vector<RbPtr<Vector> >& parameters, VectorRealPos& classProbabilities);        //!< constructor
 
     Mixture(const Mixture& m);                                                                              //!< Copy constructor
     ~Mixture(void);                                                                                         //!< Destructor
@@ -55,8 +55,8 @@ public:
     void                            setNumberOfClasses(size_t numClasses);                                  //!< Set the number of classes in the mixture
     void                            addClass();                                                             //!< Add a new class to the mixture
     void                            removeClass();                                                          //!< Remove a class from the mixture
-    Vector                          getVectorOfParameters();                                                //!< Get the vector of parameter values associated to the classes of the mixture
-    void                            setVectorOfParameters(Vector parameters);                               //!< Set the vector of parameter values associated to the classes of the mixture
+    const std::vector<RbPtr<Vector> >&     getVectorOfParameters();                                         //!< Get the vector of parameter values associated to the classes of the mixture
+    void                            setVectorOfParameters(std::vector<RbPtr<Vector> >& parameters);         //!< Set the vector of parameter values associated to the classes of the mixture
     void                            setParameterValue();                                                    //!< Set the value of a parameter associated to a particular class
     VectorNatural                   getAllocationVector();                                                  //!< Get the allocation vector associating class indices to elements
     void                            setAllocationVector(Vector allocationVector);                           //!< Set the allocation vector associating class indices to elements
@@ -66,11 +66,13 @@ public:
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
     void                            indexAllocationVector();                                                //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
+    const RbPtr<Vector>&             getParameters(int classId);                                             //!< Get the vector of parameter values associated to the classe classId
+
     
 private:
     static const TypeSpec           typeSpec_;                                                              
     VectorNatural                   allocationVector_;                                                      //!< Vector allocating elements to cluster indices
-    Vector                          parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
+    std::vector<RbPtr<Vector> >     parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
     VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
     VectorRealPos                   classProbabilities_;                                                    //!< Vector giving class probabilities
 };

@@ -226,7 +226,8 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         RbPtr<MemberObject>( new Mcmc() )              );
-        addTypeWithConstructor( "monitor",      RbPtr<MemberObject>( new Monitor() )           );
+        addTypeWithConstructor( "fileMonitor",      RbPtr<MemberObject>( new FileMonitor() )   );
+        addTypeWithConstructor( "objectMonitor",      RbPtr<MemberObject>( new ObjectMonitor()));
         addTypeWithConstructor( "mmultinomial", RbPtr<MemberObject>( new Move_mmultinomial() ) );
         addTypeWithConstructor( "model",        RbPtr<MemberObject>( new Model() )             );
         addTypeWithConstructor( "msimplex",     RbPtr<MemberObject>( new Move_msimplex() )     );

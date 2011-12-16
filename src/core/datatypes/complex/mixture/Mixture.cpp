@@ -29,7 +29,7 @@ Mixture::Mixture(void) : MutableMemberObject( getMemberRules() ) {
 }
 
 /* constructor; the vector of class probabilities is filled with values 1/number_of_classes */
-Mixture::Mixture(VectorNatural& allocationVector, Vector& parameters) : MutableMemberObject( getMemberRules() ) {
+Mixture::Mixture(VectorNatural& allocationVector, std::vector<RbPtr<Vector> >& parameters) : MutableMemberObject( getMemberRules() ) {
     
     allocationVector_ = allocationVector;
     parameters_ = parameters;
@@ -50,7 +50,7 @@ Mixture::Mixture(VectorNatural& allocationVector, Vector& parameters) : MutableM
 }
 
 /* constructor */
-Mixture::Mixture(VectorNatural& allocationVector, Vector& parameters, VectorRealPos& classProbabilities ) {
+Mixture::Mixture(VectorNatural& allocationVector, std::vector<RbPtr<Vector> >& parameters, VectorRealPos& classProbabilities ) {
 
     allocationVector_ = allocationVector;
     parameters_ = parameters;
