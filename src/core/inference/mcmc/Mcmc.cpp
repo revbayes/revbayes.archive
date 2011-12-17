@@ -265,6 +265,11 @@ void Mcmc::run(size_t ngen) {
 
     std::cout << std::endl;
     std::cout << "Gen\tlnProbability" << std::endl;
+    
+    /* Monitor */
+    for (size_t i=0; i<monitors->size(); i++) {
+        static_cast<FileMonitor*>( (RbObject*)monitors->getElement(i) )->monitor(0);
+    }
 
     for (unsigned int gen=1; gen<=ngen; gen++) {
 
