@@ -311,3 +311,16 @@ size_t Mixture::getNumberOfClasses() {
 void Mixture::setParameters(const RbPtr< DagNodeContainer>& parameters) {
     parameters_ = parameters;
 }
+
+/** Get the vector containing elements on which the mixture operates*/
+RbPtr<DagNodeContainer> Mixture::getObservations() {
+    
+    return observations_;
+}
+
+/** Set the vector containing elements on which the mixture operates*/
+void Mixture::setObservations(RbPtr<DagNodeContainer>& observations) {
+    observations_ = observations;
+    
+    
+}
