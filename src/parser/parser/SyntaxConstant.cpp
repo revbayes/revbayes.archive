@@ -80,7 +80,7 @@ const VectorString& SyntaxConstant::getClass(void) const {
 
 
 /** Get semantic value of element */
-RbPtr<Variable> SyntaxConstant::evaluateContent(RbPtr<Environment> env) {
+RbPtr<Variable> SyntaxConstant::evaluateContent(const RbPtr<Environment>& env) {
 
     // We return a clone in case this function is called repeatedly.
     if (value == NULL)

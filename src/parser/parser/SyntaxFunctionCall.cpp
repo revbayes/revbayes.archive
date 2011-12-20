@@ -109,7 +109,7 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 
 
 /** Convert element to a deterministic function node. */
-RbPtr<Variable> SyntaxFunctionCall::evaluateContent(RbPtr<Environment> env) {
+RbPtr<Variable> SyntaxFunctionCall::evaluateContent(const RbPtr<Environment>& env) {
 
     // Package arguments
     std::vector<RbPtr<Argument> > args;
@@ -129,7 +129,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(RbPtr<Environment> env) {
     }
     else {
 
-        RbPtr<DAGNode> theNode = variable->evaluateContent( env )->getDagNode();
+        const RbPtr<DAGNode>& theNode = variable->evaluateContent( env )->getDagNode();
         if ( theNode == NULL || !theNode->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 

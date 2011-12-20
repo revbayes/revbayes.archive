@@ -64,7 +64,7 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
         // test whether each object in the container is actually a constant node holding a value
         Vector* valueVector = new Vector(*type.getElementType());
         for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            RbPtr<const DAGNode> theNode = (*it)->getDagNode();
+            const RbPtr<DAGNode>& theNode = (*it)->getDagNode();
             if (theNode->isType(ConstantNode_name) && theNode->getValue()->isTypeSpec(*type.getElementType())) {
                 RbPtr<const RbObject> element( theNode->getValue() );
                 valueVector->push_back(element->clone());
@@ -144,7 +144,7 @@ bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     if (type.getBaseType() == Vector_name) {
         // test whether each object in the container is actually a constant node holding a value
         for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            RbPtr<const DAGNode> theNode = (*it)->getDagNode();
+            const RbPtr<DAGNode>& theNode = (*it)->getDagNode();
             if (!theNode->isType(ConstantNode_name) || !theNode->getValue()->isTypeSpec(*type.getElementType())) {
                 return false;
             }

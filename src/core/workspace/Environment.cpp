@@ -97,7 +97,7 @@ RbPtr<const VariableSlot> Environment::operator[]( const std::string& name ) con
     std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentEnvironment != NULL )
-            return parentEnvironment->operator []( name );
+            return RbPtr<const VariableSlot>( parentEnvironment->operator []( name ) );
         else
             throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist" );
     }
@@ -314,13 +314,13 @@ RbPtr<const RbLanguageObject> Environment::getValue( const std::string& name ) c
     std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentEnvironment != NULL )
-            return parentEnvironment-> getValue( name );
+            return RbPtr<const RbLanguageObject>( parentEnvironment->getValue( name ) );
         else
             throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist" );
     }
     
     // set the slot
-    RbPtr<VariableSlot> theSlot = it->second;
+    const RbPtr<VariableSlot>& theSlot = it->second;
     return RbPtr<const RbLanguageObject>( theSlot->getValue() );
 }
 
@@ -338,7 +338,7 @@ RbPtr<RbLanguageObject> Environment::getValue( const std::string& name ) {
     }
     
     // set the slot
-    RbPtr<VariableSlot> theSlot = it->second;
+    const RbPtr<VariableSlot>& theSlot = it->second;
     return theSlot->getValue();
 }
 

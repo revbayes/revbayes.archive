@@ -53,7 +53,7 @@ class SyntaxFormal : public SyntaxElement {
         RbPtr<ArgumentRule>         getArgumentRule(void);                                                      //!< Get the argument rule (non-const to return non-const rule)
         RbPtr<const RbString>       getLabel(void) const;                                                       //!< Get label
         RbPtr<const TypeSpec>       getArgumentTypeSpec(void) const;                                            //!< Get type spec
-        RbPtr<Variable>             evaluateContent(RbPtr<Environment> env);                                    //!< Get semantic value
+        RbPtr<Variable>             evaluateContent(const RbPtr<Environment>& env);                             //!< Get semantic value
     
     protected:
         RbPtr<ArgumentRule>         argRule;

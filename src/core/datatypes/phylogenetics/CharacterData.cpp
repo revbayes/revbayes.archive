@@ -272,7 +272,7 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
         }
     else if (name == "excludechar")
         {
-        RbPtr<const RbLanguageObject> argument = (*args)[1]->getValue();
+        const RbPtr<RbLanguageObject>& argument = (*args)[1]->getValue();
         if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) 
             {
             int n = static_cast<const Natural*>( (const RbObject*)argument )->getValue();
@@ -349,7 +349,7 @@ const std::string& CharacterData::getDataType(void) const {
 RbPtr<const RbObject> CharacterData::getElement(size_t row, size_t col) const {
 
     const RbPtr<TaxonData> sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
-    return (sequence->getElement(col));
+    return RbPtr<const RbObject>(sequence->getElement(col));
 }
 
 

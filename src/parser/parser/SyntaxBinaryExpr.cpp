@@ -105,19 +105,19 @@ const VectorString& SyntaxBinaryExpr::getClass(void) const {
  * We simply look up the function and calculate the value.
  *
  */
-RbPtr<Variable> SyntaxBinaryExpr::evaluateContent(RbPtr<Environment> env) {
+RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( const RbPtr<Environment>& env) {
 
     // Package the arguments
     std::vector<RbPtr<Argument> > args;
-    RbPtr<Variable> left = leftOperand->evaluateContent(env);
+    const RbPtr<Variable>& left = leftOperand->evaluateContent(env);
     args.push_back(RbPtr<Argument>(new Argument("", left ) ));
-    RbPtr<Variable> right = rightOperand->evaluateContent(env);
+    const RbPtr<Variable>& right = rightOperand->evaluateContent(env);
     args.push_back(RbPtr<Argument>(new Argument("", right ) ));
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];
     
-    RbPtr<RbFunction> theFunction = Workspace::globalWorkspace()->getFunction(funcName, args);
+    const RbPtr<RbFunction>& theFunction = Workspace::globalWorkspace()->getFunction(funcName, args);
     
     return RbPtr<Variable>(new Variable(RbPtr<DAGNode>(new DeterministicNode( theFunction )) ) );
 }

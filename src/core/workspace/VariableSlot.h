@@ -41,36 +41,36 @@ public:
     virtual                ~VariableSlot(void);                                                             //!< Manage variable (DAGNode) destruction
     
     // Assignment operator
-    VariableSlot&                   operator=(const VariableSlot& x);                                       //!< Assignment
+    VariableSlot&                           operator=(const VariableSlot& x);                                       //!< Assignment
     
     // Regular functions
-    VariableSlot*                   clone(void) const;                                                      //!< Clone slot
-    const VectorString&             getClass() const;                                                       //!< Get class vector
-    const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-    RbPtr<const RbLanguageObject>   getValue(void) const;                                                   //!< Get the value of the variable
-    RbPtr<RbLanguageObject>         getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
-    RbPtr<const DAGNode>            getDagNode(void) const;                                                 //!< Get the DAG node
-    RbPtr<DAGNode>                  getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
-    const std::string&              getLabel(void) const { return label; }                                  //!< Get the label of the slot
-    const std::string&              getSlotType(void) const { return varTypeSpec.getType(); }               //!< Type of slot
-    const TypeSpec&                 getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
-    RbPtr<const Variable>           getVariable(void) const;                                                //!< Get the variable
-    RbPtr<Variable>                 getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
-    virtual bool                    isValidVariable(RbPtr<DAGNode> newVariable ) const;                     //!< Is newVariable valid for the slot?
-    void                            printValue(std::ostream& o) const;                                      //!< Print value of slot
-    void                            setVariable(RbPtr<Variable> var);                                       //!< Set a slot with a variable
+    VariableSlot*                           clone(void) const;                                                      //!< Clone slot
+    const VectorString&                     getClass() const;                                                       //!< Get class vector
+    const TypeSpec&                         getTypeSpec(void) const;                                                //!< Get language type of the object
+    RbPtr<const RbLanguageObject>           getValue(void) const;                                                   //!< Get the value of the variable
+    RbPtr<RbLanguageObject>                 getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
+    RbPtr<const DAGNode>                    getDagNode(void) const;                                                 //!< Get the DAG node
+    RbPtr<DAGNode>                          getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
+    const std::string&                      getLabel(void) const { return label; }                                  //!< Get the label of the slot
+    const std::string&                      getSlotType(void) const { return varTypeSpec.getType(); }               //!< Type of slot
+    const TypeSpec&                         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
+    RbPtr<const Variable>                   getVariable(void) const;                                                //!< Get the variable
+    const RbPtr<Variable>&                  getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
+    virtual bool                            isValidVariable(RbPtr<DAGNode> newVariable ) const;                     //!< Is newVariable valid for the slot?
+    void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
+    void                                    setVariable(RbPtr<Variable> var);                                       //!< Set a slot with a variable
     
 private:
     
     // Member variables
-    TypeSpec                        varTypeSpec;                                                            //!< The type specification for the slot
-    RbPtr<Variable>                 variable;                                                               //!< the argument living in the slot 
-    std::string                     label;                                                                  //!< the label for this slot. The label should correspond to the name uner which this slot is stored in variable table. However, the label does not have to correspond to the variable name, e.g. a argument could have the label mean but the name of the variable is mu.
+    TypeSpec                                varTypeSpec;                                                            //!< The type specification for the slot
+    RbPtr<Variable>                         variable;                                                               //!< the argument living in the slot 
+    std::string                             label;                                                                  //!< the label for this slot. The label should correspond to the name uner which this slot is stored in variable table. However, the label does not have to correspond to the variable name, e.g. a argument could have the label mean but the name of the variable is mu.
 
-    static const TypeSpec           typeSpec;
+    static const TypeSpec                   typeSpec;
 };
 
 /* Global functions using the class */
-std::ostream&           operator<<(std::ostream& o, const VariableSlot& x);                         //!< Overloaded output operator
+std::ostream&                               operator<<(std::ostream& o, const VariableSlot& x);                         //!< Overloaded output operator
 
 #endif

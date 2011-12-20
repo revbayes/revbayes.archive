@@ -69,8 +69,8 @@ Mcmc* Mcmc::clone(void) const {
 RbPtr<RbLanguageObject> Mcmc::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
 
     if (name == "run") {
-        const RbPtr<const RbLanguageObject>& argument = (*args)[0]->getValue();
-        int n = static_cast<const Natural*>( (const RbObject*)argument )->getValue();
+        const RbPtr<RbLanguageObject>& argument = (*args)[0]->getValue();
+        int n = static_cast<Natural*>( (RbObject*)argument )->getValue();
         run(n);
         return RbPtr<RbLanguageObject>::getNullPtr();
     }
@@ -249,7 +249,7 @@ void Mcmc::run(size_t ngen) {
     double lnProbability = 0.0;
     std::vector<double> initProb;
     for (std::vector<RbPtr<DAGNode> >::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-        RbPtr<DAGNode> node = (*i);
+        const RbPtr<DAGNode>& node = (*i);
         if (node->isType(StochasticNode_name)) {
             RbPtr<StochasticNode> stochNode( dynamic_cast<StochasticNode*>( (DAGNode*)node ) );
             double lnProb = stochNode->calculateLnProbability();
@@ -301,7 +301,7 @@ void Mcmc::run(size_t ngen) {
                 theMove->rejectMove();
             }
 
-#ifndef NDEBUG
+#ifdef DEBUG_MCMC
             /* Assert that the probability calculation shortcuts work */
             double curLnProb = 0.0;
             std::vector<double> lnRatio;

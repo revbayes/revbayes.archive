@@ -55,8 +55,8 @@ class SyntaxFunctionCall : public SyntaxElement {
 
         // Regular functions
         const RbPtr<RbString>               getFunctionName(void) const { return functionName; }                                        //!< Get function name
-        RbPtr<Variable>                     evaluateContent(RbPtr<Environment> env);                                                    //!< Get semantic value
-        void                                setBaseVariable(RbPtr<SyntaxVariable> var) { variable = var; }                              //!< Set base variable
+        RbPtr<Variable>                     evaluateContent(const RbPtr<Environment>& env);                                             //!< Get semantic value
+        void                                setBaseVariable(const RbPtr<SyntaxVariable>& var) { variable = var; }                       //!< Set base variable
 
     protected:
         RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >  arguments;                                                                        //!< The arguments passed to the function

@@ -73,14 +73,14 @@ Simulate* Simulate::clone(void) const {
 RbPtr<RbLanguageObject> Simulate::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "run") {
-        const RbPtr<const RbLanguageObject>& argument = (*args)[0]->getValue();
-        int n = static_cast<const Natural*>( (const RbObject*)argument )->getValue();
+        const RbPtr<RbLanguageObject>& argument = (*args)[0]->getValue();
+        int n = static_cast<Natural*>( (RbObject*)argument )->getValue();
         run(n);
         return RbPtr<RbLanguageObject>::getNullPtr();
     }
     if (name == "getValues") {
-        const RbPtr<const RbLanguageObject>& argument = (*args)[0]->getValue();
-        RbString n = static_cast<const RbString*>( (const RbObject*)argument )->getValue();
+        const RbPtr<RbLanguageObject>& argument = (*args)[0]->getValue();
+        RbString n = static_cast<RbString*>( (RbObject*)argument )->getValue();
         const RbPtr<Vector>& vec = getValues(n);
         return RbPtr<RbLanguageObject>(vec);
     }

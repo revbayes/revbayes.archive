@@ -118,7 +118,7 @@ RbPtr<const DAGNode> Variable::getDagNode(void) const {
 }
 
 
-RbPtr<DAGNode> Variable::getDagNode(void) {
+const RbPtr<DAGNode>& Variable::getDagNode(void) {
     return ( node );
 }
 
@@ -138,7 +138,7 @@ const TypeSpec& Variable::getTypeSpec(void) const {
 
 /** Get the value of the variable */
 RbPtr<const RbLanguageObject> Variable::getValue(void) const {
-    return node->getValue();
+    return RbPtr<const RbLanguageObject>( node->getValue() );
 }
 
 /** Get the value of the variable */

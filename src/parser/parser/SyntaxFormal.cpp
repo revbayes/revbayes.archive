@@ -156,7 +156,7 @@ const VectorString& SyntaxFormal::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxFormal::evaluateContent(RbPtr<Environment> env) {
+RbPtr<Variable> SyntaxFormal::evaluateContent(const RbPtr<Environment>& env) {
 
     return RbPtr<Variable>::getNullPtr();
 }

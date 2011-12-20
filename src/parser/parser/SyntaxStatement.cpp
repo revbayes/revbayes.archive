@@ -132,7 +132,7 @@ const VectorString& SyntaxStatement::getClass(void) const {
 
 
 /** Get semantic value: it is here that we execute the statement */
-RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
+RbPtr<Variable> SyntaxStatement::evaluateContent(const RbPtr<Environment>& env) {
 
     RbPtr<Variable> result( NULL );
     
@@ -148,7 +148,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
         // create a new environment for the loop
         // we need a new environment so that the elements will nt be visible from the outside
 //        Environment *loopEnv = new Environment(env);
-        RbPtr<Environment> loopEnv = env;
+        const RbPtr<Environment>& loopEnv = env;
         
         forCond->initializeLoop(loopEnv);
 
@@ -326,7 +326,7 @@ const TypeSpec& SyntaxStatement::getTypeSpec(void) const {
  * whether the result is true or false, or can be interpreted as a RbBoolean
  * true or false value.
  */
-bool SyntaxStatement::isTrue( RbPtr<SyntaxElement> expression, RbPtr<Environment> env ) const {
+bool SyntaxStatement::isTrue( const RbPtr<SyntaxElement>& expression, const RbPtr<Environment>& env ) const {
     
     RbPtr<Variable> temp = expression->evaluateContent( env );
     

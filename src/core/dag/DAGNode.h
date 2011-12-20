@@ -74,7 +74,7 @@ class DAGNode : public RbLanguageObject {
         const std::string&                                  getName(void) const;                                                    //!< get the name
 		const std::set<RbPtr<DAGNode> >&                    getParents(void) const { return parents; }                              //!< Return parents
         Variable*                                           getVariable(void) const { return variable; }                            //!< Get the variable owning this node
-        bool                                                isParentInDAG(const RbPtr<DAGNode> x, std::list<DAGNode*>& done) const; //!< Is node x a parent of the caller in the DAG?
+        bool                                                isParentInDAG(const RbPtr<DAGNode>& x, std::list<DAGNode*>& done) const;//!< Is node x a parent of the caller in the DAG?
         void                                                keep(void);                                                             //!< Keep current state of this node and all affected nodes
         size_t                                              numberOfChildren(void) const { return children.size(); }                //!< Number of children
         size_t                                              numberOfParents(void) const { return parents.size(); }                  //!< Number of parents

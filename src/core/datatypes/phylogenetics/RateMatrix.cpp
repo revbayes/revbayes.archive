@@ -105,7 +105,7 @@ RbPtr<const VectorReal> RateMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates )
         throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
-    return (*theRateMatrix)[i];
+    return RbPtr<const VectorReal>( (*theRateMatrix)[i] );
 }
 
 

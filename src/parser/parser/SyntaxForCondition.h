@@ -47,10 +47,10 @@ class SyntaxForCondition : public SyntaxElement {
         void                        print(std::ostream& o) const;                                           //!< Print info about object
 
         // Regular functions
-        void                        finalizeLoop(RbPtr<Environment> env);                                   //!< Finalize loop
-        bool                        getNextLoopState(RbPtr<Environment> env);                               //!< Get next state of loop
-        RbPtr<Variable>             evaluateContent(RbPtr<Environment> env);                                //!< Get semantic value
-        void                        initializeLoop(RbPtr<Environment> env);                                 //!< Initialize loop
+        void                        finalizeLoop(const RbPtr<Environment>& env);                            //!< Finalize loop
+        bool                        getNextLoopState(const RbPtr<Environment>& env);                        //!< Get next state of loop
+        RbPtr<Variable>             evaluateContent(const RbPtr<Environment>& env);                         //!< Get semantic value
+        void                        initializeLoop(const RbPtr<Environment>& env);                          //!< Initialize loop
 
     protected:
         RbPtr<RbString>             varName;                                                                //!< The name of the loop variable

@@ -162,8 +162,8 @@ RbPtr<const MethodTable> MemberObject::getMethods(void) const {
 }
 
 
-const RbPtr<Environment> MemberObject::getMembers(void) const {
-    return members;
+RbPtr<const Environment> MemberObject::getMembers(void) const {
+    return RbPtr<const Environment>( members );
 }
 
 
@@ -176,7 +176,7 @@ RbPtr<Environment> MemberObject::getMembers(void) {
 /** Get const value of a member variable */
 RbPtr<const RbLanguageObject> MemberObject::getMemberValue(const std::string& name) const {
 
-    return members->getValue(name);
+    return RbPtr<const RbLanguageObject>( members->getValue(name) );
 }
 
 
@@ -190,7 +190,7 @@ RbPtr<RbLanguageObject> MemberObject::getMemberValue(const std::string& name) {
 /** Get a member variable */
 RbPtr<const DAGNode> MemberObject::getMemberDagNode(const std::string& name) const {
 
-    return members->getDagNode(name);
+    return RbPtr<const DAGNode>( members->getDagNode(name) );
 }
 
 

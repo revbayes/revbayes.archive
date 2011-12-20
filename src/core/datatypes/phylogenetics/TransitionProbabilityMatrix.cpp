@@ -81,7 +81,7 @@ RbPtr<const VectorReal> TransitionProbabilityMatrix::operator[]( const size_t i 
 
     if ( i >= numStates )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
-    return (*theMatrix)[i];
+    return RbPtr<const VectorReal>( (*theMatrix)[i] );
 }
 
 

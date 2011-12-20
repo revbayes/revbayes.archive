@@ -98,7 +98,7 @@ const VectorString& SyntaxUnaryExpr::getClass(void) const {
 
 
 /** Convert element to DAG node expression */
-RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(RbPtr<Environment> env) {
+RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(const RbPtr<Environment>& env) {
 
     // Package the argument
     std::vector<RbPtr<Argument> > arg;
@@ -106,7 +106,7 @@ RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(RbPtr<Environment> env) {
 
     // Find the function
     std::string funcName = "_" + opCode[operation];
-    RbPtr<RbFunction> func = Workspace::globalWorkspace()->getFunction(funcName, arg);
+    const RbPtr<RbFunction>& func = Workspace::globalWorkspace()->getFunction(funcName, arg);
 
     // Return new function node
     return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new DeterministicNode(func)) ) );

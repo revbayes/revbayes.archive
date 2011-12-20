@@ -116,7 +116,7 @@ RbPtr<const DAGNode> VariableSlot::getDagNode( void ) const {
     if (variable == NULL) 
         return NULL;
     else
-        return variable->getDagNode();
+        return RbPtr<const DAGNode>( variable->getDagNode() );
 }
 
 
@@ -139,33 +139,32 @@ const TypeSpec& VariableSlot::getTypeSpec(void) const {
 /** Get the value of the variable */
 RbPtr<const RbLanguageObject> VariableSlot::getValue( void ) const {
     
-    RbPtr<const RbLanguageObject> retVal = variable->getDagNode()->getValue();
+    const RbPtr<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
     if (!retVal->isTypeSpec(varTypeSpec)) {
-        RbPtr<const RbLanguageObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
+        return RbPtr<const RbLanguageObject>( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
         
-        return convRetVal;
+//        return convRetVal;
     }
     
-    return retVal;
+    return RbPtr<const RbLanguageObject>(retVal);
 }
 
 
 /** Get the value of the variable */
 RbPtr<RbLanguageObject> VariableSlot::getValue( void ) {
     
-    RbPtr<RbLanguageObject> retVal = variable->getDagNode()->getValue();
+    const RbPtr<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
     if (!retVal->isTypeSpec(varTypeSpec)) {
-        RbPtr<RbLanguageObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
         
       //  variable->getDagNode()->setValue(convRetVal);
         
         //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
         
-        return convRetVal;
+        return RbPtr<RbLanguageObject>( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
     }
     
     return retVal;
@@ -177,7 +176,7 @@ RbPtr<const Variable> VariableSlot::getVariable(void) const {
 }
 
 
-RbPtr<Variable> VariableSlot::getVariable(void) {
+const RbPtr<Variable>& VariableSlot::getVariable(void) {
     return ( variable );
 }
 

@@ -131,12 +131,12 @@ const VectorString& SyntaxAssignExpr::getClass(void) const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
+RbPtr<Variable> SyntaxAssignExpr::evaluateContent( const RbPtr<Environment>& env ) {
     
     PRINTF( "Evaluating assign expression\n" );
     
     // Get variable info from lhs
-    RbPtr<VariableSlot> theSlot = variable->createVariable( env );
+    const RbPtr<VariableSlot>& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
     RbPtr<Variable> theVariable(NULL);
@@ -152,7 +152,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        RbPtr<RbLanguageObject> value = theVariable->getDagNode()->getValue();
+        const RbPtr<RbLanguageObject>& value = theVariable->getDagNode()->getValue();
         RbPtr<DAGNode> theNode;
         if (value->isTypeSpec(TypeSpec(DAGNode_name))) {
             theNode = RbPtr<DAGNode>(static_cast<DAGNode*>( (RbLanguageObject*)value ) );
@@ -197,7 +197,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
         theVariable = expression->evaluateContent(env);
         
         // Get distribution, which should be the return value of the rhs function
-        RbPtr<DAGNode> exprValue = theVariable->getDagNode();
+        const RbPtr<DAGNode>& exprValue = theVariable->getDagNode();
         if ( exprValue == NULL ) {
             throw RbException( "Distribution function returns NULL" );
         }

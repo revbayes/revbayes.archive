@@ -46,7 +46,7 @@ class SyntaxLabeledExpr : public SyntaxElement {
         // Regular functions
         RbPtr<SyntaxElement>    getExpression(void) const { return expression; }        //!< Return expression
         const RbPtr<RbString>   getLabel() const { return label; }                      //!< Return label    
-        RbPtr<Variable>         evaluateContent(RbPtr<Environment> env);                //!< Get semantic value
+        RbPtr<Variable>         evaluateContent(const RbPtr<Environment>& env);         //!< Get semantic value
 
     protected:
         RbPtr<RbString>         label;                                                  //!< The label of the argument

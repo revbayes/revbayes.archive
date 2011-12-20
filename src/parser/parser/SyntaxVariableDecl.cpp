@@ -109,7 +109,7 @@ const VectorString& SyntaxVariableDecl::getClass( void ) const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxVariableDecl::evaluateContent( RbPtr<Environment> env ) {
+RbPtr<Variable> SyntaxVariableDecl::evaluateContent( const RbPtr<Environment>& env ) {
     
     PRINTF( "Evaluating variable declaration\n" );
     

@@ -135,7 +135,7 @@ RbPtr<const RbObject> DAGNode::getElement(size_t index) const {
     // test whether the value supports indexing, i.e. is a container
     if (value->supportsIndex()) {
         
-        return value->getElement(index);
+        return RbPtr<const RbObject>(value->getElement(index));
     
     } else {
         
@@ -179,7 +179,7 @@ bool DAGNode::isConst( void ) const {
 
 
 /** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
-bool DAGNode::isParentInDAG( const RbPtr<DAGNode> x, std::list<DAGNode*>& done ) const {
+bool DAGNode::isParentInDAG( const RbPtr<DAGNode>& x, std::list<DAGNode*>& done ) const {
 
     for( std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
 

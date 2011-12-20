@@ -56,10 +56,10 @@ class SyntaxStatement : public SyntaxElement {
         void                                        print(std::ostream& o) const;                                       //!< Print info about object
 
         // Regular functions
-        RbPtr<Variable>                             evaluateContent(RbPtr<Environment> env);                            //!< Get semantic value
+        RbPtr<Variable>                             evaluateContent(const RbPtr<Environment>& env);                     //!< Get semantic value
 
     protected:
-        bool                                        isTrue(RbPtr<SyntaxElement> expression, RbPtr<Environment> env) const;//!< Does expression evaluate to true?
+        bool                                        isTrue(const RbPtr<SyntaxElement>& expression, const RbPtr<Environment>& env) const;//!< Does expression evaluate to true?
 
         enum statementT                             statementType;                                                      //!< The type of statement
         RbPtr<SyntaxElement>                        expression;                                                         //!< Expression, conditional expr, or for condition

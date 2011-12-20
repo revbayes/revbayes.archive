@@ -33,7 +33,7 @@ class DeterministicNode : public VariableNode {
 
 public:
                                             DeterministicNode(const std::string& valType);                      //!< Constructor from type
-                                            DeterministicNode(RbPtr<RbFunction> func);                          //!< Constructor with function
+                                            DeterministicNode(const RbPtr<RbFunction>& func);                   //!< Constructor with function
                                             DeterministicNode(const DeterministicNode& x);                      //!< Copy Constructor
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
 

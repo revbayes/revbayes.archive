@@ -83,7 +83,7 @@ RbPtr<const MemberRules> MoveSimple::getMemberRules( void ) const {
 /** Perform the move */
 double MoveSimple::performMove(double& lnProbabilityRatio) {
 
-    RbPtr<StochasticNode> nodePtr( static_cast<StochasticNode*>( (VariableNode*)nodes[0] ) );
+    const RbPtr<StochasticNode>& nodePtr = nodes[0];
     
 //    std::cout << "Perform simple move (" << getClass()[0] << ") on node \"" << nodePtr->getName() << "\"\n";
 
@@ -97,7 +97,7 @@ double MoveSimple::performMove(double& lnProbabilityRatio) {
     std::set<RbPtr<StochasticNode> > affectedNodes;
     nodePtr->getAffectedNodes(affectedNodes);
     for (std::set<RbPtr<StochasticNode> >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++) {
-        RbPtr<StochasticNode> theNode = *i;
+        const RbPtr<StochasticNode>& theNode = *i;
         lnProbabilityRatio += theNode->getLnProbabilityRatio();
     }
 

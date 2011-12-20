@@ -92,11 +92,9 @@ unsigned CharacterStateDiscrete::getUnsignedValue(void) const {
 
 /** Initialize the discrete character state variable. We just set the value. */
 void CharacterStateDiscrete::initialize(const RbPtr<Vector> &attributes) {
-    // get a non-const pointer to the attributes
-    RbPtr<Vector> attr = attributes;
     
     // set the state
-    setState(static_cast<RbString*>( (RbLanguageObject*)(*attr)[0] )->getValue()[0]);
+    setState(static_cast<RbString*>( (RbLanguageObject*)(*attributes)[0] )->getValue()[0]);
 //    numStates = static_cast<Natural*>( (RbLanguageObject*)(*attr)[0] )->getValue();
 }
 

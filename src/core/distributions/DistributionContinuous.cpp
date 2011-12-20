@@ -41,7 +41,7 @@ RbPtr<RbLanguageObject> DistributionContinuous::executeOperationSimple( const st
 
     if ( name == "cdf" ) {
 
-        return RbPtr<RbLanguageObject>( new RealPos( cdf( (*args)[1]->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( cdf( RbPtr<const RbLanguageObject>( (*args)[1]->getValue() ) ) ) );
     }
     else if ( name == "quantile" ) {
 

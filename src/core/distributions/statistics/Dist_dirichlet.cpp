@@ -129,7 +129,7 @@ const TypeSpec& Dist_dirichlet::getVariableType( void ) const {
 double Dist_dirichlet::lnPdf( RbPtr<const RbLanguageObject> value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorReal*>( (const RbObject*)getMemberValue( "alpha" ) )->getValue();
+    std::vector<double> a = static_cast<const VectorRealPos*>( (const RbObject*)getMemberValue( "alpha" ) )->getValue();
     std::vector<double> x = static_cast<const Simplex*   >( (const RbLanguageObject*)value                     )->getValue();
 
 	// Check that the vectors are both the same size
@@ -151,7 +151,7 @@ double Dist_dirichlet::lnPdf( RbPtr<const RbLanguageObject> value ) const {
 double Dist_dirichlet::pdf( RbPtr<const RbLanguageObject> value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorReal*>( (const RbObject*)getMemberValue( "alpha" ) )->getValue();
+    std::vector<double> a = static_cast<const VectorRealPos*>( (const RbObject*)getMemberValue( "alpha" ) )->getValue();
     std::vector<double> x = static_cast<const Simplex*   >( (const RbLanguageObject*)value                     )->getValue();
 
 	// Check that the vectors are both the same size
@@ -188,7 +188,7 @@ RbPtr<Real> Dist_dirichlet::quantile( const double p ) {
  */
 RbPtr<RbLanguageObject> Dist_dirichlet::rv( void ) {
 
-    std::vector<double> a = static_cast<VectorReal*>( (RbObject*)getMemberValue("alpha") )->getValue();
+    std::vector<double> a = static_cast<VectorRealPos*>( (RbObject*)getMemberValue("alpha") )->getValue();
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 	std::vector<double> r(a.size());
 

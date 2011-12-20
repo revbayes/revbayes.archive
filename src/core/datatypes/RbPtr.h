@@ -34,12 +34,9 @@ public:
     ~RbPtr(void);
     RbPtr(const RbPtr<T>& src);
     RbPtr<T>&                   operator=(const RbPtr<T>& rhs);
-    const T&                    operator*(void) const;
-    const T*                    operator->(void) const;
-    T&                          operator*(void);
-    T*                          operator->(void);
+    T&                          operator*(void) const;
+    T*                          operator->(void) const;
     operator                    T*(void) const { return mPtr; }
-    operator                    T*(void) { return mPtr; }
     
     static RbPtr<T>             getNullPtr(void)                                           //!< Get the null pointer
     {
@@ -112,25 +109,13 @@ void RbPtr<T>::finalizePointer(void) {
 }
 
 template <typename T>
-const T* RbPtr<T>::operator->(void) const {
+T* RbPtr<T>::operator->(void) const {
     
     return (mPtr);
 }
 
 template <typename T>
-const T& RbPtr<T>::operator*(void) const {
-    
-    return (*mPtr);
-}
-
-template <typename T>
-T* RbPtr<T>::operator->(void) {
-    
-    return (mPtr);
-}
-
-template <typename T>
-T& RbPtr<T>::operator*(void) {
+T& RbPtr<T>::operator*(void) const {
     
     return (*mPtr);
 }

@@ -41,7 +41,7 @@ RbFunction::RbFunction(const RbFunction &x) : RbInternal(x), args( new Environme
     
     for (size_t i=0; i<x.args->size(); i++) {
         const std::string &name = x.args->getName(i);
-        RbPtr<const VariableSlot> theSlot = (*x.args)[i];
+        const RbPtr<VariableSlot>& theSlot = (*x.args)[i];
         args->addVariable(name, RbPtr<VariableSlot>( theSlot->clone() ));
     }
     

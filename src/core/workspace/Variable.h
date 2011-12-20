@@ -61,7 +61,7 @@ public:
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
     const std::string&                  getName(void) const;                                //!< Get name of variable
     RbPtr<const DAGNode>                getDagNode(void) const;                             //!< Get the variable 
-    RbPtr<DAGNode>                      getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
+    const RbPtr<DAGNode>&               getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
     RbPtr<const RbLanguageObject>       getValue(void) const;                               //!< Get the value of the variable
     RbPtr<RbLanguageObject>             getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
     void                                setName(const std::string &n);                      //!< Replacing the name of the variable

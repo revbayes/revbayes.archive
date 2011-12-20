@@ -99,11 +99,9 @@ RbPtr<const MemberRules> Categorical::getMemberRules(void) const {
 
 /** Initialize the Categorical variable. We just set the value. */
 void Categorical::initialize(const RbPtr<Vector> &attributes) {
-    // get a non-const pointer to the attributes
-    RbPtr<Vector> attr = attributes;
     
     // set the state
-    value = static_cast<Integer*>( (RbLanguageObject*)(*attr)[0] )->getValue();
+    value = static_cast<Integer*>( (RbLanguageObject*)(*attributes)[0] )->getValue();
 }
 
 /** Check if character code is valid */

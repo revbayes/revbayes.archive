@@ -65,7 +65,7 @@ const VectorString& Argument::getClass(void) const {
 
 
 RbPtr<const DAGNode> Argument::getDagNode(void) const {
-    return var->getDagNode();
+    return RbPtr<const DAGNode>( var->getDagNode() );
 }
 
 

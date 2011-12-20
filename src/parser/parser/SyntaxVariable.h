@@ -59,10 +59,10 @@ class SyntaxVariable : public SyntaxElement {
 
         // Regular functions
         RbPtr<RbString>                     getIdentifier(void) { return identifier; }                                              //!< Get identifier
-        VectorNatural                       computeIndex(RbPtr<Environment> env);                                                   //!< Evaluate index
-        std::string                         getFullName(RbPtr<Environment> env) const;                                              //!< Get full name, with indices and base obj
-        RbPtr<VariableSlot>                 createVariable(RbPtr<Environment> env);                                                 //!< Get semantic value
-        RbPtr<Variable>                     evaluateContent(RbPtr<Environment> env);                                                //!< Get semantic value
+        VectorNatural                       computeIndex(const RbPtr<Environment>& env);                                            //!< Evaluate index
+        std::string                         getFullName(const RbPtr<Environment>& env) const;                                       //!< Get full name, with indices and base obj
+        RbPtr<VariableSlot>                 createVariable(const RbPtr<Environment>& env);                                          //!< Get semantic value
+        RbPtr<Variable>                     evaluateContent(const RbPtr<Environment>& env);                                         //!< Get semantic value
         bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
 
     protected:

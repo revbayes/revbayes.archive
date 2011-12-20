@@ -52,7 +52,7 @@ class MemberObject: public RbLanguageObject {
         bool                                isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
 
         // Member variable functions you do not have to override
-        const RbPtr<Environment>            getMembers(void) const;                                                             //!< Get members
+        RbPtr<const Environment>            getMembers(void) const;                                                             //!< Get members
         RbPtr<Environment>                  getMembers(void);                                                                   //!< Get members
         const TypeSpec                      getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
         RbPtr<const RbLanguageObject>       getMemberValue(const std::string& name) const;                                      //!< Get member value (const)

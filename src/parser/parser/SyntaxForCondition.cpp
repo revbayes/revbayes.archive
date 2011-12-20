@@ -93,7 +93,7 @@ SyntaxElement* SyntaxForCondition::clone () const {
 
 
 /** Finalize loop. */
-void SyntaxForCondition::finalizeLoop(RbPtr<Environment> env) {
+void SyntaxForCondition::finalizeLoop(const RbPtr<Environment>& env) {
 
     if ( nextElement < 0 )
         return;
@@ -103,7 +103,7 @@ void SyntaxForCondition::finalizeLoop(RbPtr<Environment> env) {
 
 
 /** Get next loop state */
-bool SyntaxForCondition::getNextLoopState(RbPtr<Environment> env) {
+bool SyntaxForCondition::getNextLoopState(const RbPtr<Environment>& env) {
 
     if ( nextElement < 0 )
         initializeLoop( env );
@@ -134,7 +134,7 @@ const VectorString& SyntaxForCondition::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxForCondition::evaluateContent(RbPtr<Environment> env) {
+RbPtr<Variable> SyntaxForCondition::evaluateContent(const RbPtr<Environment>& env) {
 
     return RbPtr<Variable>::getNullPtr();
 }
@@ -147,7 +147,7 @@ const TypeSpec& SyntaxForCondition::getTypeSpec(void) const {
 
 
 /** Initialize loop state */
-void SyntaxForCondition::initializeLoop(RbPtr<Environment> env) {
+void SyntaxForCondition::initializeLoop(const RbPtr<Environment>& env) {
 
     assert ( nextElement < 0 );
 
