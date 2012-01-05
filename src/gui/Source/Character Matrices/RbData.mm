@@ -363,7 +363,7 @@
         for (int i=0; i<numTaxa; i++)
             {
             RbTaxonData* td = [self getDataForTaxonIndexed:i];
-            [outStr appendString:@"<"];
+            [outStr appendString:@">"];
             [outStr appendString:[td taxonName]];
             [outStr appendString:@"\n"];
             for (int j=0; j<[td numCharacters]; j++)
@@ -372,7 +372,7 @@
                 char c = [dc getDiscreteState];
                 [outStr appendString:[NSString stringWithFormat:@"%c", c]];
                 }
-            [outStr appendString:@"\n"];
+            [outStr appendString:@"\n\n"];
             }
         
         NSError* myError;

@@ -4,12 +4,16 @@
 #import "WindowControllerPreferences.h"
 #import "WindowControllerRegistration.h"
 
+#define TURN_OFF_SERVER_COMMUNICATION
+
+
 
 
 @implementation AppController
 
 - (void)awakeFromNib {
 		
+#   ifndef TURN_OFF_SERVER_COMMUNICATION
     // check the RevBayes server
     ServerComm* server = [[ServerComm alloc] init];
     [server connectToServer];                                 // establish a connection with the server
@@ -26,7 +30,8 @@
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://fisher.berkeley.edu/cteg/"]];
             }
         }
-    
+#   endif
+
     NSError* error;
     [[NSDocumentController sharedDocumentController] openUntitledDocumentAndDisplay:YES error:&error];
 }

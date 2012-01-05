@@ -9,44 +9,48 @@
     WindowControllerAlign*      controlWindow;                         // a pointer to the control window for this tool
     NSString*                   currentHelper;                         // lets Notification Center know which tools is being used
     
-    NSTask*                     alignClustalTask;                      // clustal task
-    NSPipe*                     alignClustalToPipe;
-    NSPipe*                     alignClustalFromPipe;
-    NSPipe*                     alignClustalErrorPipe;
-    NSFileHandle*               alignClustalToClustal;
-    NSFileHandle*               alignClustalFromClustal;
-    NSFileHandle*               alignClustalErrorData;
+    NSTask*                     clustalTask;                      // clustal task
+    NSPipe*                     clustalToPipe;
+    NSPipe*                     clustalFromPipe;
+    NSPipe*                     clustalErrorPipe;
+    NSFileHandle*               clustalToClustal;
+    NSFileHandle*               clustalFromClustal;
+    NSFileHandle*               clustalErrorData;
     
-    NSString*                   alignClustalAlign;                    // Clustal variables received from window controller
-    int                         alignClustalWordLength;
-    int                         alignClustalWindow;
-    NSString*                   alignClustalScoreType;
-    int                         alignClustalNumberDiagonals;
-    int                         alignClustalPairGapPenalty;
-    NSString*                   alignClustalMatrix;
-    float                       alignClustalGapOpenPenalty;
-    NSString*                   alignClustalEndGaps;
-    float                       alignClustalGapExtensionCost;
-    int                         alignClustalGapSeparationPenalty;
-    NSString*                   alignClustalIteration;
-    int                         alignClustalNumberOfIterations;
+    NSString*                   clustalAlign;                    // Clustal variables received from window controller
+    int                         clustalWordLength;
+    int                         clustalWindow;
+    NSString*                   clustalScoreType;
+    int                         clustalNumberDiagonals;
+    int                         clustalPairGapPenalty;
+    NSString*                   clustalMatrix;
+    float                       clustalGapOpenPenalty;
+    NSString*                   clustalEndGaps;
+    float                       clustalGapExtensionCost;
+    int                         clustalGapSeparationPenalty;
+    NSString*                   clustalIteration;
+    int                         clustalNumberOfIterations;
+    
+    int32_t                     taskCount;
 }
 
-@property (readwrite, assign) NSString* alignClustalAlign;
-@property (readwrite) int alignClustalWordLength;
-@property (readwrite) int alignClustalWindow;
-@property (readwrite,assign) NSString* alignClustalScoreType;
-@property (readwrite) int alignClustalNumberDiagonals;
-@property (readwrite) int alignClustalPairGapPenalty;
-@property (readwrite,assign) NSString* alignClustalMatrix;
-@property (readwrite) float alignClustalGapOpenPenalty;
-@property (readwrite, assign) NSString* alignClustalEndGaps;
-@property (readwrite) float alignClustalGapExtensionCost;
-@property (readwrite) int alignClustalGapSeparationPenalty;
-@property (readwrite,assign) NSString* alignClustalIteration;
-@property (readwrite) int alignClustalNumberOfIterations;
+@property (readwrite,assign)  NSString* clustalAlign;
+@property (readwrite)         int       clustalWordLength;
+@property (readwrite)         int       clustalWindow;
+@property (readwrite,assign)  NSString* clustalScoreType;
+@property (readwrite)         int       clustalNumberDiagonals;
+@property (readwrite)         int       clustalPairGapPenalty;
+@property (readwrite,assign)  NSString* clustalMatrix;
+@property (readwrite)         float     clustalGapOpenPenalty;
+@property (readwrite, assign) NSString* clustalEndGaps;
+@property (readwrite)         float     clustalGapExtensionCost;
+@property (readwrite)         int       clustalGapSeparationPenalty;
+@property (readwrite,assign)  NSString* clustalIteration;
+@property (readwrite)         int       clustalNumberOfIterations;
 
+- (void)performAlignment;
 - (void)closeControlPanel;
+- (void)decrementTaskCount;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2233583D14B524E000862C1D /* AlignmentTask.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2233583C14B524E000862C1D /* AlignmentTask.mm */; };
 		2296F8FE14B4D99500E28666 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2296F72414B4D99500E28666 /* BurninEstimatorContinuous.cpp */; };
 		2296F8FF14B4D99500E28666 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2296F72414B4D99500E28666 /* BurninEstimatorContinuous.cpp */; };
 		2296F90014B4D99500E28666 /* ConvergenceDiagnosticContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2296F72614B4D99500E28666 /* ConvergenceDiagnosticContinuous.cpp */; };
@@ -795,6 +796,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2233583B14B524E000862C1D /* AlignmentTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlignmentTask.h; sourceTree = "<group>"; };
+		2233583C14B524E000862C1D /* AlignmentTask.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AlignmentTask.mm; sourceTree = "<group>"; };
 		2296F72414B4D99500E28666 /* BurninEstimatorContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BurninEstimatorContinuous.cpp; sourceTree = "<group>"; };
 		2296F72514B4D99500E28666 /* BurninEstimatorContinuous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BurninEstimatorContinuous.h; sourceTree = "<group>"; };
 		2296F72614B4D99500E28666 /* ConvergenceDiagnosticContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvergenceDiagnosticContinuous.cpp; sourceTree = "<group>"; };
@@ -3043,6 +3046,8 @@
 		2296FC3B14B4D9A500E28666 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				2233583B14B524E000862C1D /* AlignmentTask.h */,
+				2233583C14B524E000862C1D /* AlignmentTask.mm */,
 				2296FC3C14B4D9A500E28666 /* SettingsMcmc.h */,
 				2296FC3D14B4D9A500E28666 /* SettingsMcmc.mm */,
 				2296FC3E14B4D9A500E28666 /* Tool.h */,
@@ -4115,6 +4120,7 @@
 				2296FDE814B4D9A500E28666 /* WindowControllerRateMatrix.mm in Sources */,
 				2296FDE914B4D9A500E28666 /* WindowControllerReadData.mm in Sources */,
 				2296FDEA14B4D9A500E28666 /* WindowControllerRegistration.mm in Sources */,
+				2233583D14B524E000862C1D /* AlignmentTask.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
