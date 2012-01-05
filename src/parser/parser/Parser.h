@@ -112,4 +112,8 @@ extern bool foundNewline;
 extern bool foundErrorBeforeEnd;
 extern bool foundEOF;
 
+// Global column markers for flex
+extern int yycolumn;
+extern size_t yyleng;
+
 #endif

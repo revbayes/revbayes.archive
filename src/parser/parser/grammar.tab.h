@@ -122,7 +122,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 92 "./grammar.y"
+#line 81 "./grammar.y"
 {
     char*                                           string;
     double                                          realValue;

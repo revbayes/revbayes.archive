@@ -10,6 +10,8 @@
 
 a <- 2   # caused an error before because of the comment
 
+x   124
+
 b <- does_not_exist   # this should cause an error
 
 c <- 4   # this should not be reached

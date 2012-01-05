@@ -23,6 +23,7 @@
 #include "VectorString.h"
 #include "SyntaxAssignExpr.h"
 #include "SyntaxElement.h"
+#include "SyntaxFormal.h"
 #include "SyntaxFunctionCall.h"
 #include "SyntaxVariable.h"
 #include "UserInterface.h"
@@ -32,6 +33,8 @@
 #include <cstring>
 #include <list>
 #include <sstream>
+
+#include "grammar.tab.h"
 
 /** Trigger printing of PRINTF debug statements by defining DEBUG_PARSER */
 #ifdef DEBUG_PARSER
@@ -326,6 +329,9 @@ int Parser::processCommand(std::string& command) {
         return 2;
     }
 
+    // Initialize flex column count
+    yycolumn = 1;
+
     // Call Bison code, which calls Flex code, which calls rrinput
     for ( std::list<std::string>::iterator i=lines.begin(); i!=lines.end(); i++ ) {
 
@@ -379,7 +385,10 @@ int Parser::processCommand(std::string& command) {
             PRINTF("Syntax error detected by parser\n");
             PRINTF("Parser discarding any remaining parts of command buffer\n\n");
             
-            RBOUT( "Syntax error" );
+            std::ostringstream msg;
+            msg << "Syntax error while reading columns " << yylloc.first_column << " to " << yylloc.last_column;
+
+            RBOUT( msg.str() );
             command = "";
             return 2;
         }
