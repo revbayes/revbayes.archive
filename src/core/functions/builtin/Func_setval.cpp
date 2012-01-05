@@ -52,7 +52,7 @@ RbPtr<RbLanguageObject> Func_setval::executeFunction( void ) {
         throw RbException( "The variable is not a stochastic node" );
     
     // remove this node as a child from the parameter node
-    for (std::set<VariableNode*>::iterator it = theNode->getChildren().begin(); it != theNode->getChildren().end(); it++) {
+    for (std::set<VariableNode*>::const_iterator it = theNode->getChildren().begin(); it != theNode->getChildren().end(); it++) {
         // test if the child is a deterministic node
         if ( (*it)->isType(DeterministicNode_name) ) {
             DeterministicNode* detNode = static_cast<DeterministicNode*>( *it );

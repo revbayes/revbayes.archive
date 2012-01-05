@@ -86,6 +86,9 @@ class DAGNode : public RbLanguageObject {
         void                                                setVariable(Variable* var);                                             //!< Set the variable owning this node
         void                                                touch(void);                                                            //!< Tell affected nodes value is reset
 
+        virtual void                                        getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                    //!< Mark and get affected nodes
+        virtual void                                        restoreMe(void) = 0;                                                        //!< Restore value of this nodes
+        virtual void                                        touchMe(void) = 0;                                                          //!< Touch myself (flag for recalculation)
 
 
     protected:
@@ -93,13 +96,10 @@ class DAGNode : public RbLanguageObject {
                                                             DAGNode(const std::string& valType);                                    //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                              //!< Copy constructor
     
-        virtual void                                        getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                    //!< Mark and get affected nodes
         virtual void                                        keepAffected(void);                                                     //!< Keep value of affected nodes
         virtual void                                        keepMe(void) = 0;                                                           //!< Keep value of myself
         virtual void                                        restoreAffected(void);                                                  //!< Restore value of affected nodes recursively
-        virtual void                                        restoreMe(void) = 0;                                                        //!< Restore value of this nodes
         virtual void                                        touchAffected(void);                                                    //!< Touch affected nodes (flag for recalculation)
-        virtual void                                        touchMe(void) = 0;                                                          //!< Touch myself (flag for recalculation)
         
 
         // Member variables keeping track of references

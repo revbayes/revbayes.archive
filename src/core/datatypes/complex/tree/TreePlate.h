@@ -18,10 +18,10 @@
 #define TreePlate_H
 
 #include "MutableMemberObject.h"
+#include "Topology.h"
 #include <set>
 #include <string>
 
-class Topology;
 class TopologyNode;
 class ValueRule;
 

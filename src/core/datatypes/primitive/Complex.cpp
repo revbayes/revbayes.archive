@@ -190,14 +190,14 @@ RbBoolean       operator==(const Complex& A, const Complex& B){
 }
 
 /** Operator != for testing inequality */
-RbBoolean       operator!=(const Complex& A, const Complex& B){
+RbBoolean operator!=(const Complex& A, const Complex& B){
     
     return std::complex<double> ( A ) != std::complex<double> ( B );
 }
 
-RbBoolean                     operator< (const Complex& A, const Complex& B){
+RbBoolean operator< (const Complex& A, const Complex& B){
     
-    return std::complex<double> ( A ) < std::complex<double> ( B );
+    return RbBoolean( std::complex<double> ( A ) < std::complex<double> ( B ) );
 
 }
 

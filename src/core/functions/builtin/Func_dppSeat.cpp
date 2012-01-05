@@ -63,7 +63,7 @@ RbPtr<RbLanguageObject> Func_dppSeat::executeFunction( void ) {
 	std::vector<int> clusters( num, 0 );
 	
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
-	for(int i=0; i<(size_t)num; i++){
+	for(size_t i=0; i<(size_t)num; i++){
 		if(i==0){
 			tables.push_back( 1 );
 			clusters[i] = 0;
@@ -78,7 +78,7 @@ RbPtr<RbLanguageObject> Func_dppSeat::executeFunction( void ) {
 			else{
 				double u = rng->uniform01();
 				double sum = 0.0;
-				int j = 0;
+				size_t j = 0;
 				while(u > sum && j <= tables.size()){
 					sum += (double)tables[j] / ((double)i);
 					j++;

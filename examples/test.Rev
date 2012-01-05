@@ -6,5 +6,10 @@
 
 # a <- vallist( a=1, b=true )
 
-a <- read( "replicase.nex" )
+# a <- read( "replicase.nex" )
 
+a <- 2   # caused an error before because of the comment
+
+b <- does_not_exist   # this should cause an error
+
+c <- 4   # this should not be reached

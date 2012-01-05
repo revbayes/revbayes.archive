@@ -284,7 +284,7 @@ void VectorBoolean::sort( void ) {
 void VectorBoolean::unique(void) {
     std::vector<bool> uniqueVector;
     uniqueVector.push_back (elements[0]);
-    for (int i = 1 ; i< elements.size() ; i++)
+    for (size_t i = 1 ; i< elements.size() ; i++)
     {
         if (elements[i] != elements[i-1])
             uniqueVector.push_back(elements[i]);

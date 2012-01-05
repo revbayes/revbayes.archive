@@ -59,8 +59,9 @@ RbPtr<RbLanguageObject> Func_source::executeFunction( void ) {
 
     /* Initialize */
     std::string commandLine;
+    int lineNumber = 0;
+    int result = 0;     // result from processing of last command
     RBOUT("Processing file \"" + filename + "\"");
-    Parser::getParser().reset();
 
     /* Command-processing loop */
     while ( inFile.good() ) {
@@ -68,12 +69,23 @@ RbPtr<RbLanguageObject> Func_source::executeFunction( void ) {
         // Read a line
         std::string line;
         getline( inFile, line );
-        
+        lineNumber++;
+
         if (echo) RBOUT(line);
 
-        // Process the line
-        if ( Parser::getParser().processCommand(line) == 2 )
-            throw RbException( "Problem processing file \"" + filename + "\"" );
+        // If previous result was 1 (append to command), we do this
+        if ( result == 1 )
+            commandLine += line;
+        else
+            commandLine = line;
+
+        // Process the line and record result
+        result = Parser::getParser().processCommand( commandLine );
+        if ( result == 2 ) {
+            std::ostringstream msg;
+            msg << "Problem processing file \"" << filename << "\"; the problem occurred on line " << lineNumber;
+            throw RbException( msg.str() );
+        }
     }
 
     /* Return control */

@@ -46,37 +46,36 @@
      RBNULL = 262,
      FALSE = 263,
      TRUE = 264,
-     COMMENT = 265,
-     FUNCTION = 266,
-     CLASS = 267,
-     FOR = 268,
-     IN = 269,
-     IF = 270,
-     ELSE = 271,
-     WHILE = 272,
-     NEXT = 273,
-     BREAK = 274,
-     RETURN = 275,
-     ARROW_ASSIGN = 276,
-     TILDE_ASSIGN = 277,
-     TILDEIID_ASSIGN = 278,
-     EQUATION_ASSIGN = 279,
-     EQUAL = 280,
-     AND = 281,
-     OR = 282,
-     AND2 = 283,
-     OR2 = 284,
-     GT = 285,
-     GE = 286,
-     LT = 287,
-     LE = 288,
-     EQ = 289,
-     NE = 290,
-     END_OF_INPUT = 291,
-     UNOT = 292,
-     UPLUS = 293,
-     UMINUS = 294,
-     UAND = 295
+     FUNCTION = 265,
+     CLASS = 266,
+     FOR = 267,
+     IN = 268,
+     IF = 269,
+     ELSE = 270,
+     WHILE = 271,
+     NEXT = 272,
+     BREAK = 273,
+     RETURN = 274,
+     ARROW_ASSIGN = 275,
+     TILDE_ASSIGN = 276,
+     TILDEIID_ASSIGN = 277,
+     EQUATION_ASSIGN = 278,
+     EQUAL = 279,
+     AND = 280,
+     OR = 281,
+     AND2 = 282,
+     OR2 = 283,
+     GT = 284,
+     GE = 285,
+     LT = 286,
+     LE = 287,
+     EQ = 288,
+     NE = 289,
+     END_OF_INPUT = 290,
+     UNOT = 291,
+     UPLUS = 292,
+     UMINUS = 293,
+     UAND = 294
    };
 #endif
 /* Tokens.  */
@@ -87,37 +86,36 @@
 #define RBNULL 262
 #define FALSE 263
 #define TRUE 264
-#define COMMENT 265
-#define FUNCTION 266
-#define CLASS 267
-#define FOR 268
-#define IN 269
-#define IF 270
-#define ELSE 271
-#define WHILE 272
-#define NEXT 273
-#define BREAK 274
-#define RETURN 275
-#define ARROW_ASSIGN 276
-#define TILDE_ASSIGN 277
-#define TILDEIID_ASSIGN 278
-#define EQUATION_ASSIGN 279
-#define EQUAL 280
-#define AND 281
-#define OR 282
-#define AND2 283
-#define OR2 284
-#define GT 285
-#define GE 286
-#define LT 287
-#define LE 288
-#define EQ 289
-#define NE 290
-#define END_OF_INPUT 291
-#define UNOT 292
-#define UPLUS 293
-#define UMINUS 294
-#define UAND 295
+#define FUNCTION 265
+#define CLASS 266
+#define FOR 267
+#define IN 268
+#define IF 269
+#define ELSE 270
+#define WHILE 271
+#define NEXT 272
+#define BREAK 273
+#define RETURN 274
+#define ARROW_ASSIGN 275
+#define TILDE_ASSIGN 276
+#define TILDEIID_ASSIGN 277
+#define EQUATION_ASSIGN 278
+#define EQUAL 279
+#define AND 280
+#define OR 281
+#define AND2 282
+#define OR2 283
+#define GT 284
+#define GE 285
+#define LT 286
+#define LE 287
+#define EQ 288
+#define NE 289
+#define END_OF_INPUT 290
+#define UNOT 291
+#define UPLUS 292
+#define UMINUS 293
+#define UAND 294
 
 
 
@@ -141,7 +139,7 @@ typedef union YYSTYPE
     RbPtr<std::list<RbPtr<SyntaxFormal> > >*        formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 145 "./grammar.tab.h"
+#line 143 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

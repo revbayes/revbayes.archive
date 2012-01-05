@@ -287,7 +287,7 @@ RbPtr<CharacterData> NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock
         
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
-        for (int i=0; i<rowDataAsString.size(); i++)
+        for (size_t i=0; i<rowDataAsString.size(); i++)
             {
             RbPtr<AminoAcidState> aaState( new AminoAcidState() );
             aaState->setState(rowDataAsString[i]);
@@ -436,7 +436,7 @@ RbPtr<CharacterData> NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* char
         
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
-        for (int i=0; i<rowDataAsString.size(); i++)
+        for (size_t i=0; i<rowDataAsString.size(); i++)
             {
             RbPtr<DnaState> dnaState( new DnaState() );
             dnaState->setState(rowDataAsString[i]);

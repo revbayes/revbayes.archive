@@ -19,6 +19,7 @@
 #include "DistributionChisq.h"
 #include "DistributionGamma.h"
 #include "DistributionNormal.h"
+#include "RandomNumberGenerator.h"
 #include "RbMathFunctions.h"
 
 /*!

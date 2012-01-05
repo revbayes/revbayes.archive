@@ -89,7 +89,7 @@ RbPtr<RbLanguageObject> DagNodeContainer::executeOperation(std::string const &na
         // get the member with give index
         RbPtr<const Natural> index( static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue()) );
         
-        if (size() < index->getValue()) {
+        if (size() < (size_t)(index->getValue())) {
             throw RbException("Index out of bounds in []");
         }
         

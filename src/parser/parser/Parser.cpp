@@ -28,9 +28,10 @@
 #include "UserInterface.h"
 #include "Workspace.h"
 
-#include <cstring>
-#include <sstream>
 #include <cstdlib>
+#include <cstring>
+#include <list>
+#include <sstream>
 
 /** Trigger printing of PRINTF debug statements by defining DEBUG_PARSER */
 #ifdef DEBUG_PARSER
@@ -40,10 +41,82 @@
 #endif
 
 
-// Global flags indicating whether flex found a newline or EOF, and what type of error occurred
+// Global flags indicating flex state
 bool foundNewline;
-bool foundEOF;
 bool foundErrorBeforeEnd;
+bool foundEOF;
+
+
+// Global command buffer string stream
+std::stringstream rrcommand;
+
+
+/**
+ * This function breaks a buffer into Rev lines, taking into account the fact that ';' also
+ * breaks lines in addition to newliines. The function also deals with different types of line
+ * endings and translate all to Unix '\n' line endings.
+ */
+void Parser::breakIntoLines( const std::string& cmd, std::list<std::string>& lines ) const {
+
+    bool inComment, inQuote;
+
+    // Initialize
+    lines.clear();  // just in case
+    inComment = inQuote = false;
+    std::stringstream buf( cmd );   // a stream is convenient for reading
+
+    // Process command buffer
+    while ( buf.good() ) {
+
+        std::stringstream temp;
+
+        while ( buf.good() ) {
+    
+            char c = buf.get();
+
+            if ( c == EOF && inQuote == true ) {
+                throw RbException( "End of line while in quote" );
+            }
+            else if ( c == '"' ) {
+                /* switch quote on or off if not in comment */
+                if ( inQuote == true )
+                    inQuote = false;
+                else if ( inComment == false )
+                    inQuote = true;
+            }
+            else if ( c == '#' && inQuote == false ) {
+                /* we are now in comment */
+                inComment = true;
+            }
+            else if ( c == ';' && inQuote == false && inComment == false ) {
+                /* break line here */
+                break;
+            }
+            else if ( c == EOF && inQuote == false ) {
+                /* break line here */
+                break;
+            }
+            else if ( c == '\n' && inQuote == false ) {
+                /* break line here */
+                break;
+            }
+            else if ( c == '\r' && inQuote == false ) {
+                /* break line here but first swallow any extra newline in DOS line ending */
+                char d = buf.peek();
+                if ( d == '\n' )
+                     c = buf.get();
+                break;
+            }
+
+            temp.put( c );
+        }
+
+
+        if ( temp.str().size() > 0 ) {
+            lines.push_back( temp.str() + "\n" );
+        }
+    }
+}
 
 
 /** This function causes recursive execution of a syntax tree by calling the root to get its value */
@@ -123,8 +196,8 @@ void Parser::getline(char* buf, size_t maxsize) {
     else {
         foundNewline = false;
         rrcommand.getline(buf, maxsize-3);
+        // Deal with line endings in case getline uses non-Unix endings
         size_t i = strlen(buf);
-        // Deal with line endings
         if ( i >= 1 && buf[i-1] == '\r' )
             buf[i-1] = '\n';
         else if ( i >= 2 && buf[i-1] == '\n' && buf[i-2] == '\r' ) {
@@ -204,9 +277,9 @@ int Parser::help(RbPtr<SyntaxFunctionCall> root) const {
         symbol = RbPtr<RbString>( static_cast<SyntaxFunctionCall*>( root )->getFunctionName() );
     }
     else {
-        msg << "I have no clue -- Bison was not supposed to ask me about this!";
+        msg << "I have no clue -- bison was not supposed to ask me about this!";
         RBOUT(msg.str());
-        return 1;
+        return 0;
     }
 
     return help( symbol );
@@ -214,87 +287,159 @@ int Parser::help(RbPtr<SyntaxFunctionCall> root) const {
 
 
 /**
- * Process command with the help of the Bison-generated code.
+ * Process command buffer with the help of the bison-generated code.
  *
- * @param   command     command string
+ * @param   command     command string; modified to contain any unprocessed incomplete statement residue, "" if none
  * @return  integer flag indicating status:
- *          1 - command is incomplete
- *          2 - syntax error
- *          0 - command syntactically correct
+ *          1 - (last) statement in command buffer is incomplete
+ *          2 - syntax error encountered
+ *          0 - all statements in command buffer syntactically correct, complete and executed
  *
- * @note If an exception occurs on a syntactically correct
- *       statement, the exception msg is printed here and
- *       the return signal is set to 0. This might change
- *       in the future.
+ * @note If an exception occurs on execution of a syntactically correct
+ *       statement, the exception msg is printed here and the return
+ *       signal is set to 2. Any remaining part of the command buffer
+ *       is discarded.
  */
 int Parser::processCommand(std::string& command) {
 
     extern int yyparse(void);   // Defined in grammar.tab.cpp (from gammar.y)
 
-    // Append command to stream where flex can find it
-    rrcommand.str(rrcommand.str() + command);
-
-    // Call Bison code, which calls Flex code, which calls rrinput
-    PRINTF("\nCalling bison with rrcommand:\n'%s'\n", rrcommand.str().c_str());
-    foundNewline = false;
-    foundEOF = false;
-    foundErrorBeforeEnd = false;
-
-    int result;
+    // Break command into Rev lines
+    std::list<std::string> lines;
     try {
-        result = yyparse();
+        breakIntoLines( command, lines );
     }
-    catch(RbException& rbException) {
-        PRINTF("Caught an exception\n");
+    catch( RbException& rbException ) {
 
-        // Catch a quit request
-        if (rbException.getExceptionType() == RbException::QUIT)
-            exit(0);
+        PRINTF("Caught an exception while breaking command buffer into lines\n");
 
-        // All other exceptions
-        PRINTF("Parse error\n");
+        // Print message
         std::ostringstream msg;
         rbException.printValue(msg);
         msg << std::endl;
         RBOUT(msg.str());
 
         // We printed a message so we dealt with the problem
-        return 0;
-    }
-
-    if (result == 0 || result == 2) {
-        PRINTF("Parser resetting command string\n\n");
-        rrcommand.str("");
-        rrcommand.clear();  // Clear any error flags
-        return result;
-    }
-    else if ( foundErrorBeforeEnd == true ) {
-        PRINTF("Syntax error occurred in parsing or executing the statement; resetting command string\n");
-        RBOUT( "Syntax error" );
-        rrcommand.str("");
-        rrcommand.clear();
+        // We exit immediately, discarding any command buffer content
+        // We return 2 to signal a problem, which the caller may choose to ignore or act upon
+        command = "";
         return 2;
     }
-    else if ( foundNewline == true && foundEOF == false ) {
-        PRINTF("Incomplete command ending with inappropriate newline; stripping newline and appending to command string\n");
-        rrcommand.str(rrcommand.str() + " ");
+
+    // Call Bison code, which calls Flex code, which calls rrinput
+    for ( std::list<std::string>::iterator i=lines.begin(); i!=lines.end(); i++ ) {
+
+        /* prepare globals for call to parser */
+        rrcommand.str( (*i) );
         rrcommand.clear();
-        return 1;
+        foundNewline = false;
+        foundEOF = false;
+        foundErrorBeforeEnd = false;
+        PRINTF("\nCalling bison with rrcommand:\n'%s'\n", rrcommand.str().c_str());
+
+        int result;
+        try {
+            result = yyparse();
+        }
+        catch(RbException& rbException) {
+            PRINTF("Caught an exception\n");
+
+            // Catch a quit request
+            if (rbException.getExceptionType() == RbException::QUIT)
+                exit(0);
+
+            // All other exceptions
+            PRINTF("Abnormal exception during parsing or execution of statement; discarding any remaining command buffer\n");
+            std::ostringstream msg;
+            rbException.printValue(msg);
+            msg << std::endl;
+            RBOUT(msg.str());
+
+            // We printed a message so we dealt with the problem
+            // We exit immediately, discarding any remaining buffer content
+            // We return 2 to signal a problem, which the caller may choose to ignore or act upon
+            command = "";
+            return 2;
+        }
+
+        if ( result == 0 ) {
+            
+            PRINTF ("Parser successfully executed statement\n\n" );
+        }
+        else if ( result == 2 ) {
+
+            // The execute function printed the error message resulting from the exception
+            // We exit immediately, discarding any remaining buffer content
+            // We return 2 to signal a problem, which the caller may choose to ignore or act upon
+            command = "";
+            return 2;
+        }
+        else if ( foundErrorBeforeEnd == true ) {
+            
+            PRINTF("Syntax error detected by parser\n");
+            PRINTF("Parser discarding any remaining parts of command buffer\n\n");
+            
+            RBOUT( "Syntax error" );
+            command = "";
+            return 2;
+        }
+        else if ( foundNewline == true && foundEOF == false ) {
+            
+            PRINTF("Incomplete statement ending with inappropriate newline; replaced with space\n");
+            
+            /* Replace newline with space */
+            std::string temp = (*i);
+            temp[temp.size()-1] = ' ';
+
+            std::list<std::string>::iterator j = i;
+            j++;
+            if ( j == lines.end() ) {
+
+                /* If no more input lines, we need to ask for more */
+                PRINTF("Reached end; asking for more content to append to (last) statement.\n\n");
+                command = temp;
+                return 1;
+            }
+            else {
+
+                /* If more input lines, put temp in front before proceeding */
+                PRINTF("Continuing with next Rev line in command buffer.\n\n");
+                (*j) = temp + (*j);
+            }
+        }
+        else if ( foundNewline == true && foundEOF == true ) {
+ 
+            PRINTF("Incomplete statement ending with appropriate newline.\n");
+            
+            std::list<std::string>::iterator j = i;
+            j++;
+            if ( j == lines.end() ) {
+                
+                /* If no more input lines, we need to ask for more */
+                PRINTF("Reached end; asking for more content to append to (last) statement.\n\n");
+                command = (*i);
+                return 1;
+            }
+            else {
+
+                /* If more input lines, put current line in front before proceeding */
+                PRINTF("Continuing with next Rev line in command buffer.\n\n");
+                (*j) = (*i) + (*j);
+            }
+        }
+        else {
+        
+            PRINTF("Unknown parse error\n");
+            RBOUT( "Unknown parse error" );
+
+            command = "";
+            return 2;
+        }
     }
-    else /* if ( foundNewline == true && foundEOF == true ) */ {
-        PRINTF("Incomplete command ending with appropriate newline; keeping newline and appending to command string\n");
-        rrcommand.str(rrcommand.str() + "\n ");
-        rrcommand.clear();
-        return 1;
-    }
-}
 
-
-/** Reset the parser */
-void Parser::reset(void) {
-
-    rrcommand.str("");
-    rrcommand.clear();
+    /* Successfully processed all statements in command buffer */
+    command = "";
+    return 0;
 }
 
 
@@ -305,5 +450,3 @@ void rrinput(char* buf, size_t& result, size_t maxsize) {
     Parser::getParser().getline(buf, maxsize);
     result = strlen(buf);
 }
-
-
