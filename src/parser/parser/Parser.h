@@ -104,7 +104,7 @@ class Parser {
 // Global call-back function for flex-generated code
 void rrinput(char* buf, size_t& result, size_t maxsize);
 
-// Global command buffer string stream
+// Global command buffer string stream for rrinput
 extern std::stringstream rrcommand;
 
 // Global flags indicating flex state
@@ -112,8 +112,8 @@ extern bool foundNewline;
 extern bool foundErrorBeforeEnd;
 extern bool foundEOF;
 
-// Global column markers for flex
-extern int yycolumn;
+// Global column and token length variables for flex
+extern size_t yycolumn;
 extern size_t yyleng;
 
 #endif

@@ -585,7 +585,7 @@ extern "C" {
 extern void rrinput(char *,size_t &,size_t);
 #define YY_NO_UNISTD_H
 
-int yycolumn = 1;
+size_t yycolumn;
 
 #define YY_USER_ACTION yycolumn += yyleng;
 

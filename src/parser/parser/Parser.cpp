@@ -350,18 +350,18 @@ int Parser::processCommand(std::string& command) {
         catch(RbException& rbException) {
             PRINTF("Caught an exception\n");
 
-            // Catch a quit request
+            // Catch a quit request in case it was not caught before
             if (rbException.getExceptionType() == RbException::QUIT)
                 exit(0);
 
-            // All other exceptions
+            // All other uncaught exceptions
             PRINTF("Abnormal exception during parsing or execution of statement; discarding any remaining command buffer\n");
+
             std::ostringstream msg;
             rbException.printValue(msg);
             msg << std::endl;
             RBOUT(msg.str());
 
-            // We printed a message so we dealt with the problem
             // We exit immediately, discarding any remaining buffer content
             // We return 2 to signal a problem, which the caller may choose to ignore or act upon
             command = "";
@@ -439,8 +439,8 @@ int Parser::processCommand(std::string& command) {
         else {
         
             PRINTF("Unknown parse error\n");
-            RBOUT( "Unknown parse error" );
 
+            RBOUT( "Unknown parse error" );
             command = "";
             return 2;
         }
