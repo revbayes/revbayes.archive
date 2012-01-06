@@ -14,7 +14,7 @@
 /* The following statements go into the resulting cpp code */
 
 /* Define the call-back function for receiving input */
-//#define YY_INPUT rrinput
+#define YY_INPUT rrinput
 
 #include <cstring>
 
@@ -52,13 +52,17 @@ extern "C" {
 #define YY_NEVER_INTERACTIVE 1
 extern void rrinput(char *,size_t &,size_t);
 #define YY_NO_UNISTD_H
+
+size_t yycolumn;
+
+#define YY_USER_ACTION yycolumn += yyleng;
+
 %}
 
 DIGIT    [0-9] 
 EXP      [Ee][+-]?[0-9]+
-ID       [a-zA-Z][a-zA-Z0-9_\-]*
+ID       [a-zA-Z][a-zA-Z0-9_]*
 STRING   \x22[^"]*\x22
-OPTSIGN  [-+]?        
 COMMENT  \x23.*
 
 %%
@@ -126,26 +130,26 @@ TRUE                                    {
                                             PRINTF("Flex found 'TRUE'\n");
                                             return TRUE;
                                         }
-{OPTSIGN}{DIGIT}+"."{DIGIT}*({EXP})?    {
+{DIGIT}+"."{DIGIT}*({EXP})?             {
                                             PRINTF("Flex found real %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
                                         }
-{OPTSIGN}{DIGIT}*"."{DIGIT}+({EXP})?    {
+{DIGIT}*"."{DIGIT}+({EXP})?             {
                                             PRINTF("Flex found real %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
                                         }
-{OPTSIGN}{DIGIT}+{EXP}                  { 
+{DIGIT}+{EXP}                           { 
                                             /* Treat ints with exponents as floating point values */
                                             PRINTF("Flex found int with exponent %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
                                         }
-{OPTSIGN}{DIGIT}+                       {
+{DIGIT}+                                {
                                             PRINTF("Flex found int %s -- ", yytext);
                                             yylval.intValue = int(strtol(yytext,NULL,10)); 
                                             PRINTF("int value = %d\n",yylval.intValue);
@@ -166,8 +170,8 @@ TRUE                                    {
                                             return STRING;
                                         }
 {COMMENT}                               {
-                                            PRINTF("Flex found comment %s\n", yytext);
-                                            return COMMENT;
+                                            PRINTF("Flex found comment '%s', ignored\n", yytext);
+                                            /* Ignore comment */
                                         }
 "<-"                                    {
                                             PRINTF("Flex found '<-'\n");
@@ -232,6 +236,10 @@ TRUE                                    {
 "\n"                                    {
                                             PRINTF ("Flex found newline\n");
                                             foundNewline = true;
+                                            return yytext[0];
+                                        }
+";"                                     {
+                                            PRINTF ("Flex found ';'\n");
                                             return yytext[0];
                                         }
 .                                       {

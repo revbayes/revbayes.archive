@@ -75,17 +75,6 @@ Parser& parser = Parser::getParser();
 #endif
 
 #define YY_NEVER_INTERACTIVE
-
-
-/* struct holding source location for accurate error reports */
-typedef struct yyltype
-{
-    int first_line;
-    int first_column;
-    int last_line;
-    int last_column;
-} yyltype;
-
 %}
 
 /* Bison needs a union of the types handled by the parser */
@@ -130,7 +119,7 @@ typedef struct yyltype
 %type <formalList> formalList optFormals
 
 /* Tokens returned by the lexer and handled by the parser */
-%token REAL INT NAME STRING RBNULL FALSE TRUE COMMENT
+%token REAL INT NAME STRING RBNULL FALSE TRUE 
 %token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
 %token ARROW_ASSIGN TILDE_ASSIGN TILDEIID_ASSIGN EQUATION_ASSIGN EQUAL 
 %token AND OR AND2 OR2 GT GE LT LE EQ NE
@@ -199,10 +188,11 @@ typedef struct yyltype
  * components are tilde assignment ('~') for creating stochastic
  * nodes and equation assignment (':=') for creating deterministic
  * nodes in model DAGs. Constant nodes are created using
- * arrow assignment ('<-') as in R.
+ * arrow assignment ('<-'), as in R.
  *
- * The Rev language passes by value except in equation and tilde
- * assignment, in which case variables are passed by reference.
+ * The Rev language effectively passes by value except in equation
+ * and tilde assignments, in which case variables on the lefthand
+ * side are passed by reference.
  * 
  * Unlike R, right assignment ('->') is not supported. Also,
  * a number of constructs that are interpreted as expressions
@@ -223,11 +213,6 @@ prog    :       END_OF_INPUT
         |       '\n'
                 {
                     PRINTF("Bison encountered newline; ignored\n");
-                    return 0;
-                }
-        |       COMMENT '\n'
-                {
-                    PRINTF("Bison encountered comment; ignored\n");
                     return 0;
                 }
         |       stmt_or_expr '\n'
@@ -634,7 +619,11 @@ vector      :   '[' vectorList ']'      { $$ = $2; }
             ;
 
 vectorList  :   vectorList ',' expression   { (*$1)->push_back(RbPtr<SyntaxLabeledExpr>( new SyntaxLabeledExpr( RbPtr<RbString>( new RbString("") ), *$3) ) ); $$ = $1; delete $3; }
-|   expression                  { $$ = new RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >( new std::list<RbPtr<SyntaxLabeledExpr> >(1, RbPtr<SyntaxLabeledExpr>( new SyntaxLabeledExpr(RbPtr<RbString>( new RbString("") ), *$1) ) ) ); delete $1; }
+            |   expression
+                {
+                $$ = new RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >( new std::list<RbPtr<SyntaxLabeledExpr> >(1, RbPtr<SyntaxLabeledExpr>( new SyntaxLabeledExpr(RbPtr<RbString>( new RbString("") ), *$1) ) ) );
+                delete $1;
+                }
             ;
 
 constant    :   FALSE
@@ -729,6 +718,9 @@ int yyerror(const char *msg)
         foundErrorBeforeEnd = false;
     else
         foundErrorBeforeEnd = true;
+
+    yylloc.first_column = yycolumn - yyleng;
+    yylloc.last_column  = yycolumn - 1;
 
     return 1;
 }
