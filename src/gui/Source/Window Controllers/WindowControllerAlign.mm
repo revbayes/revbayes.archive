@@ -69,6 +69,9 @@
 	NSString* methodLabel = [NSString stringWithString:[[alignmentMethodSelectorTab selectedTabViewItem] label]];
 	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
         {
+        // close the window
+        [myTool closeControlPanel];
+
         // the user wants us to use the CLUSTAL program
         // set the clustal parameters
         [myTool setClustalAlign:                clustalAlign];
@@ -88,10 +91,11 @@
         // run clustal
         [myTool helperRunClustal:(id)sender];
         }
-
-    
-    // close the window
-    [myTool closeControlPanel];
+    else
+        {
+        // close the window
+        [myTool closeControlPanel];
+        }
 }
 
 - (IBAction)cancelButtonAction:(id)sender {

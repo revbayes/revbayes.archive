@@ -36,6 +36,7 @@
 - (ItemSelector)selectItem:(NSPoint)forPoint;
 - (void)selectItemsInSweepArea;
 - (void)updateBackgroundColor:(NSNotification*)notification;
+- (void)updateProgressIndicatorPositions;
 - (void)writeToPasteboard:(NSPasteboard*)pb;
 
 @end

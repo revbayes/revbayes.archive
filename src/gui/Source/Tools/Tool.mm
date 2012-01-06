@@ -55,10 +55,11 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
-	[aCoder encodeObject:inlets       forKey:@"inlets"];
-	[aCoder encodeObject:outlets      forKey:@"outlets"];
-	[aCoder encodeInt:flagCount       forKey:@"flagCount"];
-	[aCoder encodeBool:touchOnRevival forKey:@"touchOnRevival"];
+    [aCoder encodeObject:progressIndicator forKey:@"progressIndicator"];
+	[aCoder encodeObject:inlets            forKey:@"inlets"];
+	[aCoder encodeObject:outlets           forKey:@"outlets"];
+	[aCoder encodeInt:flagCount            forKey:@"flagCount"];
+	[aCoder encodeBool:touchOnRevival      forKey:@"touchOnRevival"];
 	
     [super encodeWithCoder:aCoder];
 }
@@ -112,10 +113,11 @@
 
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
-        inlets         = [[NSMutableArray alloc] init];
-        outlets        = [[NSMutableArray alloc] init];
-		flagCount      = 0;
-		touchOnRevival = NO;
+        progressIndicator = [[NSProgressIndicator alloc] init];
+        inlets            = [[NSMutableArray alloc] init];
+        outlets           = [[NSMutableArray alloc] init];
+		flagCount         = 0;
+		touchOnRevival    = NO;
 		}
     return self;
 }
@@ -124,36 +126,24 @@
     
     if ( (self = [super initWithScaleFactor:sf andWindowNibName:wNibName]) ) 
         {
-        inlets         = [[NSMutableArray alloc] init];
-        outlets        = [[NSMutableArray alloc] init];
-		flagCount      = 0;
-		touchOnRevival = NO;
+        progressIndicator = [[NSProgressIndicator alloc] init];
+        inlets            = [[NSMutableArray alloc] init];
+        outlets           = [[NSMutableArray alloc] init];
+		flagCount         = 0;
+		touchOnRevival    = NO;
         }
     return self;
 }
-/*
-- (id)initWithScaleFactor:(float)sf andView:(NSView *)myView 
-{
-    
-    if ( (self = [super initWithScaleFactor:sf]) ) 
-    {
-        inlets           = [[NSMutableArray alloc] init];
-        outlets          = [[NSMutableArray alloc] init];
-		flagCount        = 0;
-		touchOnRevival   = NO;
-    }
-    return self;
-}
-*/
 
 - (id)initWithCoder:(NSCoder*)aDecoder {
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
-		inlets         = [aDecoder decodeObjectForKey:@"inlets"];
-		outlets        = [aDecoder decodeObjectForKey:@"outlets"];
-		flagCount      = [aDecoder decodeIntForKey:@"flagCount"];
-		touchOnRevival = [aDecoder decodeBoolForKey:@"touchOnRevival"];
+        progressIndicator = [aDecoder decodeObjectForKey:@"progressIndicator"];
+		inlets            = [aDecoder decodeObjectForKey:@"inlets"];
+		outlets           = [aDecoder decodeObjectForKey:@"outlets"];
+		flagCount         = [aDecoder decodeIntForKey:@"flagCount"];
+		touchOnRevival    = [aDecoder decodeBoolForKey:@"touchOnRevival"];
         [inlets retain];
         [outlets retain];
 		}
@@ -448,6 +438,8 @@
 - (void)setAnalysisView:(AnalysisView*)av {
 
     myAnalysisView = av;
+    [myAnalysisView addSubview:progressIndicator];
+    //[progressIndicator addSubview:myAnalysisView];
 }
 
 - (void)setImageWithSize:(NSSize)s {
@@ -477,6 +469,11 @@
         }
 }
 
+- (void)setProgressIndicatorPosition:(NSRect)r {
+
+    [progressIndicator setFrame:r];
+}
+
 - (void)showControlPanel {
 
 }
@@ -498,6 +495,22 @@
             [t updateForConnectionChange];
             }
         }
+}
+
+- (void)startProgressIndicator {
+
+    NSLog(@"startProgressIndicator");
+    [progressIndicator setFrame:NSMakeRect(0.0, 0.0, 500.0, 500.0)];
+    [progressIndicator setUsesThreadedAnimation:YES];
+    [progressIndicator setStyle:NSProgressIndicatorSpinningStyle];
+    [progressIndicator setIndeterminate:YES];
+    [progressIndicator startAnimation:self];
+}
+
+- (void)stopProgressIndicator {
+
+    NSLog(@"stopProgressIndicator");
+    [progressIndicator stopAnimation:self];
 }
 
 - (void)updateForConnectionChange {

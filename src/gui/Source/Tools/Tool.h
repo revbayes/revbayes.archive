@@ -14,6 +14,7 @@
     NSMutableArray*      outlets;
 	int                  flagCount;
 	BOOL                 touchOnRevival;
+    NSProgressIndicator* progressIndicator;
 }
 
 @property (readwrite) int flagCount;
@@ -30,7 +31,6 @@
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName;
-//- (id)initWithScaleFactor:(float)sf andView: (NSView *)myView;
 - (InOutlet*)inletIndexed:(int)idx;
 - (void)initializeImage;
 - (BOOL)isFullyConnected;
@@ -52,8 +52,11 @@
 - (void)setImageWithSize:(NSSize)s;
 - (void)setInletLocations;
 - (void)setOutletLocations;
+- (void)setProgressIndicatorPosition:(NSRect)r;
 - (void)showControlPanel;
 - (void)showInspectorPanel;
+- (void)startProgressIndicator;
+- (void)stopProgressIndicator;
 - (void)updateForConnectionChange;
 - (void)signalDownstreamTools;
 

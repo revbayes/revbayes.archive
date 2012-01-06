@@ -9,6 +9,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     if (alignTask != nil)
         [alignTask release];
+    if (outputPipe != nil)
+        [outputPipe release];
 	[super dealloc];
 }
 
@@ -22,8 +24,9 @@
 
     if ( (self = [super init]) ) 
         {
-         myAlignmentTool = t;
-         alignTask = nil;
+        myAlignmentTool = t;
+        alignTask = nil;
+        outputPipe = nil;
         }
     return self;
 }
@@ -40,7 +43,6 @@
     dFilePath = [dFilePath stringByAppendingString:fileName];
     
     // collect the clustal arguments
-    NSString* clustalReduceConsoleOutputArg  = [NSString stringWithString: @"-QUIET"];
     NSString* clustalMultipleAlignArg        = [NSString stringWithString: @"-ALIGN"];
     NSString* clustalInfileArg               = [NSString stringWithString: @"-INFILE="];
               clustalInfileArg               = [clustalInfileArg stringByAppendingString:dFilePath];
@@ -82,7 +84,7 @@
     if ( [[myAlignmentTool clustalAlign] isEqualToString: @"Fast"] == YES )
         {
         clustalArguments = [NSArray arrayWithObjects: 
-                                 clustalReduceConsoleOutputArg, 
+                                 //@"-QUIET", 
                                  clustalInfileArg, 
                                  clustalOutfileArg, 
                                  clustalOutputArg,
@@ -106,7 +108,7 @@
     else
         {
         clustalArguments = [NSArray arrayWithObjects: 
-                                 clustalReduceConsoleOutputArg, 
+                                 //@"-QUIET", 
                                  clustalInfileArg, 
                                  clustalOutfileArg, 
                                  clustalOutputArg,
@@ -126,10 +128,10 @@
                                  clustalMultipleAlignArg,
                                  nil];
         }
-    NSLog(@"clustalArguments = %@", clustalArguments);
         
     // allocate a task for clustal
     alignTask = [[NSTask alloc] init];
+    outputPipe = [[NSPipe alloc] init];
 
     // create a the temporary directory
     NSFileManager* clustalFileManager = [[NSFileManager alloc] init];
@@ -144,19 +146,28 @@
     [alignTask setCurrentDirectoryPath:clustalPath];
     [alignTask setLaunchPath:clustalPath];
     [alignTask setArguments:clustalArguments];
+    outputFileHandle = [outputPipe fileHandleForReading];
+    [alignTask setStandardOutput:outputPipe];
     
-    // listen for a notification indicating that the task finished
+    // listen for a notification indicating that the task finished and that data has been sent down the pipe
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self
                       selector:@selector(alignmentTaskDidFinish:)
                           name:NSTaskDidTerminateNotification
                         object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(receiveData:)
+                          name:NSFileHandleReadCompletionNotification
+                        object:outputFileHandle];
 
     // launch the task and wait
     [alignTask launch];
+    [outputFileHandle readInBackgroundAndNotify];
     [alignTask waitUntilExit];
     int status = [alignTask terminationStatus];
-    NSLog(@"status = %d", status);
+    if (status != 0)
+        NSLog(@"Problem aligning data file");
+
 
         
 
@@ -168,6 +179,14 @@
         {
         [myAlignmentTool decrementTaskCount];
         }
+}
+
+- (void)receiveData:(NSNotification*)aNotification {
+     
+    NSData* incomingData = [[aNotification userInfo] objectForKey:NSFileHandleNotificationDataItem];
+    NSString* incomingText = [[NSString alloc] initWithData:incomingData encoding:NSASCIIStringEncoding];
+    //NSLog(@"task %@ %@", self, incomingText);
+    [incomingText release];
 }
 
 @end
