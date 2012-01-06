@@ -386,7 +386,10 @@ int Parser::processCommand(std::string& command) {
             PRINTF("Parser discarding any remaining parts of command buffer\n\n");
             
             std::ostringstream msg;
-            msg << "Syntax error while reading columns " << yylloc.first_column << " to " << yylloc.last_column;
+            if ( yylloc.first_column == yylloc.last_column )
+                msg << "Syntax error while reading character " << yylloc.first_column;
+            else
+                msg << "Syntax error while reading characters " << yylloc.first_column << " to " << yylloc.last_column;
 
             RBOUT( msg.str() );
             command = "";

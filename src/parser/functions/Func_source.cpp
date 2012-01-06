@@ -83,7 +83,7 @@ RbPtr<RbLanguageObject> Func_source::executeFunction( void ) {
         result = Parser::getParser().processCommand( commandLine );
         if ( result == 2 ) {
             std::ostringstream msg;
-            msg << "Problem processing file \"" << filename << "\"; the problem occurred on line " << lineNumber;
+            msg << "Problem processing line " << lineNumber << " in file \"" << filename << "\"";
             throw RbException( msg.str() );
         }
     }

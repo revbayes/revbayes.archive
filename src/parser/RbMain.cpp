@@ -37,6 +37,9 @@ int main(int argc, char **argv) {
     std::cerr << std::endl;
 #	endif
 
+    // Print an extra line to separate prompt from possible output from help call
+    UserInterface::userInterface().output("\n");
+
     // Create command line variable
     std::string commandLine;
 

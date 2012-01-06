@@ -10,8 +10,8 @@
 
 a <- 2   # caused an error before because of the comment
 
-x   124
+b <- a   # this should not cause an error
 
-b <- does_not_exist   # this should cause an error
+source( "test2.rev"); d <- 2;
 
-c <- 4   # this should not be reached
+c <- 4;  # this should be reached
