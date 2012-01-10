@@ -4,7 +4,7 @@
 @class Inlet;
 @class InOutlet;
 @class Outlet;
-
+@class YRKSpinningProgressIndicator;
 
 
 @interface Tool : RbItem <NSCoding> {
@@ -14,7 +14,7 @@
     NSMutableArray*      outlets;
 	int                  flagCount;
 	BOOL                 touchOnRevival;
-    NSProgressIndicator* progressIndicator;
+    YRKSpinningProgressIndicator* progressIndicator;
 }
 
 @property (readwrite) int flagCount;
@@ -52,7 +52,6 @@
 - (void)setImageWithSize:(NSSize)s;
 - (void)setInletLocations;
 - (void)setOutletLocations;
-- (void)setProgressIndicatorPosition:(NSRect)r;
 - (void)showControlPanel;
 - (void)showInspectorPanel;
 - (void)startProgressIndicator;

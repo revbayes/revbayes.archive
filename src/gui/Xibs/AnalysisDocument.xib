@@ -539,7 +539,7 @@
 					<reference key="NSNextKeyView" ref="559064925"/>
 					<int key="NSViewLayerContentsRedrawPolicy">2</int>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
+				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
 				<string key="NSMinSize">{400, 322}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
@@ -1010,6 +1010,8 @@
 				<string key="-1.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="-3.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<boolean value="YES" key="100021.IBNSWindowAutoPositionCentersHorizontal"/>
+				<boolean value="YES" key="100021.IBNSWindowAutoPositionCentersVertical"/>
 				<string key="100021.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100021.IBWindowTemplateEditedContentRect">{{200, 6}, {1000, 1000}}</string>
 				<boolean value="YES" key="100021.NSWindowTemplate.visibleAtLaunch"/>

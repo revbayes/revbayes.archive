@@ -3,6 +3,7 @@
 #import "AnalysisTools.h"
 #import "AnalysisView.h"
 #import "Tool.h"
+#import "WindowControllerReadDataProgress.h"
 
 #define LEFT_VIEW_INDEX 0
 #define LEFT_VIEW_PRIORITY 2
@@ -282,6 +283,12 @@
 
 - (BOOL)readFromFileWrapper:(NSFileWrapper*)fileWrapper ofType:(NSString*)typeName error:(NSError**)outError {
 
+    WindowControllerReadDataProgress* progressWin = [[WindowControllerReadDataProgress alloc] init];
+    NSWindow* w = [progressWin window];
+    [w center];
+    [w makeKeyAndOrderFront:nil];
+    [w display];
+    
 	// get a list of the bundle's files
 	NSDictionary* files = [fileWrapper fileWrappers];
 	
@@ -305,7 +312,10 @@
 	NSMutableArray* settingsArray = [NSKeyedUnarchiver unarchiveObjectWithData:settingsData];
 	showGrid = [[settingsArray objectAtIndex:0] boolValue];
 	snapToGrid = [[settingsArray objectAtIndex:1] boolValue];
-	
+    
+    [w orderOut:nil];
+    [progressWin release];
+        
 	return YES;
 }
 

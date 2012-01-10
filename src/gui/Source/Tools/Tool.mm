@@ -6,7 +6,7 @@
 #import "Outlet.h"
 #import "RevBayes.h"
 #import "Tool.h"
-
+#import "YRKSpinningProgressIndicator.h"
 
 
 @implementation Tool
@@ -55,7 +55,6 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
-    [aCoder encodeObject:progressIndicator forKey:@"progressIndicator"];
 	[aCoder encodeObject:inlets            forKey:@"inlets"];
 	[aCoder encodeObject:outlets           forKey:@"outlets"];
 	[aCoder encodeInt:flagCount            forKey:@"flagCount"];
@@ -113,7 +112,7 @@
 
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
-        progressIndicator = [[NSProgressIndicator alloc] init];
+        progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
 		flagCount         = 0;
@@ -126,7 +125,7 @@
     
     if ( (self = [super initWithScaleFactor:sf andWindowNibName:wNibName]) ) 
         {
-        progressIndicator = [[NSProgressIndicator alloc] init];
+        progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
 		flagCount         = 0;
@@ -139,7 +138,7 @@
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
-        progressIndicator = [aDecoder decodeObjectForKey:@"progressIndicator"];
+        progressIndicator = nil;
 		inlets            = [aDecoder decodeObjectForKey:@"inlets"];
 		outlets           = [aDecoder decodeObjectForKey:@"outlets"];
 		flagCount         = [aDecoder decodeIntForKey:@"flagCount"];
@@ -438,8 +437,6 @@
 - (void)setAnalysisView:(AnalysisView*)av {
 
     myAnalysisView = av;
-    [myAnalysisView addSubview:progressIndicator];
-    //[progressIndicator addSubview:myAnalysisView];
 }
 
 - (void)setImageWithSize:(NSSize)s {
@@ -469,11 +466,6 @@
         }
 }
 
-- (void)setProgressIndicatorPosition:(NSRect)r {
-
-    [progressIndicator setFrame:r];
-}
-
 - (void)showControlPanel {
 
 }
@@ -499,11 +491,27 @@
 
 - (void)startProgressIndicator {
 
-    NSLog(@"startProgressIndicator");
-    [progressIndicator setFrame:NSMakeRect(0.0, 0.0, 500.0, 500.0)];
+    // get the size and position of the frame to hold the progress indicator
+    float scaleFactor = [myAnalysisView scaleFactor];
+    NSRect tRect;
+    tRect.origin = [self itemLocation];
+    tRect.size   = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
+    [myAnalysisView transformToBottomLeftCoordinates:(&tRect.origin)];  
+    float margine = tRect.size.width * 0.10;          
+    
+    // instantiate the progress indicator and set the views correctly
+    NSView* superView = myAnalysisView;
+    NSRect frame = NSMakeRect(tRect.origin.x + margine, tRect.origin.y + margine, tRect.size.width - 2.0*margine, tRect.size.height - 2.0*margine);
+    if (progressIndicator != nil)
+        [progressIndicator release];
+    progressIndicator = [[YRKSpinningProgressIndicator alloc] initWithFrame:frame];
+    [superView addSubview:progressIndicator];
+    [progressIndicator release];
+    
+    // set properties of the progress indicator and start it up
     [progressIndicator setUsesThreadedAnimation:YES];
-    [progressIndicator setStyle:NSProgressIndicatorSpinningStyle];
     [progressIndicator setIndeterminate:YES];
+    [progressIndicator setColor:[NSColor blueColor]];
     [progressIndicator startAnimation:self];
 }
 
@@ -511,6 +519,8 @@
 
     NSLog(@"stopProgressIndicator");
     [progressIndicator stopAnimation:self];
+    [progressIndicator removeFromSuperview];
+    progressIndicator = nil;
 }
 
 - (void)updateForConnectionChange {

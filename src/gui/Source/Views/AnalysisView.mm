@@ -1230,9 +1230,6 @@
 						}
 					}
 				}
-                           
-            // update the progress indicator positions
-            [self updateProgressIndicatorPositions];
             
             // update the scroll bars
             [self updateScrollBars];
@@ -2026,18 +2023,6 @@
     bkgrndColor = [[notification object] analysisBkgrndColor];
     gridColor   = [[notification object] analysisGridColor];
     [self setNeedsDisplay:YES];
-}
-
-- (void)updateProgressIndicatorPositions {
-
-    NSEnumerator* enumerator = [itemsPtr objectEnumerator];
-    id element;
-    while ( (element = [enumerator nextObject]) )
-        {
-        NSPoint np = [element itemLocation];
-        [self transformToBottomLeftCoordinates:(&np)];            
-        [element setProgressIndicatorPosition:NSMakeRect(np.x, np.y, 25.0, 25.0)];
-        }
 }
 
 - (void)writeToPasteboard:(NSPasteboard*)pb {
