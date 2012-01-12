@@ -328,6 +328,8 @@
             }
         }
             
+    [myTool startProgressIndicator];
+    
 	// check to see if the selection is a file or a directory
     NSFileManager* fileManager = [NSFileManager defaultManager];
 	BOOL isDir;
@@ -364,6 +366,7 @@
     if (coreResult != 0)
         {
         [self readDataError:@"Data could not be read"];
+        [myTool stopProgressIndicator];
         return NO;
         }
 
@@ -373,6 +376,7 @@
     if ( dv == NULL )
         {
         [self readDataError:@"Data could not be read"];
+        [myTool stopProgressIndicator];
         return NO;
         }
     
@@ -397,6 +401,7 @@
         else
             {
             [self readDataError:@"Failure reading in a set of character matrices"];
+            [myTool stopProgressIndicator];
             return NO;
             }
         }
@@ -411,17 +416,21 @@
         else
             {
             [self readDataError:@"Failed to read character matrix"];
+            [myTool stopProgressIndicator];
             return NO;
             }
         }
     else
         {
         [self readDataError:@"Data could not be read"];
+        [myTool stopProgressIndicator];
         return NO;
         }
         
     // set the name of the variable in the tool
     [myTool setDataWorkspaceName:[NSString stringWithUTF8String:(variableName.c_str())]];
+    
+    [myTool stopProgressIndicator];
 
 	return YES;
 }

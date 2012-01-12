@@ -1,4 +1,5 @@
 #import "AlignmentTask.h"
+#import "RbData.h"
 #import "Connection.h"
 #import "RbData.h"
 #import "Inlet.h"
@@ -7,6 +8,16 @@
 #import "ToolAlign.h"
 #import "ToolReadData.h"
 #import "WindowControllerAlign.h"
+#import "WindowControllerCharacterMatrix.h"
+#include <string>
+#include "Character.h"
+#include "CharacterData.h"
+#include "DagNodeContainer.h"
+#include "NclReader.h"
+#include "Parser.h"
+#include "RbFileManager.h"
+#include "VariableSlot.h"
+#include "Workspace.h"
 
 
 @implementation ToolAlign
@@ -24,7 +35,6 @@
 @synthesize clustalGapSeparationPenalty;
 @synthesize clustalIteration;
 @synthesize clustalNumberOfIterations;
-
 
 - (void)awakeFromNib {
 
@@ -49,6 +59,7 @@
     [clustalIteration release];
 
 	[controlWindow release];
+    
 	[super dealloc];
 }
 
@@ -87,7 +98,6 @@
 		
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor cyanColor]];
-		[self addInletOfColor:[NSColor greenColor]];
 		[self addOutletOfColor:[NSColor greenColor]];
         [self setInletLocations];
         [self setOutletLocations];
@@ -142,7 +152,6 @@
         clustalIteration = [aDecoder decodeObjectForKey:@"clustalIteration"];
             [clustalIteration retain];
         clustalNumberOfIterations = [aDecoder decodeIntForKey:@"clustalNumberOfIterations"];
-        
             
         // initialize the control window
 		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
@@ -229,8 +238,27 @@
     if ( [unalignedData count] == 0 )
         return;
         
-    // write the alignment files to the temporary directory
+    // remove all of the files from the temporary directory
     NSString* temporaryDirectory = NSTemporaryDirectory();
+    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSDirectoryEnumerator* en = [fm enumeratorAtPath:temporaryDirectory];    
+    NSString* file;
+    while ( file = [en nextObject] ) 
+        {
+        NSError* err = nil;
+        BOOL res = [fm removeItemAtPath:[temporaryDirectory stringByAppendingPathComponent:file] error:&err];
+        if (!res && err) 
+            {
+            }
+        }
+        
+    // and make a temporary directory to contain the alignments
+    NSString* alnDirectory   = [NSString stringWithString:temporaryDirectory];
+    alnDirectory             = [alnDirectory stringByAppendingString:@"/myAlignments"];
+    NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
+    [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
+
+    // write the alignment files to the temporary directory
     for (int i=0; i<[unalignedData count]; i++)
         {
         // have the data object save a fasta file to the temporary directory
@@ -240,7 +268,7 @@
         dFilePath = [dFilePath stringByAppendingString:@".fas"];
         [d writeToFile:dFilePath];
         }
-        
+    
     // set the indeterminate progress bar to on
     [self startProgressIndicator];
     
@@ -286,20 +314,96 @@
         [(AlignmentTask*)element release];
         }
         
+    // read the alignments ********************************
+    
+    // check the workspace and make certain that we use an unused name for the
+    // data variable
+    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+		    
+    // format a string command to read the data file(s) and send the
+    // formatted string to the parser
+    const char* cmdAsCStr = [alnDirectory UTF8String];
+    std::string cmdAsStlStr = cmdAsCStr;
+    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    int coreResult = Parser::getParser().processCommand(line);
+    if (coreResult != 0)
+        {
+        [self readDataError:@"Data could not be read"];
+        [self stopProgressIndicator];
+        return;
+        }
+std::cout << "variableName = " << variableName << std::endl;
+
+    // retrieve the value (character data matrix or matrices) from the workspace
+    RbPtr<RbLanguageObject> dv = NULL;
+    dv = Workspace::userWorkspace()->getValue(variableName);
+    if ( dv == NULL )
+        {
+        [self readDataError:@"Data could not be read"];
+        [self stopProgressIndicator];
+        return;
+        }
+std::cout << "dv = " << dv << std::endl;
+    
+    // instantiate data matrices for the gui, by reading the matrices that were 
+    // read in by the core
+    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( (RbObject*)dv );
+    CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
+    if ( dnc != NULL )
+        {
+std::cout << "dnc = " << dnc << std::endl;
+        if (dnc != NULL)
+            {
+            [self removeAllDataMatrices];
+std::cout << "dnc->size = " << dnc->size() << std::endl;
+            for (int i=0; i<dnc->size(); i++)
+                {
+                VariableSlot* vs = static_cast<VariableSlot*>( (RbObject*)(dnc->getElement(i)) );
+                RbPtr<RbLanguageObject> theDagNode = vs->getDagNode()->getValue();
+                CharacterData* cd = static_cast<CharacterData*>( (RbObject*)theDagNode );
+std::cout << "cd " << i << " = " << cd << std::endl;
+                RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+NSLog(@"newMatrix = %@", newMatrix);
+                [self addMatrix:newMatrix];
+                }
+            }
+        else
+            {
+            [self readDataError:@"Failure reading in a set of character matrices"];
+            [self stopProgressIndicator];
+            return;
+            }
+        }
+    else if ( cd != NULL )
+        {
+std::cout << "cd = " << cd << std::endl;
+        if (cd != NULL)
+            {
+            [self removeAllDataMatrices];
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            [self addMatrix:newMatrix];
+            }
+        else
+            {
+            [self readDataError:@"Failed to read character matrix"];
+            [self stopProgressIndicator];
+            return;
+            }
+        }
+    else
+        {
+        [self readDataError:@"Data could not be read"];
+        [self stopProgressIndicator];
+        return;
+        }
+        
+NSLog(@"dataMatrices = %@", dataMatrices);
+
+    // set the name of the variable in the tool
+    [self setDataWorkspaceName:[NSString stringWithUTF8String:(variableName.c_str())]];
+    
     // turn the indeterminate progress bar off
     [self stopProgressIndicator];
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
-
 }
 
 
@@ -314,6 +418,14 @@
     [NSThread sleepForTimeInterval:5.0f];
 
     OSAtomicDecrement32(&taskCount);
+}
+
+- (void)readDataError:(NSString*)errStr {
+
+    NSRunAlertPanel(@"Problem Reading Data", errStr, @"OK", nil, nil);
+    if ( Workspace::userWorkspace()->existsVariable("guiDataVector") )
+        Workspace::userWorkspace()->eraseVariable("guiDataVector");
+    [self removeAllDataMatrices];
 }
 
 /* Receive Clustal data */ 
@@ -342,7 +454,6 @@
     [incomingText release];
 }
     
-
 - (void)taskCompleted {
 
     NSLog (@"Clustal task completed");

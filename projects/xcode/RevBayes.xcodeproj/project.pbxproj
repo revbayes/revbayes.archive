@@ -782,6 +782,7 @@
 		22B3FBAF14BBC5A00099D4C3 /* ReadDataProgressWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22B3FBAE14BBC5A00099D4C3 /* ReadDataProgressWindow.xib */; };
 		22B3FBB214BBC6A20099D4C3 /* WindowControllerReadDataProgress.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B3FBB114BBC6A20099D4C3 /* WindowControllerReadDataProgress.mm */; };
 		22B3FBBD14BBDD610099D4C3 /* MyPanel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B3FBBC14BBDD610099D4C3 /* MyPanel.mm */; };
+		22B3FBC014BE39E70099D4C3 /* ToolData.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B3FBBF14BE39E70099D4C3 /* ToolData.mm */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -1734,6 +1735,8 @@
 		22B3FBB114BBC6A20099D4C3 /* WindowControllerReadDataProgress.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerReadDataProgress.mm; sourceTree = "<group>"; };
 		22B3FBBB14BBDD610099D4C3 /* MyPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyPanel.h; sourceTree = "<group>"; };
 		22B3FBBC14BBDD610099D4C3 /* MyPanel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MyPanel.mm; sourceTree = "<group>"; };
+		22B3FBBE14BE39E60099D4C3 /* ToolData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToolData.h; sourceTree = "<group>"; };
+		22B3FBBF14BE39E70099D4C3 /* ToolData.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ToolData.mm; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -3067,6 +3070,8 @@
 				22B3F9E314BB70E70099D4C3 /* Tool.mm */,
 				22B3F9E414BB70E70099D4C3 /* ToolAlign.h */,
 				22B3F9E514BB70E70099D4C3 /* ToolAlign.mm */,
+				22B3FBBE14BE39E60099D4C3 /* ToolData.h */,
+				22B3FBBF14BE39E70099D4C3 /* ToolData.mm */,
 				22B3F9E614BB70E70099D4C3 /* ToolMatrixFilter.h */,
 				22B3F9E714BB70E70099D4C3 /* ToolMatrixFilter.mm */,
 				22B3F9E814BB70E70099D4C3 /* ToolMcmc.h */,
@@ -4143,6 +4148,7 @@
 				22B3FBAD14BBBEBA0099D4C3 /* YRKSpinningProgressIndicator.mm in Sources */,
 				22B3FBB214BBC6A20099D4C3 /* WindowControllerReadDataProgress.mm in Sources */,
 				22B3FBBD14BBDD610099D4C3 /* MyPanel.mm in Sources */,
+				22B3FBC014BE39E70099D4C3 /* ToolData.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

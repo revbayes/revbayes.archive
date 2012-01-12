@@ -47,8 +47,9 @@
     NSString* clustalInfileArg               = [NSString stringWithString: @"-INFILE="];
               clustalInfileArg               = [clustalInfileArg stringByAppendingString:dFilePath];
     NSString* clustalOutfileArg              = [NSString stringWithString: @"-OUTFILE="];
-              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:workingDirectory];
-              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:@"/clustaloutput.fas"];
+              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:temporaryDirectory];
+              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:@"/myAlignments/"];
+              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:fileName];
     NSString* clustalOutputArg               = [NSString stringWithString: @"-OUTPUT=FASTA"];    
     NSString* clustalGuideTreeArg            = [NSString stringWithString: @"-NEWTREE="];
               clustalGuideTreeArg            = [clustalGuideTreeArg stringByAppendingString: workingDirectory];

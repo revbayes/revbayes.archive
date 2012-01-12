@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 @class RbData;
-@class ToolReadData;
+@class ToolData;
 
 
 @interface WindowControllerCharacterMatrix : NSWindowController {
@@ -27,7 +27,7 @@
 	NSDictionary*                      nucleotideColorsDict;
 	NSDictionary*                      standardColorsDict;
 
-    id                                 myTool;
+    ToolData*                          myTool;
     int                                numTaxa;
     int                                numChar;
 	float                              cellWidth;

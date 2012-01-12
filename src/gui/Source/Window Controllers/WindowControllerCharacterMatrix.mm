@@ -1,7 +1,7 @@
 #import "RbData.h"
 #import "RbDataCell.h"
 #import "ToolMatrixFilter.h"
-#import "ToolReadData.h"
+#import "ToolData.h"
 #import "WindowControllerCharacterMatrix.h"
 
 
@@ -18,6 +18,7 @@
 
 - (void)awakeFromNib {
 
+NSLog(@"awakeFromNib begin");
 	[dataScrollView setPostsBoundsChangedNotifications:YES];
 
 	[dataScrollView setHasHorizontalScroller:YES];
@@ -30,6 +31,7 @@
 	[namesScrollView setHasVerticalScroller:NO];
 	//[[namesScrollView verticalScroller] setControlSize:NSSmallControlSize];
 
+NSLog(@"[myTool numDataMatrices] = %d", [myTool numDataMatrices]);
 	[matrixSelector removeAllItems];
 	for (int i=0; i<[myTool numDataMatrices]; i++)
 		{
@@ -38,10 +40,12 @@
 		}
 
 	[self changeMatrix:self];
+NSLog(@"awakeFromNib end");
 }
 
 - (IBAction)changeMatrix:(id)sender {
 
+NSLog(@" 1 ");
     // set the data matrix display
 	[dataScrollView setDocumentView:[dataMatrices objectAtIndex:[matrixSelector indexOfSelectedItem]]];
 	[dataScrollView display];
@@ -57,9 +61,11 @@
 	float splitDivWidth = [windowSplitView dividerThickness];
 	[[mySubViews objectAtIndex:0] setFrame:NSMakeRect(masterFrame.origin.x, masterFrame.origin.y, (nameWidth), masterFrame.size.height)];
 	[[mySubViews objectAtIndex:1] setFrame:NSMakeRect(masterFrame.origin.x, masterFrame.origin.y, (masterFrame.size.width-(nameWidth+splitDivWidth)), 0.0)];
+NSLog(@" 2 ");
     
     // set the indicators for the matrix
     RbData* d = [myTool dataMatrixIndexed:(int)[matrixSelector indexOfSelectedItem]];
+NSLog(@" 3 ");
     NSString* m1 = [NSString stringWithFormat:@"Number of Taxa: %d", [d numTaxa]];
     NSString* m2 = [NSString stringWithFormat:@"Number of Characters: %d", [d numCharacters]];
     NSString* m3;
@@ -75,12 +81,14 @@
         m3 = [NSString stringWithFormat:@"Data Type: Continuous"];
     NSString* m4 = [NSString stringWithFormat:@"Number of Excluded Characters: %d", [d numExcludedCharacters]];
     NSString* m5 = [NSString stringWithFormat:@"Number of Excluded Taxa: %d", [d numExcludedTaxa]];
+NSLog(@" 4 ");
 
     [numTaxaIndicator         setStringValue:m1];
     [numCharIndicator         setStringValue:m2];
     [dataTypeIndicator        setStringValue:m3];
     [numExcludedCharIndicator setStringValue:m4];
     [numExcludedTaxaIndicator setStringValue:m5];
+NSLog(@" 5 ");
 }
 
 - (IBAction)closeAction:(id)sender {
