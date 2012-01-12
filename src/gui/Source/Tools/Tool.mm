@@ -517,7 +517,6 @@
 
 - (void)stopProgressIndicator {
 
-    NSLog(@"stopProgressIndicator");
     [progressIndicator stopAnimation:self];
     [progressIndicator removeFromSuperview];
     progressIndicator = nil;

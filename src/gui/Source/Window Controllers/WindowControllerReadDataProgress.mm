@@ -8,7 +8,6 @@
 
     [progressBar setUsesThreadedAnimation:YES];
     [progressBar startAnimation:self];
-    NSLog(@"can become key = %d", [[self window] canBecomeKeyWindow]);
 }
 
 - (id)init {

@@ -19,9 +19,14 @@ class CharacterData;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
+- (void)instantiateDataInCore;
+- (void)instantiateDataInspector;
+- (void)makeDataInspector;
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
 - (int)numDataMatrices;
 - (void)removeAllDataMatrices;
+- (void)removeDataInspector;
+- (void)removeFilesFromTemporaryDirectory;
 
 @end

@@ -9,6 +9,7 @@
 @synthesize dataType;
 @synthesize isHomologyEstablished;
 @synthesize name;
+@synthesize alignmentMethod;
 @synthesize numCharacters;
 @synthesize numTaxa;
 
@@ -41,6 +42,7 @@
 
 	[data release];
 	[name release];
+    [alignmentMethod release];
 	[taxonNames release];
 	[excludedTaxa release];
 	[excludedCharacters release];
@@ -51,6 +53,7 @@
 
     [aCoder encodeInt:dataType               forKey:@"dataType"];
     [aCoder encodeBool:isHomologyEstablished forKey:@"isHomologyEstablished"];
+    [aCoder encodeObject:alignmentMethod     forKey:@"alignmentMethod"];
 	[aCoder encodeInt:numTaxa                forKey:@"numTaxa"];
 	[aCoder encodeInt:numCharacters          forKey:@"numCharacters"];
 	[aCoder encodeObject:data                forKey:@"data"];
@@ -110,9 +113,10 @@
     if ( (self = [super init]) ) 
 		{
 		// allocate an array holding the data
-		data       = [[NSMutableArray alloc] init];
-		name       = [[NSString alloc] init];
-		taxonNames = [[NSMutableArray alloc] init];
+		data            = [[NSMutableArray alloc] init];
+		name            = [[NSString alloc] init];
+		taxonNames      = [[NSMutableArray alloc] init];
+        alignmentMethod = [[NSString alloc] init];
 		
 		// allocate sets keeping track of excluded taxa and characters
 		excludedTaxa        = [[NSMutableSet alloc] init];
@@ -122,6 +126,7 @@
 		numTaxa               = 0;
 		numCharacters         = 0;
         isHomologyEstablished = NO;
+        alignmentMethod = [NSString stringWithString:@"Unknown"];
 		}
     return self;
 }
@@ -132,6 +137,7 @@
 		{
         dataType              = [aDecoder decodeIntForKey:@"dataType"];
         isHomologyEstablished = [aDecoder decodeBoolForKey:@"isHomologyEstablished"];
+        alignmentMethod       = [aDecoder decodeObjectForKey:@"alignmentMethod"];
 		numTaxa               = [aDecoder decodeIntForKey:@"numTaxa"];
 		numCharacters         = [aDecoder decodeIntForKey:@"numCharacters"];
 		data                  = [aDecoder decodeObjectForKey:@"data"];
@@ -141,6 +147,7 @@
 		excludedCharacters    = [aDecoder decodeObjectForKey:@"excludedCharacters"];
 		[data retain];
 		[name retain];
+        [alignmentMethod retain];
 		[taxonNames retain];
 		[excludedTaxa retain];
 		[excludedCharacters retain];
@@ -153,9 +160,10 @@
     if ( (self = [super init]) ) 
 		{
 		// allocate an array holding the data
-		data       = [[NSMutableArray alloc] init];
-		name       = [[NSString alloc] init];
-		taxonNames = [[NSMutableArray alloc] init];
+		data            = [[NSMutableArray alloc] init];
+		name            = [[NSString alloc] init];
+		taxonNames      = [[NSMutableArray alloc] init];
+        alignmentMethod = [[NSString alloc] init];
 		
 		// allocate sets keeping track of excluded taxa and characters
 		excludedTaxa        = [[NSMutableSet alloc] init];
@@ -168,10 +176,11 @@
 		// copy information
 		if (d != nil)
 			{
-			numTaxa       = [d numTaxa];
-			numCharacters = [d numCharacters];
-			dataType      = [d dataType];
-			name          = [NSString stringWithString:[d name]];
+			numTaxa         = [d numTaxa];
+			numCharacters   = [d numCharacters];
+			dataType        = [d dataType];
+			name            = [NSString stringWithString:[d name]];
+            alignmentMethod = [NSString stringWithString:[d alignmentMethod]];
 			for (int i=0; i<[d numTaxa]; i++)
 				{
 				NSString* tn = [NSString stringWithString:[d taxonWithIndex:i]];

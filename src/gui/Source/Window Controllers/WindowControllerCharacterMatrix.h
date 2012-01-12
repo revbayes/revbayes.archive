@@ -12,6 +12,8 @@
     IBOutlet NSTextField*              numTaxaIndicator;
     IBOutlet NSTextField*              numCharIndicator;
     IBOutlet NSTextField*              dataTypeIndicator;
+    IBOutlet NSTextField*              isAlignedIndicator;
+    IBOutlet NSTextField*              alignmentMethodIndicator;
     IBOutlet NSTextField*              numExcludedTaxaIndicator;
     IBOutlet NSTextField*              numExcludedCharIndicator;
     IBOutlet NSButton*                 showInfoButton;

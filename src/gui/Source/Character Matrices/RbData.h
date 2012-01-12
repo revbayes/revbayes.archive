@@ -9,6 +9,7 @@
 	NSMutableArray*      data;
     int                  dataType;
     BOOL                 isHomologyEstablished;
+    NSString*            alignmentMethod;
 	NSString*            name;
 	int                  numCharacters;
 	int                  numTaxa;
@@ -20,6 +21,7 @@
 @property (readwrite) int dataType;
 @property (readwrite) BOOL isHomologyEstablished;
 @property (readwrite,retain) NSString* name;
+@property (readwrite,retain) NSString* alignmentMethod;
 @property (readwrite) int numCharacters;
 @property (readwrite) int numTaxa;
 

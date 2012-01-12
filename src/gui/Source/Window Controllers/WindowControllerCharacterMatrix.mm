@@ -18,7 +18,6 @@
 
 - (void)awakeFromNib {
 
-NSLog(@"awakeFromNib begin");
 	[dataScrollView setPostsBoundsChangedNotifications:YES];
 
 	[dataScrollView setHasHorizontalScroller:YES];
@@ -31,7 +30,6 @@ NSLog(@"awakeFromNib begin");
 	[namesScrollView setHasVerticalScroller:NO];
 	//[[namesScrollView verticalScroller] setControlSize:NSSmallControlSize];
 
-NSLog(@"[myTool numDataMatrices] = %d", [myTool numDataMatrices]);
 	[matrixSelector removeAllItems];
 	for (int i=0; i<[myTool numDataMatrices]; i++)
 		{
@@ -40,12 +38,10 @@ NSLog(@"[myTool numDataMatrices] = %d", [myTool numDataMatrices]);
 		}
 
 	[self changeMatrix:self];
-NSLog(@"awakeFromNib end");
 }
 
 - (IBAction)changeMatrix:(id)sender {
 
-NSLog(@" 1 ");
     // set the data matrix display
 	[dataScrollView setDocumentView:[dataMatrices objectAtIndex:[matrixSelector indexOfSelectedItem]]];
 	[dataScrollView display];
@@ -61,11 +57,9 @@ NSLog(@" 1 ");
 	float splitDivWidth = [windowSplitView dividerThickness];
 	[[mySubViews objectAtIndex:0] setFrame:NSMakeRect(masterFrame.origin.x, masterFrame.origin.y, (nameWidth), masterFrame.size.height)];
 	[[mySubViews objectAtIndex:1] setFrame:NSMakeRect(masterFrame.origin.x, masterFrame.origin.y, (masterFrame.size.width-(nameWidth+splitDivWidth)), 0.0)];
-NSLog(@" 2 ");
     
     // set the indicators for the matrix
     RbData* d = [myTool dataMatrixIndexed:(int)[matrixSelector indexOfSelectedItem]];
-NSLog(@" 3 ");
     NSString* m1 = [NSString stringWithFormat:@"Number of Taxa: %d", [d numTaxa]];
     NSString* m2 = [NSString stringWithFormat:@"Number of Characters: %d", [d numCharacters]];
     NSString* m3;
@@ -81,14 +75,35 @@ NSLog(@" 3 ");
         m3 = [NSString stringWithFormat:@"Data Type: Continuous"];
     NSString* m4 = [NSString stringWithFormat:@"Number of Excluded Characters: %d", [d numExcludedCharacters]];
     NSString* m5 = [NSString stringWithFormat:@"Number of Excluded Taxa: %d", [d numExcludedTaxa]];
-NSLog(@" 4 ");
 
     [numTaxaIndicator         setStringValue:m1];
     [numCharIndicator         setStringValue:m2];
     [dataTypeIndicator        setStringValue:m3];
     [numExcludedCharIndicator setStringValue:m4];
     [numExcludedTaxaIndicator setStringValue:m5];
-NSLog(@" 5 ");
+    if ( [d dataType] == DNA || [d dataType] == RNA || [d dataType] == AA )
+        {
+        if ( [d isHomologyEstablished] == YES )
+            {
+            [isAlignedIndicator setStringValue:@"Sequences Aligned: Yes"];
+            NSString* m6 = [NSString stringWithString:@"Alignment Method: "];
+            m6 = [m6 stringByAppendingString:[d alignmentMethod]];
+            [alignmentMethodIndicator setStringValue:m6];
+            [isAlignedIndicator setHidden:NO];
+            [alignmentMethodIndicator setHidden:NO];
+            }
+        else
+            {
+            [isAlignedIndicator setStringValue:@"Sequences Aligned: No"];
+            [isAlignedIndicator setHidden:NO];
+            [alignmentMethodIndicator setHidden:YES];
+            }
+        }
+    else
+        {
+        [isAlignedIndicator setHidden:YES];
+        [alignmentMethodIndicator setHidden:YES];
+        }
 }
 
 - (IBAction)closeAction:(id)sender {
@@ -350,7 +365,8 @@ NSLog(@" 5 ");
 		dataTextColor        = [NSColor blackColor];
 		namesTextColor       = [NSColor blackColor];
 		headerTextColor      = [NSColor whiteColor];
-		headerBackground     = [NSColor colorWithCalibratedRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+		headerBackground     = [NSColor darkGrayColor];
+		//headerBackground     = [NSColor colorWithCalibratedRed:0.3 green:0.3 blue:0.3 alpha:1.0];
 		namesBackground      = [NSColor whiteColor];
 		dataMatrices         = [[NSMutableArray alloc] init];
 		taxaMatrices         = [[NSMutableArray alloc] init];
@@ -405,7 +421,7 @@ NSLog(@" 5 ");
 	[NucleotideStateColors addObject:[NSColor greenColor]];
 	[NucleotideStateColors addObject:[NSColor blueColor]];
 	[NucleotideStateColors addObject:[NSColor yellowColor]];
-	for(int i = 0; i < 16; i++)
+	for (int i=0; i<16; i++)
 		[NucleotideStateColors addObject:[NSColor colorWithCalibratedRed:0.90 green:0.90 blue: 0.90 alpha:1.0]];
 
 	[NucleotideStateLabels addObject:@"A"];

@@ -24,7 +24,6 @@
 
 - (void)addMatrix:(RbData*)m {
 
-    NSLog(@"addMatrix = %@", m);
 	[dataMatrices addObject:m];
 	[m release];
     hasInspectorInfo = YES;
@@ -93,6 +92,9 @@
         // check to see if there are any data matrices stored in the tool
         if ([dataMatrices count] > 0)
             hasInspectorInfo = YES;
+
+        // make certain that the data matrices are instantiated in the core
+        [self instantiateDataInCore];
 		}
 	return self;
 }
@@ -105,6 +107,9 @@
 
     // get a path to a temporary directory
     NSString* myTemporaryDirectory = NSTemporaryDirectory();
+    
+    const char* cStr = [dataWorkspaceName UTF8String];
+    std::string variableName = cStr;
 
     if ( [dataMatrices count] == 1 )
         {
@@ -116,8 +121,6 @@
         [fn appendString:[d name]];
         [d writeToFile:fn];
 
-        const char* cStr = [dataWorkspaceName UTF8String];
-        std::string variableName = cStr;
         const char* cmdAsCStr = [fn UTF8String];
         std::string cmdAsStlStr = cmdAsCStr;
         std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
@@ -148,11 +151,9 @@
             NSMutableString* fn = [NSMutableString stringWithString:tempDir];
             [fn appendString:[d name]];
             [d writeToFile:fn];
-            NSLog(@"file name = %@", fn);
+            //NSLog(@"file name = %@", fn);
             }
             
-        const char* cStr = [dataWorkspaceName UTF8String];
-        std::string variableName = cStr;
         const char* cmdAsCStr = [tempDir UTF8String];
         std::string cmdAsStlStr = cmdAsCStr;
         std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
@@ -162,6 +163,29 @@
         if ( !Workspace::userWorkspace()->existsVariable(variableName) )
             NSLog(@"Error: Could not create data in workspace");
         }
+    [self removeFilesFromTemporaryDirectory];
+    
+    [self makeDataInspector];
+
+    if ( Workspace::userWorkspace()->existsVariable(variableName) )
+        std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
+}
+
+- (void)instantiateDataInspector {
+
+    NSLog(@"instantiating data inspector");
+    if (dataInspector != nil)
+        [dataInspector release];
+    dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
+    [dataInspector window];
+    NSLog(@"finished instantiating data inspector");
+}
+
+- (void)makeDataInspector {
+
+    //if ( [dataMatrices count] > 0 )
+    //    [NSThread detachNewThreadSelector:@selector(instantiateDataInspector) toTarget:self withObject:nil];
+    [self instantiateDataInspector];
 }
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd {
@@ -243,13 +267,36 @@
 
 	[dataMatrices removeAllObjects];
     hasInspectorInfo = NO;
+    [self removeDataInspector];
+}
+
+- (void)removeDataInspector {
+
+    if ( dataInspector != nil )
+        [dataInspector release];
+    dataInspector = nil;
+}
+
+- (void)removeFilesFromTemporaryDirectory {
+
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSDirectoryEnumerator* en = [fm enumeratorAtPath:temporaryDirectory];    
+    NSString* file;
+    while ( file = [en nextObject] ) 
+        {
+        NSError* err = nil;
+        BOOL res = [fm removeItemAtPath:[temporaryDirectory stringByAppendingPathComponent:file] error:&err];
+        if (!res && err) 
+            {
+            }
+        }
 }
 
 - (void)showInspectorPanel {
 
-    if (dataInspector != nil)
-        [dataInspector release];
-    dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
+    if (dataInspector == nil)
+        NSLog(@"No idea why we don't have a data inspector");
     [[dataInspector window] center];
     [dataInspector showWindow:self];
 }

@@ -395,6 +395,7 @@
                 RbPtr<RbLanguageObject> theDagNode = vs->getDagNode()->getValue();
                 CharacterData* cd = static_cast<CharacterData*>( (RbObject*)theDagNode );
                 RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+                [newMatrix setAlignmentMethod:@"Unknown"];
                 [myTool addMatrix:newMatrix];
                 }
             }
@@ -411,6 +412,7 @@
             {
             [myTool removeAllDataMatrices];
             RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            [newMatrix setAlignmentMethod:@"Unknown"];
             [myTool addMatrix:newMatrix];
             }
         else
@@ -430,7 +432,12 @@
     // set the name of the variable in the tool
     [myTool setDataWorkspaceName:[NSString stringWithUTF8String:(variableName.c_str())]];
     
+    [myTool makeDataInspector];
+
     [myTool stopProgressIndicator];
+
+    if ( Workspace::userWorkspace()->existsVariable(variableName) )
+        std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
 
 	return YES;
 }

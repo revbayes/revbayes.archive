@@ -168,10 +168,6 @@
     int status = [alignTask terminationStatus];
     if (status != 0)
         NSLog(@"Problem aligning data file");
-
-
-        
-
 }
 
 - (void)alignmentTaskDidFinish:(NSNotification*)notification {

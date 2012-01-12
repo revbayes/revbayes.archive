@@ -62,11 +62,6 @@ void NclReader::constructTreefromNclRecursively(RbPtr<TopologyNode> tn, const Nx
 /** Reads the blocks stored by NCL and converts them to RevBayes character matrices */
 std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::string>& fnv) {
     
-    for (std::vector<std::string>::iterator p = fnv.begin(); p != fnv.end(); p++)
-        {
-        std::cout << "fnv = \"" << *p << "\" \"" << findFileNameFromPath(*p) << "\"" << std::endl;
-        }
-    
 	std::vector<RbPtr<CharacterData> > cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();

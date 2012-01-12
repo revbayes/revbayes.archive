@@ -1,8 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "ToolData.h"
-@class RbData;
 @class WindowControllerAlign;
-@class WindowControllerCharacterMatrix;
 class CharacterData;
 
 
@@ -51,7 +49,6 @@ class CharacterData;
 @property (readwrite,assign) NSString* clustalIteration;
 @property (readwrite)        int       clustalNumberOfIterations;
 
-- (void)performAlignment;
 - (void)closeControlPanel;
 - (void)decrementTaskCount;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
@@ -61,7 +58,7 @@ class CharacterData;
 - (void)setInletsAndOutlets;
 - (void)showControlPanel;
 - (void)helperRunClustal:(id)sender;
-- (void)readDataError:(NSString*)errStr;
+- (void)readDataError:(NSString*)errStr forVariableNamed:(NSString*)varName;
 - (void)receiveData:(NSNotification*)aNotification;
 - (void)taskCompleted;
 

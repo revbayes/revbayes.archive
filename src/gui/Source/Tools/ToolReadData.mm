@@ -115,9 +115,6 @@
         
 		// initialize the control window
 		controlWindow = [[WindowControllerReadData alloc] initWithTool:self];
-        
-        // make certain that the data matrices are instantiated in the core
-        [self instantiateDataInCore];
 		}
 	return self;
 }
