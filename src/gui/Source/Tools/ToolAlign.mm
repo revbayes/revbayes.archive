@@ -288,7 +288,7 @@
         [theTaskInfo addObject:tempDir];
         [theTaskInfo addObject:nt];
         
-        // detach a thread with this task
+        // detach a thread with this task ... each thread decrements the task count when completed
         [NSThread detachNewThreadSelector:@selector(alignFile:) toTarget:theTask withObject:theTaskInfo];
         }
         
@@ -408,15 +408,6 @@
 - (void)decrementTaskCount {
 
     OSAtomicDecrement32(&taskCount);
-}
-
-- (void)readDataError:(NSString*)errStr forVariableNamed:(NSString*)varName {
-
-    std::string stlVarName = [varName UTF8String];
-    NSRunAlertPanel(@"Problem Reading Data", errStr, @"OK", nil, nil);
-    if ( Workspace::userWorkspace()->existsVariable(stlVarName) )
-        Workspace::userWorkspace()->eraseVariable(stlVarName);
-    [self removeAllDataMatrices];
 }
 
 /* Receive Clustal data */ 

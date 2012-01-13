@@ -3,7 +3,7 @@
 #import "AnalysisTools.h"
 #import "AnalysisView.h"
 #import "Tool.h"
-#import "WindowControllerReadDataProgress.h"
+#import "WindowControllerProgressBar.h"
 
 #define LEFT_VIEW_INDEX 0
 #define LEFT_VIEW_PRIORITY 2
@@ -168,6 +168,8 @@
 
 - (NSFileWrapper*)fileWrapperOfType:(NSString*)typeName error:(NSError**)outError {
 
+    NSLog(@"saving data file");
+
 	// create the file wrapper directory
 	NSFileWrapper* fw = [[NSFileWrapper alloc] initDirectoryWithFileWrappers:nil];
 
@@ -192,6 +194,8 @@
 		}
 	[fw addRegularFileWithContents:settingsData preferredFilename:@"settings"];
 	
+    NSLog(@"finished saving data file");
+    
 	// return the file wrapper object
 	return [fw autorelease];
 }
@@ -283,7 +287,8 @@
 
 - (BOOL)readFromFileWrapper:(NSFileWrapper*)fileWrapper ofType:(NSString*)typeName error:(NSError**)outError {
 
-    WindowControllerReadDataProgress* progressWin = [[WindowControllerReadDataProgress alloc] init];
+    WindowControllerProgressBar* progressWin = [[WindowControllerProgressBar alloc] init];
+    [progressWin setMessage:@"Reading Analysis File (Really!)"];
     NSWindow* w = [progressWin window];
     [w center];
     [w makeKeyAndOrderFront:nil];

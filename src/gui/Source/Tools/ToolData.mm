@@ -173,18 +173,14 @@
 
 - (void)instantiateDataInspector {
 
-    NSLog(@"instantiating data inspector");
     if (dataInspector != nil)
         [dataInspector release];
     dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
     [dataInspector window];
-    NSLog(@"finished instantiating data inspector");
 }
 
 - (void)makeDataInspector {
 
-    //if ( [dataMatrices count] > 0 )
-    //    [NSThread detachNewThreadSelector:@selector(instantiateDataInspector) toTarget:self withObject:nil];
     [self instantiateDataInspector];
 }
 

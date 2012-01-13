@@ -1,8 +1,8 @@
-#import "WindowControllerReadDataProgress.h"
+#import "WindowControllerProgressBar.h"
 
 
 
-@implementation WindowControllerReadDataProgress
+@implementation WindowControllerProgressBar
 
 - (void)awakeFromNib {
 
@@ -12,10 +12,15 @@
 
 - (id)init {
 
-	if ( (self = [super initWithWindowNibName:@"ReadDataProgressWindow"]) )
+	if ( (self = [super initWithWindowNibName:@"ProgressBarWindow"]) )
         {
         }
     return self;
+}
+
+- (void)setMessage:(NSString*)msg {
+
+    [message setStringValue:msg];
 }
 
 - (void)windowDidLoad {
