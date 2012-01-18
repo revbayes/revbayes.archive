@@ -229,6 +229,10 @@
                 [cell setNumStates:((int)theChar->getNumberOfStates())];
                 if ( theChar->isMissingOrAmbiguous() == true )
                     [cell setIsAmbig:YES];
+                if (theChar->getIsGapState() == true)
+                    [cell setIsGapState:YES];
+                else
+                    [cell setIsGapState:NO];
                 }
             else 
                 {

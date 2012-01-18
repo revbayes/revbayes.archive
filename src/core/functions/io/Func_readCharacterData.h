@@ -40,9 +40,9 @@ class VectorString;
  * following:
  *
  *            A   B   C   D   E   F   G   H   I   J   K   L   M   N   O   P   Q 
- *    Nexus   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y   N   N   N   N   N   N   N
- *    Phylip  Y   Y   Y   Y   N   Y   Y   Y   Y   N   N   N   N   N   N   N   N
- *    Fasta   Y   Y   Y   N   N   N   N   N   N   N   N   N   N   N   N   N   N
+ *    Nexus   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y   Y
+ *    Phylip  Y   Y   Y   Y   N   Y   Y   Y   Y   N   Y   Y   Y   N   N   N   N
+ *    Fasta   Y   Y   Y   N   N   N   N   N   N   N   Y   Y   Y   N   N   N   N
  *
  *    A: Aligned DNA (not interleaved); 
  *    B: Aligned RNA (not interleaved); 
@@ -62,11 +62,7 @@ class VectorString;
  *    Q: Unaligned Amino Acid (interleaved).
  * 
  * Note that some data formats do not support interleaving of data (such as Fasta) or reading of certain data types, so
- * the table is unlikely to complete with Yes's (Y) in all of the cells. However, Nexus and Fasta support
- * unaligned data for nucleotide and amino acid sequences. Eventually the program will support those data too.
- *
- * TODO: Implement the reading of unaligned data.
- *
+ * the table is unlikely to complete with Yes's (Y) in all of the cells.
  */
 const std::string Func_readAlignment_name = "Read alignment function";
 

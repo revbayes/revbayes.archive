@@ -449,7 +449,7 @@
     int n = [self numInlets];
 	for (int i=0; i<n; i++)
 		{
-		Inlet* il = [self inletIndexed:i];
+		Inlet* il = (Inlet*)[self inletIndexed:i];
         NSPoint p = NSMakePoint( 0.0, (double)(i+1)/(n+1) );
         [il setPosition:p];
         }

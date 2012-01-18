@@ -28,6 +28,7 @@
 /** Constructor taking the number of states */
 CharacterStateDiscrete::CharacterStateDiscrete(size_t n) : Character(), numStates(n) {
 
+    isGapState = false;
     value.resize(numStates);
 }
 
@@ -49,7 +50,6 @@ RbPtr<const MemberRules> CharacterStateDiscrete::getMemberRules(void) const {
         
         RbPtr<MemberRules> mr( new MemberRules() );
         mr->push_back( RbPtr<ArgumentRule>( new ValueRule( "state"  , RbString_name ) ) );
-//        mr->push_back( RbPtr<ArgumentRule>( new ValueRule( "numStates"  , Natural_name ) ) );
         memberRules = RbPtr<const MemberRules>( mr );
         
         rulesSet = true;

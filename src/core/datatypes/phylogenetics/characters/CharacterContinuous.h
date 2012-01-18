@@ -44,12 +44,14 @@ class CharacterContinuous : public Character {
         std::string                     richInfo(void) const;                                //!< Complete info about object
 
         // Discrete character observation functions
+        bool                            getIsGapState(void) const { return false; }          //!< Get whether this is a gapped character state
         const double                    getMean(void) const { return mean; }                 //!< Get the continuous observation
         virtual double                  getRealValue(void) const { return mean; }            //!< Return the double representation of the character
         const double                    getValue(void) const { return mean; }                //!< Get the continuous observation
         void                            setValue(double x) { mean = x; }                     //!< Set the continuous observation
         const double                    getVariance(void) const { return variance; }         //!< Get the continuous observation
         bool                            isMissingOrAmbiguous(void) const { return false; }   //!< Is the character missing or ambiguous
+        void                            setIsGapState(bool tf) { }                           //!< Set whether this is a gapped character
         void                            setVariance(const double x) { variance = x; }        //!< Set the continuous observation
 
     private:

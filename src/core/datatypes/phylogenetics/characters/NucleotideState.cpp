@@ -102,13 +102,15 @@ void NucleotideState::addState(const char s) {
 		value[2] = true;
 		value[3] = true;
 		}
-	else if (c == 'n')
+	else if (c == 'n' || c == '-')
 		{
 		value[0] = true;
 		value[1] = true;
 		value[2] = true;
 		value[3] = true;
 		}
+    if (c == '-')
+        isGapState = true;
 }
 
 
@@ -225,12 +227,14 @@ void NucleotideState::setState(const char s) {
 		value[2] = true;
 		value[3] = true;
 		}
-	else if (c == 'n')
+	else if (c == 'n' || c == '-')
 		{
 		value[0] = true;
 		value[1] = true;
 		value[2] = true;
 		value[3] = true;
 		}
+    if (c == '-')
+        isGapState = true;
 }
 

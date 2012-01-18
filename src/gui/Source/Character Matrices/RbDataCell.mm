@@ -6,6 +6,7 @@
 
 @synthesize isDiscrete;
 @synthesize isAmbig;
+@synthesize isGapState;
 @synthesize row;
 @synthesize column;
 @synthesize dataType;
@@ -21,6 +22,7 @@
 
 	[aCoder encodeBool:isDiscrete forKey:@"isDiscrete"];
 	[aCoder encodeBool:isAmbig    forKey:@"isAmbig"];
+    [aCoder encodeBool:isGapState forKey:@"isGapState"];
 	[aCoder encodeInt:row         forKey:@"row"];
 	[aCoder encodeInt:column      forKey:@"column"];
 	[aCoder encodeInt:dataType    forKey:@"dataType"];
@@ -71,6 +73,8 @@
 
 - (char)interpretAsAminoAcid:(unsigned)x {
 
+    if (isGapState == YES)
+        return '-';
 	char aaCode[20] = { 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' };
 	char v;
 	int nOn = 0;
@@ -90,6 +94,8 @@
 
 - (char)interpretAsDna:(unsigned)x {
 
+    if (isGapState == YES)
+        return '-';
 	if (x == 1)
 		return 'A';
 	else if (x == 2)
@@ -157,6 +163,7 @@
 		dataType    = DNA;
 		numStates   = 4;
 		isAmbig     = NO;
+        isGapState  = NO;
 		}
     return self;
 }
@@ -174,6 +181,7 @@
 		dataType    = DNA;
 		numStates   = 4;
 		isAmbig     = NO;
+        isGapState  = NO;
 
 		// copy information from the other RbDataCell object
 		if (c != nil)
@@ -184,6 +192,7 @@
 			dataType   = [c dataType];
 			numStates  = [c numStates];
 			isAmbig    = [c isAmbig];
+            isGapState = [c isGapState];
 			if (isDiscrete == YES)
 				{
 				unsigned x = [[c val] unsignedIntValue];
@@ -207,6 +216,7 @@
 		{
 		isDiscrete = [aDecoder decodeBoolForKey:@"isDiscrete"];
 		isAmbig    = [aDecoder decodeBoolForKey:@"isAmbig"];
+        isGapState = [aDecoder decodeBoolForKey:@"isGapState"];
 		row        = [aDecoder decodeIntForKey:@"row"];
 		column     = [aDecoder decodeIntForKey:@"column"];
 		dataType   = [aDecoder decodeIntForKey:@"dataType"];

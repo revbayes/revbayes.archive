@@ -88,6 +88,8 @@ void AminoAcidState::addState(const char s) {
         for (size_t i=0; i<numStates; i++)
             value[i] = true;
         }
+    if (s == '-')
+        isGapState = true;
 }
 
 

@@ -38,12 +38,14 @@ class Character : public Categorical {
         virtual const VectorString&     getClass(void) const;                      //!< Get class vector
         virtual std::string             richInfo(void) const = 0;                  //!< Complete info about object
         
+        virtual bool                    getIsGapState(void) const = 0;                   //!< Get whether this is a gapped character state
         virtual size_t                  getNumberOfStates(void) const { return 0; }//!< Get the number states for a character (return 0 in base class)
         virtual double                  getRealValue(void) const { return 0.0; }   //!< Return the double representation of the character
         virtual unsigned                getUnsignedValue(void) const { return 0; } //!< Get an unsigned representation of the bool set
         virtual std::string             getStringValue(void) const { return ""; }  //!< Get a representation of the character as a string
         virtual bool                    isMissingOrAmbiguous(void) const = 0;      //!< Is the character missing or ambiguous
         virtual void                    setValue(double x) {};                     //!< Virtual function call to enable CharacterContinuous to set data observation
+        virtual void                    setIsGapState(bool tf) = 0;                //!< Virtual function call to set whether this is a gapped character
 
     protected:
                                         Character(void);                           //!< Default constructor

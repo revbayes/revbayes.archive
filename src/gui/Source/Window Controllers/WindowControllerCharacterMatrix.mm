@@ -273,6 +273,8 @@
 					{
 					// setting up discrete matrix
 					char state = [dataMatrixCell getDiscreteState];
+                    if ( [dataMatrixCell isGapState] == YES )
+                        state = '-';
 					NSString* stateStr = [NSString localizedStringWithFormat:@"%c", state];
 					
 					NSDictionary* colorDict;

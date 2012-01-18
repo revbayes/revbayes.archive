@@ -84,7 +84,7 @@ RbPtr<RbLanguageObject> Func_dppSeat::executeFunction( void ) {
 					j++;
 				}
 				tables[j] += 1;
-				clusters[i] = j-1;
+				clusters[i] = (int)(j - 1);
 			}
 		}
 	}

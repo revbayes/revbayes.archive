@@ -80,8 +80,8 @@ class RbFunction :  public RbInternal {
 
         // RbFunction function you may want to override
         virtual bool                                    processArguments(std::vector<RbPtr<Argument> > passedArgs,
-                                                                         RbPtr<VectorInteger>          matchScore = RbPtr<VectorInteger>::getNullPtr());                  //!< Process args, return a match score if pointer is not null
-        virtual bool                                    throws(void) const { return false; }                                                      //!< Does the function throw exceptions?
+                                                                         RbPtr<VectorInteger>          matchScore = RbPtr<VectorInteger>::getNullPtr());  //!< Process args, return a match score if pointer is not null
+        virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
     
 
         // RbFunction functions you should not override

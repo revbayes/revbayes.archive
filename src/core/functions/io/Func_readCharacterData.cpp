@@ -17,6 +17,7 @@
 
 #include "CharacterData.h"
 #include "ConstantNode.h"
+#include "Ellipsis.h"
 #include "Func_readCharacterData.h"
 #include "DagNodeContainer.h"
 #include "NclReader.h"
@@ -52,6 +53,9 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( void ) {
 
     // get the information from the arguments for reading the file
     RbPtr<RbString> fn( static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() ) );
+    
+    RbPtr<Environment> xyz = getArguments(); 
+    xyz->richInfo();
 
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -243,11 +247,11 @@ void Func_readCharacterData::formatError(RbFileManager& fm, std::string& errorSt
 RbPtr<const ArgumentRules> Func_readCharacterData::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
-    static bool          rulesSet = false;
+    static bool rulesSet = false;
     
     if (!rulesSet) 
         {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file",    RbString_name ) ) );
         rulesSet = true;
         }
             
@@ -272,6 +276,7 @@ const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
 
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_readCharacterData::getTypeSpec(void) const {
+
     return typeSpec;
 }
 

@@ -46,7 +46,7 @@ class ConstructorFunction :  public RbFunction {
         const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
 
 	protected:
-        RbPtr<RbLanguageObject>                 executeFunction(void);                                                                  //!< Execute function
+        RbPtr<RbLanguageObject>                 executeFunction(void);                                                          //!< Execute function
         RbPtr<const ArgumentRules>              argRules;                                                                       //!< Member rules converted to reference rules
         RbPtr<MemberObject>                     templateObject;                                                                 //!< The template object
     

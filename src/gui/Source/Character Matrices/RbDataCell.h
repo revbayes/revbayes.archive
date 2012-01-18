@@ -16,6 +16,7 @@
 	int                  dataType;
 	int                  numStates;
 	BOOL                 isAmbig;
+    BOOL                 isGapState;
 	NSNumber*            val;
 }
 
@@ -25,6 +26,7 @@
 @property (readwrite) int dataType;
 @property (readwrite) int numStates;
 @property (readwrite) BOOL isAmbig;
+@property (readwrite) BOOL isGapState;
 @property (readwrite,retain) NSNumber* val;
 
 - (float)getContinuousState;

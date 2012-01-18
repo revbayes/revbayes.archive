@@ -130,7 +130,7 @@ std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::st
                 }
 			else if (dt == NxsCharactersBlock::rna)
                 {
-                //m = createRnaMatrix(charBlock);
+                m = createUnalignedRnaMatrix(charBlock);
                 }
 			else if (dt == NxsCharactersBlock::protein)
                 {
@@ -233,9 +233,14 @@ RbPtr<CharacterData> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charbl
             {	
             RbPtr<AminoAcidState> aaState( new AminoAcidState() );
             if (charblock->IsGapState(origTaxIndex, *cit) == true) 
+                {
+                aaState->setIsGapState(true);
                 aaState->setState('n');
+                }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
+                {
                 aaState->setState('n');
+                }
             else
                 {
                 int nStates = charblock->GetNumStates(origTaxIndex, *cit);
@@ -382,9 +387,14 @@ RbPtr<CharacterData> NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
             // add the character state to the matrix
             RbPtr<DnaState> dnaState( new DnaState() );
             if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
+                {
                 dnaState->setState('N');
+                dnaState->setIsGapState(true);
+                }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
+                {
                 dnaState->setState('N');
+                }
             else
                 {
                 dnaState->setState( charblock->GetState(origTaxIndex, *cit, 0) );                
@@ -481,9 +491,14 @@ RbPtr<CharacterData> NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
             // add the character state to the matrix
             RbPtr<RnaState> rnaState( new RnaState() );
             if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
+                {
+                rnaState->setIsGapState(true);
                 rnaState->setState('N');
+                }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
+                {
                 rnaState->setState('N');
+                }
             else
                 {
                 rnaState->setState( charblock->GetState(origTaxIndex, *cit, 0) );                
@@ -502,6 +517,47 @@ RbPtr<CharacterData> NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
     return cMat;
 }
 
+/** Create an object to hold DNA data */
+RbPtr<CharacterData> NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock) {
+    
+    // check that the character block is of the correct type
+	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
+        return RbPtr<CharacterData>::getNullPtr();
+    
+    // get the set of characters (and the number of taxa)
+	int numOrigTaxa = charblock->GetNTax();
+    NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
+        
+    // instantiate the character matrix
+	RbPtr<CharacterData> cMat( new CharacterData( RnaState_name ) );
+    cMat->setIsHomologyEstablished(false);
+    
+	// read in the data, including taxon names
+	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+        {
+        // add the taxon name
+        NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
+        std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        
+        // allocate a vector of DNA states
+        RbPtr<TaxonData> dataVec( new TaxonData(RnaState_name, tName) );
+        dataVec->setTaxonName(tName);
+        
+        // add the sequence information for the sequence associated with the taxon
+        std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
+        for (size_t i=0; i<rowDataAsString.size(); i++)
+            {
+            RbPtr<RnaState> rnaState( new RnaState() );
+            rnaState->setState(rowDataAsString[i]);
+            dataVec->addCharacter( RbPtr<Character>( rnaState ) );
+            }
+        
+        // add sequence to character matrix
+        cMat->addTaxonData( dataVec, true );
+        }
+        
+    return cMat;
+}
 
 /** Create an object to hold standard data */
 RbPtr<CharacterData> NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
