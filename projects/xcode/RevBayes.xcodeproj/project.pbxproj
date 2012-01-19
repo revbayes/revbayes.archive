@@ -343,6 +343,19 @@
 		22B302C414C5FA2F0099D4C3 /* ProgressBarWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22B3017414C5FA2F0099D4C3 /* ProgressBarWindow.xib */; };
 		22B302C514C5FA2F0099D4C3 /* RegistrationPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22B3017514C5FA2F0099D4C3 /* RegistrationPanel.xib */; };
 		22B302C614C5FA2F0099D4C3 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22B3017614C5FA2F0099D4C3 /* TextEditorWindow.xib */; };
+		22B302D014C7665D0099D4C3 /* Tool_Combiner.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302C714C7665D0099D4C3 /* Tool_Combiner.icns */; };
+		22B302D114C7665D0099D4C3 /* Tool_Combiner25.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302C814C7665D0099D4C3 /* Tool_Combiner25.icns */; };
+		22B302D214C7665D0099D4C3 /* Tool_Combiner50.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302C914C7665D0099D4C3 /* Tool_Combiner50.icns */; };
+		22B302D314C7665D0099D4C3 /* Tool_Combiner75.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302CA14C7665D0099D4C3 /* Tool_Combiner75.icns */; };
+		22B302D414C7665D0099D4C3 /* Tool_Combiner100.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302CB14C7665D0099D4C3 /* Tool_Combiner100.icns */; };
+		22B302D514C7665D0099D4C3 /* Tool_Combiner125.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302CC14C7665D0099D4C3 /* Tool_Combiner125.icns */; };
+		22B302D614C7665D0099D4C3 /* Tool_Combiner150.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302CD14C7665D0099D4C3 /* Tool_Combiner150.icns */; };
+		22B302D714C7665D0099D4C3 /* Tool_Combiner200.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302CE14C7665D0099D4C3 /* Tool_Combiner200.icns */; };
+		22B302D814C7665D0099D4C3 /* Tool_Combiner400.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22B302CF14C7665D0099D4C3 /* Tool_Combiner400.icns */; };
+		22B302DB14C766970099D4C3 /* ToolCombiner.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B302DA14C766960099D4C3 /* ToolCombiner.mm */; };
+		22B302DE14C76D9C0099D4C3 /* ToolTreeMcmcDiagnostic.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B302DD14C76D9A0099D4C3 /* ToolTreeMcmcDiagnostic.mm */; };
+		22B302E014C772060099D4C3 /* ControlWindowCombiner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22B302DF14C772050099D4C3 /* ControlWindowCombiner.xib */; };
+		22B302E314C774470099D4C3 /* WindowControllerCombiner.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B302E214C774460099D4C3 /* WindowControllerCombiner.mm */; };
 		22B3FDD114C5FA240099D4C3 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22B3FBCE14C5FA240099D4C3 /* BurninEstimatorContinuous.cpp */; };
 		22B3FDD214C5FA240099D4C3 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22B3FBCE14C5FA240099D4C3 /* BurninEstimatorContinuous.cpp */; };
 		22B3FDD314C5FA240099D4C3 /* ConvergenceDiagnosticContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22B3FBD014C5FA240099D4C3 /* ConvergenceDiagnosticContinuous.cpp */; };
@@ -1157,6 +1170,22 @@
 		22B3017414C5FA2F0099D4C3 /* ProgressBarWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressBarWindow.xib; sourceTree = "<group>"; };
 		22B3017514C5FA2F0099D4C3 /* RegistrationPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RegistrationPanel.xib; sourceTree = "<group>"; };
 		22B3017614C5FA2F0099D4C3 /* TextEditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditorWindow.xib; sourceTree = "<group>"; };
+		22B302C714C7665D0099D4C3 /* Tool_Combiner.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner.icns; sourceTree = "<group>"; };
+		22B302C814C7665D0099D4C3 /* Tool_Combiner25.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner25.icns; sourceTree = "<group>"; };
+		22B302C914C7665D0099D4C3 /* Tool_Combiner50.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner50.icns; sourceTree = "<group>"; };
+		22B302CA14C7665D0099D4C3 /* Tool_Combiner75.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner75.icns; sourceTree = "<group>"; };
+		22B302CB14C7665D0099D4C3 /* Tool_Combiner100.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner100.icns; sourceTree = "<group>"; };
+		22B302CC14C7665D0099D4C3 /* Tool_Combiner125.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner125.icns; sourceTree = "<group>"; };
+		22B302CD14C7665D0099D4C3 /* Tool_Combiner150.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner150.icns; sourceTree = "<group>"; };
+		22B302CE14C7665D0099D4C3 /* Tool_Combiner200.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner200.icns; sourceTree = "<group>"; };
+		22B302CF14C7665D0099D4C3 /* Tool_Combiner400.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Combiner400.icns; sourceTree = "<group>"; };
+		22B302D914C766950099D4C3 /* ToolCombiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToolCombiner.h; sourceTree = "<group>"; };
+		22B302DA14C766960099D4C3 /* ToolCombiner.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ToolCombiner.mm; sourceTree = "<group>"; };
+		22B302DC14C76D990099D4C3 /* ToolTreeMcmcDiagnostic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToolTreeMcmcDiagnostic.h; sourceTree = "<group>"; };
+		22B302DD14C76D9A0099D4C3 /* ToolTreeMcmcDiagnostic.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ToolTreeMcmcDiagnostic.mm; sourceTree = "<group>"; };
+		22B302DF14C772050099D4C3 /* ControlWindowCombiner.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ControlWindowCombiner.xib; sourceTree = "<group>"; };
+		22B302E114C774450099D4C3 /* WindowControllerCombiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerCombiner.h; sourceTree = "<group>"; };
+		22B302E214C774460099D4C3 /* WindowControllerCombiner.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerCombiner.mm; sourceTree = "<group>"; };
 		22B3FBCE14C5FA240099D4C3 /* BurninEstimatorContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BurninEstimatorContinuous.cpp; sourceTree = "<group>"; };
 		22B3FBCF14C5FA240099D4C3 /* BurninEstimatorContinuous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BurninEstimatorContinuous.h; sourceTree = "<group>"; };
 		22B3FBD014C5FA240099D4C3 /* ConvergenceDiagnosticContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvergenceDiagnosticContinuous.cpp; sourceTree = "<group>"; };
@@ -2094,6 +2123,8 @@
 				22B300EE14C5FA2F0099D4C3 /* Tool.mm */,
 				22B300EF14C5FA2F0099D4C3 /* ToolAlign.h */,
 				22B300F014C5FA2F0099D4C3 /* ToolAlign.mm */,
+				22B302D914C766950099D4C3 /* ToolCombiner.h */,
+				22B302DA14C766960099D4C3 /* ToolCombiner.mm */,
 				22B300F114C5FA2F0099D4C3 /* ToolData.h */,
 				22B300F214C5FA2F0099D4C3 /* ToolData.mm */,
 				22B300F314C5FA2F0099D4C3 /* ToolMatrixFilter.h */,
@@ -2110,6 +2141,8 @@
 				22B300FE14C5FA2F0099D4C3 /* ToolReadData.mm */,
 				22B300FF14C5FA2F0099D4C3 /* ToolSimulate.h */,
 				22B3010014C5FA2F0099D4C3 /* ToolSimulate.mm */,
+				22B302DC14C76D990099D4C3 /* ToolTreeMcmcDiagnostic.h */,
+				22B302DD14C76D9A0099D4C3 /* ToolTreeMcmcDiagnostic.mm */,
 				22B3010114C5FA2F0099D4C3 /* ToolTreeSet.h */,
 				22B3010214C5FA2F0099D4C3 /* ToolTreeSet.mm */,
 			);
@@ -2187,6 +2220,8 @@
 				22B3013914C5FA2F0099D4C3 /* WindowControllerAlign.mm */,
 				22B3013A14C5FA2F0099D4C3 /* WindowControllerCharacterMatrix.h */,
 				22B3013B14C5FA2F0099D4C3 /* WindowControllerCharacterMatrix.mm */,
+				22B302E114C774450099D4C3 /* WindowControllerCombiner.h */,
+				22B302E214C774460099D4C3 /* WindowControllerCombiner.mm */,
 				22B3013C14C5FA2F0099D4C3 /* WindowControllerMatrixFilter.h */,
 				22B3013D14C5FA2F0099D4C3 /* WindowControllerMatrixFilter.mm */,
 				22B3013E14C5FA2F0099D4C3 /* WindowControllerMcmc.h */,
@@ -2250,6 +2285,7 @@
 				22B3017414C5FA2F0099D4C3 /* ProgressBarWindow.xib */,
 				22B3017514C5FA2F0099D4C3 /* RegistrationPanel.xib */,
 				22B3017614C5FA2F0099D4C3 /* TextEditorWindow.xib */,
+				22B302DF14C772050099D4C3 /* ControlWindowCombiner.xib */,
 			);
 			path = Xibs;
 			sourceTree = "<group>";
@@ -3089,6 +3125,15 @@
 		22B3FF9014C5FA2F0099D4C3 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				22B302C714C7665D0099D4C3 /* Tool_Combiner.icns */,
+				22B302C814C7665D0099D4C3 /* Tool_Combiner25.icns */,
+				22B302C914C7665D0099D4C3 /* Tool_Combiner50.icns */,
+				22B302CA14C7665D0099D4C3 /* Tool_Combiner75.icns */,
+				22B302CB14C7665D0099D4C3 /* Tool_Combiner100.icns */,
+				22B302CC14C7665D0099D4C3 /* Tool_Combiner125.icns */,
+				22B302CD14C7665D0099D4C3 /* Tool_Combiner150.icns */,
+				22B302CE14C7665D0099D4C3 /* Tool_Combiner200.icns */,
+				22B302CF14C7665D0099D4C3 /* Tool_Combiner400.icns */,
 				22B3FF9114C5FA2F0099D4C3 /* aquabayes.icns */,
 				22B3FF9214C5FA2F0099D4C3 /* arrow_dn.icns */,
 				22B3FF9314C5FA2F0099D4C3 /* arrow_lft.icns */,
@@ -3575,6 +3620,16 @@
 				22B302C414C5FA2F0099D4C3 /* ProgressBarWindow.xib in Resources */,
 				22B302C514C5FA2F0099D4C3 /* RegistrationPanel.xib in Resources */,
 				22B302C614C5FA2F0099D4C3 /* TextEditorWindow.xib in Resources */,
+				22B302D014C7665D0099D4C3 /* Tool_Combiner.icns in Resources */,
+				22B302D114C7665D0099D4C3 /* Tool_Combiner25.icns in Resources */,
+				22B302D214C7665D0099D4C3 /* Tool_Combiner50.icns in Resources */,
+				22B302D314C7665D0099D4C3 /* Tool_Combiner75.icns in Resources */,
+				22B302D414C7665D0099D4C3 /* Tool_Combiner100.icns in Resources */,
+				22B302D514C7665D0099D4C3 /* Tool_Combiner125.icns in Resources */,
+				22B302D614C7665D0099D4C3 /* Tool_Combiner150.icns in Resources */,
+				22B302D714C7665D0099D4C3 /* Tool_Combiner200.icns in Resources */,
+				22B302D814C7665D0099D4C3 /* Tool_Combiner400.icns in Resources */,
+				22B302E014C772060099D4C3 /* ControlWindowCombiner.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4161,6 +4216,9 @@
 				22B302A814C5FA2F0099D4C3 /* WindowControllerReadData.mm in Sources */,
 				22B302A914C5FA2F0099D4C3 /* WindowControllerRegistration.mm in Sources */,
 				22B302AA14C5FA2F0099D4C3 /* YRKSpinningProgressIndicator.mm in Sources */,
+				22B302DB14C766970099D4C3 /* ToolCombiner.mm in Sources */,
+				22B302DE14C76D9C0099D4C3 /* ToolTreeMcmcDiagnostic.mm in Sources */,
+				22B302E314C774470099D4C3 /* WindowControllerCombiner.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

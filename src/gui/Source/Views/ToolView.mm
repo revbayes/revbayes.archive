@@ -4,6 +4,7 @@
 
 
 
+
 @implementation ToolView
 
 @synthesize whichToolSelected;
@@ -53,23 +54,27 @@
         {
         // get a pointer to the tool image
         NSImage* toolImage;
-        if (i == 0)
+        if (i == TOOL_READDATA)
             toolImage = [NSImage imageNamed:@"Tool_ReadData.icns"];
-        else if (i == 1)
+        else if (i == TOOL_ALIGN)
             toolImage = [NSImage imageNamed:@"Tool_Align.icns"];
-        else if (i == 2)
-            toolImage = [NSImage imageNamed:@"Tool_Model.icns"];
-        else if (i == 3)
-            toolImage = [NSImage imageNamed:@"Tool_Mcmc.icns"];
-        else if (i == 4)
-            toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
-        else if (i == 5)
-            toolImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
-        else if (i == 6)
+        else if (i == TOOL_COMBINER)
+            toolImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
+        else if (i == TOOL_MATRIXFILTER)
             toolImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];
-        else if (i == 7)
+        else if (i == TOOL_MODEL)
+            toolImage = [NSImage imageNamed:@"Tool_Model.icns"];
+        else if (i == TOOL_MCMC)
+            toolImage = [NSImage imageNamed:@"Tool_Mcmc.icns"];
+        else if (i == TOOL_SIMULATE)
+            toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
+        else if (i == TOOL_TREECONTAINER)
+            toolImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
+        else if (i == TOOL_NUMBERSET)
             toolImage = [NSImage imageNamed:@"ToolNumberSet.icns"];
-        else if (i == 8)
+        else if (i == TOOL_TREEDIAGNOSIS)
+            toolImage = [NSImage imageNamed:@"Tool_TreeDiagnosis.icns"];
+        else if (i == TOOL_NUMBERDIAGNOSIS)
             toolImage = [NSImage imageNamed:@"Tool_NumberSetDiagnosis.icns"];
             
         [toolImage setSize:NSMakeSize(toolSize, toolSize)];
@@ -92,24 +97,28 @@
 		p.y = toolSize * 0.75;
 	
 		NSString* myTip;
-        if (toolForToolTip == 0)
+        if (toolForToolTip == TOOL_READDATA)
 			myTip = [NSString stringWithString:@" Read Data Tool "];
-        else if (toolForToolTip == 1)
+        else if (toolForToolTip == TOOL_ALIGN)
 			myTip = [NSString stringWithString:@" Sequence Alignment Tool "];
-        else if (toolForToolTip == 2)
-			myTip = [NSString stringWithString:@" Model Tool "];
-        else if (toolForToolTip == 3)
-			myTip = [NSString stringWithString:@" MCMC Tool "];
-        else if (toolForToolTip == 4)
-			myTip = [NSString stringWithString:@" Simulate Data Tool "];
-        else if (toolForToolTip == 5)
-			myTip = [NSString stringWithString:@" Tree Set Tool "];
-        else if (toolForToolTip == 6)
+        else if (toolForToolTip == TOOL_COMBINER)
+			myTip = [NSString stringWithString:@" Matrix Combiner Tool "];
+        else if (toolForToolTip == TOOL_MATRIXFILTER)
 			myTip = [NSString stringWithString:@" Data Matrix Filter Tool "];
-        else if (toolForToolTip == 7)
+        else if (toolForToolTip == TOOL_MODEL)
+			myTip = [NSString stringWithString:@" Model Tool "];
+        else if (toolForToolTip == TOOL_MCMC)
+			myTip = [NSString stringWithString:@" MCMC Tool "];
+        else if (toolForToolTip == TOOL_SIMULATE)
+			myTip = [NSString stringWithString:@" Simulate Data Tool "];
+        else if (toolForToolTip == TOOL_TREECONTAINER)
+			myTip = [NSString stringWithString:@" Tree Container Tool "];
+        else if (toolForToolTip == TOOL_NUMBERSET)
 			myTip = [NSString stringWithString:@" Number Container Tool "];
-        else if (toolForToolTip == 8)
-			myTip = [NSString stringWithString:@" MCMC Diagnostic Tool "];
+        else if (toolForToolTip == TOOL_TREEDIAGNOSIS)
+			myTip = [NSString stringWithString:@" Tree Diagnosis Tool "];
+        else if (toolForToolTip == TOOL_NUMBERDIAGNOSIS)
+			myTip = [NSString stringWithString:@" Number Container Diagnosis Tool "];
             
 		NSDictionary *attr = [NSDictionary 
 					 dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Lucida Grande Bold" size:14.0], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] 
@@ -156,7 +165,7 @@
 		myTrackingAreas = [[NSMutableArray alloc] init];
 
 		// set default values for object variables
-        numTools             = 9;
+        numTools             = 11;
         toolSize             = 100.0;
 		whichToolSelected    = -1;
         scaleFactor          = 1.0;
@@ -189,23 +198,27 @@
     // create the image that will be dragged
     NSSize s = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
 	NSImage* anImage;
-	if (whichToolSelected == 0)
+	if (whichToolSelected == TOOL_READDATA)
 		anImage = [NSImage imageNamed:@"Tool_ReadData.icns"];
-	else if (whichToolSelected == 1)
+	else if (whichToolSelected == TOOL_ALIGN)
 		anImage = [NSImage imageNamed:@"Tool_Align.icns"];
-	else if (whichToolSelected == 2)
-		anImage = [NSImage imageNamed:@"Tool_Model.icns"];
-	else if (whichToolSelected == 3)
-		anImage = [NSImage imageNamed:@"Tool_Mcmc.icns"];
-	else if (whichToolSelected == 4)
-		anImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
-	else if (whichToolSelected == 5)
-		anImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
-	else if (whichToolSelected == 6)
+	else if (whichToolSelected == TOOL_COMBINER)
+		anImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
+	else if (whichToolSelected == TOOL_MATRIXFILTER)
 		anImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];
-	else if (whichToolSelected == 7)
+	else if (whichToolSelected == TOOL_MODEL)
+		anImage = [NSImage imageNamed:@"Tool_Model.icns"];
+	else if (whichToolSelected == TOOL_MCMC)
+		anImage = [NSImage imageNamed:@"Tool_Mcmc.icns"];
+	else if (whichToolSelected == TOOL_SIMULATE)
+		anImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
+	else if (whichToolSelected == TOOL_TREECONTAINER)
+		anImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
+	else if (whichToolSelected == TOOL_NUMBERSET)
 		anImage = [NSImage imageNamed:@"ToolNumberSet.icns"];
-	else if (whichToolSelected == 8)
+	else if (whichToolSelected == TOOL_TREEDIAGNOSIS)
+		anImage = [NSImage imageNamed:@"Tool_TreeDiagnosis.icns"];
+	else if (whichToolSelected == TOOL_NUMBERDIAGNOSIS)
 		anImage = [NSImage imageNamed:@"Tool_NumberSetDiagnosis.icns"];
 	else 
 		NSLog(@"Problem deciding which tool is to be dragged");

@@ -58,7 +58,6 @@ class CharacterData;
 - (void)setInletsAndOutlets;
 - (void)showControlPanel;
 - (void)helperRunClustal:(id)sender;
-- (void)readDataError:(NSString*)errStr forVariableNamed:(NSString*)varName;
 - (void)receiveData:(NSNotification*)aNotification;
 - (void)taskCompleted;
 

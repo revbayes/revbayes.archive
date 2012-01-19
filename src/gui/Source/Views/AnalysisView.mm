@@ -5,9 +5,11 @@
 #import "Inlet.h"
 #import "InOutlet.h"
 #import "Outlet.h"
+#import "RevBayes.h"
 #import "ScalingScrollView.h"
 #import "Tool.h"
 #import "ToolAlign.h"
+#import "ToolCombiner.h"
 #import "ToolNumericalMcmcOutput.h"
 #import "ToolMatrixFilter.h"
 #import "ToolMcmc.h"
@@ -15,6 +17,7 @@
 #import "ToolModel.h"
 #import "ToolReadData.h"
 #import "ToolSimulate.h"
+#import "ToolTreeMcmcDiagnostic.h"
 #import "ToolTreeSet.h"
 #import "ToolView.h"
 #import "WindowControllerPreferences.h"
@@ -1526,23 +1529,27 @@
 		
 		// allocate the tool, set its location, and add it to the list of tools
         Tool* newTool;
-        if (toolIdx == 0)
+        if (toolIdx == TOOL_READDATA)
             newTool = [[ToolReadData alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == 1)
+        else if (toolIdx == TOOL_ALIGN)
             newTool = [[ToolAlign alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == 2)
-            newTool = [[ToolModel alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == 3)
-            newTool = [[ToolMcmc alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == 4)
-            newTool = [[ToolSimulate alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == 5)
-            newTool = [[ToolTreeSet alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == 6)
+        else if (toolIdx == TOOL_COMBINER)
+            newTool = [[ToolCombiner alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_MATRIXFILTER)
             newTool = [[ToolMatrixFilter alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == 7)
+        else if (toolIdx == TOOL_MODEL)
+            newTool = [[ToolModel alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_MCMC)
+            newTool = [[ToolMcmc alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_SIMULATE)
+            newTool = [[ToolSimulate alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_TREECONTAINER)
+            newTool = [[ToolTreeSet alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_NUMBERSET)
             newTool = [[ToolNumericalMcmcOutput alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == 8)
+        else if (toolIdx == TOOL_TREEDIAGNOSIS)
+            newTool = [[ToolTreeMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_NUMBERDIAGNOSIS)
             newTool = [[ToolMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
 
         // set the location for the tool

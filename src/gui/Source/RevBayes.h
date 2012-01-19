@@ -5,6 +5,18 @@
 #define IN_OUT_SIZE                              15.0
 #define BURY_FRACTION                             0.7
 
+#define TOOL_READDATA                             0
+#define TOOL_ALIGN                                1
+#define TOOL_COMBINER                             2
+#define TOOL_MATRIXFILTER                         3
+#define TOOL_MODEL                                4
+#define TOOL_MCMC                                 5
+#define TOOL_SIMULATE                             6
+#define TOOL_TREECONTAINER                        7
+#define TOOL_NUMBERSET                            8
+#define TOOL_TREEDIAGNOSIS                        9
+#define TOOL_NUMBERDIAGNOSIS                     10
+
 #define DISTRIBUTION_CONSTANT                     0
 #define DISTRIBUTION_FIXED                        0
 #define DISTRIBUTION_EXPONENTIAL                  1

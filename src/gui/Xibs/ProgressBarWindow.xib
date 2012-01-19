@@ -13,11 +13,13 @@
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<string>NSTextField</string>
-			<string>NSTextFieldCell</string>
-			<string>NSWindowTemplate</string>
 			<string>NSView</string>
+			<string>NSWindowTemplate</string>
 			<string>NSProgressIndicator</string>
 			<string>NSCustomObject</string>
+			<string>NSImageCell</string>
+			<string>NSImageView</string>
+			<string>NSTextFieldCell</string>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -44,7 +46,7 @@
 			<object class="NSWindowTemplate" id="89544996">
 				<int key="NSWindowStyleMask">16</int>
 				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{272, 172}, {398, 90}}</string>
+				<string key="NSWindowRect">{{272, 172}, {498, 117}}</string>
 				<int key="NSWTFlags">-1535638528</int>
 				<string key="NSWindowTitle">Window</string>
 				<string key="NSWindowClass">MyPanel</string>
@@ -59,7 +61,7 @@
 							<reference key="NSNextResponder" ref="154387065"/>
 							<int key="NSvFlags">1292</int>
 							<object class="NSPSMatrix" key="NSDrawMatrix"/>
-							<string key="NSFrame">{{18, 22}, {362, 20}}</string>
+							<string key="NSFrame">{{118, 52}, {362, 20}}</string>
 							<reference key="NSSuperview" ref="154387065"/>
 							<reference key="NSWindow"/>
 							<string key="NSReuseIdentifierKey">_NS:1582</string>
@@ -69,7 +71,7 @@
 						<object class="NSTextField" id="713506655">
 							<reference key="NSNextResponder" ref="154387065"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{17, 53}, {137, 17}}</string>
+							<string key="NSFrame">{{117, 83}, {137, 17}}</string>
 							<reference key="NSSuperview" ref="154387065"/>
 							<reference key="NSWindow"/>
 							<string key="NSReuseIdentifierKey">_NS:3936</string>
@@ -105,8 +107,43 @@
 								</object>
 							</object>
 						</object>
+						<object class="NSImageView" id="535583431">
+							<reference key="NSNextResponder" ref="154387065"/>
+							<int key="NSvFlags">268</int>
+							<object class="NSMutableSet" key="NSDragTypes">
+								<bool key="EncodedWithXMLCoder">YES</bool>
+								<object class="NSArray" key="set.sortedObjects">
+									<bool key="EncodedWithXMLCoder">YES</bool>
+									<string>Apple PDF pasteboard type</string>
+									<string>Apple PICT pasteboard type</string>
+									<string>Apple PNG pasteboard type</string>
+									<string>NSFilenamesPboardType</string>
+									<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
+									<string>NeXT TIFF v4.0 pasteboard type</string>
+								</object>
+							</object>
+							<string key="NSFrame">{{20, 20}, {80, 80}}</string>
+							<reference key="NSSuperview" ref="154387065"/>
+							<reference key="NSWindow"/>
+							<string key="NSReuseIdentifierKey">_NS:1658</string>
+							<bool key="NSEnabled">YES</bool>
+							<object class="NSImageCell" key="NSCell" id="667861884">
+								<int key="NSCellFlags">130560</int>
+								<int key="NSCellFlags2">33554432</int>
+								<object class="NSCustomResource" key="NSContents">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">aquabayes</string>
+								</object>
+								<string key="NSCellIdentifier">_NS:1658</string>
+								<int key="NSAlign">0</int>
+								<int key="NSScale">0</int>
+								<int key="NSStyle">0</int>
+								<bool key="NSAnimates">NO</bool>
+							</object>
+							<bool key="NSEditable">YES</bool>
+						</object>
 					</object>
-					<string key="NSFrameSize">{398, 90}</string>
+					<string key="NSFrameSize">{498, 117}</string>
 					<reference key="NSSuperview"/>
 					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="713506655"/>
@@ -186,8 +223,9 @@
 						<reference key="object" ref="154387065"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="713506655"/>
 							<reference ref="1017298932"/>
+							<reference ref="713506655"/>
+							<reference ref="535583431"/>
 						</object>
 						<reference key="parent" ref="89544996"/>
 					</object>
@@ -210,6 +248,20 @@
 						<reference key="object" ref="130879253"/>
 						<reference key="parent" ref="713506655"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">13</int>
+						<reference key="object" ref="535583431"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="667861884"/>
+						</object>
+						<reference key="parent" ref="154387065"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">14</int>
+						<reference key="object" ref="667861884"/>
+						<reference key="parent" ref="535583431"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -219,6 +271,8 @@
 					<string>-1.IBPluginDependency</string>
 					<string>-2.IBPluginDependency</string>
 					<string>-3.IBPluginDependency</string>
+					<string>13.IBPluginDependency</string>
+					<string>14.IBPluginDependency</string>
 					<string>3.IBNSWindowAutoPositionCentersHorizontal</string>
 					<string>3.IBNSWindowAutoPositionCentersVertical</string>
 					<string>3.IBPluginDependency</string>
@@ -230,6 +284,8 @@
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -255,7 +311,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">12</int>
+			<int key="maxID">14</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -318,5 +374,9 @@
 		</object>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
+		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
+			<string key="NS.key.0">aquabayes</string>
+			<string key="NS.object.0">{256, 256}</string>
+		</object>
 	</data>
 </archive>
