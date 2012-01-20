@@ -61,7 +61,6 @@ class CharacterData;
 - (unsigned)missingForNumStates:(int)n;
 - (IBAction)okButtonAction:(id)sender;
 - (BOOL)readDataFile;
-- (void)readDataError:(NSString*)errStr;
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd;
 - (void)setControlsEnabledState;
 - (void)setControlWindowSize;

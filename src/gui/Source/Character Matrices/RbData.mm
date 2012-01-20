@@ -33,6 +33,11 @@
     return [td dataCellIndexed:c];
 }
 
+- (RbData*)copiedFrom {
+
+    return copiedFrom;
+}
+
 - (int)dataSize {
 
 	return (int)[data count];
@@ -61,6 +66,7 @@
 	[aCoder encodeObject:taxonNames          forKey:@"taxonNames"];
 	[aCoder encodeObject:excludedTaxa        forKey:@"excludedTaxa"];
 	[aCoder encodeObject:excludedCharacters  forKey:@"excludedCharacters"];
+    [aCoder encodeObject:copiedFrom          forKey:@"copiedFrom"];
 }
 
 - (void)excludeTaxonIndexed:(int)idx {
@@ -126,7 +132,8 @@
 		numTaxa               = 0;
 		numCharacters         = 0;
         isHomologyEstablished = NO;
-        alignmentMethod = [NSString stringWithString:@"Unknown"];
+        alignmentMethod       = [NSString stringWithString:@"Unknown"];
+        copiedFrom            = nil;
 		}
     return self;
 }
@@ -145,6 +152,7 @@
 		taxonNames            = [aDecoder decodeObjectForKey:@"taxonNames"];
 		excludedTaxa          = [aDecoder decodeObjectForKey:@"excludedTaxa"];
 		excludedCharacters    = [aDecoder decodeObjectForKey:@"excludedCharacters"];
+        copiedFrom            = [aDecoder decodeObjectForKey:@"copiedFrom"];
 		[data retain];
 		[name retain];
         [alignmentMethod retain];
@@ -181,6 +189,7 @@
 			dataType        = [d dataType];
 			name            = [NSString stringWithString:[d name]];
             alignmentMethod = [NSString stringWithString:[d alignmentMethod]];
+            copiedFrom      = d;
 			for (int i=0; i<[d numTaxa]; i++)
 				{
 				NSString* tn = [NSString stringWithString:[d taxonWithIndex:i]];

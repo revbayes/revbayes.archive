@@ -135,7 +135,7 @@
 - (IBAction)settingChangedAction:(id)sender;
 - (void)showControlPanel;
 - (void)showInspectorPanel;
-- (void)updateForConnectionChange;
+- (void)updateForChangeInState;
 
 
 @end

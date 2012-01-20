@@ -288,7 +288,7 @@
 		BOOL isSuccessful = [self readDataFile];
 		if (isSuccessful == YES)
 			{
-			[myTool updateForConnectionChange];
+			[myTool updateForChangeInState];
             [myTool setIsResolved:YES];
 			}
 		else 
@@ -301,7 +301,7 @@
 		[myTool closeControlPanel];
 		[myTool removeAllDataMatrices];
         [self addBlankDataMatrix];
-		[myTool updateForConnectionChange];
+		[myTool updateForChangeInState];
         [myTool setIsResolved:YES];
 		}
 }
@@ -358,6 +358,7 @@
     // check the workspace and make certain that we use an unused name for the
     // data variable
     std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+    NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
 		    
     // format a string command to read the data file(s) and send the
     // formatted string to the parser
@@ -367,7 +368,7 @@
     int coreResult = Parser::getParser().processCommand(line);
     if (coreResult != 0)
         {
-        [self readDataError:@"Data could not be read"];
+        [myTool readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [myTool stopProgressIndicator];
         return NO;
         }
@@ -377,7 +378,7 @@
     dv = Workspace::userWorkspace()->getValue(variableName);
     if ( dv == NULL )
         {
-        [self readDataError:@"Data could not be read"];
+        [myTool readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [myTool stopProgressIndicator];
         return NO;
         }
@@ -403,7 +404,7 @@
             }
         else
             {
-            [self readDataError:@"Failure reading in a set of character matrices"];
+            [myTool readDataError:@"Failure reading in a set of character matrices" forVariableNamed:nsVariableName];
             [myTool stopProgressIndicator];
             return NO;
             }
@@ -419,20 +420,20 @@
             }
         else
             {
-            [self readDataError:@"Failed to read character matrix"];
+            [myTool readDataError:@"Failed to read character matrix" forVariableNamed:nsVariableName];
             [myTool stopProgressIndicator];
             return NO;
             }
         }
     else
         {
-        [self readDataError:@"Data could not be read"];
+            [myTool readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [myTool stopProgressIndicator];
         return NO;
         }
         
     // set the name of the variable in the tool
-    [myTool setDataWorkspaceName:[NSString stringWithUTF8String:(variableName.c_str())]];
+    [myTool setDataWorkspaceName:nsVariableName];
     
     [myTool makeDataInspector];
 
@@ -442,14 +443,6 @@
         std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
 
 	return YES;
-}
-
-- (void)readDataError:(NSString*)errStr {
-
-    NSRunAlertPanel(@"Problem Reading Data", errStr, @"OK", nil, nil);
-    if ( Workspace::userWorkspace()->existsVariable("guiDataVector") )
-        Workspace::userWorkspace()->eraseVariable("guiDataVector");
-    [myTool removeAllDataMatrices];
 }
 
 - (void)setControlWindowSize {

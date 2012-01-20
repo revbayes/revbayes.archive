@@ -9,14 +9,6 @@
 
 @implementation ToolMatrixFilter
 
-@synthesize dataMatrices;
-
-- (void)addMatrix:(RbData*)m {
-
-	[dataMatrices addObject:m];
-    hasInspectorInfo = YES;
-}
-
 - (void)awakeFromNib {
 
 }
@@ -25,28 +17,18 @@
 
     [NSApp stopModal];
 	[controlWindow close];
-    [self setInletsAndOutlets];
 	[self signalDownstreamTools];
-	//[self updateForConnectionChange];
-}
-
-- (RbData*)dataMatrixIndexed:(int)i {
-
-	if (i > [dataMatrices count])
-		return nil;
-	return [dataMatrices objectAtIndex:i];
+	//[self updateForChangeInState];
 }
 
 - (void)dealloc {
 
 	[controlWindow release];
-	[dataMatrices release];
 	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
-	[aCoder encodeObject:dataMatrices forKey:@"dataMatrices"];
 	[super encodeWithCoder:aCoder];
 }
 
@@ -69,9 +51,6 @@
 		[self addOutletOfColor:[NSColor greenColor]];
         [self setInletLocations];
         [self setOutletLocations];
-		
-		// initialize the array holding the data matrices
-		dataMatrices = [[NSMutableArray alloc] init];
 
 		// initialize some variables
 		controlWindow = nil;
@@ -86,9 +65,6 @@
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
-		dataMatrices = [aDecoder decodeObjectForKey:@"dataMatrices"];
-		[dataMatrices retain];
-
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
@@ -115,29 +91,6 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
-- (int)numDataMatrices {
-
-	return (int)[dataMatrices count];
-}
-
-- (void)removeAllDataMatrices {
-
-	[dataMatrices removeAllObjects];
-    hasInspectorInfo = NO;
-}
-
-- (void)setOutlets {
-
-	if ( [controlWindow numberOfOutlets] != [self numOutlets] )
-		{
-		[self removeAllOutlets];
-		for (int i=0; i<[controlWindow numberOfOutlets]; i++)
-			{
-			[self addOutletOfColor:[NSColor greenColor]];
-			}
-		}
-}
-
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = [NSString stringWithString:@" Matrix Filter Tool "];
@@ -159,10 +112,6 @@
     return attrString;
 }
 
-- (void)setInletsAndOutlets {
-
-}
-
 - (void)showControlPanel {
 
     NSPoint p = [self originForControlWindow:[controlWindow window]];
@@ -173,56 +122,81 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)showInspectorPanel {
-
-    if (dataInspector != nil)
-        [dataInspector release];
-    dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
-    [[dataInspector window] center];
-    [dataInspector showWindow:self];
-}
-
-- (void)updateForConnectionChange {
+- (void)updateForChangeInState {
 
     // set the tool state to unresolved
     [self setIsResolved:NO];
     
-	// attempt to get a pointer to the parent tool
-    ToolReadData* t = (ToolReadData*)[self getToolOfInletIndexed:0];
-	
+    // set up an array of parent tools that contain data
+    NSMutableArray* dataTools = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[self numInlets]; i++)
+        {
+        Inlet* theInlet = [self inletIndexed:i];
+        Tool* t = [self getToolOfInlet:theInlet];
+        if (t != nil)
+            {
+            if ( [t isMemberOfClass:[ToolData class]] == YES )
+                [dataTools addObject:t];
+            }
+        }
+    NSLog(@"dataTools = %@", dataTools);
+    	
 	// update the state of this tool depending upon the state/presence of the parent tool
-	if (t == nil)
+	if ( [dataTools count] == 0 )
 		{
-		// we don't have a parent tool
+		// we don't have a parent tool that contains data
 		[self removeAllDataMatrices];
 		}
 	else 
 		{
-		// there is a parent tool 
-		
-		// check that the tool is a ReadData tool...the only connection possible should be to a ReadData tool
-		NSString* className = NSStringFromClass([t class]); 
-		if ( [className isEqualToString:@"ToolReadData"] == NO )
-			return;
-			
-		// remove any data matrices the filter may contain
-		[self removeAllDataMatrices];
-		
-		// copy the data matrices to this control window's tool
-		if ( [t numDataMatrices] > 0 )
-			{
-			for (int i=0; i<[t numDataMatrices]; i++)
-				{
-				RbData* d = [t dataMatrixIndexed:i];
+		// we have parent data-containing tool(s)
+        
+        // check to see if our current data is simply a copy of the data in the parents, in which case
+        // we don't need to do anything
+        NSMutableArray* parentDataMatrices = [NSMutableArray arrayWithCapacity:1];
+        for (int i=0; i<[dataTools count]; i++)
+            {
+            ToolData* t = [dataTools objectAtIndex:i];
+            for (int j=0; j<[t numDataMatrices]; j++)
+                {
+                RbData* d = [t dataMatrixIndexed:j];
+                [parentDataMatrices addObject:d];
+                }
+            }
+        for (int i=0; i<[dataMatrices count]; i++)
+            {
+            RbData* myDataMatrix = [dataMatrices objectAtIndex:i];
+            for (int j=0; j<[parentDataMatrices count]; j++)
+                {
+                RbData* parentDataMatrix = [parentDataMatrices objectAtIndex:j];
+                if ( parentDataMatrix == myDataMatrix )
+                    {
+                    [parentDataMatrices removeObject:parentDataMatrix];
+                    break;
+                    }
+                }
+            }
+            
+        NSLog(@"parentDataMatrices = %@", parentDataMatrices);
+        // remove all of the data matrices if each and every data matrix in this tool is not
+        // a copy of the data matrices in the parents
+        if ([parentDataMatrices count] != 0)
+            {
+            [self removeAllDataMatrices];
+            for (int i=0; i<[parentDataMatrices count]; i++)
+                {
+				RbData* d = [parentDataMatrices objectAtIndex:i];
 				RbData* nd = [[RbData alloc] initWithRbData:d];
 				[self addMatrix:nd];
-				}
-			}
-        [self setIsResolved:YES];
+                }
+            }
+            
+        if ( [dataMatrices count] > 0 )
+            [self setIsResolved:YES];
 		}
-        
-    // call the update for the super class, to pass on the call to downstream tools
-	[super updateForConnectionChange];
+            
+    // send the message on up the chain for signaling downstream tools
+    [super updateForChangeInState];
 }
 
 @end

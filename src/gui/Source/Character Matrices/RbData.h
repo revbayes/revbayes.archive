@@ -16,6 +16,7 @@
 	NSMutableArray*      taxonNames;
 	NSMutableSet*        excludedTaxa;
 	NSMutableSet*        excludedCharacters;
+    RbData*              copiedFrom;
 }
 
 @property (readwrite) int dataType;
@@ -28,6 +29,7 @@
 - (void)addTaxonData:(RbTaxonData*)td;
 - (void)addTaxonName:(NSString*)n;
 - (RbDataCell*)cellWithRow:(int)r andColumn:(int)c;
+- (RbData*)copiedFrom;
 - (int)dataSize;
 - (void)excludeTaxonIndexed:(int)idx;
 - (void)excludeCharacterIndexed:(int)idx;

@@ -133,7 +133,7 @@
 	while ( (element = [enumerator nextObject]) )
 		{
 		if ( [element touchOnRevival] == YES )
-			[element updateForConnectionChange];
+			[element updateForChangeInState];
 		}
 }
 

@@ -87,7 +87,7 @@
 	
 //	[self setToolValues];
     [self closeControlPanel];
-    [self updateForConnectionChange];
+    [self updateForChangeInState];
 }
 
 - (void)closeControlPanel {
@@ -955,7 +955,7 @@
 //    [dataInspector showWindow:self];
 }
 
-- (void)updateForConnectionChange {
+- (void)updateForChangeInState {
     
     // set the tool state to unresolved
     [self setIsResolved:NO];
@@ -998,7 +998,7 @@
     }
     
     // call the update for the super class, to pass on the call to downstream tools
-	[super updateForConnectionChange];
+	[super updateForChangeInState];
 }
 
 

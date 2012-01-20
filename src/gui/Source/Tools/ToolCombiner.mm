@@ -121,4 +121,79 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
+- (void)updateForChangeInState {
+
+    // set the tool state to unresolved
+    [self setIsResolved:NO];
+    
+    // set up an array of parent tools that contain data
+    NSMutableArray* dataTools = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[self numInlets]; i++)
+        {
+        Inlet* theInlet = [self inletIndexed:i];
+        Tool* t = [self getToolOfInlet:theInlet];
+        if (t != nil)
+            {
+            if ( [t isMemberOfClass:[ToolData class]] == YES )
+                [dataTools addObject:t];
+            }
+        }
+    	
+	// update the state of this tool depending upon the state/presence of the parent tool
+	if ( [dataTools count] == 0 )
+		{
+		// we don't have a parent tool that contains data
+		[self removeAllDataMatrices];
+		}
+	else 
+		{
+		// we have parent data-containing tool(s)
+        
+        // check to see if our current data is simply a copy of the data in the parents, in which case
+        // we don't need to do anything
+        NSMutableArray* parentDataMatrices = [NSMutableArray arrayWithCapacity:1];
+        for (int i=0; i<[dataTools count]; i++)
+            {
+            ToolData* t = [dataTools objectAtIndex:i];
+            for (int j=0; j<[t numDataMatrices]; j++)
+                {
+                RbData* d = [t dataMatrixIndexed:j];
+                [parentDataMatrices addObject:d];
+                }
+            }
+        for (int i=0; i<[dataMatrices count]; i++)
+            {
+            RbData* myDataMatrix = [dataMatrices objectAtIndex:i];
+            for (int j=0; j<[parentDataMatrices count]; j++)
+                {
+                RbData* parentDataMatrix = [parentDataMatrices objectAtIndex:j];
+                if ( parentDataMatrix == myDataMatrix )
+                    {
+                    [parentDataMatrices removeObject:parentDataMatrix];
+                    break;
+                    }
+                }
+            }
+            
+        // remove all of the data matrices if each and every data matrix in this tool is not
+        // a copy of the data matrices in the parents
+        if ([parentDataMatrices count] != 0)
+            {
+            [self removeAllDataMatrices];
+            for (int i=0; i<[parentDataMatrices count]; i++)
+                {
+				RbData* d = [parentDataMatrices objectAtIndex:i];
+				RbData* nd = [[RbData alloc] initWithRbData:d];
+				[self addMatrix:nd];
+                }
+            }
+            
+        if ( [dataMatrices count] > 0 )
+            [self setIsResolved:YES];
+		}
+            
+    // send the message on up the chain for signaling downstream tools
+    [super updateForChangeInState];
+}
+
 @end

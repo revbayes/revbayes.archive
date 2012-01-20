@@ -187,7 +187,7 @@
     if ( [source isEqualToString:@"MCMC"] == YES )
     {
         [self closeControlPanel];
-        [self updateForConnectionChange];
+        [self updateForChangeInState];
         [self setIsResolved:YES];
     }
     else if ( [source isEqualToString:@"Import"] == YES )
@@ -200,7 +200,7 @@
         {
             [self setHasInspectorInfo:YES];
 			[self closeControlPanel];
-			[self updateForConnectionChange];
+			[self updateForChangeInState];
             [self setIsResolved:YES];
         }
 		else 
@@ -219,7 +219,7 @@
         if (isSuccessful == YES)
         {
             [self closeControlPanel];
-            [self updateForConnectionChange];
+            [self updateForChangeInState];
             [self setIsResolved:YES];
         }
         else 

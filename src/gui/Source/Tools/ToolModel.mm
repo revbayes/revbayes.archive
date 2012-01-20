@@ -429,7 +429,7 @@
         [element updateChildren];
 }
 
-- (void)updateForConnectionChange {
+- (void)updateForChangeInState {
 
     // set the tool state to unresolved
     [self setIsResolved:NO];
@@ -464,7 +464,7 @@
 	[self touchAllParameters];
         
     // call the update for the super class, to pass on the call to downstream tools
-	[super updateForConnectionChange];
+	[super updateForChangeInState];
 }
 
 - (void)updateInlets {

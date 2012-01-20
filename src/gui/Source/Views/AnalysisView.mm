@@ -1446,9 +1446,6 @@
                         
                     // we have the outlet manage the connection
                     [theOutlet addConnectionWithInlet:theInlet];
-                    
-                    // signal downstream tools of the new connection
-                    [[theInlet toolOwner] updateForConnectionChange];
 					}
 					
 				// inform the user of certain errors
@@ -1616,7 +1613,7 @@
 	toolEnumerator = [pastedTools objectEnumerator];
 	while ( (element = [toolEnumerator nextObject]) )
         {
-		[element updateForConnectionChange];
+		[element updateForChangeInState];
 		}
         
 	// update the display

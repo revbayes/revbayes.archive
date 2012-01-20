@@ -189,9 +189,6 @@
 		22B3022A14C5FA2F0099D4C3 /* summarize_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 22B3005014C5FA2F0099D4C3 /* summarize_button.png */; };
 		22B3022B14C5FA2F0099D4C3 /* AJHBezierUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B3005314C5FA2F0099D4C3 /* AJHBezierUtils.mm */; };
 		22B3022C14C5FA2F0099D4C3 /* AnalysisDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B3005614C5FA2F0099D4C3 /* AnalysisDocument.mm */; };
-		22B3022D14C5FA2F0099D4C3 /* AnalysisDocument.mm.mine in Resources */ = {isa = PBXBuildFile; fileRef = 22B3005714C5FA2F0099D4C3 /* AnalysisDocument.mm.mine */; };
-		22B3022E14C5FA2F0099D4C3 /* AnalysisDocument.mm.r1097 in Resources */ = {isa = PBXBuildFile; fileRef = 22B3005814C5FA2F0099D4C3 /* AnalysisDocument.mm.r1097 */; };
-		22B3022F14C5FA2F0099D4C3 /* AnalysisDocument.mm.r1101 in Resources */ = {isa = PBXBuildFile; fileRef = 22B3005914C5FA2F0099D4C3 /* AnalysisDocument.mm.r1101 */; };
 		22B3023014C5FA2F0099D4C3 /* AnalysisTools.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B3005B14C5FA2F0099D4C3 /* AnalysisTools.mm */; };
 		22B3023114C5FA2F0099D4C3 /* Connection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B3005D14C5FA2F0099D4C3 /* Connection.mm */; };
 		22B3023214C5FA2F0099D4C3 /* ConnectionPair.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22B3005F14C5FA2F0099D4C3 /* ConnectionPair.mm */; };
@@ -891,9 +888,6 @@
 		22B3005314C5FA2F0099D4C3 /* AJHBezierUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AJHBezierUtils.mm; sourceTree = "<group>"; };
 		22B3005514C5FA2F0099D4C3 /* AnalysisDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalysisDocument.h; sourceTree = "<group>"; };
 		22B3005614C5FA2F0099D4C3 /* AnalysisDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AnalysisDocument.mm; sourceTree = "<group>"; };
-		22B3005714C5FA2F0099D4C3 /* AnalysisDocument.mm.mine */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AnalysisDocument.mm.mine; sourceTree = "<group>"; };
-		22B3005814C5FA2F0099D4C3 /* AnalysisDocument.mm.r1097 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AnalysisDocument.mm.r1097; sourceTree = "<group>"; };
-		22B3005914C5FA2F0099D4C3 /* AnalysisDocument.mm.r1101 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AnalysisDocument.mm.r1101; sourceTree = "<group>"; };
 		22B3005A14C5FA2F0099D4C3 /* AnalysisTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalysisTools.h; sourceTree = "<group>"; };
 		22B3005B14C5FA2F0099D4C3 /* AnalysisTools.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AnalysisTools.mm; sourceTree = "<group>"; };
 		22B3005C14C5FA2F0099D4C3 /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
@@ -1950,9 +1944,6 @@
 			children = (
 				22B3005514C5FA2F0099D4C3 /* AnalysisDocument.h */,
 				22B3005614C5FA2F0099D4C3 /* AnalysisDocument.mm */,
-				22B3005714C5FA2F0099D4C3 /* AnalysisDocument.mm.mine */,
-				22B3005814C5FA2F0099D4C3 /* AnalysisDocument.mm.r1097 */,
-				22B3005914C5FA2F0099D4C3 /* AnalysisDocument.mm.r1101 */,
 				22B3005A14C5FA2F0099D4C3 /* AnalysisTools.h */,
 				22B3005B14C5FA2F0099D4C3 /* AnalysisTools.mm */,
 				22B3005C14C5FA2F0099D4C3 /* Connection.h */,
@@ -3589,9 +3580,6 @@
 				22B3022814C5FA2F0099D4C3 /* revbayeshelplogo.psd in Resources */,
 				22B3022914C5FA2F0099D4C3 /* simulate_button.png in Resources */,
 				22B3022A14C5FA2F0099D4C3 /* summarize_button.png in Resources */,
-				22B3022D14C5FA2F0099D4C3 /* AnalysisDocument.mm.mine in Resources */,
-				22B3022E14C5FA2F0099D4C3 /* AnalysisDocument.mm.r1097 in Resources */,
-				22B3022F14C5FA2F0099D4C3 /* AnalysisDocument.mm.r1101 in Resources */,
 				22B302AB14C5FA2F0099D4C3 /* AnalysisDocument.xib in Resources */,
 				22B302AC14C5FA2F0099D4C3 /* CharacterMatrix.xib in Resources */,
 				22B302AD14C5FA2F0099D4C3 /* ControlWindowAlign.xib in Resources */,

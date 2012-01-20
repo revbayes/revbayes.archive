@@ -41,7 +41,6 @@
 	[excludedTaxaMatrices removeAllObjects];
     
     [myTool closeControlPanel];
-	[myTool setOutlets];
 }
 
 - (IBAction)changeCharMatrix:(id)sender {
@@ -541,9 +540,6 @@
 	[excludedCharMatrices removeAllObjects];
 	[includedTaxaMatrices removeAllObjects];
 	[excludedTaxaMatrices removeAllObjects];
-
-	// set the number of outlets for the tool
-	[myTool setOutlets];
 
     [myTool closeControlPanel];
 }

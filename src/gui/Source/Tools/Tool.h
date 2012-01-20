@@ -31,7 +31,7 @@
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName;
-- (InOutlet*)inletIndexed:(int)idx;
+- (Inlet*)inletIndexed:(int)idx;
 - (void)initializeImage;
 - (BOOL)isFullyConnected;
 - (int)numInlets;
@@ -56,7 +56,7 @@
 - (void)showInspectorPanel;
 - (void)startProgressIndicator;
 - (void)stopProgressIndicator;
-- (void)updateForConnectionChange;
 - (void)signalDownstreamTools;
+- (void)updateForChangeInState;
 
 @end

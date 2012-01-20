@@ -44,7 +44,6 @@
 
     [NSApp stopModal];
 	[controlWindow close];
-    [self setInletsAndOutlets];
 }
 
 - (void)dealloc {
@@ -196,10 +195,6 @@
     return attrString;
 }
 
-- (void)setInletsAndOutlets {
-
-}
-
 - (void)showControlPanel {
 
     NSPoint p = [self originForControlWindow:[controlWindow window]];
@@ -227,7 +222,7 @@
         }
     if ( dataTool == nil )
         return;
-        
+
     // calculate how many unaligned data matrices exist
     NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
     for (int i=0; i<[dataTool numDataMatrices]; i++)
@@ -402,6 +397,8 @@
 
     if ( Workspace::userWorkspace()->existsVariable(variableName) )
         std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
+
+    [self updateForChangeInState];
 }
 
 

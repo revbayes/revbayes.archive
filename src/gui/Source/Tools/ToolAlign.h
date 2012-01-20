@@ -55,7 +55,6 @@ class CharacterData;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (NSMutableAttributedString*)sendTip;
-- (void)setInletsAndOutlets;
 - (void)showControlPanel;
 - (void)helperRunClustal:(id)sender;
 - (void)receiveData:(NSNotification*)aNotification;

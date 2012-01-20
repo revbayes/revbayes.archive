@@ -1,6 +1,7 @@
 #import "Connection.h"
 #import "Inlet.h"
 #import "Outlet.h"
+#import "Tool.h"
 
 
 
@@ -27,6 +28,7 @@
         [connections addObject:c];
         [theInlet addConnection:c];
         [c release];
+        [[theInlet toolOwner] updateForChangeInState];
         }
 }
 
@@ -146,6 +148,8 @@
 
     if ( [connections containsObject:c] == YES )
         {
+        Tool* t = [[c inlet] toolOwner];
+        [t updateForChangeInState];
         [[c inlet] removeConnection];
         [connections removeObject:c];
         }

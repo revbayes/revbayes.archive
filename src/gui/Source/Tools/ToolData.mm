@@ -263,6 +263,15 @@
 	return (int)[dataMatrices count];
 }
 
+- (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName {
+
+    NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);
+    std::string tempName = [vName UTF8String];
+    if ( Workspace::userWorkspace()->existsVariable(tempName) )
+        Workspace::userWorkspace()->eraseVariable(tempName);
+    [self removeAllDataMatrices];
+}
+
 - (void)removeAllDataMatrices {
 
 	[dataMatrices removeAllObjects];
@@ -299,6 +308,12 @@
         NSLog(@"No idea why we don't have a data inspector");
     [[dataInspector window] center];
     [dataInspector showWindow:self];
+}
+
+- (void)updateForChangeInState {
+            
+    // send the message on up the chain for signaling downstream tools
+    [super updateForChangeInState];
 }
 
 @end

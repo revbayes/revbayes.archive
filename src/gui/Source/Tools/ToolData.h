@@ -25,6 +25,7 @@ class CharacterData;
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
 - (int)numDataMatrices;
+- (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName;
 - (void)removeAllDataMatrices;
 - (void)removeDataInspector;
 - (void)removeFilesFromTemporaryDirectory;
