@@ -83,7 +83,7 @@
 	return nil;
 }
 
-- (Tool*)getToolOfInlet:(Inlet*)inlt {
+- (Tool*)getParentToolOfInlet:(Inlet*)inlt {
 
     Connection* c = [inlt connection];
     if ( c == nil )
@@ -92,7 +92,7 @@
     return t;
 }
 
-- (Tool*)getToolOfInletIndexed:(int)idx {
+- (Tool*)getParentToolOfInletIndexed:(int)idx {
 
     Inlet* il = [inlets objectAtIndex:idx];
     Connection* c = [il connection];
@@ -498,7 +498,7 @@
 
 - (void)updateForChangeInState {
 
-    NSLog(@"updateForChangeOfState in %@", self);
+    NSLog(@"updateForChangeOfState in Tool");
 	NSEnumerator* enumerator = [outlets objectEnumerator];
 	id element;
 	while ( (element = [enumerator nextObject]) )

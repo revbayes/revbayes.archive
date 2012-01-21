@@ -36,6 +36,7 @@
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
+- (BOOL)readDataFile;
 - (NSMutableAttributedString*)sendTip;
 - (void)showControlPanel;
 

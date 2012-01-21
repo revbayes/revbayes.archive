@@ -221,6 +221,8 @@
     [shadow set];
 	
 	// draw the tool images
+    NSPoint mouseLoc = [NSEvent mouseLocation];
+	mouseLoc = [self convertPoint:mouseLoc fromView:nil];
 	NSEnumerator* itemEnumerator = [itemsPtr objectEnumerator];
 	id element;
 	while ( (element = [itemEnumerator nextObject]) )
@@ -234,7 +236,7 @@
 		drawingRect.origin = [element itemLocation];
         drawingRect.size = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
 		[self transformToBottomLeftCoordinates:(&drawingRect.origin)];            
-        
+                
 		// draw a focus ring behind the tool, if it is currently selected
         if ([element isSelected] == YES)
             {
@@ -421,6 +423,23 @@
 			[triangle fill];
             [[NSColor blackColor] set];
             [triangle stroke];
+            if ( [element isKindOfClass:[ToolData class]] == YES )
+                {
+                int n = 0;
+                if ( [theOutlet toolColor] == [NSColor greenColor] )
+                    n = [element numAligned];
+                else if ( [theOutlet toolColor] == [NSColor cyanColor] )
+                    n = [element numUnaligned];
+                [[[NSColor blackColor] colorWithAlphaComponent:0.4] set];
+                NSBezierPath* numPath = [self makePathForNumber:n];
+                NSRect numBounds = [numPath bounds];
+                NSPoint numPoint = [theOutlet getDrawingPositionForToolWithRect:drawingRect andBoundedRect:numBounds];
+                NSAffineTransform* transform = [NSAffineTransform transform];
+                [transform translateXBy:numPoint.x yBy:numPoint.y];
+                [numPath transformUsingAffineTransform:transform];
+                [numPath stroke];
+                [numPath fill];
+                }
             }
         }
     [NSGraphicsContext restoreGraphicsState];
@@ -1086,6 +1105,28 @@
     if ( NSPointInRect(p, r) == YES )
         return YES;    
     return NO;
+}
+
+- (NSBezierPath*)makePathForNumber:(int)n {
+
+    NSString* numStr = [NSString stringWithFormat:@"%d", n];
+    NSFont* numFont = [NSFont systemFontOfSize:(12.0*scaleFactor)];
+
+    NSTextView* textview = [[NSTextView alloc] init];
+    [textview setString:numStr];
+    [textview setFont:numFont];
+
+    NSLayoutManager* layoutManager = [textview layoutManager];
+    NSRange range = [layoutManager glyphRangeForCharacterRange:NSMakeRange(0, [numStr length]) actualCharacterRange:NULL];
+    NSGlyph glyphs[5];
+    [layoutManager getGlyphs:glyphs range:range];
+
+    NSBezierPath* path = [NSBezierPath bezierPath];
+    [path moveToPoint:NSMakePoint(0.0, 0.0)];
+    [path appendBezierPathWithGlyphs:glyphs count:range.length inFont:numFont];
+    [textview release];
+    
+    return path;
 }
 
 - (void)mouseDown:(NSEvent*)event {

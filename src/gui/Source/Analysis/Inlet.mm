@@ -1,3 +1,4 @@
+#import "Connection.h"
 #import "Inlet.h"
 
 
@@ -39,6 +40,13 @@
 	[aCoder encodeObject:connection forKey:@"connection"];
 	
     [super encodeWithCoder:aCoder];
+}
+
+- (Outlet*)getMyOutlet {
+
+    if (connection == nil)
+        return nil;
+    return [connection outlet];
 }
 
 - (BOOL)hasConnection {

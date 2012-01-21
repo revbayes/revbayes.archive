@@ -10,13 +10,19 @@ class CharacterData;
     WindowControllerCharacterMatrix*   dataInspector;	
 	NSMutableArray*                    dataMatrices;
     NSString*                          dataWorkspaceName;
+    int                                numAligned;
+    int                                numUnaligned;
 }
 
 @property (readwrite,retain) NSString* dataWorkspaceName;
+@property (readwrite) int numAligned;
+@property (readwrite) int numUnaligned;
 
 - (void)addMatrix:(RbData*)m;
 - (RbData*)dataMatrixIndexed:(int)i;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (NSMutableArray*)getAlignedData;
+- (NSMutableArray*)getUnalignedData;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (void)instantiateDataInCore;

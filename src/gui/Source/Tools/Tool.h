@@ -26,8 +26,8 @@
 - (NSColor*)colorOfOutletIndexed:(int)idx;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (InOutlet*)findInOutletWithColor:(NSColor*)c;
-- (Tool*)getToolOfInlet:(Inlet*)inlt;
-- (Tool*)getToolOfInletIndexed:(int)idx;
+- (Tool*)getParentToolOfInlet:(Inlet*)inlt;
+- (Tool*)getParentToolOfInletIndexed:(int)idx;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName;

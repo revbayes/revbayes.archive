@@ -184,12 +184,16 @@
 		// copy information
 		if (d != nil)
 			{
-			numTaxa         = [d numTaxa];
-			numCharacters   = [d numCharacters];
-			dataType        = [d dataType];
-			name            = [NSString stringWithString:[d name]];
-            alignmentMethod = [NSString stringWithString:[d alignmentMethod]];
-            copiedFrom      = d;
+			numTaxa               = [d numTaxa];
+			numCharacters         = [d numCharacters];
+			dataType              = [d dataType];
+            isHomologyEstablished = [d isHomologyEstablished];
+			name                  = [NSString stringWithString:[d name]];
+            alignmentMethod       = [NSString stringWithString:[d alignmentMethod]];
+            if ( [d copiedFrom] == nil )
+                copiedFrom = d;
+            else
+                copiedFrom = [d copiedFrom];
 			for (int i=0; i<[d numTaxa]; i++)
 				{
 				NSString* tn = [NSString stringWithString:[d taxonWithIndex:i]];

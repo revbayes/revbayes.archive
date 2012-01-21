@@ -132,14 +132,15 @@
     for (int i=0; i<[self numInlets]; i++)
         {
         Inlet* theInlet = [self inletIndexed:i];
-        Tool* t = [self getToolOfInlet:theInlet];
+        Tool* t = [self getParentToolOfInlet:theInlet];
         if (t != nil)
             {
-            if ( [t isMemberOfClass:[ToolData class]] == YES )
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                {
                 [dataTools addObject:t];
+                }
             }
         }
-    NSLog(@"dataTools = %@", dataTools);
     	
 	// update the state of this tool depending upon the state/presence of the parent tool
 	if ( [dataTools count] == 0 )
@@ -177,7 +178,6 @@
                 }
             }
             
-        NSLog(@"parentDataMatrices = %@", parentDataMatrices);
         // remove all of the data matrices if each and every data matrix in this tool is not
         // a copy of the data matrices in the parents
         if ([parentDataMatrices count] != 0)
@@ -192,7 +192,10 @@
             }
             
         if ( [dataMatrices count] > 0 )
+            {
             [self setIsResolved:YES];
+            [self makeDataInspector];
+            }
 		}
             
     // send the message on up the chain for signaling downstream tools

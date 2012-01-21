@@ -60,8 +60,6 @@ class CharacterData;
 - (id)initWithTool:(ToolReadData*)t;
 - (unsigned)missingForNumStates:(int)n;
 - (IBAction)okButtonAction:(id)sender;
-- (BOOL)readDataFile;
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd;
 - (void)setControlsEnabledState;
 - (void)setControlWindowSize;
 - (void)setToolValues;

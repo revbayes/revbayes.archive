@@ -21,9 +21,15 @@
 @implementation ToolData
 
 @synthesize dataWorkspaceName;
+@synthesize numAligned;
+@synthesize numUnaligned;
 
 - (void)addMatrix:(RbData*)m {
 
+    if ( [m isHomologyEstablished] == YES )
+        numAligned++;
+    else
+        numUnaligned++;
 	[dataMatrices addObject:m];
 	[m release];
     hasInspectorInfo = YES;
@@ -48,6 +54,30 @@
     [dataWorkspaceName release];
     
 	[super dealloc];
+}
+
+- (NSMutableArray*)getAlignedData {
+
+    NSMutableArray* arr = [NSMutableArray arrayWithCapacity:0];
+    for (int i=0; i<[dataMatrices count]; i++)
+        {
+        RbData* d = [dataMatrices objectAtIndex:i];
+        if ( [d isHomologyEstablished] == YES )
+            [arr addObject:d];
+        }
+    return arr;
+}
+
+- (NSMutableArray*)getUnalignedData {
+
+    NSMutableArray* arr = [NSMutableArray arrayWithCapacity:0];
+    for (int i=0; i<[dataMatrices count]; i++)
+        {
+        RbData* d = [dataMatrices objectAtIndex:i];
+        if ( [d isHomologyEstablished] == NO )
+            [arr addObject:d];
+        }
+    return arr;
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -275,6 +305,8 @@
 - (void)removeAllDataMatrices {
 
 	[dataMatrices removeAllObjects];
+    numAligned = 0;
+    numUnaligned = 0;
     hasInspectorInfo = NO;
     [self removeDataInspector];
 }
@@ -311,7 +343,8 @@
 }
 
 - (void)updateForChangeInState {
-            
+
+    NSLog(@"updateForChangeInState in ToolData");
     // send the message on up the chain for signaling downstream tools
     [super updateForChangeInState];
 }

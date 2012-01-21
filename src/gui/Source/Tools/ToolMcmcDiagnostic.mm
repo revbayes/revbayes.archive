@@ -961,7 +961,7 @@
     [self setIsResolved:NO];
     
 	// attempt to get a pointer to the parent tool
-    ToolNumericalMcmcOutput* t = (ToolNumericalMcmcOutput*)[self getToolOfInletIndexed:0];
+    ToolNumericalMcmcOutput* t = (ToolNumericalMcmcOutput*)[self getParentToolOfInletIndexed:0];
 	
 	// update the state of this tool depending upon the state/presence of the parent tool
 	if (t == nil)

@@ -1,3 +1,20 @@
+#include <map>
+#include <vector>
+#include <string>
+#include "AminoAcidState.h"
+#include "Character.h"
+#include "CharacterData.h"
+#include "CharacterContinuous.h"
+#include "DagNodeContainer.h"
+#include "DnaState.h"
+#include "NclReader.h"
+#include "Parser.h"
+#include "RbFileManager.h"
+#include "RnaState.h"
+#include "StandardState.h"
+#include "VariableSlot.h"
+#include "Workspace.h"
+
 #import "InOutlet.h"
 #import "RbData.h"
 #import "RevBayes.h"
@@ -133,6 +150,145 @@
 	float s[8] = { 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 2.0, 4.0 };
 	for (int i=0; i<8; i++)
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
+}
+
+- (BOOL)readDataFile {
+
+    // make an array containing the valid file types that can be chosen
+	NSArray* fileTypes = [NSArray arrayWithObjects: @"nex", @"phy", @"fasta", @"fas", @"in", NSFileTypeForHFSTypeCode( 'TEXT' ), nil];
+    
+    // get the open panel
+    NSOpenPanel* oPanel = [NSOpenPanel openPanel];
+    [oPanel setAllowsMultipleSelection:NO];
+    [oPanel setCanChooseDirectories:YES];
+
+    // open the panel
+    NSString* fileToOpen;
+    [oPanel setAllowedFileTypes:fileTypes];
+    int result = (int)[oPanel runModal];
+    if ( result == NSFileHandlingPanelOKButton )
+        {
+        NSArray* filesToOpen = [oPanel URLs];
+        int count = (int)[filesToOpen count];
+        for (int i=0; i<count; i++) 
+            {
+            fileToOpen = [[filesToOpen objectAtIndex:i] path];
+            }
+        }
+            
+    [self startProgressIndicator];
+    
+	// check to see if the selection is a file or a directory
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+	BOOL isDir;
+	[fileManager fileExistsAtPath:fileToOpen isDirectory:&isDir];
+	
+	// set the information
+	if (isDir == NO)
+        {
+		NSString *lastComponent = [fileToOpen lastPathComponent];
+		NSString *pathLessFilename = [fileToOpen stringByDeletingLastPathComponent];
+		[self setFileName:lastComponent];
+		[self setPathName:pathLessFilename];
+        }
+	else 
+        {
+		[self setFileName:@""];
+		[self setPathName:fileToOpen];
+        }
+    
+	// set the information in the tool
+	[self setFileName:fileName];
+	[self setPathName:pathName];
+    
+    // check the workspace and make certain that we use an unused name for the
+    // data variable
+    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+    NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
+		    
+    // format a string command to read the data file(s) and send the
+    // formatted string to the parser
+    const char* cmdAsCStr = [fileToOpen UTF8String];
+    std::string cmdAsStlStr = cmdAsCStr;
+    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    int coreResult = Parser::getParser().processCommand(line);
+    if (coreResult != 0)
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        return NO;
+        }
+
+    // retrieve the value (character data matrix or matrices) from the workspace
+    RbPtr<RbLanguageObject> dv = NULL;
+    dv = Workspace::userWorkspace()->getValue(variableName);
+    if ( dv == NULL )
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        return NO;
+        }
+    
+    // instantiate data matrices for the gui, by reading the matrices that were 
+    // read in by the core
+    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( (RbObject*)dv );
+    CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
+    if ( dnc != NULL )
+        {
+        if (dnc != NULL)
+            {
+            [self removeAllDataMatrices];
+            for (int i=0; i<dnc->size(); i++)
+                {
+                VariableSlot* vs = static_cast<VariableSlot*>( (RbObject*)(dnc->getElement(i)) );
+                RbPtr<RbLanguageObject> theDagNode = vs->getDagNode()->getValue();
+                CharacterData* cd = static_cast<CharacterData*>( (RbObject*)theDagNode );
+                RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+                [newMatrix setAlignmentMethod:@"Unknown"];
+                [self addMatrix:newMatrix];
+                }
+            }
+        else
+            {
+            [self readDataError:@"Failure reading in a set of character matrices" forVariableNamed:nsVariableName];
+            [self stopProgressIndicator];
+            return NO;
+            }
+        }
+    else if ( cd != NULL )
+        {
+        if (cd != NULL)
+            {
+            [self removeAllDataMatrices];
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            [newMatrix setAlignmentMethod:@"Unknown"];
+            [self addMatrix:newMatrix];
+            }
+        else
+            {
+            [self readDataError:@"Failed to read character matrix" forVariableNamed:nsVariableName];
+            [self stopProgressIndicator];
+            return NO;
+            }
+        }
+    else
+        {
+            [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        return NO;
+        }
+        
+    // set the name of the variable in the tool
+    [self setDataWorkspaceName:nsVariableName];
+    
+    [self makeDataInspector];
+
+    [self stopProgressIndicator];
+
+    if ( Workspace::userWorkspace()->existsVariable(variableName) )
+        std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
+
+	return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {

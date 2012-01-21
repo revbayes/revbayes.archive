@@ -32,6 +32,78 @@
 	[aCoder encodeObject:toolOwner forKey:@"toolOwner"];
 }
 
+- (NSPoint)getDrawingPositionForToolWithRect:(NSRect)tr andBoundedRect:(NSRect)b {
+
+    NSRect r = [self rectForToolWithRect:tr];
+    NSPoint p = r.origin;
+    float spacer = r.size.width * 0.2;
+    
+    if (position.x < 0.01)
+        {
+        // left side
+        p.x += r.size.width + spacer;
+        p.y += (r.size.height - b.size.height) * 0.5;
+        }
+    else if (position.x > 0.99)
+        {
+        // right side
+        p.x -= (b.size.width + spacer);
+        p.y += (r.size.height - b.size.height) * 0.5;
+        }
+    else if (position.y < 0.01)
+        {
+        // bottom side
+        p.x += (r.size.width - b.size.width) * 0.5;
+        p.y += r.size.height + spacer;
+        }
+    else if (position.y > 0.99)
+        {
+        // top side
+        p.x += (r.size.width - b.size.width) * 0.5;
+        p.y -= (b.size.height + spacer);
+        }
+    else
+        {
+        NSLog(@"Cannot figure out which edge of the tool the inlet is on");
+        }
+    return p;
+}
+
+- (NSRect)getTextRectForToolWithRect:(NSRect)r {
+
+    NSRect inOutRect = [self rectForToolWithRect:r];
+    
+    if (position.x < 0.01)
+        {
+        // left side
+        inOutRect.origin.x += inOutRect.size.width;
+        }
+    else if (position.x > 0.99)
+        {
+        // right side
+        inOutRect.origin.x -= inOutRect.size.width;
+        }
+    else if (position.y < 0.01)
+        {
+        // bottom side
+        inOutRect.origin.y += inOutRect.size.height;
+        //float d = (inOutRect.size.width - b.size.width) * 0.5;
+        //inOutRect.origin.x += d;
+        }
+    else if (position.y > 0.99)
+        {
+        // top side
+        inOutRect.origin.y -= inOutRect.size.height;
+        //float d = (inOutRect.size.width - b.size.width) * 0.5;
+        //inOutRect.origin.x += d;
+        }
+    else
+        {
+        NSLog(@"Cannot figure out which edge of the tool the inlet is on");
+        }
+    return inOutRect;
+}
+
 - (id)init {
 
 	[self initWithTool:nil];

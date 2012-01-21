@@ -17,6 +17,8 @@
 
 - (BOOL)amInlet;
 - (BOOL)amOutlet;
+- (NSPoint)getDrawingPositionForToolWithRect:(NSRect)tr andBoundedRect:(NSRect)b;
+- (NSRect)getTextRectForToolWithRect:(NSRect)r;
 - (id)initWithTool:(Tool*)t;
 - (BOOL)isOnLeftEdge;
 - (BOOL)isOnRightEdge;

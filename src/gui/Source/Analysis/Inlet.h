@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import "InOutlet.h"
 @class Connection;
+@class Outlet;
 @class Tool;
 
 
@@ -15,6 +16,7 @@
 - (BOOL)amOutlet;
 - (Connection*)connection;
 - (Connection*)connectionWithIndex:(int)idx;
+- (Outlet*)getMyOutlet;
 - (BOOL)hasConnection;
 - (id)initWithTool:(Tool*)t;
 - (int)numberOfConnections;

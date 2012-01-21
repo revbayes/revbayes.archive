@@ -351,7 +351,7 @@
 		}
 	else if ( [[includedCharSetsButton titleOfSelectedItem] isEqualToString:@"MissAmbig"] == YES )
 		{
-		ToolReadData* t = (ToolReadData*)[myTool getToolOfInletIndexed:0];
+		ToolReadData* t = (ToolReadData*)[myTool getParentToolOfInletIndexed:0];
 		if (t == nil)
 			return;
 		RbData* d = [t dataMatrixIndexed:(int)[charMatrixSelector indexOfSelectedItem]];

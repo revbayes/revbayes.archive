@@ -435,7 +435,7 @@
     [self setIsResolved:NO];
     
 	// attempt to get a pointer to the parent tool
-	id t = [self getToolOfInletIndexed:0];
+	id t = [self getParentToolOfInletIndexed:0];
     NSString* className;
     if (t != nil)
         {
