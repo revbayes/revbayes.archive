@@ -148,8 +148,8 @@
 
     if ( [connections containsObject:c] == YES )
         {
-        Tool* t = [[c inlet] toolOwner];
-        [t updateForChangeInState];
+        //Tool* t = [[c inlet] toolOwner];
+        //[t updateForChangeInState];
         [[c inlet] removeConnection];
         [connections removeObject:c];
         }

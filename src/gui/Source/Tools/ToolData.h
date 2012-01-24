@@ -26,7 +26,6 @@ class CharacterData;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (void)instantiateDataInCore;
-- (void)instantiateDataInspector;
 - (void)makeDataInspector;
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd;
 - (NSString*)nameOfMatrixIndexed:(int)idx;

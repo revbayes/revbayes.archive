@@ -498,7 +498,6 @@
 
 - (void)updateForChangeInState {
 
-    NSLog(@"updateForChangeOfState in Tool");
 	NSEnumerator* enumerator = [outlets objectEnumerator];
 	id element;
 	while ( (element = [enumerator nextObject]) )
@@ -508,7 +507,6 @@
             Connection* c = [element connectionWithIndex:i];
             Tool* t = [[c inlet] toolOwner];
             [t updateForChangeInState];
-            NSLog(@"%@ is signaling %@ of a change in state", self, t);
             }
         }
 }

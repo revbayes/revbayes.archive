@@ -9,11 +9,11 @@
 
 @interface Tool : RbItem <NSCoding> {
 
-    AnalysisView*        myAnalysisView;
-    NSMutableArray*      inlets;
-    NSMutableArray*      outlets;
-	int                  flagCount;
-	BOOL                 touchOnRevival;
+    AnalysisView*                 myAnalysisView;
+    NSMutableArray*               inlets;
+    NSMutableArray*               outlets;
+	int                           flagCount;
+	BOOL                          touchOnRevival;
     YRKSpinningProgressIndicator* progressIndicator;
 }
 

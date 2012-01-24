@@ -351,8 +351,7 @@
         else
             {
             [self readDataError:@"Failure reading in a set of character matrices" forVariableNamed:nsVariableName];
-            [self stopProgressIndicator];
-            return;
+            goto errorExit;
             }
         }
     else if ( cd != NULL )
@@ -366,15 +365,13 @@
         else
             {
             [self readDataError:@"Failed to read character matrix" forVariableNamed:nsVariableName];
-            [self stopProgressIndicator];
-            return;
+            goto errorExit;
             }
         }
     else
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        return;
+        goto errorExit;
         }
         
     // set the name of the variable in the tool
@@ -388,15 +385,18 @@
         [d setAlignmentMethod:@"ClustalW2"];
         }
     
-    [self removeFilesFromTemporaryDirectory];
-    
     [self makeDataInspector];
+
+    if ( Workspace::userWorkspace()->existsVariable(variableName) )
+        std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
+
+    errorExit:
+    
+    [self removeFilesFromTemporaryDirectory];
 
     // turn the indeterminate progress bar off
     [self stopProgressIndicator];
 
-    if ( Workspace::userWorkspace()->existsVariable(variableName) )
-        std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
 
     [self updateForChangeInState];
 }

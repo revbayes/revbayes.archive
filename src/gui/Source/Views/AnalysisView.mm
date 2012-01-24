@@ -102,6 +102,9 @@
 
 - (void)dealloc {
 
+    [toolsToRemove release];
+    [toolsToUpdate release];
+    [self removeObserver:self forKeyPath:@"scaleFactorChangeNotification"];
 	[super dealloc];
 }
 
@@ -1063,6 +1066,10 @@
 							  name:@"scaleFactorChangeNotification"
 						    object:nil];
 
+        // allocate vectors for holding list of tools to be removed/updated
+        toolsToRemove = [[NSMutableArray alloc] init];
+        toolsToUpdate = [[NSMutableArray alloc] init];
+
         // get the background color and grid color from the defaults
         NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         NSData* colorAsData = [defaults objectForKey:RB_AnalysisBgrndColorKey];
@@ -1105,6 +1112,91 @@
     if ( NSPointInRect(p, r) == YES )
         return YES;    
     return NO;
+}
+
+- (void)keyDown:(NSEvent*)event {
+
+	// inactivate the timer, if it is still going
+	if ([analysisDocumentPtr isRbTimerActive] == YES)
+		[analysisDocumentPtr invalidateTimer];
+	[self stopItemTipTimer];
+
+    // maybe we're deleting stuff
+    NSString *chars = [event characters];
+    unichar character = [chars characterAtIndex:0];
+    if (character == NSDeleteCharacter)
+		{
+        // clean
+        [toolsToRemove removeAllObjects];
+        [toolsToUpdate removeAllObjects];
+
+        // make two lists, one containing the tools that will be removed and the
+        // other containing the tools that are in need of update
+        NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+        id element;
+        while ( (element = [enumerator nextObject]) )
+            {
+            if ( [element isSelected] == YES )
+                {
+                // we add the tool to the list of tools that will be removed and
+                // also flag all of its children for update
+                [toolsToRemove addObject:element];
+                for (int i=0; i<[element numOutlets]; i++)
+                    {
+                    Outlet* theOutlet = [element outletIndexed:i];
+                    for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                        {
+                        Connection* c = [theOutlet connectionWithIndex:j];
+                        Tool* t = [[c inlet] toolOwner];
+                        [toolsToUpdate addObject:t];
+                        }
+                    }
+                }
+            else
+                {
+                // we check all of this tool's connections to see if any are to be removed,
+                // in which case we flag the child tool for update
+                for (int i=0; i<[element numOutlets]; i++)
+                    {
+                    Outlet* theOutlet = [element outletIndexed:i];
+                    for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                        {
+                        Connection* c = [theOutlet connectionWithIndex:j];
+                        if ( [c isSelected] == YES )
+                            [toolsToUpdate addObject:[[c inlet] toolOwner]];
+                        }
+                    }
+               }
+                
+            }
+            
+        // some of the tools that are to be deleted may have been flaged for 
+        // update...we need to remove those tools
+        for (int i=0; i<[toolsToRemove count]; i++)
+            {
+            Tool* tr = [toolsToRemove objectAtIndex:i];
+            for (int j=0; j<[toolsToUpdate count]; j++)
+                {
+                Tool* tu = [toolsToUpdate objectAtIndex:j];
+                if ( tr == tu )
+                    {
+                    [toolsToUpdate removeObject:tu];
+                    break;
+                    }
+                }
+            }
+            
+        // remove the connections and tools
+		[self removeSelectedConnections];
+        [self removeSelectedItems];
+
+        // update the tools that need to be updated
+        enumerator = [toolsToUpdate objectEnumerator];
+        while ( (element = [enumerator nextObject]) )
+            {
+            [element updateForChangeInState];
+            }
+		}
 }
 
 - (NSBezierPath*)makePathForNumber:(int)n {

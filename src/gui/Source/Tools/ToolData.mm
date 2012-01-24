@@ -201,17 +201,13 @@
         std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
 }
 
-- (void)instantiateDataInspector {
-
-    if (dataInspector != nil)
-        [dataInspector release];
-    dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
-    [dataInspector window];
-}
-
 - (void)makeDataInspector {
 
-    [self instantiateDataInspector];
+    NSLog(@"start makeDataInspector");
+    [self removeDataInspector];
+    dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
+    [dataInspector window];
+    NSLog(@"end makeDataInspector");
 }
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd {
@@ -344,7 +340,7 @@
 
 - (void)updateForChangeInState {
 
-    NSLog(@"updateForChangeInState in ToolData");
+    NSLog(@"updateForChangeInState in ToolData (%@)", self);
     // send the message on up the chain for signaling downstream tools
     [super updateForChangeInState];
 }

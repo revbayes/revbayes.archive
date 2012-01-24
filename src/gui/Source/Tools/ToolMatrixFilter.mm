@@ -1,3 +1,4 @@
+#import "Inlet.h"
 #import "InOutlet.h"
 #import "RbData.h"
 #import "RevBayes.h"
@@ -124,11 +125,13 @@
 
 - (void)updateForChangeInState {
 
+    [self startProgressIndicator];
+    
     // set the tool state to unresolved
     [self setIsResolved:NO];
     
-    // set up an array of parent tools that contain data
-    NSMutableArray* dataTools = [NSMutableArray arrayWithCapacity:1];
+    // set up an array of outlets from parent tools
+    NSMutableArray* dataOutlets = [NSMutableArray arrayWithCapacity:1];
     for (int i=0; i<[self numInlets]; i++)
         {
         Inlet* theInlet = [self inletIndexed:i];
@@ -137,13 +140,13 @@
             {
             if ( [t isKindOfClass:[ToolData class]] == YES )
                 {
-                [dataTools addObject:t];
+                [dataOutlets addObject:[theInlet getMyOutlet]];
                 }
             }
         }
-    	
+        
 	// update the state of this tool depending upon the state/presence of the parent tool
-	if ( [dataTools count] == 0 )
+	if ( [dataOutlets count] == 0 )
 		{
 		// we don't have a parent tool that contains data
 		[self removeAllDataMatrices];
@@ -155,24 +158,29 @@
         // check to see if our current data is simply a copy of the data in the parents, in which case
         // we don't need to do anything
         NSMutableArray* parentDataMatrices = [NSMutableArray arrayWithCapacity:1];
-        for (int i=0; i<[dataTools count]; i++)
+        for (int i=0; i<[dataOutlets count]; i++)
             {
-            ToolData* t = [dataTools objectAtIndex:i];
-            for (int j=0; j<[t numDataMatrices]; j++)
+            Outlet* ol = [dataOutlets objectAtIndex:i];
+            ToolData* t = (ToolData*)[ol toolOwner];
+            if ( [ol toolColor] == [NSColor greenColor] )
                 {
-                RbData* d = [t dataMatrixIndexed:j];
-                [parentDataMatrices addObject:d];
+                [parentDataMatrices addObjectsFromArray:[t getAlignedData]];
+                }
+            else if ( [ol toolColor] == [NSColor cyanColor] )
+                {
+                [parentDataMatrices addObjectsFromArray:[t getUnalignedData]];
                 }
             }
+        int numFound = 0;
         for (int i=0; i<[dataMatrices count]; i++)
             {
             RbData* myDataMatrix = [dataMatrices objectAtIndex:i];
             for (int j=0; j<[parentDataMatrices count]; j++)
                 {
                 RbData* parentDataMatrix = [parentDataMatrices objectAtIndex:j];
-                if ( parentDataMatrix == myDataMatrix )
+                if ( parentDataMatrix == [myDataMatrix copiedFrom] )
                     {
-                    [parentDataMatrices removeObject:parentDataMatrix];
+                    numFound++;
                     break;
                     }
                 }
@@ -180,7 +188,7 @@
             
         // remove all of the data matrices if each and every data matrix in this tool is not
         // a copy of the data matrices in the parents
-        if ([parentDataMatrices count] != 0)
+        if ( [parentDataMatrices count] != numFound )
             {
             [self removeAllDataMatrices];
             for (int i=0; i<[parentDataMatrices count]; i++)
@@ -197,7 +205,9 @@
             [self makeDataInspector];
             }
 		}
-            
+        
+    [self stopProgressIndicator];
+
     // send the message on up the chain for signaling downstream tools
     [super updateForChangeInState];
 }

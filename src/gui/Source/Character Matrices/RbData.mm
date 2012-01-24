@@ -169,9 +169,9 @@
 		{
 		// allocate an array holding the data
 		data            = [[NSMutableArray alloc] init];
-		name            = [[NSString alloc] init];
+		name            = [[NSString alloc] initWithString:@""];
 		taxonNames      = [[NSMutableArray alloc] init];
-        alignmentMethod = [[NSString alloc] init];
+        alignmentMethod = [[NSString alloc] initWithString:@""];
 		
 		// allocate sets keeping track of excluded taxa and characters
 		excludedTaxa        = [[NSMutableSet alloc] init];
@@ -188,8 +188,8 @@
 			numCharacters         = [d numCharacters];
 			dataType              = [d dataType];
             isHomologyEstablished = [d isHomologyEstablished];
-			name                  = [NSString stringWithString:[d name]];
-            alignmentMethod       = [NSString stringWithString:[d alignmentMethod]];
+            [self setName:[d name]];
+            [self setAlignmentMethod:[d alignmentMethod]];
             if ( [d copiedFrom] == nil )
                 copiedFrom = d;
             else
