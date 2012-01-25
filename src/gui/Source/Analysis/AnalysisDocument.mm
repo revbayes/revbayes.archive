@@ -131,6 +131,8 @@
 
 - (void)dealloc {
 
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"boundsChangeNotification"                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NSTableViewSelectionDidChangeNotification" object:nil];
 	[splitViewDelegate release];
     [analyses release];
 	[super dealloc];
@@ -168,7 +170,7 @@
 
 - (NSFileWrapper*)fileWrapperOfType:(NSString*)typeName error:(NSError**)outError {
 
-    NSLog(@"saving data file");
+    NSLog(@"begin saving file");
 
 	// create the file wrapper directory
 	NSFileWrapper* fw = [[NSFileWrapper alloc] initDirectoryWithFileWrappers:nil];
@@ -193,6 +195,7 @@
 		return nil;
 		}
 	[fw addRegularFileWithContents:settingsData preferredFilename:@"settings"];
+    NSLog(@"end saving file");
 	
     NSLog(@"finished saving data file");
     

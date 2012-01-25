@@ -288,7 +288,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 }
 
 - (void)keyDown:(NSEvent*)event {
-
+NSLog(@"keyDown in RbView");
 	// inactivate the timer, if it is still going
 	if ([analysisDocumentPtr isRbTimerActive] == YES)
 		[analysisDocumentPtr invalidateTimer];

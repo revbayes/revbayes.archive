@@ -14,11 +14,13 @@
     NSMutableArray*               outlets;
 	int                           flagCount;
 	BOOL                          touchOnRevival;
+    BOOL                          isVisited;
     YRKSpinningProgressIndicator* progressIndicator;
 }
 
 @property (readwrite) int flagCount;
 @property (readwrite) BOOL touchOnRevival;
+@property (readwrite) BOOL isVisited;
 
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;
@@ -28,12 +30,14 @@
 - (InOutlet*)findInOutletWithColor:(NSColor*)c;
 - (Tool*)getParentToolOfInlet:(Inlet*)inlt;
 - (Tool*)getParentToolOfInletIndexed:(int)idx;
+- (BOOL)hasParents;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName;
 - (Inlet*)inletIndexed:(int)idx;
 - (void)initializeImage;
 - (BOOL)isFullyConnected;
+- (BOOL)isSomeParentVisited;
 - (int)numInlets;
 - (int)numInletsOfColor:(NSColor*)c;
 - (int)numOutlets;

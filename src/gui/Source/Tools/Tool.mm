@@ -13,6 +13,7 @@
 
 @synthesize flagCount;
 @synthesize touchOnRevival;
+@synthesize isVisited;
 
 - (void)addInletOfColor:(NSColor*)c {
 
@@ -102,6 +103,21 @@
     return t;
 }
 
+- (BOOL)hasParents {
+
+    int numParents = 0;
+	NSEnumerator* enumerator = [inlets objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+        {
+        numParents += [element numberOfConnections];
+        }
+
+    if (numParents > 0)
+        return YES;
+    return NO;
+}
+
 - (id)init {
 
     self = [self initWithScaleFactor:1.0];
@@ -179,6 +195,23 @@
         }
 
     return YES;
+}
+
+- (BOOL)isSomeParentVisited {
+
+	NSEnumerator* enumerator = [inlets objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+        {
+        for (int i=0; i<[element numberOfConnections]; i++)
+            {
+            Connection* c = [element connectionWithIndex:i];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isVisited] == YES )
+                return YES;
+            }
+        }
+    return NO;
 }
 
 - (int)numInlets {

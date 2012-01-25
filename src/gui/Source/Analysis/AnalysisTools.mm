@@ -34,7 +34,7 @@
      if ( (self = [super init]) ) 
 		{
         [self setAnalysisName:@"My Analysis"];
-		tools = [[NSMutableArray alloc] init];
+		tools            = [[NSMutableArray alloc] init];
 		notebookContents = [[NSAttributedString alloc] initWithString:@""];
 
 		// allocate the note book
