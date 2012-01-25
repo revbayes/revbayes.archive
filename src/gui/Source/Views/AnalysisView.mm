@@ -121,7 +121,6 @@
             }
         }
     [dpa addObject:t];
-    NSLog(@"visiting tool: %@", t);
 }
 
 - (float)distanceFromPoint:(NSPoint)a toPoint:(NSPoint)b {
@@ -1151,10 +1150,6 @@
 }
 
 - (void)keyDown:(NSEvent*)event {
-
-#   if 1
-
-    NSLog(@"keyDown in AnalysisView");
     
 	// inactivate the timer, if it is still going
 	if ([analysisDocumentPtr isRbTimerActive] == YES)
@@ -1166,6 +1161,8 @@
     unichar character = [chars characterAtIndex:0];
     if (character == NSDeleteCharacter)
 		{
+        // we are deleting stuff!
+        
         // make a list of tools that will be deleted
         NSMutableArray* toolsToRemove = [NSMutableArray arrayWithCapacity:0];
         NSEnumerator* toolEnumerator = [itemsPtr objectEnumerator];
@@ -1175,12 +1172,10 @@
             if ( [element isSelected] == YES )
                 [toolsToRemove addObject:element];
             }
-        NSLog(@"toolsToRemove = %@", toolsToRemove);
             
         // initialize the depth-first traversal order for the graph of tools
         NSMutableArray* depthFirstOrder = [NSMutableArray arrayWithCapacity:0];
         [self initializeDepthFirstOrderForTools:depthFirstOrder];
-        NSLog(@"depthFirstOrder = %@", depthFirstOrder);
         
         // mark mark all tools as having not been visited
         toolEnumerator = [itemsPtr objectEnumerator];
@@ -1191,9 +1186,29 @@
         toolEnumerator = [toolsToRemove objectEnumerator];
         while ( (element = [toolEnumerator nextObject]) )
             [element setIsVisited:YES];
+            
+        // we may also be removing connections, in which case we also have to
+        // mark tools downstream from removed connections as having been visited
+        toolEnumerator = [itemsPtr objectEnumerator];
+        while ( (element = [toolEnumerator nextObject]) )
+            {
+            for (int i=0; i<[element numOutlets]; i++)
+                {
+                Outlet* o = [element outletIndexed:i];
+                for (int j=0; j<[o numberOfConnections]; j++)
+                    {
+                    Connection* c = [o connectionWithIndex:j];
+                    if ( [c isSelected] == YES )
+                        {
+                        Tool* t = [[c inlet] toolOwner];
+                        [t setIsVisited:YES];
+                        }
+                    }
+                }
+            }
         
-        // mark tools downstream from t as visited
-        toolEnumerator = [depthFirstOrder objectEnumerator];
+        // mark tools downstream from removed tools/connections as visited
+        toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
         while ( (element = [toolEnumerator nextObject]) )
             {
             if ([element isSomeParentVisited] == YES)
@@ -1211,115 +1226,16 @@
         
         // and remove the tools from the depth-first array
         [depthFirstOrder removeObjectsInArray:toolsToRemove];
-        NSLog(@"depthFirstOrder = %@", depthFirstOrder);
         
         // update tools in need of update
-        toolEnumerator = [depthFirstOrder objectEnumerator];
+        toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
         while ( (element = [toolEnumerator nextObject]) )
             {
-            NSLog(@"dps = %@", element);
             if ( [element isVisited] == YES )
-                {
-                NSLog(@"update tool %@", element);
-                }
+                [element updateForChangeInState];
             }
                 
         }
-
-#   else
-	// inactivate the timer, if it is still going
-	if ([analysisDocumentPtr isRbTimerActive] == YES)
-		[analysisDocumentPtr invalidateTimer];
-	[self stopItemTipTimer];
-
-    // maybe we're deleting stuff
-    NSString *chars = [event characters];
-    unichar character = [chars characterAtIndex:0];
-    if (character == NSDeleteCharacter)
-		{
-        //[self updateToolsDownstreamFromTool:(Tool*)t];
-
-        // clean
-        [toolsToRemove removeAllObjects];
-        [toolsToUpdate removeAllObjects];
-
-        // make two lists, one containing the tools that will be removed and the
-        // other containing the tools that are in need of update
-        NSEnumerator* enumerator = [itemsPtr objectEnumerator];
-        id element;
-        while ( (element = [enumerator nextObject]) )
-            {
-            if ( [element isSelected] == YES )
-                {
-                // we add the tool to the list of tools that will be removed and
-                // also flag all of its children for update
-                [toolsToRemove addObject:element];
-                for (int i=0; i<[element numOutlets]; i++)
-                    {
-                    Outlet* theOutlet = [element outletIndexed:i];
-                    for (int j=0; j<[theOutlet numberOfConnections]; j++)
-                        {
-                        Connection* c = [theOutlet connectionWithIndex:j];
-                        Tool* t = [[c inlet] toolOwner];
-                        [toolsToUpdate addObject:t];
-                        }
-                    }
-                }
-            else
-                {
-                // we check all of this tool's connections to see if any are to be removed,
-                // in which case we flag the child tool for update
-                for (int i=0; i<[element numOutlets]; i++)
-                    {
-                    Outlet* theOutlet = [element outletIndexed:i];
-                    for (int j=0; j<[theOutlet numberOfConnections]; j++)
-                        {
-                        Connection* c = [theOutlet connectionWithIndex:j];
-                        if ( [c isSelected] == YES )
-                            [toolsToUpdate addObject:[[c inlet] toolOwner]];
-                        }
-                    }
-               }
-                
-            }
-NSLog(@"before");
-NSLog(@"toolsToUpdate = %@", toolsToUpdate);
-NSLog(@"toolsToRemove = %@", toolsToRemove);
-
-        // some of the tools that are to be deleted may have been flaged for 
-        // update...we need to remove those tools
-        for (int i=0; i<[toolsToRemove count]; i++)
-            {
-            Tool* tr = [toolsToRemove objectAtIndex:i];
-            for (int j=0; j<[toolsToUpdate count]; j++)
-                {
-                Tool* tu = [toolsToUpdate objectAtIndex:j];
-                if ( tr == tu )
-                    {
-                    [toolsToUpdate removeObject:tu];
-                    break;
-                    }
-                }
-            }
-NSLog(@"after");
-NSLog(@"toolsToUpdate = %@", toolsToUpdate);
-NSLog(@"toolsToRemove = %@", toolsToRemove);
-            
-        // remove the connections and tools
-NSLog(@"removeSelectedConnections");
-		[self removeSelectedConnections];
-NSLog(@"removeSelectedItems");
-        [self removeSelectedItems];
-
-NSLog(@"update");
-        // update the tools that need to be updated
-        enumerator = [toolsToUpdate objectEnumerator];
-        while ( (element = [enumerator nextObject]) )
-            {
-            [element updateForChangeInState];
-            }
-		}
-#   endif
 }
 
 - (NSBezierPath*)makePathForNumber:(int)n {
@@ -2283,6 +2199,41 @@ NSLog(@"update");
     bkgrndColor = [[notification object] analysisBkgrndColor];
     gridColor   = [[notification object] analysisGridColor];
     [self setNeedsDisplay:YES];
+}
+
+- (void)updateToolsDownstreamFromTool:(Tool*)t {
+
+    // initialize the depth-first traversal order for the graph of tools
+    NSMutableArray* depthFirstOrder = [NSMutableArray arrayWithCapacity:0];
+    [self initializeDepthFirstOrderForTools:depthFirstOrder];
+    
+    // mark mark all tools as having not been visited
+    NSEnumerator* toolEnumerator = [itemsPtr objectEnumerator];
+    id element;
+    while ( (element = [toolEnumerator nextObject]) )
+        [element setIsVisited:NO];
+        
+    // mark the tool of interest as having been visited
+    [t setIsVisited:YES];
+
+    // mark tools downstream from removed tools/connections as visited
+    toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
+    while ( (element = [toolEnumerator nextObject]) )
+        {
+        if ([element isSomeParentVisited] == YES)
+            [element setIsVisited:YES];
+        }
+        
+    // unmark the tool of interest
+    [t setIsVisited:NO];
+
+    // update tools in need of update
+    toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
+    while ( (element = [toolEnumerator nextObject]) )
+        {
+        if ( [element isVisited] == YES )
+            [element updateForChangeInState];
+        }
 }
 
 - (void)writeToPasteboard:(NSPasteboard*)pb {

@@ -203,11 +203,9 @@
 
 - (void)makeDataInspector {
 
-    NSLog(@"start makeDataInspector");
     [self removeDataInspector];
     dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
     [dataInspector window];
-    NSLog(@"end makeDataInspector");
 }
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd {
@@ -340,9 +338,6 @@
 
 - (void)updateForChangeInState {
 
-    NSLog(@"updateForChangeInState in ToolData (%@)", self);
-    // send the message on up the chain for signaling downstream tools
-    [super updateForChangeInState];
 }
 
 @end

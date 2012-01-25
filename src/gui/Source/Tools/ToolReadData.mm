@@ -15,6 +15,7 @@
 #include "VariableSlot.h"
 #include "Workspace.h"
 
+#import "AnalysisView.h"
 #import "InOutlet.h"
 #import "RbData.h"
 #import "RevBayes.h"
@@ -273,7 +274,7 @@
         }
     else
         {
-            [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
         return NO;
         }
@@ -287,6 +288,9 @@
 
     if ( Workspace::userWorkspace()->existsVariable(variableName) )
         std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
+        
+    [self setIsResolved:YES];
+    [myAnalysisView updateToolsDownstreamFromTool:self];
 
 	return YES;
 }
@@ -319,6 +323,11 @@
 	[controlWindow showWindow:self];
 	[[controlWindow window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[controlWindow window]];
+}
+
+- (void)updateForChangeInState {
+
+    NSLog(@"updateForChangeInState in %@", self);
 }
 
 @end

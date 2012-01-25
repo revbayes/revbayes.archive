@@ -1,4 +1,5 @@
 #import "AlignmentTask.h"
+#import "AnalysisView.h"
 #import "RbData.h"
 #import "Connection.h"
 #import "RbData.h"
@@ -397,8 +398,7 @@
     // turn the indeterminate progress bar off
     [self stopProgressIndicator];
 
-
-    [self updateForChangeInState];
+    [myAnalysisView updateToolsDownstreamFromTool:self];
 }
 
 
@@ -435,6 +435,11 @@
     
 - (void)taskCompleted {
 
+}
+
+- (void)updateForChangeInState {
+
+    NSLog(@"updateForChangeInState in %@", self);
 }
 
 @end

@@ -28,7 +28,7 @@
         [connections addObject:c];
         [theInlet addConnection:c];
         [c release];
-        [[theInlet toolOwner] updateForChangeInState];
+        [[self toolOwner] updateDownstreamTools];
         }
 }
 
@@ -148,8 +148,6 @@
 
     if ( [connections containsObject:c] == YES )
         {
-        //Tool* t = [[c inlet] toolOwner];
-        //[t updateForChangeInState];
         [[c inlet] removeConnection];
         [connections removeObject:c];
         }

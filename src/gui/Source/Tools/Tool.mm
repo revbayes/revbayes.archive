@@ -316,14 +316,6 @@
         Outlet* theOutlet = [element outlet];
         [theOutlet removeConnection:element];
         }
-        
-    // finally, we update the tools downstream from this tool
-	enumerator = [myToolSet objectEnumerator];
-	while ( (element = [enumerator nextObject]) )
-        {
-        Tool* t = element;
-        [t updateForChangeInState];
-        }
 }
 
 - (void)removeAllConnectionsToInlets {
@@ -340,9 +332,6 @@
             [theOutlet removeConnection:c];
             }
         }
-        
-    // finally, signal tools downstream from this tool
-    [self updateForChangeInState];
 }
 
 - (void)removeAllConnectionsToOutlets {
@@ -364,14 +353,6 @@
             [myToolSet addObject:t];
             [theOutlet removeConnection:c];
             }
-        }
-                
-    // finally, we update the tools downstream from this tool
-	enumerator = [myToolSet objectEnumerator];
-	while ( (element = [enumerator nextObject]) )
-        {
-        Tool* t = element;
-        [t updateForChangeInState];
         }
 }
 
@@ -423,9 +404,6 @@
         Outlet* theOutlet = [key objectForKey:key];
         [theOutlet removeConnection:c];
         }
-        
-    // finally, signal tools downstream from this tool
-    [self updateForChangeInState];
 }
 
 - (NSMutableAttributedString*)sendTip {
@@ -481,21 +459,6 @@
 
 }
 
-- (void)signalDownstreamTools {
-
-	NSEnumerator* enumerator = [outlets objectEnumerator];
-	id element;
-	while ( (element = [enumerator nextObject]) )
-        {
-        for (int i=0; i<[element numberOfConnections]; i++)
-            {
-            Connection* c = [element connectionWithIndex:i];
-            Tool* t = [[c inlet] toolOwner];
-            [t updateForChangeInState];
-            }
-        }
-}
-
 - (void)startProgressIndicator {
 
     // get the size and position of the frame to hold the progress indicator
@@ -529,19 +492,13 @@
     progressIndicator = nil;
 }
 
+- (void)updateDownstreamTools {
+
+    [myAnalysisView updateToolsDownstreamFromTool:self];
+}
+
 - (void)updateForChangeInState {
 
-	NSEnumerator* enumerator = [outlets objectEnumerator];
-	id element;
-	while ( (element = [enumerator nextObject]) )
-        {
-        for (int i=0; i<[element numberOfConnections]; i++)
-            {
-            Connection* c = [element connectionWithIndex:i];
-            Tool* t = [[c inlet] toolOwner];
-            [t updateForChangeInState];
-            }
-        }
 }
 
 @end

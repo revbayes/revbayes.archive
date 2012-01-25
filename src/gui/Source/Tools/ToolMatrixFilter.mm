@@ -125,6 +125,8 @@
 
 - (void)updateForChangeInState {
 
+    NSLog(@"updateForChangeInState in %@", self);
+
     [self startProgressIndicator];
     
     // set the tool state to unresolved
@@ -188,7 +190,7 @@
             
         // remove all of the data matrices if each and every data matrix in this tool is not
         // a copy of the data matrices in the parents
-        if ( [parentDataMatrices count] != numFound )
+        if ( [parentDataMatrices count] != numFound || [parentDataMatrices count] != [dataMatrices count] )
             {
             [self removeAllDataMatrices];
             for (int i=0; i<[parentDataMatrices count]; i++)
@@ -207,9 +209,6 @@
 		}
         
     [self stopProgressIndicator];
-
-    // send the message on up the chain for signaling downstream tools
-    [super updateForChangeInState];
 }
 
 @end

@@ -203,8 +203,6 @@
 		BOOL isSuccessful = [myTool readDataFile];
 		if (isSuccessful == YES)
 			{
-			[myTool updateForChangeInState];
-            [myTool setIsResolved:YES];
 			}
 		else 
 			{

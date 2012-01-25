@@ -60,7 +60,7 @@
 - (void)showInspectorPanel;
 - (void)startProgressIndicator;
 - (void)stopProgressIndicator;
-- (void)signalDownstreamTools;
 - (void)updateForChangeInState;
+- (void)updateDownstreamTools;
 
 @end
