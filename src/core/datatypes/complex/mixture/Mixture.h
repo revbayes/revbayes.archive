@@ -69,14 +69,14 @@ public:
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
     void                            indexAllocationVector();                                                //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
-    const RbPtr<DagNodeContainer>&  getParameter(unsigned int classId);                                             //!< Get the vector of parameter values associated to the classe classId
+    const RbPtr<DagNodeContainer>&  getParameter(unsigned int classId);                                     //!< Get the vector of parameter values associated to the classe classId
 
     
 private:
     static const TypeSpec           typeSpec_;                                                              
     RbPtr<DagNodeContainer>         allocationVector_;                                                      //!< Vector allocating elements to cluster indices
     RbPtr<DagNodeContainer>         parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
-    RbPtr<DagNodeContainer>         observations_;                                                         //!< Vector containing the elements on which the mixture is operating
+    RbPtr<DagNodeContainer>         observations_;                                                          //!< Vector containing the elements on which the mixture is operating
     VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
     VectorRealPos                   classProbabilities_;                                                    //!< Vector giving class probabilities
 };

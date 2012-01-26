@@ -1,0 +1,91 @@
+# Phylogenetic model with site-specific rates according to a mixture with a pre-specified number of categories. 
+
+# By Bastien Boussau and Tracy Heath
+
+# Function that creates the model from nucleotidic matrix D. 
+function Model mixtureSiteRateHet("data" = NucleotideMatrix D, "numberOfRates" = Real+ num_rates) {
+
+#Prior for the rates
+lambda_rate_prior <- 2.0
+
+#Draw cluster for each site
+# cluster_indices contains indices to assign rates to each site
+cluster_indices <- randomIntegerVector(0, num_rates - 1, D.nsites()) 	# randomIntegerVector function generates an assignment vector based on the indices of classes and number of sites, e.g. (0,1,1,2,2,1,2,1,0)
+
+#Draw rate for each cluster of sites 
+for (j in 0:num_rates -1 ) {  
+rates[j] ~ exp(lambda_rate_prior)  # G_0 is an exponential(2)
+}
+
+#Draw probabilities for each cluster
+for (j in 0:num_rates -1 ) {  
+uniformVector[i] = 1
+}
+probabilityVector ~ dirichlet(uniformVector)
+
+
+#The Mixture constructor links the allocation vector (cluster_indices), the observation vector (rates), and the probability vector (probabilityVector) together into a coherent DAG on which computations can be performed.
+rateMixture <- mixture(cluster_indices, rates, probabilityVector)
+
+####End of DPP-related computations
+
+# Create random variable drawn from a uniform topology distribution
+tau ~ unifTopology( numberTaxa=D.ntaxa(), tipNames=D.names(), isRooted=true, isBinary=true )
+
+# Create the tree plate that is ordered by the topology
+tree <- treeplate(tau)
+
+# Add variables to the tree plate
+tree.addVariable("l_branch", "Real+") #branch length
+
+# Now we can specify the model by using the tree functions for generating node or branch
+# indices. In rooted trees, T.anc(i) would simply give the ancestral node index with respect
+# to the root.
+
+pi_prior <- v(1, 1, 1, 1)
+exchange_prior <- v(1, 1, 1, 1, 1, 1)
+
+#Parameters of the root:
+pi ~ dirichlet(pi_prior)
+exchange ~ dirichlet(exchange_prior)
+
+NucleotideMatrix dna_state
+
+lambda <- 1.0
+nodeCount <- tree.nnodes()
+siteCount <- D.nsites()
+
+for (i in nodeCount:1) {
+
+node <- tree.node(i)
+
+if (node.isRoot()) {   
+for (j in 1:siteCount) {
+dna_state[i][j] ~ categorical(pi)
+}
+}
+else {
+parent <- node.ancestor()
+parentIndex[i] <- tree.index(parent)	
+bl[i] ~ exp(lambda)
+Q[i] := gtr(pi, exchange)
+
+if (node.isTip()) {
+for (j in 1:siteCount) {
+dna_state[i][j] ~ ctmc(Q[i], bl[i]*rates[j], dna_state[parentIndex[i]][j])
+clamp(dna_state[i][j], D[i][j])
+}
+}
+else {
+for (j in 1:siteCount) {
+dna_state[i][j] ~ ctmc(Q[i], bl[i]*rates[j], dna_state[parentIndex[i]][j])
+
+}
+}	
+}
+}
+
+return model(pi)
+
+}
+
