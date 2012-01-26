@@ -44,7 +44,6 @@ class Func_distance :  public RbFunction {
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
-
 };
 
 #endif
