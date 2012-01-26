@@ -454,6 +454,42 @@
 - (void)updateForChangeInState {
 
     NSLog(@"updateForChangeInState in %@", self);
+
+    // find the parent of this tool, which should be an instance of ToolReadData
+    ToolReadData* dataTool = nil;
+    for (int i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (int j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            NSString* className = NSStringFromClass([t class]); 
+            if ( [className isEqualToString:@"ToolReadData"] == YES )
+                dataTool = (ToolReadData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        {
+        [self removeAllDataMatrices];
+        return;
+        }
+
+    // calculate how many unaligned data matrices exist
+    NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == NO )
+            [unalignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+    if ( [unalignedData count] == 0 )
+        {
+        [self removeAllDataMatrices];
+        return;
+        }
+        
+    // we are connected to a ToolReadData and that tool has some unaligned data in it
+        
 }
 
 @end
