@@ -34,13 +34,13 @@
 - (void)alignFile:(id)fInfo {
 
     // get the file path and name of the file to align
-    NSMutableArray* args = (NSMutableArray*)fInfo;
+    NSMutableArray* args         = (NSMutableArray*)fInfo;
     NSString* temporaryDirectory = [NSString stringWithString:[args objectAtIndex:0]];
     NSString* fileName           = [NSString stringWithString:[args objectAtIndex:1]];
     NSString* workingDirectory   = [NSString stringWithString:temporaryDirectory];
-    workingDirectory             = [workingDirectory stringByAppendingString:[args objectAtIndex:2]];
-    NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
-    dFilePath = [dFilePath stringByAppendingString:fileName];
+              workingDirectory   = [workingDirectory stringByAppendingString:[args objectAtIndex:2]];
+    NSString* dFilePath          = [NSString stringWithString:temporaryDirectory];
+              dFilePath          = [dFilePath stringByAppendingString:fileName];
     
     // collect the clustal arguments
     NSString* clustalMultipleAlignArg        = [NSString stringWithString: @"-ALIGN"];

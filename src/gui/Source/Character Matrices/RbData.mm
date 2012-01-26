@@ -334,6 +334,11 @@
 		}
 }
 
+- (void)setCopiedFrom:(RbData*)d {
+
+    copiedFrom = d;
+}
+
 - (NSString*)taxonWithIndex:(int)i {
 
 	return [taxonNames objectAtIndex:i];

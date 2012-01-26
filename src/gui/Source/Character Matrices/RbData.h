@@ -48,6 +48,7 @@
 - (void)print;
 - (void)restoreTaxonIndexed:(int)idx;
 - (void)restoreCharacterIndexed:(int)idx;
+- (void)setCopiedFrom:(RbData*)d;
 - (void)writeToFile:(NSString*)fn;
 - (NSString*)taxonWithIndex:(int)i;
 
