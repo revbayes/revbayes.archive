@@ -38,7 +38,7 @@ class Character : public Categorical {
         virtual const VectorString&     getClass(void) const;                      //!< Get class vector
         virtual std::string             richInfo(void) const = 0;                  //!< Complete info about object
         
-        virtual bool                    getIsGapState(void) const = 0;                   //!< Get whether this is a gapped character state
+        virtual bool                    getIsGapState(void) const = 0;             //!< Get whether this is a gapped character state
         virtual size_t                  getNumberOfStates(void) const { return 0; }//!< Get the number states for a character (return 0 in base class)
         virtual double                  getRealValue(void) const { return 0.0; }   //!< Return the double representation of the character
         virtual unsigned                getUnsignedValue(void) const { return 0; } //!< Get an unsigned representation of the bool set

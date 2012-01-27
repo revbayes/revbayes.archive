@@ -34,7 +34,6 @@
 #include "UserInterface.h"
 #include "Workspace.h"
 
-
 /* Primitive types (alphabetic order) */
 #include "AminoAcidState.h"
 #include "RbBoolean.h"
@@ -139,8 +138,6 @@
 #include "Func_sort.h"
 #include "Func_resize.h"
 
-
-
 /* Builtin templated functions */
 #include "Func_simplex.h"
 #include "Func_transpose.h"
@@ -157,11 +154,11 @@
 #include "Func_sqrt.h"
 
 /* Phylogeny functions */
+#include "Func_distance.h"
 #include "Func_gtr.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrees.h"
 #include "Func_CtmmTransitionProbabilities.h"
-
 
 #include <sstream>
 #include <vector>
@@ -192,7 +189,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbBoolean()                      );
         addType( new Complex()                        );
         addType( new CharacterContinuous()            );
-//        addType( new DnaState()                       );
+        //addType( new DnaState()                       );
         addType( new Integer()                        );
         addType( new Natural()                        );
         addType( new Probability()                    );
@@ -393,11 +390,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sqrt",      new Func_sqrt()  );
 
         /* Add phylogeny-related functions (alphabetical order) */
+        addFunction( "distances", new Func_distance()          );
         addFunction( "gtr",       new Func_gtr()               );
         addFunction( "read",      new Func_readCharacterData() );
         addFunction( "readTrees", new Func_readTrees()         );
         addFunction( "ctmmtp",    new Func_CtmmTransitionProbabilities()           );
-        addFunction( "ctmmTransitionProbabilities",   new Func_CtmmTransitionProbabilities());
+        addFunction( "ctmmTransitionProbabilities", new Func_CtmmTransitionProbabilities());
 
         /* Add builtin templated functions */
 //        addFunction( "simplex",   new Func_simplex<         Integer                                                         >() );

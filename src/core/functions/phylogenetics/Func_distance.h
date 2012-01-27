@@ -44,6 +44,8 @@ class Func_distance :  public RbFunction {
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+        double                      distanceP(RbPtr<const TaxonData> td1, RbPtr<const TaxonData> td2);
+        double                      distanceJC69(RbPtr<const TaxonData> td1, RbPtr<const TaxonData> td2);
 };
 
 #endif

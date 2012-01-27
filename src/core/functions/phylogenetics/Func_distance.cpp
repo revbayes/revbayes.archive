@@ -17,14 +17,20 @@
  */
 
 #include "CharacterData.h"
+#include "DnaState.h"
 #include "Func_distance.h"
 #include "MatrixReal.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "RnaState.h"
+#include "StringUtilities.h"
+#include "TaxonData.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
+#include "VectorReal.h"
 #include "VectorString.h"
+#include <cmath>
 #include <sstream>
 #include <vector>
 
@@ -46,16 +52,97 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction(void) {
     // get the information from the arguments for reading the file
     RbPtr<CharacterData> m( static_cast<CharacterData*>( (RbObject*)(*args)[0]->getValue() ) );
     RbPtr<RbString> dName( static_cast<RbString*>( (RbObject*)(*args)[1]->getValue() ) );
+    
+    // check that the data matrix is aligned
+    if ( m->getIsHomologyEstablished() == false )
+        throw( RbException("Data is not aligned") );
 
+    // check that we have DNA or RNA sequences
+    if  ( !(m->getDataType() == DnaState_name || m->getDataType() == RnaState_name) )
+        throw( RbException("Data must be DNA or RNA") );
+        
+    // determine the distance model
+    enum distanceModel { p_dist, jc69, k80, hky85 };
+    distanceModel myModel;
+    std::string distanceStr = dName->getValue();
+    StringUtilities::toLower(distanceStr);
+    if ( distanceStr == "p" )
+        myModel = p_dist;
+    else if ( distanceStr == "jc69" )
+        myModel = jc69;
+    else if ( distanceStr == "k80" )
+        myModel = k80;
+    else if ( distanceStr == "hky85" )
+        myModel = hky85;
+    else
+        throw( RbException("Unknown distance model \"" + distanceStr + "\"") );
+    
+    // get the dimensions of the distance matrix
+    int n = (int)m->getNumberOfTaxa();
 
-    //MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matrix(VectorReal_name) {
-    RbPtr<MatrixReal> d( new MatrixReal(4, 4, 0.0) );
+    // allocate the distance matrix
+    RbPtr<MatrixReal> d( new MatrixReal(n, n, 0.0) );
+    
+    // fill in the distance matrix
+    for (int i=0; i<n; i++)
+        {
+        RbPtr<const TaxonData> td_i = m->getTaxonData(i);
+        for (int j=i+1; j<n; j++)
+            {
+            RbPtr<const TaxonData> td_j = m->getTaxonData(j);
+            
+            double dist = 0.0;
+            if (myModel == p_dist)
+                dist = distanceP(td_i, td_j);
+            else if (myModel == jc69)
+                dist = distanceJC69(td_i, td_j);
+            else if (myModel == k80)
+                dist = distanceJC69(td_i, td_j);
+            else if (myModel == hky85)
+                dist = distanceJC69(td_i, td_j);
+            (*(*d)[i])[j] = dist;
+            (*(*d)[j])[i] = dist;
+            }
+        }
 
     return RbPtr<RbLanguageObject>( d );
-
-    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
+
+double Func_distance::distanceJC69(RbPtr<const TaxonData> td1, RbPtr<const TaxonData> td2) {
+
+    int numDiff = 0;
+    for (int c=0; c<td1->getNumberOfCharacters(); c++)
+        {
+        RbPtr<const Character> c1 = td1->getCharacter(c);
+        RbPtr<const Character> c2 = td2->getCharacter(c);
+        unsigned a = c1->getUnsignedValue();
+        unsigned b = c2->getUnsignedValue();
+        if (a != b)
+            numDiff++;
+        }
+    double p = (double)numDiff / td1->getNumberOfCharacters();
+    if (p >= 0.75)
+        return 10.0;
+    return -0.75 * log(1.0 - (4.0/3.0)*p);
+}
+
+
+double Func_distance::distanceP(RbPtr<const TaxonData> td1, RbPtr<const TaxonData> td2) {
+
+    int numDiff = 0;
+    for (int c=0; c<td1->getNumberOfCharacters(); c++)
+        {
+        RbPtr<const Character> c1 = td1->getCharacter(c);
+        RbPtr<const Character> c2 = td2->getCharacter(c);
+        unsigned a = c1->getUnsignedValue();
+        unsigned b = c2->getUnsignedValue();
+        if (a != b)
+            numDiff++;
+        }
+    double p = (double)numDiff / td1->getNumberOfCharacters();
+    return p;
+}
 
 /** Get argument rules */
 RbPtr<const ArgumentRules> Func_distance::getArgumentRules(void) const {
