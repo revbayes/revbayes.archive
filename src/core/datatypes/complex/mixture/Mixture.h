@@ -55,7 +55,7 @@ public:
     size_t                          getNumberOfClasses();                                                   //!< Get the number of classes in the mixture
     void                            addClass(RbPtr<DagNodeContainer>& parameters);                                                             //!< Add a new class to the mixture
     void                            removeClass(unsigned int classId);                                                          //!< Remove a class from the mixture
-    const RbPtr<DagNodeContainer>&  getParameters();                                         //!< Get the vector of parameter values associated to the classes of the mixture
+    RbPtr<DagNodeContainer>&        getParameters();                                         //!< Get the vector of parameter values associated to the classes of the mixture
     void                            setParameters(const RbPtr< DagNodeContainer>& parameters);         //!< Set the vector of parameter values associated to the classes of the mixture
     void                            setParameter(unsigned int classId, RbPtr<DagNodeContainer>& parameter);                                                    //!< Set the value of a parameter associated to a particular class
     VectorNatural                   getAllocationVector();                                                  //!< Get the allocation vector associating class indices to elements
@@ -69,7 +69,7 @@ public:
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
     void                            indexAllocationVector();                                                //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
-    const RbPtr<DagNodeContainer>&  getParameter(unsigned int classId);                                     //!< Get the vector of parameter values associated to the classe classId
+    RbPtr<DagNodeContainer>&        getParameter(unsigned int classId);                                     //!< Get the vector of parameter values associated to the classe classId
 
     
 private:

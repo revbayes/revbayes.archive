@@ -192,6 +192,12 @@ RbPtr<RbLanguageObject> Mixture::executeOperation(const std::string& name, const
       return new Natural(getNumberOfClasses());
     }
     else if (name == "getParameter") {
+      // get the name of the variable
+      const std::string& numString = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
+      std::stringstream ss(numString);
+      int num;
+      ss >> num;
+      
    //     unsigned int num = static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
    //     return getParameter(num);
         return RbPtr<RbLanguageObject>::getNullPtr();
@@ -207,6 +213,9 @@ RbPtr<RbLanguageObject> Mixture::executeOperation(const std::string& name, const
         setParameters ( params ) ;
         return RbPtr<RbLanguageObject>::getNullPtr();
     }
+  
+  
+  
     return RbPtr<RbLanguageObject>::getNullPtr();
     /*
     // special handling for adding a variable
