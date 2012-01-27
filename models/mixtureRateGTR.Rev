@@ -14,7 +14,7 @@ cluster_indices <- randomIntegerVector(0, num_rates - 1, D.nsites()) 	# randomIn
 
 #Draw rate for each cluster of sites 
 for (j in 0:num_rates -1 ) {  
-rates[j] ~ exp(lambda_rate_prior)  # G_0 is an exponential(2)
+rate_parameters[j] ~ exp(lambda_rate_prior)  # G_0 is an exponential(2)
 }
 
 #Draw probabilities for each cluster
@@ -23,9 +23,8 @@ uniformVector[i] = 1
 }
 probabilityVector ~ dirichlet(uniformVector)
 
-
 #The Mixture constructor links the allocation vector (cluster_indices), the observation vector (rates), and the probability vector (probabilityVector) together into a coherent DAG on which computations can be performed.
-rateMixture <- mixture(cluster_indices, rates, probabilityVector)
+rateMixture <- mixture(cluster_indices, rate_parameters, probabilityVector)
 
 ####End of DPP-related computations
 
@@ -72,13 +71,13 @@ Q[i] := gtr(pi, exchange)
 
 if (node.isTip()) {
 for (j in 1:siteCount) {
-dna_state[i][j] ~ ctmc(Q[i], bl[i]*rates[j], dna_state[parentIndex[i]][j])
+dna_state[i][j] ~ ctmc(Q[i], bl[i]*rateMixture.getObservation(j), dna_state[parentIndex[i]][j])
 clamp(dna_state[i][j], D[i][j])
 }
 }
 else {
 for (j in 1:siteCount) {
-dna_state[i][j] ~ ctmc(Q[i], bl[i]*rates[j], dna_state[parentIndex[i]][j])
+dna_state[i][j] ~ ctmc(Q[i], bl[i]*rateMixture.getObservation(j), dna_state[parentIndex[i]][j])
 
 }
 }	
@@ -89,3 +88,6 @@ return model(pi)
 
 }
 
+moves[0]<-reallocationMove(rateMixture)
+moves[1]<-probVecMove(rateMixture)
+moves[2]<-mscale(rateMixture.rate_parameters)

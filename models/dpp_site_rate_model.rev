@@ -11,18 +11,21 @@ function Model dppSiteRateHet("data" = NucleotideMatrix D, "expectedNumberOfRate
 expectedAlpha <- dppConFromExpNumClusters(num_rates, D.nsites())
 
 #Hyperprior for the concentration parameters
-alpha_rate ~ gamma(shape = 2, rate = 2/ expectedAlpha)
+alpha ~ gamma(shape = 2, rate = 2/ expectedAlpha)
 
 lambda_rate_prior <- 2.0
 
 #Draw clusters for each site
-# cluster_rate is the assignment to table indices for each site
-cluster_rate ~ dpp(alpha_rate, D.nsites()) 	# dpp function generates an assignment vector based on the concentration and number of diners, e.g. (0,1,1,2,2,1,2,1,0)
+# cluster_indices is the allocation vecotor
+cluster_indices ~ dppSeat(concentration=alpha, number=D.nsites()) 	# dppSeat function generates an assignment vector based on the concentration and number of diners, e.g. (0,1,1,2,2,1,2,1,0)
 
 #Draw rate for each cluster of sites 
-for (j in unique(cluster_rate)) {  
-    rate_unique[j] ~ exp(lambda_rate_prior)  # G_0 is an exponential(2)
+for (j in unique(cluster_indices)) {  
+    rate_parameters[j] ~ exp(lambda_rate_prior)  # G_0 is an exponential(2)
 }
+
+#The Mixture constructor links the allocation vector (cluster_indices), the observation vector (rates), and the probability vector (probabilityVector) together into a coherent DAG on which computations can be performed.
+rateMixture <- mixture(cluster_indices, rate_parameters, probabilityVector=None)
 
 ####End of DPP-related computations
 
@@ -69,13 +72,13 @@ for (i in nodeCount:1) {
 
    			if (node.isTip()) {
             	for (j in 1:siteCount) {
-            		dna_state[i][j] ~ ctmc(Q[i], bl[i]*rate_unique[cluster_rate[j]], dna_state[parentIndex[i]][j])
+            		dna_state[i][j] ~ ctmc(Q[i], bl[i]*rateMixture.getObservation(j), dna_state[parentIndex[i]][j])
             		clamp(dna_state[i][j], D[i][j])
             	}
         	}
     		else {
     			for (j in 1:siteCount) {
-	    			dna_state[i][j] ~ ctmc(Q[i], bl[i]*rate_unique[cluster_rate[j]], dna_state[parentIndex[i]][j])
+	    			dna_state[i][j] ~ ctmc(Q[i], bl[i]*rateMixture.getObservation(j), dna_state[parentIndex[i]][j])
 	    		
 	    		}
    			}	
@@ -85,4 +88,7 @@ for (i in nodeCount:1) {
 return model(pi)
 
 }
+
+moves[0]<-dppNeal8(rateMixture,alpha)
+moves[1]<-mslide(alpha)
 
