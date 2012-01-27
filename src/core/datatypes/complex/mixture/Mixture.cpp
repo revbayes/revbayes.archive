@@ -191,16 +191,25 @@ RbPtr<RbLanguageObject> Mixture::executeOperation(const std::string& name, const
     if (name == "getNumberOfClasses") {
       return new Natural(getNumberOfClasses());
     }
-    else if (name == "getParameter") {
-      // get the name of the variable
-      const std::string& numString = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
-      std::stringstream ss(numString);
-      int num;
-      ss >> num;
+    else if (name == "getParameter") {      
+      // get the member with given index
+      RbPtr<const Natural> index( static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue()) );
+      
+      if (parameters_->size() < (size_t)(index->getValue())) {
+        throw RbException("Index out of bounds in Mixture::getParameter");
+      }
+     // (DagNodeContainer*) getParameter(index->getValue());
+      return RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (DagNodeContainer*) getParameter(index->getValue()) ) );
+      
+//      
+//      const std::string& numString = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
+//      std::stringstream ss(numString);
+//      int num;
+//      ss >> num;
       
    //     unsigned int num = static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
    //     return getParameter(num);
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        //return RbPtr<RbLanguageObject>::getNullPtr();
 
     }
     else if (name == "getParameters") {
@@ -320,6 +329,12 @@ size_t Mixture::getNumberOfClasses() {
 void Mixture::setParameters(const RbPtr< DagNodeContainer>& parameters) {
     parameters_ = parameters;
 }
+
+/** Set the vector of parameter values associated to the classes of the mixture*/
+const RbPtr<DagNodeContainer>& Mixture::getParameter(unsigned int classId) {
+  return ( RbPtr<DagNodeContainer> ( &(parameters_[classId]) ) );
+}
+
 
 /** Get the vector containing elements on which the mixture operates*/
 RbPtr<DagNodeContainer> Mixture::getObservations() {
