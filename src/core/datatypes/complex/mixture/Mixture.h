@@ -55,18 +55,19 @@ public:
     
     // Mixture functions
     size_t                          getNumberOfClasses();                                                   //!< Get the number of classes in the mixture
-    void                            addClass(RbPtr<DagNodeContainer>& parameters);                                                             //!< Add a new class to the mixture
-    void                            removeClass(unsigned int classId);                                                          //!< Remove a class from the mixture
-    RbPtr<DagNodeContainer>&        getParameters();                                         //!< Get the vector of parameter values associated to the classes of the mixture
-    void                            setParameters(const RbPtr< DagNodeContainer>& parameters);         //!< Set the vector of parameter values associated to the classes of the mixture
+    void                            addClass(RbPtr<DagNodeContainer>& parameter);                           //!< Add a new class to the mixture
+    void                            removeClass(unsigned int classId);                                      //!< Remove a class from the mixture
+    RbPtr<DagNodeContainer>&        getParameters();                                                        //!< Get the vector of parameter values associated to the classes of the mixture
+    void                            setParameters(const RbPtr< DagNodeContainer>& parameters);              //!< Set the vector of parameter values associated to the classes of the mixture
     void                            setParameter(unsigned int classId, RbPtr<DagNodeContainer>& parameter);                                                    //!< Set the value of a parameter associated to a particular class
     VectorNatural                   getAllocationVector();                                                  //!< Get the allocation vector associating class indices to elements
     void                            setAllocationVector(Vector allocationVector);                           //!< Set the allocation vector associating class indices to elements
     void                            allocateElement (int elementId, int classId);                           //!< Change the class of a particular element
+    void                            allocateElementToNewClass (int elementId);                              //!< Change the class of a particular element
     VectorRealPos                   getClassProbabilities();                                                //!< Get the vector containing class probabilities
     void                            setClassProbabilities();                                                //!< Set the vector containing class probabilities
-    RbPtr<DagNodeContainer>         getObservations();                                                      //!< Get the vector containing elements on which the mixture operates
-    void                            setObservations(RbPtr<DagNodeContainer>& observations);                  //!< Set the vector containing elements on which the mixture operates
+    /*RbPtr<DagNodeContainer>         getObservations();                                                      //!< Get the vector containing elements on which the mixture operates
+    void                            setObservations(RbPtr<DagNodeContainer>& observations);                 //!< Set the vector containing elements on which the mixture operates*/
 
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
@@ -78,7 +79,7 @@ private:
     static const TypeSpec           typeSpec_;                                                              
     RbPtr<DagNodeContainer>         allocationVector_;                                                      //!< Vector allocating elements to cluster indices
     RbPtr<DagNodeContainer>         parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
-    RbPtr<DagNodeContainer>         observations_;                                                          //!< Vector containing the elements on which the mixture is operating
+    /*RbPtr<DagNodeContainer>         observations_;                                                        //!< Vector containing the elements on which the mixture is operating*/
     VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
     VectorRealPos                   classProbabilities_;                                                    //!< Vector giving class probabilities
 };

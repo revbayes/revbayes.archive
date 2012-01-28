@@ -339,6 +339,48 @@ size_t Mixture::getNumberOfClasses() {
     return parameters_->size();
 }
 
+/** Add a new class to the mixture */
+void Mixture::addClass(RbPtr<DagNodeContainer>& parameter) {                                                            
+  numberOfElementsInClasses_.push_back(0);
+  classProbabilities_.push_back(0.0);
+  parameters_->push_back(RbPtr<RbObject> ( static_cast<RbObject*> ( parameter ) ));
+}
+
+/* Remove a class from the mixture */
+void Mixture::removeClass(unsigned int classId) {
+  if (numberOfElementsInClasses_[classId] > 0 ) {
+    throw RbException("Trying to remove a non-empty class in Mixture::removeClass");
+  }
+  std::map <int, int> oldToNew;
+  for (unsigned int i = 0 ; i < numberOfElementsInClasses_.size() - 1; i++) {
+    if (i < classId) {
+      oldToNew[i] = i;
+    }
+    else {
+      if (i > classId) 
+        oldToNew[i] = i -1 ;
+      numberOfElementsInClasses_.getElement(i) = numberOfElementsInClasses_.getElement(i+1);
+    }
+  }
+  numberOfElementsInClasses_.pop_back();
+  VectorRealPos copy = classProbabilities_;
+  double multiplier = 1.0/ ( 1.0 - classProbabilities_[classId] );
+  classProbabilities_.clear();
+  for (unsigned int i = 0 ; i < copy.size(); i++) {
+    if (i != classId)
+      classProbabilities_.push_back(copy[i] * multiplier);
+  }
+
+  RbPtr<DagNodeContainer> copyParam = parameters_->clone();
+  parameters_->clear();
+  for (unsigned int i = 0 ; i < copy.size(); i++) {
+    if (i != classId)
+      parameters_->push_back(copyParam[i].clone());
+  }
+
+}
+
+
 /** Set the vector of parameter values associated to the classes of the mixture*/
 void Mixture::setParameters(const RbPtr< DagNodeContainer>& parameters) {
     parameters_ = parameters;
@@ -351,15 +393,15 @@ const RbPtr<DagNodeContainer>& Mixture::getParameter(unsigned int classId) {
 
 
 /** Get the vector containing elements on which the mixture operates*/
-RbPtr<DagNodeContainer> Mixture::getObservations() {
+/*RbPtr<DagNodeContainer> Mixture::getObservations() {
     
     return observations_;
-}
+}*/
 
 /** Set the vector containing elements on which the mixture operates*/
-void Mixture::setObservations(RbPtr<DagNodeContainer>& observations) {
+/*void Mixture::setObservations(RbPtr<DagNodeContainer>& observations) {
     observations_ = observations;
-}
+}*/
 
 /** Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1*/
 void Mixture::indexAllocationVector() {
