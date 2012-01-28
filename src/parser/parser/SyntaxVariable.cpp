@@ -171,7 +171,7 @@ VectorNatural SyntaxVariable::computeIndex( const RbPtr<Environment>& env ) {
         
         else {
             
-            const RbPtr<DAGNode>& indexVar = (*i)->evaluateContent( env )->getDagNode();
+            RbPtr<DAGNode> indexVar = (*i)->evaluateContent( env )->getDagNode();
             
             if ( indexVar->getValue()->isTypeSpec( TypeSpec(Integer_name) ) ) {
                 
