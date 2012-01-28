@@ -18,6 +18,9 @@
 #include "VectorString.h"
 #include "ValueRule.h"
 #include "DagNodeContainer.h"
+#include "DistributionDirichlet.h"
+#include "DistributionMultinomial.h"
+#include "RandomNumberFactory.h"
 
 #include <sstream>
 
@@ -52,13 +55,24 @@ Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContain
 }
 
 /* constructor */
-Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters, VectorRealPos& classProbabilities ) {
+Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters, VectorRealPos& classProbabilities ) : MutableMemberObject( getMemberRules() ) {
 
     allocationVector_ = allocationVector;
     parameters_ = parameters;
     classProbabilities_ = classProbabilities;
     computeNumberOfElementsInClasses();
 }
+/* constructor */
+Mixture::Mixture(const size_t numObservations, RbPtr<DagNodeContainer>& parameters) : MutableMemberObject( getMemberRules() ) {
+  parameters_ = parameters;
+  allocationVector_ = RbPtr< DagNodeContainer >(new DagNodeContainer (numObservations) );
+  std::vector<double> v(numObservations, 1.0);
+  RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
+  classProbabilities_ = RbStatistics::Dirichlet::rv(v, rng) ;
+  std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_.getValue(), (int)numObservations, rng);
+  indexAllocationVector();
+}
+
 
 /* Copy constructor */
 Mixture::Mixture(const Mixture& m) : MutableMemberObject( m ) {
@@ -345,6 +359,31 @@ RbPtr<DagNodeContainer> Mixture::getObservations() {
 /** Set the vector containing elements on which the mixture operates*/
 void Mixture::setObservations(RbPtr<DagNodeContainer>& observations) {
     observations_ = observations;
-    
-    
 }
+
+/** Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1*/
+void Mixture::indexAllocationVector() {
+  std::map<int, int> rvToNumber;
+  unsigned int maxIntSeen = 0;
+  //Renumber the allocation vector
+  for (unsigned int i = 0 ; i < allocationVector_->size() ; i++ ) { 
+    int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue();
+    if (rvToNumber.find(formerlyAssignedValue) != rvToNumber.end())
+      allocationVector_->setElement(i, RbPtr< RbObject >(new Integer(rvToNumber[formerlyAssignedValue])) );
+    else {
+      rvToNumber[static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue()] = maxIntSeen;
+      maxIntSeen = maxIntSeen +1;
+    }
+  }
+  //Renumber the classProbabilities_ vector
+  VectorRealPos copy = classProbabilities_;
+  for (unsigned int i = 0 ; i < classProbabilities_.size() ; i++ ) { 
+    classProbabilities_.getElement(i) = copy.getElement(rvToNumber[i] );
+  }
+}
+
+
+
+
+
+
