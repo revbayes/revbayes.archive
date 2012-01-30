@@ -64,6 +64,15 @@
     [super encodeWithCoder:aCoder];
 }
 
+- (void)execute {
+
+    NSLog(@"Executing tool %@", self);
+    
+    [self startProgressIndicator];
+    
+    [self stopProgressIndicator];
+}
+
 - (InOutlet*)findInOutletWithColor:(NSColor*)c {
 
 	NSEnumerator* enumerator = [inlets objectEnumerator];

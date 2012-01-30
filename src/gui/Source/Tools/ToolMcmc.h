@@ -13,6 +13,7 @@
 
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
+- (void)execute;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (NSMutableAttributedString*)sendTip;

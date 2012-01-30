@@ -132,6 +132,15 @@
 	[super encodeWithCoder:aCoder];
 }
 
+- (void)execute {
+
+    NSLog(@"Executing tool %@", self);
+    
+    [self startProgressIndicator];
+    
+    [self stopProgressIndicator];
+}
+
 - (IBAction)helpButtonAction:(id)sender {
     /** 
      * /TODO need some help implementation

@@ -12,10 +12,11 @@
 #define TOOL_MODEL                                4
 #define TOOL_MCMC                                 5
 #define TOOL_SIMULATE                             6
-#define TOOL_TREECONTAINER                        7
-#define TOOL_NUMBERSET                            8
-#define TOOL_TREEDIAGNOSIS                        9
-#define TOOL_NUMBERDIAGNOSIS                     10
+#define TOOL_DISTANCEMATRIX                       7
+#define TOOL_TREECONTAINER                        8
+#define TOOL_NUMBERSET                            9
+#define TOOL_TREEDIAGNOSIS                       10
+#define TOOL_NUMBERDIAGNOSIS                     11
 
 #define DISTRIBUTION_CONSTANT                     0
 #define DISTRIBUTION_FIXED                        0

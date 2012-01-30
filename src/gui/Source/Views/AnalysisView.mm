@@ -10,6 +10,7 @@
 #import "Tool.h"
 #import "ToolAlign.h"
 #import "ToolCombiner.h"
+#import "ToolDistanceMatrix.h"
 #import "ToolNumericalMcmcOutput.h"
 #import "ToolMatrixFilter.h"
 #import "ToolMcmc.h"
@@ -1712,6 +1713,8 @@
             newTool = [[ToolMcmc alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_SIMULATE)
             newTool = [[ToolSimulate alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_DISTANCEMATRIX)
+            newTool = [[ToolDistanceMatrix alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_TREECONTAINER)
             newTool = [[ToolTreeSet alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_NUMBERSET)

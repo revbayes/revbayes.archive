@@ -68,6 +68,8 @@
             toolImage = [NSImage imageNamed:@"Tool_Mcmc.icns"];
         else if (i == TOOL_SIMULATE)
             toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
+        else if (i == TOOL_DISTANCEMATRIX)
+            toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
         else if (i == TOOL_TREECONTAINER)
             toolImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
         else if (i == TOOL_NUMBERSET)
@@ -111,6 +113,8 @@
 			myTip = [NSString stringWithString:@" MCMC Tool "];
         else if (toolForToolTip == TOOL_SIMULATE)
 			myTip = [NSString stringWithString:@" Simulate Data Tool "];
+        else if (toolForToolTip == TOOL_DISTANCEMATRIX)
+			myTip = [NSString stringWithString:@" Distance Matrix Tool "];
         else if (toolForToolTip == TOOL_TREECONTAINER)
 			myTip = [NSString stringWithString:@" Tree Container Tool "];
         else if (toolForToolTip == TOOL_NUMBERSET)
@@ -211,6 +215,8 @@
 	else if (whichToolSelected == TOOL_MCMC)
 		anImage = [NSImage imageNamed:@"Tool_Mcmc.icns"];
 	else if (whichToolSelected == TOOL_SIMULATE)
+		anImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
+	else if (whichToolSelected == TOOL_DISTANCEMATRIX)
 		anImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
 	else if (whichToolSelected == TOOL_TREECONTAINER)
 		anImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];

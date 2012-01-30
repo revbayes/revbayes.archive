@@ -11,6 +11,15 @@
 	[super encodeWithCoder:aCoder];
 }
 
+- (void)execute {
+
+    NSLog(@"Executing tool %@", self);
+    
+    [self startProgressIndicator];
+    
+    [self stopProgressIndicator];
+}
+
 - (id)init {
 
     self = [self initWithScaleFactor:1.0];

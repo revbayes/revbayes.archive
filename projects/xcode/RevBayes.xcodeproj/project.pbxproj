@@ -798,6 +798,11 @@
 		22313D6314D207550047F2BC /* ProgressBarWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22313C0914D207540047F2BC /* ProgressBarWindow.xib */; };
 		22313D6414D207550047F2BC /* RegistrationPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22313C0A14D207540047F2BC /* RegistrationPanel.xib */; };
 		22313D6514D207550047F2BC /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22313C0B14D207540047F2BC /* TextEditorWindow.xib */; };
+		22F0C5FD14D48B95001EB0E2 /* ToolDistanceMatrix.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22F0C5FC14D48B95001EB0E2 /* ToolDistanceMatrix.mm */; };
+		22F0C60114D48CD9001EB0E2 /* WindowControllerDistanceMatrix.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22F0C60014D48CD9001EB0E2 /* WindowControllerDistanceMatrix.mm */; };
+		22F0C60414D48CFB001EB0E2 /* WindowControllerDistanceViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22F0C60314D48CFB001EB0E2 /* WindowControllerDistanceViewer.mm */; };
+		22F0C60614D49707001EB0E2 /* ControlWindowDistanceMatrix.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F0C60514D49707001EB0E2 /* ControlWindowDistanceMatrix.xib */; };
+		22F0C60814D4971D001EB0E2 /* DistanceMatrix.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F0C60714D4971D001EB0E2 /* DistanceMatrix.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -1770,6 +1775,14 @@
 		22313C0914D207540047F2BC /* ProgressBarWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressBarWindow.xib; sourceTree = "<group>"; };
 		22313C0A14D207540047F2BC /* RegistrationPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RegistrationPanel.xib; sourceTree = "<group>"; };
 		22313C0B14D207540047F2BC /* TextEditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditorWindow.xib; sourceTree = "<group>"; };
+		22F0C5FB14D48B95001EB0E2 /* ToolDistanceMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToolDistanceMatrix.h; sourceTree = "<group>"; };
+		22F0C5FC14D48B95001EB0E2 /* ToolDistanceMatrix.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ToolDistanceMatrix.mm; sourceTree = "<group>"; };
+		22F0C5FF14D48CD9001EB0E2 /* WindowControllerDistanceMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerDistanceMatrix.h; sourceTree = "<group>"; };
+		22F0C60014D48CD9001EB0E2 /* WindowControllerDistanceMatrix.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerDistanceMatrix.mm; sourceTree = "<group>"; };
+		22F0C60214D48CFB001EB0E2 /* WindowControllerDistanceViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerDistanceViewer.h; sourceTree = "<group>"; };
+		22F0C60314D48CFB001EB0E2 /* WindowControllerDistanceViewer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerDistanceViewer.mm; sourceTree = "<group>"; };
+		22F0C60514D49707001EB0E2 /* ControlWindowDistanceMatrix.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ControlWindowDistanceMatrix.xib; sourceTree = "<group>"; };
+		22F0C60714D4971D001EB0E2 /* DistanceMatrix.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DistanceMatrix.xib; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -3118,6 +3131,8 @@
 				22313B8014D207540047F2BC /* ToolCombiner.mm */,
 				22313B8114D207540047F2BC /* ToolData.h */,
 				22313B8214D207540047F2BC /* ToolData.mm */,
+				22F0C5FB14D48B95001EB0E2 /* ToolDistanceMatrix.h */,
+				22F0C5FC14D48B95001EB0E2 /* ToolDistanceMatrix.mm */,
 				22313B8314D207540047F2BC /* ToolMatrixFilter.h */,
 				22313B8414D207540047F2BC /* ToolMatrixFilter.mm */,
 				22313B8514D207540047F2BC /* ToolMcmc.h */,
@@ -3213,6 +3228,10 @@
 				22313BCD14D207540047F2BC /* WindowControllerCharacterMatrix.mm */,
 				22313BCE14D207540047F2BC /* WindowControllerCombiner.h */,
 				22313BCF14D207540047F2BC /* WindowControllerCombiner.mm */,
+				22F0C5FF14D48CD9001EB0E2 /* WindowControllerDistanceMatrix.h */,
+				22F0C60014D48CD9001EB0E2 /* WindowControllerDistanceMatrix.mm */,
+				22F0C60214D48CFB001EB0E2 /* WindowControllerDistanceViewer.h */,
+				22F0C60314D48CFB001EB0E2 /* WindowControllerDistanceViewer.mm */,
 				22313BD014D207540047F2BC /* WindowControllerMatrixFilter.h */,
 				22313BD114D207540047F2BC /* WindowControllerMatrixFilter.mm */,
 				22313BD214D207540047F2BC /* WindowControllerMcmc.h */,
@@ -3253,6 +3272,7 @@
 				22313BF114D207540047F2BC /* ControlWindowAlign.xib */,
 				22313BF214D207540047F2BC /* ControlWindowCombiner.xib */,
 				22313BF314D207540047F2BC /* ControlWindowConstant.xib */,
+				22F0C60514D49707001EB0E2 /* ControlWindowDistanceMatrix.xib */,
 				22313BF414D207540047F2BC /* ControlWindowMatrixFilter.xib */,
 				22313BF514D207540047F2BC /* ControlWindowMcmc.xib */,
 				22313BF614D207540047F2BC /* ControlWindowMcmcDiagnostic.xib */,
@@ -3267,6 +3287,7 @@
 				22313BFF14D207540047F2BC /* ControlWindowRV.xib */,
 				22313C0014D207540047F2BC /* ControlWindowTree.xib */,
 				22313C0114D207540047F2BC /* ControlWindowTreePlate.xib */,
+				22F0C60714D4971D001EB0E2 /* DistanceMatrix.xib */,
 				22313C0214D207540047F2BC /* MainMenu.xib */,
 				22313C0314D207540047F2BC /* ModelBrowser.xib */,
 				22313C0414D207540047F2BC /* ModelSubmission.xib */,
@@ -3624,6 +3645,8 @@
 				22313D6314D207550047F2BC /* ProgressBarWindow.xib in Resources */,
 				22313D6414D207550047F2BC /* RegistrationPanel.xib in Resources */,
 				22313D6514D207550047F2BC /* TextEditorWindow.xib in Resources */,
+				22F0C60614D49707001EB0E2 /* ControlWindowDistanceMatrix.xib in Resources */,
+				22F0C60814D4971D001EB0E2 /* DistanceMatrix.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4215,6 +4238,9 @@
 				22313D4614D207550047F2BC /* WindowControllerReadData.mm in Sources */,
 				22313D4714D207550047F2BC /* WindowControllerRegistration.mm in Sources */,
 				22313D4814D207550047F2BC /* YRKSpinningProgressIndicator.mm in Sources */,
+				22F0C5FD14D48B95001EB0E2 /* ToolDistanceMatrix.mm in Sources */,
+				22F0C60114D48CD9001EB0E2 /* WindowControllerDistanceMatrix.mm in Sources */,
+				22F0C60414D48CFB001EB0E2 /* WindowControllerDistanceViewer.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

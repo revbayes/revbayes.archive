@@ -18,8 +18,6 @@
 
     [NSApp stopModal];
 	[controlWindow close];
-	[self signalDownstreamTools];
-	//[self updateForChangeInState];
 }
 
 - (void)dealloc {

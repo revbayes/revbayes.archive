@@ -141,6 +141,7 @@
 - (IBAction)executeButton:(id)sender {
 
     // check that the tools are all connected with each fully resolved
+#   if 0
     NSMutableArray* a = [self checkAnalysis];
     if ([a count] > 0)
         {
@@ -163,8 +164,19 @@
 		isRbTimerActive = YES;
         return;
         }
+#   endif
+
+    // execute each tool in turn, but first get the preorder traversal of the graph
+    NSMutableArray* depthFirstOrder = [NSMutableArray arrayWithCapacity:0];
+    [analysisViewPtr initializeDepthFirstOrderForTools:depthFirstOrder];
         
-    // execute each tool in turn
+    // mark tools downstream from removed tools/connections as visited
+    NSEnumerator* toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
+    Tool* t = nil;
+    while ( (t = [toolEnumerator nextObject]) )
+        {
+        [t execute];
+        }
 
 }
 

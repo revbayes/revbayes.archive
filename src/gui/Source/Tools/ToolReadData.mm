@@ -279,15 +279,17 @@
         return NO;
         }
         
+    // erase the data in the core
+    if ( Workspace::userWorkspace()->existsVariable(variableName) )
+        Workspace::userWorkspace()->eraseVariable(variableName);
+        
     // set the name of the variable in the tool
-    [self setDataWorkspaceName:nsVariableName];
+    [self setDataWorkspaceName:@""];
     
+    // set up the data inspector
     [self makeDataInspector];
 
     [self stopProgressIndicator];
-
-    if ( Workspace::userWorkspace()->existsVariable(variableName) )
-        std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
         
     [self setIsResolved:YES];
     [myAnalysisView updateToolsDownstreamFromTool:self];

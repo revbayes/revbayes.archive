@@ -39,6 +39,7 @@
 
 - (IBAction)cancelAction:(id)sender;
 - (void)closeControlPanel;
+- (void)execute;
 - (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
 - (id)initWithCoder:(NSCoder*)aDecoder;

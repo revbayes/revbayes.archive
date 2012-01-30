@@ -88,6 +88,80 @@
 	[super encodeWithCoder:aCoder];
 }
 
+- (void)execute {
+
+    NSLog(@"Executing tool %@", self);
+    
+    [self startProgressIndicator];
+    
+    // check that we have data to instantiate in the core
+    if ( [self numDataMatrices] == 0 )
+        {
+        [self stopProgressIndicator];
+        return;
+        }
+        
+    // check to see if we already have data in the core, in which case we erase the data
+    if ( [[self dataWorkspaceName] isEqualToString:@""] == NO )
+        {
+        const char* tempSeeStr = [[self dataWorkspaceName] UTF8String];
+        std::string tempStr = tempSeeStr;
+        if ( Workspace::userWorkspace()->existsVariable(tempStr) == true )
+            Workspace::userWorkspace()->eraseVariable(tempStr);
+        [self setDataWorkspaceName:@""];
+        }
+        
+    // remove all of the files from the temporary directory
+    [self removeFilesFromTemporaryDirectory];
+        
+    // and make a temporary directory to contain the alignments
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
+              alnDirectory = [alnDirectory stringByAppendingString:@"/myAlignments"];
+    NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
+    [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
+    
+    // write the data matrix/matrices in this tool to the temporary directory
+    for (int i=0; i<[dataMatrices count]; i++)
+        {
+        // have the data object save a fasta file to the temporary directory
+        RbData* d = [dataMatrices objectAtIndex:i];
+        NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
+                  dFilePath = [dFilePath stringByAppendingString:[d name]];
+        if ( [d isHomologyEstablished] == YES )
+            dFilePath = [dFilePath stringByAppendingString:@".nex"];
+        else
+            dFilePath = [dFilePath stringByAppendingString:@".fas"];
+        [d writeToFile:dFilePath];
+        }
+    
+    // check the workspace and make certain that we use an unused name for the data variable
+    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+    NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
+		    
+    // format a string command to read the data file(s) and send the
+    // formatted string to the parser
+    const char* cmdAsCStr = [alnDirectory UTF8String];
+    std::string cmdAsStlStr = cmdAsCStr;
+    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    int coreResult = Parser::getParser().processCommand(line);
+    if (coreResult != 0)
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        return;
+        }
+        
+    // set the variable name for this tool
+    [self setDataWorkspaceName:nsVariableName];
+
+    // remove all of the files from the temporary directory
+    [self removeFilesFromTemporaryDirectory];
+    
+    [self stopProgressIndicator];
+}
+
 - (id)init {
 
     self = [self initWithScaleFactor:1.0];

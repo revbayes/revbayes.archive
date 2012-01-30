@@ -89,6 +89,15 @@
     [aCoder encodeBool:possibleInlets[3] forKey:@"possibleInlets3"];
 }
 
+- (void)execute {
+
+    NSLog(@"Executing tool %@", self);
+    
+    [self startProgressIndicator];
+    
+    [self stopProgressIndicator];
+}
+
 - (void)exportModel {
 
 	// open the model submission window and retrieve information from it

@@ -27,6 +27,7 @@
 - (NSColor*)colorOfInletIndexed:(int)idx;
 - (NSColor*)colorOfOutletIndexed:(int)idx;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (void)execute;
 - (InOutlet*)findInOutletWithColor:(NSColor*)c;
 - (Tool*)getParentToolOfInlet:(Inlet*)inlt;
 - (Tool*)getParentToolOfInletIndexed:(int)idx;

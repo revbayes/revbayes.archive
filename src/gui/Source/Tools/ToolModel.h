@@ -28,6 +28,7 @@
 - (void)closeControlPanel;
 - (void)deleteParms;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
+- (void)execute;
 - (void)exportModel;
 - (void)importModel;
 - (id)initWithCoder:(NSCoder*)aDecoder;

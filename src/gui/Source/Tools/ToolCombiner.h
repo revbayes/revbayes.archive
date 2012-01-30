@@ -15,6 +15,7 @@
 @property (readwrite) int startingNumberOfInlets;
 
 - (void)closeControlPanel;
+- (void)execute;
 - (void)setInletsAndOutlets;
 - (void)showControlPanel;
 

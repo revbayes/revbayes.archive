@@ -1,35 +1,66 @@
-#import "InOutlet.h"
 #import "RevBayes.h"
-#import "SettingsMcmc.h"
-#import "ToolMcmc.h"
-#import "WindowControllerMcmc.h"
+#import "ToolDistanceMatrix.h"
+#import "WindowControllerDistanceMatrix.h"
 
 
 
-@implementation ToolMcmc
+@implementation ToolDistanceMatrix
+
+@synthesize distanceType;
+@synthesize gammaRateVariation;
+@synthesize baseFreqTreatment;
+@synthesize proportionInvariableSites;
+@synthesize gammaShape;
 
 - (void)awakeFromNib {
 
+}
+
+- (void)calculateDistances {
+
+    [self startProgressIndicator];
+
+    NSLog(@"distanceType              = %d", distanceType);
+    NSLog(@"gammaRateVariation        = %d", gammaRateVariation);
+    NSLog(@"baseFreqTreatment         = %d", baseFreqTreatment);
+    NSLog(@"proportionInvariableSites = %lf", proportionInvariableSites);
+    NSLog(@"gammaShape                = %lf", gammaShape);
+
+    /*const char* cmdAsCStr = [alnDirectory UTF8String];
+    std::string cmdAsStlStr = cmdAsCStr;
+    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    int coreResult = Parser::getParser().processCommand(line);
+    if (coreResult != 0)
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        return;
+        }*/
+
+    [self stopProgressIndicator];
 }
 
 - (void)closeControlPanel {
 
     [NSApp stopModal];
 	[controlWindow close];
-    [self setInletsAndOutlets];
 }
 
 - (void)dealloc {
 
-    [settings release];
     [controlWindow release];
 	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
+	[aCoder encodeInt:distanceType                 forKey:@"distanceType"];
+	[aCoder encodeBool:gammaRateVariation          forKey:@"gammaRateVariation"];
+	[aCoder encodeInt:baseFreqTreatment            forKey:@"baseFreqTreatment"];
+	[aCoder encodeDouble:proportionInvariableSites forKey:@"proportionInvariableSites"];
+	[aCoder encodeDouble:gammaShape                forKey:@"gammaShape"];
+
 	[super encodeWithCoder:aCoder];
-    [aCoder encodeObject:settings forKey:@"settings"];
 }
 
 - (void)execute {
@@ -56,20 +87,20 @@
         [self setImageWithSize:itemSize];
         
 		// initialize the inlet/outlet information
-		[self addInletOfColor:[NSColor blueColor]];
-		[self addOutletOfColor:[NSColor redColor]];
-		[self addOutletOfColor:[NSColor orangeColor]];
+		[self addInletOfColor:[NSColor greenColor]];
+		[self addOutletOfColor:[NSColor purpleColor]];
         [self setInletLocations];
         [self setOutletLocations];
         
-        // initialize the settings
-        settings = [[SettingsMcmc alloc] init];
+        // initialize the distance variables
+        distanceType              = JC69;
+        gammaRateVariation        = NO;
+        baseFreqTreatment         = EQUAL_FREQS;
+        proportionInvariableSites = 0.0;
+        gammaShape                = 0.5;
 		
 		// initialize the control window
-		controlWindow = [[WindowControllerMcmc alloc] initWithTool:self andSettings:settings];
-        
-        // note that the state of this tool is, by default, resolved
-        [self setIsResolved:YES];
+		controlWindow = [[WindowControllerDistanceMatrix alloc] initWithTool:self];
 		}
     return self;
 }
@@ -81,13 +112,16 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-        
-        // initialize the settings
-        settings = [aDecoder decodeObjectForKey:@"settings"];
-        [settings retain];
-        
+
+        // initialize the distance variables
+		distanceType              = [aDecoder decodeIntForKey:@"distanceType"];
+		gammaRateVariation        = [aDecoder decodeBoolForKey:@"gammaRateVariation"];
+		baseFreqTreatment         = [aDecoder decodeIntForKey:@"baseFreqTreatment"];
+		proportionInvariableSites = [aDecoder decodeDoubleForKey:@"proportionInvariableSites"];
+		gammaShape                = [aDecoder decodeDoubleForKey:@"gammaShape"];
+
 		// initialize the control window
-		controlWindow = [[WindowControllerMcmc alloc] initWithTool:self andSettings:settings];
+		controlWindow = [[WindowControllerDistanceMatrix alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -110,7 +144,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" MCMC Tool "];
+    NSString* myTip = [NSString stringWithString:@" Distance Matrix Tool "];
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 
@@ -129,31 +163,13 @@
     return attrString;
 }
 
-- (void)setInletsAndOutlets {
-
-    if ( [controlWindow mcmcType] == 0 )
-        {
-        if ( [self numInlets] != 1 && [self numOutlets] != 2 )
-            {
-            [self removeAllInletsAndOutlets];
-            [self addInletOfColor:[NSColor blueColor]];
-            [self addOutletOfColor:[NSColor redColor]];
-            [self addOutletOfColor:[NSColor orangeColor]];
-            }
-        }
-    else
-        {
-        if ( [self numInlets] != 2 && [self numOutlets] != 1 )
-            {
-            [self removeAllInletsAndOutlets];
-            [self addInletOfColor:[NSColor blueColor]];
-            [self addInletOfColor:[NSColor blueColor]];
-            [self addOutletOfColor:[NSColor purpleColor]];
-            }
-        }
-}
-
 - (void)showControlPanel {
+
+    [controlWindow setDistanceType:distanceType];
+    [controlWindow setGammaRateVariation:gammaRateVariation];
+    [controlWindow setBaseFreqTreatment:baseFreqTreatment];
+    [controlWindow setProportionInvariableSites:proportionInvariableSites];
+    [controlWindow setGammaShape:gammaShape];
 
     NSPoint p = [self originForControlWindow:[controlWindow window]];
     [[controlWindow window] setFrameOrigin:p];
