@@ -1,7 +1,0 @@
-# Extra test file for debugging
-
-x <- expf(2.0);
-
-y 4.5
-
-z <- 9
