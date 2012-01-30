@@ -199,6 +199,7 @@ bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, Rb
     size_t numRegularRules;
     if (nRules > 0 && (*theRules)[nRules-1]->isType(Ellipsis_name)) {
         numRegularRules = nRules - 1;
+        // TODO: This does not work if some rules have default values and can be ommitted!!!
         if ( passedArgs.size() < nRules )
             numFinalArgs = nRules - 1;
         else
@@ -284,6 +285,9 @@ bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, Rb
                 }
                 else
                     return false;
+                
+                // We got an exact match -> we can skip the other labels for checking
+                break;
             }
         }
     }

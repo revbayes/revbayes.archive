@@ -21,7 +21,7 @@ for (i in 1:n) {
     moves[2+i] <- mslide(x[i],weight=1.0,delta=10.0)
 }
 
-filemonitors <- monitor(filename="normaltest.out",printgen=1,mu,e,sigma,x[1])
+filemonitors <- fileMonitor(filename="normaltest.out",printgen=1,separator="	",mu,e,sigma,x[1])
 
 mymodel <- model(a)
  
