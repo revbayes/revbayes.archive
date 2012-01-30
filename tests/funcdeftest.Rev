@@ -1,8 +1,8 @@
 # Testing function definitions
 
-#function square (x) { x * x }
-#
-#square(5.0)
+function square (x) { x * x }
+
+square(5.0)
 
 function fac(i) {
    if (i > 1) {
@@ -11,3 +11,5 @@ function fac(i) {
       return 1
    }
 }
+
+fac(10)
