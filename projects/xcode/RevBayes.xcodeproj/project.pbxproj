@@ -803,6 +803,15 @@
 		22F0C60414D48CFB001EB0E2 /* WindowControllerDistanceViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22F0C60314D48CFB001EB0E2 /* WindowControllerDistanceViewer.mm */; };
 		22F0C60614D49707001EB0E2 /* ControlWindowDistanceMatrix.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F0C60514D49707001EB0E2 /* ControlWindowDistanceMatrix.xib */; };
 		22F0C60814D4971D001EB0E2 /* DistanceMatrix.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F0C60714D4971D001EB0E2 /* DistanceMatrix.xib */; };
+		22FADA9414D74BD600C2F59E /* Tool_Distance.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA8B14D74BD600C2F59E /* Tool_Distance.icns */; };
+		22FADA9514D74BD600C2F59E /* Tool_Distance25.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA8C14D74BD600C2F59E /* Tool_Distance25.icns */; };
+		22FADA9614D74BD600C2F59E /* Tool_Distance50.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA8D14D74BD600C2F59E /* Tool_Distance50.icns */; };
+		22FADA9714D74BD600C2F59E /* Tool_Distance75.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA8E14D74BD600C2F59E /* Tool_Distance75.icns */; };
+		22FADA9814D74BD600C2F59E /* Tool_Distance100.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA8F14D74BD600C2F59E /* Tool_Distance100.icns */; };
+		22FADA9914D74BD600C2F59E /* Tool_Distance125.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA9014D74BD600C2F59E /* Tool_Distance125.icns */; };
+		22FADA9A14D74BD600C2F59E /* Tool_Distance150.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA9114D74BD600C2F59E /* Tool_Distance150.icns */; };
+		22FADA9B14D74BD600C2F59E /* Tool_Distance200.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA9214D74BD600C2F59E /* Tool_Distance200.icns */; };
+		22FADA9C14D74BD600C2F59E /* Tool_Distance400.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22FADA9314D74BD600C2F59E /* Tool_Distance400.icns */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -1783,6 +1792,15 @@
 		22F0C60314D48CFB001EB0E2 /* WindowControllerDistanceViewer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerDistanceViewer.mm; sourceTree = "<group>"; };
 		22F0C60514D49707001EB0E2 /* ControlWindowDistanceMatrix.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ControlWindowDistanceMatrix.xib; sourceTree = "<group>"; };
 		22F0C60714D4971D001EB0E2 /* DistanceMatrix.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DistanceMatrix.xib; sourceTree = "<group>"; };
+		22FADA8B14D74BD600C2F59E /* Tool_Distance.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance.icns; sourceTree = "<group>"; };
+		22FADA8C14D74BD600C2F59E /* Tool_Distance25.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance25.icns; sourceTree = "<group>"; };
+		22FADA8D14D74BD600C2F59E /* Tool_Distance50.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance50.icns; sourceTree = "<group>"; };
+		22FADA8E14D74BD600C2F59E /* Tool_Distance75.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance75.icns; sourceTree = "<group>"; };
+		22FADA8F14D74BD600C2F59E /* Tool_Distance100.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance100.icns; sourceTree = "<group>"; };
+		22FADA9014D74BD600C2F59E /* Tool_Distance125.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance125.icns; sourceTree = "<group>"; };
+		22FADA9114D74BD600C2F59E /* Tool_Distance150.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance150.icns; sourceTree = "<group>"; };
+		22FADA9214D74BD600C2F59E /* Tool_Distance200.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance200.icns; sourceTree = "<group>"; };
+		22FADA9314D74BD600C2F59E /* Tool_Distance400.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Distance400.icns; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -2716,6 +2734,15 @@
 				22313A5214D207540047F2BC /* Tool_Combiner400.icns */,
 				22313A5314D207540047F2BC /* Tool_Combiner50.icns */,
 				22313A5414D207540047F2BC /* Tool_Combiner75.icns */,
+				22FADA8B14D74BD600C2F59E /* Tool_Distance.icns */,
+				22FADA8C14D74BD600C2F59E /* Tool_Distance25.icns */,
+				22FADA8D14D74BD600C2F59E /* Tool_Distance50.icns */,
+				22FADA8E14D74BD600C2F59E /* Tool_Distance75.icns */,
+				22FADA8F14D74BD600C2F59E /* Tool_Distance100.icns */,
+				22FADA9014D74BD600C2F59E /* Tool_Distance125.icns */,
+				22FADA9114D74BD600C2F59E /* Tool_Distance150.icns */,
+				22FADA9214D74BD600C2F59E /* Tool_Distance200.icns */,
+				22FADA9314D74BD600C2F59E /* Tool_Distance400.icns */,
 				22313A5514D207540047F2BC /* Tool_MatrixFilter.icns */,
 				22313A5614D207540047F2BC /* Tool_MatrixFilter100.icns */,
 				22313A5714D207540047F2BC /* Tool_MatrixFilter125.icns */,
@@ -3647,6 +3674,15 @@
 				22313D6514D207550047F2BC /* TextEditorWindow.xib in Resources */,
 				22F0C60614D49707001EB0E2 /* ControlWindowDistanceMatrix.xib in Resources */,
 				22F0C60814D4971D001EB0E2 /* DistanceMatrix.xib in Resources */,
+				22FADA9414D74BD600C2F59E /* Tool_Distance.icns in Resources */,
+				22FADA9514D74BD600C2F59E /* Tool_Distance25.icns in Resources */,
+				22FADA9614D74BD600C2F59E /* Tool_Distance50.icns in Resources */,
+				22FADA9714D74BD600C2F59E /* Tool_Distance75.icns in Resources */,
+				22FADA9814D74BD600C2F59E /* Tool_Distance100.icns in Resources */,
+				22FADA9914D74BD600C2F59E /* Tool_Distance125.icns in Resources */,
+				22FADA9A14D74BD600C2F59E /* Tool_Distance150.icns in Resources */,
+				22FADA9B14D74BD600C2F59E /* Tool_Distance200.icns in Resources */,
+				22FADA9C14D74BD600C2F59E /* Tool_Distance400.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
