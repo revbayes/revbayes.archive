@@ -13,6 +13,7 @@
 
 @synthesize flagCount;
 @synthesize touchOnRevival;
+@synthesize isCurrentlyExecuting;
 @synthesize isVisited;
 
 - (void)addInletOfColor:(NSColor*)c {
@@ -492,6 +493,7 @@
     [progressIndicator setIndeterminate:YES];
     [progressIndicator setColor:[NSColor blueColor]];
     [progressIndicator startAnimation:self];
+    NSLog(@"startProgressIndicator");
 }
 
 - (void)stopProgressIndicator {
@@ -499,6 +501,7 @@
     [progressIndicator stopAnimation:self];
     [progressIndicator removeFromSuperview];
     progressIndicator = nil;
+    NSLog(@"stopProgressIndicator");
 }
 
 - (void)updateDownstreamTools {

@@ -69,7 +69,7 @@
         else if (i == TOOL_SIMULATE)
             toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
         else if (i == TOOL_DISTANCEMATRIX)
-            toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
+            toolImage = [NSImage imageNamed:@"Tool_Distance.icns"];
         else if (i == TOOL_TREECONTAINER)
             toolImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
         else if (i == TOOL_NUMBERSET)
@@ -217,7 +217,7 @@
 	else if (whichToolSelected == TOOL_SIMULATE)
 		anImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
 	else if (whichToolSelected == TOOL_DISTANCEMATRIX)
-		anImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
+		anImage = [NSImage imageNamed:@"Tool_Distance.icns"];
 	else if (whichToolSelected == TOOL_TREECONTAINER)
 		anImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
 	else if (whichToolSelected == TOOL_NUMBERSET)

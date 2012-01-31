@@ -15,11 +15,13 @@
 	int                           flagCount;
 	BOOL                          touchOnRevival;
     BOOL                          isVisited;
+    BOOL                          isCurrentlyExecuting;
     YRKSpinningProgressIndicator* progressIndicator;
 }
 
 @property (readwrite) int flagCount;
 @property (readwrite) BOOL touchOnRevival;
+@property (readwrite) BOOL isCurrentlyExecuting;
 @property (readwrite) BOOL isVisited;
 
 - (void)addInletOfColor:(NSColor*)c;

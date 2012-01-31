@@ -24,6 +24,7 @@
 
 @implementation ToolAlign
 
+@synthesize alignmentMethod;
 @synthesize clustalAlign;
 @synthesize clustalWordLength;
 @synthesize clustalWindow;
@@ -37,6 +38,14 @@
 @synthesize clustalGapSeparationPenalty;
 @synthesize clustalIteration;
 @synthesize clustalNumberOfIterations;
+
+- (void)alignSequences {
+
+    if (alignmentMethod == ALN_CLUSTAL)
+        [self helperRunClustal:self];
+    else
+        NSRunAlertPanel(@"Problem aligning sequences", @"Currently only able to align sequences using Clustal", @"OK", nil, nil);
+}
 
 - (void)awakeFromNib {
 
@@ -71,6 +80,7 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
+    [aCoder encodeInt:alignmentMethod             forKey:@"alignmentMethod"];
 	[aCoder encodeObject:clustalAlign             forKey:@"clustalAlign"];
 	[aCoder encodeInt:clustalWordLength           forKey:@"clustalWordLength"];
  	[aCoder encodeInt:clustalWindow               forKey:@"clustalWindow"];
@@ -86,6 +96,16 @@
 	[aCoder encodeInt:clustalNumberOfIterations   forKey:@"clustalNumberOfIterations"];
        
 	[super encodeWithCoder:aCoder];
+}
+
+- (void)execute {
+
+    if ( [self numDataMatrices] == 0 )
+        {
+        [self helperRunClustal:self];
+        }
+
+    [super execute];
 }
 
 - (void)helperRunClustal:(id)sender {
@@ -319,6 +339,9 @@
 		[self addOutletOfColor:[NSColor greenColor]];
         [self setInletLocations];
         [self setOutletLocations];
+        
+        // initialize variables
+        alignmentMethod = ALN_CLUSTAL;
             
         // initialize clustal variables here
         // Default values taken from http://www.ebi.ac.uk/Tools/msa/clustalw2/help/
@@ -350,6 +373,9 @@
             // initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
+        
+        // decode variables
+        alignmentMethod = [aDecoder decodeIntForKey:@"alignmentMethod"];
             
         // resuscitate Clustal variables here before recreating new windowcontroller
         clustalAlign = [aDecoder decodeObjectForKey:@"clustalAlign"];
@@ -487,6 +513,7 @@
     if ( [unalignedData count] == 0 || [unalignedData count] != [self numDataMatrices] )
         {
         [self removeAllDataMatrices];
+        [self alignSequences];
         return;
         }
         
@@ -508,6 +535,7 @@
     if (numNotTraced > 0)
         {
         [self removeAllDataMatrices];
+        [self alignSequences];
         return;
         }
 }

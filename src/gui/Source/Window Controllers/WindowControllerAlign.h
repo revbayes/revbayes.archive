@@ -9,6 +9,8 @@
 	IBOutlet NSButton*      okButton;
 	IBOutlet NSButton*      cancelButton;
     ToolAlign*              myTool;
+    
+    int                     alignmentMethod;
 
     NSString*               clustalAlign;                   // CLUSTAL variables
     int                     clustalWordLength;
@@ -25,6 +27,7 @@
     int                     clustalNumberOfIterations;
 }
 
+@property (readwrite)        int       alignmentMethod;
 @property (readwrite,assign) NSString* clustalAlign;
 @property (readwrite)        int       clustalWordLength;
 @property (readwrite)        int       clustalWindow;

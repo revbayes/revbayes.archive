@@ -166,16 +166,27 @@
         }
 #   endif
 
+    // set the isCurrentlyExecuting flag for each tool to "NO"
+	NSEnumerator* toolEnumerator = [tools objectEnumerator];
+    Tool* t = nil;
+	while ( (t = [toolEnumerator nextObject]) )
+        {
+        [t setIsCurrentlyExecuting:NO];
+        }
+
     // execute each tool in turn, but first get the preorder traversal of the graph
     NSMutableArray* depthFirstOrder = [NSMutableArray arrayWithCapacity:0];
     [analysisViewPtr initializeDepthFirstOrderForTools:depthFirstOrder];
         
     // mark tools downstream from removed tools/connections as visited
-    NSEnumerator* toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
-    Tool* t = nil;
+    toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
     while ( (t = [toolEnumerator nextObject]) )
         {
+        [t setIsCurrentlyExecuting:YES];
+        [analysisViewPtr setNeedsDisplay:YES];
         [t execute];
+        [t setIsCurrentlyExecuting:NO];
+        [analysisViewPtr setNeedsDisplay:YES];
         }
 
 }

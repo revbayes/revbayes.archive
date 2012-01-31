@@ -128,14 +128,14 @@
 
 - (void)initializeImage {
 
-    itemImage[0] = [NSImage imageNamed:@"Tool_Mcmc25.icns"];
-    itemImage[1] = [NSImage imageNamed:@"Tool_Mcmc50.icns"];
-    itemImage[2] = [NSImage imageNamed:@"Tool_Mcmc75.icns"];
-    itemImage[3] = [NSImage imageNamed:@"Tool_Mcmc100.icns"];
-    itemImage[4] = [NSImage imageNamed:@"Tool_Mcmc125.icns"];
-    itemImage[5] = [NSImage imageNamed:@"Tool_Mcmc150.icns"];
-    itemImage[6] = [NSImage imageNamed:@"Tool_Mcmc200.icns"];
-    itemImage[7] = [NSImage imageNamed:@"Tool_Mcmc400.icns"];
+    itemImage[0] = [NSImage imageNamed:@"Tool_Distance25.icns"];
+    itemImage[1] = [NSImage imageNamed:@"Tool_Distance50.icns"];
+    itemImage[2] = [NSImage imageNamed:@"Tool_Distance75.icns"];
+    itemImage[3] = [NSImage imageNamed:@"Tool_Distance100.icns"];
+    itemImage[4] = [NSImage imageNamed:@"Tool_Distance125.icns"];
+    itemImage[5] = [NSImage imageNamed:@"Tool_Distance150.icns"];
+    itemImage[6] = [NSImage imageNamed:@"Tool_Distance200.icns"];
+    itemImage[7] = [NSImage imageNamed:@"Tool_Distance400.icns"];
 
 	float s[8] = { 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 2.0, 4.0 };
 	for (int i=0; i<8; i++)

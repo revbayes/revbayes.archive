@@ -5,6 +5,7 @@
 
 @implementation WindowControllerAlign
 
+@synthesize alignmentMethod;
 @synthesize clustalAlign;
 @synthesize clustalWordLength;
 @synthesize clustalWindow;
@@ -42,6 +43,8 @@
         // pick up Clustal values from myTool and bind
         if (myTool != nil)
             {
+            [self setAlignmentMethod:             [myTool alignmentMethod]];
+            
             [self setClustalAlign:                [myTool clustalAlign]];
             [self setClustalWordLength:           [myTool clustalWordLength]];            
             [self setClustalWindow:               [myTool clustalWindow]];
@@ -71,25 +74,30 @@
         {
         // close the window
         [myTool closeControlPanel];
+        
+        [myTool setAlignmentMethod:alignmentMethod];
 
         // the user wants us to use the CLUSTAL program
         // set the clustal parameters
-        [myTool setClustalAlign:                clustalAlign];
-        [myTool setClustalWordLength:           clustalWordLength];            
-        [myTool setClustalWindow:               clustalWindow];
-        [myTool setClustalScoreType:            clustalScoreType];
-        [myTool setClustalNumberDiagonals:      clustalNumberDiagonals];
-        [myTool setClustalPairGapPenalty:       clustalPairGapPenalty];
-        [myTool setClustalMatrix:               clustalMatrix];
-        [myTool setClustalGapOpenPenalty:       clustalGapOpenPenalty];
-        [myTool setClustalEndGaps:              clustalEndGaps];
-        [myTool setClustalGapExtensionCost:     clustalGapExtensionCost];
-        [myTool setClustalGapSeparationPenalty: clustalGapSeparationPenalty];
-        [myTool setClustalIteration:            clustalIteration];
-        [myTool setClustalNumberOfIterations:   clustalNumberOfIterations];     
+        if ( alignmentMethod == ALN_CLUSTAL )
+            {
+            [myTool setClustalAlign:                clustalAlign];
+            [myTool setClustalWordLength:           clustalWordLength];            
+            [myTool setClustalWindow:               clustalWindow];
+            [myTool setClustalScoreType:            clustalScoreType];
+            [myTool setClustalNumberDiagonals:      clustalNumberDiagonals];
+            [myTool setClustalPairGapPenalty:       clustalPairGapPenalty];
+            [myTool setClustalMatrix:               clustalMatrix];
+            [myTool setClustalGapOpenPenalty:       clustalGapOpenPenalty];
+            [myTool setClustalEndGaps:              clustalEndGaps];
+            [myTool setClustalGapExtensionCost:     clustalGapExtensionCost];
+            [myTool setClustalGapSeparationPenalty: clustalGapSeparationPenalty];
+            [myTool setClustalIteration:            clustalIteration];
+            [myTool setClustalNumberOfIterations:   clustalNumberOfIterations];  
+            }
         
         // run clustal
-        [myTool helperRunClustal:(id)sender];
+        [myTool alignSequences];
         }
     else
         {

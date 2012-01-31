@@ -293,6 +293,24 @@
             [selRing appendBezierPathWithRoundedRect:flagRect xRadius:rad yRadius:rad];
             [selRing fill];
 			}
+            
+        // possibly draw a light green rectangle behind the tool, if it is currently executing
+        if ([element isCurrentlyExecuting] == YES)
+            {
+            NSRect flagRect;
+            flagRect = drawingRect;
+            flagRect.origin.x -= 4.0;
+            flagRect.origin.y -= 4.0;
+            flagRect.size.height += 8.0;
+            flagRect.size.width += 8.0;
+
+            [[NSColor greenColor] set];
+
+            NSBezierPath* selRing = [NSBezierPath bezierPath];
+            float rad = flagRect.size.width * 0.1;
+            [selRing appendBezierPathWithRoundedRect:flagRect xRadius:rad yRadius:rad];
+            [selRing fill];
+            }
 
 		// draw the tool image
 		[itemImage drawInRect:drawingRect fromRect:imageRect operation:NSCompositeSourceOver fraction:1.0];

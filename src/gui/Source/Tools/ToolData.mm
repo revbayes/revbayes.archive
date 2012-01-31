@@ -118,7 +118,7 @@
     NSString* temporaryDirectory = NSTemporaryDirectory();
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
-              alnDirectory = [alnDirectory stringByAppendingString:@"/myAlignments"];
+              alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments/"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
     
@@ -127,7 +127,7 @@
         {
         // have the data object save a fasta file to the temporary directory
         RbData* d = [dataMatrices objectAtIndex:i];
-        NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
+        NSString* dFilePath = [NSString stringWithString:alnDirectory];
                   dFilePath = [dFilePath stringByAppendingString:[d name]];
         if ( [d isHomologyEstablished] == YES )
             dFilePath = [dFilePath stringByAppendingString:@".nex"];

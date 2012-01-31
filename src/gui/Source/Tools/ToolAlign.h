@@ -3,12 +3,22 @@
 @class WindowControllerAlign;
 class CharacterData;
 
+#define ALN_CLUSTAL     0
+#define ALN_MAFFT       1
+#define ALN_DIALIGN     2
+#define ALN_MUSCLE      3
+#define ALN_TCOFFEE     4
+#define ALN_DCA         5
+#define ALN_PROBCONS    6
+
+
 
 
 @interface ToolAlign : ToolData <NSCoding> {
 
     WindowControllerAlign*             controlWindow;                    // a pointer to the control window for this tool
     NSString*                          currentHelper;                    // lets Notification Center know which tools is being used
+    int                                alignmentMethod;
     
     NSTask*                            clustalTask;                      // clustal task
     NSPipe*                            clustalToPipe;
@@ -35,6 +45,7 @@ class CharacterData;
     int32_t                            taskCount;
 }
 
+@property (readwrite)        int       alignmentMethod;
 @property (readwrite,assign) NSString* clustalAlign;
 @property (readwrite)        int       clustalWordLength;
 @property (readwrite)        int       clustalWindow;
@@ -49,6 +60,7 @@ class CharacterData;
 @property (readwrite,assign) NSString* clustalIteration;
 @property (readwrite)        int       clustalNumberOfIterations;
 
+- (void)alignSequences;
 - (void)closeControlPanel;
 - (void)decrementTaskCount;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
