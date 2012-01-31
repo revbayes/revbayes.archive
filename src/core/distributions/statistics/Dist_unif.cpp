@@ -137,11 +137,11 @@ const TypeSpec& Dist_unif::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_unif::lnPdf(RbPtr<const RbLanguageObject> value) const {
+double Dist_unif::lnPdf(const RbLanguageObject *value) const {
 
     double min = static_cast<const Real*>( (const RbObject*)getMemberValue("min") )->getValue();
     double max = static_cast<const Real*>( (const RbObject*)getMemberValue("max") )->getValue();
-    double x   = static_cast<const Real*>( (const RbLanguageObject*)value                 )->getValue();
+    double x   = static_cast<const Real*>( value )->getValue();
 
     if ( x < min || x > max )
         return RbConstants::Double::neginf;
@@ -159,11 +159,11 @@ double Dist_unif::lnPdf(RbPtr<const RbLanguageObject> value) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_unif::pdf(RbPtr<const RbLanguageObject> value) const {
+double Dist_unif::pdf(const RbLanguageObject *value) const {
     
     double min = static_cast<const Real*>( (const RbObject*)getMemberValue("min") )->getValue();
     double max = static_cast<const Real*>( (const RbObject*)getMemberValue("max") )->getValue();
-    double x   = static_cast<const Real*>( (const RbLanguageObject*)value                 )->getValue();
+    double x   = static_cast<const Real*>( value )->getValue();
 
     if ( x < min || x > max )
         return 0.0;

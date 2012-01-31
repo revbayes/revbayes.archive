@@ -118,11 +118,11 @@ const TypeSpec& Dist_beta::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_beta::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_beta::lnPdf( const RbLanguageObject *value ) const {
 
     double shape1 = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape1"))->getValue();
     double shape2 = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape2"))->getValue();
-    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value)->getValue();
+    double x      = static_cast<const RealPos*>(value)->getValue();
 
     return RbStatistics::Beta::lnPdf(shape1, shape2, x);
 }
@@ -137,11 +137,11 @@ double Dist_beta::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_beta::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_beta::pdf( const RbLanguageObject *value ) const {
     
     double shape1 = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape1"))->getValue();
     double shape2 = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape2"))->getValue();
-    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value)->getValue();
+    double x      = static_cast<const RealPos*>(value)->getValue();
 
     return RbStatistics::Beta::pdf(shape1, shape2, x);
 }

@@ -100,11 +100,11 @@ const TypeSpec& Dist_logis::getVariableType( void ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_logis::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_logis::pdf( const RbLanguageObject *value ) const {
     
     double location =   static_cast<const Real*     >( (const RbObject*)getMemberValue("location")   )->getValue();
     double scale =      static_cast<const RealPos*  >( (const RbObject*)getMemberValue("scale")      )->getValue();
-    double x =          static_cast<const Real*     >( (const RbLanguageObject*)value                        )->getValue();
+    double x =          static_cast<const Real*     >( value )->getValue();
 
 	return RbStatistics::Logistic::pdf( location, scale, x );
 
@@ -121,12 +121,12 @@ double Dist_logis::pdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_logis::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_logis::lnPdf( const RbLanguageObject *value ) const {
 
 	// Get the value and the parameters of the Logistic
     double location =   static_cast<const Real*     >( (const RbObject*)getMemberValue("location")   )->getValue();
     double scale =      static_cast<const RealPos*  >( (const RbObject*)getMemberValue("scale")      )->getValue();
-    double x =          static_cast<const Real*     >( (const RbLanguageObject*)value                        )->getValue();
+    double x =          static_cast<const Real*     >( value )->getValue();
 
 	return RbStatistics::Logistic::lnPdf( location, scale, x );
 }

@@ -189,6 +189,26 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
 }
 
 
+/** Get the conditional ln probability of the node; do not rely on stored values */
+double StochasticNode::calculateLnProbability( void ) {
+    
+    if (needsRecalculation) {
+        if (instantiated) {
+            lnProb = distribution->lnPdf( value );
+        }
+        else {
+            // we need to iterate over my states
+            DistributionDiscrete* d = static_cast<DistributionDiscrete*>( (Distribution*)distribution );
+            d->getNumberOfStates();
+        }
+        
+        needsRecalculation = false;
+    }
+    
+    return lnProb;
+}
+
+
 /** Clamp the node to an observed value */
 void StochasticNode::clamp( RbPtr<RbLanguageObject> observedVal ) {
 
@@ -280,24 +300,6 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
 }
 
 
-///** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
-//void StochasticNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
-//
-//    /* If we have already touched this node, we are done; otherwise, get the affected children */
-////    if ( !touched ) {
-////        touched = true;
-//        affected.insert( RbPtr<StochasticNode>( this ) );
-//        
-//        // if this node is integrated out, then we need to add the children too
-//        if (!instantiated) {
-//            for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-//                (*i)->getAffected( affected );
-//            }
-//        }
-////    }
-//}
-
-
 /** Get class vector describing type of DAG node */
 const VectorString& StochasticNode::getClass() const {
 
@@ -309,26 +311,6 @@ const VectorString& StochasticNode::getClass() const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& StochasticNode::getTypeSpec(void) const {
     return typeSpec;
-}
-
-
-/** Get the conditional ln probability of the node; do not rely on stored values */
-double StochasticNode::calculateLnProbability( void ) {
-
-    if (needsRecalculation) {
-        if (instantiated) {
-            lnProb = distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) );
-        }
-        else {
-            // we need to iterate over my states
-            DistributionDiscrete* d = static_cast<DistributionDiscrete*>( (Distribution*)distribution );
-            d->getNumberOfStates();
-        }
-        
-        needsRecalculation = false;
-    }
-    
-    return lnProb;
 }
 
 

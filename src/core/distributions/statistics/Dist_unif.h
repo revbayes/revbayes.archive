@@ -46,8 +46,8 @@ class Dist_unif: public DistributionContinuous {
         RbPtr<const Real>           getMax(void) const;                                                 //!< Get max value
         RbPtr<const Real>           getMin(void) const;                                                 //!< Get min value
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Real)
-        double                      lnPdf(RbPtr<const RbLanguageObject> value) const;                   //!< Ln probability density
-        double                      pdf(RbPtr<const RbLanguageObject> value) const;                     //!< Probability density
+        double                      lnPdf(const RbLanguageObject *value) const;                   //!< Ln probability density
+        double                      pdf(const RbLanguageObject *value) const;                     //!< Probability density
         RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
         RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
     

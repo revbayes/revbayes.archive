@@ -107,11 +107,11 @@ const TypeSpec& Dist_multinomial::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_multinomial::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_multinomial::lnPdf( const RbLanguageObject *value ) const {
 
 	// Get the value and the parameters of the Dirichlet
     std::vector<double>       p = static_cast<const Simplex*      >( (const RbObject*)getMemberValue( "p" ) )->getValue();
-    std::vector<unsigned int> x = static_cast<const VectorNatural*>( (const RbLanguageObject*)value                 )->getValue();
+    std::vector<unsigned int> x = static_cast<const VectorNatural*>( value )->getValue();
 
 	// Check that the vectors are both the same size
 	if ( p.size() != x.size() )
@@ -130,11 +130,11 @@ double Dist_multinomial::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_multinomial::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_multinomial::pdf( const RbLanguageObject *value ) const {
 
 	// Get the value and the parameters of the Dirichlet
     std::vector<double>       p = static_cast<const Simplex*      >( (const RbObject*)getMemberValue( "p" ) )->getValue();
-    std::vector<unsigned int> x = static_cast<const VectorNatural*>( (const RbLanguageObject*)value                 )->getValue();
+    std::vector<unsigned int> x = static_cast<const VectorNatural*>( value )->getValue();
 
 	// check that the vectors are both the same size
 	if ( p.size() != x.size() )

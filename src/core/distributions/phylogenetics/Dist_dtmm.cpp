@@ -125,12 +125,12 @@ const TypeSpec& Dist_dtmm::getVariableType( void ) const {
  * @param value Observed character state
  * @return      Natural log of the probability
  */
-double Dist_dtmm::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_dtmm::lnPdf( const RbLanguageObject *value ) const {
     
     // Get the parameters
     RbPtr<const TransitionProbabilityMatrix>    m      = RbPtr<const TransitionProbabilityMatrix>( static_cast<const TransitionProbabilityMatrix*>( (const RbObject*)getMemberValue( "m" ) ) );
     RbPtr<const CharacterStateDiscrete>         start  = RbPtr<const CharacterStateDiscrete     >( static_cast<const CharacterStateDiscrete*     >( (const RbObject*)getMemberValue( "a" ) ) );
-    RbPtr<const CharacterStateDiscrete>         stop   = RbPtr<const CharacterStateDiscrete     >( static_cast<const CharacterStateDiscrete*     >( (const RbLanguageObject*)value ) );
+    RbPtr<const CharacterStateDiscrete>         stop   = RbPtr<const CharacterStateDiscrete     >( static_cast<const CharacterStateDiscrete*     >( value ) );
     
     // calculate the transition probability matrix
         
@@ -164,12 +164,12 @@ double Dist_dtmm::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed character state
  * @return      Probability
  */
-double Dist_dtmm::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_dtmm::pdf( const RbLanguageObject *value ) const {
     
     // Get the parameters
     RbPtr<const TransitionProbabilityMatrix>    m      = RbPtr<const TransitionProbabilityMatrix>( static_cast<const TransitionProbabilityMatrix*>( (const RbObject*)getMemberValue( "m" ) ) );
     RbPtr<const CharacterStateDiscrete>         start  = RbPtr<const CharacterStateDiscrete     >( static_cast<const CharacterStateDiscrete*     >( (const RbObject*)getMemberValue( "a" ) ) );
-    RbPtr<const CharacterStateDiscrete>         stop   = RbPtr<const CharacterStateDiscrete     >( static_cast<const CharacterStateDiscrete*     >( (const RbLanguageObject*)value ) );
+    RbPtr<const CharacterStateDiscrete>         stop   = RbPtr<const CharacterStateDiscrete     >( static_cast<const CharacterStateDiscrete*     >( value ) );
         
     double prob = 1.0;
     std::vector<bool> startState = start->getStateVector();

@@ -50,8 +50,8 @@ class DistributionDiscrete: public Distribution {
         virtual size_t                      getNumberOfStates(void) const = 0;                                          //!< Get number of states
         virtual RbPtr<Simplex>              getProbabilityMassVector(void) = 0;                                         //!< Get probability mass vector
         virtual const TypeSpec&             getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                      lnPdf( RbPtr<const RbLanguageObject> value) const = 0;                      //!< Ln probability density
-        virtual double                      pdf( RbPtr<const RbLanguageObject> value) const = 0;                        //!< Probability density
+        virtual double                      lnPdf( const RbLanguageObject *value) const = 0;                      //!< Ln probability density
+        virtual double                      pdf( const RbLanguageObject *value) const = 0;                        //!< Probability density
         virtual RbPtr<RbLanguageObject>     rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:

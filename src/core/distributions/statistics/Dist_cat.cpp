@@ -115,11 +115,11 @@ const TypeSpec& Dist_cat::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_cat::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_cat::lnPdf( const RbLanguageObject *value ) const {
 
 	// Get the value and the parameters of the categorical distribution
     std::vector<double> m = static_cast<const Simplex*    >( (const RbObject*)getMemberValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( (const RbLanguageObject*)value               )->getValue();
+    int                 x = static_cast<const Categorical*>( value )->getValue();
 
     if ( x < 0 )
         return 0.0;
@@ -137,11 +137,11 @@ double Dist_cat::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_cat::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_cat::pdf( const RbLanguageObject *value ) const {
 
 	// Get the value and the parameter of the categorical distribution
     std::vector<double> m = static_cast<const Simplex*    >( (const RbObject*)getMemberValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( (const RbLanguageObject*)value               )->getValue();
+    int                 x = static_cast<const Categorical*>( value )->getValue();
 
 	if ( x < 0 )
         return 1.0;

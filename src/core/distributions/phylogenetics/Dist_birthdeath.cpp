@@ -109,10 +109,10 @@ const TypeSpec& Dist_birthdeath::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_birthdeath::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_birthdeath::lnPdf( const RbLanguageObject *value ) const {
     
     // Get the parameters
-    double t = static_cast<const RealPos*    >( (const RbLanguageObject*)value )->getValue();
+    double t = static_cast<const RealPos*    >( value )->getValue();
     double o = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "origin" ) )->getValue();
     double T = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "T"      ) )->getValue();
     double b = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "lambda" ) )->getValue();
@@ -155,7 +155,7 @@ double Dist_birthdeath::pBirth(double t, double T, double lambda, double mu, dou
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_birthdeath::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_birthdeath::pdf( const RbLanguageObject *value ) const {
     
     // Get the parameters
     double t = static_cast<const RealPos*    >( (const RbLanguageObject*)value )->getValue();

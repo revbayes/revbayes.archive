@@ -54,8 +54,8 @@ class DistributionContinuous: public Distribution {
         // Interval distribution functions you have to override
         virtual double                          cdf( RbPtr<const RbLanguageObject> value) = 0;                              //!< Cumulative probability
         virtual const TypeSpec&                 getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                          lnPdf( RbPtr<const RbLanguageObject> value) const = 0;                      //!< Ln probability density
-        virtual double                          pdf( RbPtr<const RbLanguageObject> value) const = 0;                        //!< Probability density
+        virtual double                          lnPdf( const RbLanguageObject *value) const = 0;                      //!< Ln probability density
+        virtual double                          pdf( const RbLanguageObject *value) const = 0;                        //!< Probability density
         virtual RbPtr<Real>                     quantile(const double p) = 0;                                               //!< Quantile
         virtual RbPtr<RbLanguageObject>         rv(void) = 0;                                                               //!< Generate a random draw
 

@@ -47,8 +47,8 @@ class Dist_multinomial: public DistributionContinuous {
         // Multinomial distribution functions
         double                      cdf(RbPtr<const RbLanguageObject> value);                           //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (VectorNatural)
-        double                      lnPdf(RbPtr<const RbLanguageObject> value) const;                   //!< Ln probability density
-        double                      pdf(RbPtr<const RbLanguageObject> value) const;                     //!< Probability density
+        double                      lnPdf(const RbLanguageObject *value) const;                         //!< Ln probability density
+        double                      pdf(const RbLanguageObject *value) const;                           //!< Probability density
         RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
         RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
     

@@ -112,10 +112,10 @@ const TypeSpec& Dist_exp::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_exp::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_exp::lnPdf( const RbLanguageObject *value ) const {
     
     double lambda = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "rate" ) )->getValue();
-    double x      = static_cast<const RealPos*>( (const RbLanguageObject*)value                    )->getValue();
+    double x      = static_cast<const RealPos*>( value )->getValue();
 
     return std::log(lambda) -lambda * x;
 }
@@ -130,10 +130,10 @@ double Dist_exp::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_exp::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_exp::pdf( const RbLanguageObject *value ) const {
 
     double lambda = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "rate" ) )->getValue();
-    double x      = static_cast<const RealPos*>( (const RbLanguageObject*)value                    )->getValue();
+    double x      = static_cast<const RealPos*>( value )->getValue();
 
     return lambda * std::exp( -lambda * x );
 }

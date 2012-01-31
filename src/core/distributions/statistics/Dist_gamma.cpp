@@ -118,11 +118,11 @@ const TypeSpec& Dist_gamma::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_gamma::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_gamma::lnPdf( const RbLanguageObject *value ) const {
     
     double shape  = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape") )->getValue();
     double lambda = static_cast<const RealPos*>((const RbObject*)getMemberValue("rate")  )->getValue();
-    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value                   )->getValue();  
+    double x      = static_cast<const RealPos*>(value )->getValue();  
   
     return RbStatistics::Gamma::lnPdf(shape, lambda, x); 
 }
@@ -137,11 +137,11 @@ double Dist_gamma::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_gamma::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_gamma::pdf( const RbLanguageObject *value ) const {
     
     double shape  = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape") )->getValue();
     double lambda = static_cast<const RealPos*>((const RbObject*)getMemberValue("rate")  )->getValue();
-    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value                   )->getValue();   
+    double x      = static_cast<const RealPos*>( value )->getValue();   
     
     return RbStatistics::Gamma::pdf(shape, lambda, x, false);    
 }

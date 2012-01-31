@@ -232,7 +232,7 @@ const TypeSpec& Dist_topologyunif::getVariableType( void ) const {
  * @param value Observed topology
  * @return      Natural log of the probability
  */
-double Dist_topologyunif::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_topologyunif::lnPdf( const RbLanguageObject *value ) const {
 
     // Get the parameters
     RbPtr<const Topology> top( static_cast<const Topology*>( (const RbLanguageObject*)value ) );
@@ -258,7 +258,7 @@ double Dist_topologyunif::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_topologyunif::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_topologyunif::pdf( const RbLanguageObject *value ) const {
 
     // Get the parameters
     RbPtr<const Topology> top( static_cast<const Topology*>( (const RbLanguageObject*)value ) );
