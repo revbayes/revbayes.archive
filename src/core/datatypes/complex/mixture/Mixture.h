@@ -59,7 +59,7 @@ public:
     void                            removeClass(unsigned int classId);                                      //!< Remove a class from the mixture
     RbPtr<DagNodeContainer>&        getParameters();                                                        //!< Get the vector of parameter values associated to the classes of the mixture
     void                            setParameters(const RbPtr< DagNodeContainer>& parameters);              //!< Set the vector of parameter values associated to the classes of the mixture
-    void                            setParameter(unsigned int classId, RbPtr<DagNodeContainer>& parameter);                                                    //!< Set the value of a parameter associated to a particular class
+    void                            setParameter(unsigned int classId, const RbPtr<DagNodeContainer>& parameter);                                                    //!< Set the value of a parameter associated to a particular class
     VectorNatural                   getAllocationVector();                                                  //!< Get the allocation vector associating class indices to elements
     void                            setAllocationVector(Vector allocationVector);                           //!< Set the allocation vector associating class indices to elements
     void                            allocateElement (int elementId, int classId);                           //!< Change the class of a particular element

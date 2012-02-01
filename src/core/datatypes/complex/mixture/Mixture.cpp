@@ -30,12 +30,13 @@ const TypeSpec Mixture::typeSpec_(Mixture_name);
 
 /* Default constructor */
 Mixture::Mixture(void) : MutableMemberObject( getMemberRules() ) {
-    
+
 }
 
 /* constructor; the vector of class probabilities is filled with values 1/number_of_classes */
 Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters) : MutableMemberObject( getMemberRules() ) {
-    
+  std::cout << "constructor 1"<<std::endl;
+
     allocationVector_ = allocationVector;
     parameters_ = parameters;
     RbPtr<DagNodeContainer> numClassesAllocated = allocationVector_->clone();
@@ -54,29 +55,41 @@ Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContain
     
 }
 
+
 /* constructor */
 Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters, VectorRealPos& classProbabilities ) : MutableMemberObject( getMemberRules() ) {
+  std::cout << "constructor 2 "<<std::endl;
 
     allocationVector_ = allocationVector;
     parameters_ = parameters;
     classProbabilities_ = classProbabilities;
     computeNumberOfElementsInClasses();
 }
+
+
 /* constructor */
 Mixture::Mixture(const size_t numObservations, RbPtr<DagNodeContainer>& parameters) : MutableMemberObject( getMemberRules() ) {
+  std::cout << "constructor 3 "<<std::endl;
+
   parameters_ = parameters;
-  allocationVector_ = RbPtr< DagNodeContainer >(new DagNodeContainer (numObservations) );
   std::vector<double> v(numObservations, 1.0);
   RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
   classProbabilities_ = RbStatistics::Dirichlet::rv(v, rng) ;
   std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_.getValue(), (int)numObservations, rng);
+  allocationVector_ = RbPtr< DagNodeContainer >(new DagNodeContainer (numObservations) );
+  for (size_t i = 0 ; i < numObservations ; i ++ ) {
+  //  allocationVector_->push_back(RbPtr<RbObject> (new Integer(allocationVec[i])));
+    allocationVector_->setElement(i, RbPtr<RbObject> (new Integer(allocationVec[i] ) ) );
+  }
   indexAllocationVector();
+  
+  std::cout << allocationVector_->size()<<std::endl;
 }
 
 
 /* Copy constructor */
 Mixture::Mixture(const Mixture& m) : MutableMemberObject( m ) {
-    
+
     allocationVector_ = m.allocationVector_;
     parameters_ = m.parameters_;
     numberOfElementsInClasses_ = m.numberOfElementsInClasses_;
@@ -161,9 +174,11 @@ RbPtr<const MemberRules> Mixture::getMemberRules(void) const {
     static bool        rulesSet = false;
     if (!rulesSet) 
     {
-        memberRules->push_back( RbPtr<ArgumentRule> ( new ValueRule( "allocationVector", DagNodeContainer_name ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule> ( new ValueRule( "numObservations", Integer_name ) ) );
+       // memberRules->push_back( RbPtr<ArgumentRule> ( new ValueRule( "allocationVector", DagNodeContainer_name ) ) );
         memberRules->push_back( RbPtr<ArgumentRule> ( new ValueRule( "parameters", DagNodeContainer_name ) ) );
-        
+       // memberRules->push_back( RbPtr<ArgumentRule> ( new ValueRule( "classProbabilities", VectorRealPos_name ) ) );
+      
         rulesSet = true;
     }
     
@@ -173,15 +188,23 @@ RbPtr<const MemberRules> Mixture::getMemberRules(void) const {
 
 /** Print value for user */
 void Mixture::printValue(std::ostream& o) const {
-    o << "Allocation vector:\n";
-    for ( size_t i = 0; i < allocationVector_->size(); i++ ) {
+  std::cout <<"printValue"<<std::endl;
+  o << "Parameter vector:\n";
+  for ( size_t i = 0; i < parameters_->size(); i++ ) {
+     RbPtr<const DAGNode> theNode = static_cast<const VariableSlot*>( (const RbObject*) (parameters_->getElement(i) ) )->getDagNode();
+     theNode->printValue(o) ;
+     o << "\t";
+  }
+  o << std::endl << std::endl;
+
+  o << "Allocation vector:\n";
+/*    for ( size_t i = 0; i < allocationVector_->size(); i++ ) {
         RbPtr<const DAGNode> theNode = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getDagNode();
         theNode->printValue(o) ;
-
-    }
+       o << "\t";
+  }*/
     o << std::endl << std::endl;
 
-    // TODO: print parameter values too
 }
 
 /* Get a lot of information about the Mixture */
@@ -236,7 +259,14 @@ RbPtr<RbLanguageObject> Mixture::executeOperation(const std::string& name, const
         setParameters ( params ) ;
         return RbPtr<RbLanguageObject>::getNullPtr();
     }
-  
+    else if (name == "setParameter") {
+      RbPtr<Environment> a = args;
+      RbPtr<const Natural> index( static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue()) );
+      const RbPtr< DagNodeContainer >& params =  RbPtr< DagNodeContainer > ( static_cast<DagNodeContainer*>( (RbObject*)(*a)[1]->getValue() ) );
+      setParameter ( (index->getValue()), params ) ;
+      return RbPtr<RbLanguageObject>::getNullPtr();
+    }
+
   
   
     return RbPtr<RbLanguageObject>::getNullPtr();
@@ -384,6 +414,11 @@ void Mixture::removeClass(unsigned int classId) {
 /** Set the vector of parameter values associated to the classes of the mixture*/
 void Mixture::setParameters(const RbPtr< DagNodeContainer>& parameters) {
     parameters_ = parameters;
+}
+
+/**Set the value of a parameter associated to a particular class*/
+void Mixture::setParameter(unsigned int classId, const RbPtr<DagNodeContainer>& parameter) {
+  parameters_->setElement(classId, RbPtr< RbObject >(parameter));
 }
 
 /** Set the vector of parameter values associated to the classes of the mixture*/

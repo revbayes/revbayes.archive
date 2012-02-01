@@ -11,7 +11,7 @@ function Model mixtureSiteRateHet("data" = NucleotideMatrix D, "numberOfRates" =
 lambda_rate_prior <- 2.0
 
 #Draw rate for each cluster of sites 
-for (j in 0:(num_rates - 1) ) {  
+for (j in 1:(num_rates ) ) {  
 rate_parameters[j] ~ exp(lambda_rate_prior)  # G_0 is an exponential(2)
 }
 
@@ -21,19 +21,21 @@ rate_parameters[j] ~ exp(lambda_rate_prior)  # G_0 is an exponential(2)
 ################################################
 #### First, the simplest way:
 #The Mixture simplest constructor creates the allocation vector and the probability vector (probabilityVector) and links them to the parameter vector into a coherent DAG on which computations can be performed.
-rateMixture <- mixture(rate_parameters, D.nsites() )
+rateMixture <- mixture( numObservations=D.nsites(), parameters=rate_parameters )
 
 
 #### Second, the more complex but explicit way:
+
+#Draw probabilities for each cluster
+for (j in 1:num_rates ) {  
+uniformVector[j] <- 1
+}
+probabilityVector ~ dirichlet(uniformVector)
+
 #Draw cluster for each site
 # cluster_indices contains indices to assign rates to each site
 cluster_indices <- randomIntegerVector(0, num_rates - 1, D.nsites()) 	# randomIntegerVector function generates an assignment vector based on the indices of classes and number of sites, e.g. (0,1,1,2,2,1,2,1,0)
 
-#Draw probabilities for each cluster
-for (j in 0:num_rates -1 ) {  
-uniformVector[i] = 1
-}
-probabilityVector ~ dirichlet(uniformVector)
 
 #The Mixture explicit constructor links the allocation vector (cluster_indices), the parameter vector (rates), and the probability vector (probabilityVector) together into a coherent DAG on which computations can be performed.
 rateMixture <- mixture(cluster_indices, rate_parameters, probabilityVector)
