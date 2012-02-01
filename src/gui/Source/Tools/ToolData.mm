@@ -39,6 +39,11 @@
 
 }
 
+- (NSMutableArray*)dataMatrices {
+
+    return dataMatrices;
+}
+
 - (RbData*)dataMatrixIndexed:(int)i {
 
 	if (i > [dataMatrices count])

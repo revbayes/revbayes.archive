@@ -19,6 +19,7 @@ class CharacterData;
 @property (readwrite) int numUnaligned;
 
 - (void)addMatrix:(RbData*)m;
+- (NSMutableArray*)dataMatrices;
 - (RbData*)dataMatrixIndexed:(int)i;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (void)execute;

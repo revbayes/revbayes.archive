@@ -531,6 +531,7 @@
         while ( (element = [charEnum nextObject]) )
             {
             int idx = [[element stringValue] intValue] - 1;
+            NSLog(@"excluding character %d", idx);
             [d excludeCharacterIndexed:idx];
             }
 		}

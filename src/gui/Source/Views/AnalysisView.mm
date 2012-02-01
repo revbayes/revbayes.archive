@@ -1305,8 +1305,6 @@
         // option click (do nothing as option click is currently undefined for tools)
         if ( mySelection.selectedItem != nil && (mySelection.selectionType == INLET_SELECTION || mySelection.selectionType == OUTLET_SELECTION) )
             optionClicked = YES;
-        NSLog(@"option clicked:");
-        NSLog(@"  %@", mySelection.selectedItem);
 		}
 	else if ([event modifierFlags] & NSShiftKeyMask)
 		{

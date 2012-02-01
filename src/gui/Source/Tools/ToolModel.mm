@@ -5,6 +5,7 @@
 #import "RbData.h"
 #import "RevBayes.h"
 #import "ServerComm.h"
+#import "Tool.h"
 #import "ToolMatrixFilter.h"
 #import "ToolModel.h"
 #import "ToolReadData.h"
@@ -440,17 +441,21 @@
 
 - (void)updateForChangeInState {
 
+    [self startProgressIndicator];
+
     // set the tool state to unresolved
     [self setIsResolved:NO];
     
 	// attempt to get a pointer to the parent tool
-	id t = [self getParentToolOfInletIndexed:0];
-    NSString* className;
-    if (t != nil)
+    Tool* t = nil;
+    for (int i=0; i<[self numInlets]; i++)
         {
-        className = NSStringFromClass([t class]); 
-        if ( [className isEqualToString:@"ToolReadData"] == NO && [className isEqualToString:@"ToolMatrixFilter"] == NO )
-            t = nil;
+        Tool* myParentTool = [self getParentToolOfInletIndexed:i];
+        if ( [myParentTool isKindOfClass:[ToolData class]] == YES )
+            {
+            t = myParentTool;
+            break;
+            }
         }
 		
 	// update the state of this tool depending upon the state/presence of the parent tool
@@ -462,18 +467,14 @@
 	else 
 		{
 		// there is a parent tool 
-		if ( [className isEqualToString:@"ToolReadData"] == YES )
-			dataMatrices = [(ToolReadData*)t dataMatrices];
-		else if ( [className isEqualToString:@"ToolMatrixFilter"] == YES )
-			dataMatrices = [(ToolMatrixFilter*)t dataMatrices];
+        dataMatrices = [(ToolData*)t dataMatrices];
 		}
 
 	// make certain that all of the parameters update their state
 	// to reflect the new connectivity of the tool
 	[self touchAllParameters];
         
-    // call the update for the super class, to pass on the call to downstream tools
-	[super updateForChangeInState];
+    [self stopProgressIndicator];
 }
 
 - (void)updateInlets {

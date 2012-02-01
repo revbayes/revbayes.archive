@@ -82,7 +82,12 @@
 - (void)excludeCharacterIndexed:(int)idx {
 
 	if ( [self isCharacterExcluded:idx] == NO )
-		[excludedCharacters addObject:[NSNumber numberWithInt:idx]];
+        {
+        NSLog(@"excluding character with index = %d for matrix %@", idx, self);
+        NSNumber* n = [[NSNumber alloc] initWithInt:idx];
+		[excludedCharacters addObject:n];
+        [n release];
+        }
 }
 
 - (RbTaxonData*)getDataForTaxonIndexed:(int)idx {
@@ -91,6 +96,8 @@
 }
 
 - (void)includeAllCharacters {
+
+    NSLog(@"including all characters");
 
     [excludedCharacters removeAllObjects];
 }
@@ -223,6 +230,7 @@
 	NSEnumerator* characterEnumerator = [excludedCharacters objectEnumerator];
 	while ( (element = [characterEnumerator nextObject]) )
 		{
+        NSLog(@"[element intValue] = %d", [element intValue]);
 		if ( [element intValue] == idx )
 			return YES;
 		}
