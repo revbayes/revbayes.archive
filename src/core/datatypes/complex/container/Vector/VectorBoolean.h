@@ -31,11 +31,11 @@ class VectorBoolean : public AbstractVector {
 
     public:
     // Constructors and destructor
-    VectorBoolean(void);                                            //!< Default constructor (empty vector)
-    VectorBoolean(bool x);                                          //!< Construct vector with one bool x
-    VectorBoolean(size_t n, bool x);                                //!< Construct vector with n bools x
-    VectorBoolean(const std::vector<bool>& x);                      //!< Constructor from bool vector
-    VectorBoolean(const std::vector<int>& x);                       //!< Constructor from int vector
+                                        VectorBoolean(void);                                            //!< Default constructor (empty vector)
+                                        VectorBoolean(bool x);                                          //!< Construct vector with one bool x
+                                        VectorBoolean(size_t n, bool x);                                //!< Construct vector with n bools x
+                                        VectorBoolean(const std::vector<bool>& x);                      //!< Constructor from bool vector
+                                        VectorBoolean(const std::vector<int>& x);                       //!< Constructor from int vector
 
     // Overloaded operators
     std::vector<bool>::reference        operator[](size_t i);                                           //!< Index op allowing change
@@ -69,8 +69,8 @@ class VectorBoolean : public AbstractVector {
     void                                unique(void);                                                   //!< removes consecutive duplicates
 
     private:
-    std::vector<bool>               elements;
-    static const TypeSpec           typeSpec;
+    std::vector<bool>                   elements;
+    static const TypeSpec               typeSpec;
     
 };
 

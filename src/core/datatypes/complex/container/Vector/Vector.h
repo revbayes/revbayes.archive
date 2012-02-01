@@ -29,9 +29,9 @@ const std::string Vector_name = "Vector";
 class Vector : public AbstractVector {
 
 public:
-    Vector();                                                                                       //!< Default constructor with type RbLanguageObject
-    Vector(const TypeSpec &elemType);                                                               //!< Set type spec of container from type of elements
-    Vector(const Vector &v);                                                                        //!< Copy Constructor
+                                                    Vector(void);                                                   //!< Default constructor with type RbLanguageObject
+                                                    Vector(const TypeSpec& elemType);                               //!< Set type spec of container from type of elements
+                                                    Vector(const Vector& v);                                        //!< Copy Constructor
 
     virtual                                        ~Vector(void);                                                   //!< Virtual destructor 
 

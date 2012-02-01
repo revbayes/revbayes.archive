@@ -38,39 +38,39 @@ const std::string DagNodeContainer_name = "DAG Node Container";
 class DagNodeContainer : public Container {
     
     public: 
-                                            DagNodeContainer(void);                                                                             //!< Default constructor 
-                                            DagNodeContainer(size_t length);                                                                    //!< Default constructor with number of elements
-        virtual                            ~DagNodeContainer(void);                                       //!< Virtual destructor
+                                            DagNodeContainer(void);                                                     //!< Default constructor 
+                                            DagNodeContainer(size_t length);                                            //!< Default constructor with number of elements
+        virtual                            ~DagNodeContainer(void);                                                     //!< Virtual destructor
         
         // Basic utility functions
-        bool                                allowsVariableInsertion(void) const { return true; }          //!< Yes we do allow variable to be inserted
-        DagNodeContainer*                   clone(void) const;                                            //!< Clone object
-        RbObject*                           convertTo(const TypeSpec& type) const;                        //!< Convert to type
-        const VectorString&                 getClass(void) const;                                         //!< Get class vector
-        const TypeSpec&                     getTypeSpec(void) const;                                      //!< Get language type of the object
-        bool                                isConvertibleTo(const TypeSpec& type) const;                  //!< Is convertible to type?
-        void                                printValue(std::ostream& o) const;                            //!< Print value for user
-        std::string                         richInfo(void) const;                                         //!< Complete info about object
+        bool                                allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be inserted
+        DagNodeContainer*                   clone(void) const;                                                          //!< Clone object
+        RbObject*                           convertTo(const TypeSpec& type) const;                                      //!< Convert to type
+        const VectorString&                 getClass(void) const;                                                       //!< Get class vector
+        const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        bool                                isConvertibleTo(const TypeSpec& type) const;                                //!< Is convertible to type?
+        void                                printValue(std::ostream& o) const;                                          //!< Print value for user
+        std::string                         richInfo(void) const;                                                       //!< Complete info about object
 
-    // Container functions
-    void                    clear(void);                                                                //!< Clear
-    RbPtr<RbLanguageObject> executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute a member method
-    RbPtr<const RbObject>   getElement(size_t index) const;                                             //!< Get element
-    RbPtr<RbObject>         getElement(size_t index);                                                   //!< Get element (non-const to return non-const element)
-    void                    pop_back(void);                                                             //!< Drop element at back
-    void                    pop_front(void);                                                            //!< Drop element from front
-    void                    push_back(RbPtr<RbObject> x);                                               //!< Append element to end
-    void                    push_front(RbPtr<RbObject> x);                                              //!< Add element in front
-    void                    resize(size_t n);                                                           //!< Resize to new AbstractVector of length n
-    void                    setElement(const size_t index, RbPtr<RbObject> elem);                       //!< Set element with type conversion
-    void                    setElement(const size_t index, RbPtr<Variable> elem);                       //!< Set an element
-    void                    sort(void);                                                                 //!< sort the AbstractVector
-    size_t                  size(void) const;                                                           //!< get the number of elements in the AbstractVector
-    void                    unique(void);                                                               //!< removes consecutive duplicates
+        // Container functions
+        void                                clear(void);                                                                //!< Clear
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute a member method
+        RbPtr<const RbObject>               getElement(size_t index) const;                                             //!< Get element
+        RbPtr<RbObject>                     getElement(size_t index);                                                   //!< Get element (non-const to return non-const element)
+        void                                pop_back(void);                                                             //!< Drop element at back
+        void                                pop_front(void);                                                            //!< Drop element from front
+        void                                push_back(RbPtr<RbObject> x);                                               //!< Append element to end
+        void                                push_front(RbPtr<RbObject> x);                                              //!< Add element in front
+        void                                resize(size_t n);                                                           //!< Resize to new AbstractVector of length n
+        void                                setElement(const size_t index, RbPtr<RbObject> elem);                       //!< Set element with type conversion
+        void                                setElement(const size_t index, RbPtr<Variable> elem);                       //!< Set an element
+        void                                sort(void);                                                                 //!< sort the AbstractVector
+        size_t                              size(void) const;                                                           //!< get the number of elements in the AbstractVector
+        void                                unique(void);                                                               //!< removes consecutive duplicates
 
     private:
-        std::vector<RbPtr<VariableSlot> >   elements;                                                     //!< The elements
-        TypeSpec                            typeSpec;                                                     //!< The type of this instance
+        std::vector<RbPtr<VariableSlot> >   elements;                                                                   //!< The elements
+        TypeSpec                            typeSpec;                                                                   //!< The type of this instance
 };  
 
 #endif
