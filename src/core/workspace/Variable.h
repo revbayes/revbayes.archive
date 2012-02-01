@@ -46,8 +46,8 @@ const std::string Variable_name = "Variable";
 class Variable : public RbInternal {
     
 public:
-    Variable(const std::string &n, RbPtr<DAGNode> var);                                     //!< Constructor of filled variable
-    Variable(RbPtr<DAGNode> var);                                                           //!< Constructor of filled, unnamed variable
+    Variable(const std::string &n, DAGNode* var);                                           //!< Constructor of filled variable
+    Variable(DAGNode* var);                                                                 //!< Constructor of filled, unnamed variable
     Variable(const std::string &n);                                                         //!< Constructor with name only
     Variable(const Variable& x);                                                            //!< Copy value or reference correctly
     virtual                ~Variable(void);                                                 //!< Manage variable (DAGNode) destruction
@@ -60,17 +60,17 @@ public:
     const VectorString&                 getClass() const;                                   //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
     const std::string&                  getName(void) const;                                //!< Get name of variable
-    RbPtr<const DAGNode>                getDagNode(void) const;                             //!< Get the variable 
-    const RbPtr<DAGNode>&               getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
-    RbPtr<const RbLanguageObject>       getValue(void) const;                               //!< Get the value of the variable
-    RbPtr<RbLanguageObject>             getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
+    const DAGNode*                      getDagNode(void) const;                             //!< Get the variable 
+    DAGNode*                            getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
+    const RbLanguageObject*             getValue(void) const;                               //!< Get the value of the variable
+    RbLanguageObject*                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
     void                                setName(const std::string &n);                      //!< Replacing the name of the variable
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable
-    void                                setDagNode(RbPtr<DAGNode> newVar);                  //!< Set a variable with a variable
+    void                                setDagNode(DAGNode* newVar);                        //!< Set a variable with a variable
     
 private:
     // Help functions
-    void                                replaceDagNode(RbPtr<DAGNode> newVariable );        //!< Replace the old DAG node with the new one and set the children and parent
+    void                                replaceDagNode(DAGNode* newVariable );              //!< Replace the old DAG node with the new one and set the children and parent
     
     // Member variables
     RbPtr<DAGNode>                      node;                                               //!< Pointer to the variable (reference or not)

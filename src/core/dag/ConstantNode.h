@@ -46,9 +46,9 @@ public:
     std::string                         richInfo(void) const;                                                       //!< Complete info on object
 
     // ConstantNode functions
-    RbPtr<const RbLanguageObject>       getStoredValue(void) const;                                                 //!< Get stored value
-    RbPtr<const RbLanguageObject>       getValue(void) const;                                                       //!< Get value 
-    RbPtr<RbLanguageObject>             getValue(void);                                                             //!< Get value (non-const to return non-const value)
+    const RbLanguageObject*             getStoredValue(void) const;                                                 //!< Get stored value
+    const RbLanguageObject*             getValue(void) const;                                                       //!< Get value 
+    RbLanguageObject*                   getValue(void);                                                             //!< Get value (non-const to return non-const value)
 
     // DAG functions
     RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;        //!< Clone entire graph
@@ -57,7 +57,7 @@ public:
 
 protected:
 
-    void                                getAffected(std::set<RbPtr<StochasticNode> >& affected);                    //!< Mark and get affected nodes
+    void                                getAffected(std::set<StochasticNode* >& affected);                          //!< Mark and get affected nodes
     void                                keepMe(void);                                                               //!< Keep value of this and affected nodes
     void                                restoreMe(void);                                                            //!< Restore value of this nodes
     void                                touchMe(void);                                                              //!< Tell affected nodes value is reset

@@ -82,7 +82,7 @@ RbPtr<DAGNode> ConstantNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >
  * Get the affected nodes.
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
-void ConstantNode::getAffected(std::set<RbPtr<StochasticNode> > &affected) {
+void ConstantNode::getAffected(std::set<StochasticNode* > &affected) {
     // do nothing
     throw RbException("You should never call getAffected() of a constant node!!!");
 }
@@ -96,8 +96,8 @@ const VectorString& ConstantNode::getClass() const {
 }
 
 
-RbPtr<const RbLanguageObject> ConstantNode::getStoredValue(void) const {
-    return RbPtr<const RbLanguageObject>( value );
+const RbLanguageObject* ConstantNode::getStoredValue(void) const {
+    return value;
 }
 
 
@@ -107,13 +107,13 @@ const TypeSpec& ConstantNode::getTypeSpec(void) const {
 }
 
 
-RbPtr<const RbLanguageObject> ConstantNode::getValue(void) const {
-    return RbPtr<const RbLanguageObject>( value );
+const RbLanguageObject* ConstantNode::getValue(void) const {
+    return value;
 }
 
 
 
-RbPtr<RbLanguageObject> ConstantNode::getValue(void) {
+RbLanguageObject* ConstantNode::getValue(void) {
     return ( value );
 }
 

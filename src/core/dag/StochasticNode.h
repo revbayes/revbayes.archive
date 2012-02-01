@@ -46,9 +46,9 @@ public:
 
     const VectorString&                 getClass(void) const;                                               //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
-    RbPtr<const RbLanguageObject>       getStoredValue(void) const;                                         //!< Get stored value
-    RbPtr<const RbLanguageObject>       getValue(void) const;                                               //!< Get value 
-    RbPtr<RbLanguageObject>             getValue(void);                                                     //!< Get value (non-const to return non-const value)
+    const RbLanguageObject*             getStoredValue(void) const;                                         //!< Get stored value
+    const RbLanguageObject*             getValue(void) const;                                               //!< Get value 
+    RbLanguageObject*                   getValue(void);                                                     //!< Get value (non-const to return non-const value)
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
     void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
     std::string                         richInfo(void) const;                                               //!< Complete info about object
@@ -70,7 +70,7 @@ public:
 protected:
     // Help function
     virtual bool                        areDistributionParamsTouched() const;                               //!< Are any distribution params touched? Important in calculating prob ratio
-    void                                getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
+    void                                getAffected(std::set<StochasticNode* >& affected);                  //!< Mark and get affected nodes
     void                                keepMe(void);                                                       //!< Keep value of this and affected nodes
     void                                restoreMe(void);                                                    //!< Restore value of this nodes
     void                                touchMe(void);                                                      //!< Tell affected nodes value is reset

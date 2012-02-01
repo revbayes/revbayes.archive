@@ -169,7 +169,7 @@ RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNo
 
 
 /** Get affected nodes: pass through to next stochastic node */
-void DeterministicNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
+void DeterministicNode::getAffected( std::set<StochasticNode* >& affected ) {
 
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
         (*i)->getAffected( affected );
@@ -205,31 +205,31 @@ RbPtr<RbFunction> DeterministicNode::getFunction(void) {
 
 
 /** Get stored value */
-RbPtr<const RbLanguageObject> DeterministicNode::getStoredValue( void ) const {
+const RbLanguageObject* DeterministicNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return RbPtr<const RbLanguageObject>(value);
+        return value;
     
-    return RbPtr<const RbLanguageObject>(storedValue);
+    return storedValue;
 }
 
 
 /** Get value */
-RbPtr<const RbLanguageObject> DeterministicNode::getValue( void ) const {
+const RbLanguageObject* DeterministicNode::getValue( void ) const {
     
     if ( touched && needsUpdate )
         const_cast<DeterministicNode*>(this)->update();
     
-    return RbPtr<const RbLanguageObject>(value);
+    return value;
 }
 
 /** Get value */
-RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
+RbLanguageObject* DeterministicNode::getValue( void ) {
     
     if ( touched && needsUpdate )
         update();
     
-    return (value);
+    return value;
 }
 
 

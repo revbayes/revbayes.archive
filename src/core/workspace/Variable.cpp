@@ -34,7 +34,7 @@
 const TypeSpec Variable::typeSpec(Variable_name);
 
 /** Constructor of filled variable. */
-Variable::Variable(const std::string &n, RbPtr<DAGNode> dn) : RbInternal() {
+Variable::Variable(const std::string &n, DAGNode* dn) : RbInternal() {
     name = n;
     
     // initialize the variable
@@ -45,7 +45,7 @@ Variable::Variable(const std::string &n, RbPtr<DAGNode> dn) : RbInternal() {
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(RbPtr<DAGNode> n) {
+Variable::Variable(DAGNode* n) {
     // we do not have a name for the variable so we ask the dag node
     name = n->getName();
     
@@ -113,13 +113,13 @@ const VectorString& Variable::getClass() const {
 }
 
 
-RbPtr<const DAGNode> Variable::getDagNode(void) const {
-    return RbPtr<const DAGNode>( node );
+const DAGNode* Variable::getDagNode(void) const {
+    return node;
 }
 
 
-const RbPtr<DAGNode>& Variable::getDagNode(void) {
-    return ( node );
+DAGNode* Variable::getDagNode(void) {
+    return node;
 }
 
 
@@ -137,12 +137,12 @@ const TypeSpec& Variable::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-RbPtr<const RbLanguageObject> Variable::getValue(void) const {
-    return RbPtr<const RbLanguageObject>( node->getValue() );
+const RbLanguageObject* Variable::getValue(void) const {
+    return node->getValue();
 }
 
 /** Get the value of the variable */
-RbPtr<RbLanguageObject> Variable::getValue(void) {
+RbLanguageObject* Variable::getValue(void) {
     return node->getValue();
 }
 
@@ -158,7 +158,7 @@ void Variable::printValue(std::ostream& o) const {
 
 
 /** Set variable */
-void Variable::setDagNode( RbPtr<DAGNode> newVariable ) {
+void Variable::setDagNode( DAGNode *newVariable ) {
     
     // change the old variable with the new variable in the parent and children
     replaceDagNode( newVariable );
@@ -169,7 +169,7 @@ void Variable::setDagNode( RbPtr<DAGNode> newVariable ) {
 
 
 /** Replace DAG node, only keep the children */
-void Variable::replaceDagNode(RbPtr<DAGNode> newVariable) {
+void Variable::replaceDagNode( DAGNode *newVariable) {
     
     if (node != NULL) {
         // replace the old variable with the new variable for the parents of the old variable

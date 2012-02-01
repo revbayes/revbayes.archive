@@ -24,7 +24,7 @@
 const TypeSpec ValueRule::typeSpec(ValueRule_name);
 
 /** Construct rule based on default value; use "" for no label. */
-ValueRule::ValueRule( const std::string& argName, RbPtr<RbLanguageObject> defVal ) : ArgumentRule( argName, defVal ) {
+ValueRule::ValueRule( const std::string& argName, RbLanguageObject *defVal ) : ArgumentRule( argName, defVal ) {
 }
 
 
@@ -35,13 +35,13 @@ ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp ) : 
 
 
 /** Construct rule with default value. We rely on workspace to check the provided type specification. */
-ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, RbPtr<RbLanguageObject> defValue ) : ArgumentRule( argName, argTypeSp, defValue ) {
+ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue ) : ArgumentRule( argName, argTypeSp, defValue ) {
 
 }
 
 
 /** Construct rule with default reference or value variable. */
-ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, RbPtr<DAGNode> defVariable ) : ArgumentRule( argName, argTypeSp, defVariable ) {
+ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, DAGNode *defVariable ) : ArgumentRule( argName, argTypeSp, defVariable ) {
 
 }
 

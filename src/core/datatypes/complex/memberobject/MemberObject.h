@@ -55,10 +55,10 @@ class MemberObject: public RbLanguageObject {
         RbPtr<const Environment>            getMembers(void) const;                                                             //!< Get members
         RbPtr<Environment>                  getMembers(void);                                                                   //!< Get members
         const TypeSpec                      getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
-        RbPtr<const RbLanguageObject>       getMemberValue(const std::string& name) const;                                      //!< Get member value (const)
-        RbPtr<RbLanguageObject>             getMemberValue(const std::string& name);                                            //!< Get member value (non-const to return non-const value)
-        RbPtr<const DAGNode>                getMemberDagNode(const std::string& name) const;                                    //!< Get member variable 
-        RbPtr<DAGNode>                      getMemberDagNode(const std::string& name);                                          //!< Get member variable (non-const node)
+        const RbLanguageObject*             getMemberValue(const std::string& name) const;                                      //!< Get member value (const)
+        RbLanguageObject*                   getMemberValue(const std::string& name);                                            //!< Get member value (non-const to return non-const value)
+        const DAGNode*                      getMemberDagNode(const std::string& name) const;                                    //!< Get member variable 
+        DAGNode*                            getMemberDagNode(const std::string& name);                                          //!< Get member variable (non-const node)
         bool                                hasMember(const std::string& name) const;                                           //!< Has this object a member with name
 
         // Member variable functions you may wish to override

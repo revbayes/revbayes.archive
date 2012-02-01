@@ -56,9 +56,9 @@ class DAGNode : public RbLanguageObject {
         // Basic utility functions you have to override
         virtual DAGNode*                                    clone(void) const = 0;                                                  //!< Clone this node
         virtual const VectorString&                         getClass(void) const;                                                   //!< Get DAG node class vector
-        virtual RbPtr<const RbLanguageObject>               getStoredValue(void) const = 0;                                         //!< Get stored value
-        virtual RbPtr<const RbLanguageObject>               getValue(void) const = 0;                                               //!< Get value
-        virtual RbPtr<RbLanguageObject>                     getValue(void) = 0;                                                     //!< Get value (non-const to return non-const value)
+        virtual const RbLanguageObject*                     getStoredValue(void) const = 0;                                         //!< Get stored value
+        virtual const RbLanguageObject*                     getValue(void) const = 0;                                               //!< Get value
+        virtual RbLanguageObject*                           getValue(void) = 0;                                                     //!< Get value (non-const to return non-const value)
         virtual void                                        printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
     
@@ -67,7 +67,7 @@ class DAGNode : public RbLanguageObject {
 
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                          //!< Add child node
-        void                                                getAffectedNodes(std::set<RbPtr<StochasticNode> >& affected);           //!< Mark and get affected nodes
+        void                                                getAffectedNodes(std::set<StochasticNode* >& affected);                 //!< Mark and get affected nodes
         const std::set<VariableNode*>&                      getChildren(void) const { return children; }                            //!< Return children
         RbPtr<const RbObject>                               getElement(size_t index) const ;                                        //!< Get element at index (container function)
         RbPtr<RbObject>                                     getElement(size_t index);                                               //!< Get element at index (container function)
@@ -92,7 +92,7 @@ class DAGNode : public RbLanguageObject {
                                                             DAGNode(const std::string& valType);                                    //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                              //!< Copy constructor
 
-        virtual void                                        getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;            //!< Mark and get affected nodes
+        virtual void                                        getAffected(std::set<StochasticNode* >& affected) = 0;                  //!< Mark and get affected nodes
         virtual void                                        keepAffected(void);                                                     //!< Keep value of affected nodes
         virtual void                                        keepMe(void) = 0;                                                       //!< Keep value of myself
         virtual void                                        restoreMe(void) = 0;                                                    //!< Restore value of this nodes

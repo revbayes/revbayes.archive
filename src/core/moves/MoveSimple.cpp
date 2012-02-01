@@ -94,10 +94,10 @@ double MoveSimple::performMove(double& lnProbabilityRatio) {
     
     lnProbabilityRatio = nodePtr->getLnProbabilityRatio();
     
-    std::set<RbPtr<StochasticNode> > affectedNodes;
+    std::set<StochasticNode* > affectedNodes;
     nodePtr->getAffectedNodes(affectedNodes);
-    for (std::set<RbPtr<StochasticNode> >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++) {
-        const RbPtr<StochasticNode>& theNode = *i;
+    for (std::set<StochasticNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++) {
+        StochasticNode* theNode = *i;
         lnProbabilityRatio += theNode->getLnProbabilityRatio();
     }
 

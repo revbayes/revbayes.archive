@@ -111,17 +111,17 @@ const VectorString& VariableSlot::getClass() const {
 
 
 /** Get a const pointer to the dag node */
-RbPtr<const DAGNode> VariableSlot::getDagNode( void ) const {
+const DAGNode* VariableSlot::getDagNode( void ) const {
     
     if (variable == NULL) 
         return NULL;
     else
-        return RbPtr<const DAGNode>( variable->getDagNode() );
+        return variable->getDagNode();
 }
 
 
 /** Get a reference to the slot variable */
-RbPtr<DAGNode> VariableSlot::getDagNode( void ) {
+DAGNode* VariableSlot::getDagNode( void ) {
     
     if (variable == NULL) 
         return NULL;
@@ -137,25 +137,25 @@ const TypeSpec& VariableSlot::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-RbPtr<const RbLanguageObject> VariableSlot::getValue( void ) const {
+const RbLanguageObject* VariableSlot::getValue( void ) const {
     
-    const RbPtr<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
+    const RbLanguageObject* retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
     if (!retVal->isTypeSpec(varTypeSpec)) {
-        return RbPtr<const RbLanguageObject>( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
+        return dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec));
         
 //        return convRetVal;
     }
     
-    return RbPtr<const RbLanguageObject>(retVal);
+    return retVal;
 }
 
 
 /** Get the value of the variable */
-RbPtr<RbLanguageObject> VariableSlot::getValue( void ) {
+RbLanguageObject* VariableSlot::getValue( void ) {
     
-    const RbPtr<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
+    RbLanguageObject* retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
     if (!retVal->isTypeSpec(varTypeSpec)) {
@@ -164,20 +164,20 @@ RbPtr<RbLanguageObject> VariableSlot::getValue( void ) {
         
         //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
         
-        return RbPtr<RbLanguageObject>( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
+        return dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec));
     }
     
     return retVal;
 }
 
 
-RbPtr<const Variable> VariableSlot::getVariable(void) const {
-    return RbPtr<const Variable>( variable );
+const Variable* VariableSlot::getVariable(void) const {
+    return variable;
 }
 
 
-const RbPtr<Variable>& VariableSlot::getVariable(void) {
-    return ( variable );
+Variable* VariableSlot::getVariable(void) {
+    return variable;
 }
 
 

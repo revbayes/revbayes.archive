@@ -174,28 +174,28 @@ RbPtr<Environment> MemberObject::getMembers(void) {
 
 
 /** Get const value of a member variable */
-RbPtr<const RbLanguageObject> MemberObject::getMemberValue(const std::string& name) const {
+const RbLanguageObject* MemberObject::getMemberValue(const std::string& name) const {
 
-    return RbPtr<const RbLanguageObject>( members->getValue(name) );
+    return members->getValue(name);
 }
 
 
 /** Get const value of a member variable */
-RbPtr<RbLanguageObject> MemberObject::getMemberValue(const std::string& name) {
+RbLanguageObject* MemberObject::getMemberValue(const std::string& name) {
     
     return members->getValue(name);
 }
 
 
 /** Get a member variable */
-RbPtr<const DAGNode> MemberObject::getMemberDagNode(const std::string& name) const {
+const DAGNode* MemberObject::getMemberDagNode(const std::string& name) const {
 
-    return RbPtr<const DAGNode>( members->getDagNode(name) );
+    return members->getDagNode(name);
 }
 
 
 /** Get a member variable (non-const, for derived classes) */
-RbPtr<DAGNode> MemberObject::getMemberDagNode(const std::string& name) {
+DAGNode* MemberObject::getMemberDagNode(const std::string& name) {
 
     return members->getDagNode(name);
 }

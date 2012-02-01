@@ -123,7 +123,7 @@ const VectorString& DAGNode::getClass() const {
  * Restore all affected nodes this DAGNode.
  * This means we call restoreMe() of all children. restoreMe() is pure virtual.
  */
-void DAGNode::getAffectedNodes(std::set<RbPtr<StochasticNode> > &affected) {
+void DAGNode::getAffectedNodes(std::set<StochasticNode* > &affected) {
     
     // get all my affected children
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )

@@ -47,15 +47,15 @@ public:
     VariableSlot*                           clone(void) const;                                                      //!< Clone slot
     const VectorString&                     getClass() const;                                                       //!< Get class vector
     const TypeSpec&                         getTypeSpec(void) const;                                                //!< Get language type of the object
-    RbPtr<const RbLanguageObject>           getValue(void) const;                                                   //!< Get the value of the variable
-    RbPtr<RbLanguageObject>                 getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
-    RbPtr<const DAGNode>                    getDagNode(void) const;                                                 //!< Get the DAG node
-    RbPtr<DAGNode>                          getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
+    const RbLanguageObject*                 getValue(void) const;                                                   //!< Get the value of the variable
+    RbLanguageObject*                       getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
+    const DAGNode*                          getDagNode(void) const;                                                 //!< Get the DAG node
+    DAGNode*                                getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
     const std::string&                      getLabel(void) const { return label; }                                  //!< Get the label of the slot
     const std::string&                      getSlotType(void) const { return varTypeSpec.getType(); }               //!< Type of slot
     const TypeSpec&                         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
-    RbPtr<const Variable>                   getVariable(void) const;                                                //!< Get the variable
-    const RbPtr<Variable>&                  getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
+    const Variable*                         getVariable(void) const;                                                //!< Get the variable
+    Variable*                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
     virtual bool                            isValidVariable(RbPtr<DAGNode> newVariable ) const;                     //!< Is newVariable valid for the slot?
     void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
     void                                    setVariable(RbPtr<Variable> var);                                       //!< Set a slot with a variable

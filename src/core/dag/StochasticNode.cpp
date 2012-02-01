@@ -315,12 +315,12 @@ const TypeSpec& StochasticNode::getTypeSpec(void) const {
 
 
 /** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
-void StochasticNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
+void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
     
     /* If we have already touched this node, we are done; otherwise, get the affected children */
     //    if ( !touched ) {
     //        touched = true;
-    affected.insert( RbPtr<StochasticNode>( this ) );
+    affected.insert( this );
     
     // if this node is integrated out, then we need to add the children too
     if (!instantiated) {
@@ -358,24 +358,24 @@ double StochasticNode::getLnProbabilityRatio( void ) {
 
 
 /** Get stored value */
-RbPtr<const RbLanguageObject> StochasticNode::getStoredValue( void ) const {
+const RbLanguageObject* StochasticNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return RbPtr<const RbLanguageObject>( value );
+        return value;
 
-    return RbPtr<const RbLanguageObject>( storedValue );
+    return storedValue;
 }
 
 
 /** Get const value; we always know our value. */
-RbPtr<const RbLanguageObject> StochasticNode::getValue( void ) const {
+const RbLanguageObject* StochasticNode::getValue( void ) const {
 
-    return RbPtr<const RbLanguageObject>( value );
+    return value;
 }
 
 
 /** Get const value; we always know our value. */
-RbPtr<RbLanguageObject> StochasticNode::getValue( void ) {
+RbLanguageObject* StochasticNode::getValue( void ) {
     
     return ( value );
 }
@@ -445,7 +445,7 @@ void StochasticNode::restoreMe() {
     if ( touched ) {
         
         value           = storedValue;
-        storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
+//        storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
         

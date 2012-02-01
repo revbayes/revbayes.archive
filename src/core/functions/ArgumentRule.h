@@ -52,10 +52,10 @@ class ArgumentRule : public RbInternal {
         virtual bool                isArgumentValid(RbPtr<const DAGNode> var, bool& needsConversion) const;                             //!< Is var valid argument?
 
     protected:
-                                    ArgumentRule(const std::string& argName, RbPtr<RbLanguageObject> defValue);                         //!< Constructor of rule from default value
+                                    ArgumentRule(const std::string& argName, RbLanguageObject *defValue);                               //!< Constructor of rule from default value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbPtr<RbLanguageObject> defValue);      //!< Constructor of rule with default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbPtr<DAGNode> defVariable);    //!< Constructor of rule with default reference or default wrapped value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue);    //!< Constructor of rule with default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode *defVariable);          //!< Constructor of rule with default reference or default wrapped value
 
         std::string                 label;                                                                                              //!< Label of argument
         VariableSlot                argSlot;                                                                                            //!< Slot with typespec and possibly default value
