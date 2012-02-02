@@ -31,7 +31,7 @@ class Mixture: public MutableMemberObject {
 public:
     Mixture(void);                                                                                          //!< Default constructor
     Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters);                      //!< constructor
-    Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters, VectorRealPos& classProbabilities);        //!< constructor
+    Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters, RbPtr <VectorRealPos> classProbabilities );        //!< constructor
     Mixture(const size_t numObservations, RbPtr<DagNodeContainer>& parameters);                                //!< constructor
 
 
@@ -81,7 +81,7 @@ private:
     RbPtr<DagNodeContainer>         parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
     /*RbPtr<DagNodeContainer>         observations_;                                                        //!< Vector containing the elements on which the mixture is operating*/
     VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
-    VectorRealPos                   classProbabilities_;                                                    //!< Vector giving class probabilities
+    RbPtr<VectorRealPos>                   classProbabilities_;                                                    //!< Vector giving class probabilities
 };
 
 #endif

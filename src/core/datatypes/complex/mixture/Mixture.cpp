@@ -49,7 +49,7 @@ Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContain
     }
     
     for (unsigned int i = 0 ; i < parameters_->size() ; i++) {
-        classProbabilities_.push_back( RealPos ( 1.0 / parameters_->size() ) );
+        classProbabilities_->push_back( RealPos ( 1.0 / parameters_->size() ) );
     }
     computeNumberOfElementsInClasses();
     
@@ -57,7 +57,7 @@ Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContain
 
 
 /* constructor */
-Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters, VectorRealPos& classProbabilities ) : MutableMemberObject( getMemberRules() ) {
+Mixture::Mixture(RbPtr<DagNodeContainer>& allocationVector, RbPtr<DagNodeContainer>& parameters, RbPtr <VectorRealPos> classProbabilities ) : MutableMemberObject( getMemberRules() ) {
   std::cout << "constructor 2 "<<std::endl;
 
     allocationVector_ = allocationVector;
@@ -74,8 +74,8 @@ Mixture::Mixture(const size_t numObservations, RbPtr<DagNodeContainer>& paramete
   parameters_ = parameters;
   std::vector<double> v(numObservations, 1.0);
   RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
-  classProbabilities_ = RbStatistics::Dirichlet::rv(v, rng) ;
-  std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_.getValue(), (int)numObservations, rng);
+  classProbabilities_ = RbPtr< VectorRealPos > (new VectorRealPos( RbStatistics::Dirichlet::rv(v, rng) ) );
+  std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)numObservations, rng);
   allocationVector_ = RbPtr< DagNodeContainer >(new DagNodeContainer (numObservations) );
   for (size_t i = 0 ; i < numObservations ; i ++ ) {
   //  allocationVector_->push_back(RbPtr<RbObject> (new Integer(allocationVec[i])));
@@ -332,6 +332,53 @@ void Mixture::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
     if ( name == "parameters" ) {
         parameters_ = RbPtr< DagNodeContainer >(static_cast<DagNodeContainer*>( (RbLanguageObject*)var->getValue() ) );
     }
+    if ( name == "classProbabilities" ) {
+        classProbabilities_ =  RbPtr< VectorRealPos >(static_cast<VectorRealPos*>( (RbLanguageObject*)var->getValue() ) );
+    }
+    if ( name == "numObservations" ) {
+      int numObservations = RbPtr< Integer >(static_cast<Integer*>( (RbLanguageObject*)var->getValue() ) )->getValue();
+      if (allocationVector_ != 0) {
+        throw RbException("Mixture already constructed. Cannot reconstruct it in Mixture::setMemberVariable.");
+      }
+      else {
+        RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
+        if (classProbabilities_ == 0) {
+          std::vector<double> v(numObservations, 1.0);
+          classProbabilities_ = RbPtr< VectorRealPos > (new VectorRealPos( RbStatistics::Dirichlet::rv(v, rng) ) );
+        }
+        std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)numObservations, rng);
+        allocationVector_ = RbPtr< DagNodeContainer >(new DagNodeContainer (numObservations) );
+        for (size_t i = 0 ; i < numObservations ; i ++ ) {
+          //  allocationVector_->push_back(RbPtr<RbObject> (new Integer(allocationVec[i])));
+          
+     //     rvToNumber[static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue()] = maxIntSeen;
+          
+   //       static_cast< VariableSlot*>( ( RbObject*) (new Integer(allocationVec[i] ) ) );
+          
+       //   RbPtr<Variable> var = RbPtr<Variable> (new Variable ( new Integer ( allocationVec[i] )  ) );
+        
+          allocationVector_->setElement(i, RbPtr<Variable> (static_cast<Variable*>( ( RbObject*)  (new Integer ( allocationVec[i] ) ) ) ) );
+
+          
+          //allocationVector_->setElement(i, RbPtr<Variable> ( (static_cast< VariableSlot*>( ( RbObject*) (new Integer(allocationVec[i] ) ) )  )->getVariable() ) );
+        }
+        std::cout << "Size of the vector: "<< allocationVector_->size()<<std::endl;
+        
+        //TEST
+        const VariableSlot* slot = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(1) ) );
+        std::cout <<"here"<<std::endl;
+        const Variable* var = slot->getVariable();
+        std::cout <<"here 2"<<std::endl;
+        var->getValue();
+        std::cout <<"here 3"<<std::endl;
+        
+        indexAllocationVector();
+        
+        std::cout << allocationVector_->size()<<std::endl;
+        
+        
+      }
+    }
 
     MemberObject::setMemberVariable(name, var);
 }
@@ -339,11 +386,11 @@ void Mixture::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
 
 void Mixture::estimateClassProbabilities() {
     for (unsigned int i = 0 ; i <  numberOfElementsInClasses_.size() ; i++) {
-        if (classProbabilities_.size() <= i ) {
-            classProbabilities_.push_back( (double) numberOfElementsInClasses_[i] / (double) allocationVector_->size() );
+        if (classProbabilities_->size() <= i ) {
+            classProbabilities_->push_back( (double) numberOfElementsInClasses_[i] / (double) allocationVector_->size() );
         }
         else {
-        classProbabilities_.setElement(i, new RealPos ( (double) numberOfElementsInClasses_[i] / (double) allocationVector_->size() ) );
+        classProbabilities_->setElement(i, new RealPos ( (double) numberOfElementsInClasses_[i] / (double) allocationVector_->size() ) );
         }
     }
 }
@@ -372,7 +419,7 @@ size_t Mixture::getNumberOfClasses() {
 /** Add a new class to the mixture */
 void Mixture::addClass(RbPtr<DagNodeContainer>& parameter) {                                                            
   numberOfElementsInClasses_.push_back(0);
-  classProbabilities_.push_back(0.0);
+  classProbabilities_->push_back(0.0);
   parameters_->push_back(RbPtr<RbObject> ( static_cast<RbObject*> ( parameter ) ));
 }
 
@@ -393,12 +440,14 @@ void Mixture::removeClass(unsigned int classId) {
     }
   }
   numberOfElementsInClasses_.pop_back();
-  VectorRealPos copy = classProbabilities_;
-  double multiplier = 1.0/ ( 1.0 - classProbabilities_[classId] );
-  classProbabilities_.clear();
+  VectorRealPos copy = *(classProbabilities_->clone());
+  double classProba =  *(static_cast<const RealPos*>( (const RbObject*)classProbabilities_->getElement(classId) ) );
+  //double classProba =  *(static_cast<RealPos*> ( (static_cast<VectorRealPos*> (classProbabilities_) )->getElement(classId) ) );
+  double multiplier = 1.0/ ( 1.0 - classProba);
+  classProbabilities_->clear();
   for (unsigned int i = 0 ; i < copy.size(); i++) {
     if (i != classId)
-      classProbabilities_.push_back(copy[i] * multiplier);
+      classProbabilities_->push_back(copy[i] * multiplier);
   }
 
   RbPtr<DagNodeContainer> copyParam = parameters_->clone();
@@ -444,18 +493,33 @@ void Mixture::indexAllocationVector() {
   unsigned int maxIntSeen = 0;
   //Renumber the allocation vector
   for (unsigned int i = 0 ; i < allocationVector_->size() ; i++ ) { 
-    int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue();
+ //   allocationVector_->setElement(i, RbPtr<Variable> ( (static_cast< VariableSlot*>( ( RbObject*) (new Integer(allocationVec[i] ) ) )  )->getVariable() ) );
+    
+    int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getVariable() ) ->getValue();
+    
+ //   int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue();
     if (rvToNumber.find(formerlyAssignedValue) != rvToNumber.end())
       allocationVector_->setElement(i, RbPtr< RbObject >(new Integer(rvToNumber[formerlyAssignedValue])) );
     else {
+      const VariableSlot* slot = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) );
+      std::cout <<"here"<<std::endl;
+      const Variable* var = slot->getVariable();
+      std::cout <<"here 2"<<std::endl;
+      var->getValue();
+      std::cout <<"here 3"<<std::endl;
+
+      const Integer* j = static_cast<const  Integer*> ( (RbLanguageObject *) (var->getValue() ) );
+      j->printValue(std::cout);
+      std::cout <<std::endl;
+      
       rvToNumber[static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue()] = maxIntSeen;
       maxIntSeen = maxIntSeen +1;
     }
   }
   //Renumber the classProbabilities_ vector
-  VectorRealPos copy = classProbabilities_;
-  for (unsigned int i = 0 ; i < classProbabilities_.size() ; i++ ) { 
-    classProbabilities_.getElement(i) = copy.getElement(rvToNumber[i] );
+  VectorRealPos copy = *(classProbabilities_->clone());
+  for (unsigned int i = 0 ; i < classProbabilities_->size() ; i++ ) { 
+    classProbabilities_->getElement(i) = copy.getElement(rvToNumber[i] );
   }
 }
 
