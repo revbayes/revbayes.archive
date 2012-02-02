@@ -346,16 +346,16 @@ const std::string& CharacterData::getDataType(void) const {
 }
 
 
-RbPtr<const RbObject> CharacterData::getElement(size_t row, size_t col) const {
+const RbObject* CharacterData::getElement(size_t row, size_t col) const {
 
-    const RbPtr<TaxonData> sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
-    return RbPtr<const RbObject>(sequence->getElement(col));
+    const TaxonData* sequence = dynamic_cast<const TaxonData*>( (RbLanguageObject*)elements[row] );
+    return sequence->getElement(col);
 }
 
 
-RbPtr<RbObject> CharacterData::getElement(size_t row, size_t col) {
+RbObject* CharacterData::getElement(size_t row, size_t col) {
 
-    RbPtr<TaxonData> sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
+    TaxonData* sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
     return (sequence->getElement(col));
 }
 
@@ -682,23 +682,23 @@ std::string CharacterData::richInfo(void) const {
 }
 
 /** Overloaded container setElement method */
-void CharacterData::setElement( const size_t index, RbPtr<RbLanguageObject> var ) {
+void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
     
     if (var->isTypeSpec(TypeSpec(TaxonData_name))) {
-        RbPtr<TaxonData> seq( static_cast<TaxonData*>( (RbLanguageObject*)var ) );
+        RbPtr<TaxonData> seq( static_cast<TaxonData*>( var ) );
         
         sequenceNames.erase(sequenceNames.begin() + index);
         sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());
         elements.insert( elements.begin() + index, var );
         
         // add the sequence also as a member so that we can access it by name
-        RbPtr<Variable> variable( new Variable( RbPtr<DAGNode>( new ConstantNode(var ) ) ) );
+        Variable* variable = new Variable( RbPtr<DAGNode>( new ConstantNode(var ) ) );
         members->addVariable(seq->getTaxonName(), variable );
     }
 }
 
 /** Overloaded container setElement method */
-void CharacterData::setElement( size_t row, size_t col, RbPtr<RbLanguageObject> var ) {
+void CharacterData::setElement( size_t row, size_t col, RbLanguageObject* var ) {
     
     throw RbException("Not implemented method Alignment::setElement()");
 }

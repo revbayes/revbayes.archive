@@ -77,16 +77,16 @@ TransitionProbabilityMatrix::~TransitionProbabilityMatrix(void) {
 
 
 /** Index operator (const) */
-RbPtr<const VectorReal> TransitionProbabilityMatrix::operator[]( const size_t i ) const {
+const VectorReal* TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
-    return RbPtr<const VectorReal>( (*theMatrix)[i] );
+    return (*theMatrix)[i];
 }
 
 
 /** Index operator */
-RbPtr<VectorReal> TransitionProbabilityMatrix::operator[]( const size_t i ) {
+VectorReal* TransitionProbabilityMatrix::operator[]( const size_t i ) {
 
     if ( i >= numStates )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );

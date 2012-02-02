@@ -65,22 +65,22 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
 
 
 /** Index operator (const) */
-RbPtr<const VectorComplex> MatrixComplex::operator[]( const size_t i ) const {
+const VectorComplex* MatrixComplex::operator[]( const size_t i ) const {
 
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
-    return RbPtr<const VectorComplex>( static_cast<const VectorComplex*>( (RbLanguageObject*)elements[i] ) );
+    return static_cast<const VectorComplex*>( (RbLanguageObject*)elements[i] );
 }
 
 
 /** Index operator */
-RbPtr<VectorComplex> MatrixComplex::operator[]( const size_t i ) {
+VectorComplex* MatrixComplex::operator[]( const size_t i ) {
 
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
     
-    return RbPtr<VectorComplex>( static_cast<VectorComplex*>( (RbLanguageObject*)elements[i] ) );
+    return static_cast<VectorComplex*>( (RbLanguageObject*)elements[i] );
 }
 
 /** Clone function */
@@ -99,17 +99,17 @@ const VectorString& MatrixComplex::getClass(void) const {
 
 
 /** Overloaded container method to get element or subcontainer */
-RbPtr<const RbObject> MatrixComplex::getElement( size_t row , size_t col) const {
+const RbObject* MatrixComplex::getElement( size_t row , size_t col) const {
     
-    RbPtr<const VectorComplex> tmp = operator[](row);
+    const VectorComplex* tmp = operator[](row);
     return tmp->getElement(col);
 }
 
 
 /** Overloaded container method to get element or subcontainer */
-RbPtr<RbObject> MatrixComplex::getElement( size_t row , size_t col) {
+RbObject* MatrixComplex::getElement( size_t row , size_t col) {
     
-    RbPtr<VectorComplex> tmp = operator[](row);
+    VectorComplex* tmp = operator[](row);
     return tmp->getElement(col);
 }
 
@@ -261,12 +261,12 @@ void MatrixComplex::setValue( const std::vector<std::vector<std::complex<double>
     
     elements.clear();
     for ( size_t i = 0; i < size(); i++ )
-        elements.push_back( RbPtr<RbLanguageObject>( new VectorComplex( x[i] ) ) );
+        elements.push_back( new VectorComplex( x[i] ) );
 }
 
 
 /** Overloaded container setElement method */
-void MatrixComplex::setElement( size_t row, size_t col, RbPtr<RbLanguageObject> value ) {
+void MatrixComplex::setElement( size_t row, size_t col, RbLanguageObject* value ) {
     
     if ( row >= getNumberOfRows() || col >= getNumberOfColumns() )
         throw RbException( "Index out of bounds for " + Real_name + "[][]" );

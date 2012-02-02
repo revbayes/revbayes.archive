@@ -68,22 +68,22 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
 
 
 /** Index operator (const) */
-RbPtr<const VectorReal> MatrixReal::operator[]( const size_t i ) const {
+const VectorReal* MatrixReal::operator[]( const size_t i ) const {
 
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
-    return RbPtr<const VectorReal>( static_cast<const VectorReal*>( (RbLanguageObject*)elements[i] ) );
+    return static_cast<const VectorReal*>( (RbLanguageObject*)elements[i] );
 }
 
 
 /** Index operator */
-RbPtr<VectorReal> MatrixReal::operator[]( const size_t i ) {
+VectorReal* MatrixReal::operator[]( const size_t i ) {
 
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
     
-    return RbPtr<VectorReal>( static_cast<VectorReal*>( (RbLanguageObject*)elements[i] ) );
+    return static_cast<VectorReal*>( (RbLanguageObject*)elements[i] );
 }
 
 
@@ -116,17 +116,17 @@ const VectorString& MatrixReal::getClass(void) const {
 
 
 /** Overloaded container method to get element or subcontainer */
-RbPtr<const RbObject> MatrixReal::getElement( size_t row, size_t col ) const {
+const RbObject* MatrixReal::getElement( size_t row, size_t col ) const {
     
-    RbPtr<const VectorReal> tmp(static_cast<const VectorReal*>( (const RbObject*)Vector::getElement(row) ) );
+    const VectorReal* tmp = static_cast<const VectorReal*>( Vector::getElement(row) );
     return tmp->getElement(col);
 }
 
 
 /** Overloaded container method to get element or subcontainer */
-RbPtr<RbObject> MatrixReal::getElement( size_t row, size_t col ) {
+RbObject* MatrixReal::getElement( size_t row, size_t col ) {
     
-    RbPtr<VectorReal> tmp(static_cast<VectorReal*>( (RbObject*)Vector::getElement(row) ) );
+    VectorReal* tmp = static_cast<VectorReal*>( Vector::getElement(row) );
     return tmp->getElement(col);
 }
 
@@ -303,7 +303,7 @@ void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
 
 
 /** Overloaded container setElement method */
-void MatrixReal::setElement( size_t row, size_t col, RbPtr<RbLanguageObject> value ) {
+void MatrixReal::setElement( size_t row, size_t col, RbLanguageObject* value ) {
     
     if ( row >= getNumberOfRows() || col >= getNumberOfColumns() )
         throw RbException( "Index out of bounds for " + Real_name + "[][]" );

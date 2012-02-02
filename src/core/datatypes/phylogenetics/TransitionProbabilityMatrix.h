@@ -35,8 +35,8 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
                                             TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m); //!< Copy constructor
                                             TransitionProbabilityMatrix(size_t n);                             //!< Construct rate matrix with n states
                                            ~TransitionProbabilityMatrix(void);                                 //!< Destructor
-        RbPtr<VectorReal>                   operator[](size_t i);                                              //!< Subscript operator
-        RbPtr<const VectorReal>             operator[](size_t i) const;                                        //!< Subscript operator (const)
+        VectorReal*                         operator[](size_t i);                                              //!< Subscript operator
+        const VectorReal*                   operator[](size_t i) const;                                        //!< Subscript operator (const)
     
         // Basic utility functions
         TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object

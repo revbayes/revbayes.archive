@@ -52,8 +52,8 @@ public:
                                         MatrixReal(const size_t nRows, const size_t nCols, const std::vector<double>& x);//!< Construct matrix from length specification and vector of content
 
     // Overoaded operators
-    RbPtr<VectorReal>                   operator[](size_t i);                                                       //!< Subscript operator
-    RbPtr<const VectorReal>             operator[](size_t i) const;                                                 //!< Subscript operator (const)
+    VectorReal*                         operator[](size_t i);                                                       //!< Subscript operator
+    const VectorReal*                   operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
     // Basic utility functions
     MatrixReal*                         clone(void) const;                                                          //!< Clone object
@@ -64,9 +64,9 @@ public:
 
     
     // Matrix functions
-    RbPtr<const RbObject>               getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
-    RbPtr<RbObject>                     getElement(size_t row, size_t col);                                         //!< Get element or subcontainer (non-const to return non-const element)
-    void                                setElement(size_t row, size_t col, RbPtr<RbLanguageObject> var);            //!< set element
+    const RbObject*                     getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
+    RbObject*                           getElement(size_t row, size_t col);                                         //!< Get element or subcontainer (non-const to return non-const element)
+    void                                setElement(size_t row, size_t col, RbLanguageObject* var);                  //!< set element
     void                                resize(size_t nRows, size_t nCols);                                         //!< Resize to new length vector
     void                                transpose(void);                                                            //!< Transpose the matrix
 
