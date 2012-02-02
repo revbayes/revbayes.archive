@@ -41,8 +41,8 @@ RbFunction::RbFunction(const RbFunction &x) : RbInternal(x), args( new Environme
     
     for (size_t i=0; i<x.args->size(); i++) {
         const std::string &name = x.args->getName(i);
-        const RbPtr<VariableSlot>& theSlot = (*x.args)[i];
-        args->addVariable(name, RbPtr<VariableSlot>( theSlot->clone() ));
+        const VariableSlot* theSlot = (*x.args)[i];
+        args->addVariable(name, theSlot->clone() );
     }
     
     argsProcessed = x.argsProcessed;
@@ -216,10 +216,10 @@ bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, Rb
 
     /* Fill processedArguments with empty variable slots */
     for (size_t i=0; i<numRegularRules; i++) {
-        args->addVariable( (*theRules)[i]->getArgumentLabel(), RbPtr<VariableSlot>( new VariableSlot( (*theRules)[i]->getArgumentLabel(), (*theRules)[i]->getArgumentTypeSpec() ) ) );
+        args->addVariable( (*theRules)[i]->getArgumentLabel(), new VariableSlot( (*theRules)[i]->getArgumentLabel(), (*theRules)[i]->getArgumentTypeSpec() ) );
     }
     for (size_t i=numRegularRules; i<numFinalArgs; i++) {
-        RbPtr<VariableSlot> theEllipsisSlot( new VariableSlot( EmptyString, (*theRules)[nRules-1]->getArgumentTypeSpec() ) );
+        VariableSlot* theEllipsisSlot = new VariableSlot( EmptyString, (*theRules)[nRules-1]->getArgumentTypeSpec() );
         args->addVariable( theEllipsisSlot->getLabel(), theEllipsisSlot );
     }
     

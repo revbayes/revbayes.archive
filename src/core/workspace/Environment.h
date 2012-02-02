@@ -40,7 +40,7 @@
 #include <vector>
 
 
-typedef std::map<std::string, RbPtr<VariableSlot> > VariableTable;         //!< Typedef for convenience
+typedef std::map<std::string, VariableSlot* > VariableTable;         //!< Typedef for convenience
 
 
 /**
@@ -73,10 +73,10 @@ public:
     virtual                                ~Environment();                                                                          //!< Destrcutor
     
     // Operators
-    RbPtr<VariableSlot>                     operator[](const std::string& name);                                                    //!< Get named variable slot reference
-    RbPtr<const VariableSlot>               operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
-    RbPtr<VariableSlot>                     operator[](const size_t index);                                                         //!< Get named variable slot reference
-    RbPtr<const VariableSlot>               operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
+    VariableSlot*                           operator[](const std::string& name);                                                    //!< Get named variable slot reference
+    const VariableSlot*                     operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
+    VariableSlot*                           operator[](const size_t index);                                                         //!< Get named variable slot reference
+    const VariableSlot*                     operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
     
     // Basic utility functions
     virtual Environment*                    clone(void) const;                                                                      //!< Clone Environment
@@ -86,10 +86,9 @@ public:
     virtual std::string                     richInfo(void) const;                                                                   //!< Complete info to string
     
     // Regular functions
-    void                                    addVariable(const std::string& name, RbPtr<VariableSlot> slot);                         //!< Add variable
-    void                                    addVariable(const std::string& name, RbPtr<Variable>& var);                             //!< Add variable
+    void                                    addVariable(const std::string& name, VariableSlot* slot);                         //!< Add variable
     void                                    addVariable(const std::string& name, Variable* var);                                    //!< Add variable
-    void                                    addVariable(const std::string& name, const TypeSpec &ts, RbPtr<Variable> var);          //!< Add variable
+    void                                    addVariable(const std::string& name, const TypeSpec &ts, Variable* var);          //!< Add variable
     void                                    addVariable(const std::string& name, const TypeSpec& typeSp, RbPtr<DAGNode> variable);  //!< Add variable
     void                                    addVariable(const std::string& name, const TypeSpec& typeSp);                           //!< Add variable
     void                                    clear(void);                                                                            //!< clears the variable table

@@ -128,9 +128,9 @@ const TypeSpec& Dist_dtmm::getVariableType( void ) const {
 double Dist_dtmm::lnPdf( const RbLanguageObject *value ) const {
     
     // Get the parameters
-    RbPtr<const TransitionProbabilityMatrix>    m      = RbPtr<const TransitionProbabilityMatrix>( static_cast<const TransitionProbabilityMatrix*>( (const RbObject*)getMemberValue( "m" ) ) );
-    RbPtr<const CharacterStateDiscrete>         start  = RbPtr<const CharacterStateDiscrete     >( static_cast<const CharacterStateDiscrete*     >( (const RbObject*)getMemberValue( "a" ) ) );
-    RbPtr<const CharacterStateDiscrete>         stop   = RbPtr<const CharacterStateDiscrete     >( static_cast<const CharacterStateDiscrete*     >( value ) );
+    const TransitionProbabilityMatrix*    m      = static_cast<const TransitionProbabilityMatrix*>( getMemberValue( "m" ) );
+    const CharacterStateDiscrete*         start  = static_cast<const CharacterStateDiscrete*     >( getMemberValue( "a" ) );
+    const CharacterStateDiscrete*         stop   = static_cast<const CharacterStateDiscrete*     >( value );
     
     // calculate the transition probability matrix
         

@@ -136,7 +136,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( const RbPtr<Environment>& env
     PRINTF( "Evaluating assign expression\n" );
     
     // Get variable info from lhs
-    const RbPtr<VariableSlot>& theSlot = variable->createVariable( env );
+    VariableSlot* theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
     RbPtr<Variable> theVariable(NULL);

@@ -226,12 +226,12 @@ VectorNatural SyntaxVariable::computeIndex( const RbPtr<Environment>& env ) {
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-RbPtr<VariableSlot> SyntaxVariable::createVariable( const RbPtr<Environment>& env) {
+VariableSlot* SyntaxVariable::createVariable( const RbPtr<Environment>& env) {
     
     /* Get index */
     VectorNatural indices = computeIndex(env);
     
-    RbPtr<VariableSlot> theSlot( NULL );
+    VariableSlot* theSlot( NULL );
     
     /* Get variable */
     RbPtr<DAGNode> theDagNode( NULL );
@@ -246,7 +246,7 @@ RbPtr<VariableSlot> SyntaxVariable::createVariable( const RbPtr<Environment>& en
             }
             
             // get the slot and variable
-            theSlot          = RbPtr<VariableSlot>( (*env)[ (*identifier) ] );
+            theSlot          = (*env)[ (*identifier) ];
             const RbPtr<Variable>& theVar = ( theSlot->getVariable() );
             theDagNode       = theVar->getDagNode();
                 
@@ -324,7 +324,7 @@ RbPtr<VariableSlot> SyntaxVariable::createVariable( const RbPtr<Environment>& en
                 throw RbException("Missing slot in variable");
             }
             else if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) )) {
-                theSlot = RbPtr<VariableSlot>( dynamic_cast<VariableSlot*>((RbObject*)subElement) );
+                theSlot = dynamic_cast<VariableSlot*>((RbObject*)subElement);
                 theDagNode = theSlot->getDagNode();
                 theSlot->getVariable()->setName(name);
             }

@@ -17,6 +17,7 @@
 #include "RbException.h"
 #include "VectorString.h"
 #include "ValueRule.h"
+#include "ConstantNode.h"
 #include "DagNodeContainer.h"
 #include "DistributionDirichlet.h"
 #include "DistributionMultinomial.h"
@@ -357,7 +358,8 @@ void Mixture::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
           
        //   RbPtr<Variable> var = RbPtr<Variable> (new Variable ( new Integer ( allocationVec[i] )  ) );
         
-          allocationVector_->setElement(i, RbPtr<Variable> (static_cast<Variable*>( ( RbObject*)  (new Integer ( allocationVec[i] ) ) ) ) );
+//            allocationVector_->setElement(i, RbPtr<Variable> (static_cast<Variable*>( ( RbObject*)  (new Integer ( allocationVec[i] ) ) ) ) );
+            allocationVector_->setElement(i, RbPtr<Variable> (new Variable( new ConstantNode( new Integer ( 0 ) ) ) ) );
 
           
           //allocationVector_->setElement(i, RbPtr<Variable> ( (static_cast< VariableSlot*>( ( RbObject*) (new Integer(allocationVec[i] ) ) )  )->getVariable() ) );
@@ -365,11 +367,11 @@ void Mixture::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
         std::cout << "Size of the vector: "<< allocationVector_->size()<<std::endl;
         
         //TEST
-        const VariableSlot* slot = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(1) ) );
+        const VariableSlot* slot = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(0) ) );
         std::cout <<"here"<<std::endl;
-        const Variable* var = slot->getVariable();
+        const Variable* tmp_var = slot->getVariable();
         std::cout <<"here 2"<<std::endl;
-        var->getValue();
+        tmp_var->getValue();
         std::cout <<"here 3"<<std::endl;
         
         indexAllocationVector();

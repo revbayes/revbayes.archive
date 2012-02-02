@@ -248,7 +248,7 @@ bool DistributionFunction::processArguments( std::vector<RbPtr<Argument> > args,
 
         /* All distribution variables are references but we have value arguments here
            so a const cast is needed to deal with the mismatch */
-        RbPtr<VariableSlot> arg = this->args->operator[](i);
+        VariableSlot* arg = this->args->operator[](i);
         
         distribution->setMemberVariable( name, arg->getVariable() );
     }
