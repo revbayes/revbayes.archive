@@ -107,7 +107,7 @@ const VectorString& DagNodeContainer::getClass(void) const {
 }
 
 /** Get element */
-RbPtr<const RbObject> DagNodeContainer::getElement(const size_t index) const {
+const RbObject* DagNodeContainer::getElement(const size_t index) const {
     
     // test if the index is outside the current range
     if (index >= size()) {
@@ -115,12 +115,12 @@ RbPtr<const RbObject> DagNodeContainer::getElement(const size_t index) const {
         throw RbException("Index out of bounds in DagNodeContainer.");
     }
     
-    return RbPtr<const RbObject>(elements[index]);
+    return elements[index];
 }
 
 
 /** Get element */
-RbPtr<RbObject> DagNodeContainer::getElement(const size_t index) {
+RbObject* DagNodeContainer::getElement(const size_t index) {
     
     // test if the index is outside the current range
     if (index >= size()) {
@@ -168,12 +168,12 @@ void DagNodeContainer::pop_front(void) {
 }
 
 
-void DagNodeContainer::push_back(RbPtr<RbObject> x) {
+void DagNodeContainer::push_back(RbObject* x) {
     
     // we expect to receive a parameter of type Variable
-    RbPtr<Variable> var( dynamic_cast<Variable*>( (RbObject*)x ) );
+    Variable* var = dynamic_cast<Variable*>( x );
     if (var != NULL) {
-        RbPtr<VariableSlot> theSlot( new VariableSlot(EmptyString,var) );
+        VariableSlot* theSlot = new VariableSlot(EmptyString,var);
         elements.push_back(theSlot);
     }
     else {
@@ -183,12 +183,12 @@ void DagNodeContainer::push_back(RbPtr<RbObject> x) {
 }
 
 
-void DagNodeContainer::push_front(RbPtr<RbObject> x) {
+void DagNodeContainer::push_front(RbObject* x) {
     
     // we expect to receive a parameter of type Variable
-    RbPtr<Variable> var( dynamic_cast<Variable*>( (RbObject*)x ) );
+    Variable* var = dynamic_cast<Variable*>( x );
     if (var != NULL) {
-        RbPtr<VariableSlot> theSlot( new VariableSlot(EmptyString,var) );
+        VariableSlot* theSlot = new VariableSlot(EmptyString,var);
         elements.insert( elements.begin(), theSlot );
     }
     else {
@@ -246,14 +246,14 @@ std::string DagNodeContainer::richInfo(void) const {
 
 
 /** Set element */
-void DagNodeContainer::setElement(const size_t index, RbPtr<RbObject> elem) {
+void DagNodeContainer::setElement(const size_t index, RbObject* elem) {
     if (index >= size()) {
         throw RbException("Cannot set element in DagNodeContainer outside the current range.");
     }
     // we expect to receive a parameter of type Variable
-    RbPtr<Variable> var( dynamic_cast<Variable*>( (RbObject*)elem ) );
+    Variable* var = dynamic_cast<Variable*>( elem );
     if (var != NULL) {
-        RbPtr<VariableSlot> theSlot = elements[index];
+        VariableSlot* theSlot = elements[index];
         theSlot->setVariable(var);
     }
     else {
@@ -263,11 +263,11 @@ void DagNodeContainer::setElement(const size_t index, RbPtr<RbObject> elem) {
 
 
 /** Set element */
-void DagNodeContainer::setElement(const size_t index, RbPtr<Variable> elem) {
+void DagNodeContainer::setElement(const size_t index, Variable* elem) {
     if (index >= size()) {
         throw RbException("Cannot set element in DagNodeContainer outside the current range.");
     }
-    RbPtr<VariableSlot> theSlot = elements[index];
+    VariableSlot* theSlot = elements[index];
     theSlot->setVariable(elem);
 }
 

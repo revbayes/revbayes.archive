@@ -142,23 +142,23 @@ const VectorString& VectorReal::getClass(void) const {
 }
 
 
-RbPtr<const RbObject> VectorReal::getElement(size_t index) const {
+const RbObject* VectorReal::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    RbPtr<const RbObject> n( new Real(elements[index]) );
+    const RbObject* n = new Real(elements[index]);
     
     return n;
 }
 
 
-RbPtr<RbObject> VectorReal::getElement(size_t index) {
+RbObject* VectorReal::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    RbPtr<RbObject> n( new Real(elements[index]) );
+    RbObject* n = new Real(elements[index]);
     
     return n;
 }
@@ -231,12 +231,14 @@ void VectorReal::printValue(std::ostream& o) const {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorReal::push_back( RbPtr<RbObject> x ) {
+void VectorReal::push_back( RbObject* x ) {
     
     if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
-        elements.push_back(static_cast<Real*>( (RbObject*)x )->getValue());
+        elements.push_back(static_cast<Real*>( x )->getValue());
     } else if ( x->isConvertibleTo(Real_name) ) {
         elements.push_back(static_cast<Real*>(x->convertTo(Real_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Real_name + "[] with invalid value" );
@@ -251,12 +253,14 @@ void VectorReal::push_back(double x) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorReal::push_front( RbPtr<RbObject> x ) {
+void VectorReal::push_front( RbObject* x ) {
     
     if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Real*>( (RbObject*)x )->getValue());
+        elements.insert( elements.begin(), static_cast<Real*>( x )->getValue());
     } else if ( x->isConvertibleTo(Real_name) ) {
         elements.insert( elements.begin(), static_cast<Real*>(x->convertTo(Real_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Real_name + "[] with invalid value" );
@@ -287,7 +291,7 @@ std::string VectorReal::richInfo(void) const {
 }
 
 
-void VectorReal::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
+void VectorReal::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
@@ -306,6 +310,8 @@ void VectorReal::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         elements.erase(elements.begin()+index);
         
         elements.insert( elements.begin() + index, static_cast<Real*>(x->convertTo(Real_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Real_name + "[] with invalid value" );

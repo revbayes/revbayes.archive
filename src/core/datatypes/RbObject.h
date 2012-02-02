@@ -48,8 +48,8 @@ class RbObject {
         virtual bool                        allowsVariableInsertion(void) const { return false; }                   //!< Do we allow variable to be inserted in this object (only appicable for some container, e.g. DagNodeContainer)
         virtual std::string                 briefInfo(void) const;                                              //!< Brief info about object
         virtual RbObject*                   convertTo(const TypeSpec& type) const;                                  //!< Convert to type
-        virtual RbPtr<const RbObject>       getElement(size_t index) const;                                         //!< Get element or subcontainer
-        virtual RbPtr<RbObject>             getElement(size_t index);                                               //!< Get element or subcontainer
+        virtual const RbObject*             getElement(size_t index) const;                                         //!< Get element or subcontainer
+        virtual RbObject*                   getElement(size_t index);                                               //!< Get element or subcontainer
         virtual bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         virtual std::string                 richInfo(void) const;                                               //!< Complete info about object
         virtual bool                        supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]

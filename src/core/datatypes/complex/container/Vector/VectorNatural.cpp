@@ -216,23 +216,23 @@ std::vector<unsigned int> VectorNatural::getValue( void ) const {
 }
 
 
-RbPtr<const RbObject> VectorNatural::getElement(size_t index) const {
+const RbObject* VectorNatural::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    RbPtr<const RbObject> n( new Natural(elements[index]) );
+    const RbObject* n = new Natural(elements[index]);
     
     return n;
 }
 
 
-RbPtr<RbObject> VectorNatural::getElement(size_t index) {
+RbObject* VectorNatural::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    RbPtr<RbObject> n( new Natural(elements[index]) );
+    RbObject* n = new Natural(elements[index]);
     
     return n;
 }
@@ -264,12 +264,14 @@ void VectorNatural::pop_front(void) {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorNatural::push_back( RbPtr<RbObject> x ) {
+void VectorNatural::push_back( RbObject* x ) {
     
     if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
-        elements.push_back(static_cast<Natural*>( (RbObject*)x )->getValue());
+        elements.push_back(static_cast<Natural*>( x )->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         elements.push_back(static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Natural_name + "[] with invalid value" );
@@ -285,12 +287,14 @@ void VectorNatural::push_back( unsigned int x ) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorNatural::push_front( RbPtr<RbObject> x ) {
+void VectorNatural::push_front( RbObject* x ) {
     
     if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Natural*>( (RbObject*)x )->getValue());
+        elements.insert( elements.begin(), static_cast<Natural*>( x )->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         elements.insert( elements.begin(), static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Natural_name + "[] with invalid value" );
@@ -321,7 +325,7 @@ std::string VectorNatural::richInfo( void ) const {
 }
 
 
-void VectorNatural::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
+void VectorNatural::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
@@ -329,7 +333,7 @@ void VectorNatural::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Natural*>( (RbLanguageObject*)x )->getValue());
+        elements.insert( elements.begin() + index, static_cast<Natural*>( x )->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
@@ -340,6 +344,8 @@ void VectorNatural::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         elements.erase(elements.begin()+index);
         
         elements.insert( elements.begin() + index, static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Natural_name + "[] with invalid value" );

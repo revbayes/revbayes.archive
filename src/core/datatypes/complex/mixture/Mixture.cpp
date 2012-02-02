@@ -420,8 +420,8 @@ size_t Mixture::getNumberOfClasses() {
 
 /** Add a new class to the mixture */
 void Mixture::addClass(RbPtr<DagNodeContainer>& parameter) {                                                            
-  numberOfElementsInClasses_.push_back(0);
-  classProbabilities_->push_back(0.0);
+  numberOfElementsInClasses_.push_back(new Natural(0));
+  classProbabilities_->push_back(new RealPos(0.0));
   parameters_->push_back(RbPtr<RbObject> ( static_cast<RbObject*> ( parameter ) ));
 }
 
@@ -438,7 +438,7 @@ void Mixture::removeClass(unsigned int classId) {
     else {
       if (i > classId) 
         oldToNew[i] = i -1 ;
-      numberOfElementsInClasses_.getElement(i) = numberOfElementsInClasses_.getElement(i+1);
+        numberOfElementsInClasses_.AbstractVector::setElement(i, numberOfElementsInClasses_.getElement(i+1) );
     }
   }
   numberOfElementsInClasses_.pop_back();
@@ -521,7 +521,7 @@ void Mixture::indexAllocationVector() {
   //Renumber the classProbabilities_ vector
   VectorRealPos copy = *(classProbabilities_->clone());
   for (unsigned int i = 0 ; i < classProbabilities_->size() ; i++ ) { 
-    classProbabilities_->getElement(i) = copy.getElement(rvToNumber[i] );
+      classProbabilities_->AbstractVector::setElement(i, copy.getElement(rvToNumber[i] ) );
   }
 }
 

@@ -74,7 +74,7 @@ Vector& Vector::operator=( const Vector& x ) {
 }
 
 /** Subscript operator */
-RbPtr<RbLanguageObject> Vector::operator[](size_t i) {
+RbLanguageObject* Vector::operator[](size_t i) {
     
     if (i > elements.size())
         throw RbException("Index out of bounds");
@@ -84,7 +84,7 @@ RbPtr<RbLanguageObject> Vector::operator[](size_t i) {
 
 
 /** Subscript const operator */
-const RbPtr<RbLanguageObject> Vector::operator[](size_t i) const {
+const RbLanguageObject* Vector::operator[](size_t i) const {
     
     if ( i >= elements.size() )
         throw RbException("Index out of bounds");
@@ -116,16 +116,16 @@ const VectorString& Vector::getClass(void) const {
 
 
 /** Get element */
-RbPtr<const RbObject> Vector::getElement(size_t index) const {
+const RbObject* Vector::getElement(size_t index) const {
     
-    return RbPtr<const RbObject>( elements[index] );
+    return elements[index];
 }
 
 
 /** Get element */
-RbPtr<RbObject> Vector::getElement(size_t index) {
+RbObject* Vector::getElement(size_t index) {
     
-    return RbPtr<RbObject>( elements[index] );
+    return elements[index];
 }
 
 
@@ -171,7 +171,7 @@ void Vector::pop_back(void) {
 
 
 /** Push an int onto the back of the vector after checking */
-void Vector::push_back( RbPtr<RbObject> x ) {
+void Vector::push_back( RbObject* x ) {
     if (x == NULL) {
         elements.push_back( RbPtr<RbLanguageObject>::getNullPtr() );
     }
@@ -187,12 +187,14 @@ void Vector::push_back( RbPtr<RbObject> x ) {
 
 
 /** Push an int onto the front of the vector after checking */
-void Vector::push_front( RbPtr<RbObject> x ) {
+void Vector::push_front( RbObject* x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
-        elements.insert( elements.begin(), RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)x )) );
+        elements.insert( elements.begin(), RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( x ) ) );
     } else if ( x->isConvertibleTo(RbLanguageObject_name) ) {
         elements.insert( elements.begin(), RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name))) );
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Vector_name + "[] with invalid value" );
@@ -229,7 +231,7 @@ std::string Vector::richInfo(void) const {
 }
 
 /** Set element */
-void Vector::setElement(const size_t index, RbPtr<RbLanguageObject> elem) {
+void Vector::setElement(const size_t index, RbLanguageObject* elem) {
     if (index >= elements.size()) {
         throw RbException("Cannot set element in Vector outside the current range.");
     }

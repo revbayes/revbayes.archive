@@ -101,10 +101,10 @@ void AbstractVector::printValue( std::ostream& o ) const {
 }
 
 
-void AbstractVector::setElement(const size_t index, RbPtr<RbObject> x) {
-    RbLanguageObject *elem = dynamic_cast<RbLanguageObject*>( (RbObject*)x );
+void AbstractVector::setElement(const size_t index, RbObject* x) {
+    RbLanguageObject *elem = dynamic_cast<RbLanguageObject*>( x );
     if (elem != NULL)
-        setElement(index, RbPtr<RbLanguageObject>(elem) );
+        setElement(index, elem );
 }
 
 

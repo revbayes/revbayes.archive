@@ -42,21 +42,21 @@ public:
     void                                            printValue(std::ostream& o) const;                              //!< Print value for user
     std::string                                     richInfo(void) const;                                           //!< Complete info about object
     
-    RbPtr<RbLanguageObject>                         operator[](size_t i);                                           //!< Index op allowing change
-    const RbPtr<RbLanguageObject>                   operator[](size_t i) const;                                     //!< Const index op
+    RbLanguageObject*                               operator[](size_t i);                                           //!< Index op allowing change
+    const RbLanguageObject*                         operator[](size_t i) const;                                     //!< Const index op
     Vector&                                         operator=(const Vector& x);                                     //!< Assignment operator
     
     // Vector functions
     virtual void                                    clear(void);                                                    //!< Clear
-    virtual RbPtr<const RbObject>                   getElement(size_t index) const;                                 //!< Get element
-    virtual RbPtr<RbObject>                         getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+    virtual const RbObject*                         getElement(size_t index) const;                                 //!< Get element
+    virtual RbObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
     const std::vector<RbPtr<RbLanguageObject> >&    getValue(void) const;                                           //!< Get the stl vector of elements
     void                                            pop_back(void);                                                 //!< Drop element at back
     void                                            pop_front(void);                                                //!< Drop element from front
-    virtual void                                    push_back(RbPtr<RbObject> x);                                   //!< Append element to end
-    virtual void                                    push_front(RbPtr<RbObject> x);                                  //!< Add element in front
+    virtual void                                    push_back(RbObject* x);                                         //!< Append element to end
+    virtual void                                    push_front(RbObject* x);                                        //!< Add element in front
     virtual void                                    resize(size_t n);                                               //!< Resize to new AbstractVector of length n
-    virtual void                                    setElement(const size_t index, RbPtr<RbLanguageObject> elem);   //!< Set element with type conversion
+    virtual void                                    setElement(const size_t index, RbLanguageObject* elem);         //!< Set element with type conversion
     void                                            sort(void);                                                     //!< sort the AbstractVector
     size_t                                          size(void) const;                                               //!< get the number of elements in the AbstractVector
     void                                            unique(void);                                                   //!< removes consecutive duplicates

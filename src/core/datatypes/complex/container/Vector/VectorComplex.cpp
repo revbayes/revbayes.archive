@@ -147,22 +147,22 @@ const VectorString& VectorComplex::getClass(void) const {
 }
 
 
-RbPtr<const RbObject> VectorComplex::getElement(size_t index) const {
+const RbObject* VectorComplex::getElement(size_t index) const {
     
     if (index >= elements.size())
         throw RbException("Index out of bounds");
     
-    RbPtr<const RbObject> c( new Complex(elements[index]) );
+    const RbObject* c = new Complex(elements[index]);
     return c;
 }
 
 
-RbPtr<RbObject> VectorComplex::getElement(size_t index) {
+RbObject* VectorComplex::getElement(size_t index) {
     
     if (index >= elements.size())
         throw RbException("Index out of bounds");
     
-    RbPtr<RbObject> c( new Complex(elements[index]) );
+    RbObject* c = new Complex(elements[index]);
     return c;
 }
 
@@ -218,12 +218,14 @@ void VectorComplex::printValue(std::ostream& o) const {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorComplex::push_back( RbPtr<RbObject> x ) {
+void VectorComplex::push_back( RbObject* x ) {
     
     if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
-        elements.push_back(static_cast<Complex*>( (RbObject*)x )->getValue());
+        elements.push_back(static_cast<Complex*>( x )->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         elements.push_back(static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );
@@ -239,12 +241,14 @@ void VectorComplex::push_back(std::complex<double> x) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorComplex::push_front( RbPtr<RbObject> x ) {
+void VectorComplex::push_front( RbObject* x ) {
     
     if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Complex*>( (RbObject*)x )->getValue());
+        elements.insert( elements.begin(), static_cast<Complex*>( x )->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         elements.insert( elements.begin(), static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );
@@ -273,7 +277,7 @@ std::string VectorComplex::richInfo(void) const {
 }
 
 
-void VectorComplex::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
+void VectorComplex::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
@@ -281,7 +285,7 @@ void VectorComplex::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Complex*>( (RbObject*)x )->getValue());
+        elements.insert( elements.begin() + index, static_cast<Complex*>( x )->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
@@ -292,6 +296,8 @@ void VectorComplex::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         elements.erase(elements.begin()+index);
         
         elements.insert( elements.begin() + index, static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );

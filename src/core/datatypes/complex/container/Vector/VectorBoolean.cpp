@@ -134,22 +134,22 @@ const TypeSpec& VectorBoolean::getTypeSpec(void) const {
 }
 
 
-RbPtr<const RbObject> VectorBoolean::getElement(size_t index) const {
+const RbObject* VectorBoolean::getElement(size_t index) const {
     
     if ( index >= elements.size() )
         throw RbException("Index out of bounds");
     
-    RbPtr<const RbObject> b( new RbBoolean(elements[index]) );
+    const RbObject* b = new RbBoolean(elements[index]);
     return b;
 }
 
 
-RbPtr<RbObject> VectorBoolean::getElement(size_t index) {
+RbObject* VectorBoolean::getElement(size_t index) {
     
     if ( index >= elements.size() )
         throw RbException("Index out of bounds");
     
-    RbPtr<RbObject> b( new RbBoolean(elements[index]) );
+    RbObject* b = new RbBoolean(elements[index]);
     return b;
 }
 
@@ -172,12 +172,14 @@ void VectorBoolean::pop_front() {
 
 
 /** Append element to end of vector, updating length in process */
-void VectorBoolean::push_back(RbPtr<RbObject> x) {
+void VectorBoolean::push_back(RbObject* x) {
  
     if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
-        elements.push_back(static_cast<RbBoolean*>( (RbObject*)x )->getValue());
+        elements.push_back(static_cast<RbBoolean*>( x )->getValue());
     } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         elements.push_back(static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
@@ -192,12 +194,14 @@ void VectorBoolean::push_back(bool x) {
 
 
 /** Append element to front of vector, updating length in process */
-void VectorBoolean::push_front(RbPtr<RbObject> x) {
+void VectorBoolean::push_front(RbObject* x) {
     
     if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
-        elements.insert( elements.begin() , static_cast<RbBoolean*>( (RbObject*)x )->getValue());
+        elements.insert( elements.begin() , static_cast<RbBoolean*>( x )->getValue());
     } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         elements.insert( elements.begin() , static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
@@ -227,7 +231,7 @@ std::string VectorBoolean::richInfo(void) const {
 }
 
 
-void VectorBoolean::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
+void VectorBoolean::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
@@ -235,7 +239,7 @@ void VectorBoolean::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<RbBoolean*>( (RbLanguageObject*)x )->getValue());
+        elements.insert( elements.begin() + index, static_cast<RbBoolean*>( x )->getValue());
     } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
@@ -246,6 +250,8 @@ void VectorBoolean::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         elements.erase(elements.begin()+index);
         
         elements.insert( elements.begin() + index, static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+        // since we own the parameter, we delete the old type
+        delete x;
     }
     else {
         throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
