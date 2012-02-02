@@ -53,6 +53,7 @@
 - (void)removeAllInletsAndOutlets;
 - (void)removeAllInlets;
 - (void)removeAllOutlets;
+- (void)removeFilesFromTemporaryDirectory;
 - (void)removeInletOfColor:(NSColor*)c;
 - (NSMutableAttributedString*)sendTip;
 - (void)setAnalysisView:(AnalysisView*)av;

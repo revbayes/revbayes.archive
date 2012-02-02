@@ -230,7 +230,6 @@
 	NSEnumerator* characterEnumerator = [excludedCharacters objectEnumerator];
 	while ( (element = [characterEnumerator nextObject]) )
 		{
-        NSLog(@"[element intValue] = %d", [element intValue]);
 		if ( [element intValue] == idx )
 			return YES;
 		}

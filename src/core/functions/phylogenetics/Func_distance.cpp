@@ -23,6 +23,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "Real.h"
 #include "RnaState.h"
 #include "StringUtilities.h"
 #include "TaxonData.h"
@@ -50,8 +51,16 @@ Func_distance* Func_distance::clone(void) const {
 RbPtr<RbLanguageObject> Func_distance::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    RbPtr<CharacterData> m( static_cast<CharacterData*>( (RbObject*)(*args)[0]->getValue() ) );
-    RbPtr<RbString> dName( static_cast<RbString*>( (RbObject*)(*args)[1]->getValue() ) );
+    RbPtr<CharacterData> m     ( static_cast<CharacterData*>( (RbObject*)(*args)[0]->getValue() ) );
+    RbPtr<RbString>      dName ( static_cast<RbString*>     ( (RbObject*)(*args)[1]->getValue() ) );
+    RbPtr<RbString>      freqs ( static_cast<RbString*>     ( (RbObject*)(*args)[2]->getValue() ) );
+    RbPtr<RbString>      asrv  ( static_cast<RbString*>     ( (RbObject*)(*args)[3]->getValue() ) );
+    RbPtr<Real>          shape ( static_cast<Real*>         ( (RbObject*)(*args)[4]->getValue() ) );
+    RbPtr<Real>          pinvar( static_cast<Real*>         ( (RbObject*)(*args)[5]->getValue() ) );
+
+    //CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
+    
+    std::cout << "m = " << m << std::endl;
     
     // check that the data matrix is aligned
     if ( m->getIsHomologyEstablished() == false )
@@ -62,7 +71,7 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction(void) {
         throw( RbException("Data must be DNA or RNA") );
         
     // determine the distance model
-    enum distanceModel { p_dist, jc69, k80, hky85 };
+    enum distanceModel { p_dist, jc69, f81, tn93, k2p, hky85, k3p, gtr, logdet };
     distanceModel myModel;
     std::string distanceStr = dName->getValue();
     StringUtilities::toLower(distanceStr);
@@ -70,10 +79,20 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction(void) {
         myModel = p_dist;
     else if ( distanceStr == "jc69" )
         myModel = jc69;
-    else if ( distanceStr == "k80" )
-        myModel = k80;
+    else if ( distanceStr == "f81" )
+        myModel = f81;
+    else if ( distanceStr == "tn93" )
+        myModel = tn93;
+    else if ( distanceStr == "k2p" )
+        myModel = k2p;
     else if ( distanceStr == "hky85" )
         myModel = hky85;
+    else if ( distanceStr == "k3p" )
+        myModel = k3p;
+    else if ( distanceStr == "gtr" )
+        myModel = gtr;
+    else if ( distanceStr == "logdet" )
+        myModel = logdet;
     else
         throw( RbException("Unknown distance model \"" + distanceStr + "\"") );
     
@@ -96,9 +115,19 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction(void) {
                 dist = distanceP(td_i, td_j);
             else if (myModel == jc69)
                 dist = distanceJC69(td_i, td_j);
-            else if (myModel == k80)
+            else if (myModel == f81)
+                dist = distanceJC69(td_i, td_j);
+            else if (myModel == tn93)
+                dist = distanceJC69(td_i, td_j);
+            else if (myModel == k2p)
                 dist = distanceJC69(td_i, td_j);
             else if (myModel == hky85)
+                dist = distanceJC69(td_i, td_j);
+            else if (myModel == k3p)
+                dist = distanceJC69(td_i, td_j);
+            else if (myModel == gtr)
+                dist = distanceJC69(td_i, td_j);
+            else if (myModel == logdet)
                 dist = distanceJC69(td_i, td_j);
             (*(*d)[i])[j] = dist;
             (*(*d)[j])[i] = dist;
@@ -152,8 +181,12 @@ RbPtr<const ArgumentRules> Func_distance::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "data",  CharacterData_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "model", RbString_name      ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "data",   CharacterData_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "model",  RbString_name      ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "freqs",  RbString_name      ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "asrv",   RbString_name      ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "shape",  Real_name          ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "pinvar", Real_name          ) ) );
         rulesSet = true;
         }
 

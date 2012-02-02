@@ -11,7 +11,6 @@
 
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
-- (void)execute;
 - (id)initWithScaleFactor:(float)sf;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (NSMutableAttributedString*)sendTip;

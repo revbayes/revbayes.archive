@@ -512,7 +512,7 @@
 		{
         // get a pointer to the data matrix
         RbData* d = [myTool dataMatrixIndexed:i];
-        
+
         // delete taxa
         [d includeAllTaxa];
         NSArray* tList = [[excludedTaxaMatrices objectAtIndex:i] cells];
@@ -531,7 +531,6 @@
         while ( (element = [charEnum nextObject]) )
             {
             int idx = [[element stringValue] intValue] - 1;
-            NSLog(@"excluding character %d", idx);
             [d excludeCharacterIndexed:idx];
             }
 		}
@@ -543,6 +542,8 @@
 	[excludedTaxaMatrices removeAllObjects];
 
     [myTool closeControlPanel];
+    
+    [myTool makeDataInspector];
 }
 
 - (void)setControlWindowSize {

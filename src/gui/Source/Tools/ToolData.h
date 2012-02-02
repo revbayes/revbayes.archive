@@ -35,6 +35,5 @@ class CharacterData;
 - (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName;
 - (void)removeAllDataMatrices;
 - (void)removeDataInspector;
-- (void)removeFilesFromTemporaryDirectory;
 
 @end

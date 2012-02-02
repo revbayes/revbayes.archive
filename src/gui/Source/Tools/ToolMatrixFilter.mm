@@ -205,7 +205,7 @@
             [self makeDataInspector];
             }
 		}
-        
+                
     [self stopProgressIndicator];
 }
 

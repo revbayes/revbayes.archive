@@ -140,7 +140,6 @@
 
 - (BOOL)initDataMatrixWithMatrix:(RbData*)matrix {
 
-    NSLog(@"in initDataMatrixWithMatrix");
 	int nRows = [matrix numTaxa];
 	nRows += 2;
 	
@@ -289,8 +288,6 @@
 					NSColor* bkgrndColor = [colorDict objectForKey:stateStr];
                     if ( [matrix isCharacterExcluded:j] == YES || [matrix isTaxonExcluded:(i-2)] == YES )
                         bkgrndColor = [NSColor grayColor];
-                    if ([matrix isCharacterExcluded:j] == YES)
-                        NSLog(@"is [matrix isCharacterExcluded:j] = %d", [matrix isCharacterExcluded:j]);
 					bkgrndColor = [bkgrndColor colorWithAlphaComponent:0.5];
 
 					NSTextFieldCell* aCell = [allCells objectAtIndex:(i*nCols)+j];

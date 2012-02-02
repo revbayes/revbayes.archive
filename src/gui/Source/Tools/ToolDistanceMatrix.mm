@@ -1,7 +1,15 @@
+#import "Connection.h"
+#import "Inlet.h"
+#import "Outlet.h"
+#import "RbData.h"
 #import "RevBayes.h"
+#import "ToolData.h"
 #import "ToolDistanceMatrix.h"
 #import "WindowControllerDistanceMatrix.h"
 
+#include "Parser.h"
+#include "Workspace.h"
+#include <string>
 
 
 @implementation ToolDistanceMatrix
@@ -19,23 +27,133 @@
 - (void)calculateDistances {
 
     [self startProgressIndicator];
+        
+    // find the parent of this tool, which should be an instance of ToolReadData
+    ToolData* dataTool = nil;
+    for (int i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (int j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return;
 
-    NSLog(@"distanceType              = %d", distanceType);
-    NSLog(@"gammaRateVariation        = %d", gammaRateVariation);
-    NSLog(@"baseFreqTreatment         = %d", baseFreqTreatment);
-    NSLog(@"proportionInvariableSites = %lf", proportionInvariableSites);
-    NSLog(@"gammaShape                = %lf", gammaShape);
+    // calculate how many aligned data matrices exist
+    NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            [alignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+    if ( [alignedData count] == 0 )
+        return;
+        
+    // remove all of the files from the temporary directory
+    [self removeFilesFromTemporaryDirectory];
+        
+    // and make a temporary directory to contain the alignments
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
+              alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments/"];
+    NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
+    [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
 
-    /*const char* cmdAsCStr = [alnDirectory UTF8String];
+    // write the alignment files to the temporary directory
+    for (int i=0; i<[alignedData count]; i++)
+        {
+        // have the data object save a file to the temporary directory
+        RbData* d = [alignedData objectAtIndex:i];
+        NSString* dFilePath = [NSString stringWithString:alnDirectory];
+                  dFilePath = [dFilePath stringByAppendingString:[d name]];
+        if ( [d isHomologyEstablished] == YES )
+            dFilePath = [dFilePath stringByAppendingString:@".nex"];
+        else
+            dFilePath = [dFilePath stringByAppendingString:@".fas"];
+        [d writeToFile:dFilePath];
+        }
+
+    // get a variable name from the workspace for the data and distance matrix
+    std::string dataName = Workspace::userWorkspace()->generateUniqueVariableName();
+    std::string distName = Workspace::userWorkspace()->generateUniqueVariableName();
+		    
+    // format a string command to read the data file(s) and send the
+    // formatted string to the parser
+    const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    std::string line = dataName + " <- read(\"" + cmdAsStlStr + "\")";
     int coreResult = Parser::getParser().processCommand(line);
     if (coreResult != 0)
         {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
         return;
-        }*/
+        }
+        
+    // get string for specifying distance commands
+    std::string cmdStr = distName;
+    cmdStr += " <- distances(data=";
+    cmdStr += dataName;
+    cmdStr += ", model=\"";
+    if (distanceType == P_DISTANCE)
+        cmdStr += "p";
+    else if (distanceType == JC69)
+        cmdStr += "jc69";
+    else if (distanceType == F81)
+        cmdStr += "f81";
+    else if (distanceType == TN93)
+        cmdStr += "tn93";
+    else if (distanceType == K2P)
+        cmdStr += "k2p";
+    else if (distanceType == HKY85)
+        cmdStr += "hky85";
+    else if (distanceType == K3P)
+        cmdStr += "k3p";
+    else if (distanceType == GTR)
+        cmdStr += "gtr";
+    else if (distanceType == LOGDET)
+        cmdStr += "logdet";
+    cmdStr += "\", freqs=\"";
+    if (baseFreqTreatment == EQUAL_FREQS)
+        cmdStr += "equal";
+    else if (baseFreqTreatment == EMPIRICAL_FREQS)
+        cmdStr += "empirical";
+    cmdStr += "\", asrv=\"";
+    if (gammaRateVariation == EQUAL_RATES)
+        cmdStr += "equal";
+    else if (gammaRateVariation == GAMMA_RATES)
+        cmdStr += "gamma";
+    cmdStr += "\", shape=";
+    char tempC[20];
+    sprintf(tempC, "%lf", gammaShape);
+    std::string tempStr = tempC;
+    cmdStr += tempStr;
+    cmdStr += ", pinvar=";
+    sprintf(tempC, "%lf", proportionInvariableSites);
+    tempStr = tempC;
+    cmdStr += tempStr;
+    cmdStr += ");";
+    std::cout << cmdStr << std::endl;
+
+    // have the core process the command
+    coreResult = Parser::getParser().processCommand(cmdStr);
+    if (coreResult != 0)
+        {
+        // possibly return, after erasing the temporary variable names
+        }
+
+
+
+
+
+    // remove the variables from the core
+    Workspace::userWorkspace()->eraseVariable(dataName);
+    Workspace::userWorkspace()->eraseVariable(distName);
 
     [self stopProgressIndicator];
 }

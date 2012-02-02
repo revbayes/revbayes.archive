@@ -19,12 +19,12 @@
     RbData*              copiedFrom;
 }
 
-@property (readwrite) int dataType;
-@property (readwrite) BOOL isHomologyEstablished;
+@property (readwrite)        int       dataType;
+@property (readwrite)        BOOL      isHomologyEstablished;
 @property (readwrite,retain) NSString* name;
 @property (readwrite,retain) NSString* alignmentMethod;
-@property (readwrite) int numCharacters;
-@property (readwrite) int numTaxa;
+@property (readwrite)        int       numCharacters;
+@property (readwrite)        int       numTaxa;
 
 - (void)addTaxonData:(RbTaxonData*)td;
 - (void)addTaxonName:(NSString*)n;

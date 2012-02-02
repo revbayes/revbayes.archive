@@ -130,7 +130,7 @@
     // write the data matrix/matrices in this tool to the temporary directory
     for (int i=0; i<[dataMatrices count]; i++)
         {
-        // have the data object save a fasta file to the temporary directory
+        // have the data object save a file to the temporary directory
         RbData* d = [dataMatrices objectAtIndex:i];
         NSString* dFilePath = [NSString stringWithString:alnDirectory];
                   dFilePath = [dFilePath stringByAppendingString:[d name]];
@@ -389,22 +389,6 @@
     if ( dataInspector != nil )
         [dataInspector release];
     dataInspector = nil;
-}
-
-- (void)removeFilesFromTemporaryDirectory {
-
-    NSString* temporaryDirectory = NSTemporaryDirectory();
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
-    NSDirectoryEnumerator* en = [fm enumeratorAtPath:temporaryDirectory];    
-    NSString* file;
-    while ( file = [en nextObject] ) 
-        {
-        NSError* err = nil;
-        BOOL res = [fm removeItemAtPath:[temporaryDirectory stringByAppendingPathComponent:file] error:&err];
-        if (!res && err) 
-            {
-            }
-        }
 }
 
 - (void)showInspectorPanel {

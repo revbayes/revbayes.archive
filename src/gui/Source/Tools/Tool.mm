@@ -385,6 +385,22 @@
 	[outlets removeAllObjects];
 }
 
+- (void)removeFilesFromTemporaryDirectory {
+
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSDirectoryEnumerator* en = [fm enumeratorAtPath:temporaryDirectory];    
+    NSString* file;
+    while ( file = [en nextObject] ) 
+        {
+        NSError* err = nil;
+        BOOL res = [fm removeItemAtPath:[temporaryDirectory stringByAppendingPathComponent:file] error:&err];
+        if (!res && err) 
+            {
+            }
+        }
+}
+
 - (void)removeInletOfColor:(NSColor*)c {
     
     NSMutableDictionary* myMap = [NSMutableDictionary dictionaryWithCapacity:0];
