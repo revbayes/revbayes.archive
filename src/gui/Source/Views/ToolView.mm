@@ -62,6 +62,8 @@
             toolImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
         else if (i == TOOL_MATRIXFILTER)
             toolImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];
+        else if (i == TOOL_BOOTSTRAP)
+            toolImage = [NSImage imageNamed:@"Tool_Bootstrap.icns"];
         else if (i == TOOL_MODEL)
             toolImage = [NSImage imageNamed:@"Tool_Model.icns"];
         else if (i == TOOL_MCMC)
@@ -70,7 +72,9 @@
             toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
         else if (i == TOOL_DISTANCEMATRIX)
             toolImage = [NSImage imageNamed:@"Tool_Distance.icns"];
-        else if (i == TOOL_TREECONTAINER)
+         else if (i == TOOL_NEIGHBORJOINING)
+            toolImage = [NSImage imageNamed:@"Tool_Distance.icns"];
+       else if (i == TOOL_TREECONTAINER)
             toolImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
         else if (i == TOOL_NUMBERSET)
             toolImage = [NSImage imageNamed:@"ToolNumberSet.icns"];
@@ -107,6 +111,8 @@
 			myTip = [NSString stringWithString:@" Matrix Combiner Tool "];
         else if (toolForToolTip == TOOL_MATRIXFILTER)
 			myTip = [NSString stringWithString:@" Data Matrix Filter Tool "];
+        else if (toolForToolTip == TOOL_BOOTSTRAP)
+			myTip = [NSString stringWithString:@" Bootstrap Tool "];
         else if (toolForToolTip == TOOL_MODEL)
 			myTip = [NSString stringWithString:@" Model Tool "];
         else if (toolForToolTip == TOOL_MCMC)
@@ -115,6 +121,8 @@
 			myTip = [NSString stringWithString:@" Simulate Data Tool "];
         else if (toolForToolTip == TOOL_DISTANCEMATRIX)
 			myTip = [NSString stringWithString:@" Distance Matrix Tool "];
+        else if (toolForToolTip == TOOL_NEIGHBORJOINING)
+			myTip = [NSString stringWithString:@" Neighbor Joining Tool "];
         else if (toolForToolTip == TOOL_TREECONTAINER)
 			myTip = [NSString stringWithString:@" Tree Container Tool "];
         else if (toolForToolTip == TOOL_NUMBERSET)
@@ -210,6 +218,8 @@
 		anImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
 	else if (whichToolSelected == TOOL_MATRIXFILTER)
 		anImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];
+	else if (whichToolSelected == TOOL_BOOTSTRAP)
+		anImage = [NSImage imageNamed:@"Tool_Bootstrap.icns"];
 	else if (whichToolSelected == TOOL_MODEL)
 		anImage = [NSImage imageNamed:@"Tool_Model.icns"];
 	else if (whichToolSelected == TOOL_MCMC)
@@ -217,6 +227,8 @@
 	else if (whichToolSelected == TOOL_SIMULATE)
 		anImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
 	else if (whichToolSelected == TOOL_DISTANCEMATRIX)
+		anImage = [NSImage imageNamed:@"Tool_Distance.icns"];
+	else if (whichToolSelected == TOOL_NEIGHBORJOINING)
 		anImage = [NSImage imageNamed:@"Tool_Distance.icns"];
 	else if (whichToolSelected == TOOL_TREECONTAINER)
 		anImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];

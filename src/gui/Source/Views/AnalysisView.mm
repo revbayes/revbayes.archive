@@ -9,6 +9,7 @@
 #import "ScalingScrollView.h"
 #import "Tool.h"
 #import "ToolAlign.h"
+#import "ToolBootstrap.h"
 #import "ToolCombiner.h"
 #import "ToolDistanceMatrix.h"
 #import "ToolNumericalMcmcOutput.h"
@@ -16,6 +17,7 @@
 #import "ToolMcmc.h"
 #import "ToolMcmcDiagnostic.h"
 #import "ToolModel.h"
+#import "ToolNeighborJoining.h"
 #import "ToolReadData.h"
 #import "ToolSimulate.h"
 #import "ToolTreeMcmcDiagnostic.h"
@@ -1723,6 +1725,8 @@
             newTool = [[ToolCombiner alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_MATRIXFILTER)
             newTool = [[ToolMatrixFilter alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_BOOTSTRAP)
+            newTool = [[ToolBootstrap alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_MODEL)
             newTool = [[ToolModel alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_MCMC)
@@ -1731,6 +1735,8 @@
             newTool = [[ToolSimulate alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_DISTANCEMATRIX)
             newTool = [[ToolDistanceMatrix alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_NEIGHBORJOINING)
+            newTool = [[ToolNeighborJoining alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_TREECONTAINER)
             newTool = [[ToolTreeSet alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_NUMBERSET)
