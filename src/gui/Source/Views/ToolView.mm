@@ -54,7 +54,9 @@
         {
         // get a pointer to the tool image
         NSImage* toolImage;
-        if (i == TOOL_READDATA)
+        if (i == TOOL_LOOP)
+            toolImage = [NSImage imageNamed:@"Tool_Loop.icns"];
+        else if (i == TOOL_READDATA)
             toolImage = [NSImage imageNamed:@"Tool_ReadData.icns"];
         else if (i == TOOL_ALIGN)
             toolImage = [NSImage imageNamed:@"Tool_Align.icns"];
@@ -73,7 +75,7 @@
         else if (i == TOOL_DISTANCEMATRIX)
             toolImage = [NSImage imageNamed:@"Tool_Distance.icns"];
          else if (i == TOOL_NEIGHBORJOINING)
-            toolImage = [NSImage imageNamed:@"Tool_Distance.icns"];
+            toolImage = [NSImage imageNamed:@"Tool_NeighborJoining.icns"];
        else if (i == TOOL_TREECONTAINER)
             toolImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
         else if (i == TOOL_NUMBERSET)
@@ -103,7 +105,9 @@
 		p.y = toolSize * 0.75;
 	
 		NSString* myTip;
-        if (toolForToolTip == TOOL_READDATA)
+        if (toolForToolTip == TOOL_LOOP)
+			myTip = [NSString stringWithString:@" Loop Tool "];
+        else if (toolForToolTip == TOOL_READDATA)
 			myTip = [NSString stringWithString:@" Read Data Tool "];
         else if (toolForToolTip == TOOL_ALIGN)
 			myTip = [NSString stringWithString:@" Sequence Alignment Tool "];
@@ -177,7 +181,7 @@
 		myTrackingAreas = [[NSMutableArray alloc] init];
 
 		// set default values for object variables
-        numTools             = 11;
+        numTools             = NUM_TOOLS;
         toolSize             = 100.0;
 		whichToolSelected    = -1;
         scaleFactor          = 1.0;
@@ -210,7 +214,9 @@
     // create the image that will be dragged
     NSSize s = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
 	NSImage* anImage;
-	if (whichToolSelected == TOOL_READDATA)
+	if (whichToolSelected == TOOL_LOOP)
+		anImage = [NSImage imageNamed:@"Tool_Loop.icns"];
+	else if (whichToolSelected == TOOL_READDATA)
 		anImage = [NSImage imageNamed:@"Tool_ReadData.icns"];
 	else if (whichToolSelected == TOOL_ALIGN)
 		anImage = [NSImage imageNamed:@"Tool_Align.icns"];
@@ -229,7 +235,7 @@
 	else if (whichToolSelected == TOOL_DISTANCEMATRIX)
 		anImage = [NSImage imageNamed:@"Tool_Distance.icns"];
 	else if (whichToolSelected == TOOL_NEIGHBORJOINING)
-		anImage = [NSImage imageNamed:@"Tool_Distance.icns"];
+		anImage = [NSImage imageNamed:@"Tool_NeighborJoining.icns"];
 	else if (whichToolSelected == TOOL_TREECONTAINER)
 		anImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
 	else if (whichToolSelected == TOOL_NUMBERSET)

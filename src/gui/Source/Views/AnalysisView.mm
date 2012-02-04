@@ -12,6 +12,7 @@
 #import "ToolBootstrap.h"
 #import "ToolCombiner.h"
 #import "ToolDistanceMatrix.h"
+#import "ToolLoop.h"
 #import "ToolNumericalMcmcOutput.h"
 #import "ToolMatrixFilter.h"
 #import "ToolMcmc.h"
@@ -241,13 +242,111 @@
     [NSGraphicsContext saveGraphicsState];
     [shadow set];
 	
-	// draw the tool images
-    NSPoint mouseLoc = [NSEvent mouseLocation];
-	mouseLoc = [self convertPoint:mouseLoc fromView:nil];
+    // draw the loops
+    float borderWidth = ITEM_IMAGE_SIZE * scaleFactor * 0.01;
 	NSEnumerator* itemEnumerator = [itemsPtr objectEnumerator];
 	id element;
 	while ( (element = [itemEnumerator nextObject]) )
+        {
+        if ( [element isLoop] == YES )
+            {
+			// draw the rectangle (plate)
+            [NSGraphicsContext saveGraphicsState];
+            [shadow set];
+
+			NSRect pr = [element loopRect];
+			pr.origin = [element itemLocation];
+            pr.size.width *= scaleFactor;
+            pr.size.height *= scaleFactor;
+			[self transformToBottomLeftCoordinates:(&pr.origin)];
+            NSColor* c = [NSColor colorWithDeviceCyan:0.66 magenta:0.24 yellow:0.19 black:0.0 alpha:0.7];
+			[c set];
+            NSBezierPath* pp = [NSBezierPath bezierPath];
+            float rad = 6.0 * scaleFactor;
+            [pp appendBezierPathWithRoundedRect:pr xRadius:rad yRadius:rad];
+            [pp fill];
+            
+			// and the line around the plate
+			NSRect focusRect = pr;
+            [[NSColor blackColor] set];
+			NSBezierPath* selRing = [NSBezierPath bezierPath];
+			[selRing setLineWidth:borderWidth];
+			[selRing appendBezierPathWithRoundedRect:focusRect xRadius:rad yRadius:rad];
+			[selRing stroke];
+            [NSGraphicsContext restoreGraphicsState];
+			
+			// draw the plate's information in the bottom right corner
+			if ( [element isCursorOver] == YES || (draggedItems == YES && element == selection.selectedItem) )
+				{
+                // show the little "i" button
+				NSRect iRect = informationRect[scaleIdx];
+				float delta  = pr.size.width - ITEM_IMAGE_SIZE * scaleFactor;
+				iRect.origin = NSMakePoint(pr.origin.x + rOffset[scaleIdx].x + delta, pr.origin.y + rOffset[scaleIdx].y);
+				NSPoint p    = NSMakePoint(pr.origin.x + iOffset[scaleIdx].x + delta, pr.origin.y + iOffset[scaleIdx].y);
+				[[[NSColor blackColor] colorWithAlphaComponent:0.25] set];
+				[[NSBezierPath bezierPathWithOvalInRect:iRect] fill];
+				[selectedAttributedString[scaleIdx] drawAtPoint:p];
+				}
+			else 
+				{
+                // write out the mathematical notation for the iterator
+				NSDictionary* attrs;
+				if ( [element isCursorOver] == YES || (draggedItems == YES && element == selection.selectedItem) )
+					attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Times" size:(18.0*scaleFactor)], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]];
+				else 
+					attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Times" size:(18.0*scaleFactor)], [[NSColor blackColor] colorWithAlphaComponent:1.0], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]];
+				unichar uc = 8712;
+				NSString* endingRangeStr = [element getEndingRangeForLoop];
+				NSRange endingRangeRange = [element italicsRange];
+				NSString* infoStr = [NSString stringWithFormat:@"%c %C (1,...,", [element indexLetter], uc];
+				infoStr = [infoStr stringByAppendingString:endingRangeStr];
+				infoStr = [infoStr stringByAppendingString:@")"];
+				NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:infoStr attributes:attrs];
+				[attrString applyFontTraits:NSItalicFontMask range:NSMakeRange(0, 1)];
+				if ( endingRangeRange.length != 0 )
+					{
+					endingRangeRange.location += 11;
+					[attrString applyFontTraits:NSItalicFontMask range:endingRangeRange];
+					}
+				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+				float padding = 4.0 * scaleFactor;
+				textSize.origin.x = pr.origin.x + (pr.size.width - textSize.size.width - padding);
+				textSize.origin.y = pr.origin.y + padding;
+				NSPoint p = textSize.origin;
+				[attrString drawAtPoint:p];
+				[attrString release];
+				[element setMinLoopSize:NSMakeSize(textSize.size.width + 2.0*padding, textSize.size.height + 2.0*padding)];
+				}
+				
+			// draw the selection information, with handles
+			if ([element isSelected] == YES)
+				{
+				[[NSColor darkGrayColor] set];
+				NSRect handleRect;
+				handleRect.origin = pr.origin;
+				handleRect.size = NSMakeSize(15.0*scaleFactor, 15.0*scaleFactor);
+				float oneHalfWidth = handleRect.size.width * 0.5;
+				handleRect.origin.x += (pr.size.width - oneHalfWidth);
+				handleRect.origin.y -= oneHalfWidth;
+				[[NSBezierPath bezierPathWithRect:handleRect] fill];
+				
+				handleRect.origin = pr.origin;
+				handleRect.origin.x -= oneHalfWidth;
+				handleRect.origin.y += (pr.size.height - oneHalfWidth);
+				[[NSBezierPath bezierPathWithRect:handleRect] fill];
+				}
+			}
+        }
+        
+	// draw the tool images
+    NSPoint mouseLoc = [NSEvent mouseLocation];
+	mouseLoc = [self convertPoint:mouseLoc fromView:nil];
+	itemEnumerator = [itemsPtr objectEnumerator];
+	while ( (element = [itemEnumerator nextObject]) )
 		{
+        if ( [element isLoop] == YES )
+            continue;
+            
 		// get information on the location and size of the tool's image
 		NSImage* itemImage = [element itemImageWithIndex:scaleIdx];
 		NSRect imageRect;
@@ -1091,6 +1190,32 @@
         }
 }
 
+- (BOOL)hasItemCollided:(RbItem*)itm {
+
+    if ( [(Tool*)itm isLoop] == YES )
+        return NO;
+        
+    NSRect r;
+    r.origin = [itm itemLocation];
+    r.size   = [itm itemSize];
+
+	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+        if ( element != itm )
+            {
+            NSRect itemRect;
+            itemRect.origin = [element itemLocation];
+            itemRect.size   = [element itemSize];
+            if ( CGRectIntersectsRect( NSRectToCGRect(itemRect), NSRectToCGRect(r) ) == YES && [element isLoop] == NO )
+                return YES;
+            }
+		}
+
+	return NO;
+}
+
 - (void)initializeDepthFirstOrderForTools:(NSMutableArray*)dpa {
 
     [dpa removeAllObjects];
@@ -1328,7 +1453,8 @@
         // click, with no modifier keys
 		if (mySelection.selectedItem != nil)
 			{
-			if (mySelection.selectionType == INLET_SELECTION || mySelection.selectionType == OUTLET_SELECTION)
+			if (mySelection.selectionType == INLET_SELECTION || mySelection.selectionType == OUTLET_SELECTION || 
+			    mySelection.selectionType == TL_PLATE_RESIZE || mySelection.selectionType == BR_PLATE_RESIZE)
 				[[NSCursor crosshairCursor] push];
 			else if (mySelection.selectionType == ITEM_SELECTION)
 				[mySelection.selectedItem setIsSelected:YES];
@@ -1427,6 +1553,62 @@
             
             // update the scroll bars
             [self updateScrollBars];
+			}
+		else if ( (selection.selectionType == TL_PLATE_RESIZE || selection.selectionType == BR_PLATE_RESIZE) && optionClicked == NO )
+			{
+			// we are resizing the plate
+						
+            // convert the point to the view's coordinates
+            NSPoint newP = [self convertPoint:p fromView:nil];
+            [self transformToTopLeftCoordinates:(&newP)];
+            
+            // account for the initial point where the item was selected
+            //newP.x -= cursorOffset.width;
+            //newP.y += cursorOffset.height;
+
+			// find the nearest grid intersection to this point, if we are snapping the item to the grid
+            if (snapToGrid == YES)
+                newP = [self findNearestGridIntersectionToPoint:newP];
+            			
+			// get the rectangle for the plate
+			NSRect pRect = [selection.selectedItem loopRect];
+			
+			// get the other corner
+			NSPoint otherP = [selection.selectedItem itemLocation];
+			if (selection.selectionType == TL_PLATE_RESIZE)
+				otherP.x += pRect.size.width;
+			else 
+				otherP.y -= pRect.size.height;
+				
+			// check that the plate isn't too small
+			NSSize ms = [selection.selectedItem minLoopSize];
+			if (fabs(newP.x-otherP.x) > ms.width && fabs(newP.y-otherP.y) > ms.height)
+				{
+				// get the new rectangle defined by the two corners
+				NSRect newRect;
+				if (otherP.x < newP.x)
+					newRect.origin.x = otherP.x;
+				else 
+					newRect.origin.x = newP.x;
+				if (otherP.y > newP.y)
+					newRect.origin.y = otherP.y;
+				else 
+					newRect.origin.y = newP.y;
+				newRect.size.width  = fabs(otherP.x - newP.x);
+				newRect.size.height = fabs(otherP.y - newP.y);
+				
+				// set the new plate
+				[selection.selectedItem setItemLocation:newRect.origin];
+				[selection.selectedItem setLoopRect:newRect];
+				[selection.selectedItem setImageWithSize:newRect.size];
+				}
+				
+			// reset the scroll bars if we are dragging by the bottom-right corner
+ 			if (selection.selectionType == BR_PLATE_RESIZE)
+				{
+				[self setCorners];
+				[self updateScrollBars];
+				}
 			}
         else if ( (selection.selectionType == INLET_SELECTION || selection.selectionType == OUTLET_SELECTION) && optionClicked == YES )
             {
@@ -1568,6 +1750,20 @@
             {
             
             }
+		else if (selection.selectionType == TL_PLATE_RESIZE || selection.selectionType == BR_PLATE_RESIZE)
+            {
+			// update the cursor
+			[[NSCursor crosshairCursor] pop];
+
+			// update the tracking areas
+			NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+			id element;
+			while ( (element = [enumerator nextObject]) )
+				[self addTrackingForItem:element];
+
+			// check plate membership
+			//[self checkPlateMembership];
+            }
 		else 
 			{
 			// we attempt to finish establishing a connection b/w inlet/outlets
@@ -1697,6 +1893,9 @@
 		{
 		// which tool was selected?
 		int toolIdx = [[sender draggingSource] whichToolSelected];
+        BOOL isLoop = NO;
+        if (toolIdx == TOOL_LOOP)
+            isLoop = YES;
 		
 		// get the location of the drop and then convert it to the view's coordinate system
 		NSPoint p = [sender draggedImageLocation];
@@ -1708,16 +1907,30 @@
 		if (snapToGrid == YES)
 			p = [self findNearestGridIntersectionToPoint:p];
 		
-		// check that the drop location is OK
-		NSRect r;
-		r.origin = p;
-        r.size   = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
-		if ( [self hasRectCollided:r] == YES)
-			return NO;
+		// Check that the drop location is OK. We don't drop parameters onto other parameters.
+        // However, we do allow plates to be dropped anywhere, as long as they fit in the screen.
+        if (isLoop == NO)
+            {
+            NSRect r;
+            r.origin = p;
+            r.size   = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
+            if ( [self hasRectCollided:r] == YES )
+                return NO;
+            }
+        else 
+            {
+            NSRect r;
+            r.origin = p;
+            r.size   = NSMakeSize(200.0*scaleFactor, 200.0*scaleFactor);
+            if ( [self hasRectCollidedWithEdge:r] == YES )
+                return NO;
+            }
 		
 		// allocate the tool, set its location, and add it to the list of tools
         Tool* newTool;
-        if (toolIdx == TOOL_READDATA)
+        if (toolIdx == TOOL_LOOP)
+            newTool = [[ToolLoop alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_READDATA)
             newTool = [[ToolReadData alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_ALIGN)
             newTool = [[ToolAlign alloc] initWithScaleFactor:scaleFactor];
@@ -1968,6 +2181,9 @@
 	id element;
 	while ( (element = [enumerator nextObject]) )
 		{
+        if ( [element isLoop] == YES )
+            continue;
+            
 		// initialize information on the tool
 		NSRect toolRect, infoRect, inspRect;
 		toolRect.origin = [element itemLocation];
@@ -2036,7 +2252,7 @@
 			return mySelection;
             }
 		}
-		
+        
     // now, check for clicks on connections
 	enumerator = [itemsPtr objectEnumerator];
 	while ( (element = [enumerator nextObject]) )
@@ -2088,7 +2304,87 @@
                 }
             }
 		}
-        
+
+    // check to see if we have selected a loop tool
+	enumerator = [itemsPtr objectEnumerator];
+	while ( (element = [enumerator nextObject]) )
+		{
+        if ( [element isLoop] == YES )
+            {
+			// selecting for a plate
+			NSRect pRect;
+			pRect.origin = [element itemLocation];
+			pRect.size   = [element itemSize];
+            pRect.size.width *= scaleFactor;
+            pRect.size.height *= scaleFactor;
+			[self transformToBottomLeftCoordinates:(&pRect.origin)];
+            
+			NSRect brRect;
+			brRect.origin = pRect.origin;
+			brRect.size = NSMakeSize(15.0*scaleFactor, 15.0*scaleFactor);
+			float oneHalfWidth = brRect.size.width * 0.5;
+			brRect.origin.x += (pRect.size.width - oneHalfWidth);
+			brRect.origin.y -= oneHalfWidth;
+            
+			NSRect tlRect;
+			tlRect.origin = pRect.origin;
+			tlRect.origin.x -= oneHalfWidth;
+			tlRect.origin.y += (pRect.size.height - oneHalfWidth);
+			tlRect.size = brRect.size;
+            
+            NSLog(@"pRect (itemSize) = %@", NSStringFromRect(pRect));
+            NSRect tempRect = [element loopRect];
+            NSLog(@"loopRect = %@", NSStringFromRect(tempRect));
+			
+			// 1, check if the point is in the top left handle
+			if ( CGRectContainsPoint( NSRectToCGRect(tlRect), NSPointToCGPoint(p) ) && [element isSelected] == YES )
+				{
+                NSLog(@"Top left handle");
+				mySelection.selectedItem  = element;
+				mySelection.selectionType = TL_PLATE_RESIZE;
+				cursorOffset = NSMakeSize(0.0, 0.0);
+				p.x = pRect.origin.x;
+				p.y = pRect.origin.y + pRect.size.height;
+				return mySelection;
+				}
+            
+			// 2, check if the point is in the bottom right handle
+			if ( CGRectContainsPoint( NSRectToCGRect(brRect), NSPointToCGPoint(p) ) && [element isSelected] == YES )
+				{
+                NSLog(@"Bottom right handle");
+				mySelection.selectedItem  = element;
+				mySelection.selectionType = BR_PLATE_RESIZE;
+				cursorOffset = NSMakeSize(0.0, 0.0);
+				p.x = pRect.origin.x + pRect.size.width;
+				p.y = pRect.origin.y;
+				return mySelection;
+				}
+            
+			// 3, check if we are selecting the information button
+			NSRect iRect = informationRect[scaleIdx];
+			float delta  = pRect.size.width - ITEM_IMAGE_SIZE * scaleFactor;
+			iRect.origin = NSMakePoint(pRect.origin.x + rOffset[scaleIdx].x + delta, pRect.origin.y + rOffset[scaleIdx].y);
+			if ( CGRectContainsPoint( NSRectToCGRect(iRect), NSPointToCGPoint(p) ) )
+				{
+                NSLog(@"Information button");
+				mySelection.selectedItem = element;
+				mySelection.selectionType = INFO_SELECTION;
+				return mySelection;
+				}
+            
+			// 4, check if the point is in the plate itself
+			if ( CGRectContainsPoint( NSRectToCGRect(pRect), NSPointToCGPoint(p) ) )
+				{
+                NSLog(@"Loop");
+				cursorOffset.width  = p.x - pRect.origin.x;
+				cursorOffset.height = p.y - pRect.origin.y;
+				mySelection.selectedItem = element;
+				mySelection.selectionType = ITEM_SELECTION;
+				return mySelection;
+				}
+            }
+        }
+                
 	return mySelection;
 }
 

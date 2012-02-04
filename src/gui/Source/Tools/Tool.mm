@@ -14,6 +14,7 @@
 @synthesize flagCount;
 @synthesize touchOnRevival;
 @synthesize isCurrentlyExecuting;
+@synthesize isLoop;
 @synthesize isVisited;
 
 - (void)addInletOfColor:(NSColor*)c {
@@ -57,10 +58,11 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
-	[aCoder encodeObject:inlets            forKey:@"inlets"];
-	[aCoder encodeObject:outlets           forKey:@"outlets"];
-	[aCoder encodeInt:flagCount            forKey:@"flagCount"];
-	[aCoder encodeBool:touchOnRevival      forKey:@"touchOnRevival"];
+	[aCoder encodeObject:inlets       forKey:@"inlets"];
+	[aCoder encodeObject:outlets      forKey:@"outlets"];
+	[aCoder encodeInt:flagCount       forKey:@"flagCount"];
+	[aCoder encodeBool:touchOnRevival forKey:@"touchOnRevival"];
+    [aCoder encodeBool:isLoop         forKey:@"isLoop"];
 	
     [super encodeWithCoder:aCoder];
 }
@@ -143,6 +145,7 @@
         outlets           = [[NSMutableArray alloc] init];
 		flagCount         = 0;
 		touchOnRevival    = NO;
+        isLoop            = NO;
 		}
     return self;
 }
@@ -156,6 +159,7 @@
         outlets           = [[NSMutableArray alloc] init];
 		flagCount         = 0;
 		touchOnRevival    = NO;
+        isLoop            = NO;
         }
     return self;
 }
@@ -169,6 +173,7 @@
 		outlets           = [aDecoder decodeObjectForKey:@"outlets"];
 		flagCount         = [aDecoder decodeIntForKey:@"flagCount"];
 		touchOnRevival    = [aDecoder decodeBoolForKey:@"touchOnRevival"];
+        isLoop            = [aDecoder decodeBoolForKey:@"isLoop"];
         [inlets retain];
         [outlets retain];
 		}

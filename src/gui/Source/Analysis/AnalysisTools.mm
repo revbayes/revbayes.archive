@@ -1,6 +1,7 @@
 #import "AnalysisTools.h"
 #import "RevBayes.h"
 #import "Tool.h"
+#import "ToolLoop.h"
 #import "WindowControllerNoteBook.h"
 
 
@@ -78,7 +79,18 @@
         p.x *= f;
         p.y *= f;
         [element setItemLocation:p];
-        [element setImageWithSize:sz];
+        if ( [element isLoop] == YES )
+            {
+            NSSize s = [element itemSize];
+            s.height *= f;
+            s.width *= f;
+            [element setItemSize:s];
+            //[element setImageWithSize:[(ToolLoop*)element loopRect].size];
+            }
+        else
+            {
+            [element setImageWithSize:sz];
+            }
         }
 }
 

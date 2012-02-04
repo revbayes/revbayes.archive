@@ -2011,7 +2011,6 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 			// 4, check if the point is in the plate itself
 			if ( CGRectContainsPoint( NSRectToCGRect(pRect), NSPointToCGPoint(p) ) )
 				{
-                NSLog(@"selecting tree plate");
 				cursorOffset.width  = p.x - pRect.origin.x;
 				cursorOffset.height = p.y - pRect.origin.y;
 				mySelection.selectedItem = element;
