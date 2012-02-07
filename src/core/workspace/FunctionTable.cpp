@@ -188,7 +188,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
     else {
         VectorInteger* matchScore = new VectorInteger();
         VectorInteger bestScore;
-        RbFunction* bestMatch;
+        RbFunction* bestMatch = NULL;
 
         bool ambiguous = false;
         std::multimap<std::string, RbFunction* >::iterator it;
