@@ -128,7 +128,7 @@ RbObject* DagNodeContainer::getElement(const size_t index) {
         throw RbException("Index out of bounds in DagNodeContainer.");
     }
     
-    return RbPtr<RbObject>(elements[index]);
+    return elements[index];
 }
 
 

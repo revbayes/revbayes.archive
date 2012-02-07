@@ -81,7 +81,7 @@ class MemberObject: public RbLanguageObject {
         virtual RbLanguageObject*           executeOperationSimple(const std::string& name, Environment* args);                 //!< Override to map member methods to internal functions
 
         // Members is the variable frame that stores member variables
-        RbPtr<Environment>                  members;                                                                            //!< Member variables
+        Environment*                        members;                                                                            //!< Member variables
 };
 
 #endif

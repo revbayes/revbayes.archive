@@ -19,7 +19,6 @@
 #define AbstractVector_H
 
 #include "Container.h"
-#include "RbPtr.h"
 
 #include <iostream>
 #include <vector>

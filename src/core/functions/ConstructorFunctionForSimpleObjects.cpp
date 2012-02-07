@@ -30,7 +30,7 @@
 const TypeSpec ConstructorFunctionForSimpleObjects::typeSpec(ConstructorFunctionForSimpleObjects_name);
 
 /** Constructor */
-ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(RbPtr<RbLanguageObject> obj) : RbFunction(), templateObject(obj) {
+ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(RbLanguageObject* obj) : RbFunction(), templateObject(obj) {
     
     argRules = templateObject->getMemberRules();
 }
@@ -48,9 +48,9 @@ RbLanguageObject* ConstructorFunctionForSimpleObjects::executeFunction(void) {
     
     RbLanguageObject* copy = templateObject->clone();
     
-    Vector* params = new Vector(RbObject_name);
+    Vector params = Vector(RbObject_name);
     for ( size_t i = 0; i < args->size(); i++ ) {
-        params->push_back( (*args)[i]->getValue() );
+        params.push_back( (*args)[i]->getValue() );
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
     

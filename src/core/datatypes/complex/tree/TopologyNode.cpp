@@ -220,7 +220,7 @@ const MethodTable* TopologyNode::getMethods(void) const {
         methods->addFunction("isInterior", new MemberFunction(RbBoolean_name,      isInteriorArgRules) );
         
         // Necessary call for proper inheritance
-        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
+        methods->setParentTable( MemberObject::getMethods() );
         methodsSet = true;
     }
 

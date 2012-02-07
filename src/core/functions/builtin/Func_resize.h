@@ -151,7 +151,7 @@ const VectorString& Func_resize::getClass( void ) const {
 
 /** Get return type */
 const TypeSpec& Func_resize::getReturnType( void ) const {
-	static TypeSpec rt = TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(RbLanguageObject_name) ) );
+	static TypeSpec rt = TypeSpec(Vector_name, new TypeSpec(RbLanguageObject_name) );
   return rt;
 }
 

@@ -17,7 +17,6 @@
 #define RbAbstract_H
 
 #include "RbLanguageObject.h"
-#include "RbPtr.h"
 #include "VectorString.h"
 
 #include <ostream>

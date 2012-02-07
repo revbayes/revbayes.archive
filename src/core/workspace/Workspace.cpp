@@ -59,10 +59,16 @@ Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), functio
 
 }
 
+/** Constructor of user workspace */
+Workspace::Workspace(const Workspace& x) : Environment(x.parentEnvironment), functionTable(x.functionTable->clone()), typesInitialized(x.typesInitialized) {
+    
+}
+
 
 /** Destructor */
 Workspace::~Workspace() {
 
+    delete functionTable;
 }
 
 
@@ -71,7 +77,7 @@ Workspace& Workspace::operator=(const Workspace& x) {
 
     if (this != &x) {
 
-        functionTable = x.functionTable;
+        functionTable = x.functionTable->clone();
     }
 
     return (*this);

@@ -54,8 +54,6 @@ public:
     RbLanguageObject*               rv(void);                                                           //!< Generate random variable
     
 private:
-//    RbPtr<DAGNode>                  transitionProbabilityMatrix;
-//    RbPtr<DAGNode>                  initialState;
     
     static const TypeSpec           typeSpec;
     static const TypeSpec           varTypeSpec;

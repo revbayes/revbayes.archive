@@ -54,25 +54,25 @@ void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode*> &tips, 
     
     if (tips.size() < numTaxa) {
         // Get the rng
-        RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
+        RandomNumberGenerator* rng = GLOBAL_RNG;
         
         // randomly draw one node from the list of tips
         size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
         
         // get the node from the list
-        RbPtr<TopologyNode> parent = tips.at(index);
+        TopologyNode* parent = tips.at(index);
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+index);
         
         // add a left child
-        RbPtr<TopologyNode> leftChild( new TopologyNode(0) );
+        TopologyNode* leftChild = new TopologyNode(0);
         parent->addChild(leftChild);
         leftChild->setParent(parent);
         tips.push_back(leftChild);
         
         // add a right child
-        RbPtr<TopologyNode> rightChild( new TopologyNode(0) );
+        TopologyNode* rightChild = new TopologyNode(0);
         parent->addChild(rightChild);
         rightChild->setParent(parent);
         tips.push_back(rightChild);

@@ -42,7 +42,7 @@ class CharacterData : public Matrix {
 
         // Overloaded operators
         CharacterData&                      operator=(const CharacterData& x);                                          //!< Assignment operator
-        RbPtr<const TaxonData>              operator[](size_t i) const;                                                 //!< Subscript operator (const)
+        const TaxonData*                    operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
         // Basic utility functions
         CharacterData*                      clone(void) const;                                                          //!< Clone object

@@ -14,7 +14,6 @@
  * $Id$
  */
 
-#include "RbPtr.h"
 
 class RandomNumberGenerator;
 

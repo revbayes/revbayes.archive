@@ -37,7 +37,6 @@
 #define TopologyNode_H
 
 #include "ConstantMemberObject.h"
-#include "RbPtr.h"
 
 #include <vector>
 

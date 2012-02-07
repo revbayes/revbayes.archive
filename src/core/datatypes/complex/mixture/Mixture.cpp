@@ -40,7 +40,7 @@ Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameter
 
     allocationVector_ = allocationVector;
     parameters_ = parameters;
-    RbPtr<DagNodeContainer> numClassesAllocated = allocationVector_->clone();
+    DagNodeContainer* numClassesAllocated = allocationVector_->clone();
     numClassesAllocated->sort();
     numClassesAllocated->unique();
     if (parameters_->size() != numClassesAllocated->size()) {
@@ -164,7 +164,7 @@ const MethodTable* Mixture::getMethods(void) const {
         methodsSet = true;
     }
     */
-    return RbPtr<const MethodTable>( methods) ;
+    return methods;
 }
 
 
@@ -358,7 +358,7 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
           
        //   RbPtr<Variable> var = RbPtr<Variable> (new Variable ( new Integer ( allocationVec[i] )  ) );
         
-            allocationVector_->setElement(i, new Variable(RbPtr<ConstantNode>(new ConstantNode( new Integer( allocationVec[i] ) ) ) ) );
+            allocationVector_->setElement(i, new Variable(new ConstantNode( new Integer( allocationVec[i] ) ) ) );
 //            allocationVector_->setElement(i, RbPtr<Variable> (new Variable( new ConstantNode( new Integer ( 0 ) ) ) ) );
 
           
@@ -501,7 +501,7 @@ void Mixture::indexAllocationVector() {
     
  //   int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue();
     if (rvToNumber.find(formerlyAssignedValue) != rvToNumber.end())
-      allocationVector_->setElement(i, RbPtr< RbObject >(new Integer(rvToNumber[formerlyAssignedValue])) );
+      allocationVector_->setElement(i, new Integer(rvToNumber[formerlyAssignedValue]) );
     else {
       const VariableSlot* slot = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) );
       std::cout <<"here"<<std::endl;

@@ -43,14 +43,14 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(CharacterData_name, RbPtr<TypeSpec>( new TypeSpec(charType) ) ) {
+CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(CharacterData_name, new TypeSpec(charType) ) {
 
     characterType = charType;
 }
 
 
 /** Copy constructor */
-CharacterData::CharacterData( const CharacterData& x ) : Matrix( x ), typeSpec(CharacterData_name, RbPtr<TypeSpec>( new TypeSpec(characterType) ) ) {
+CharacterData::CharacterData( const CharacterData& x ) : Matrix( x ), typeSpec(CharacterData_name, new TypeSpec(characterType) ) {
 
     characterType     = x.characterType;
     deletedTaxa       = x.deletedTaxa;
@@ -87,7 +87,7 @@ CharacterData& CharacterData::operator=( const CharacterData& x ) {
 
 
 /** Index (const) operator */
-RbPtr<const TaxonData> CharacterData::operator[]( const size_t i ) const {
+const TaxonData* CharacterData::operator[]( const size_t i ) const {
 
     return getTaxonData( i );
 }
@@ -102,7 +102,7 @@ void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
-    Variable* var = new Variable( RbPtr<DAGNode>( new ConstantNode( obs ) ) );
+    Variable* var = new Variable( new ConstantNode( obs ) );
     members->addVariable(obs->getTaxonName(), var);
 }
 
@@ -464,7 +464,7 @@ size_t CharacterData::getNumberOfStates(void) const {
     if ( size() == 0 )
         return 0;
 
-    RbPtr<const TaxonData> sequence = getTaxonData( 0 );
+    const TaxonData* sequence = getTaxonData( 0 );
     if ( sequence->size() == 0 )
         return 0;
 
@@ -597,7 +597,7 @@ Vector* CharacterData::makeSiteColumn( size_t cn ) const {
     Vector* temp = static_cast<Vector*>( ( (*members)[0]->getValue() )->clone() );
     temp->clear();
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
-        temp->push_back( RbPtr<RbObject>( getCharacter( i, cn )->clone() ) );
+        temp->push_back( getCharacter( i, cn )->clone() );
 
     return temp;
 }
@@ -693,7 +693,7 @@ void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
         elements.insert( elements.begin() + index, var );
         
         // add the sequence also as a member so that we can access it by name
-        Variable* variable = new Variable( RbPtr<DAGNode>( new ConstantNode(var ) ) );
+        Variable* variable = new Variable( new ConstantNode(var ) );
         members->addVariable(seq->getTaxonName(), variable );
     }
 }

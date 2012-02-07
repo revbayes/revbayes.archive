@@ -19,7 +19,6 @@
 #define Container_H
 
 #include "ConstantMemberObject.h"
-#include "RbPtr.h"
 
 #include <iostream>
 #include <vector>

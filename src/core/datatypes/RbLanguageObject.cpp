@@ -54,7 +54,7 @@ const VectorString& RbLanguageObject::getClass(void) const {
 /** Return member rules (no members) */
 const MemberRules* RbLanguageObject::getMemberRules(void) const {
     
-    static RbPtr<const MemberRules> rules( new MemberRules());
+    static const MemberRules* rules = new MemberRules();
     
     return rules;
 }
@@ -64,7 +64,7 @@ const MemberRules* RbLanguageObject::getMemberRules(void) const {
  * Initialize this instance with the parameters given. 
  * The ordering of the parameters is specified by the member rules. 
  */
-void RbLanguageObject::initialize(const RbPtr<Vector> &) {
+void RbLanguageObject::initialize(const Vector& params) {
     // do nothing because we do not have any parameters. Some derived classes might have ...
 }
 

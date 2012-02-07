@@ -107,7 +107,7 @@ RbLanguageObject* Func_gtr::executeFunction(void) {
     m->updateEigenSystem();
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return RbPtr<RbLanguageObject>( m );
+    return m;
 }
 
 

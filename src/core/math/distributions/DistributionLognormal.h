@@ -15,7 +15,6 @@
  * Created by sibonli on 8/17/11.
  */
 
-#include "RbPtr.h"
 
 class RandomNumberGenerator;
 

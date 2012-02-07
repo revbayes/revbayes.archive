@@ -21,7 +21,6 @@
 #define Func_source_H
 
 #include "RbFunction.h"
-#include "RbPtr.h"
 
 const std::string Func_source_name = "Source function";
 

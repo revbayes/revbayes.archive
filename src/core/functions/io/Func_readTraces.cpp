@@ -34,7 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_readTraces::typeSpec(Func_readTraces_name);
-const TypeSpec Func_readTraces::returnTypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(Trace_name) ) );
+const TypeSpec Func_readTraces::returnTypeSpec(Vector_name, new TypeSpec(Trace_name) );
 
 /** Clone object */
 Func_readTraces* Func_readTraces::clone( void ) const {
@@ -144,13 +144,13 @@ RbLanguageObject* Func_readTraces::executeFunction( void ) {
             if (!hasHeaderBeenRead) {
                 
                 for (size_t j=0; j<columns.size(); j++) {
-                    RbPtr<Trace> t( new Trace() );
+                    Trace* t = new Trace();
                     
                     std::string parmName = columns[j];
                     t->setParameterName(parmName);
                     t->setFileName(filename);
                     
-                    data->push_back( RbPtr<RbObject>( t ) );
+                    data->push_back( t );
                 }
                 
                 hasHeaderBeenRead = true;
@@ -160,7 +160,7 @@ RbLanguageObject* Func_readTraces::executeFunction( void ) {
             
             // adding values to the Tracess
             for (size_t j=0; j<columns.size(); j++) {
-                RbPtr<Trace> t = RbPtr<Trace>( static_cast<Trace*>( (RbLanguageObject*)(*data)[j] ) );
+                Trace* t = static_cast<Trace*>( (*data)[j] );
                 std::string tmp = columns[j];
                 double d = 1.0;
                 t->addObject(d);

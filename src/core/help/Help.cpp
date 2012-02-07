@@ -98,7 +98,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         size_t longestArgName = 0;
         for (size_t i=0; i<nArgs; i++)
             {
-            RbPtr<HelpNode> hn1 = h->getChildWithTag("argument", i)->getChildWithTag("arg_name");
+            HelpNode* hn1 = h->getChildWithTag("argument", i)->getChildWithTag("arg_name");
             std::string temp = hn1->getHelpEntry();
             if (temp.size() > longestArgName)
                 longestArgName = temp.size();
@@ -106,8 +106,8 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         longestArgName += 1;
         for (size_t i=0; i<nArgs; i++)
             {
-            RbPtr<HelpNode> hn1 = h->getChildWithTag("argument", i)->getChildWithTag("arg_name");
-            RbPtr<HelpNode> hn2 = h->getChildWithTag("argument", i)->getChildWithTag("arg_description");
+            HelpNode* hn1 = h->getChildWithTag("argument", i)->getChildWithTag("arg_name");
+            HelpNode* hn2 = h->getChildWithTag("argument", i)->getChildWithTag("arg_description");
             hStr += "\n";
             hStr += formatStringWithBreaks(hn1->getHelpEntry() + " " + hn2->getHelpEntry(), pad, longestArgName, columnWidth);
             }

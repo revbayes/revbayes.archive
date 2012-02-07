@@ -60,7 +60,7 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
         }
 
     for ( size_t i = 0; i < numRows; i++ )
-        elements.push_back( RbPtr<RbLanguageObject>( new VectorComplex( x[i] ) ) );
+        elements.push_back( new VectorComplex( x[i] ) );
 }
 
 
@@ -186,7 +186,7 @@ void MatrixComplex::printValue(std::ostream& o) const {
             lineStr += pad  + "  ";
         
         
-        RbPtr<const VectorComplex> vec = operator[](i);
+        const VectorComplex* vec = operator[](i);
         lineStr += vec->briefInfo();
         if (i == size()-1)
             lineStr += " ]";
@@ -200,16 +200,6 @@ void MatrixComplex::printValue(std::ostream& o) const {
     o.setf(previousFlags);
     o << o.precision(previousPrecision);
 }
-
-
-///** Push back a row vector */
-//void MatrixComplex::push_back( const VectorComplex& x ) {
-//    
-//    if ( size() > 0 && x.size() != getNumberOfColumns() )
-//        throw RbException( "Cannot make matrix with rows of unequal size" );
-//    
-//    elements.push_back( RbPtr<RbLanguageObject>( x.clone() ) );
-//}
 
 
 /** Overloaded container resize method */

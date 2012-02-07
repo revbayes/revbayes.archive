@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     Workspace::globalWorkspace().initializeGlobalWorkspace();
 
     /* Add stuff that Sebastian does not want to have in the core */
-    Workspace::globalWorkspace().addFunction( "source", RbPtr<RbFunction>( new Func_source() ) );
+    Workspace::globalWorkspace().addFunction( "source", new Func_source() );
 
 #	if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;

@@ -77,7 +77,7 @@ RbLanguageObject* Func_dppServe::executeFunction( void ) {
 		// paramValues[i] = ...
 	}
     
-	return RbPtr<RbLanguageObject>( new VectorReal( paramValues ) );
+	return new VectorReal( paramValues );
 }
 
 

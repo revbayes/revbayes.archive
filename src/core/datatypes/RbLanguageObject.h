@@ -18,7 +18,6 @@
 #define RbLanguageObject_H
 
 #include "RbObject.h"
-#include "RbPtr.h"
 
 #include <ostream>
 #include <string>
@@ -43,14 +42,14 @@ public:
     
     // Basic utility functions you have to override (also getClass()!)
     virtual RbLanguageObject*           clone(void) const = 0;                                                  //!< Clone object
-    virtual XmlElement*                 encode(XmlDocument* doc, const std::string& name);                //!< Function to encode this object into an XML string
+    virtual XmlElement*                 encode(XmlDocument* doc, const std::string& name);                      //!< Function to encode this object into an XML string
     virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
     virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
     
     // Basic utility functions you may want to override
     virtual RbObject*                   convertTo(const TypeSpec& type) const;                                  //!< Convert to type
     virtual const MemberRules*          getMemberRules(void) const;                                             //!< Get member rules
-    virtual void                        initialize(const RbPtr<Vector>& attributes);                            //!< Initialize this object with the values inside the vector
+    virtual void                        initialize(const Vector& attributes);                                   //!< Initialize this object with the values inside the vector
     virtual bool                        isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
     virtual bool                        supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]

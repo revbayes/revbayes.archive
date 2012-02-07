@@ -34,7 +34,7 @@ const TypeSpec ArgumentRule::typeSpec(ArgumentRule_name);
 /** Construct rule based on default value; use "" for no label. */
 ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal) : RbInternal(), label(argName), argSlot(argName, defVal->getTypeSpec()), hasDefaultVal(true) {
 
-    Variable* tmpVar = new Variable( argName, RbPtr<DAGNode>( new ConstantNode(defVal) ) );
+    Variable* tmpVar = new Variable( argName, new ConstantNode(defVal) );
     argSlot.setVariable( tmpVar );
 }
 
@@ -55,7 +55,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 /** Construct rule with default value. We rely on workspace to check the provided type specification. */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(true) {
     
-    Variable* tmpVar = new Variable( RbPtr<DAGNode>( new ConstantNode(defValue) ) );
+    Variable* tmpVar = new Variable( new ConstantNode(defValue) );
     argSlot.setVariable( tmpVar );
 }
 

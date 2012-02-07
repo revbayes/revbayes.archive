@@ -50,7 +50,7 @@ const TypeSpec TransitionProbabilityMatrix::typeSpec(TransitionProbabilityMatrix
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberObject(getMemberRules()) {
 
     numStates = 2;
-    theMatrix = RbPtr<MatrixReal>( new MatrixReal(numStates, numStates) );
+    theMatrix = new MatrixReal(numStates, numStates);
 }
 
 
@@ -58,7 +58,7 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberO
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : ConstantMemberObject(getMemberRules()) {
 
     numStates = n;
-    theMatrix = RbPtr<MatrixReal>( new MatrixReal(numStates, numStates) );
+    theMatrix = new MatrixReal(numStates, numStates);
 }
 
 
@@ -66,7 +66,7 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : ConstantMem
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m) {
 
     numStates = m.numStates;
-    theMatrix = RbPtr<MatrixReal>( m.theMatrix->clone() );
+    theMatrix = m.theMatrix->clone();
 }
 
 

@@ -77,7 +77,7 @@ protected:
 
     // Member variables
     bool                                clamped;                                                            //!< Is the node clamped with data?
-    RbPtr<Distribution>                 distribution;                                                       //!< Distribution (density functions, random draw function)
+    Distribution*                       distribution;                                                       //!< Distribution (density functions, random draw function)
     bool                                instantiated;                                                       //!< Is this node instantiated or integrated over?
     double                              lnProb;                                                             //!< Current log probability
     bool                                needsRecalculation;                                                 //!< Do we need recalculation of the ln prob?

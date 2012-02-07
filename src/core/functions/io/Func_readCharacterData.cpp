@@ -39,7 +39,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_readCharacterData::typeSpec(Func_readAlignment_name);
-const TypeSpec Func_readCharacterData::returnTypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(CharacterData_name) ) );
+const TypeSpec Func_readCharacterData::returnTypeSpec(Vector_name, new TypeSpec(CharacterData_name) );
 
 /** Clone object */
 Func_readCharacterData* Func_readCharacterData::clone( void ) const {

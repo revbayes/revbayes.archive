@@ -256,7 +256,7 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
     copy->setName(name);
 
     /* Set the copy member variables */
-    copy->distribution = RbPtr<Distribution>( distribution->clone() );
+    copy->distribution = distribution->clone();
     copy->clamped      = clamped;
     copy->touched      = touched;
     if (value != NULL) {
@@ -451,7 +451,6 @@ void StochasticNode::restoreMe() {
     if ( touched ) {
         
         value           = storedValue;
-//        storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
         
         // delete the stored value
         if (storedValue != NULL) {

@@ -187,7 +187,7 @@ RbLanguageObject* DistributionFunction::executeFunction( void ) {
     }
     else if (functionType == PROB) {
 
-        return RbPtr<RbLanguageObject>( new RealPos( static_cast<DistributionContinuous*>( (Distribution*)distribution )->cdf( (const RbLanguageObject*)(*args)[0]->getValue() ) ) );
+        return new RealPos( static_cast<DistributionContinuous*>( (Distribution*)distribution )->cdf( (const RbLanguageObject*)(*args)[0]->getValue() ) );
     }
     else if (functionType == QUANTILE) {
 

@@ -69,7 +69,7 @@ protected:
 
     // Member variable
     bool                                    needsUpdate;                                                        //!< True when value after touch but before update; if then updated set to false
-    RbPtr<RbFunction>                       function;
+    RbFunction*                             function;
     
 private:
     static const TypeSpec                   typeSpec;

@@ -118,7 +118,7 @@ class Workspace : public Environment {
                                     Workspace(void);                                                                    //!< Workspace with NULL parent
                                     Workspace(Workspace* parentSpace);                                                  //!< Workspace with parent
                                     Workspace(Environment* parentSpace);                                                //!< Workspace with parent
-                                    Workspace(const Workspace& w) {}                                                    //!< Prevent copy
+                                    Workspace(const Workspace& w);                                                    //!< Prevent copy
         Workspace&                  operator=(const Workspace& w);                                                      //! Prevent assignment
 
         FunctionTable*              functionTable;                                                                      //!< Table holding functions

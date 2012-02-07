@@ -16,7 +16,6 @@
 #ifndef SyntaxConstant_H
 #define SyntaxConstant_H
 
-#include "RbPtr.h"
 #include "SyntaxElement.h"
 
 #include <iostream>

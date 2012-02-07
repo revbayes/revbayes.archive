@@ -16,7 +16,6 @@
  */
 
 #include "ValueRule.h"
-#include "RbPtr.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Signals.h"
