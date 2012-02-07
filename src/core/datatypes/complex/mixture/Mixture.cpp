@@ -350,29 +350,28 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
         std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)numObservations, *rng);
         allocationVector_ = new DagNodeContainer (numObservations);
         for (size_t i = 0 ; i < numObservations ; i ++ ) {
-          //  allocationVector_->push_back(RbPtr<RbObject> (new Integer(allocationVec[i])));
-          
-     //     rvToNumber[static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue()] = maxIntSeen;
-          
-   //       static_cast< VariableSlot*>( ( RbObject*) (new Integer(allocationVec[i] ) ) );
-          
-       //   RbPtr<Variable> var = RbPtr<Variable> (new Variable ( new Integer ( allocationVec[i] )  ) );
-        
-            allocationVector_->setElement(i, new Variable(new ConstantNode( new Integer( allocationVec[i] ) ) ) );
-//            allocationVector_->setElement(i, RbPtr<Variable> (new Variable( new ConstantNode( new Integer ( 0 ) ) ) ) );
-
-          
-          //allocationVector_->setElement(i, RbPtr<Variable> ( (static_cast< VariableSlot*>( ( RbObject*) (new Integer(allocationVec[i] ) ) )  )->getVariable() ) );
+         allocationVector_->setElement(i, new Variable(new ConstantNode( new Integer( allocationVec[i] ) ) ) );
         }
         std::cout << "Size of the vector: "<< allocationVector_->size()<<std::endl;
         
         //TEST
-        const VariableSlot* slot = static_cast<const VariableSlot*>( allocationVector_->getElement(0) );
+        std::cout <<"setMemberVariable"<<std::endl;
+        const Variable* slot = static_cast<const Variable*>( allocationVector_->getElement(0) );
+        std::cout <<"setMemberVariable 2"<<std::endl;
+        const Integer* nat = static_cast<const Integer*>( slot->getValue() );
+        std::cout <<"setMemberVariable 3"<<std::endl;
+        int formerlyAssignedValue = nat->getValue();
+        std::cout <<"setMemberVariable 4: "<< formerlyAssignedValue<<std::endl;
+
+        
+        
+        //TEST
+       /* const VariableSlot* slot = static_cast<const VariableSlot*>( allocationVector_->getElement(0) );
         std::cout <<"here"<<std::endl;
         const Variable* tmp_var = slot->getVariable();
         std::cout <<"here 2"<<std::endl;
         tmp_var->getValue();
-        std::cout <<"here 3"<<std::endl;
+        std::cout <<"here 3"<<std::endl;*/
         
         indexAllocationVector();
         
@@ -496,19 +495,35 @@ void Mixture::indexAllocationVector() {
   //Renumber the allocation vector
   for (unsigned int i = 0 ; i < allocationVector_->size() ; i++ ) { 
  //   allocationVector_->setElement(i, RbPtr<Variable> ( (static_cast< VariableSlot*>( ( RbObject*) (new Integer(allocationVec[i] ) ) )  )->getVariable() ) );
+   /* const RbObject* variab = (const  RbObject*) (allocationVector_->getElement(i) );
+   const  RbLanguageObject* lango = (const RbLanguageObject*)static_cast<const VariableSlot*>( variab);
+    const Natural* nat = static_cast<const Natural*>(lango);
+    int formerlyAssignedValue = nat->getValue();*/
     
-    int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getVariable() ) ->getValue();
+    //TEST
+    const VariableSlot* slot = static_cast<const VariableSlot*>( allocationVector_->getElement(i) );
+    std::cout <<"indexAllocationVector"<<std::endl;
+    const Variable* tmp_var = slot->getVariable();
+    std::cout <<"indexAllocationVector 2"<<std::endl;
+    const  RbLanguageObject* lango = (const RbLanguageObject*)( tmp_var);
+    const Natural* nat = static_cast<const Natural*>(lango);
+    int formerlyAssignedValue = nat->getValue();
+    std::cout <<"indexAllocationVector 3"<<std::endl;
+    
+    
+    
+  //  int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getVariable() ) ->getValue();
     
  //   int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue();
     if (rvToNumber.find(formerlyAssignedValue) != rvToNumber.end())
       allocationVector_->setElement(i, new Integer(rvToNumber[formerlyAssignedValue]) );
     else {
       const VariableSlot* slot = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) );
-      std::cout <<"here"<<std::endl;
+      std::cout <<"indexAllocationVector 4"<<std::endl;
       const Variable* var = slot->getVariable();
-      std::cout <<"here 2"<<std::endl;
+      std::cout <<"indexAllocationVector 5"<<std::endl;
       var->getValue();
-      std::cout <<"here 3"<<std::endl;
+      std::cout <<"indexAllocationVector 6"<<std::endl;
 
       const Integer* j = static_cast<const  Integer*> ( (RbLanguageObject *) (var->getValue() ) );
       j->printValue(std::cout);
