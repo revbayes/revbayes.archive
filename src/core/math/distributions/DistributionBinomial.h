@@ -14,7 +14,6 @@
  * $Id$
  */
 
-#include "RbPtr.h"
 
 class RandomNumberGenerator;
 
@@ -27,6 +26,6 @@ namespace RbStatistics {
         double                      lnPdf(double n, double p, double x);                                  /*!< Binomial(n,p) log_e probability density */
         double                      cdf(double a, double b, double x);                                    /*!< Binomial(n,p) cumulative probability */
         double                      quantile(double a, double b, double p);                               /*!< Binomial(n,p) quantile */
-        double                      rv(double a, double b, RbPtr<RandomNumberGenerator> rng);             /*!< Binomial(n,p) random variable */
+        double                      rv(double a, double b, RandomNumberGenerator& rng);             /*!< Binomial(n,p) random variable */
 	}
 }

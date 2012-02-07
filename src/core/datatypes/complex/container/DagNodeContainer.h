@@ -54,22 +54,22 @@ class DagNodeContainer : public Container {
 
         // Container functions
         void                                clear(void);                                                                //!< Clear
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute a member method
+        RbLanguageObject*                   executeOperation(const std::string& name, Environment* args);               //!< Execute a member method
         const RbObject*                     getElement(size_t index) const;                                             //!< Get element
         RbObject*                           getElement(size_t index);                                                   //!< Get element (non-const to return non-const element)
         void                                pop_back(void);                                                             //!< Drop element at back
         void                                pop_front(void);                                                            //!< Drop element from front
-        void                                push_back(RbObject* x);                                               //!< Append element to end
-        void                                push_front(RbObject* x);                                              //!< Add element in front
+        void                                push_back(RbObject* x);                                                     //!< Append element to end
+        void                                push_front(RbObject* x);                                                    //!< Add element in front
         void                                resize(size_t n);                                                           //!< Resize to new AbstractVector of length n
-        void                                setElement(const size_t index, RbObject* elem);                       //!< Set element with type conversion
-        void                                setElement(const size_t index, Variable* elem);                       //!< Set an element
+        void                                setElement(const size_t index, RbObject* elem);                             //!< Set element with type conversion
+        void                                setElement(const size_t index, Variable* elem);                             //!< Set an element
         void                                sort(void);                                                                 //!< sort the AbstractVector
         size_t                              size(void) const;                                                           //!< get the number of elements in the AbstractVector
         void                                unique(void);                                                               //!< removes consecutive duplicates
 
     private:
-        std::vector<RbPtr<VariableSlot> >   elements;                                                                   //!< The elements
+        std::vector<VariableSlot* >         elements;                                                                   //!< The elements
         TypeSpec                            typeSpec;                                                                   //!< The type of this instance
 };  
 

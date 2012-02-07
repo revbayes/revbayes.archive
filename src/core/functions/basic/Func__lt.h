@@ -36,11 +36,11 @@ class Func__lt :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        const ArgumentRules*        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
+        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
@@ -79,29 +79,29 @@ Func__lt<firstValType, secondValType>* Func__lt<firstValType, secondValType>::cl
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-RbPtr<RbLanguageObject> Func__lt<firstValType,secondValType>::executeFunction( void ) {
+RbLanguageObject* Func__lt<firstValType,secondValType>::executeFunction( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbObject*)(*args)[0]->getValue() ) );
-    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbObject*)(*args)[1]->getValue() ) );
+    const firstValType*  val1 = static_cast<firstValType*> ( (*args)[0]->getValue() );
+    const secondValType* val2 = static_cast<secondValType*>( (*args)[1]->getValue() );
     
-    return RbPtr<RbLanguageObject>( new RbBoolean( *val1 < *val2 ) );
+    return new RbBoolean( *val1 < *val2 );
 }
 
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType>
-RbPtr<const ArgumentRules> Func__lt<firstValType, secondValType>::getArgumentRules(void) const {
+const ArgumentRules* Func__lt<firstValType, secondValType>::getArgumentRules(void) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", firstValType() .getTypeSpec() ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", secondValType().getTypeSpec() ) ) );
+        argumentRules->push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules->push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
     }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

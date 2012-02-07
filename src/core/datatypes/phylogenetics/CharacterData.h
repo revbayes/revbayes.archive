@@ -52,10 +52,10 @@ class CharacterData : public Matrix {
         std::string                         richInfo(void) const;                                                       //!< Complete info
 
         // Member variable rules
-        RbPtr<const MemberRules>            getMemberRules(void) const;                                                 //!< Get member rules
+        const MemberRules*                  getMemberRules(void) const;                                                 //!< Get member rules
 
         // Member method inits
-        RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get methods
+        const MethodTable*                  getMethods(void) const;                                                     //!< Get methods
     
         // Container functions
         void                                clear(void);
@@ -69,12 +69,12 @@ class CharacterData : public Matrix {
         void                                transpose(void);                                                            //!< Transpose the matrix
 
         // CharacterData functions
-        void                                addTaxonData(RbPtr<TaxonData> obs);                                         //!< Add taxon data
-        void                                addTaxonData(RbPtr<TaxonData> obs, bool forceAdd);                          //!< Add taxon data
+        void                                addTaxonData(TaxonData* obs);                                         //!< Add taxon data
+        void                                addTaxonData(TaxonData* obs, bool forceAdd);                          //!< Add taxon data
         void                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
-        RbPtr<const Character>              getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
+        const Character*                    getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         const std::string&                  getDataType(void) const;                                                    //!< Returns the data type for the matrix
         const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         bool                                getIsHomologyEstablished(void) { return isHomologyEstablished; }            //!< Returns whether the homology of the characters has been established
@@ -82,12 +82,12 @@ class CharacterData : public Matrix {
         size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
-        RbPtr<const TaxonData>              getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
+        const TaxonData*                    getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
         bool                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
-        RbPtr<Vector>                       makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
+        Vector*                             makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
         void                                restoreCharacter(size_t i);                                                 //!< Restore character
         void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
@@ -96,7 +96,7 @@ class CharacterData : public Matrix {
         void                                showData(void);                                                             //!< Show the data in the character matrix
 
     protected:
-        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
+        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment* args);         //!< Execute method
 
     private:
         // Utility functions

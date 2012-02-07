@@ -34,7 +34,7 @@ const TypeSpec ArgumentRule::typeSpec(ArgumentRule_name);
 /** Construct rule based on default value; use "" for no label. */
 ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal) : RbInternal(), label(argName), argSlot(argName, defVal->getTypeSpec()), hasDefaultVal(true) {
 
-    RbPtr<Variable> tmpVar( new Variable( argName, RbPtr<DAGNode>( new ConstantNode(defVal) ) ) );
+    Variable* tmpVar = new Variable( argName, RbPtr<DAGNode>( new ConstantNode(defVal) ) );
     argSlot.setVariable( tmpVar );
 }
 
@@ -55,7 +55,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 /** Construct rule with default value. We rely on workspace to check the provided type specification. */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(true) {
     
-    RbPtr<Variable> tmpVar( new Variable( RbPtr<DAGNode>( new ConstantNode(defValue) ) ) );
+    Variable* tmpVar = new Variable( RbPtr<DAGNode>( new ConstantNode(defValue) ) );
     argSlot.setVariable( tmpVar );
 }
 
@@ -63,7 +63,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 /** Construct rule with default reference or value variable. */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(true) {
         
-    RbPtr<Variable> tmpVar( new Variable( defVariable ) );
+    Variable* tmpVar = new Variable( defVariable );
     argSlot.setVariable( tmpVar );
 }
 
@@ -91,12 +91,12 @@ const VectorString& ArgumentRule::getClass(void) const {
 }
 
 
-RbPtr<const Variable> ArgumentRule::getDefaultVariable(void) const {
+const Variable* ArgumentRule::getDefaultVariable(void) const {
     return argSlot.getVariable(); 
 }
 
 
-RbPtr<Variable> ArgumentRule::getDefaultVariable(void) {
+Variable* ArgumentRule::getDefaultVariable(void) {
     return argSlot.getVariable(); 
 }
 
@@ -112,7 +112,7 @@ bool ArgumentRule::hasDefault(void) const {
 
 
 /** Test if argument is valid */
-bool ArgumentRule::isArgumentValid(RbPtr<const DAGNode> var, bool& needsConversion) const {
+bool ArgumentRule::isArgumentValid(const DAGNode* var, bool& needsConversion) const {
     
     needsConversion = false;
     if ( var == NULL )

@@ -14,7 +14,6 @@
  * $Id$
  */
 
-#include "RbPtr.h"
 
 class RandomNumberGenerator;
 
@@ -27,6 +26,6 @@ namespace RbStatistics {
         double                      lnPdf(double location, double scale, double x);                       /*!< Cauchy(a,b) log_e probability density */
         double                      cdf(double a, double b, double x);                                    /*!< Cauchy(a,b) cumulative probability */
         double                      quantile(double a, double b, double p);                               /*!< Cauchy(a,b) quantile */
-        double                      rv(double a, double b, RbPtr<RandomNumberGenerator> rng);             /*!< Cauchy(a,b) random variable */
+        double                      rv(double a, double b, RandomNumberGenerator& rng);             /*!< Cauchy(a,b) random variable */
 	}
 }

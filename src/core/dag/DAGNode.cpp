@@ -44,11 +44,11 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeS
 
 
 /** Constructor of filled node */
-DAGNode::DAGNode(RbPtr<RbLanguageObject> val) : children(), parents(), value(val), valueTypeSpec(RbObject_name) {
+DAGNode::DAGNode(RbLanguageObject* val) : children(), parents(), value(val), valueTypeSpec(RbObject_name) {
     
-//    if (val != NULL) {
-//        valueTypeSpec = val->getTypeSpec();
-//    }
+    if (val != NULL) {
+        valueTypeSpec = val->getTypeSpec();
+    }
     
     // initialize the variable
     variable = NULL;
@@ -67,12 +67,10 @@ DAGNode::DAGNode(RbPtr<RbLanguageObject> val) : children(), parents(), value(val
 DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.valueTypeSpec), value( NULL ) {
 
     if ( x.value != NULL ) {
-        value = RbPtr<RbLanguageObject>( x.value->clone() );
+        value = x.value->clone();
     }
     
-//    if (x.variable != NULL) {
-//        variable = x.variable->clone();
-//    }
+    // the variable is always set to NULL and needs to be set manually!
     variable = NULL;
     
     // copy the name so that we still be able to identify the variable in a cloned DAG
@@ -84,6 +82,9 @@ DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.va
 /** Destructor deletes value if not NULL */
 DAGNode::~DAGNode( void ) {
 
+    if (value != NULL) {
+        delete value;
+    }
 }
 
 
@@ -259,14 +260,12 @@ void DAGNode::printParents( std::ostream& o ) const {
 void DAGNode::setVariable(Variable* var) {
     // only do something if the old var is different to the new var
     if (var != variable) {
-        // the DAG node does not own the Variable so we do not release it
+        // the DAG node does not own the Variable so we do not delete it
     
         // set the new variable
         variable = var;
         
         name = var->getName();
-        
-        // we do not retain the variable for now because if we would, then the DAG node holds a pointer to the variable
     }
 }
 

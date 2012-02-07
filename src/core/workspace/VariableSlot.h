@@ -34,9 +34,9 @@ const std::string VariableSlot_name = "Variable Slot";
 class VariableSlot : public RbInternal {
     
 public:
-    VariableSlot(const std::string &label, const TypeSpec& typeSp, RbPtr<Variable> var);                    //!< Constructor of filled slot
+    VariableSlot(const std::string &label, const TypeSpec& typeSp, Variable* var);                          //!< Constructor of filled slot
     VariableSlot(const std::string &label, const TypeSpec& typeSp);                                         //!< Constructor of empty slot
-    VariableSlot(const std::string &label, RbPtr<Variable> var);                                            //!< Constructor with filled slot
+    VariableSlot(const std::string &label, Variable* var);                                                  //!< Constructor with filled slot
     VariableSlot(const VariableSlot& x);                                                                    //!< Copy value or reference correctly
     virtual                ~VariableSlot(void);                                                             //!< Manage variable (DAGNode) destruction
     
@@ -56,15 +56,15 @@ public:
     const TypeSpec&                         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
     const Variable*                         getVariable(void) const;                                                //!< Get the variable
     Variable*                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
-    virtual bool                            isValidVariable(RbPtr<DAGNode> newVariable ) const;                     //!< Is newVariable valid for the slot?
+    virtual bool                            isValidVariable(DAGNode* newVariable ) const;                           //!< Is newVariable valid for the slot?
     void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
-    void                                    setVariable(RbPtr<Variable> var);                                       //!< Set a slot with a variable
+    void                                    setVariable(Variable* var);                                             //!< Set a slot with a variable
     
 private:
     
     // Member variables
     TypeSpec                                varTypeSpec;                                                            //!< The type specification for the slot
-    RbPtr<Variable>                         variable;                                                               //!< the argument living in the slot 
+    Variable*                               variable;                                                               //!< the argument living in the slot 
     std::string                             label;                                                                  //!< the label for this slot. The label should correspond to the name uner which this slot is stored in variable table. However, the label does not have to correspond to the variable name, e.g. a argument could have the label mean but the name of the variable is mu.
 
     static const TypeSpec                   typeSpec;

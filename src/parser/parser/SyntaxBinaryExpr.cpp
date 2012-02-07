@@ -38,7 +38,7 @@ std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", 
 
 
 /** Construct from operator type and operands */
-SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, RbPtr<SyntaxElement> lhs, RbPtr<SyntaxElement> rhs) : SyntaxElement(), leftOperand(lhs), rightOperand(rhs), operation(op) {
+SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, SyntaxElement* lhs, SyntaxElement* rhs) : SyntaxElement(), leftOperand(lhs), rightOperand(rhs), operation(op) {
 
 }
 
@@ -46,8 +46,8 @@ SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, RbPtr<SyntaxElement> lhs, RbPtr
 /** Deep copy constructor */
 SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x) : SyntaxElement(x) {
 
-    leftOperand  = RbPtr<SyntaxElement>( x.leftOperand->clone() );
-    rightOperand = RbPtr<SyntaxElement>( x.rightOperand->clone() );
+    leftOperand  = x.leftOperand->clone();
+    rightOperand = x.rightOperand->clone();
     operation    = x.operation;
 }
 
@@ -65,8 +65,8 @@ SyntaxBinaryExpr& SyntaxBinaryExpr::operator=(const SyntaxBinaryExpr& x) {
 
         SyntaxElement::operator=(x);
 
-        leftOperand  = RbPtr<SyntaxElement>( x.leftOperand->clone() );
-        rightOperand = RbPtr<SyntaxElement>( x.rightOperand->clone() );
+        leftOperand  = x.leftOperand->clone();
+        rightOperand = x.rightOperand->clone();
         operation    = x.operation;
     }
 
@@ -87,7 +87,7 @@ std::string SyntaxBinaryExpr::briefInfo () const {
 /** Clone syntax element */
 SyntaxElement* SyntaxBinaryExpr::clone () const {
 
-    return (SyntaxElement*)(new SyntaxBinaryExpr(*this));
+    return (new SyntaxBinaryExpr(*this));
 }
 
 
@@ -99,27 +99,33 @@ const VectorString& SyntaxBinaryExpr::getClass(void) const {
 }
 
 
+/** We cannot perform this function and throw and error */
+Variable* SyntaxBinaryExpr::evaluateContent( ) {
+    throw RbException("Cannot evaluate the content in SyntaxBinaryExpr without environment!");
+}
+
+
 /**
  * @brief Get semantic value
  *
  * We simply look up the function and calculate the value.
  *
  */
-RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( const RbPtr<Environment>& env) {
+Variable* SyntaxBinaryExpr::evaluateContent( Environment& env) {
 
     // Package the arguments
-    std::vector<RbPtr<Argument> > args;
-    const RbPtr<Variable>& left = leftOperand->evaluateContent(env);
-    args.push_back(RbPtr<Argument>(new Argument("", left ) ));
-    const RbPtr<Variable>& right = rightOperand->evaluateContent(env);
-    args.push_back(RbPtr<Argument>(new Argument("", right ) ));
+    std::vector<Argument*> args;
+    Variable* left = leftOperand->evaluateContent(env);
+    args.push_back( new Argument("", left ) );
+    Variable* right = rightOperand->evaluateContent(env);
+    args.push_back(new Argument("", right ) );
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];
     
-    const RbPtr<RbFunction>& theFunction = Workspace::globalWorkspace()->getFunction(funcName, args);
+    RbFunction* theFunction = Workspace::globalWorkspace().getFunction(funcName, args);
     
-    return RbPtr<Variable>(new Variable(RbPtr<DAGNode>(new DeterministicNode( theFunction )) ) );
+    return new Variable(new DeterministicNode( theFunction ) );
 }
 
 

@@ -39,17 +39,17 @@ class Dist_unif: public DistributionContinuous {
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
-        RbPtr<const MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
+        const MemberRules*          getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Real-valued distribution functions
-        double                      cdf(RbPtr<const RbLanguageObject> value);                           //!< Cumulative density
-        RbPtr<const Real>           getMax(void) const;                                                 //!< Get max value
-        RbPtr<const Real>           getMin(void) const;                                                 //!< Get min value
+        double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
+        const Real*                 getMax(void) const;                                                 //!< Get max value
+        const Real*                 getMin(void) const;                                                 //!< Get min value
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Real)
-        double                      lnPdf(const RbLanguageObject *value) const;                   //!< Ln probability density
-        double                      pdf(const RbLanguageObject *value) const;                     //!< Probability density
-        RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
-        RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
+        double                      lnPdf(const RbLanguageObject *value) const;                         //!< Ln probability density
+        double                      pdf(const RbLanguageObject *value) const;                           //!< Probability density
+        Real*                       quantile(const double p);                                           //!< Quantile
+        RbLanguageObject*           rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;

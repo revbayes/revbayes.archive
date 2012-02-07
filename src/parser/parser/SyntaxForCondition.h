@@ -32,7 +32,7 @@ const std::string SyntaxForCondition_name = "For loop";
 class SyntaxForCondition : public SyntaxElement {
 
     public:
-                                    SyntaxForCondition(RbPtr<RbString> identifier, RbPtr<SyntaxElement> inExpr);        //!< Standard constructor
+                                    SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr);        //!< Standard constructor
                                     SyntaxForCondition(const SyntaxForCondition& x);                        //!< Copy constructor
 	    virtual                    ~SyntaxForCondition();                                                   //!< Destructor
 
@@ -47,15 +47,15 @@ class SyntaxForCondition : public SyntaxElement {
         void                        print(std::ostream& o) const;                                           //!< Print info about object
 
         // Regular functions
-        void                        finalizeLoop(const RbPtr<Environment>& env);                            //!< Finalize loop
-        bool                        getNextLoopState(const RbPtr<Environment>& env);                        //!< Get next state of loop
-        RbPtr<Variable>             evaluateContent(const RbPtr<Environment>& env);                         //!< Get semantic value
-        void                        initializeLoop(const RbPtr<Environment>& env);                          //!< Initialize loop
+        void                        finalizeLoop(void);                                                     //!< Finalize loop
+        bool                        getNextLoopState(Environment& env);                                     //!< Get next state of loop
+        Variable*                   evaluateContent(void);                                                  //!< Get semantic value
+        void                        initializeLoop(Environment& env);                                       //!< Initialize loop
 
     protected:
-        RbPtr<RbString>             varName;                                                                //!< The name of the loop variable
-        RbPtr<SyntaxElement>        inExpression;                                                           //!< The in expression (a vector of values)
-        RbPtr<AbstractVector>       vector;                                                                 //!< Vector result of 'in' expression
+        RbString*                   varName;                                                                //!< The name of the loop variable
+        SyntaxElement*              inExpression;                                                           //!< The in expression (a vector of values)
+        AbstractVector*             vector;                                                                 //!< Vector result of 'in' expression
         int                         nextElement;                                                            //!< Next element in vector
     
     private:

@@ -54,11 +54,11 @@ Dist_beta::Dist_beta( void ) : DistributionContinuous( getMemberRules() ) {
  * @return      Cumulative probability
  *
  */
-double Dist_beta::cdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_beta::cdf( const RbLanguageObject* value ) {
 
-    double shape1 = static_cast<RealPos*>((RbObject*)getMemberValue("shape1"))->getValue();
-    double shape2 = static_cast<RealPos*>((RbObject*)getMemberValue("shape2"))->getValue();
-    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value)->getValue();
+    double shape1 = static_cast<RealPos*>(getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<RealPos*>(getMemberValue("shape2"))->getValue();
+    double x      = static_cast<const RealPos*>(value)->getValue();
 
     return RbStatistics::Beta::cdf(shape1, shape2, x);
 }
@@ -79,20 +79,20 @@ const VectorString& Dist_beta::getClass( void ) const {
 }
 
 /** Get member variable rules */
-RbPtr<const MemberRules> Dist_beta::getMemberRules( void ) const {
+const MemberRules* Dist_beta::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
 
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "shape1", RealPos_name) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "shape2", RealPos_name ) ) );
+        memberRules->push_back( new ValueRule( "shape1", RealPos_name) );
+        memberRules->push_back( new ValueRule( "shape2", RealPos_name) );
 
         rulesSet = true;
     }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -120,8 +120,8 @@ const TypeSpec& Dist_beta::getVariableType( void ) const {
  */
 double Dist_beta::lnPdf( const RbLanguageObject *value ) const {
 
-    double shape1 = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape1"))->getValue();
-    double shape2 = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape2"))->getValue();
+    double shape1 = static_cast<const RealPos*>(getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<const RealPos*>(getMemberValue("shape2"))->getValue();
     double x      = static_cast<const RealPos*>(value)->getValue();
 
     return RbStatistics::Beta::lnPdf(shape1, shape2, x);
@@ -139,8 +139,8 @@ double Dist_beta::lnPdf( const RbLanguageObject *value ) const {
  */
 double Dist_beta::pdf( const RbLanguageObject *value ) const {
     
-    double shape1 = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape1"))->getValue();
-    double shape2 = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape2"))->getValue();
+    double shape1 = static_cast<const RealPos*>(getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<const RealPos*>(getMemberValue("shape2"))->getValue();
     double x      = static_cast<const RealPos*>(value)->getValue();
 
     return RbStatistics::Beta::pdf(shape1, shape2, x);
@@ -157,13 +157,13 @@ double Dist_beta::pdf( const RbLanguageObject *value ) const {
  * @return      Quantile
  *
  */
-RbPtr<Real> Dist_beta::quantile(const double p) {
+Real* Dist_beta::quantile(const double p) {
 
-    double shape1 = static_cast<RealPos*>((RbObject*)getMemberValue("shape1"))->getValue();
-    double shape2 = static_cast<RealPos*>((RbObject*)getMemberValue("shape2"))->getValue();
+    double shape1 = static_cast<RealPos*>(getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<RealPos*>(getMemberValue("shape2"))->getValue();
 
     double quantile = RbStatistics::Beta::quantile(shape1, shape2, p);
-    return RbPtr<Real>( new RealPos(quantile) );
+    return new RealPos(quantile);
 }
 
 
@@ -175,15 +175,15 @@ RbPtr<Real> Dist_beta::quantile(const double p) {
  *
  * @return      Random draw from beta distribution
  */
-RbPtr<RbLanguageObject> Dist_beta::rv( void ) {
+RbLanguageObject* Dist_beta::rv( void ) {
 
-    double shape1 = static_cast<RealPos*>((RbObject*)getMemberValue("shape1"))->getValue();
-    double shape2 = static_cast<RealPos*>((RbObject*)getMemberValue("shape2"))->getValue();
+    double shape1 = static_cast<RealPos*>(getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<RealPos*>(getMemberValue("shape2"))->getValue();
 
-    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
-    double rv = RbStatistics::Beta::rv(shape1, shape2, rng);
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    double rv = RbStatistics::Beta::rv(shape1, shape2, *rng);
     //TODO implement RbMath::isFinite
-    return RbPtr<RbLanguageObject>( new RealPos(rv) );
+    return new RealPos(rv);
 }
 
 

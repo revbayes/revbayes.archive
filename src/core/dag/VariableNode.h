@@ -70,7 +70,7 @@ protected:
     
     // Member variables
     bool                                        touched;                                                                        //!< Is touched by move?
-    RbPtr<RbLanguageObject>                     storedValue;                                                                    //!< Stored value
+    RbLanguageObject*                           storedValue;                                                                    //!< Stored value
 };
 
 #endif

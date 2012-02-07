@@ -46,17 +46,17 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
         std::string                         richInfo(void) const;                                              //!< Complete info
 
         // Member variable rules
-        RbPtr<const MemberRules>            getMemberRules(void) const;                                        //!< Get member rules
+        const MemberRules*                  getMemberRules(void) const;                                        //!< Get member rules
 
         // Member method inits
-        RbPtr<const MethodTable>            getMethods(void) const;                                            //!< Get methods
+        const MethodTable*                  getMethods(void) const;                                            //!< Get methods
 
     protected:
-        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);      //!< Map method call to internal functions
+        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment* args);//!< Map method call to internal functions
 
     private:
         size_t                              numStates;                                                         //!< The number of character states
-        RbPtr<MatrixReal>                   theMatrix;                                                         //!< Holds the transition probability matrix
+        MatrixReal*                         theMatrix;                                                         //!< Holds the transition probability matrix
     
         static const TypeSpec               typeSpec;
 };

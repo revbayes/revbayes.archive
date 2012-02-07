@@ -37,16 +37,14 @@ std::string SyntaxUnaryExpr::opCode[] = { "uminus", "uplus", "unot" };
 
 
 /** Construct from operator type and operands */
-SyntaxUnaryExpr::SyntaxUnaryExpr(operatorT op, RbPtr<SyntaxElement> expr) 
-    : SyntaxElement(), expression(expr), operation(op) {
+SyntaxUnaryExpr::SyntaxUnaryExpr(operatorT op, SyntaxElement* expr)  : SyntaxElement(), expression(expr), operation(op) {
 }
 
 
 /** Deep copy constructor */
-SyntaxUnaryExpr::SyntaxUnaryExpr(const SyntaxUnaryExpr& x)
-    : SyntaxElement(x) {
+SyntaxUnaryExpr::SyntaxUnaryExpr(const SyntaxUnaryExpr& x) : SyntaxElement(x) {
 
-    expression  = RbPtr<SyntaxElement>( x.expression->clone() );
+    expression  = x.expression->clone();
     operation   = x.operation;
 }
 
@@ -54,6 +52,7 @@ SyntaxUnaryExpr::SyntaxUnaryExpr(const SyntaxUnaryExpr& x)
 /** Destructor deletes expression */
 SyntaxUnaryExpr::~SyntaxUnaryExpr() {
     
+    delete expression;
 }
 
 
@@ -64,7 +63,7 @@ SyntaxUnaryExpr& SyntaxUnaryExpr::operator=(const SyntaxUnaryExpr& x) {
 
         SyntaxElement::operator=(x);
 
-        expression  = x.expression;
+        expression  = x.expression->clone();
         operation   = x.operation;
     }
 
@@ -97,19 +96,25 @@ const VectorString& SyntaxUnaryExpr::getClass(void) const {
 }
 
 
+/** We cannot perform this function and throw and error */
+Variable* SyntaxUnaryExpr::evaluateContent( void ) {
+    throw RbException("Cannot evaluate the content in SyntaxUnaryExpr without environment!");
+}
+
+
 /** Convert element to DAG node expression */
-RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(const RbPtr<Environment>& env) {
+Variable* SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Package the argument
-    std::vector<RbPtr<Argument> > arg;
-    arg.push_back(RbPtr<Argument>( new Argument("", expression->evaluateContent(env) ) ));
+    std::vector<Argument*> arg;
+    arg.push_back( new Argument("", expression->evaluateContent(env) ) );
 
     // Find the function
     std::string funcName = "_" + opCode[operation];
-    const RbPtr<RbFunction>& func = Workspace::globalWorkspace()->getFunction(funcName, arg);
+    RbFunction* func = Workspace::globalWorkspace().getFunction(funcName, arg);
 
     // Return new function node
-    return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new DeterministicNode(func)) ) );
+    return new Variable( new DeterministicNode(func) );
 }
 
 

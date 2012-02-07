@@ -17,7 +17,6 @@
 
 #include "Monitor.h"
 #include "Move.h"
-#include "MoveSchedule.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbObject.h"
@@ -36,7 +35,7 @@ VariableNode::VariableNode( const std::string& valType ) : DAGNode( valType ), t
 /** Copy Constructor */
 VariableNode::VariableNode(const VariableNode &v) : DAGNode(v) {
     touched = false;
-    storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+    storedValue = NULL;
 }
 
 

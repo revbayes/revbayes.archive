@@ -88,7 +88,7 @@ class DAGNode : public RbLanguageObject {
 
 
     protected:
-                                                            DAGNode(RbPtr<RbLanguageObject> value);                                 //!< Constructor of filled node
+                                                            DAGNode(RbLanguageObject* value);                                       //!< Constructor of filled node
                                                             DAGNode(const std::string& valType);                                    //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                              //!< Copy constructor
 
@@ -107,8 +107,8 @@ class DAGNode : public RbLanguageObject {
         Variable*                                           variable;                                                               //!< The variable owning this dag node
 
         // Member value variables
-        const TypeSpec                                      valueTypeSpec;                                                          //!< the TypeSpec of the value
-        RbPtr<RbLanguageObject>                             value;                                                                  //!< Value
+        TypeSpec                                            valueTypeSpec;                                                          //!< the TypeSpec of the value
+        RbLanguageObject*                                   value;                                                                  //!< Value
         std::string                                         name;                                                                   //!< The name/identifier of the DAG node
 };
 

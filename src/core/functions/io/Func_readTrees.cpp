@@ -37,7 +37,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_readTrees::typeSpec(Func_readTrees_name);
-const TypeSpec Func_readTrees::returnTypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(TreePlate_name) ) );
+const TypeSpec Func_readTrees::returnTypeSpec(Vector_name, new TypeSpec(TreePlate_name) );
 
 /** Clone object */
 Func_readTrees* Func_readTrees::clone( void ) const {
@@ -47,10 +47,10 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_readTrees::executeFunction( void ) {
+RbLanguageObject* Func_readTrees::executeFunction( void ) {
     
     // get the information from the arguments for reading the file
-    RbPtr<RbString> fn( static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() ) );
+    RbString* fn = static_cast<RbString*>( (*args)[0]->getValue() );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -96,17 +96,17 @@ RbPtr<RbLanguageObject> Func_readTrees::executeFunction( void ) {
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    RbPtr<Vector> trees( new Vector(TreePlate_name) );
+    Vector* trees = new Vector(TreePlate_name);
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
         // we should check here the file type first and make sure it is valid
         
         // read the files in the map containing the file names with the output being a vector of pointers to
         // the character matrices that have been read
-        RbPtr<std::vector<RbPtr<TreePlate> > > m = reader.readTrees( *p, "nexus" );
+        std::vector<TreePlate*>* m = reader.readTrees( *p, "nexus" );
             
         if (m != NULL) {
-            for (std::vector<RbPtr<TreePlate> >::iterator it = m->begin(); it != m->end(); it++) {
-                trees->push_back(RbPtr<RbObject>(*it) );
+            for (std::vector<TreePlate*>::iterator it = m->begin(); it != m->end(); it++) {
+                trees->push_back(*it);
             }
         }
     }
@@ -158,14 +158,14 @@ RbPtr<RbLanguageObject> Func_readTrees::executeFunction( void ) {
     
     // return either a list of trees or a single tree wrapped up in a DAG node
     if ( trees->size() > 1 ) {
-        return RbPtr<RbLanguageObject>( trees );
+        return trees;
     }
     else if ( trees->size() == 1 ) {
-        return RbPtr<RbLanguageObject>( (*trees)[0] );
+        return (*trees)[0];
     }
     else {
         // Return null object
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return NULL;
     }
 }
 
@@ -193,18 +193,18 @@ void Func_readTrees::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_readTrees::getArgumentRules( void ) const {
+const ArgumentRules* Func_readTrees::getArgumentRules( void ) const {
     
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
+        argumentRules->push_back( new ValueRule( "file", RbString_name ) );
         rulesSet = true;
     }
     
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

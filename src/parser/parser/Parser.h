@@ -18,7 +18,6 @@
 
 
 #include "RbOptions.h"
-#include "RbPtr.h"
 #include "RbString.h"
 
 #include <list>
@@ -79,10 +78,10 @@ class Parser {
 
     public:
         // Regular functions
-        int                 execute(RbPtr<SyntaxElement> root) const;               //!< Execute the syntax tree
+        int                 execute(SyntaxElement* root) const;                     //!< Execute the syntax tree
         void                getline(char* buf, size_t maxsize);                     //!< Give flex one line to process
-        int                 help(RbPtr<RbString> symbol) const;                     //!< Get help for a symbol
-        int                 help(RbPtr<SyntaxFunctionCall> root) const;             //!< Get help for a function call
+        int                 help(const RbString& symbol) const;                     //!< Get help for a symbol
+        int                 help(const SyntaxFunctionCall& root) const;             //!< Get help for a function call
         int                 processCommand(std::string& command);                   //!< Process command with help from Bison
 
         /** Get singleton parser */

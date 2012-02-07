@@ -41,56 +41,67 @@
 const TypeSpec SyntaxVariable::typeSpec(SyntaxVariable_name);
 
 /** Construct from identifier and index */
-SyntaxVariable::SyntaxVariable(RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxElement> > > indx) :
+SyntaxVariable::SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx) :
     SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(NULL) {
 }
 
 
 /** Construct from function call and index */
-SyntaxVariable::SyntaxVariable(RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<std::list<RbPtr<SyntaxElement> > > indx) :
-SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(NULL) {
+SyntaxVariable::SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx) :
+    SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(NULL) {
 }
 
 
 /** Construct from base variable (member object), identifier and index */
-SyntaxVariable::SyntaxVariable(RbPtr<SyntaxVariable> var, RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxElement> > > indx) :
+SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx) :
     SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(var) {
 }
 
 
 /** Construct from base variable (member object), function call and index */
-SyntaxVariable::SyntaxVariable(RbPtr<SyntaxVariable> var, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<std::list<RbPtr<SyntaxElement> > > indx) :
+SyntaxVariable::SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx) :
     SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(var) {
 }
 
 
 /** Deep copy constructor */
-SyntaxVariable::SyntaxVariable(const SyntaxVariable& x)
-    : SyntaxElement(x) {
+SyntaxVariable::SyntaxVariable(const SyntaxVariable& x) : SyntaxElement(x) {
 
-    identifier = RbPtr<RbString>( x.identifier->clone() );
+    identifier = x.identifier->clone();
     if ( x.baseVariable != NULL )
-        baseVariable = RbPtr<SyntaxVariable>( x.baseVariable->clone() );
+        baseVariable = x.baseVariable->clone();
     else
-        baseVariable = RbPtr<SyntaxVariable>::getNullPtr();
+        baseVariable = NULL;
     if ( x.functionCall != NULL )
-        functionCall = RbPtr<SyntaxFunctionCall>( x.functionCall->clone() );
+        functionCall = x.functionCall->clone();
     else
-        functionCall = RbPtr<SyntaxFunctionCall>::getNullPtr();
+        functionCall = NULL;
     if ( x.index != NULL ) {
-        index = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >() );
-        for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.index->begin(); i!=x.index->end(); i++) {
-            index->push_back(RbPtr<SyntaxElement>( (*i)->clone() ));
+        index = new std::list<SyntaxElement*>();
+        for (std::list<SyntaxElement*>::const_iterator i=x.index->begin(); i!=x.index->end(); i++) {
+            index->push_back( (*i)->clone() );
         }
     }
     else
-        index = RbPtr<std::list<RbPtr<SyntaxElement> > >::getNullPtr();
+        index = NULL;
 }
 
 
 /** Destructor deletes variable, identifier and index */
 SyntaxVariable::~SyntaxVariable() {
     
+    delete identifier;
+    delete functionCall;
+    
+    if (baseVariable != NULL) {
+        delete baseVariable;
+    }
+    
+    
+    for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++) {
+        delete *i;
+    }
+    delete index;
 }
 
 
@@ -122,7 +133,7 @@ std::string SyntaxVariable::briefInfo () const {
     else
         o << "SyntaxVariable: <base>." << std::string(*identifier);
 
-    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=index->begin(); i!=index->end(); i++)
+    for (std::list<SyntaxElement*>::const_iterator i=index->begin(); i!=index->end(); i++)
         o << "[<" << (*i) << ">]";
 
     return o.str();
@@ -145,7 +156,7 @@ const VectorString& SyntaxVariable::getClass(void) const {
 
 
 /** Return nice representation of the syntax element */
-std::string SyntaxVariable::getFullName(const RbPtr<Environment>& env) const {
+std::string SyntaxVariable::getFullName(Environment& env) const {
 
     std::ostringstream theName;
     if (baseVariable != NULL)
@@ -158,12 +169,12 @@ std::string SyntaxVariable::getFullName(const RbPtr<Environment>& env) const {
 
 
 /** Get index */
-VectorNatural SyntaxVariable::computeIndex( const RbPtr<Environment>& env ) {
+VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
     
     VectorNatural   theIndex;
     
     int count = 1;
-    for ( std::list<RbPtr<SyntaxElement> >::iterator i=index->begin(); i!=index->end(); i++, count++ ) {
+    for ( std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++ ) {
         
         if ( (*i) == NULL )
             
@@ -171,7 +182,7 @@ VectorNatural SyntaxVariable::computeIndex( const RbPtr<Environment>& env ) {
         
         else {
             
-            RbPtr<DAGNode> indexVar = (*i)->evaluateContent( env )->getDagNode();
+            DAGNode* indexVar = (*i)->evaluateContent( env )->getDagNode();
             
             if ( indexVar->getValue()->isTypeSpec( TypeSpec(Integer_name) ) ) {
                 
@@ -226,28 +237,28 @@ VectorNatural SyntaxVariable::computeIndex( const RbPtr<Environment>& env ) {
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-VariableSlot* SyntaxVariable::createVariable( const RbPtr<Environment>& env) {
+VariableSlot* SyntaxVariable::createVariable( Environment& env) {
     
     /* Get index */
     VectorNatural indices = computeIndex(env);
     
-    VariableSlot* theSlot( NULL );
+    VariableSlot* theSlot = NULL;
     
     /* Get variable */
-    RbPtr<DAGNode> theDagNode( NULL );
+    DAGNode* theDagNode = NULL;
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
 
-            if ( !env->existsVariable( *identifier ) ) {
+            if ( !env.existsVariable( *identifier ) ) {
                 // create a new slot
-                RbPtr<Variable> theVar( new Variable( *identifier ) );
-                env->addVariable(*identifier,theVar);
+                Variable* theVar = new Variable( *identifier );
+                env.addVariable(*identifier,theVar);
             }
             
             // get the slot and variable
-            theSlot          = (*env)[ (*identifier) ];
-            const RbPtr<Variable>& theVar = ( theSlot->getVariable() );
+            theSlot          = env[ (*identifier) ];
+            Variable* theVar = theSlot->getVariable();
             theDagNode       = theVar->getDagNode();
                 
         }
@@ -308,23 +319,23 @@ VariableSlot* SyntaxVariable::createVariable( const RbPtr<Environment>& env) {
             
             // get the element at the index
             if (theDagNode == NULL) {
-                theDagNode = RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(indexValue+1) )) );
+                theDagNode = new ConstantNode( new DagNodeContainer(indexValue+1) );
                 theSlot->getVariable()->setDagNode(theDagNode);
             }
             
-            RbPtr<Container> con( static_cast<Container*>((RbObject*)theDagNode->getValue()) );
+            Container* con = static_cast<Container*>( theDagNode->getValue() );
             // test if the container is large enough
             if (con->size() <= indexValue) {
                 con->resize(indexValue);
             }
-            const RbPtr<RbObject>& subElement = con->getElement(indexValue);
+            RbObject* subElement = con->getElement(indexValue);
             
             // test whether the element exists and needs 
             if (subElement == NULL) {
                 throw RbException("Missing slot in variable");
             }
             else if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) )) {
-                theSlot = dynamic_cast<VariableSlot*>((RbObject*)subElement);
+                theSlot = dynamic_cast<VariableSlot*>(subElement);
                 theDagNode = theSlot->getDagNode();
                 theSlot->getVariable()->setName(name);
             }
@@ -333,6 +344,12 @@ VariableSlot* SyntaxVariable::createVariable( const RbPtr<Environment>& env) {
     }
 
     return theSlot;
+}
+
+
+/** We cannot perform this function and throw and error */
+Variable* SyntaxVariable::evaluateContent( void ) {
+    throw RbException("Cannot evaluate the content in SyntaxVariable without environment!");
 }
 
 
@@ -348,16 +365,16 @@ VariableSlot* SyntaxVariable::createVariable( const RbPtr<Environment>& env) {
  * The function call is NULL unless we have a base variable, in which case
  * the function call can replace the identifier.
  */
-RbPtr<Variable> SyntaxVariable::evaluateContent( const RbPtr<Environment>& env) {
+Variable* SyntaxVariable::evaluateContent( Environment& env) {
 
     /* Get variable */
-    RbPtr<Variable> theVar;
+    Variable* theVar = NULL;
     
     // if the base variable is not set we have a simple object, otherwise a member object 
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
-            theVar = (*env)[ (*identifier) ]->getVariable();
+            theVar = env[ (*identifier) ]->getVariable();
         } else {
             theVar = functionCall->evaluateContent( env );
         }
@@ -368,15 +385,15 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( const RbPtr<Environment>& env) 
 
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
-            const RbPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
+            Variable* baseVar = baseVariable->evaluateContent( env );
             if ( !baseVar->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
                 throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members" );       
         
             if ( identifier == NULL )
                 throw RbException( "Member variable identifier missing" );
 
-            RbPtr<MemberObject> theMemberObject( static_cast<MemberObject*>( (RbObject*)baseVar->getDagNode()->getValue() ) );
-            const RbPtr<Environment>& members = theMemberObject->getMembers();
+            MemberObject* theMemberObject = static_cast<MemberObject*>( baseVar->getDagNode()->getValue() );
+            Environment* members = theMemberObject->getMembers();
             theVar = (*members)[ (*identifier) ]->getVariable();
         }
         else {
@@ -389,45 +406,26 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( const RbPtr<Environment>& env) 
     // test whether we want to directly assess the variable or if we want to assess subelement of this container
     if (!index->empty()) {
         // iterate over the each index
-        for (std::list<RbPtr<SyntaxElement> >::const_iterator it=index->begin(); it!=index->end(); it++) {
-            const RbPtr<SyntaxElement>&         indexSyntaxElement     = *it;
-            const RbPtr<Variable>&              indexVar               = indexSyntaxElement->evaluateContent(env);
-            RbPtr<RbLanguageObject>             theValue               = indexVar->getValue();
+        for (std::list<SyntaxElement*>::const_iterator it=index->begin(); it!=index->end(); it++) {
+            SyntaxElement*         indexSyntaxElement     = *it;
+            Variable*              indexVar               = indexSyntaxElement->evaluateContent(env);
+            RbLanguageObject*      theValue               = indexVar->getValue();
             if ( !theValue->isTypeSpec(Natural_name) ) {
                 if (!theValue->isConvertibleTo(Natural_name)) {
-                    theValue = RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( theValue->convertTo(Natural_name) ) );
+                    theValue = static_cast<RbLanguageObject*>( theValue->convertTo(Natural_name) );
                 }
                 else { 
                     throw RbException("Could not access index with type xxx because only natural indices are supported!");
                 }
             }
-            size_t                              indexValue             = dynamic_cast<const Natural*>( (RbLanguageObject*)theValue)->getValue() - 1;
-            const RbPtr<RbObject>&              subElement             = theVar->getDagNode()->getElement(indexValue);
+            
+            size_t                  indexValue             = dynamic_cast<const Natural*>( (RbLanguageObject*)theValue)->getValue() - 1;
+            RbObject*               subElement             = theVar->getDagNode()->getElement(indexValue);
             
             if (subElement != NULL && subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
-                theVar = dynamic_cast<VariableSlot*>( (RbObject*)subElement )->getVariable();
+                theVar = dynamic_cast<VariableSlot*>( subElement )->getVariable();
             else 
-                theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)subElement ) ) ) ) ) );
-
-//            // convert the value into a member object
-//            RbPtr<MemberObject> mObject( static_cast<MemberObject*>( (RbObject*)theVar->getValue() ) );
-//            
-//            // get the method table for this member object
-//            // TODO: We shouldn't allow const casts!!!
-//            MethodTable* mt = const_cast<MethodTable*>( (const MethodTable*)mObject->getMethods() );
-//            
-//            // create the arguments which consist only of the single paramater inside the square brackets
-//            std::vector<RbPtr<Argument> > args;
-//            args.push_back( RbPtr<Argument>( new Argument( indexVar ) ) );
-//            
-//            // get the member function with name "[]"
-//            RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)mt->getFunction( "[]", args ) ) );
-//            
-//            // set the member object for the member function
-//            theMemberFunction->setMemberObject(mObject);
-//            RbPtr<RbFunction> func( theMemberFunction );
-//            
-//            theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );
+                theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement ) ) );
 
         }
     }
@@ -451,7 +449,7 @@ void SyntaxVariable::print(std::ostream& o) const {
     if (baseVariable != NULL)
         o << "base variable   = <" << baseVariable << "> " << baseVariable->briefInfo() << std::endl;
     int count = 1;
-    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=(*index).begin(); i!=(*index).end(); i++, count++) {
+    for (std::list<SyntaxElement*>::const_iterator i=(*index).begin(); i!=(*index).end(); i++, count++) {
         if ( (*i) != NULL )
             o << "index " << count << " = <" << (*i) << "> " << (*i)->briefInfo() << std::endl;
         else
@@ -459,7 +457,7 @@ void SyntaxVariable::print(std::ostream& o) const {
     }
     o << std::endl;
 
-    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=index->begin(); i!=index->end(); i++)
+    for (std::list<SyntaxElement*>::const_iterator i=index->begin(); i!=index->end(); i++)
         (*i)->print(o);
 }
 

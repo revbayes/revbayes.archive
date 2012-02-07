@@ -58,18 +58,18 @@ Func_dppServe* Func_dppServe::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_dppServe::executeFunction( void ) {
+RbLanguageObject* Func_dppServe::executeFunction( void ) {
     
 	// Expecting the allocation vector to be like: [0,0,1,0,1,2,2,2,2,2,3,0,3,1]
-	std::vector<unsigned int> allocVec = static_cast<const VectorNatural*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
+	std::vector<unsigned int> allocVec = static_cast<const VectorNatural*>( (*args)[0]->getValue() )->getValue();
 
 	std::sort(allocVec.begin(), allocVec.end()); // this makes [0,0,0,0,1,1,1,2,2,2,2,2,3,3]
 
 	int numClusters = *allocVec.end() + 1; 
 	std::vector<double> paramValues( numClusters, 0.0 );
 	
-	RbPtr<StochasticNode> paramVar( dynamic_cast<StochasticNode*>( (DAGNode*)(*args)[1]->getDagNode() ) );
-    RbPtr<DistributionContinuous> baseDistribution( static_cast<DistributionContinuous*>( (Distribution*)paramVar->getDistribution() ) );
+	StochasticNode* paramVar( dynamic_cast<StochasticNode*>( (DAGNode*)(*args)[1]->getDagNode() ) );
+    DistributionContinuous* baseDistribution( static_cast<DistributionContinuous*>( paramVar->getDistribution() ) );
 	
 	// Question: should this function take a stochastic node as an argument, or a distribution? I think maybe it should be a distribution...
 	
@@ -82,19 +82,19 @@ RbPtr<RbLanguageObject> Func_dppServe::executeFunction( void ) {
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_dppServe::getArgumentRules( void ) const {
+const ArgumentRules* Func_dppServe::getArgumentRules( void ) const {
 	
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 	
     if ( !rulesSet ) {
 		
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "allocation", VectorNatural_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "stochastic node ~ G_0", StochasticNode_name ) ) );
+        argumentRules->push_back( new ValueRule( "allocation", VectorNatural_name ) );
+        argumentRules->push_back( new ValueRule( "stochastic node ~ G_0", StochasticNode_name ) );
         rulesSet = true;
     }
 	
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

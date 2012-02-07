@@ -37,7 +37,6 @@ const std::string Real_name = "Real";
 class Real : public RbLanguageObject {
 
     public:
-//        friend class                VectorReal;                                                             //!< Give VecorReal direct access to value
 
                                     Real(void);                                                             //!< Default constructor (0.0)
                                     Real(const double v);                                                   //!< Construct from double

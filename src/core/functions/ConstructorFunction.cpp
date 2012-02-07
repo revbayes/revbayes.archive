@@ -30,9 +30,13 @@
 const TypeSpec ConstructorFunction::typeSpec(ConstructorFunction_name);
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction(RbPtr<MemberObject> obj) : RbFunction(), templateObject(obj) {
+ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), templateObject(obj) {
 
     argRules = templateObject->getMemberRules();
+}
+
+ConstructorFunction::~ConstructorFunction() {
+    delete templateObject;
 }
 
 
@@ -44,22 +48,22 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbPtr<RbLanguageObject> ConstructorFunction::executeFunction(void) {
+RbLanguageObject* ConstructorFunction::executeFunction(void) {
 
-   RbPtr<MemberObject> copy( templateObject->clone() );
+   MemberObject* copy = templateObject->clone();
 
     for ( size_t i = 0; i < args->size(); i++ ) {
         copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
  
-    return RbPtr<RbLanguageObject>( copy );
+    return copy;
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> ConstructorFunction::getArgumentRules(void) const {
+const ArgumentRules* ConstructorFunction::getArgumentRules(void) const {
 
-    return ( argRules );
+    return argRules;
 }
 
 

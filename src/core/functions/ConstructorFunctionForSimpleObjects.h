@@ -41,14 +41,14 @@ public:
     const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
     
     // Regular functions
-    RbPtr<const ArgumentRules>              getArgumentRules(void) const;                                                   //!< Get argument rules
+    const ArgumentRules*                    getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
     const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
     
 protected:
-    RbPtr<RbLanguageObject>                 executeFunction(void);                                                                  //!< Execute function
-    RbPtr<const ArgumentRules>              argRules;                                                                       //!< Member rules converted to reference rules
-    RbPtr<RbLanguageObject>                 templateObject;                                                                 //!< The template object
+    RbLanguageObject*                       executeFunction(void);                                                                  //!< Execute function
+    const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
+    RbLanguageObject*                       templateObject;                                                                 //!< The template object
     
 private:
     static const TypeSpec                   typeSpec;

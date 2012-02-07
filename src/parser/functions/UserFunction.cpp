@@ -33,26 +33,26 @@
 const TypeSpec UserFunction::typeSpec(UserFunction_name);
 
 /** Basic constructor */
-UserFunction::UserFunction( RbPtr<const ArgumentRules>  argRules,
+UserFunction::UserFunction( const ArgumentRules*  argRules,
                             const TypeSpec&             retType,
-                            RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts,
-                            RbPtr<Environment>                defineEnv)
+                            std::list<SyntaxElement*>*  stmts,
+                            Environment*                defineEnv)
 : RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
     
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType), code(RbPtr<std::list<RbPtr<SyntaxElement> > >::getNullPtr()), defineEnvironment(RbPtr<Environment>::getNullPtr()) {
+UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType), code(NULL), defineEnvironment(NULL) {
 
     // clone the environment
-    defineEnvironment   = RbPtr<Environment>( x.defineEnvironment->clone() );
+    defineEnvironment   = x.defineEnvironment->clone();
     
     // create a new list for the code
-    code = RbPtr<std::list<RbPtr<SyntaxElement> > >(new std::list<RbPtr<SyntaxElement> >());
-    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
+    code = new std::list<SyntaxElement*>();
+    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
 //        SyntaxElement *element = (*i)->clone();
-        RbPtr<SyntaxElement> element = *i;
+        SyntaxElement* element = *i;
         code->push_back(element);
     }
 }
@@ -84,19 +84,19 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> UserFunction::executeFunction( void ) {
+RbLanguageObject* UserFunction::executeFunction( void ) {
 
     // Clear signals
     Signals::getSignals().clearFlags();
 
     // Set initial return value
-    RbPtr<Variable> retValue(NULL);
+    Variable* retValue = NULL;
 
     // Create new variable frame
-    RbPtr<Environment> functionEnvironment(new Environment( RbPtr<Environment>(args) ) );
+    Environment functionEnvironment = Environment( args );
 
     // Execute code
-    for ( std::list<RbPtr<SyntaxElement> >::iterator i=code->begin(); i!=code->end(); i++ ) {
+    for ( std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++ ) {
 
         retValue = (*i)->evaluateContent( functionEnvironment );
 
@@ -110,7 +110,7 @@ RbPtr<RbLanguageObject> UserFunction::executeFunction( void ) {
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> UserFunction::getArgumentRules() const {
+const ArgumentRules* UserFunction::getArgumentRules() const {
 
     return argumentRules;
 }

@@ -66,24 +66,24 @@ const VectorString& Dist_birthdeath::getClass( void ) const {
 
 
 /** Get member variable rules */
-RbPtr<const MemberRules> Dist_birthdeath::getMemberRules( void ) const {
+const MemberRules* Dist_birthdeath::getMemberRules( void ) const {
     
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
     
     if ( !rulesSet )
     {
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "origin"          , RealPos_name     ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "T"               , RealPos_name     ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "lambda"          , RealPos_name     ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "mu"              , RealPos_name, RbPtr<RbLanguageObject>( new RealPos(0.0) ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "rho"             , Probability_name, RbPtr<RbLanguageObject>( new Probability(1.0) ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "speciationEvent" , RbBoolean_name, RbPtr<RbLanguageObject>( new RbBoolean(true) ) ) ) );
+        memberRules->push_back( new ValueRule( "origin"          , RealPos_name     ) );
+        memberRules->push_back( new ValueRule( "T"               , RealPos_name     ) );
+        memberRules->push_back( new ValueRule( "lambda"          , RealPos_name     ) );
+        memberRules->push_back( new ValueRule( "mu"              , RealPos_name, new RealPos(0.0) ) );
+        memberRules->push_back( new ValueRule( "rho"             , Probability_name, new Probability(1.0) ) );
+        memberRules->push_back( new ValueRule( "speciationEvent" , RbBoolean_name, new RbBoolean(true) ) );
         
         rulesSet = true;
     }
     
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -113,11 +113,11 @@ double Dist_birthdeath::lnPdf( const RbLanguageObject *value ) const {
     
     // Get the parameters
     double t = static_cast<const RealPos*    >( value )->getValue();
-    double o = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "origin" ) )->getValue();
-    double T = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "T"      ) )->getValue();
-    double b = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "lambda" ) )->getValue();
-    double d = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "mu"     ) )->getValue();
-    double p = static_cast<const Probability*>( (const RbObject*)getMemberValue( "rho"    ) )->getValue();
+    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ) )->getValue();
+    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ) )->getValue();
+    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
+    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
+    double p = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
     // have we observed a speciation event at time t or did we just stop the process without oberving an event?
     // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
@@ -158,16 +158,16 @@ double Dist_birthdeath::pBirth(double t, double T, double lambda, double mu, dou
 double Dist_birthdeath::pdf( const RbLanguageObject *value ) const {
     
     // Get the parameters
-    double t = static_cast<const RealPos*    >( (const RbLanguageObject*)value )->getValue();
-    double o = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "origin" ) )->getValue();
-    double T = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "T"      ) )->getValue();
-    double b = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "lambda" ) )->getValue();
-    double d = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "mu"     ) )->getValue();
-    double p = static_cast<const Probability*>( (const RbObject*)getMemberValue( "rho"    ) )->getValue();
+    double t = static_cast<const RealPos*    >( value )->getValue();
+    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ) )->getValue();
+    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ) )->getValue();
+    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
+    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
+    double p = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
     // have we observed a speciation event at time t or did we just stop the process without oberving an event?
     // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
-    bool speciationEvent = static_cast<const RbBoolean*>( (const RbObject*)getMemberValue( "speciationEvent" ) )->getValue();
+    bool speciationEvent = static_cast<const RbBoolean*>( getMemberValue( "speciationEvent" ) )->getValue();
     
     // the probability of the current time is the probability of having observed no event until now
     double prob = pWaiting(o,t,T,b,d,p);
@@ -218,19 +218,19 @@ double Dist_birthdeath::ut(double t, double t_prime, double lambda, double mu, d
  *
  * @return      Randomly drawn vector of speciation times
  */
-RbPtr<RbLanguageObject> Dist_birthdeath::rv( void ) {
+RbLanguageObject* Dist_birthdeath::rv( void ) {
     
     // TODO needs implementation!!!
     
     // Get the parameters
-    double o = static_cast<RealPos*    >( (RbObject*)getMemberValue( "origin" ) )->getValue();
-    double T = static_cast<RealPos*    >( (RbObject*)getMemberValue( "T"      ) )->getValue();
+    double o = static_cast<RealPos*    >( getMemberValue( "origin" ) )->getValue();
+    double T = static_cast<RealPos*    >( getMemberValue( "T"      ) )->getValue();
 //    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ).get() )->getValue();
 //    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ).get() )->getValue();
 //    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
     
     
-    return RbPtr<RbLanguageObject>( new RealPos( (T - o) / 2.0 + o) );
+    return new RealPos( (T - o) / 2.0 + o);
 }
 
 

@@ -29,13 +29,12 @@
 #include "ArgumentRule.h"
 #include "Environment.h"
 #include "RbInternal.h"
-#include "RbPtr.h"
 
 class DAGNode;
 class VectorInteger;
 class VectorString;
 
-typedef std::vector<RbPtr<ArgumentRule> > ArgumentRules;
+typedef std::vector<ArgumentRule* > ArgumentRules;
 
 /**
  * This is the interface and abstract base class for functions in
@@ -74,27 +73,27 @@ class RbFunction :  public RbInternal {
     	void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
 
         // RbFunction functions you have to override
-        virtual RbPtr<RbLanguageObject>                 execute(void);                                                                      //!< Execute function
-        virtual RbPtr<const ArgumentRules>              getArgumentRules(void) const = 0;                                                   //!< Get argument rules
+        virtual RbLanguageObject*                       execute(void);                                                                      //!< Execute function
+        virtual const ArgumentRules*                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                                    processArguments(std::vector<RbPtr<Argument> > passedArgs,
-                                                                         RbPtr<VectorInteger>          matchScore = RbPtr<VectorInteger>::getNullPtr());  //!< Process args, return a match score if pointer is not null
+        virtual bool                                    processArguments(std::vector<Argument* > passedArgs,
+                                                                         VectorInteger*          matchScore = NULL);                        //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
     
 
         // RbFunction functions you should not override
         void                                            clearArguments(void);                                                               //!< Clear argument Environment "args"
-        RbPtr<const Environment>                        getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
-        RbPtr<Environment>                              getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
+        const Environment*                              getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
+        Environment*                                    getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
 
 	protected:
                                                         RbFunction(void);                                                                   //!< Basic constructor
 
-        virtual RbPtr<RbLanguageObject>                 executeFunction(void);                                                              //!< Execute the function. This is the function one has to overwrite for simple return values.
+        virtual RbLanguageObject*                       executeFunction(void);                                                              //!< Execute the function. This is the function one has to overwrite for simple return values.
         // Member variables
-        RbPtr<Environment>                              args;                                                                               //!< Environment for passed arguments
+        Environment*                                    args;                                                                               //!< Environment for passed arguments
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
 };
 

@@ -28,21 +28,21 @@
 class EigenSystem {
 
     public:
-                                    EigenSystem(RbPtr<MatrixReal> m);                                                                //!< Constructor from rate matrix
+                                    EigenSystem(MatrixReal* m);                                                                //!< Constructor from rate matrix
                                     EigenSystem(const EigenSystem& e);                                                         //!< Copy constructor
                                    ~EigenSystem(void);                                                                         //!< Destructor
     
         EigenSystem*                clone(void) const;
 
         double                      getDeterminant(void);                                                                      //!< Return determinant
-        const MatrixReal&           getEigenvectors(void) const { return eigenvectors; }                                             //!< Return the eigenvector matrix
-        const MatrixReal&           getInverseEigenvectors(void) const { return inverseEigenvectors; }                               //!< Return the inverse eigenvector matrix
-        const VectorReal&           getRealEigenvalues(void) const { return realEigenvalues; }                                       //!< Return the real parts of the eigenvalues
-        const VectorReal&           getImagEigenvalues(void) const { return imaginaryEigenvalues; }                                  //!< Return the imaginary parts of the eigenvalues
-        const MatrixComplex&        getComplexEigenvectors(void) const { return complexEigenvectors; }                               //!< Return the eigenvector matrix
-        const MatrixComplex&        getComplexInverseEigenvectors() const { return complexInverseEigenvectors; }                     //!< Return the inverse eigenvector matrix
+        const MatrixReal&           getEigenvectors(void) const { return eigenvectors; }                                       //!< Return the eigenvector matrix
+        const MatrixReal&           getInverseEigenvectors(void) const { return inverseEigenvectors; }                         //!< Return the inverse eigenvector matrix
+        const VectorReal&           getRealEigenvalues(void) const { return realEigenvalues; }                                 //!< Return the real parts of the eigenvalues
+        const VectorReal&           getImagEigenvalues(void) const { return imaginaryEigenvalues; }                            //!< Return the imaginary parts of the eigenvalues
+        const MatrixComplex&        getComplexEigenvectors(void) const { return complexEigenvectors; }                         //!< Return the eigenvector matrix
+        const MatrixComplex&        getComplexInverseEigenvectors() const { return complexInverseEigenvectors; }               //!< Return the inverse eigenvector matrix
         bool                        isComplex(void) const { return complex; } 
-        void                        setRateMatrixPtr(RbPtr<MatrixReal> qp) { qPtr = qp; }
+        void                        setRateMatrixPtr(MatrixReal* qp) { qPtr = qp; }
         bool                        update(void);                                                                              //!< Update the eigen system for the matrix q;
 
     private:
@@ -62,7 +62,7 @@ class EigenSystem {
         int                         luDecompose(MatrixReal& a, double *vv, int *indx, double *pd);                             //!< calculates the LU-decomposition of a matrix
 
         int                         n;                                                                                         //!< Row and column dimension (square matrix)
-        RbPtr<MatrixReal>           qPtr;                                                                                      //!< A pointer to the rate matrix for this system of eigen values and vectors
+        MatrixReal*                 qPtr;                                                                                      //!< A pointer to the rate matrix for this system of eigen values and vectors
         MatrixReal                  eigenvectors;                                                                              //!< Matrix for internal storage of eigenvectors
         MatrixReal                  inverseEigenvectors;                                                                       //!< Matrix for internal storage of the inverse eigenvectors
         MatrixComplex               complexEigenvectors;                                                                       //!< Matrix for internal storage of complex eigenvectors

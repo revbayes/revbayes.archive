@@ -37,7 +37,7 @@
 
 
 /** Constructor */
-Move::Move( RbPtr<const MemberRules> memberRules ) : ConstantMemberObject( memberRules ) {
+Move::Move( const MemberRules* memberRules ) : ConstantMemberObject( memberRules ) {
 
     numAccepted = 0;
     numTried    = 0;
@@ -69,7 +69,7 @@ std::string Move::briefInfo(void) const {
             tmp += ", ";
         }
         
-        RbPtr<StochasticNode> n = nodes[i];
+        StochasticNode* n = nodes[i];
         tmp += n->getName();
     }
     
@@ -80,7 +80,7 @@ std::string Move::briefInfo(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Move::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
+RbLanguageObject* Move::executeOperationSimple(const std::string& name, Environment* args) {
 
     static ArgumentRules acceptArgRules;
     static ArgumentRules acceptanceRatioArgRules;    
@@ -93,37 +93,37 @@ RbPtr<RbLanguageObject> Move::executeOperationSimple(const std::string& name, co
     if ( name == "accept" ) {
 
         acceptMove();
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return NULL;
     }
     else if ( name == "acceptanceRatio" ) {
 
-        return RbPtr<RbLanguageObject>( new Real( getAcceptanceRatio() ) );
+        return new Real( getAcceptanceRatio() );
     }
     else if ( name == "numAccepted" ) {
 
-        return RbPtr<RbLanguageObject>( new Natural( numAccepted ) );
+        return new Natural( numAccepted );
     }
     else if ( name == "numTried" ) {
 
-        return RbPtr<RbLanguageObject>( new Natural( numTried ) );
+        return new Natural( numTried );
     }
     else if ( name == "propose" ) {
 
-        RbPtr<VectorReal> temp( new VectorReal(2) );
-        RbPtr<Real> tmp( new Real(performMove( (*temp)[0] ) ) );
+        VectorReal* temp = new VectorReal(2);
+        Real* tmp = new Real(performMove( (*temp)[0] ) );
         
         // return the Hastings ratio
-        return RbPtr<RbLanguageObject>( tmp );
+        return tmp;
     }
     else if ( name == "reject" ) {
 
         rejectMove();
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return NULL;
     }
     else if ( name == "resetCounters" ) {
 
         resetCounters();
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return NULL;
     }
 
     // No hit yet; we hope there is a mapped function call in the base class
@@ -147,33 +147,33 @@ const VectorString& Move::getClass( void ) const {
 
 
 /** Return member rules */
-RbPtr<const MemberRules> Move::getMemberRules( void ) const {
+const MemberRules* Move::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) {
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "weight"  , RbPtr<RbLanguageObject>( new RealPos(1.0) ) ) ) );
+        memberRules->push_back( new ValueRule( "weight"  , new RealPos(1.0) ) );
         rulesSet = true;
     }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
 /** Get move methods */
-RbPtr<const MethodTable> Move::getMethods(void) const {
+const MethodTable* Move::getMethods(void) const {
 
-    static RbPtr<MethodTable> methods( new MethodTable() );
+    static MethodTable* methods = new MethodTable();
     
-    static RbPtr<ArgumentRules> acceptArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> acceptanceRatioArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> numAcceptedArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> numRejectedArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> numTriedArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> proposeArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> rejectArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> resetCountersArgRules( new ArgumentRules() );
+    static ArgumentRules* acceptArgRules            = new ArgumentRules();
+    static ArgumentRules* acceptanceRatioArgRules   = new ArgumentRules();    
+    static ArgumentRules* numAcceptedArgRules       = new ArgumentRules();    
+    static ArgumentRules* numRejectedArgRules       = new ArgumentRules();    
+    static ArgumentRules* numTriedArgRules          = new ArgumentRules();
+    static ArgumentRules* proposeArgRules           = new ArgumentRules();
+    static ArgumentRules* rejectArgRules            = new ArgumentRules();
+    static ArgumentRules* resetCountersArgRules     = new ArgumentRules();
     
     static bool          methodsSet = false;
 
@@ -181,21 +181,21 @@ RbPtr<const MethodTable> Move::getMethods(void) const {
         {
         
         // Add functions
-        methods->addFunction( "accept",          RbPtr<RbFunction>( new MemberFunction( RbVoid_name,     acceptArgRules ) ) );
-        methods->addFunction( "acceptanceRatio", RbPtr<RbFunction>( new MemberFunction( Real_name,       acceptanceRatioArgRules ) ) );
-        methods->addFunction( "numAccepted",     RbPtr<RbFunction>( new MemberFunction( Natural_name,    numAcceptedArgRules ) ) );
-        methods->addFunction( "numRejected",     RbPtr<RbFunction>( new MemberFunction( Natural_name,    numRejectedArgRules ) ) );
-        methods->addFunction( "numTried",        RbPtr<RbFunction>( new MemberFunction( Natural_name,    numTriedArgRules ) ) );
-        methods->addFunction( "propose",         RbPtr<RbFunction>( new MemberFunction( VectorReal_name, proposeArgRules ) ) );
-        methods->addFunction( "reject",          RbPtr<RbFunction>( new MemberFunction( RbVoid_name,     rejectArgRules ) ) );
-        methods->addFunction( "resetCounters",   RbPtr<RbFunction>( new MemberFunction( RbVoid_name,     resetCountersArgRules ) ) );
+        methods->addFunction( "accept",          new MemberFunction( RbVoid_name,     acceptArgRules            ) );
+        methods->addFunction( "acceptanceRatio", new MemberFunction( Real_name,       acceptanceRatioArgRules   ) );
+        methods->addFunction( "numAccepted",     new MemberFunction( Natural_name,    numAcceptedArgRules       ) );
+        methods->addFunction( "numRejected",     new MemberFunction( Natural_name,    numRejectedArgRules       ) );
+        methods->addFunction( "numTried",        new MemberFunction( Natural_name,    numTriedArgRules          ) );
+        methods->addFunction( "propose",         new MemberFunction( VectorReal_name, proposeArgRules           ) );
+        methods->addFunction( "reject",          new MemberFunction( RbVoid_name,     rejectArgRules            ) );
+        methods->addFunction( "resetCounters",   new MemberFunction( RbVoid_name,     resetCountersArgRules     ) );
         
         // Set parent table for proper inheritance
-        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
+        methods->setParentTable( MemberObject::getMethods() );
         methodsSet = true;
     }
 
-    return RbPtr<const MethodTable>( methods );
+    return methods;
 }
 
 
@@ -203,7 +203,7 @@ RbPtr<const MethodTable> Move::getMethods(void) const {
  *  from its member variable "weight". */
 double Move::getUpdateWeight( void ) const {
 
-    return static_cast<const RealPos*>( (const RbObject*)(*members)["weight"]->getValue() )->getValue();
+    return static_cast<const RealPos*>( (*members)["weight"]->getValue() )->getValue();
 }
 
 
@@ -220,7 +220,7 @@ void Move::resetCounters(void) {
 }
 
 /** Set member variable. We catch here setting of the stochastic nodes to add them to our internal vector */
-void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
+void Move::setMemberVariable(std::string const &name, Variable* var) {
     
     // test whether we want to set the variable 
     if (name == "variable") {
@@ -229,16 +229,16 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         
         // test whether we want to set multiple variable
         if (var->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
-            RbPtr<DagNodeContainer> container( dynamic_cast<DagNodeContainer*>( (RbObject*)var->getValue() ) );
+            DagNodeContainer* container = dynamic_cast<DagNodeContainer*>( var->getValue() );
             
             // add all nodes
             for (size_t i=0; i<container->size(); i++) {
-                RbPtr<RbObject> theElement = container->getElement(i);
+                RbObject* theElement = container->getElement(i);
                 
                 // check if it is a stochastic node
                 if (theElement->isTypeSpec( TypeSpec(StochasticNode_name) )) {
                     // cast to stochastic node
-                    RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (RbObject*)theElement) );
+                    StochasticNode* theNode = dynamic_cast<StochasticNode*>( theElement );
                     
                     // add
                     nodes.push_back(theNode);
@@ -250,7 +250,7 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         }
         else if (var->getDagNode()->isType(StochasticNode_name)) {
             // cast to stochastic node
-            RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*)var->getDagNode() ) );
+            StochasticNode* theNode = dynamic_cast<StochasticNode*>( var->getDagNode() );
             
             // add
             nodes.push_back(theNode);
@@ -265,14 +265,14 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
 }
 
 
-void Move::replaceDagNodes(std::vector<RbPtr<StochasticNode> > &n) {
+void Move::replaceDagNodes(std::vector<StochasticNode*> &n) {
     
     // release all nodes
     nodes.clear();
     
     // add all nodes
     for (size_t i=0; i<n.size(); i++) {
-        RbPtr<StochasticNode> theNode = n[i];
+        StochasticNode* theNode = n[i];
         if (theNode != NULL) {
             nodes.push_back(theNode);
         }

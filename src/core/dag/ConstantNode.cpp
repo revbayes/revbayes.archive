@@ -36,7 +36,7 @@
 const TypeSpec ConstantNode::typeSpec(ConstantNode_name);
 
 /** Constructor from value */
-ConstantNode::ConstantNode( RbPtr<RbLanguageObject> val ) : DAGNode( val ) {
+ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( val ) {
 
 }
 

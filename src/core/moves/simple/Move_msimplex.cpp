@@ -57,27 +57,27 @@ const VectorString& Move_msimplex::getClass() const {
 
 
 /** Return member rules */
-RbPtr<const MemberRules> Move_msimplex::getMemberRules( void ) const {
+const MemberRules* Move_msimplex::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
     {
         TypeSpec varType( Simplex_name );
-        memberRules->push_back( RbPtr<ArgumentRule>(new ValueRule( "variable", varType ) ) );
+        memberRules->push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        RbPtr<const MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        const MemberRules* inheritedRules = MoveSimple::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "tuning"  , RealPos_name ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "num_cats", Natural_name ) ) );
+        memberRules->push_back( new ValueRule( "tuning"  , RealPos_name ) );
+        memberRules->push_back( new ValueRule( "num_cats", Natural_name ) );
 
         rulesSet = true;
 		}
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -98,11 +98,10 @@ const TypeSpec Move_msimplex::getVariableType( void ) const {
 double Move_msimplex::perform( void ) {
 
     // Get random number generator    
-    RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-//    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
-    RbPtr<StochasticNode> nodePtr( NULL );
+    StochasticNode*        nodePtr = NULL;
     double                 alpha0  = static_cast<const RealPos*>( (const RbObject*)getMemberValue("tuning")   )->getValue();
     int                    k       = static_cast<const Natural*>( (const RbObject*)getMemberValue("num_cats") )->getValue();
 
@@ -143,7 +142,7 @@ double Move_msimplex::perform( void ) {
 		std::vector<int> tmpV;
 		for (int i=0; i<n; i++)
 			tmpV.push_back(i);
-		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<int>(tmpV, indicesToUpdate, k, rng);
+		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<int>(tmpV, indicesToUpdate, k, *rng);
 		std::map<int,int> mapper;
 		for (size_t i=0; i<indicesToUpdate.size(); i++)
 			mapper.insert( std::make_pair(indicesToUpdate[i], i) );
@@ -165,7 +164,7 @@ double Move_msimplex::perform( void ) {
 			alphaForward[i] = x[i] * alpha0;
 			
 		// draw a new value for the reduced vector
-		z = RbStatistics::Dirichlet::rv( alphaForward, rng );
+		z = RbStatistics::Dirichlet::rv( alphaForward, *rng );
 		
 		// fill in the Dirichlet parameters for the reverse probability calculations
 		for (size_t i=0; i<z.size(); i++)
@@ -195,7 +194,7 @@ double Move_msimplex::perform( void ) {
 			alphaForward[i] = curVal[i] * alpha0;
 			
 		// then, we propose new values
-		newVal = RbStatistics::Dirichlet::rv( alphaForward, rng );
+		newVal = RbStatistics::Dirichlet::rv( alphaForward, *rng );
 		
 		// and calculate the Dirichlet parameters for the (imagined) reverse move
 		std::vector<double> alphaReverse(newVal.size());
@@ -206,7 +205,7 @@ double Move_msimplex::perform( void ) {
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
 		
-    nodePtr->setValue( RbPtr<RbLanguageObject>( new Simplex( newVal ) ) );
+    nodePtr->setValue( new Simplex( newVal ) );
 	
     return lnProposalRatio;
 }

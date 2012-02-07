@@ -32,8 +32,7 @@
 const TypeSpec Move_mscale::typeSpec(Move_mscale_name);
 
 /** Constructor for parser */
-Move_mscale::Move_mscale( void )
-    : MoveSimple( getMemberRules() ) {
+Move_mscale::Move_mscale( void ) : MoveSimple( getMemberRules() ) {
 }
 
 
@@ -53,25 +52,25 @@ const VectorString& Move_mscale::getClass() const {
 
 
 /** Return member rules */
-RbPtr<const MemberRules> Move_mscale::getMemberRules( void ) const {
+const MemberRules* Move_mscale::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules );
+    static MemberRules* memberRules = new MemberRules;
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
         TypeSpec varType( RealPos_name );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable", varType ) ) );
+        memberRules->push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        RbPtr<const MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        const MemberRules* inheritedRules = MoveSimple::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "lambda", RealPos_name ) ) );
+        memberRules->push_back( new ValueRule( "lambda", RealPos_name ) );
 
         rulesSet = true;
     }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -92,11 +91,10 @@ const TypeSpec Move_mscale::getVariableType( void ) const {
 double Move_mscale::perform( void ) {
 
     // Get random number generator    
-    RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-//    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (DAGNode*)(*members)["variable"]->getDagNode() ) );
-    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (DAGNode*)nodes[0] ) );
+    StochasticNode*        nodePtr = static_cast<StochasticNode*>( nodes[0] );
     const RealPos          lambda  = *( static_cast<const RealPos*>( (const RbObject*)getMemberValue("lambda")  ) );
     const RealPos          curVal  = *( static_cast<const RealPos*>( (const RbObject*)nodePtr->getValue() ) );
 
@@ -105,7 +103,7 @@ double Move_mscale::perform( void ) {
     RealPos newVal = curVal * std::exp( lambda * ( u - 0.5 ) );
 
     // Propose new value
-    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ) );
+    nodePtr->setValue( newVal.clone() );
 
     // Return Hastings ratio
     return log( newVal / curVal );

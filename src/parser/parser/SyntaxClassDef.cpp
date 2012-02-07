@@ -27,7 +27,7 @@
 const TypeSpec SyntaxClassDef::typeSpec(SyntaxClassDef_name);
 
 /** Construct definition from class name, base class name, and variable and function definitions */
-SyntaxClassDef::SyntaxClassDef( RbPtr<RbString> name, RbPtr<RbString> base, RbPtr<std::list<RbPtr<SyntaxElement> > > defs) : SyntaxElement(), className(name), baseClass(base), definitions(defs) {
+SyntaxClassDef::SyntaxClassDef( RbString* name, RbString* base, std::list<SyntaxElement*>* defs) : SyntaxElement(), className(name), baseClass(base), definitions(defs) {
     
 }
 
@@ -35,11 +35,11 @@ SyntaxClassDef::SyntaxClassDef( RbPtr<RbString> name, RbPtr<RbString> base, RbPt
 /** Deep copy constructor */
 SyntaxClassDef::SyntaxClassDef(const SyntaxClassDef& x) : SyntaxElement(x) {
 
-    className = RbPtr<RbString>(new RbString(*className));
-    baseClass = RbPtr<RbString>(new RbString(*baseClass));
-    definitions = RbPtr<std::list<RbPtr<SyntaxElement> > >(new std::list<RbPtr<SyntaxElement> >() );
-    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.definitions->begin(); i!=x.definitions->end(); i++)
-        definitions->push_back(RbPtr<SyntaxElement>( (*i)->clone() ));
+    className = new RbString(*className);
+    baseClass = new RbString(*baseClass);
+    definitions = new std::list<SyntaxElement*>();
+    for (std::list<SyntaxElement*>::const_iterator i=x.definitions->begin(); i!=x.definitions->end(); i++)
+        definitions->push_back((*i)->clone());
  
 }
 
@@ -80,7 +80,7 @@ std::string SyntaxClassDef::briefInfo () const {
 /** Clone syntax element */
 SyntaxElement* SyntaxClassDef::clone () const {
 
-    return (SyntaxElement*)(new SyntaxClassDef(*this));
+    return (new SyntaxClassDef(*this));
 }
 
 
@@ -93,12 +93,12 @@ const VectorString& SyntaxClassDef::getClass(void) const {
 
 
 /** Get semantic value: insert a user-defined class in the user workspace */
-RbPtr<Variable> SyntaxClassDef::evaluateContent(const RbPtr<Environment>& env) {
+Variable* SyntaxClassDef::evaluateContent(void) {
 
     std::cerr << "Sorry, user-defined classes are not implemented yet" << std::endl;
 
     // No return value 
-    return RbPtr<Variable>::getNullPtr();
+    return NULL;
 }
 
 

@@ -40,7 +40,7 @@ OptionRule::OptionRule( const std::string& argName, VectorString optVals ) : Val
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, RbPtr<RbString> defVal, VectorString optVals ) : ValueRule( argName, RbPtr<RbLanguageObject>( defVal ) ), options( optVals ) {
+OptionRule::OptionRule(const std::string& argName, RbString* defVal, VectorString optVals ) : ValueRule( argName, RbPtr<RbLanguageObject>( defVal ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -74,7 +74,7 @@ const TypeSpec& OptionRule::getTypeSpec(void) const {
 
 
 /** Test if argument is valid */
-bool OptionRule::isArgValid( RbPtr<DAGNode> var, bool& needsConversion ) const {
+bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion ) const {
 
     // Initialize
     needsConversion = false;
@@ -84,16 +84,16 @@ bool OptionRule::isArgValid( RbPtr<DAGNode> var, bool& needsConversion ) const {
         return false;
 
     // This will make sure we have a string variable
-    if ( !ArgumentRule::isArgumentValid( RbPtr<const DAGNode>( var ), needsConversion ) )
+    if ( !ArgumentRule::isArgumentValid( var, needsConversion ) )
         return false;
 
     // Make sure we have a valid option
     bool        valid = false;
-    RbPtr<RbString> value( NULL );
+    RbString* value = NULL;
     if ( needsConversion )
-        value = RbPtr<RbString>( static_cast<RbString*>( var->getValue()->convertTo( RbString_name ) ) );
+        value = static_cast<RbString*>( var->getValue()->convertTo( RbString_name ) );
     else
-        value = RbPtr<RbString>( static_cast<RbString*>( var->getValue()->clone() ) );
+        value = static_cast<RbString*>( var->getValue()->clone() );
 
     std::string valString = value->getValue();
     for ( size_t i = 0; i < options.size(); i++ ) {

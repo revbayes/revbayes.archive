@@ -44,24 +44,24 @@ ConstructorFunctionForSimpleObjects* ConstructorFunctionForSimpleObjects::clone(
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbPtr<RbLanguageObject> ConstructorFunctionForSimpleObjects::executeFunction(void) {
+RbLanguageObject* ConstructorFunctionForSimpleObjects::executeFunction(void) {
     
-    RbPtr<RbLanguageObject> copy( templateObject->clone() );
+    RbLanguageObject* copy = templateObject->clone();
     
-    RbPtr<Vector> params( new Vector(RbObject_name) );
+    Vector* params = new Vector(RbObject_name);
     for ( size_t i = 0; i < args->size(); i++ ) {
-        params->push_back( RbPtr<RbObject>( (*args)[i]->getValue() ) );
+        params->push_back( (*args)[i]->getValue() );
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
     
     copy->initialize(params);
     
-    return RbPtr<RbLanguageObject>( copy );
+    return copy;
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> ConstructorFunctionForSimpleObjects::getArgumentRules(void) const {
+const ArgumentRules* ConstructorFunctionForSimpleObjects::getArgumentRules(void) const {
     
     return ( argRules );
 }

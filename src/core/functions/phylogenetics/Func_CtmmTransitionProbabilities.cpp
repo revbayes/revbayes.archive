@@ -46,11 +46,11 @@ Func_CtmmTransitionProbabilities* Func_CtmmTransitionProbabilities::clone(void) 
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_CtmmTransitionProbabilities::executeFunction(void) {
+RbLanguageObject* Func_CtmmTransitionProbabilities::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    RbPtr<RateMatrix> q( static_cast<RateMatrix*>( (RbObject*)(*args)[0]->getValue() ) );
-    RbPtr<RealPos>    t( static_cast<RealPos*>(    (RbObject*)(*args)[1]->getValue() ) );
+    RateMatrix* q = static_cast<RateMatrix*>( (*args)[0]->getValue() );
+    RealPos*    t = static_cast<RealPos*>(    (*args)[1]->getValue() );
 
     // initialize the number of states
     const size_t numStates = q->getNumberOfStates();
@@ -68,31 +68,31 @@ RbPtr<RbLanguageObject> Func_CtmmTransitionProbabilities::executeFunction(void) 
         nStates = numStates;
         // construct a rate matrix of the correct dimensions
         // TODO: we might want to resize instead
-        transProbsMatrix = RbPtr<TransitionProbabilityMatrix>(new TransitionProbabilityMatrix(nStates));
+        transProbsMatrix = new TransitionProbabilityMatrix(nStates);
     }
 
     // calculate the transition probabilities
     q->calculateTransitionProbabilities( t->getValue(), transProbsMatrix );
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return RbPtr<RbLanguageObject>( transProbsMatrix );
+    return transProbsMatrix;
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_CtmmTransitionProbabilities::getArgumentRules(void) const {
+const ArgumentRules* Func_CtmmTransitionProbabilities::getArgumentRules(void) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 
     if (!rulesSet)
         {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "q", RateMatrix_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "t", RealPos_name    ) ) );
+        argumentRules->push_back( new ValueRule( "q", RateMatrix_name ) );
+        argumentRules->push_back( new ValueRule( "t", RealPos_name    ) );
         rulesSet = true;
         }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

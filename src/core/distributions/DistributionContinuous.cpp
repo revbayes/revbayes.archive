@@ -32,22 +32,20 @@
 
 
 /** Constructor passes member rules to base class */
-DistributionContinuous::DistributionContinuous( RbPtr<const MemberRules> memberRules ) : Distribution( memberRules ) {
+DistributionContinuous::DistributionContinuous( const MemberRules* memberRules ) : Distribution( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> DistributionContinuous::executeOperationSimple( const std::string& name, const RbPtr<Environment>& args ) {
+RbLanguageObject* DistributionContinuous::executeOperationSimple( const std::string& name, Environment* args ) {
 
     if ( name == "cdf" ) {
 
-        return RbPtr<RbLanguageObject>( new RealPos( cdf( RbPtr<const RbLanguageObject>( (*args)[1]->getValue() ) ) ) );
+        return new RealPos( cdf( (*args)[1]->getValue() ) );
     }
     else if ( name == "quantile" ) {
 
-        RbPtr<RbLanguageObject> quant( quantile( static_cast<const Real*>( (const RbLanguageObject*)(*args)[1]->getValue() )->getValue() ) );
-
-        return quant;
+        return quantile( static_cast<const Real*>( (*args)[1]->getValue() )->getValue() );
     }
 
     return Distribution::executeOperationSimple( name, args );
@@ -63,41 +61,41 @@ const VectorString& DistributionContinuous::getClass( void ) const {
 
 
 /** Get max value of distribution */
-RbPtr<const Real> DistributionContinuous::getMax( void ) const {
+const Real* DistributionContinuous::getMax( void ) const {
 
-    return RbPtr<const Real>( new Real(RbConstants::Double::max) );
+    return new Real(RbConstants::Double::max);
 }
 
 
 /** Get min value of distribution */
-RbPtr<const Real> DistributionContinuous::getMin( void ) const {
+const Real* DistributionContinuous::getMin( void ) const {
 
-    return RbPtr<const Real>( new Real(-RbConstants::Double::max) );
+    return new Real(-RbConstants::Double::max);
 }
 
 
 /** Get method specifications */
-RbPtr<const MethodTable> DistributionContinuous::getMethods( void ) const {
+const MethodTable* DistributionContinuous::getMethods( void ) const {
 
-    static RbPtr<MethodTable> methods( new MethodTable() );
-    static RbPtr<ArgumentRules> cdfArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> quantileArgRules( new ArgumentRules() );
+    static MethodTable* methods = new MethodTable();
+    static ArgumentRules* cdfArgRules = new ArgumentRules();
+    static ArgumentRules* quantileArgRules = new ArgumentRules();
     static bool          methodsSet = false;
 
     if ( !methodsSet ) {
 
-        cdfArgRules->push_back     ( RbPtr<ArgumentRule>( new ValueRule    ( "q", RealPos_name      ) ) );
+        cdfArgRules->push_back     ( new ValueRule    ( "q", RealPos_name      ) );
 
-        quantileArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule    ( "p", RealPos_name      ) ) );
+        quantileArgRules->push_back( new ValueRule    ( "p", RealPos_name      ) );
 
-        methods->addFunction( "cdf",      RbPtr<RbFunction>( new MemberFunction( Real_name, cdfArgRules      ) ) );
-        methods->addFunction( "quantile", RbPtr<RbFunction>( new MemberFunction( Real_name, quantileArgRules ) ) );
+        methods->addFunction( "cdf",      new MemberFunction( Real_name, cdfArgRules      ) );
+        methods->addFunction( "quantile", new MemberFunction( Real_name, quantileArgRules ) );
 
-        methods->setParentTable( RbPtr<const FunctionTable>( Distribution::getMethods() ) );
+        methods->setParentTable( Distribution::getMethods() );
 
         methodsSet = true;
     }
 
-    return RbPtr<const MethodTable>( methods );
+    return methods;
 }
 

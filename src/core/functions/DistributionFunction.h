@@ -38,7 +38,7 @@ class DistributionFunction :  public RbFunction {
     public:
         enum FuncType { DENSITY, RVALUE, PROB, QUANTILE };                                                  //!< Enum specifying function type
 
-                                    DistributionFunction(RbPtr<Distribution> dist, FuncType funcType);      //!< Constructor
+                                    DistributionFunction(Distribution* dist, FuncType funcType);            //!< Constructor
                                     DistributionFunction(const DistributionFunction& x);                    //!< Copy constructor
                                    ~DistributionFunction(void);                                             //!< Destructor
 
@@ -51,17 +51,17 @@ class DistributionFunction :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // DistributionFunction functions
-        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                                           //!< Get argument rules
+        const ArgumentRules*        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type spec of return value
-        bool                        processArguments(std::vector<RbPtr<Argument> > passedArgs,
-                                                     RbPtr<VectorInteger>          matchScore=RbPtr<VectorInteger>::getNullPtr());   //!< Process args, set member variables of distribution
+        bool                        processArguments(std::vector<Argument* > passedArgs,
+                                                     VectorInteger*          matchScore=NULL);              //!< Process args, set member variables of distribution
 
 	protected:
-        RbPtr<RbLanguageObject>     executeFunction(void);                                                  //!< Execute function
+        RbLanguageObject*           executeFunction(void);                                                  //!< Execute function
 
-        RbPtr<ArgumentRules>        argumentRules;                                                          //!< Argument rules
+        ArgumentRules*              argumentRules;                                                          //!< Argument rules
         TypeSpec                    returnType;                                                             //!< Return type
-        RbPtr<Distribution>         distribution;                                                           //!< The distribution
+        Distribution*               distribution;                                                           //!< The distribution
         FuncType                    functionType;                                                           //!< Function type
     
     private:

@@ -35,17 +35,17 @@ class Func_distance :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                                 //!< Get language type of the object
         
         // Regular functions
-        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                                            //!< Get argument rules
+        const ArgumentRules*        getArgumentRules(void) const;                                            //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(void);                                                   //!< Execute function
+        RbLanguageObject*           executeFunction(void);                                                   //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
-        double                      distanceP(RbPtr<const TaxonData> td1, RbPtr<const TaxonData> td2);
-        double                      distanceJC69(RbPtr<const TaxonData> td1, RbPtr<const TaxonData> td2);
+        double                      distanceP(const TaxonData* td1, const TaxonData* td2);
+        double                      distanceJC69(const TaxonData* td1, const TaxonData* td2);
 };
 
 #endif

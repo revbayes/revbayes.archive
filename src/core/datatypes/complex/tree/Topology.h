@@ -46,35 +46,35 @@ class Topology: public ConstantMemberObject {
         std::string                         richInfo(void) const;                                                   //!< Complete info
 
         // Member variable rules
-        RbPtr<const MemberRules>            getMemberRules(void) const;                                             //!< Get member rules
+        const MemberRules*                  getMemberRules(void) const;                                             //!< Get member rules
 
         // Member method inits
-        RbPtr<const MethodTable>            getMethods(void) const;                                                 //!< Get methods
+        const MethodTable*                  getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions
-        RbPtr<TopologyNode>                 cloneTree(RbPtr<const TopologyNode> parent);                                  //!< Deep copy of the nodes
+        TopologyNode*                       cloneTree(const TopologyNode& parent);                                  //!< Deep copy of the nodes
         bool                                getIsBinary(void) const { return isBinary; }                            //!< Is the tree rooted
         bool                                getIsRooted(void) const { return isRooted; }                            //!< Is the tree rooted
-        std::vector<RbPtr<TopologyNode> >   getNodes(void) const { return nodes; }                                  //!< Get a pointer to the nodes in the tree
+        std::vector<TopologyNode* >         getNodes(void) const { return nodes; }                                  //!< Get a pointer to the nodes in the tree
         size_t                              getNumberOfInteriorNodes(void) const;                                   //!< Get the number of nodes in the tree
         size_t                              getNumberOfNodes(void) const { return nodes.size(); }                   //!< Get the number of nodes in the tree
         size_t                              getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the tree
-        RbPtr<const TopologyNode>           getInteriorNode(int indx) const;                                        //!< Get a pointer to interior node i
-        RbPtr<const TopologyNode>           getRoot(void) const;                                                    //!< Get a pointer to the root node of the tree
-        RbPtr<const TopologyNode>           getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
+        const TopologyNode*                 getInteriorNode(int indx) const;                                        //!< Get a pointer to interior node i
+        const TopologyNode*                 getRoot(void) const;                                                    //!< Get a pointer to the root node of the tree
+        const TopologyNode*                 getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
         void                                setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
-        void                                setRoot(RbPtr<TopologyNode> r);                                         //!< Set the root and bootstrap the tree from it
+        void                                setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the tree from it
 
 protected:
-        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
+        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment* args);     //!< Execute method
     
 private:
         static const TypeSpec               typeSpec;
-        void                                fillNodesByPreorderTraversal(RbPtr<TopologyNode> node);                 //!< fill the nodes vector by a preorder traversal recursively starting with this node.
-        void                                fillNodesByPhylogeneticTraversal(RbPtr<TopologyNode> node);             //!< fill the nodes vector by a preorder traversal recursively starting with this node.
+        void                                fillNodesByPreorderTraversal(TopologyNode* node);                       //!< fill the nodes vector by a preorder traversal recursively starting with this node.
+        void                                fillNodesByPhylogeneticTraversal(TopologyNode* node);                   //!< fill the nodes vector by a preorder traversal recursively starting with this node.
     
-        std::vector<RbPtr<TopologyNode> >   nodes;                                                                  //!< Vector of pointers to all nodes
-        RbPtr<TopologyNode>                 root;                                                                   //!< Pointer to the root node
+        std::vector<TopologyNode* >         nodes;                                                                  //!< Vector of pointers to all nodes
+        TopologyNode*                       root;                                                                   //!< Pointer to the root node
         bool                                isRooted;                                                               //!< Is the topology rooted?
         bool                                isBinary;                                                               //!< Is the topology binary?
 };

@@ -49,12 +49,12 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( void ) {
+RbLanguageObject* Func_readCharacterData::executeFunction( void ) {
 
     // get the information from the arguments for reading the file
-    RbPtr<RbString> fn( static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() ) );
+    RbString* fn = static_cast<RbString*>( (*args)[0]->getValue() );
     
-    RbPtr<Environment> xyz = getArguments(); 
+    Environment* xyz = getArguments(); 
     xyz->richInfo();
 
     // check that the file/path name has been correctly specified
@@ -143,7 +143,7 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( void ) {
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<RbPtr<CharacterData> > m = reader.readMatrices( fileMap );
+    std::vector<CharacterData* > m = reader.readMatrices( fileMap );
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
@@ -198,25 +198,25 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( void ) {
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-        RbPtr<DagNodeContainer> retList( new DagNodeContainer(m.size()) );
+        DagNodeContainer* retList = new DagNodeContainer( m.size() );
         size_t index = 0;
-        for (std::vector<RbPtr<CharacterData> >::iterator it = m.begin(); it != m.end(); it++)
+        for (std::vector<CharacterData*>::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, RbPtr<RbObject>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( (*it) ) ) ) ) ) );
+            retList->setElement( index, new Variable( new ConstantNode( *it ) ) );
             index++;
             }
-        return RbPtr<RbLanguageObject>( retList );
+        return retList;
         throw RbException("Wanted to create a List of Alignment but List does not exist anymore. See Func_readAlignment");
         }
     else if ( m.size() == 1 ) 
         {
-        return RbPtr<RbLanguageObject>( m[0] );
+        return m[0];
         }
     else
         {
         // Return null object
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return NULL;
         }
 }
 
@@ -244,18 +244,18 @@ void Func_readCharacterData::formatError(RbFileManager& fm, std::string& errorSt
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_readCharacterData::getArgumentRules( void ) const {
+const ArgumentRules* Func_readCharacterData::getArgumentRules( void ) const {
     
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool rulesSet = false;
     
     if (!rulesSet) 
         {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file",    RbString_name ) ) );
+        argumentRules->push_back( new ValueRule( "file",    RbString_name ) );
         rulesSet = true;
         }
             
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

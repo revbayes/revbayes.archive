@@ -75,11 +75,11 @@ class Func_readCharacterData :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                                           //!< Get argument rules
+        const ArgumentRules*        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
   
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(void);                                                  //!< Execute function
+        RbLanguageObject*           executeFunction(void);                                                  //!< Execute function
 
     private:
         void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files

@@ -37,13 +37,15 @@
 const TypeSpec MemberFunction::typeSpec(MemberFunction_name);
 
 /** Constructor */
-MemberFunction::MemberFunction(const TypeSpec retType, const RbPtr<ArgumentRules> argRules) : 
+MemberFunction::MemberFunction(const TypeSpec retType, ArgumentRules* argRules) : 
     RbFunction(), argumentRules(argRules), object(NULL), returnType(retType) {
 
 }
 
 MemberFunction::~MemberFunction() {
-    
+    if (object != NULL) {
+        delete object;
+    }
 }
 
 /** Brief info on the function */
@@ -64,7 +66,7 @@ MemberFunction* MemberFunction::clone(void) const {
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbPtr<RbLanguageObject> MemberFunction::execute( void ) {
+RbLanguageObject* MemberFunction::execute( void ) {
 
     return object->executeOperation( funcName, args );
 
@@ -80,9 +82,9 @@ const VectorString& MemberFunction::getClass(void) const {
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> MemberFunction::getArgumentRules(void) const {
+const ArgumentRules* MemberFunction::getArgumentRules(void) const {
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 
@@ -116,8 +118,11 @@ std::string MemberFunction::richInfo(void) const {
     return o.str();
 }
 
-void MemberFunction::setMemberObject(RbPtr<MemberObject> obj) {
+void MemberFunction::setMemberObject(MemberObject* obj) {
     
+    if (object != NULL) {
+        delete object;
+    }
     object = obj;
 }
 

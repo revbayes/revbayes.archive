@@ -38,11 +38,11 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
-    RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
+    const ArgumentRules*        getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 
 protected:
-    RbPtr<RbLanguageObject>     executeFunction(void);                              //!< Execute operation
+    RbLanguageObject*           executeFunction(void);                              //!< Execute operation
 
 private:
     static const TypeSpec       typeSpec;	
@@ -71,31 +71,31 @@ Func_sort<valType>* Func_sort<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-RbPtr<RbLanguageObject> Func_sort<valType>::executeFunction( void ) {
+RbLanguageObject* Func_sort<valType>::executeFunction( void ) {
     
-    RbPtr<valType> val( static_cast<valType*>( (*args)[0]->getValue()->clone() ) );    
+    valType* val = static_cast<valType*>( (*args)[0]->getValue()->clone() );    
     if(val->size() == 0) 
-        return RbPtr<RbLanguageObject>( val );
+        return val;
     val->sort();
     
-    return RbPtr<RbLanguageObject>( val );
+    return val;
 }
 
 
 /** Get argument rules */
 template <typename valType>
-RbPtr<const ArgumentRules> Func_sort<valType>::getArgumentRules( void ) const {
+const ArgumentRules* Func_sort<valType>::getArgumentRules( void ) const {
     
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", valType() .getTypeSpec() ) ) );
+        argumentRules->push_back( new ValueRule( "", valType() .getTypeSpec() ) );
         rulesSet = true;
     }
     
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

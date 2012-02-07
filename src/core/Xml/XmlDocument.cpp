@@ -21,17 +21,17 @@ XmlDocument::XmlDocument() {
  * If there is such an element, its pointer in out hash map will be overwritten!
  *
  */
-void XmlDocument::addXmlElement(const RbPtr<XmlElement> element) {
+void XmlDocument::addXmlElement(XmlElement* element) {
     elements.push_back(element);
-    entries.insert(std::pair<uintptr_t, const RbPtr<XmlElement> >(element->getId(),element) );
+    entries.insert(std::pair<uintptr_t, XmlElement*>(element->getId(),element) );
 }
 
-RbPtr<const XmlElement> XmlDocument::getFirstXmlElement() const {
-    return RbPtr<const XmlElement>( *(elements.begin()) );
+const XmlElement* XmlDocument::getFirstXmlElement() const {
+    return *(elements.begin());
 }
 
-RbPtr<const XmlElement> XmlDocument::getXmlElement(uintptr_t identifier) const {
-    return RbPtr<const XmlElement>( entries.find(identifier)->second );
+const XmlElement* XmlDocument::getXmlElement(uintptr_t identifier) const {
+    return entries.find(identifier)->second;
 }
 
 bool XmlDocument::hasXmlElementWithId(uintptr_t identifier) const {
@@ -42,7 +42,7 @@ std::string XmlDocument::print() {
     // create a stream for the output
     std::stringstream out;
     // write every element into the stream
-    for (std::vector<RbPtr<XmlElement> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+    for (std::vector<XmlElement*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
         (*it)->writeToStream(out);
         out << std::endl;
     }

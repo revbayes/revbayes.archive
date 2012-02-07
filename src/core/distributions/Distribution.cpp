@@ -30,26 +30,24 @@
 
 
 /** Constructor with inheritance for member rules */
-Distribution::Distribution( RbPtr<const MemberRules> memberRules ) : ConstantMemberObject( memberRules ) {
+Distribution::Distribution( const MemberRules* memberRules ) : ConstantMemberObject( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> Distribution::executeOperationSimple( const std::string& name, const RbPtr<Environment>& args ) {
+RbLanguageObject* Distribution::executeOperationSimple( const std::string& name, Environment* args ) {
 
     if ( name == "lnPdf" ) {
 
-        return RbPtr<RbLanguageObject>( new RealPos( lnPdf( (const RbLanguageObject*)(*args)[1]->getValue() ) ) );
+        return new RealPos( lnPdf( (*args)[1]->getValue() ) );
     }
     else if ( name == "pdf" ) {
 
-        return RbPtr<RbLanguageObject>( new RealPos( pdf  ( (const RbLanguageObject*)(*args)[1]->getValue() ) ) );
+        return new RealPos( pdf  ( (*args)[1]->getValue() ) );
     }
     else if ( name == "rv" ) {
 
-        RbPtr<RbLanguageObject> draw = rv();
-
-        return draw;
+        return rv();
     }
     else
         return MemberObject::executeOperationSimple( name, args );
@@ -65,29 +63,29 @@ const VectorString& Distribution::getClass( void ) const {
 
 
 /** Get methods */
-RbPtr<const MethodTable> Distribution::getMethods( void ) const {
+const MethodTable* Distribution::getMethods( void ) const {
 
-    static RbPtr<MethodTable> methods( new MethodTable() );
-    static RbPtr<ArgumentRules>    lnPdfArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules>    pdfArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules>    rvArgRules( new ArgumentRules() );
+    static MethodTable* methods = new MethodTable();
+    static ArgumentRules*    lnPdfArgRules = new ArgumentRules();
+    static ArgumentRules*    pdfArgRules = new ArgumentRules();
+    static ArgumentRules*    rvArgRules = new ArgumentRules();
     static bool             methodsSet = false;
 
     if ( !methodsSet ) {
 
-        lnPdfArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "x", RbObject_name ) ) );
+        lnPdfArgRules->push_back( new ValueRule( "x", RbObject_name ) );
 
-        pdfArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "x", RbObject_name ) ) );
+        pdfArgRules->push_back( new ValueRule( "x", RbObject_name ) );
 
-        methods->addFunction( "lnPdf", RbPtr<RbFunction>( new MemberFunction( Real_name    , lnPdfArgRules ) ) );
-        methods->addFunction( "pdf",   RbPtr<RbFunction>( new MemberFunction( Real_name    , pdfArgRules   ) ) );
-        methods->addFunction( "rv",    RbPtr<RbFunction>( new MemberFunction( RbObject_name, rvArgRules    ) ) );
+        methods->addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules ) );
+        methods->addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules   ) );
+        methods->addFunction( "rv",    new MemberFunction( RbObject_name, rvArgRules    ) );
 
-        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
+        methods->setParentTable( MemberObject::getMethods() );
 
         methodsSet = true;
     }
 
-    return RbPtr<const MethodTable>( methods );
+    return methods;
 }
 

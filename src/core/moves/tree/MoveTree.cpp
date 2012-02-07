@@ -31,7 +31,7 @@
 
 
 /** Constructor for parser use */
-MoveTree::MoveTree( RbPtr<const MemberRules> memberRules) : Move(memberRules) {
+MoveTree::MoveTree( const MemberRules* memberRules) : Move(memberRules) {
 
 }
 
@@ -56,32 +56,32 @@ const VectorString& MoveTree::getClass(void) const {
 
 
 /** Return member rules */
-RbPtr<const MemberRules> MoveTree::getMemberRules( void ) const {
+const MemberRules* MoveTree::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) {
         
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "tree", TypeSpec(TreePlate_name) ) ) );
+        memberRules->push_back( new ValueRule ( "tree", TypeSpec(TreePlate_name) ) );
 
         /* Inherit weight from Move, put it after topology and tree variables */
-        RbPtr<const MemberRules> inheritedRules = MoveTree::getMemberRules();
+        const MemberRules* inheritedRules = MoveTree::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
         rulesSet = true;
     }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
 /**
  * We provide a convenience function in the base class for retrieving the topology.
  */
-RbPtr<const Topology> MoveTree::getTopology( void ) const {
+const Topology* MoveTree::getTopology( void ) const {
 
-    RbPtr<const TreePlate> tree( static_cast<const TreePlate*>( (const RbObject*)(*members)["tree"]->getValue() ) );
+    const TreePlate* tree = static_cast<const TreePlate*>( (*members)["tree"]->getValue() );
     
     return tree->getTopology();
 }

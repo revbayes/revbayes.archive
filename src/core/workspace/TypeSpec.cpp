@@ -21,7 +21,7 @@
 
 
 /** Complete constructor */
-TypeSpec::TypeSpec(const std::string &objType, RbPtr<TypeSpec> elemType) : baseType(objType) {
+TypeSpec::TypeSpec(const std::string &objType, TypeSpec* elemType) : baseType(objType) {
     elementType = elemType;
     
     type = baseType;
@@ -37,10 +37,10 @@ TypeSpec::TypeSpec(const TypeSpec& ts) : baseType(ts.baseType) {
     
     // make a independent copy of the element type
     if (ts.elementType != NULL) {
-        elementType = RbPtr<TypeSpec>( new TypeSpec(*ts.elementType) );
+        elementType = new TypeSpec(*ts.elementType);
     }
     else {
-        elementType = RbPtr<TypeSpec>::getNullPtr();
+        elementType = NULL;
     }
     
     type = baseType;
@@ -57,7 +57,12 @@ TypeSpec& TypeSpec::operator=( const TypeSpec& x ) {
     
     if ( this != &x ) {
         
-        elementType = RbPtr<TypeSpec>( new TypeSpec(*x.elementType) );
+        if (x.elementType != NULL) {
+            elementType = new TypeSpec(*x.elementType);
+        }
+        else {
+            elementType = NULL;
+        }
     }
     
     return ( *this );

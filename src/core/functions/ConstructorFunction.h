@@ -33,7 +33,8 @@ const std::string ConstructorFunction_name = "constructor function";
 class ConstructorFunction :  public RbFunction {
 
     public:
-                                                ConstructorFunction(RbPtr<MemberObject> obj);                                   //!< Object constructor
+                                                ConstructorFunction(MemberObject* obj);                                         //!< Object constructor
+    virtual                                    ~ConstructorFunction();
 
         // Basic utility functions
         ConstructorFunction*                    clone(void) const;                                                              //!< Clone the object
@@ -41,14 +42,14 @@ class ConstructorFunction :  public RbFunction {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Regular functions
-        RbPtr<const ArgumentRules>              getArgumentRules(void) const;                                                   //!< Get argument rules
+        const ArgumentRules*                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
 
 	protected:
-        RbPtr<RbLanguageObject>                 executeFunction(void);                                                          //!< Execute function
-        RbPtr<const ArgumentRules>              argRules;                                                                       //!< Member rules converted to reference rules
-        RbPtr<MemberObject>                     templateObject;                                                                 //!< The template object
+        RbLanguageObject*                       executeFunction(void);                                                          //!< Execute function
+        const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
+        MemberObject*                           templateObject;                                                                 //!< The template object
     
     private:
         static const TypeSpec                   typeSpec;

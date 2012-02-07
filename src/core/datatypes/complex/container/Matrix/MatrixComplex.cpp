@@ -44,7 +44,7 @@ MatrixComplex::MatrixComplex(void) : Matrix(Complex_name) {
 MatrixComplex::MatrixComplex(const size_t nRows, const size_t nCols, std::complex<double> x) : Matrix(Complex_name) {
 
     for ( size_t i = 0; i < nRows; i++ )
-        elements.push_back( RbPtr<RbLanguageObject>( new VectorComplex( nCols, x ) ) );
+        elements.push_back( new VectorComplex( nCols, x ) );
 }
 
 

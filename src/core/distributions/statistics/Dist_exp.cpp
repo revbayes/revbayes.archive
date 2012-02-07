@@ -50,10 +50,10 @@ Dist_exp::Dist_exp( void ) : DistributionContinuous( getMemberRules() ) {
  * @return      Cumulative probability
  *
  */
-double Dist_exp::cdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_exp::cdf( const RbLanguageObject* value ) {
 
-    const double lambda = static_cast<      RealPos*>( (RbObject*)getMemberValue("rate") )->getValue();
-    const double q      = static_cast<const RealPos*>( (const RbLanguageObject*)value            )->getValue();
+    const double lambda = static_cast<      RealPos*>( getMemberValue("rate") )->getValue();
+    const double q      = static_cast<const RealPos*>( value                  )->getValue();
 
     return 1.0 - std::exp( - lambda * q );
 }
@@ -74,19 +74,19 @@ const VectorString& Dist_exp::getClass( void ) const {
 }
 
 /** Get member variable rules */
-RbPtr<const MemberRules> Dist_exp::getMemberRules( void ) const {
+const MemberRules* Dist_exp::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
 
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "rate", RealPos_name ) ) );
+        memberRules->push_back( new ValueRule( "rate", RealPos_name ) );
 
         rulesSet = true;
     }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -114,7 +114,7 @@ const TypeSpec& Dist_exp::getVariableType( void ) const {
  */
 double Dist_exp::lnPdf( const RbLanguageObject *value ) const {
     
-    double lambda = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "rate" ) )->getValue();
+    double lambda = static_cast<const RealPos*>( getMemberValue( "rate" ) )->getValue();
     double x      = static_cast<const RealPos*>( value )->getValue();
 
     return std::log(lambda) -lambda * x;
@@ -132,7 +132,7 @@ double Dist_exp::lnPdf( const RbLanguageObject *value ) const {
  */
 double Dist_exp::pdf( const RbLanguageObject *value ) const {
 
-    double lambda = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "rate" ) )->getValue();
+    double lambda = static_cast<const RealPos*>( getMemberValue( "rate" ) )->getValue();
     double x      = static_cast<const RealPos*>( value )->getValue();
 
     return lambda * std::exp( -lambda * x );
@@ -149,11 +149,11 @@ double Dist_exp::pdf( const RbLanguageObject *value ) const {
  * @return      Quantile
  *
  */
-RbPtr<Real> Dist_exp::quantile(const double p) {
+Real* Dist_exp::quantile(const double p) {
 
-    double lambda = static_cast<RealPos*>( (RbObject*)getMemberValue( "rate" ) )->getValue();
+    double lambda = static_cast<RealPos*>( getMemberValue( "rate" ) )->getValue();
 
-    return RbPtr<Real>( new RealPos( -( 1.0 / lambda ) * std::log( 1.0 - p ) ) );
+    return new RealPos( -( 1.0 / lambda ) * std::log( 1.0 - p ) );
 }
 
 
@@ -165,13 +165,13 @@ RbPtr<Real> Dist_exp::quantile(const double p) {
  *
  * @return      Random draw from exponential distribution
  */
-RbPtr<RbLanguageObject> Dist_exp::rv( void ) {
+RbLanguageObject* Dist_exp::rv( void ) {
 
-    double lambda = static_cast<RealPos*>( (RbObject*)getMemberValue("rate") )->getValue();
-    RbPtr<RandomNumberGenerator> rng    = GLOBAL_RNG;
+    double lambda = static_cast<RealPos*>( getMemberValue("rate") )->getValue();
+    RandomNumberGenerator* rng    = GLOBAL_RNG;
 
     double u = rng->uniform01();
 
-    return RbPtr<RbLanguageObject>(new RealPos( -( 1.0 / lambda ) * std::log( u ) ) );
+    return new RealPos( -( 1.0 / lambda ) * std::log( u ) );
 }
 

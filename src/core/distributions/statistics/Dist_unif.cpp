@@ -53,11 +53,11 @@ Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()) {
  * @return      Cumulative probability
  *
  */
-double Dist_unif::cdf(RbPtr<const RbLanguageObject> value) {
+double Dist_unif::cdf(const RbLanguageObject* value) {
 
-    double min = static_cast<      Real*>( (      RbObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<      Real*>( (      RbObject*)getMemberValue("max") )->getValue();
-    double q   = static_cast<const Real*>( (const RbLanguageObject*)value                 )->getValue();
+    double min = static_cast<      Real*>( getMemberValue("min") )->getValue();
+    double max = static_cast<      Real*>( getMemberValue("max") )->getValue();
+    double q   = static_cast<const Real*>( value                 )->getValue();
 
     if ( q < min )
         return 0.0;
@@ -84,34 +84,34 @@ const VectorString& Dist_unif::getClass(void) const {
 
 
 /** Get max value of distribution */
-RbPtr<const Real> Dist_unif::getMax( void ) const {
+const Real* Dist_unif::getMax( void ) const {
 
-    return RbPtr<const Real>( static_cast<const Real*>( (const RbObject*)getMemberValue("max") ) );
+    return static_cast<const Real*>( getMemberValue("max") );
 }
 
 
 /** Get member variable rules */
-RbPtr<const MemberRules> Dist_unif::getMemberRules(void) const {
+const MemberRules* Dist_unif::getMemberRules(void) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) {
 
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "min", Real_name ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "max", Real_name ) ) );
+        memberRules->push_back( new ValueRule( "min", Real_name ) );
+        memberRules->push_back( new ValueRule( "max", Real_name ) );
 
         rulesSet = true;
     }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
 /** Get min value of distribution */
-RbPtr<const Real> Dist_unif::getMin( void ) const {
+const Real* Dist_unif::getMin( void ) const {
 
-    return RbPtr<const Real>( static_cast<const Real*>( (const RbObject*)getMemberValue("min") ) );
+    return static_cast<const Real*>( getMemberValue("min") );
 }
 
 
@@ -182,12 +182,12 @@ double Dist_unif::pdf(const RbLanguageObject *value) const {
  * @return      Quantile
  *
  */
-RbPtr<Real> Dist_unif::quantile(const double p) {
+Real* Dist_unif::quantile(const double p) {
     
-    double min = static_cast<Real*>( (RbObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<Real*>( (RbObject*)getMemberValue("max") )->getValue();
+    double min = static_cast<Real*>( getMemberValue("min") )->getValue();
+    double max = static_cast<Real*>( getMemberValue("max") )->getValue();
 
-    return RbPtr<Real>( new Real( min + ( max - min ) * p ) );
+    return new Real( min + ( max - min ) * p );
 }
 
 
@@ -199,15 +199,15 @@ RbPtr<Real> Dist_unif::quantile(const double p) {
  *
  * @return      Random draw from uniform distribution
  */
-RbPtr<RbLanguageObject> Dist_unif::rv(void) {
+RbLanguageObject* Dist_unif::rv(void) {
     
-    double min = static_cast<const Real*>( (const RbObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<const Real*>( (const RbObject*)getMemberValue("max") )->getValue();
-    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
+    double min = static_cast<const Real*>( getMemberValue("min") )->getValue();
+    double max = static_cast<const Real*>( getMemberValue("max") )->getValue();
+    RandomNumberGenerator* rng = GLOBAL_RNG;
 
     double u = rng->uniform01();
 
-    return RbPtr<RbLanguageObject>( new Real( min + ( max - min ) * u ) );
+    return new Real( min + ( max - min ) * u );
 }
 
 

@@ -39,13 +39,13 @@ const std::string SyntaxVariable_name = "Syntax Variable";
 class SyntaxVariable : public SyntaxElement {
 
     public:
-                                            SyntaxVariable(RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxElement> > > indx);                          //!< Global variable
-                                            SyntaxVariable(RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<std::list<RbPtr<SyntaxElement> > > indx);           //!< Global variable expression
-                                            SyntaxVariable(RbPtr<SyntaxVariable> var, RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxElement> > > indx);     //!< Member variable 
-                                            SyntaxVariable(RbPtr<SyntaxVariable> var, RbPtr<SyntaxFunctionCall> fxnCall,
-                                                   RbPtr<std::list<RbPtr<SyntaxElement> > > indx);                                                      //!< Member variable expression
-                                            SyntaxVariable(const SyntaxVariable& x);                                                                    //!< Copy constructor
-	    virtual                            ~SyntaxVariable(void);                                                                                       //!< Destructor deletes variable, identifier and index
+                                            SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);                          //!< Global variable
+                                            SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);           //!< Global variable expression
+                                            SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx);     //!< Member variable 
+                                            SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall,
+                                                           std::list<SyntaxElement*>* indx);                                        //!< Member variable expression
+                                            SyntaxVariable(const SyntaxVariable& x);                                                //!< Copy constructor
+	    virtual                            ~SyntaxVariable(void);                                                                   //!< Destructor deletes variable, identifier and index
 
         // Assignment operator
         SyntaxVariable&                     operator=(const SyntaxVariable& x);                                                     //!< Assignment operator
@@ -58,18 +58,19 @@ class SyntaxVariable : public SyntaxElement {
         void                                print(std::ostream& o) const;                                                           //!< Print info about object
 
         // Regular functions
-        RbPtr<RbString>                     getIdentifier(void) { return identifier; }                                              //!< Get identifier
-        VectorNatural                       computeIndex(const RbPtr<Environment>& env);                                            //!< Evaluate index
-        std::string                         getFullName(const RbPtr<Environment>& env) const;                                       //!< Get full name, with indices and base obj
-        VariableSlot*                       createVariable(const RbPtr<Environment>& env);                                          //!< Get semantic value
-        RbPtr<Variable>                     evaluateContent(const RbPtr<Environment>& env);                                         //!< Get semantic value
+        RbString*                           getIdentifier(void) { return identifier; }                                              //!< Get identifier
+        VectorNatural                       computeIndex(Environment& env);                                                         //!< Evaluate index
+        std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
+        VariableSlot*                       createVariable(Environment& env);                                                       //!< Get semantic value
+        Variable*                           evaluateContent(void);                                                                  //!< Get semantic value
+        Variable*                           evaluateContent(Environment& env);                                                      //!< Get semantic value
         bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
 
     protected:
-        RbPtr<RbString>                     identifier;                                                                             //!< The name of the variable, if identified by name
-        RbPtr<SyntaxFunctionCall>           functionCall;                                                                           //!< Function call giving a reference to a variable (we hope)
-        RbPtr<std::list<RbPtr<SyntaxElement> > >  index;                                                                                  //!< Vector of int indices to variable element
-        RbPtr<SyntaxVariable>               baseVariable;                                                                           //!< Base variable (pointing to a composite node)
+        RbString*                           identifier;                                                                             //!< The name of the variable, if identified by name
+        SyntaxFunctionCall*                 functionCall;                                                                           //!< Function call giving a reference to a variable (we hope)
+        std::list<SyntaxElement*>*          index;                                                                                  //!< Vector of int indices to variable element
+        SyntaxVariable*                     baseVariable;                                                                           //!< Base variable (pointing to a composite node)
     
     private:
         static const TypeSpec       typeSpec;

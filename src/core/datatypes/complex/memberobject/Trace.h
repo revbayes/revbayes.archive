@@ -29,7 +29,7 @@ class Trace : public MemberObject {
     Trace(void);
 //    Trace(int capacity);
     Trace(const Trace& t);                                                                        //!< copy constructor
-    Trace(RbPtr<const XmlDocument> doc, RbPtr<const XmlElementAttributed> element);
+    Trace(const XmlDocument* doc, const XmlElementAttributed* element);
     ~Trace();
     
     // overloaded functions from RbObject
@@ -38,7 +38,7 @@ class Trace : public MemberObject {
     const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
     void                        printValue(std::ostream& o) const;                              //!< Print value for user
     std::string                 richInfo(void) const;                                           //!< Complete info about object
-    RbPtr<XmlElement>           encode(RbPtr<XmlDocument> doc, const std::string& name);
+    XmlElement*                 encode(XmlDocument* doc, const std::string& name);
     
     void                        addObject(double d);
     double                      objectAt(int index)                             { return values.at(index); }

@@ -31,9 +31,9 @@ const std::string SyntaxClassDef_name = "Class definition";
 class SyntaxClassDef : public SyntaxElement {
 
     public:
-                                    SyntaxClassDef(RbPtr<RbString>          name,
-                                                   RbPtr<RbString>          base,
-                                                   RbPtr<std::list<RbPtr<SyntaxElement> > > defs);    //!< Standard constructor
+                                    SyntaxClassDef(RbString*          name,
+                                                   RbString*          base,
+                                                   std::list<SyntaxElement*>* defs);    //!< Standard constructor
                                     SyntaxClassDef(const SyntaxClassDef& x);            //!< Copy constructor
 	    virtual                    ~SyntaxClassDef();                                   //!< Destructor
 
@@ -48,12 +48,12 @@ class SyntaxClassDef : public SyntaxElement {
         void                        print(std::ostream& o) const;                       //!< Print info about object
 
         // Regular functions
-        RbPtr<Variable>             evaluateContent(const RbPtr<Environment>& env);     //!< Get semantic value
+        Variable*                   evaluateContent(void);                              //!< Get semantic value
 
     protected:
-        RbPtr<RbString>                             className;                                          //!< The name of the class
-        RbPtr<RbString>                             baseClass;                                          //!< The name of the base class
-        RbPtr<std::list<RbPtr<SyntaxElement> > >    definitions;                                        //!< Defined member variables and functions
+        RbString*                   className;                                          //!< The name of the class
+        RbString*                   baseClass;                                          //!< The name of the base class
+        std::list<SyntaxElement*>*  definitions;                                        //!< Defined member variables and functions
     
     private:
         static const TypeSpec       typeSpec;

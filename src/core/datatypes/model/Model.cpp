@@ -74,10 +74,10 @@ Model::Model( const Model& x ) : ConstantMemberObject( x ) {
     for ( std::map<const DAGNode*, RbPtr<DAGNode> >::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
 
         const DAGNode *theOrgNode = (*i).first;
-        RbPtr<DAGNode> theOldNode = (*i).second;
+        const RbPtr<DAGNode>& theOldNode = (*i).second;
         
         // find the new node in our temporary map
-        RbPtr<DAGNode> theNewNode = newNodes.find(theOldNode)->second;
+        const RbPtr<DAGNode>& theNewNode = newNodes.find(theOldNode)->second;
 
         // Insert in direct access vector
         dagNodes.push_back( theNewNode );
@@ -153,13 +153,13 @@ const VectorString& Model::getClass(void) const {
 }
 
 
-std::vector<RbPtr<DAGNode> > Model::getClonedDagNodes(std::vector<RbPtr<DAGNode> > &orgNodes) const {
+std::vector<DAGNode*> Model::getClonedDagNodes(std::vector<DAGNode*> &orgNodes) const {
 
     // create a vector for the cloned nodes
-    std::vector<RbPtr<DAGNode> > clones;
+    std::vector<DAGNode*> clones;
     
     // find each original node and add it to the map
-    for (std::vector<RbPtr<DAGNode> >::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
+    for (std::vector<DAGNode*>::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
         std::map<const DAGNode*, RbPtr<DAGNode> >::const_iterator orgClonePair = nodesMap.find((*it));
         if (orgClonePair != nodesMap.end()) {
             clones.push_back( orgClonePair->second );
@@ -174,19 +174,19 @@ std::vector<RbPtr<DAGNode> > Model::getClonedDagNodes(std::vector<RbPtr<DAGNode>
 }
 
 
-RbPtr<const MemberRules> Model::getMemberRules(void) const {
+const MemberRules* Model::getMemberRules(void) const {
     
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) {
         
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "sinknode"  , RbObject_name ) ) );
+        memberRules->push_back( new ValueRule( "sinknode"  , RbObject_name ) );
         
         rulesSet = true;
     }
     
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -283,7 +283,7 @@ std::string Model::richInfo(void) const {
 }
 
 /** Set a member variable */
-void Model::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
+void Model::setMemberVariable(const std::string& name, Variable* var) {
     RbPtr<DAGNode> theNode = var->getDagNode();
     if (name == "sinknode") {
         // test whether var is a DagNodeContainer
@@ -309,9 +309,9 @@ void Model::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             // do not add myself into the list of nodes
             if (theNewNode->isType(DeterministicNode_name)) {
                 RbPtr<DeterministicNode> theDetNode( dynamic_cast<DeterministicNode*>((DAGNode*)theNewNode) );
-                RbPtr<RbFunction> theFunction = theDetNode->getFunction();
+                RbFunction* theFunction = theDetNode->getFunction();
                 if (theFunction->isType(ConstructorFunction_name)) {
-                    RbPtr<ConstructorFunction> theConstructorFunction( dynamic_cast<ConstructorFunction*>((RbFunction*)theFunction) );
+                    ConstructorFunction* theConstructorFunction = dynamic_cast<ConstructorFunction*>( theFunction );
                     if (theConstructorFunction->getTemplateObjectType() == Model_name) {
                         // remove the dag node holding the model constructor function from the dag
                         std::set<RbPtr<DAGNode> > parents = theDetNode->getParents();

@@ -55,9 +55,9 @@ RateMatrix::RateMatrix(void) : MemberObject(getMemberRules()) {
     areEigensDirty       = true;
     reversibilityChecked = false;
     isReversible         = false;
-    theRateMatrix        = RbPtr<MatrixReal>( new MatrixReal(numStates, numStates, 0.0) );
-    theStationaryFreqs   = RbPtr<Simplex>( new Simplex(numStates) );
-    theEigenSystem       = RbPtr<EigenSystem>( new EigenSystem(theRateMatrix) );
+    theRateMatrix        = new MatrixReal(numStates, numStates, 0.0);
+    theStationaryFreqs   = new Simplex(numStates);
+    theEigenSystem       = new EigenSystem(theRateMatrix);
     c_ijk.resize(numStates*numStates*numStates);
     cc_ijk.resize(numStates*numStates*numStates);
 }
@@ -70,9 +70,9 @@ RateMatrix::RateMatrix(size_t n) : MemberObject(getMemberRules()) {
     areEigensDirty       = true;
     reversibilityChecked = false;
     isReversible         = false;
-    theRateMatrix        = RbPtr<MatrixReal>( new MatrixReal(numStates, numStates, 0.0) );
-    theStationaryFreqs   = RbPtr<Simplex>( new Simplex(numStates) );
-    theEigenSystem       = RbPtr<EigenSystem>( new EigenSystem(theRateMatrix) );
+    theRateMatrix        = new MatrixReal(numStates, numStates, 0.0);
+    theStationaryFreqs   = new Simplex(numStates);
+    theEigenSystem       = new EigenSystem(theRateMatrix);
     c_ijk.resize(numStates*numStates*numStates);
     cc_ijk.resize(numStates*numStates*numStates);
 }
@@ -85,9 +85,9 @@ RateMatrix::RateMatrix(const RateMatrix& m) {
     areEigensDirty       = m.areEigensDirty;
     reversibilityChecked = m.reversibilityChecked;
     isReversible         = m.isReversible;
-    theRateMatrix        = RbPtr<MatrixReal>( m.theRateMatrix->clone() );
-    theStationaryFreqs   = RbPtr<Simplex>( m.theStationaryFreqs->clone() );
-    theEigenSystem       = RbPtr<EigenSystem>( m.theEigenSystem->clone() );
+    theRateMatrix        = m.theRateMatrix->clone();
+    theStationaryFreqs   = m.theStationaryFreqs->clone();
+    theEigenSystem       = m.theEigenSystem->clone();
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
     theEigenSystem->setRateMatrixPtr(theRateMatrix);
@@ -101,16 +101,16 @@ RateMatrix::~RateMatrix(void) {
 
 
 /** Index operator (const) */
-RbPtr<const VectorReal> RateMatrix::operator[]( const size_t i ) const {
+const VectorReal* RateMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates )
         throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
-    return RbPtr<const VectorReal>( (*theRateMatrix)[i] );
+    return (*theRateMatrix)[i];
 }
 
 
 /** Index operator */
-RbPtr<VectorReal> RateMatrix::operator[]( const size_t i ) {
+VectorReal* RateMatrix::operator[]( const size_t i ) {
 
     if ( i >= numStates )
         throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
@@ -229,7 +229,7 @@ void RateMatrix::calculateStationaryFrequencies(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix::calculateTransitionProbabilities(double t, RbPtr<TransitionProbabilityMatrix> P) const {
+void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix* P) const {
 
 	if ( theEigenSystem->isComplex() == false )
 		tiProbsEigens(t, P);
@@ -267,20 +267,20 @@ RateMatrix* RateMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> RateMatrix::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
+RbLanguageObject* RateMatrix::executeOperationSimple(const std::string& name, Environment* args) {
 
     if (name == "nstates") {
-        return RbPtr<RbLanguageObject>( new Natural((int)numStates) );
+        return new Natural((int)numStates);
     }
     else if (name == "stationaryfreqs") {
-        RbPtr<RbLanguageObject> s( theStationaryFreqs->clone() );
+        RbLanguageObject* s = theStationaryFreqs->clone();
         return s;
     }
     else if (name == "averate") {
-        return RbPtr<RbLanguageObject>( new RealPos(averageRate()) );
+        return new RealPos(averageRate() );
     }        
     else if (name == "reversible") {
-        return RbPtr<RbLanguageObject>( new RbBoolean(isReversible) );
+        return new RbBoolean(isReversible);
     }        
 
     return MemberObject::executeOperationSimple( name, args );
@@ -311,9 +311,9 @@ bool RateMatrix::getIsTimeReversible(void) {
 
 
 /** Get member rules */
-RbPtr<const MemberRules> RateMatrix::getMemberRules(void) const {
+const MemberRules* RateMatrix::getMemberRules(void) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
@@ -321,34 +321,34 @@ RbPtr<const MemberRules> RateMatrix::getMemberRules(void) const {
         rulesSet = true;
         }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
 /** Get methods */
-RbPtr<const MethodTable> RateMatrix::getMethods(void) const {
+const MethodTable* RateMatrix::getMethods(void) const {
 
-    static RbPtr<MethodTable> methods( new MethodTable() );
-    static RbPtr<ArgumentRules> nstatesArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> stationaryfreqsArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> averateArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> reversibleArgRules( new ArgumentRules() );
+    static MethodTable* methods = new MethodTable();
+    static ArgumentRules* nstatesArgRules = new ArgumentRules();
+    static ArgumentRules* stationaryfreqsArgRules = new ArgumentRules();
+    static ArgumentRules* averateArgRules = new ArgumentRules();
+    static ArgumentRules* reversibleArgRules = new ArgumentRules();
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 
         {
         
-        methods->addFunction("nstates",         RbPtr<RbFunction>( new MemberFunction(Natural_name, nstatesArgRules)         ) );
-        methods->addFunction("stationaryfreqs", RbPtr<RbFunction>( new MemberFunction(Simplex_name, stationaryfreqsArgRules) ) );
-        methods->addFunction("averate",         RbPtr<RbFunction>( new MemberFunction(RealPos_name, averateArgRules)         ) );
-        methods->addFunction("reversible",      RbPtr<RbFunction>( new MemberFunction(RbBoolean_name, reversibleArgRules)    ) );
+        methods->addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
+        methods->addFunction("stationaryfreqs", new MemberFunction(Simplex_name, stationaryfreqsArgRules) );
+        methods->addFunction("averate",         new MemberFunction(RealPos_name, averateArgRules)         );
+        methods->addFunction("reversible",      new MemberFunction(RbBoolean_name, reversibleArgRules)    );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
+        methods->setParentTable( MemberObject::getMethods() );
         methodsSet = true;
         }
 
-    return RbPtr<const MethodTable>( methods );
+    return methods;
 }
 
 
@@ -418,7 +418,7 @@ void RateMatrix::setStationaryFrequencies(const std::vector<double>& f) {
 
 
 /** Calculate the transition probabilities for the real case */
-void RateMatrix::tiProbsEigens(const double t, RbPtr<TransitionProbabilityMatrix> P) const {
+void RateMatrix::tiProbsEigens(const double t, TransitionProbabilityMatrix* P) const {
 
     // get a reference to the eigenvalues
     const VectorReal& eigenValue = theEigenSystem->getRealEigenvalues();
@@ -444,7 +444,7 @@ void RateMatrix::tiProbsEigens(const double t, RbPtr<TransitionProbabilityMatrix
 
 
 /** Calculate the transition probabilities for the complex case */
-void RateMatrix::tiProbsComplexEigens(const double t, RbPtr<TransitionProbabilityMatrix> P) const {
+void RateMatrix::tiProbsComplexEigens(const double t, TransitionProbabilityMatrix* P) const {
 
     // get a reference to the eigenvalues
     const VectorReal& eigenValueReal = theEigenSystem->getRealEigenvalues();

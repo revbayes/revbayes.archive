@@ -102,10 +102,10 @@ TransitionProbabilityMatrix* TransitionProbabilityMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> TransitionProbabilityMatrix::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
+RbLanguageObject* TransitionProbabilityMatrix::executeOperationSimple(const std::string& name, Environment* args) {
 
     if (name == "nstates") {
-        return RbPtr<RbLanguageObject>( new Natural((int)numStates) );
+        return new Natural( (int)numStates );
     }
 
     return MemberObject::executeOperationSimple( name, args );
@@ -121,9 +121,9 @@ const VectorString& TransitionProbabilityMatrix::getClass(void) const {
 
 
 /** Get member rules */
-RbPtr<const MemberRules> TransitionProbabilityMatrix::getMemberRules(void) const {
+const MemberRules* TransitionProbabilityMatrix::getMemberRules(void) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
@@ -131,28 +131,28 @@ RbPtr<const MemberRules> TransitionProbabilityMatrix::getMemberRules(void) const
         rulesSet = true;
         }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
 /** Get methods */
-RbPtr<const MethodTable> TransitionProbabilityMatrix::getMethods(void) const {
+const MethodTable* TransitionProbabilityMatrix::getMethods(void) const {
 
-    static RbPtr<MethodTable> methods( new MethodTable() );
-    static RbPtr<ArgumentRules> nstatesArgRules( new ArgumentRules() );
+    static MethodTable* methods = new MethodTable();
+    static ArgumentRules* nstatesArgRules = new ArgumentRules();
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 
         {
         
-        methods->addFunction("nstates", RbPtr<RbFunction>( new MemberFunction(Natural_name, nstatesArgRules) ) );
+        methods->addFunction("nstates", new MemberFunction(Natural_name, nstatesArgRules) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
+        methods->setParentTable( MemberObject::getMethods() );
         methodsSet = true;
         }
 
-    return RbPtr<const MethodTable>( methods );
+    return methods;
 }
 
 

@@ -32,7 +32,7 @@ const std::string ConstantNode_name = "Constant Node";
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode(RbPtr<RbLanguageObject> val);                                                                      //!< Constructor from value
+    ConstantNode(RbLanguageObject* val);                                                                            //!< Constructor from value
     ConstantNode(const std::string& typeSpec);                                                                      //!< Constructor from language object type
     ConstantNode(const ConstantNode &x);                                                                            //!< Copy constructor
 

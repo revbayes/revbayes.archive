@@ -37,11 +37,11 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
-    RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
+    const ArgumentRules*        getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
   
 protected:
-	RbPtr<RbLanguageObject>     executeFunction( void);                              //!< Execute operation
+	RbLanguageObject*           executeFunction( void);                              //!< Execute operation
   
 private:
   void                          resizeVector(Container &vec, Environment *args, unsigned int numArg);
@@ -67,75 +67,75 @@ Func_resize* Func_resize::clone( void ) const {
 }
 
 void Func_resize::resizeVector(Container &vec, Environment *args, unsigned int numArg) { 
-    unsigned int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[numArg]->getValue() ) )->getValue();
+    unsigned int nrows = ( static_cast<Natural*>( (*args)[numArg]->getValue() ) )->getValue();
     for (unsigned int j = 0 ; j < vec.size() ; j ++) {
         if (vec.getElement(j) != NULL && vec.getElement(j)->isTypeSpec(Vector_name )) { //if element j already a vector
-            static_cast<Vector*>( (RbObject*)vec.getElement(j))->resize(nrows);
+            static_cast<Vector*>( vec.getElement(j))->resize(nrows);
         }
         else {
             if (vec.getElement(j) != NULL) { //if element j not a vector but not NULL
-                RbPtr<Vector> v2( new Vector(vec.getElement(j)->getTypeSpec()) );
+                Vector* v2 = new Vector(vec.getElement(j)->getTypeSpec() );
                 v2->push_back(vec.getElement(j));
                 v2->resize(nrows);
-                vec.setElement(j, RbPtr<RbObject>( (Vector*)v2));
+                vec.setElement(j, v2);
             }
             else { //if element j NULL
-                RbPtr<Vector> v2( new Vector(RbObject_name) );
+                Vector* v2 = new Vector(RbObject_name);
                 for ( size_t i = 0; i < nrows; i++ )
-                    v2->push_back( RbPtr<RbObject>::getNullPtr() );
-                vec.setElement(j, RbPtr<RbObject>( (Vector*)v2));
+                    v2->push_back( NULL );
+                vec.setElement(j, v2);
             }
         }
         if (args->size() != numArg +1) { //if we still have dimensions to populate
-            resizeVector(*(static_cast<Vector*>( (RbObject*)vec.getElement(j))), args, numArg+1);
+            resizeVector(*(static_cast<Vector*>( vec.getElement(j))), args, numArg+1);
         }
         
     }
 }
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
-RbPtr<RbLanguageObject> Func_resize::executeFunction( void ) {
+RbLanguageObject* Func_resize::executeFunction( void ) {
 
   unsigned long nargs = args->size();
   //The identity of the object to resize
-  RbPtr<Container> val( static_cast<Container*>( (RbLanguageObject*)(*args)[0]->getValue()->clone() ) );
+  Container* val = static_cast<Container*>( (*args)[0]->getValue()->clone() );
 
     if (nargs == 2) {
       //Resizing a vector
-      unsigned int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[1]->getValue() ) )->getValue();
+      unsigned int nrows = ( static_cast<Natural*>( (*args)[1]->getValue() ) )->getValue();
       val->resize(nrows);
     }
     else {
       //Resizing a matrix of nargs-1 dimensions
-        int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[1]->getValue() ) )->getValue();
+        int nrows = ( static_cast<Natural*>( (*args)[1]->getValue() ) )->getValue();
         
         if (!val->isType(Vector_name)) {
-            val = RbPtr<Container>( static_cast<Container*>( val->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(RbLanguageObject_name) ) ) ) ) );
+            val = static_cast<Container*>( val->convertTo(TypeSpec(Vector_name, new TypeSpec(RbLanguageObject_name) ) ) );
         }
         
         val->resize(nrows);
         resizeVector(*val, args, 2);
     }
-  return RbPtr<RbLanguageObject>( val );
+  return val;
   
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_resize::getArgumentRules( void ) const {
+const ArgumentRules* Func_resize::getArgumentRules( void ) const {
   
-  static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+  static ArgumentRules* argumentRules = new ArgumentRules();
   static bool          rulesSet = false;
   
   if ( !rulesSet ) 
   {
-    argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", TypeSpec(Container_name) ) ) );
-    argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", Natural_name ) ) );
-    argumentRules->push_back( RbPtr<ArgumentRule>( new Ellipsis( Natural_name ) ) );
+    argumentRules->push_back( new ValueRule( "", TypeSpec(Container_name) ) );
+    argumentRules->push_back( new ValueRule( "", Natural_name ) );
+    argumentRules->push_back( new Ellipsis( Natural_name ) );
     rulesSet = true;
   }
   
-  return RbPtr<const ArgumentRules>( argumentRules );
+  return argumentRules;
 }
 
 

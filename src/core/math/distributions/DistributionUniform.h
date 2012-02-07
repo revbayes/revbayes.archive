@@ -30,7 +30,7 @@ namespace RbStatistics {
         double                      cdf(double a, double b, double x);                                    /*!< Uniform(a,b) cumulative probability */
         inline                      double quantile(double p);                                            /*!< Uniform(0,1) quantile */
         double                      quantile(double a, double b, double p);                               /*!< Uniform(a,b) quantile */
-        double                      rv(RbPtr<RandomNumberGenerator> rng);                                       /*!< Uniform(0,1) random variable */
-        double                      rv(double a, double b, RbPtr<RandomNumberGenerator> rng);                   /*!< Uniform(a,b) random variable */
+        double                      rv(RandomNumberGenerator& rng);                                       /*!< Uniform(0,1) random variable */
+        double                      rv(double a, double b, RandomNumberGenerator& rng);                   /*!< Uniform(a,b) random variable */
 	}
 }

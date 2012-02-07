@@ -72,10 +72,10 @@ void RbFunction::clearArguments(void) {
  * (which is of type RbLanguageObject) into a ConstantNode.
  * If you do not wish to wrap the return value into a constant node, then you need to overwrite this function.
  */
-RbPtr<RbLanguageObject> RbFunction::execute(void) {
+RbLanguageObject* RbFunction::execute(void) {
     
     // get the value by executing the internal function
-    RbPtr<RbLanguageObject> value = executeFunction();
+    RbLanguageObject* value = executeFunction();
   
     return value;
     
@@ -90,20 +90,20 @@ RbPtr<RbLanguageObject> RbFunction::execute(void) {
  * that is wraped into a ConstantNode by the calling execute function.
  * If you write your own execute function, you do not need to overwrite this function, otherwise you should.
  */
-RbPtr<RbLanguageObject> RbFunction::executeFunction(void) {
+RbLanguageObject* RbFunction::executeFunction(void) {
     
     // TODO: We might want to throw an error!
     
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return NULL;
 }
 
 
-RbPtr<const Environment> RbFunction::getArguments(void) const {
-    return RbPtr<const Environment>( args );
+const Environment* RbFunction::getArguments(void) const {
+    return args;
 }
 
 
-RbPtr<Environment> RbFunction::getArguments(void) {
+Environment* RbFunction::getArguments(void) {
     return args;
 }
 
@@ -119,7 +119,7 @@ const VectorString& RbFunction::getClass(void) const {
 /** Print value for user */
 void RbFunction::printValue(std::ostream& o) const {
 
-    const RbPtr<const ArgumentRules>& argRules = getArgumentRules();
+    const ArgumentRules* argRules = getArgumentRules();
 
     o << getReturnType() << " function (";
     for (size_t i=0; i<argRules->size(); i++) {
@@ -177,7 +177,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, RbPtr<VectorInteger> matchScore) {
+bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorInteger* matchScore) {
     
     bool    conversionNeeded;
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
@@ -185,7 +185,7 @@ bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, Rb
     /*********************  0. Initialization  **********************/
 
     /* Get the argument rules */
-    RbPtr<const ArgumentRules> theRules = getArgumentRules();
+    const ArgumentRules* theRules = getArgumentRules();
 
     /* Get the number of argument rules */
     size_t nRules = theRules->size();
@@ -237,8 +237,8 @@ bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, Rb
 
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 
-            RbPtr<Argument> theArgument = passedArgs[i];
-            RbPtr<const DAGNode> theDAGNode( (const DAGNode*)theArgument->getDagNode() );
+            Argument* theArgument = passedArgs[i];
+            const DAGNode* theDAGNode = theArgument->getDagNode();
             if ( theDAGNode == NULL )
                 return false;   // This should never happen
             if ( !(*theRules)[nRules-1]->isArgumentValid( theDAGNode, conversionNeeded ) )
@@ -348,7 +348,7 @@ bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, Rb
         for (size_t j=0; j<numRegularRules; j++) {
 
             if ( filled[j] == false ) {
-                RbPtr<DAGNode> argVar = passedArgs[i]->getDagNode();
+                DAGNode* argVar = passedArgs[i]->getDagNode();
                 if ( (*theRules)[j]->isArgumentValid( (const DAGNode*)argVar, conversionNeeded ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -376,8 +376,7 @@ bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, Rb
         if ( !(*theRules)[i]->hasDefault() )
             return false;
 
-        // TODO: We shouldn't use const-cast but instead implement a non-const function
-        RbPtr<ArgumentRule> theRule = (*theRules)[i];
+        ArgumentRule* theRule = (*theRules)[i];
         (*args)[i]->setVariable( theRule->getDefaultVariable() );
     }
 

@@ -38,7 +38,7 @@ const std::string MethodTable_name = "Method table";
 class MethodTable : public FunctionTable {
 
     public:
-    MethodTable(RbPtr<MethodTable> parent=RbPtr<MethodTable>::getNullPtr());                                      //!< Empty table
+    MethodTable(MethodTable* parent = NULL);                                                                    //!< Empty table
         virtual                    ~MethodTable() {}                                                            //!< Destructor doesn't need to do anything
 
         // Assignment operator
@@ -52,7 +52,7 @@ class MethodTable : public FunctionTable {
         std::string                 richInfo(void) const;                                                       //!< Complete info to string
 
         // MethodTable function (we just set the name of MemberFunction objects here)
-        void                        addFunction(const std::string name, RbPtr<RbFunction> func);                      //!< Add function; set name if appropriate
+        void                        addFunction(const std::string name, RbFunction* func);                      //!< Add function; set name if appropriate
     
     private:
         static const TypeSpec       typeSpec;

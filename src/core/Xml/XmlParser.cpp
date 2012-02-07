@@ -26,7 +26,7 @@ XmlParser::XmlParser() {
 }
 
 
-RbPtr<XmlDocument> XmlParser::parse(const char* inStream) {
+XmlDocument* XmlParser::parse(const char* inStream) {
     // create a string-stream and throw the string into it
     std::istringstream ss (inStream);
      
@@ -34,7 +34,7 @@ RbPtr<XmlDocument> XmlParser::parse(const char* inStream) {
     return parse(ss);
 }
 
-RbPtr<XmlDocument> XmlParser::parse(std::string& inStream) {
+XmlDocument* XmlParser::parse(std::string& inStream) {
     // create a string-stream and throw the string into it
     std::stringstream ss (std::stringstream::in | std::stringstream::out);
     ss << inStream;
@@ -43,10 +43,10 @@ RbPtr<XmlDocument> XmlParser::parse(std::string& inStream) {
     return parse(ss);
 }
 
-RbPtr<XmlDocument> XmlParser::parse(std::istream &instream) {
+XmlDocument* XmlParser::parse(std::istream &instream) {
 
     // create the XmlDocument
-    RbPtr<XmlDocument> doc( new XmlDocument() );
+    XmlDocument* doc = new XmlDocument();
     
     // skip the initial white space
     skipWhiteSpace(instream);
@@ -64,21 +64,21 @@ RbPtr<XmlDocument> XmlParser::parse(std::istream &instream) {
             if (tag.isReference()) 
                 {
                 // this is a reference element -> create the object
-                RbPtr<XmlElement> refNode( new XmlElementReference(tag.getName(), tag.getId() ) );
+                XmlElement* refNode = new XmlElementReference(tag.getName(), tag.getId() );
                 // add this element to the document on the top level
                 doc->addXmlElement(refNode);
                 }
             else 
                 {
                 // this is a instance element -> create the object
-                RbPtr<XmlElementInstance> instNode( new XmlElementInstance(tag.getName(), tag.getId() ) );
+                XmlElementInstance* instNode = new XmlElementInstance(tag.getName(), tag.getId() );
                 // set the attributes for this xml element
                 for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) 
                     {
                     instNode->setAttribute(it->first, it->second);
                     }
                 // add this element to the document on the top level
-                doc->addXmlElement( RbPtr<XmlElement>( instNode ) );
+                doc->addXmlElement( instNode );
                 }
             }
         else if (tag.isClosingTag()) 
@@ -91,7 +91,7 @@ RbPtr<XmlDocument> XmlParser::parse(std::istream &instream) {
             {
             // the tag is neither closed nor a closing tag. this means there will follow some content, either further tags inside or simple text
             // read the contents of this tag
-            RbPtr<XmlElementAttributed> element = readTagContents(instream,tag.getName(),tag.getId());
+            XmlElementAttributed* element = readTagContents(instream,tag.getName(),tag.getId());
             // set the attributes for this xml element
             for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) 
                 {
@@ -99,7 +99,7 @@ RbPtr<XmlDocument> XmlParser::parse(std::istream &instream) {
                 }
                 
             // add this element to the document on the top level
-            doc->addXmlElement( RbPtr<XmlElement>( element ) );
+            doc->addXmlElement( element );
             }
         
         skipWhiteSpace(instream);
@@ -159,14 +159,14 @@ XmlTag XmlParser::readTextTag(std::istream &instream) {
 }
 
 
-RbPtr<XmlElementAttributed> XmlParser::readTagContents(std::istream &instream, const std::string& name, uintptr_t identifier) {
+XmlElementAttributed* XmlParser::readTagContents(std::istream &instream, const std::string& name, uintptr_t identifier) {
 
     // read the content tag
     XmlTag      tag = readTag(instream);
     // test whether this tag only contains text, i.e. the parent tag is a text node tag
     if (tag.isTextTag()) {
         // the parent is a text node, since this tag only contains text and we do not allow mixing between text and children
-        RbPtr<XmlElementTextNode> element( new XmlElementTextNode(name,identifier) );
+        XmlElementTextNode* element = new XmlElementTextNode(name,identifier);
         // set the content of the text node 
         element->setTextNode(tag.getText());
         // after a text content we expect a closing tag, which we need to remove. We do this here and also check that there is a immidiate following closing tag.
@@ -175,11 +175,11 @@ RbPtr<XmlElementAttributed> XmlParser::readTagContents(std::istream &instream, c
             throw RbException("Excpected closing tag after text content while reading xml file but didn't get one.");
         }
         // return the xml element
-        return RbPtr<XmlElementAttributed>( element );
+        return element;
     }
     else {
         // this element contains children, i.e. it is a xml element attributed instance
-        RbPtr<XmlElementInstance> element( new XmlElementInstance(name,identifier) );
+        XmlElementInstance* element = new XmlElementInstance(name,identifier);
         // add the children until we find the closing tag
         while (!tag.isClosingTag()) {
             // check if the tag is closed or if we need to go looking for childring
@@ -189,36 +189,36 @@ RbPtr<XmlElementAttributed> XmlParser::readTagContents(std::istream &instream, c
                 // might read a closed reference tag or an attributed tag
                 if (tag.isReference()) {
                     // this child is a reference tag, so we just need to create a reference node
-                    RbPtr<XmlElement> child( new XmlElementReference(tag.getName(),tag.getId()) );
+                    XmlElement* child = new XmlElementReference(tag.getName(),tag.getId());
                     // add the child to the parent
                     element->addSubElement(child);
                 }
                 else {
                     // this child is an attributed, closed xml element
-                    RbPtr<XmlElementInstance> child( new XmlElementInstance(tag.getName(),tag.getId() ) );
+                    XmlElementInstance* child = new XmlElementInstance(tag.getName(),tag.getId() );
                     // set the attributes for this child xml element
                     for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) {
                         child->setAttribute(it->first,it->second);
                     }
                     // add the child to the parent
-                    element->addSubElement( RbPtr<XmlElement>( child ) );
+                    element->addSubElement( child );
                 }
             }
             else {
                 // the child is a not closed element, hence we need to look for children
-                RbPtr<XmlElementAttributed> child = readTagContents(instream,tag.getName(),tag.getId());
+                XmlElementAttributed* child = readTagContents(instream,tag.getName(),tag.getId());
                 // set the attributes for this child xml element
                 for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) {
                     child->setAttribute(it->first,it->second);
                 }
                 // add the child to the parent
-                element->addSubElement(RbPtr<XmlElement>( child ) );
+                element->addSubElement( child );
             }
             
             // read the next tag
             tag = readTag(instream);
         }
-        return RbPtr<XmlElementAttributed>( element );
+        return element;
     }
 }
 

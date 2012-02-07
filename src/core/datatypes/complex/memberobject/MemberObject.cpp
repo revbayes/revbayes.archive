@@ -32,16 +32,16 @@
 /** Constructor */
 MemberObject::MemberObject() : RbLanguageObject() {
     
-    members = RbPtr<Environment>( new Environment() );
+    members = new Environment();
     
 }
 
 
 
 /** Constructor: we set member variables here from member rules */
-MemberObject::MemberObject(RbPtr<const MemberRules> memberRules) : RbLanguageObject() {
+MemberObject::MemberObject(const MemberRules* memberRules) : RbLanguageObject() {
 
-    members = RbPtr<Environment>( new Environment() );
+    members = new Environment();
     
     /* Fill member table (frame) based on member rules */
     for ( MemberRules::const_iterator i = memberRules->begin(); i != memberRules->end(); i++ ) {
@@ -57,14 +57,14 @@ MemberObject::MemberObject(RbPtr<const MemberRules> memberRules) : RbLanguageObj
 MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
     
     // copy the members
-    members = RbPtr<Environment>( m.members->clone() );
+    members = m.members->clone();
 }
 
 
 /** Execute member method: delegate to method table. */
-RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument* >& args) {
     // TODO: We shouldn't allow const casts!!!
-    MethodTable* mt = const_cast<MethodTable*>((const MethodTable*)getMethods());
+    MethodTable* mt = const_cast<MethodTable*>(getMethods());
     return mt->executeFunction(name, args);
 }
 
@@ -72,15 +72,15 @@ RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, con
 /* Execute method. This method just delegate the call to executeOperationSimple and wraps the return value into
  * a constant node. If you don't want this, you have to overwrite this method.
  */
-RbPtr<RbLanguageObject> MemberObject::executeOperation(std::string const &name, const RbPtr<Environment> &args) {
+RbLanguageObject* MemberObject::executeOperation(std::string const &name, Environment* args) {
     
     // get the return value
-    RbPtr<RbLanguageObject> value = executeOperationSimple(name, args);
+    RbLanguageObject* value = executeOperationSimple(name, args);
   
     return value;
     
 //    // wrap into constant node
-//    RbPtr<DAGNode> theNode( new ConstantNode( value ) );
+//    DAGNode* theNode = new ConstantNode( value );
 //    
 //    return theNode;
 }
@@ -89,18 +89,18 @@ RbPtr<RbLanguageObject> MemberObject::executeOperation(std::string const &name, 
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-RbPtr<RbLanguageObject> MemberObject::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
+RbLanguageObject* MemberObject::executeOperationSimple(const std::string& name, Environment* args) {
     
     if (name == "memberNames") {
         for (size_t i=0; i<members->size(); i++) {
             RBOUT(members->getName(i));
         }
         
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return NULL;
     } 
     else if (name == "get") {
         // get the member with give name
-        RbPtr<const RbString> varName( static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue()) );
+        const RbString* varName = static_cast<const RbString*>( (*args)[0]->getValue() );
         
         // check if a member with that name exists
         if (members->existsVariable(*varName)) {
@@ -108,7 +108,7 @@ RbPtr<RbLanguageObject> MemberObject::executeOperationSimple(const std::string& 
         }
         
         // there was no variable with the given name
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return NULL;
         
     }
     else {
@@ -126,7 +126,7 @@ const VectorString& MemberObject::getClass(void) const {
 
 
 /** Return member rules (no members) */
-RbPtr<const MemberRules> MemberObject::getMemberRules(void) const {
+const MemberRules* MemberObject::getMemberRules(void) const {
 
     throw RbException( "Object does not have members" );
 }
@@ -139,35 +139,35 @@ const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
 
 
 /** Get method specifications (no methods) */
-RbPtr<const MethodTable> MemberObject::getMethods(void) const {
+const MethodTable* MemberObject::getMethods(void) const {
 
-    static RbPtr<MethodTable> methods( new MethodTable() );
-    static RbPtr<ArgumentRules> getMemberNamesArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> getArgRules( new ArgumentRules() );
+    static MethodTable* methods = new MethodTable();
+    static ArgumentRules* getMemberNamesArgRules = new ArgumentRules();
+    static ArgumentRules* getArgRules = new ArgumentRules();
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) {
         
         // add the 'memberNames()' method
-        methods->addFunction("memberNames", RbPtr<RbFunction>( new MemberFunction(RbVoid_name, getMemberNamesArgRules) ) );
+        methods->addFunction("memberNames", new MemberFunction(RbVoid_name, getMemberNamesArgRules) );
         
         // add the 'memberNames()' method
-        getArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "name" , RbString_name ) ) );
-        methods->addFunction("get", RbPtr<RbFunction>( new MemberFunction(RbLanguageObject_name, getArgRules) ) );
+        getArgRules->push_back( new ValueRule( "name" , RbString_name ) );
+        methods->addFunction("get", new MemberFunction(RbLanguageObject_name, getArgRules) );
         
         methodsSet = true;
     }   
     
-    return RbPtr<const MethodTable>( methods );
+    return methods;
 }
 
 
-RbPtr<const Environment> MemberObject::getMembers(void) const {
-    return RbPtr<const Environment>( members );
+const Environment* MemberObject::getMembers(void) const {
+    return members;
 }
 
 
-RbPtr<Environment> MemberObject::getMembers(void) {
+Environment* MemberObject::getMembers(void) {
     return members;
 }
 
@@ -242,14 +242,14 @@ std::string MemberObject::richInfo(void) const {
 
 
 /** Set a member DAG node */
-void MemberObject::setMemberDagNode(const std::string& name, RbPtr<DAGNode> var) {
+void MemberObject::setMemberDagNode(const std::string& name, DAGNode* var) {
     
     (*members)[name]->getVariable()->setDagNode(var);
 }
 
 
 /** Set a member variable */
-void MemberObject::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
+void MemberObject::setMemberVariable(const std::string& name, Variable* var) {
 
     (*members)[name]->setVariable(var);
 }

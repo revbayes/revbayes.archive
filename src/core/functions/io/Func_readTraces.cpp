@@ -44,9 +44,9 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_readTraces::executeFunction( void ) {
+RbLanguageObject* Func_readTraces::executeFunction( void ) {
     // get the information from the arguments for reading the file
-    RbPtr<RbString> fn( static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() ) );
+    RbString* fn = static_cast<RbString*>( (*args)[0]->getValue() );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -84,7 +84,7 @@ RbPtr<RbLanguageObject> Func_readTraces::executeFunction( void ) {
         RBOUT(o1.str());
     }
     
-    RbPtr<Vector> data( new Vector(Trace_name) );
+    Vector* data = new Vector(Trace_name);
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -169,7 +169,7 @@ RbPtr<RbLanguageObject> Func_readTraces::executeFunction( void ) {
     }
     
     
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return NULL;
     
 
 }
@@ -198,18 +198,18 @@ void Func_readTraces::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_readTraces::getArgumentRules( void ) const {
+const ArgumentRules* Func_readTraces::getArgumentRules( void ) const {
     
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
+        argumentRules->push_back( new ValueRule( "file", RbString_name ) );
         rulesSet = true;
     }
     
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

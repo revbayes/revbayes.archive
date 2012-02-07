@@ -25,11 +25,11 @@ int main(int argc, char **argv) {
     UserInterface::userInterface().output("             Released under the GPL license, version 3\n\n", false);
 
     RbSettings::userSettings().initializeUserSettings();
-    Help::getHelp()->initializeHelp("~/help/");
-    Workspace::globalWorkspace()->initializeGlobalWorkspace();
+    Help::getHelp().initializeHelp("~/help/");
+    Workspace::globalWorkspace().initializeGlobalWorkspace();
 
     /* Add stuff that Sebastian does not want to have in the core */
-    Workspace::globalWorkspace()->addFunction( "source", RbPtr<RbFunction>( new Func_source() ) );
+    Workspace::globalWorkspace().addFunction( "source", RbPtr<RbFunction>( new Func_source() ) );
 
 #	if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;

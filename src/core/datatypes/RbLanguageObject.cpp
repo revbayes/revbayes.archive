@@ -35,11 +35,11 @@ RbObject* RbLanguageObject::convertTo(const TypeSpec& type) const {
 }
 
 /** Encode the object into a serializable xml-object */
-RbPtr<XmlElement> RbLanguageObject::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
+XmlElement* RbLanguageObject::encode(XmlDocument* doc, const std::string& name) {    
     
     //! @Sebatian TODO basic implementation which should return an empty xml object with only the name
     
-    return RbPtr<XmlElement>::getNullPtr();
+    return NULL;
 }
 
 
@@ -52,7 +52,7 @@ const VectorString& RbLanguageObject::getClass(void) const {
 
 
 /** Return member rules (no members) */
-RbPtr<const MemberRules> RbLanguageObject::getMemberRules(void) const {
+const MemberRules* RbLanguageObject::getMemberRules(void) const {
     
     static RbPtr<const MemberRules> rules( new MemberRules());
     

@@ -25,20 +25,21 @@
 const TypeSpec SyntaxConstant::typeSpec(SyntaxConstant_name);
 
 /** Construct from value */
-SyntaxConstant::SyntaxConstant(RbPtr<RbLanguageObject> val) : SyntaxElement(), value(val) {
+SyntaxConstant::SyntaxConstant(RbLanguageObject* val) : SyntaxElement(), value(val) {
 }
 
 
 /** Deep copy constructor */
 SyntaxConstant::SyntaxConstant(const SyntaxConstant& x) : SyntaxElement(x), value(NULL) {
 
-    value = RbPtr<RbLanguageObject>(x.value->clone());
+    value = x.value->clone();
 }
 
 
 /** Destructor deletes value */
 SyntaxConstant::~SyntaxConstant(void) {
     
+    delete value;
 }
 
 
@@ -49,7 +50,7 @@ SyntaxConstant& SyntaxConstant::operator=(const SyntaxConstant& x) {
 
         SyntaxElement::operator=(x);
         
-        value = RbPtr<RbLanguageObject>( x.value->clone() );
+        value = x.value->clone();
         
     }
 
@@ -80,13 +81,13 @@ const VectorString& SyntaxConstant::getClass(void) const {
 
 
 /** Get semantic value of element */
-RbPtr<Variable> SyntaxConstant::evaluateContent(const RbPtr<Environment>& env) {
+Variable* SyntaxConstant::evaluateContent(void) {
 
     // We return a clone in case this function is called repeatedly.
     if (value == NULL)
-        return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( NULL ) ) ) ) );
+        return new Variable(new ConstantNode( NULL ) );
     else
-        return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( value ) ) ) ) );
+        return new Variable(new ConstantNode( value ) );
 }
 
 

@@ -36,15 +36,15 @@ class Func_CtmmTransitionProbabilities :  public RbFunction {
         const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RbPtr<const ArgumentRules>          getArgumentRules(void) const;                                           //!< Get argument rules
+        const ArgumentRules*                getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                     getReturnType(void) const;                                              //!< Get type of return value
 
     protected:
-        RbPtr<RbLanguageObject>             executeFunction(void);                                                  //!< Execute function
+        RbLanguageObject*                   executeFunction(void);                                                  //!< Execute function
 
     private:
         size_t                              nStates;                                                                //!< The number of states in the model
-        RbPtr<TransitionProbabilityMatrix>  transProbsMatrix;                                                       //!< The transition probability matrix
+        TransitionProbabilityMatrix*        transProbsMatrix;                                                       //!< The transition probability matrix
     
         static const TypeSpec               typeSpec;
         static const TypeSpec               returnTypeSpec;

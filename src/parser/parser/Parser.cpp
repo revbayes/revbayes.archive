@@ -123,7 +123,7 @@ void Parser::breakIntoLines( const std::string& cmd, std::list<std::string>& lin
 
 
 /** This function causes recursive execution of a syntax tree by calling the root to get its value */
-int Parser::execute(RbPtr<SyntaxElement> root) const {
+int Parser::execute(SyntaxElement* root) const {
 
 #	ifdef DEBUG_PARSER
     // Print syntax tree
@@ -134,12 +134,12 @@ int Parser::execute(RbPtr<SyntaxElement> root) const {
 #	endif
 
     // Declare a variable for the result
-    RbPtr<Variable> result;
+    Variable* result;
     
     //! Execute syntax tree
     try {
         PRINTF("Parser getting the semantic value of the syntax tree...\n");
-        result = root->evaluateContent(RbPtr<Environment>(Workspace::userWorkspace()));
+        result = root->evaluateContent(Workspace::userWorkspace());
     }
     catch(RbException& rbException) {
 
@@ -152,14 +152,14 @@ int Parser::execute(RbPtr<SyntaxElement> root) const {
         // Catch a missing variable exception that might be interpreted as a request for
         // usage help on a function
         SyntaxVariable* rootPtr = dynamic_cast<SyntaxVariable*>( (SyntaxElement*)root);
-        RbPtr<SyntaxVariable> theVariable( rootPtr );
+        SyntaxVariable* theVariable = rootPtr;
         if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
 
-            RbPtr<RbString> fxnName = theVariable->getIdentifier();
-            std::vector<RbPtr<RbFunction> > functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *fxnName );
+            RbString* fxnName = theVariable->getIdentifier();
+            std::vector<RbFunction*> functions = Workspace::userWorkspace().getFunctionTable()->findFunctions( *fxnName );
             if ( functions.size() != 0 ) {
                 RBOUT( "Usage:" );
-                for ( std::vector<RbPtr<RbFunction> >::iterator i=functions.begin(); i!=functions.end(); i++ ) {
+                for ( std::vector<RbFunction*>::iterator i=functions.begin(); i!=functions.end(); i++ ) {
                     RBOUT( (*i)->briefInfo() );
                 }
                 return 0;
@@ -223,7 +223,7 @@ void Parser::getline(char* buf, size_t maxsize) {
 
 
 /** This function gets help info about a symbol */
-int Parser::help(RbPtr<RbString> symbol) const {
+int Parser::help(const RbString& symbol) const {
 
     std::ostringstream msg;
 
@@ -235,22 +235,22 @@ int Parser::help(RbPtr<RbString> symbol) const {
 #	endif
 
     // Get some help
-    RbPtr<Help> userHelp = Help::getHelp();
-    if ( userHelp->isUserHelpAvailable() == true && userHelp->isHelpAvailableForQuery( std::string( *symbol ) ) == true )
+    Help& userHelp = Help::getHelp();
+    if ( userHelp.isUserHelpAvailable() == true && userHelp.isHelpAvailableForQuery( std::string( symbol ) ) == true )
         {
-        std::string hStr = userHelp->formatHelpString(std::string(*symbol), 100);
+        std::string hStr = userHelp.formatHelpString(std::string(symbol), 100);
         UserInterface::userInterface().output(hStr, false);
         }
     else {
-        if (userHelp->isUserHelpAvailable() == false)
+        if (userHelp.isUserHelpAvailable() == false)
             RBOUT("User help is unavailable");
-        else if ( userHelp->isHelpAvailableForQuery(std::string(*symbol)) == false )
-            RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
+        else if ( userHelp.isHelpAvailableForQuery(std::string(symbol)) == false )
+            RBOUT("Help unavailable for \"" + std::string(symbol) + "\"");
 
-        std::vector<RbPtr<RbFunction> > functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *symbol );
+        std::vector<RbFunction*> functions = Workspace::userWorkspace().getFunctionTable()->findFunctions( symbol );
         if ( functions.size() != 0 ) {
             RBOUT( "Usage:" );
-            for ( std::vector<RbPtr<RbFunction> >::iterator i=functions.begin(); i!=functions.end(); i++ ) {
+            for ( std::vector<RbFunction*>::iterator i=functions.begin(); i!=functions.end(); i++ ) {
                 RBOUT( (*i)->briefInfo() );
             }
         }
@@ -262,7 +262,7 @@ int Parser::help(RbPtr<RbString> symbol) const {
 
 
 /** This function prints help info about a function if it sees a function call */
-int Parser::help(RbPtr<SyntaxFunctionCall> root) const {
+int Parser::help(const SyntaxFunctionCall& root) const {
 
     std::ostringstream msg;
 
@@ -274,10 +274,10 @@ int Parser::help(RbPtr<SyntaxFunctionCall> root) const {
     std::cerr << std::endl;
 #	endif
 
-    RbPtr<RbString> symbol;
+    RbString symbol;
 
-    if ( root->isType(SyntaxFunctionCall_name) ) {
-        symbol = RbPtr<RbString>( static_cast<SyntaxFunctionCall*>( root )->getFunctionName() );
+    if ( root.isType(SyntaxFunctionCall_name) ) {
+        symbol = root.getFunctionName();
     }
     else {
         msg << "I have no clue -- bison was not supposed to ask me about this!";

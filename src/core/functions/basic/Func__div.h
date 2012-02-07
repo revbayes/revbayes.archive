@@ -36,11 +36,11 @@ class Func__div :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        const ArgumentRules*        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
+        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
@@ -74,42 +74,42 @@ Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondV
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality for most data types */
 template <typename firstValType, typename secondValType, typename retType>
-RbPtr<RbLanguageObject> Func__div<firstValType,secondValType,retType>::executeFunction( void ) {
+RbLanguageObject* Func__div<firstValType,secondValType,retType>::executeFunction( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbObject*)(*args)[0]->getValue() ) );
-    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbObject*)(*args)[1]->getValue() ) );
+    const firstValType*  val1 = static_cast<firstValType*> ( (*args)[0]->getValue() );
+    const secondValType* val2 = static_cast<secondValType*>( (*args)[1]->getValue() );
     retType              quot = *val1 / *val2;
     
-    return RbPtr<RbLanguageObject>(quot.clone());
+    return quot.clone();
 }
 
 
 /** Execute function: Special case for integer division */
 template <>
-RbPtr<RbLanguageObject> Func__div<Integer,Integer,Real>::executeFunction( void ) {
+RbLanguageObject* Func__div<Integer,Integer,Real>::executeFunction( void ) {
 
-    double val1 = static_cast<const Integer*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
-    double val2 = static_cast<const Integer*>( (const RbObject*)(*args)[1]->getValue() )->getValue();
+    double val1 = static_cast<const Integer*>( (*args)[0]->getValue() )->getValue();
+    double val2 = static_cast<const Integer*>( (*args)[1]->getValue() )->getValue();
     
-    return RbPtr<RbLanguageObject>( new Real( val1 / val2 ) );
+    return new Real( val1 / val2 );
 }
 
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType, typename retType>
-RbPtr<const ArgumentRules> Func__div<firstValType, secondValType, retType>::getArgumentRules( void ) const {
+const ArgumentRules* Func__div<firstValType, secondValType, retType>::getArgumentRules( void ) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", firstValType() .getTypeSpec() ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", secondValType().getTypeSpec() ) ) );
+        argumentRules->push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules->push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
         }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

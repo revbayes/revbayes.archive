@@ -29,19 +29,19 @@
 const TypeSpec SyntaxFormal::typeSpec(SyntaxFormal_name);
 
 /** Constructor with implicit type */
-SyntaxFormal::SyntaxFormal(RbPtr<RbString> id, RbPtr<SyntaxElement> defaultVal) : SyntaxElement(), argType(new TypeSpec(RbObject_name)), label(id), defaultExpr(defaultVal) {
+SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElement(), argType(new TypeSpec(RbObject_name)), label(id), defaultExpr(defaultVal) {
     
     // Make argument rule from element
     if (defaultExpr == NULL)
-        argRule = RbPtr<ArgumentRule>( new ValueRule(*label, *argType) );
+        argRule = new ValueRule(*label, *argType);
     else
-        argRule = RbPtr<ArgumentRule>( new ValueRule(*label, *argType, defaultExpr->evaluateContent( NULL )->getDagNode()) );
+        argRule = new ValueRule(*label, *argType, defaultExpr->evaluateContent()->getDagNode() );
 
 }
 
 
 /** Constructor with explicit type */
-SyntaxFormal::SyntaxFormal(RbPtr<RbString> typeSpec, RbPtr<RbString> id, RbPtr<SyntaxElement> defaultVal) : SyntaxElement(), argType(NULL), label(id), defaultExpr(defaultVal) {
+SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defaultVal) : SyntaxElement(), argType(NULL), label(id), defaultExpr(defaultVal) {
 
     // Convert to standard string
     const std::string typeString = *typeSpec;
@@ -57,13 +57,13 @@ SyntaxFormal::SyntaxFormal(RbPtr<RbString> typeSpec, RbPtr<RbString> id, RbPtr<S
     }
 
     // Create the type specification
-    argType = RbPtr<TypeSpec>(new TypeSpec(tpName));
+    argType = new TypeSpec(tpName);
     
     // Make argument rule from element
     if (defaultExpr == NULL)
-        argRule = RbPtr<ArgumentRule>( new ValueRule(*label, *argType) );
+        argRule = new ValueRule(*label, *argType);
     else
-        argRule = RbPtr<ArgumentRule>( new ValueRule(*label, *argType, defaultExpr->evaluateContent( NULL )->getDagNode()) );
+        argRule = new ValueRule(*label, *argType, defaultExpr->evaluateContent()->getDagNode());
 
 }
 
@@ -71,10 +71,10 @@ SyntaxFormal::SyntaxFormal(RbPtr<RbString> typeSpec, RbPtr<RbString> id, RbPtr<S
 /** Deep copy constructor */
 SyntaxFormal::SyntaxFormal(const SyntaxFormal& x) : SyntaxElement(x) {
 
-    argRule     = RbPtr<ArgumentRule>( x.argRule->clone() );
-    argType     = RbPtr<TypeSpec>(new TypeSpec(*x.argType));
-    label       = RbPtr<RbString>(new RbString(*(x.label)));
-    defaultExpr = RbPtr<SyntaxElement>( x.defaultExpr->clone() );
+    argRule     = x.argRule->clone();
+    argType     = new TypeSpec(*x.argType);
+    label       = new RbString(*(x.label));
+    defaultExpr = x.defaultExpr->clone();
     
 }
 
@@ -82,6 +82,10 @@ SyntaxFormal::SyntaxFormal(const SyntaxFormal& x) : SyntaxElement(x) {
 /** Destructor deletes pointer members */
 SyntaxFormal::~SyntaxFormal() {
     
+    delete argRule;
+    delete argType;
+    delete label;
+    delete defaultExpr;
 }
 
 
@@ -92,10 +96,10 @@ SyntaxFormal& SyntaxFormal::operator=(const SyntaxFormal& x) {
 
         SyntaxElement::operator=(x);
 
-        argRule     = x.argRule;
-        argType     = x.argType;
-        label       = x.label;
-        defaultExpr = x.defaultExpr;
+        argRule     = x.argRule->clone();
+        argType     = new TypeSpec(*x.argType);
+        label       = x.label->clone();
+        defaultExpr = x.defaultExpr->clone();
     }
 
     return (*this);
@@ -126,23 +130,23 @@ SyntaxFormal* SyntaxFormal::clone () const {
 
 
 
-RbPtr<const ArgumentRule> SyntaxFormal::getArgumentRule(void ) const {
-    return RbPtr<const ArgumentRule>( argRule );
+const ArgumentRule* SyntaxFormal::getArgumentRule(void ) const {
+    return argRule;
 }
 
 
-RbPtr<ArgumentRule> SyntaxFormal::getArgumentRule(void ) {
-    return ( argRule );
+ArgumentRule* SyntaxFormal::getArgumentRule(void ) {
+    return argRule;
 }
 
 
-RbPtr<const TypeSpec> SyntaxFormal::getArgumentTypeSpec(void) const {
-    return RbPtr<const TypeSpec>( argType );
+const TypeSpec* SyntaxFormal::getArgumentTypeSpec(void) const {
+    return argType;
 }
 
 
-RbPtr<const RbString> SyntaxFormal::getLabel(void) const {
-    return RbPtr<const RbString>( label );
+const RbString* SyntaxFormal::getLabel(void) const {
+    return label;
 }
 
 
@@ -156,9 +160,9 @@ const VectorString& SyntaxFormal::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxFormal::evaluateContent(const RbPtr<Environment>& env) {
+Variable* SyntaxFormal::evaluateContent(void) {
 
-    return RbPtr<Variable>::getNullPtr();
+    return NULL;
 }
 
 

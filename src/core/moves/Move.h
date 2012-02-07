@@ -38,11 +38,11 @@ class Move : public ConstantMemberObject {
         virtual void                            printValue(std::ostream& o) const;
     
         // Member variable rules
-        virtual RbPtr<const MemberRules>        getMemberRules(void) const;                                             //!< Get member rules
+        virtual const MemberRules*              getMemberRules(void) const;                                             //!< Get member rules
 
         // Member methods
-        virtual RbPtr<const MethodTable>        getMethods(void) const;                                                 //!< Get methods
-        void                                    setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< set the member variables
+        virtual const MethodTable*              getMethods(void) const;                                                 //!< Get methods
+        void                                    setMemberVariable(const std::string& name, Variable* var);              //!< set the member variables
 
         // Move functions you have to override
         virtual void                            acceptMove(void) = 0;                                                   //!< Accept the move
@@ -51,23 +51,23 @@ class Move : public ConstantMemberObject {
 
         // Move functions you should not override
         double                                  getAcceptanceRatio(void) const;                                         //!< Get acceptance ratio
-        std::vector<RbPtr<StochasticNode> >&    getDagNodes(void) { return nodes;}                                      //!< Get the nodes vector
+        std::vector<StochasticNode*>&           getDagNodes(void) { return nodes;}                                      //!< Get the nodes vector
         double                                  getUpdateWeight(void) const;                                            //!< Get update weight of move
 //        void                            setDagNodes(std::vector<StochasticNode*> n);                                  //!< Set the nodes vector
-        void                                    replaceDagNodes(std::vector<RbPtr<StochasticNode> > &n);                //!< Set the nodes vector
+        void                                    replaceDagNodes(std::vector<StochasticNode*> &n);                       //!< Set the nodes vector
         void                                    resetCounters(void);                                                    //!< Reset numTried/numAccepted
 
 	protected:
-        Move(RbPtr<const MemberRules> memberRules);                                                                     //!< Default constructor
+        Move(const MemberRules* memberRules);                                                                           //!< Default constructor
         Move(const Move& m);                                                                                            //!< Copy constructor
 
-        RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const RbPtr<Environment>& args); //!< Map method call to internal functions
+        RbLanguageObject*                 executeOperationSimple(const std::string& name, Environment* args);           //!< Map method call to internal functions
 
     
         // Hidden member variables
         int                                     numAccepted;                                                            //!< Number of times accepted
         int                                     numTried;                                                               //!< Number of times tried
-        std::vector<RbPtr<StochasticNode> >     nodes;                                                                  //!< The nodes on which the move works
+        std::vector<StochasticNode*>     nodes;                                                                         //!< The nodes on which the move works
 };
 
 #endif

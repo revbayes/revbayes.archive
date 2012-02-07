@@ -27,6 +27,6 @@ namespace RbStatistics {
         double                      lnPdf(double a, double b, double x);                                  /*!< F(a,b) log_e probability density */
         double                      cdf(double df1, double df2, double x);                                /*!< F(a,b) cumulative probability */
         double                      quantile(double a, double b, double p);                               /*!< F(a,b) quantile */
-        double                      rv(double a, double b, RbPtr<RandomNumberGenerator> rng);                   /*!< F(a,b) random variable */
+        double                      rv(double a, double b, RandomNumberGenerator& rng);                   /*!< F(a,b) random variable */
 	}
 }

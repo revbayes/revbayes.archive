@@ -48,15 +48,15 @@ Func_distance* Func_distance::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_distance::executeFunction(void) {
+RbLanguageObject* Func_distance::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    RbPtr<CharacterData> m     ( static_cast<CharacterData*>( (RbObject*)(*args)[0]->getValue() ) );
-    RbPtr<RbString>      dName ( static_cast<RbString*>     ( (RbObject*)(*args)[1]->getValue() ) );
-    RbPtr<RbString>      freqs ( static_cast<RbString*>     ( (RbObject*)(*args)[2]->getValue() ) );
-    RbPtr<RbString>      asrv  ( static_cast<RbString*>     ( (RbObject*)(*args)[3]->getValue() ) );
-    RbPtr<Real>          shape ( static_cast<Real*>         ( (RbObject*)(*args)[4]->getValue() ) );
-    RbPtr<Real>          pinvar( static_cast<Real*>         ( (RbObject*)(*args)[5]->getValue() ) );
+    CharacterData* m      = static_cast<CharacterData*>( (*args)[0]->getValue() );
+    RbString*      dName  = static_cast<RbString*>     ( (*args)[1]->getValue() );
+    RbString*      freqs  = static_cast<RbString*>     ( (*args)[2]->getValue() );
+    RbString*      asrv   = static_cast<RbString*>     ( (*args)[3]->getValue() );
+    Real*          shape  = static_cast<Real*>         ( (*args)[4]->getValue() );
+    Real*          pinvar = static_cast<Real*>         ( (*args)[5]->getValue() );
 
     //CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
     
@@ -100,15 +100,15 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction(void) {
     int n = (int)m->getNumberOfTaxa();
 
     // allocate the distance matrix
-    RbPtr<MatrixReal> d( new MatrixReal(n, n, 0.0) );
+    MatrixReal* d = new MatrixReal(n, n, 0.0);
     
     // fill in the distance matrix
     for (int i=0; i<n; i++)
         {
-        RbPtr<const TaxonData> td_i = m->getTaxonData(i);
+        const TaxonData* td_i = m->getTaxonData(i);
         for (int j=i+1; j<n; j++)
             {
-            RbPtr<const TaxonData> td_j = m->getTaxonData(j);
+            const TaxonData* td_j = m->getTaxonData(j);
             
             double dist = 0.0;
             if (myModel == p_dist)
@@ -134,17 +134,17 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction(void) {
             }
         }
 
-    return RbPtr<RbLanguageObject>( d );
+    return d;
 }
 
 
-double Func_distance::distanceJC69(RbPtr<const TaxonData> td1, RbPtr<const TaxonData> td2) {
+double Func_distance::distanceJC69(const TaxonData* td1, const TaxonData* td2) {
 
     int numDiff = 0;
     for (int c=0; c<td1->getNumberOfCharacters(); c++)
         {
-        RbPtr<const Character> c1 = td1->getCharacter(c);
-        RbPtr<const Character> c2 = td2->getCharacter(c);
+        const Character* c1 = td1->getCharacter(c);
+        const Character* c2 = td2->getCharacter(c);
         unsigned a = c1->getUnsignedValue();
         unsigned b = c2->getUnsignedValue();
         if (a != b)
@@ -157,13 +157,13 @@ double Func_distance::distanceJC69(RbPtr<const TaxonData> td1, RbPtr<const Taxon
 }
 
 
-double Func_distance::distanceP(RbPtr<const TaxonData> td1, RbPtr<const TaxonData> td2) {
+double Func_distance::distanceP(const TaxonData* td1, const TaxonData* td2) {
 
     int numDiff = 0;
     for (int c=0; c<td1->getNumberOfCharacters(); c++)
         {
-        RbPtr<const Character> c1 = td1->getCharacter(c);
-        RbPtr<const Character> c2 = td2->getCharacter(c);
+        const Character* c1 = td1->getCharacter(c);
+        const Character* c2 = td2->getCharacter(c);
         unsigned a = c1->getUnsignedValue();
         unsigned b = c2->getUnsignedValue();
         if (a != b)
@@ -174,23 +174,23 @@ double Func_distance::distanceP(RbPtr<const TaxonData> td1, RbPtr<const TaxonDat
 }
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_distance::getArgumentRules(void) const {
+const ArgumentRules* Func_distance::getArgumentRules(void) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool rulesSet = false;
 
     if (!rulesSet)
         {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "data",   CharacterData_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "model",  RbString_name      ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "freqs",  RbString_name      ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "asrv",   RbString_name      ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "shape",  Real_name          ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "pinvar", Real_name          ) ) );
+        argumentRules->push_back( new ValueRule( "data",   CharacterData_name ) );
+        argumentRules->push_back( new ValueRule( "model",  RbString_name      ) );
+        argumentRules->push_back( new ValueRule( "freqs",  RbString_name      ) );
+        argumentRules->push_back( new ValueRule( "asrv",   RbString_name      ) );
+        argumentRules->push_back( new ValueRule( "shape",  Real_name          ) );
+        argumentRules->push_back( new ValueRule( "pinvar", Real_name          ) );
         rulesSet = true;
         }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

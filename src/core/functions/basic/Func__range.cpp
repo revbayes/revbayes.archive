@@ -41,10 +41,10 @@ Func__range* Func__range::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func__range::executeFunction( void ) {
+RbLanguageObject* Func__range::executeFunction( void ) {
 
-    int first = static_cast<const Integer*>( (RbObject*)(*args)[0]->getValue() )->getValue();
-    int last  = static_cast<const Integer*>( (RbObject*)(*args)[1]->getValue() )->getValue();
+    int first = static_cast<const Integer*>( (*args)[0]->getValue() )->getValue();
+    int last  = static_cast<const Integer*>( (*args)[1]->getValue() )->getValue();
 
     std::vector<int> temp;
     if (first < last) {
@@ -56,26 +56,26 @@ RbPtr<RbLanguageObject> Func__range::executeFunction( void ) {
             temp.push_back(i);
     }
     if (first >= 0 && last >= 0) 
-        return RbPtr<RbLanguageObject>( new VectorNatural(temp) );
+        return new VectorNatural(temp);
     else
-        return RbPtr<RbLanguageObject>( new VectorInteger(temp) );
+        return new VectorInteger(temp);
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func__range::getArgumentRules( void ) const {
+const ArgumentRules* Func__range::getArgumentRules( void ) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 
     if (!rulesSet) {
 
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", Integer_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", Integer_name ) ) );
+        argumentRules->push_back( new ValueRule( "", Integer_name ) );
+        argumentRules->push_back( new ValueRule( "", Integer_name ) );
         rulesSet = true;
     }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

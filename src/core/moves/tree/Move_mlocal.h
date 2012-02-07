@@ -45,7 +45,7 @@ class Move_mlocal : public MoveTree {
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable inits
-        RbPtr<const MemberRules>    getMemberRules(void) const;                                             //!< Get member rules
+        const MemberRules*          getMemberRules(void) const;                                             //!< Get member rules
 
     protected:
 //        double                      perform(std::set<StochasticNode*>&      movedNodes,

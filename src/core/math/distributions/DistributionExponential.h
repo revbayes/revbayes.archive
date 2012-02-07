@@ -26,6 +26,6 @@ namespace RbStatistics {
         double                      lnPdf(double lambda, double x);                                       /*!< Exponential(lambda) log_e probability density */
         double                      cdf(double lambda, double x);                                         /*!< Exponential(lambda) cumulative probability */
         double                      quantile(double lambda, double p);                                    /*!< Exponential(lambda) quantile */
-        double                      rv(double lambda, RbPtr<RandomNumberGenerator> rng);                        /*!< Exponential(lambda) random variable */
+        double                      rv(double lambda, RandomNumberGenerator& rng);                        /*!< Exponential(lambda) random variable */
 	}
 }

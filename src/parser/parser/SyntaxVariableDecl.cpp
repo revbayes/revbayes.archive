@@ -33,7 +33,7 @@
 const TypeSpec SyntaxVariableDecl::typeSpec(SyntaxVariableDecl_name);
 
 /** Construct from operator type, variable and expression */
-SyntaxVariableDecl::SyntaxVariableDecl( RbPtr<RbString> typeName, RbPtr<std::list<RbPtr<SyntaxElement> > > lengths, RbPtr<RbString> referenceChar, RbPtr<RbString> varName) 
+SyntaxVariableDecl::SyntaxVariableDecl( RbString* typeName, std::list<SyntaxElement*>* lengths, RbString* referenceChar, RbString* varName) 
     : SyntaxElement(), elementTypeName(typeName), lengthExpr(lengths), referenceSymbol(referenceChar), variableName(varName) {
 }
 
@@ -41,20 +41,28 @@ SyntaxVariableDecl::SyntaxVariableDecl( RbPtr<RbString> typeName, RbPtr<std::lis
 /** Deep copy constructor */
 SyntaxVariableDecl::SyntaxVariableDecl(const SyntaxVariableDecl& x) : SyntaxElement(x) {
     
-    elementTypeName = RbPtr<RbString>( x.elementTypeName->clone() );
-    referenceSymbol = RbPtr<RbString>( x.referenceSymbol->clone() );
-    variableName    = RbPtr<RbString>( x.variableName->clone() );
+    elementTypeName = x.elementTypeName->clone();
+    referenceSymbol = x.referenceSymbol->clone();
+    variableName    = x.variableName->clone();
     
-    lengthExpr = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >() );
+    lengthExpr = new std::list<SyntaxElement*>();
     
-    for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=x.lengthExpr->begin(); i!=x.lengthExpr->end(); i++ )
-        lengthExpr->push_back( RbPtr<SyntaxElement>( (*i)->clone() ) );
+    for ( std::list<SyntaxElement*>::const_iterator i=x.lengthExpr->begin(); i!=x.lengthExpr->end(); i++ )
+        lengthExpr->push_back( (*i)->clone() );
 }
 
 
 /** Destructor deletes operands */
 SyntaxVariableDecl::~SyntaxVariableDecl() {
     
+    delete elementTypeName;
+    delete referenceSymbol;
+    delete variableName;
+    
+    for (std::list<SyntaxElement*>::iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++) {
+        delete *i;
+    }
+    delete lengthExpr;
 }
 
 
@@ -65,10 +73,12 @@ SyntaxVariableDecl& SyntaxVariableDecl::operator=(const SyntaxVariableDecl& x) {
         
         lengthExpr->clear();
 
-        elementTypeName = x.elementTypeName;
-        referenceSymbol = x.referenceSymbol;
-        variableName    = x.variableName;
+        elementTypeName = x.elementTypeName->clone();
+        referenceSymbol = x.referenceSymbol->clone();
+        variableName    = x.variableName->clone();
         
+        for ( std::list<SyntaxElement*>::const_iterator i=x.lengthExpr->begin(); i!=x.lengthExpr->end(); i++ )
+            lengthExpr->push_back( (*i)->clone() );
     }
     
     return (*this);
@@ -80,7 +90,7 @@ std::string SyntaxVariableDecl::briefInfo() const {
     
     std::ostringstream   o;
     o << "SyntaxVariableDecl: " << *elementTypeName;
-    for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++ ) {
+    for ( std::list<SyntaxElement*>::const_iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++ ) {
         if ( (*i) == NULL )
             o << "[]";
         else
@@ -108,22 +118,28 @@ const VectorString& SyntaxVariableDecl::getClass( void ) const {
 }
 
 
+/** We cannot perform this function and throw and error */
+Variable* SyntaxVariableDecl::evaluateContent( void ) {
+    throw RbException("Cannot evaluate the content in SyntaxVariableDecl without environment!");
+}
+
+
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxVariableDecl::evaluateContent( const RbPtr<Environment>& env ) {
+Variable* SyntaxVariableDecl::evaluateContent( Environment& env ) {
     
     PRINTF( "Evaluating variable declaration\n" );
     
     // Check if variable exists
-    if ( env->existsVariable( *variableName ) )
+    if ( env.existsVariable( *variableName ) )
         throw RbException( "Illegal attempt to redefine variable " + *variableName );
     
     // Check if type exists
-    if ( !Workspace::userWorkspace()->existsType( TypeSpec(elementTypeName->getValue()) ) )
+    if ( !Workspace::userWorkspace().existsType( TypeSpec(elementTypeName->getValue()) ) )
         throw RbException( "Type " + *elementTypeName + " does not exist" );
 
     // Evaluate length specification
     std::vector<int> length;
-    for ( std::list<RbPtr<SyntaxElement> >::iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++ ) {
+    for ( std::list<SyntaxElement*>::iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++ ) {
         
         if ( (*i) == NULL ) {
 
@@ -131,11 +147,11 @@ RbPtr<Variable> SyntaxVariableDecl::evaluateContent( const RbPtr<Environment>& e
         }
         else {
             
-            RbPtr<DAGNode>                  temp    = (*i)->evaluateContent( env )->getDagNode();
-            const RbPtr<RbLanguageObject>   value   = temp->getValue();
+            DAGNode*            temp    = (*i)->evaluateContent( env )->getDagNode();
+            RbLanguageObject*   value   = temp->getValue();
             
             if ( value->isTypeSpec( TypeSpec(Integer_name) ) )
-                length.push_back( static_cast<const Integer*>( (RbObject*)value )->getValue() );
+                length.push_back( static_cast<const Integer*>( value )->getValue() );
             else
                 throw RbException( "Expression in length specification of variable declaration does not evaluate to an integer" );
         }
@@ -167,10 +183,10 @@ RbPtr<Variable> SyntaxVariableDecl::evaluateContent( const RbPtr<Environment>& e
     else {
 
         // Create new slot in frame with null variable
-        env->addVariable( *variableName, typeSpec );
+        env.addVariable( *variableName, typeSpec );
     }
     
-    return RbPtr<Variable>::getNullPtr();
+    return NULL;
 }
 
 

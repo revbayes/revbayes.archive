@@ -36,14 +36,14 @@
 const TypeSpec VariableSlot::typeSpec(VariableSlot_name);
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, RbPtr<Variable> var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, Variable* var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
     variable = var;
     
 }
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, RbPtr<Variable> var) : RbInternal() , varTypeSpec( TypeSpec(RbObject_name) ), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, Variable* var) : RbInternal() , varTypeSpec( TypeSpec(RbObject_name) ), label(lbl) {
     
     variable = var;
     
@@ -53,7 +53,7 @@ VariableSlot::VariableSlot(const std::string &lbl, RbPtr<Variable> var) : RbInte
 /** Constructor of empty slot based on type specification */
 VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
-    variable = RbPtr<Variable>::getNullPtr();
+    variable = NULL;
     
 }
 
@@ -64,7 +64,7 @@ VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x
     if ( x.variable != NULL ) {
         variable = x.variable;
     } else {
-        variable = RbPtr<Variable>::getNullPtr();
+        variable = NULL;
     }
 }
 
@@ -86,7 +86,7 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         
         // Copy the new variable
         if ( x.variable != NULL ) {
-            variable = RbPtr<Variable>(x.variable->clone());
+            variable = x.variable->clone();
         }
         
         label = x.label;
@@ -182,7 +182,7 @@ Variable* VariableSlot::getVariable(void) {
 
 
 /** Is variable valid for the slot? Additional type checking here */
-bool VariableSlot::isValidVariable( RbPtr<DAGNode> newVariable ) const {
+bool VariableSlot::isValidVariable( DAGNode* newVariable ) const {
     
     return true;    // No additional requirements here, but see MemberSlot
 }
@@ -200,7 +200,7 @@ void VariableSlot::printValue(std::ostream& o) const {
 
 
 /** Set variable */
-void VariableSlot::setVariable(RbPtr<Variable> var) {
+void VariableSlot::setVariable(Variable* var) {
     
     // set the new variable
     variable = var;

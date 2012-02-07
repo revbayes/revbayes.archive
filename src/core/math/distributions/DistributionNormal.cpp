@@ -260,7 +260,7 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
 	return x;
 }
 
-double RbStatistics::Normal::rv(RbPtr<RandomNumberGenerator> rng) {
+double RbStatistics::Normal::rv(RandomNumberGenerator& rng) {
     
 	double v1 = 0.0;
 	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
@@ -268,8 +268,8 @@ double RbStatistics::Normal::rv(RbPtr<RandomNumberGenerator> rng) {
 	double rsq = 0.0;
 	do
         {
-		v1 = 2.0 * rng->uniform01() - 1.0;
-		v2 = 2.0 * rng->uniform01() - 1.0;
+		v1 = 2.0 * rng.uniform01() - 1.0;
+		v2 = 2.0 * rng.uniform01() - 1.0;
 		rsq = v1 * v1 + v2 * v2;
         } while ( rsq >= 1.0 || rsq == 0.0 );
 	double fac = sqrt(-2.0 * log(rsq)/rsq);
@@ -278,7 +278,7 @@ double RbStatistics::Normal::rv(RbPtr<RandomNumberGenerator> rng) {
 	return ( v2 * fac );
 }
 
-double RbStatistics::Normal::rv(double mu, double sigma, RbPtr<RandomNumberGenerator> rng) {
+double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator& rng) {
     
 	double v1 = 0.0;
 	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
@@ -286,8 +286,8 @@ double RbStatistics::Normal::rv(double mu, double sigma, RbPtr<RandomNumberGener
 	double rsq = 0.0;
 	do
         {
-		v1 = 2.0 * rng->uniform01() - 1.0;
-		v2 = 2.0 * rng->uniform01() - 1.0;
+		v1 = 2.0 * rng.uniform01() - 1.0;
+		v2 = 2.0 * rng.uniform01() - 1.0;
 		rsq = v1 * v1 + v2 * v2;
         } while ( rsq >= 1.0 || rsq == 0.0 );
 	double fac = sqrt(-2.0 * log(rsq)/rsq);

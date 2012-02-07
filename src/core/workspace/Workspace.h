@@ -40,7 +40,7 @@ class RandomNumberGenerator;
 class RbFunction;
 class RbObject;
 
-typedef std::map<std::string, RbPtr<RbObject> > TypeTable;
+typedef std::map<std::string, RbObject*> TypeTable;
 
 /**
  * @brief Workspace
@@ -77,7 +77,7 @@ const std::string Workspace_name = "Workspace";
 class Workspace : public Environment {
 
     public:
-                                   ~Workspace(void);                                                                     //!< Delete function table
+                                   ~Workspace(void);                                                                    //!< Delete function table
     
         // Frame functions you have to override
         Workspace*                  clone(void) const;                                                                  //!< Clone frame
@@ -87,44 +87,44 @@ class Workspace : public Environment {
         std::string                 richInfo(void) const;                                                               //!< Complete info to string
 
 
-        bool                        addDistribution(const std::string& name, RbPtr<Distribution> dist);                 //!< Add distribution
-        bool                        addDistribution(const std::string& name, RbPtr<DistributionContinuous> dist);       //!< Add distribution on continuous variable
-        bool                        addFunction(const std::string& name, RbPtr<RbFunction> func);                       //!< Add function
-        bool                        addType(RbPtr<RbObject> exampleObj);                                                //!< Add type
-        bool                        addType(const std::string& name, RbPtr<RbObject> exampleObj);                       //!< Add special abstract type (synonym)
-        bool                        addTypeWithConstructor(const std::string& name, RbPtr<MemberObject> templ);         //!< Add type with constructor
-        bool                        addTypeWithConstructor(const std::string& name, RbPtr<RbLanguageObject> templ);     //!< Add type with constructor
+        bool                        addDistribution(const std::string& name, Distribution* dist);                       //!< Add distribution
+        bool                        addDistribution(const std::string& name, DistributionContinuous* dist);             //!< Add distribution on continuous variable
+        bool                        addFunction(const std::string& name, RbFunction* func);                             //!< Add function
+        bool                        addType(RbObject* exampleObj);                                                      //!< Add type
+        bool                        addType(const std::string& name, RbObject* exampleObj);                             //!< Add special abstract type (synonym)
+        bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
+        bool                        addTypeWithConstructor(const std::string& name, RbLanguageObject* templ);           //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
-        RbPtr<RbLanguageObject>     executeFunction(    const std::string&              name,
-                                                        const std::vector<RbPtr<Argument> >&   args);                   //!< Execute function
+        RbLanguageObject*           executeFunction(    const std::string&              name,
+                                                        const std::vector<Argument*>&   args);                          //!< Execute function
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
 //        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
         const VectorString&         getClassOfType(const TypeSpec& type) const;                                         //!< Get reference to class vector of type
-        RbPtr<FunctionTable>        getFunctionTable(void) const { return functionTable; }                              //!< Get function table
-        RbPtr<RbFunction>           getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args);    //!< Get function copy
+        FunctionTable*              getFunctionTable(void) const { return functionTable; }                              //!< Get function table
+        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument*>& args);           //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
-        static RbPtr<Workspace>&    globalWorkspace(void)                                                               //!< Get global workspace
+        static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                     {
-                                        static RbPtr<Workspace> globalSpace(new Workspace());
+                                        static Workspace globalSpace = Workspace();
                                         return globalSpace;
                                     }
-        static RbPtr<Workspace>&    userWorkspace(void)                                                                  //!< Get user workspace
+        static Workspace&           userWorkspace(void)                                                                 //!< Get user workspace
                                     {
-                                         static RbPtr<Workspace> userSpace(new Workspace(globalWorkspace()));
+                                         static Workspace userSpace = Workspace(globalWorkspace());
                                          return userSpace;
                                     }
  
     private:
-                                    Workspace(void);                                                                     //!< Workspace with NULL parent
-                                    Workspace(RbPtr<Workspace> parentSpace);                                             //!< Workspace with parent
-                                    Workspace(RbPtr<Environment> parentSpace);                                           //!< Workspace with parent
-                                    Workspace(const Workspace& w) {}                                                     //!< Prevent copy
-        Workspace&                  operator=(const Workspace& w);                                                       //! Prevent assignment
+                                    Workspace(void);                                                                    //!< Workspace with NULL parent
+                                    Workspace(Workspace* parentSpace);                                                  //!< Workspace with parent
+                                    Workspace(Environment* parentSpace);                                                //!< Workspace with parent
+                                    Workspace(const Workspace& w) {}                                                    //!< Prevent copy
+        Workspace&                  operator=(const Workspace& w);                                                      //! Prevent assignment
 
-        RbPtr<FunctionTable>        functionTable;                                                                       //!< Table holding functions
-        TypeTable                   typeTable;                                                                           //!< Type table
+        FunctionTable*              functionTable;                                                                      //!< Table holding functions
+        TypeTable                   typeTable;                                                                          //!< Type table
 
-        bool                        typesInitialized;                                                                    //!< Is type table initialized? Before then, we can't perform type checking.
+        bool                        typesInitialized;                                                                   //!< Is type table initialized? Before then, we can't perform type checking.
 
         static const TypeSpec       typeSpec;
 };

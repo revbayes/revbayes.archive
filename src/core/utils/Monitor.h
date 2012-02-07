@@ -37,7 +37,7 @@ class Monitor : public ConstantMemberObject {
 public:
     // Constructors and Destructors
     Monitor();                                                                                              //!< Default Constructor
-    Monitor(RbPtr<const MemberRules> rules ) ;                                                              //!< Constructor
+    Monitor(const MemberRules* rules ) ;                                                                    //!< Constructor
     Monitor(const Monitor &x);                                                                              //!< Copy Constructor
     virtual ~Monitor(void);                                                                                 //!< Destructor
     
@@ -49,17 +49,17 @@ public:
     virtual std::string                 richInfo(void) const;                                               //!< Complete info about object
     
     // Member Object Functions
-    virtual RbPtr<const MemberRules>    getMemberRules( void ) const;                                       //!< The member rules for a monitor
-    virtual void                        setMemberVariable(const std::string &name, RbPtr<Variable> var);    //!< Set a member variable. We catch here setting of variable nodes
+    virtual const MemberRules*          getMemberRules( void ) const;                                       //!< The member rules for a monitor
+    virtual void                        setMemberVariable(const std::string &name, Variable* var);          //!< Set a member variable. We catch here setting of variable nodes
     
-    std::vector<RbPtr<VariableNode> >&  getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
+    std::vector<VariableNode*>&         getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
     virtual void                        monitor(void) = 0;                                                  //!< Monitor unconditionally
     virtual void                        monitor(int gen) = 0;                                               //!< Monitor at generation gen
-    void                                replaceDagNodes(std::vector<RbPtr<VariableNode> > &n);              //!< Set the nodes vector
+    void                                replaceDagNodes(std::vector<VariableNode*> &n);                     //!< Set the nodes vector
     bool                                monitorsVariable (RbString varName);                                //! Tell whether the variable with name is monitored by this monitor
     
 protected:
-    std::vector<RbPtr<VariableNode> >   nodes;                                                              //!< Vector of nodes that this monitor monitors    
+    std::vector<VariableNode*>          nodes;                                                              //!< Vector of nodes that this monitor monitors    
     
 private:
     static const TypeSpec               typeSpec;

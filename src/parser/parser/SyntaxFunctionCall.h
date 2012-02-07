@@ -36,10 +36,10 @@ const std::string SyntaxFunctionCall_name = "Function call";
 class SyntaxFunctionCall : public SyntaxElement {
 
     public:
-                                            SyntaxFunctionCall(RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > > args);  //!< Standard function
-                                            SyntaxFunctionCall(RbPtr<SyntaxVariable>                  var,
-                                                           RbPtr<RbString>                        id,
-                                                           RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >   args);                        //!< Member function
+                                            SyntaxFunctionCall(RbString* id, std::list<SyntaxLabeledExpr*>* args);                      //!< Standard function
+                                            SyntaxFunctionCall(SyntaxVariable*                  var,
+                                                               RbString*                        id,
+                                                               std::list<SyntaxLabeledExpr*>*   args);                                  //!< Member function
                                             SyntaxFunctionCall(const SyntaxFunctionCall& x);                                            //!< Copy constructor
 	    virtual                            ~SyntaxFunctionCall();                                                                       //!< Destructor
 
@@ -54,14 +54,15 @@ class SyntaxFunctionCall : public SyntaxElement {
         void                                print(std::ostream& o) const;                                                               //!< Print info about object
 
         // Regular functions
-        const RbPtr<RbString>               getFunctionName(void) const { return functionName; }                                        //!< Get function name
-        RbPtr<Variable>                     evaluateContent(const RbPtr<Environment>& env);                                             //!< Get semantic value
-        void                                setBaseVariable(const RbPtr<SyntaxVariable>& var) { variable = var; }                       //!< Set base variable
+        const RbString&                     getFunctionName(void) const { return *functionName; }                                       //!< Get function name
+        Variable*                           evaluateContent(void);                                                                      //!< Get semantic value
+        Variable*                           evaluateContent(Environment& env);                                                          //!< Get semantic value
+        void                                setBaseVariable(SyntaxVariable* var) { variable = var; }                                    //!< Set base variable
 
     protected:
-        RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >  arguments;                                                                        //!< The arguments passed to the function
-        RbPtr<RbString>                     functionName;                                                                               //!< The name of the function
-        RbPtr<SyntaxVariable>               variable;                                                                                   //!< Variable holding member function
+        std::list<SyntaxLabeledExpr*>*      arguments;                                                                                  //!< The arguments passed to the function
+        RbString*                           functionName;                                                                               //!< The name of the function
+        SyntaxVariable*                     variable;                                                                                   //!< Variable holding member function
     
     private:
         static const TypeSpec       typeSpec;

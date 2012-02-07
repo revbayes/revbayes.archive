@@ -64,22 +64,20 @@ const VectorString& ObjectMonitor::getClass() const {
 }
 
 /** Return member rules */
-RbPtr<const MemberRules> ObjectMonitor::getMemberRules( void ) const {
+const MemberRules* ObjectMonitor::getMemberRules( void ) const {
     
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) 
     {
-       // memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) ) );
-       // memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "separator" , TypeSpec(RbString_name), RbPtr<RbLanguageObject>(new RbString("\t") ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) ) );
+        memberRules->push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
+        memberRules->push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
+        memberRules->push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
         rulesSet = true;
     }
     
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -92,11 +90,11 @@ const TypeSpec& ObjectMonitor::getTypeSpec(void) const {
 /** Monitor value unconditionally */
 void ObjectMonitor::monitor(void) {
     
-    for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         
         // save the value        
-        RbPtr< RbLanguageObject> temp = (*it)->getValue()->clone();
-        values[(*it)->getName()].push_back( RbPtr<RbObject> (temp) );
+        RbLanguageObject* temp = (*it)->getValue()->clone();
+        values[(*it)->getName()].push_back( temp );
     }
     
 }
@@ -106,15 +104,15 @@ void ObjectMonitor::monitor(void) {
 void ObjectMonitor::monitor(int gen) {
     
     // get the sampling frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer*>( getMemberValue("printgen") )->getValue();
 
     if (gen % samplingFrequency == 0) {
         
-        for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             
             // save the value
-            RbPtr< RbLanguageObject> temp = (*it)->getValue()->clone();
-            values[(*it)->getName()].push_back( RbPtr<RbObject> (temp) );
+            RbLanguageObject* temp = (*it)->getValue()->clone();
+            values[(*it)->getName()].push_back( temp );
         }
         
     }
@@ -144,18 +142,18 @@ std::string ObjectMonitor::richInfo(void) const {
     return o.str();
 }
 
-void ObjectMonitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
+void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
-        RbPtr<DAGNode> theNode = var->getDagNode();
+        DAGNode* theNode = var->getDagNode();
         if (theNode->getValue()->isType(DagNodeContainer_name)) {
-            RbPtr<DagNodeContainer> theContainer( static_cast<DagNodeContainer*>( (RbLanguageObject*)theNode->getValue() ) );
+            DagNodeContainer* theContainer = static_cast<DagNodeContainer*>( theNode->getValue() );
             for (size_t i = 0; i < theContainer->size(); i++) {
-                theNode = static_cast<VariableSlot*>( (RbObject*)theContainer->getElement(i) )->getDagNode();
+                theNode = static_cast<VariableSlot*>( theContainer->getElement(i) )->getDagNode();
                 if (theNode->isType(VariableNode_name)) {
-                    nodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) ) );
-                    values[RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) )->getName()] = Vector();
+                    nodes.push_back( static_cast<VariableNode*>( theNode ) );
+                    values[static_cast<VariableNode*>( theNode )->getName()] = Vector();
                     //                } else {
                     //                    throw RbException("Cannot monitor a constant node!");
                 }
@@ -163,8 +161,8 @@ void ObjectMonitor::setMemberVariable(std::string const &name, RbPtr<Variable> v
         }
         else {
             if (theNode->isType(VariableNode_name)) {
-                nodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) ) );
-                values[RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) )->getName()] = Vector();
+                nodes.push_back( static_cast<VariableNode*>( theNode ) );
+                values[static_cast<VariableNode*>( theNode )->getName()] = Vector();
                 //            } else {
                 //                throw RbException("Cannot monitor a constant node!");
             }
@@ -178,12 +176,12 @@ void ObjectMonitor::setMemberVariable(std::string const &name, RbPtr<Variable> v
 
 
 /** returns the values contained in the values vector for variable with name varName */
-RbPtr<Vector> ObjectMonitor::getValues(RbString varName) {
+Vector* ObjectMonitor::getValues(RbString varName) {
     std::map<RbString,Vector>::iterator it = values.find(varName);
     if (it != values.end()) {
-        RbPtr<Vector> toReturn = RbPtr<Vector> ( it->second.clone() );
-        return( toReturn );
+        Vector* toReturn = it->second.clone();
+        return toReturn ;
     }
     
-    return RbPtr<Vector>::getNullPtr();
+    return NULL;
 }

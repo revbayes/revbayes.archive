@@ -45,17 +45,17 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object 
 
     // Member variable rules
-    RbPtr<const MemberRules>    getMemberRules(void) const;                                                     //!< Get member rules
-    void                        setMemberVariable(const std::string& name, RbPtr<Variable> var);                //!< Only constants allowed
+    const MemberRules*          getMemberRules(void) const;                                                     //!< Get member rules
+    void                        setMemberVariable(const std::string& name, Variable* var);                      //!< Only constants allowed
 
     // Member method inits
-    RbPtr<const MethodTable>    getMethods(void) const;                                                         //!< Get methods
+    const MethodTable*          getMethods(void) const;                                                         //!< Get methods
         
     // Mcmc functions
     void                        run(size_t ngen);                                                               //!< Update the chain
 
 protected:
-    RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);//!< Execute method
+    RbLanguageObject*           executeOperationSimple(const std::string& name, Environment* args);             //!< Execute method
 
     
 private:

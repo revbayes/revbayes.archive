@@ -41,17 +41,15 @@ const VectorString& CharacterStateDiscrete::getClass() const {
 }
 
 
-RbPtr<const MemberRules> CharacterStateDiscrete::getMemberRules(void) const {
+const MemberRules* CharacterStateDiscrete::getMemberRules(void) const {
     
-    static RbPtr<const MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) {
         
-        RbPtr<MemberRules> mr( new MemberRules() );
-        mr->push_back( RbPtr<ArgumentRule>( new ValueRule( "state"  , RbString_name ) ) );
-        memberRules = RbPtr<const MemberRules>( mr );
-        
+        memberRules->push_back( new ValueRule( "state"  , RbString_name ) );
+       
         rulesSet = true;
     }
     
@@ -91,10 +89,10 @@ unsigned CharacterStateDiscrete::getUnsignedValue(void) const {
 
 
 /** Initialize the discrete character state variable. We just set the value. */
-void CharacterStateDiscrete::initialize(const RbPtr<Vector> &attributes) {
+void CharacterStateDiscrete::initialize(const Vector &attributes) {
     
     // set the state
-    setState(static_cast<RbString*>( (RbLanguageObject*)(*attributes)[0] )->getValue()[0]);
+    setState(static_cast<const RbString*>( attributes[0] )->getValue()[0]);
 //    numStates = static_cast<Natural*>( (RbLanguageObject*)(*attr)[0] )->getValue();
 }
 

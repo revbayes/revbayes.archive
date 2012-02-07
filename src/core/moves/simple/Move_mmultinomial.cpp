@@ -59,26 +59,26 @@ const VectorString& Move_mmultinomial::getClass() const {
 
 
 /** Return member rules */
-RbPtr<const MemberRules> Move_mmultinomial::getMemberRules(void) const {
+const MemberRules* Move_mmultinomial::getMemberRules(void) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
 		{
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) ) );
+        memberRules->push_back( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        RbPtr<const MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        const MemberRules* inheritedRules = MoveSimple::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
-        memberRules->push_back(RbPtr<ArgumentRule>( new ValueRule("tuning", RealPos_name) ) );
-        memberRules->push_back(RbPtr<ArgumentRule>( new ValueRule("num_cats", Integer_name) ) );
+        memberRules->push_back(new ValueRule("tuning", RealPos_name) );
+        memberRules->push_back(new ValueRule("num_cats", Integer_name) );
 
         rulesSet = true;
 		}
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -99,15 +99,15 @@ const TypeSpec Move_mmultinomial::getVariableType( void ) const {
 double Move_mmultinomial::perform( void ) {
 
     // Get random number generator    
-    RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
-    RbPtr<StochasticNode>        nodePtr( NULL );
+    StochasticNode*        nodePtr = NULL;
     double                 alpha0  = static_cast<const RealPos*>( (const RbObject*)getMemberValue("tuning")   )->getValue();
     int                    k       = static_cast<const Integer*>( (const RbObject*)getMemberValue("num_cats") )->getValue();
 
-    const RbPtr<VectorReal> valPtr( static_cast<VectorReal*>( (RbObject*)nodePtr->getValue() ) );
+    VectorReal* valPtr = static_cast<VectorReal*>( nodePtr->getValue() );
 
     std::vector<double>    curVal  = valPtr->getValue();
     int                    n       = int( curVal.size() );
@@ -152,7 +152,7 @@ double Move_mmultinomial::perform( void ) {
 		std::vector<int> tmpV;
 		for (int i=0; i<n; i++)
 			tmpV.push_back(i);
-		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<int>(tmpV, indicesToUpdate, k, rng);
+		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<int>(tmpV, indicesToUpdate, k, *rng);
 		std::map<int,int> mapper;
 		for (size_t i=0; i<indicesToUpdate.size(); i++)
 			mapper.insert( std::make_pair(indicesToUpdate[i], i) );
@@ -174,7 +174,7 @@ double Move_mmultinomial::perform( void ) {
 			alphaForward[i] = x[i] * alpha0;
 			
 		// draw a new value for the reduced vector
-		z = RbStatistics::Dirichlet::rv( alphaForward, rng );
+		z = RbStatistics::Dirichlet::rv( alphaForward, *rng );
 		
 		// fill in the Dirichlet parameters for the reverse probability calculations
 		for (size_t i=0; i<z.size(); i++)
@@ -204,7 +204,7 @@ double Move_mmultinomial::perform( void ) {
 			alphaForward[i] = curVal[i] * alpha0;
 			
 		// then, we propose new values
-		newVal = RbStatistics::Dirichlet::rv( alphaForward, rng );
+		newVal = RbStatistics::Dirichlet::rv( alphaForward, *rng );
 		
 		// and calculate the Dirichlet parameters for the (imagined) reverse move
 		std::vector<double> alphaReverse(newVal.size());
@@ -218,7 +218,7 @@ double Move_mmultinomial::perform( void ) {
     for ( size_t i = 0; i < valPtr->size(); i++ )
         newVal[i] *= sum;
 		
-    nodePtr->setValue( RbPtr<RbLanguageObject>( new VectorReal( newVal ) ) );
+    nodePtr->setValue( new VectorReal( newVal ) );
 	
     return lnProposalRatio;
 }

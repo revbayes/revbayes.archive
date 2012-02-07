@@ -44,16 +44,16 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_ls::executeFunction( void ) {
+RbLanguageObject* Func_ls::executeFunction( void ) {
 
     /* Open file */
-    const bool printAll = static_cast<const RbBoolean*>( (RbObject*)(*args)[0]->getValue() )->getValue();
+    const bool printAll = static_cast<const RbBoolean*>( (*args)[0]->getValue() )->getValue();
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;
     std::cout << std::endl;
 
-    Workspace::userWorkspace()->printValue( std::cout );
+    Workspace::userWorkspace().printValue( std::cout );
     std::cout << std::endl;
     
     if ( printAll == true ) {
@@ -62,27 +62,27 @@ RbPtr<RbLanguageObject> Func_ls::executeFunction( void ) {
         std::cout << "===============" << std::endl;
         std::cout << std::endl;
 
-        Workspace::globalWorkspace()->printValue( std::cout );
+        Workspace::globalWorkspace().printValue( std::cout );
         std::cout << std::endl;
     }
 
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return NULL;
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_ls::getArgumentRules( void ) const {
+const ArgumentRules* Func_ls::getArgumentRules( void ) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "all", RbPtr<RbLanguageObject>( new RbBoolean( false ) ) ) ) );
+        argumentRules->push_back( new ValueRule( "all", new RbBoolean( false ) ) );
         rulesSet = true;
     }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

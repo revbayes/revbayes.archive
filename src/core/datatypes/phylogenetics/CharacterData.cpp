@@ -94,19 +94,19 @@ RbPtr<const TaxonData> CharacterData::operator[]( const size_t i ) const {
 
 
 /** Add a sequence to the character matrix. For now, we require same data type and same length. */
-void CharacterData::addTaxonData(RbPtr<TaxonData> obs, bool forceAdd) {
+void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
 
-    push_back(RbPtr<RbObject>( obs ));
+    push_back( obs );
     
     // add the sequence name to the list
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
-    RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( obs ) ) ) ) );
+    Variable* var = new Variable( RbPtr<DAGNode>( new ConstantNode( obs ) ) );
     members->addVariable(obs->getTaxonName(), var);
 }
 
-void CharacterData::addTaxonData( RbPtr<TaxonData> obs ) {
+void CharacterData::addTaxonData( TaxonData* obs ) {
 
     // set the number of character per sequence
     if ( size() > 0 && obs->size() != getNumberOfCharacters() ) 
@@ -171,16 +171,16 @@ void CharacterData::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
+RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name, Environment* args) {
 
     if (name == "names") 
         {
-        return RbPtr<RbLanguageObject>( new VectorString(sequenceNames) );
+        return new VectorString(sequenceNames);
         }
     else if (name == "ntaxa") 
         {
         int n = (int)getNumberOfTaxa();
-        return RbPtr<RbLanguageObject>( new Natural(n) );
+        return new Natural(n);
         }
     else if (name == "nchar")
         {
@@ -196,32 +196,32 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
                     nc.push_back( (int)getTaxonData(i)->getNumberOfCharacters() );
                 }
             }
-        return RbPtr<RbLanguageObject>( new VectorNatural(nc) );
+        return new VectorNatural(nc);
         }
     else if (name == "chartype")
         {
         std::string ct = getDataType();
-        return RbPtr<RbLanguageObject>( new RbString(ct) );
+        return new RbString(ct);
         }
     else if (name == "nexcludedtaxa")
         {
         int n = (int)deletedTaxa.size();
-        return RbPtr<RbLanguageObject>( new Natural(n) );
+        return new Natural(n);
         }
     else if (name == "nexcludedchars")
         {
         int n = (int)deletedCharacters.size();
-        return RbPtr<RbLanguageObject>( new Natural(n) );
+        return new Natural(n);
         }
     else if (name == "nincludedtaxa")
         {
         int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
-        return RbPtr<RbLanguageObject>( new Natural(n) );
+        return new Natural(n);
         }
     else if (name == "nincludedchars")
         {
         int n = (int)(getNumberOfCharacters() - deletedCharacters.size());
-        return RbPtr<RbLanguageObject>( new Natural(n) );
+        return new Natural(n);
         }
     else if (name == "excludedtaxa")
         {
@@ -231,14 +231,14 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
             std::string tn = getTaxonNameWithIndex(*it);
             et.push_back( tn );
             }
-        return RbPtr<RbLanguageObject>( new VectorString(et) );
+        return new VectorString(et);
         }
     else if (name == "excludedchars")
         {
         std::vector<int> ec;
         for (std::set<size_t>::iterator it = deletedCharacters.begin(); it != deletedCharacters.end(); it++)
             ec.push_back( (int)(*it) );
-        return RbPtr<RbLanguageObject>( new VectorNatural(ec) );
+        return new VectorNatural(ec);
         }
     else if (name == "includedtaxa")
         {
@@ -248,7 +248,7 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
             if ( isTaxonExcluded(i) == false )
                 it.push_back( getTaxonNameWithIndex(i) );
             }
-        return RbPtr<RbLanguageObject>( new VectorString(it) );
+        return new VectorString(it);
         }
     else if (name == "includedchars")
         {
@@ -258,29 +258,29 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
             if ( isCharacterExcluded(i) == false )
                 ic.push_back( (int)(i+1) );
             }
-        return RbPtr<RbLanguageObject>( new VectorNatural(ic) );
+        return new VectorNatural(ic);
         }
     else if (name == "nconstantpatterns")
         {
         int n = (int)numConstantPatterns();
-        return RbPtr<RbLanguageObject>( new Natural(n) );
+        return new Natural(n);
         }
     else if (name == "ncharswithambiguity")
         {
         int n = (int)numMissAmbig();
-        return RbPtr<RbLanguageObject>( new Natural(n) );
+        return new Natural(n);
         }
     else if (name == "excludechar")
         {
-        const RbPtr<RbLanguageObject>& argument = (*args)[1]->getValue();
+        RbLanguageObject* argument = (*args)[1]->getValue();
         if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) 
             {
-            int n = static_cast<const Natural*>( (const RbObject*)argument )->getValue();
+            int n = static_cast<const Natural*>( argument )->getValue();
             deletedCharacters.insert( n );
             }
         else if ( argument->isTypeSpec( TypeSpec(VectorNatural_name) ) ) 
             {
-            std::vector<unsigned int> x = static_cast<const VectorNatural*>( (const RbObject*)argument )->getValue();
+            std::vector<unsigned int> x = static_cast<const VectorNatural*>( argument )->getValue();
             for ( size_t i=0; i<x.size(); i++ )
                 deletedCharacters.insert( x[i] );
             }
@@ -291,7 +291,7 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
         int nt = (int)getNumberOfTaxa();
         for (int i=0; i<nt; i++)
             {
-            RbPtr<const TaxonData> taxonData = getTaxonData(i);
+            const TaxonData* taxonData = getTaxonData(i);
             std::string taxonName = getTaxonNameWithIndex(i);
             int nc = (int)taxonData->getNumberOfCharacters();
             std::cout << "   " << taxonName << std::endl;
@@ -315,7 +315,7 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
     else if (name == "ishomologous")
         {
         bool ih = getIsHomologyEstablished();
-        return RbPtr<RbLanguageObject>( new RbBoolean(ih) );
+        return new RbBoolean(ih);
         }
 
     return ConstantMemberObject::executeOperationSimple( name, args );
@@ -323,12 +323,12 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
 
 
 /** Return a pointer to a character element in the character matrix */
-RbPtr<const Character> CharacterData::getCharacter( size_t tn, size_t cn ) const {
+const Character* CharacterData::getCharacter( size_t tn, size_t cn ) const {
 
     if ( cn >= getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
 
-    return RbPtr<const Character>((*getTaxonData( tn ))[cn]);
+    return (*getTaxonData( tn ))[cn];
 }
 
 
@@ -367,68 +367,69 @@ const std::string& CharacterData::getFileName(void) const {
 
 
 /** Get member rules */
-RbPtr<const MemberRules> CharacterData::getMemberRules(void) const {
+const MemberRules* CharacterData::getMemberRules(void) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
-    return RbPtr<const MemberRules>( memberRules );
+    static MemberRules* memberRules = new MemberRules();
+    
+    return memberRules;
 }
 
 
 /** Get methods */
-RbPtr<const MethodTable> CharacterData::getMethods(void) const {
+const MethodTable* CharacterData::getMethods(void) const {
 
-    static RbPtr<MethodTable> methods( new MethodTable() );
-    static RbPtr<ArgumentRules> ncharArgRules( new ArgumentRules()               );
-    static RbPtr<ArgumentRules> namesArgRules( new ArgumentRules()               );
-    static RbPtr<ArgumentRules> ntaxaArgRules( new ArgumentRules()               );
-    static RbPtr<ArgumentRules> chartypeArgRules( new ArgumentRules()            );    
-    static RbPtr<ArgumentRules> nexcludedtaxaArgRules( new ArgumentRules()       );    
-    static RbPtr<ArgumentRules> nexcludedcharsArgRules( new ArgumentRules()      );    
-    static RbPtr<ArgumentRules> nincludedtaxaArgRules( new ArgumentRules()       );    
-    static RbPtr<ArgumentRules> nincludedcharsArgRules( new ArgumentRules()      );    
-    static RbPtr<ArgumentRules> excludedtaxaArgRules( new ArgumentRules()        );    
-    static RbPtr<ArgumentRules> excludedcharsArgRules( new ArgumentRules()       );    
-    static RbPtr<ArgumentRules> includedtaxaArgRules( new ArgumentRules()        );    
-    static RbPtr<ArgumentRules> includedcharsArgRules( new ArgumentRules()       );    
-    static RbPtr<ArgumentRules> nconstantpatternsArgRules( new ArgumentRules()   );    
-    static RbPtr<ArgumentRules> ncharswithambiguityArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> excludecharArgRules( new ArgumentRules()         );
-    static RbPtr<ArgumentRules> excludecharArgRules2( new ArgumentRules()        );
-    static RbPtr<ArgumentRules> showdataArgRules( new ArgumentRules()            );
-    static RbPtr<ArgumentRules> ishomologousArgRules( new ArgumentRules()        );    
+    static MethodTable* methods = new MethodTable();
+    static ArgumentRules* ncharArgRules = new ArgumentRules();
+    static ArgumentRules* namesArgRules = new ArgumentRules();
+    static ArgumentRules* ntaxaArgRules = new ArgumentRules();
+    static ArgumentRules* chartypeArgRules = new ArgumentRules();    
+    static ArgumentRules* nexcludedtaxaArgRules = new ArgumentRules();    
+    static ArgumentRules* nexcludedcharsArgRules = new ArgumentRules();    
+    static ArgumentRules* nincludedtaxaArgRules = new ArgumentRules();    
+    static ArgumentRules* nincludedcharsArgRules = new ArgumentRules();    
+    static ArgumentRules* excludedtaxaArgRules = new ArgumentRules();    
+    static ArgumentRules* excludedcharsArgRules = new ArgumentRules();    
+    static ArgumentRules* includedtaxaArgRules = new ArgumentRules();    
+    static ArgumentRules* includedcharsArgRules = new ArgumentRules();    
+    static ArgumentRules* nconstantpatternsArgRules = new ArgumentRules();    
+    static ArgumentRules* ncharswithambiguityArgRules = new ArgumentRules();
+    static ArgumentRules* excludecharArgRules = new ArgumentRules();
+    static ArgumentRules* excludecharArgRules2 = new ArgumentRules();
+    static ArgumentRules* showdataArgRules = new ArgumentRules();
+    static ArgumentRules* ishomologousArgRules = new ArgumentRules();    
     static bool methodsSet = false;
 
     if ( methodsSet == false ) 
         {
 
-        excludecharArgRules->push_back(        RbPtr<ArgumentRule>( new ValueRule(     "", Natural_name       ) ) );
-        excludecharArgRules2->push_back(       RbPtr<ArgumentRule>( new ValueRule(     "", VectorNatural_name ) ) );
+        excludecharArgRules->push_back(        new ValueRule(     "", Natural_name       ) );
+        excludecharArgRules2->push_back(       new ValueRule(     "", VectorNatural_name ) );
             
-        methods->addFunction("names",               RbPtr<RbFunction>( new MemberFunction(VectorString_name,  namesArgRules              ) ) );
-        methods->addFunction("nchar",               RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, ncharArgRules              ) ) );
-        methods->addFunction("ntaxa",               RbPtr<RbFunction>( new MemberFunction(Natural_name,       ntaxaArgRules              ) ) );
-        methods->addFunction("chartype",            RbPtr<RbFunction>( new MemberFunction(RbString_name,      chartypeArgRules           ) ) );
-        methods->addFunction("nexcludedtaxa",       RbPtr<RbFunction>( new MemberFunction(Natural_name,       nexcludedtaxaArgRules      ) ) );
-        methods->addFunction("nexcludedchars",      RbPtr<RbFunction>( new MemberFunction(Natural_name,       nexcludedcharsArgRules     ) ) );
-        methods->addFunction("nincludedtaxa",       RbPtr<RbFunction>( new MemberFunction(Natural_name,       nincludedtaxaArgRules      ) ) );
-        methods->addFunction("nincludedchars",      RbPtr<RbFunction>( new MemberFunction(Natural_name,       nincludedcharsArgRules     ) ) );
-        methods->addFunction("excludedtaxa",        RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, excludedtaxaArgRules       ) ) );
-        methods->addFunction("excludedchars",       RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, excludedcharsArgRules      ) ) );
-        methods->addFunction("includedtaxa",        RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, includedtaxaArgRules       ) ) );
-        methods->addFunction("includedchars",       RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, includedcharsArgRules      ) ) );
-        methods->addFunction("nconstantpatterns",   RbPtr<RbFunction>( new MemberFunction(Natural_name,       nconstantpatternsArgRules  ) ) );
-        methods->addFunction("ncharswithambiguity", RbPtr<RbFunction>( new MemberFunction(Natural_name,       ncharswithambiguityArgRules) ) );
-        methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules        ) ) );
-        methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules2       ) ) );
-        methods->addFunction("show",                RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        showdataArgRules           ) ) );
-        methods->addFunction("ishomologous",        RbPtr<RbFunction>( new MemberFunction(RbBoolean_name,     ishomologousArgRules       ) ) );
+        methods->addFunction("names",               new MemberFunction(VectorString_name,  namesArgRules              ) );
+        methods->addFunction("nchar",               new MemberFunction(VectorNatural_name, ncharArgRules              ) );
+        methods->addFunction("ntaxa",               new MemberFunction(Natural_name,       ntaxaArgRules              ) );
+        methods->addFunction("chartype",            new MemberFunction(RbString_name,      chartypeArgRules           ) );
+        methods->addFunction("nexcludedtaxa",       new MemberFunction(Natural_name,       nexcludedtaxaArgRules      ) );
+        methods->addFunction("nexcludedchars",      new MemberFunction(Natural_name,       nexcludedcharsArgRules     ) );
+        methods->addFunction("nincludedtaxa",       new MemberFunction(Natural_name,       nincludedtaxaArgRules      ) );
+        methods->addFunction("nincludedchars",      new MemberFunction(Natural_name,       nincludedcharsArgRules     ) );
+        methods->addFunction("excludedtaxa",        new MemberFunction(VectorNatural_name, excludedtaxaArgRules       ) );
+        methods->addFunction("excludedchars",       new MemberFunction(VectorNatural_name, excludedcharsArgRules      ) );
+        methods->addFunction("includedtaxa",        new MemberFunction(VectorNatural_name, includedtaxaArgRules       ) );
+        methods->addFunction("includedchars",       new MemberFunction(VectorNatural_name, includedcharsArgRules      ) );
+        methods->addFunction("nconstantpatterns",   new MemberFunction(Natural_name,       nconstantpatternsArgRules  ) );
+        methods->addFunction("ncharswithambiguity", new MemberFunction(Natural_name,       ncharswithambiguityArgRules) );
+        methods->addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules        ) );
+        methods->addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules2       ) );
+        methods->addFunction("show",                new MemberFunction(RbVoid_name,        showdataArgRules           ) );
+        methods->addFunction("ishomologous",        new MemberFunction(RbBoolean_name,     ishomologousArgRules       ) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
+        methods->setParentTable( MemberObject::getMethods() );
         methodsSet = true;
         }
 
-    return RbPtr<const MethodTable>( methods );
+    return methods;
 }
 
 
@@ -477,12 +478,12 @@ size_t CharacterData::getNumberOfTaxa(void) const {
 
 
 /** Get sequence with index tn */
-RbPtr<const TaxonData> CharacterData::getTaxonData( size_t tn ) const {
+const TaxonData* CharacterData::getTaxonData( size_t tn ) const {
 
     if ( tn >= getNumberOfTaxa() )
         throw RbException( "Taxon index out of range" );
 
-    RbPtr<const TaxonData> sequence( static_cast<const TaxonData*>( (RbLanguageObject*)elements[tn] ) );
+    const TaxonData* sequence = static_cast<const TaxonData*>( elements[tn] );
 
     return sequence;
 }
@@ -518,7 +519,7 @@ size_t CharacterData::indexOfTaxonWithName( std::string& s ) const {
 /** Is this character pattern constant? */
 bool CharacterData::isCharacterConstant(size_t idx) const {
 
-    RbPtr<const Character> f( NULL );
+    const Character* f = NULL;
     for ( size_t i=0; i<getNumberOfTaxa(); i++ ) {
 
         if ( isTaxonExcluded(i) == false ) {
@@ -526,7 +527,7 @@ bool CharacterData::isCharacterConstant(size_t idx) const {
             if ( f == NULL )
                 f = getCharacter( i, idx );
             else {
-                RbPtr<const Character> s = getCharacter( i , idx );
+                const Character* s = getCharacter( i , idx );
                 if ( (*f) != (*s) )
                     return false;
             }
@@ -554,7 +555,7 @@ bool CharacterData::isCharacterMissingOrAmbiguous(size_t idx) const {
         {
         if ( isTaxonExcluded(i) == false )
             {
-            RbPtr<const Character> c = getCharacter( i, idx );
+            const Character* c = getCharacter( i, idx );
             if ( c->isMissingOrAmbiguous() == true )
                 return true;
             }
@@ -585,7 +586,7 @@ bool CharacterData::isTaxonExcluded(std::string& s) const {
 
 
 /** Make copy of site column with index cn */
-RbPtr<Vector> CharacterData::makeSiteColumn( size_t cn ) const {
+Vector* CharacterData::makeSiteColumn( size_t cn ) const {
 
     if ( cn >= getNumberOfCharacters() )
         throw RbException( "Site index out of range" );
@@ -593,7 +594,7 @@ RbPtr<Vector> CharacterData::makeSiteColumn( size_t cn ) const {
     if ( getNumberOfTaxa() == 0 )
         throw RbException( "Character matrix is empty" );
 
-    RbPtr<Vector> temp( static_cast<Vector*>( ( (const RbObject*)(*members)[0]->getValue() )->clone() ) );
+    Vector* temp = static_cast<Vector*>( ( (*members)[0]->getValue() )->clone() );
     temp->clear();
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
         temp->push_back( RbPtr<RbObject>( getCharacter( i, cn )->clone() ) );
@@ -685,7 +686,7 @@ std::string CharacterData::richInfo(void) const {
 void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
     
     if (var->isTypeSpec(TypeSpec(TaxonData_name))) {
-        RbPtr<TaxonData> seq( static_cast<TaxonData*>( var ) );
+        TaxonData* seq = static_cast<TaxonData*>( var );
         
         sequenceNames.erase(sequenceNames.begin() + index);
         sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());

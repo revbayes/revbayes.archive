@@ -16,7 +16,6 @@
 #ifndef SyntaxBinaryExpr_H
 #define SyntaxBinaryExpr_H
 
-#include "RbPtr.h"
 #include "SyntaxElement.h"
 
 #include <iostream>
@@ -42,8 +41,8 @@ class SyntaxBinaryExpr : public SyntaxElement {
 
         // Constructors and destructor
                                 SyntaxBinaryExpr(SyntaxBinaryExpr::operatorT    op,
-                                             RbPtr<SyntaxElement>               lhs,
-                                             RbPtr<SyntaxElement>               rhs);   //!< Standard constructor 
+                                             SyntaxElement*               lhs,
+                                             SyntaxElement*               rhs);   //!< Standard constructor 
                                 SyntaxBinaryExpr(const SyntaxBinaryExpr& x);            //!< Copy constructor
         virtual                ~SyntaxBinaryExpr();                                     //!< Destroy operands
 
@@ -58,11 +57,12 @@ class SyntaxBinaryExpr : public SyntaxElement {
         void                    print(std::ostream& o) const;                           //!< Print info about object
 
         // Regular functions
-        RbPtr<Variable>         evaluateContent(const RbPtr<Environment>& env);         //!< Get semantic value
+        Variable*               evaluateContent(Environment& env);                      //!< Get semantic value
+        Variable*               evaluateContent(void);                                  //!< Get semantic value
 
     protected:
-        RbPtr<SyntaxElement>    leftOperand;                                            //!< The left operand
-        RbPtr<SyntaxElement>    rightOperand;                                           //!< The right operand
+        SyntaxElement*          leftOperand;                                            //!< The left operand
+        SyntaxElement*          rightOperand;                                           //!< The right operand
         enum operatorT          operation;                                              //!< The type of operation
     
     private:

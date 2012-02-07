@@ -41,7 +41,7 @@ public:
     virtual const VectorString&         getClass(void) const;                                           //!< Get class vector
 
     // Member variable rules
-    virtual RbPtr<const MemberRules>    getMemberRules(void) const;                                     //!< Get member rules
+    virtual const MemberRules*          getMemberRules(void) const;                                     //!< Get member rules
 
     // MoveSimple functions
     void                                acceptMove(void);				                                //!< Accept the move, update statistics
@@ -49,7 +49,7 @@ public:
     void                                rejectMove(void);                                               //!< Reject the move
 
 protected:
-    MoveSimple(RbPtr<const MemberRules> memberRules);                                                   //!< Default constructor
+    MoveSimple(const MemberRules* memberRules);                                                   //!< Default constructor
     MoveSimple(const MoveSimple &ms);                                                                   //!< Copy constructor
 
     // Functions you have to override

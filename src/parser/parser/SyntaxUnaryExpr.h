@@ -40,7 +40,7 @@ class SyntaxUnaryExpr : public SyntaxElement {
         static std::string      opCode[];                                                               //!< Operator codes for printing
 
         // Constructors and destructor
-                                SyntaxUnaryExpr(SyntaxUnaryExpr::operatorT op, RbPtr<SyntaxElement> expr); //!< Standard constructor 
+                                SyntaxUnaryExpr(SyntaxUnaryExpr::operatorT op, SyntaxElement* expr);    //!< Standard constructor 
                                 SyntaxUnaryExpr(const SyntaxUnaryExpr& x);                              //!< Copy constructor
 	    virtual                ~SyntaxUnaryExpr();                                                      //!< Destroy operands
 
@@ -55,10 +55,11 @@ class SyntaxUnaryExpr : public SyntaxElement {
         void                    print(std::ostream& o) const;                                           //!< Print info about object
 
         // Regular functions
-        RbPtr<Variable>         evaluateContent(const RbPtr<Environment>& env);                         //!< Get semantic value
+        Variable*               evaluateContent(void);                                                  //!< Get semantic value
+        Variable*               evaluateContent(Environment& env);                                      //!< Get semantic value
 
     protected:
-        RbPtr<SyntaxElement>    expression;                                                             //!< The expression
+        SyntaxElement*          expression;                                                             //!< The expression
         enum operatorT          operation;                                                              //!< The type of operation
     
     private:

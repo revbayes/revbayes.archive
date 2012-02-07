@@ -26,7 +26,7 @@
 
 
 /** Constructor */
-MoveSimple::MoveSimple(RbPtr<const MemberRules> memberRules) : Move(memberRules) {
+MoveSimple::MoveSimple(const MemberRules* memberRules) : Move(memberRules) {
 
 //    if ( !members.existsVariable("variable") )
 //        throw RbException( "A simple move must have a member called 'variable'" );
@@ -47,7 +47,7 @@ void MoveSimple::acceptMove(void) {
 //    std::cout << "Accept move\n";
     accept();
     numAccepted++;
-    for (std::vector<RbPtr<StochasticNode> >::iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<StochasticNode*>::iterator it=nodes.begin(); it!=nodes.end(); it++) {
         (*it)->keep();
     }
 }
@@ -62,28 +62,28 @@ const VectorString& MoveSimple::getClass(void) const {
 
 
 /** Return member rules */
-RbPtr<const MemberRules> MoveSimple::getMemberRules( void ) const {
+const MemberRules* MoveSimple::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
 		{
         /* Inherit weight from Move */
-        RbPtr<const MemberRules> inheritedRules = Move::getMemberRules();
+        const MemberRules* inheritedRules = Move::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
         rulesSet = true;
 		}
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
 /** Perform the move */
 double MoveSimple::performMove(double& lnProbabilityRatio) {
 
-    const RbPtr<StochasticNode>& nodePtr = nodes[0];
+    StochasticNode* nodePtr = nodes[0];
     
 //    std::cout << "Perform simple move (" << getClass()[0] << ") on node \"" << nodePtr->getName() << "\"\n";
 

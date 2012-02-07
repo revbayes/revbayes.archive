@@ -24,8 +24,6 @@
 #include <set>
 #include <vector>
 
-#include "RbPtr.h"
-
 #define GLOBAL_RNG RandomNumberFactory::randomNumberFactoryInstance().getGlobalRandomNumberGenerator()
 #define NEW_RNG    RandomNumberFactory::randomNumberFactoryInstance().getRandomNumberGenerator()
 
@@ -38,10 +36,10 @@ class RandomNumberFactory {
                                                         static RandomNumberFactory singleRandomNumberFactory;
                                                         return singleRandomNumberFactory;
                                                     }
-		void                                        deleteRandomNumberGenerator(RbPtr<RandomNumberGenerator> r);                                 //!< Return a random number object to the pool
-		RbPtr<RandomNumberGenerator>                getRandomNumberGenerator(void);                                                        //!< Return a pointer to a random number object
-		RbPtr<RandomNumberGenerator>                getRandomNumberGenerator(std::vector<unsigned int> s);                                 //!< Return a pointer to a random number object witha  specific seed
-		RbPtr<RandomNumberGenerator>                getGlobalRandomNumberGenerator(void) { return seedGenerator; }                         //!< Return a pointer to the global random number object
+		void                                        deleteRandomNumberGenerator(RandomNumberGenerator* r);                                 //!< Return a random number object to the pool
+		RandomNumberGenerator*                      getRandomNumberGenerator(void);                                                        //!< Return a pointer to a random number object
+		RandomNumberGenerator*                      getRandomNumberGenerator(std::vector<unsigned int> s);                                 //!< Return a pointer to a random number object witha  specific seed
+		RandomNumberGenerator*                      getGlobalRandomNumberGenerator(void) { return seedGenerator; }                         //!< Return a pointer to the global random number object
 		void                                        setFactorySeed(unsigned int &seed1, unsigned int &seed2) { I1 = seed1; I2 = seed2; }   //!< Set the seed for the factory
 
 	private:
@@ -50,8 +48,8 @@ class RandomNumberFactory {
                                                     RandomNumberFactory&operator=(const RandomNumberFactory&);                             //!< Assignment operator
                                                    ~RandomNumberFactory(void);                                                             //!< Destructor
 		void                                        setSeed(void);                                                                         //!< Set the seeds of the factory using the current time
-		RbPtr<RandomNumberGenerator>                seedGenerator;                                                                         //!< A random number object that generates seeds
-		std::set<RbPtr<RandomNumberGenerator> >     allocatedRandomNumbers;                                                                //!< The pool of random number objects
+		RandomNumberGenerator*                      seedGenerator;                                                                         //!< A random number object that generates seeds
+		std::set<RandomNumberGenerator*>            allocatedRandomNumbers;                                                                //!< The pool of random number objects
 		unsigned int                     I1, I2;                                                                                //!< The factory seeds
 };
 

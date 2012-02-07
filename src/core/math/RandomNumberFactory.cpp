@@ -33,7 +33,7 @@ RandomNumberFactory::RandomNumberFactory(void) {
     std::vector<unsigned int> s;
     s.push_back(I1);
     s.push_back(I2);
-    seedGenerator = RbPtr<RandomNumberGenerator>( new RandomNumberGenerator(s) );
+    seedGenerator = new RandomNumberGenerator(s);
 }
 
 
@@ -44,14 +44,16 @@ RandomNumberFactory::~RandomNumberFactory(void) {
 
 
 /** Delete a random number object (remove it from the pool too) */
-void RandomNumberFactory::deleteRandomNumberGenerator(RbPtr<RandomNumberGenerator> r) {
+void RandomNumberFactory::deleteRandomNumberGenerator(RandomNumberGenerator* r) {
 
     allocatedRandomNumbers.erase( r );
+    
+    delete r;
 }
 
 
 /** Return a pointer to a random number object */
-RbPtr<RandomNumberGenerator> RandomNumberFactory::getRandomNumberGenerator(void) {
+RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(void) {
 
     unsigned int s1 = (unsigned int)(seedGenerator->uniform01()*UINT_MAX);
     unsigned int s2 = (unsigned int)(seedGenerator->uniform01()*UINT_MAX);
@@ -59,18 +61,18 @@ RbPtr<RandomNumberGenerator> RandomNumberFactory::getRandomNumberGenerator(void)
     std::vector<unsigned int> s;
     s.push_back(s1);
     s.push_back(s2);
-    RbPtr<RandomNumberGenerator> r( new RandomNumberGenerator( s ) );
+    RandomNumberGenerator* r = new RandomNumberGenerator( s );
     allocatedRandomNumbers.insert( r );
     return r;
 }
 
 
 /** Return a pointer to a random number object with a specific set of seeds */
-RbPtr<RandomNumberGenerator> RandomNumberFactory::getRandomNumberGenerator(std::vector<unsigned int> s) {
+RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(std::vector<unsigned int> s) {
 
     if (s.size() != 2)
         throw(RbException("Problem returning random number generator: Too few seeds."));
-    RbPtr<RandomNumberGenerator> r( new RandomNumberGenerator( s ) );
+    RandomNumberGenerator* r = new RandomNumberGenerator( s );
     allocatedRandomNumbers.insert( r );
     return r;
 }

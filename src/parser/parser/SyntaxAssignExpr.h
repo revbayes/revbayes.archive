@@ -35,17 +35,17 @@ class SyntaxAssignExpr : public SyntaxElement {
         static std::string opCode[];                                                                    //!< Operator codes for printing
 
                                     SyntaxAssignExpr(operatorT                  op,
-                                                     RbPtr<SyntaxVariable>      var,
-                                                     RbPtr<SyntaxElement>       expr);                  //!< Constructor with lhs = variable
+                                                     SyntaxVariable*            var,
+                                                     SyntaxElement*             expr);                  //!< Constructor with lhs = variable
                                     SyntaxAssignExpr(operatorT                  op,
-                                                     RbPtr<SyntaxFunctionCall>  fxnCall,
-                                                     RbPtr<SyntaxElement>       expr);                  //!< Constructor with lhs = function call
+                                                     SyntaxFunctionCall*        fxnCall,
+                                                     SyntaxElement*             expr);                  //!< Constructor with lhs = function call
                                     SyntaxAssignExpr(operatorT                  op,
-                                                     RbPtr<SyntaxVariable>      var,
-                                                     RbPtr<SyntaxFunctionCall>  expr);                  //!< Constructor with lhs = variable
+                                                     SyntaxVariable*            var,
+                                                     SyntaxFunctionCall*        expr);                  //!< Constructor with lhs = variable
                                     SyntaxAssignExpr(operatorT                  op,
-                                                     RbPtr<SyntaxFunctionCall>  fxnCall,
-                                                     RbPtr<SyntaxFunctionCall>  expr);                  //!< Constructor with lhs = function call
+                                                     SyntaxFunctionCall*        fxnCall,
+                                                     SyntaxFunctionCall*        expr);                  //!< Constructor with lhs = function call
                                     SyntaxAssignExpr(const SyntaxAssignExpr& x);                        //!< Copy constructor
 	    virtual                    ~SyntaxAssignExpr();                                                 //!< Destructor
 
@@ -60,12 +60,13 @@ class SyntaxAssignExpr : public SyntaxElement {
         void                        print(std::ostream& o) const;                                       //!< Print info about object
 
     // Regular functions
-        RbPtr<Variable>             evaluateContent(const RbPtr<Environment>& env);                     //!< Get semantic value
+        Variable*                   evaluateContent(Environment& env);                                  //!< Get semantic value
+        Variable*                   evaluateContent(void);                                              //!< Get semantic value
 
     protected:
-        RbPtr<SyntaxVariable>       variable;                                                           //!< A lhs variable (or NULL)
-        RbPtr<SyntaxFunctionCall>   functionCall;                                                       //!< A lhs function call (or NULL)
-        RbPtr<SyntaxElement>        expression;                                                         //!< The rhs expression
+        SyntaxVariable*             variable;                                                           //!< A lhs variable (or NULL)
+        SyntaxFunctionCall*         functionCall;                                                       //!< A lhs function call (or NULL)
+        SyntaxElement*              expression;                                                         //!< The rhs expression
         SyntaxAssignExpr::operatorT opType;                                                             //!< The type of assignment
     
     private:

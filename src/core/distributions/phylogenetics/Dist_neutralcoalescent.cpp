@@ -66,7 +66,7 @@ Dist_neutralcoalescent::Dist_neutralcoalescent( void ) : Distribution( getMember
 */
 double Dist_neutralcoalescent::drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize) {
     double rate = RbMath::kchoose2( int(numNodes) );
-    double tmrca = RbStatistics::Exponential::rv(rate, GLOBAL_RNG) * haploidPopSize;
+    double tmrca = RbStatistics::Exponential::rv(rate, *GLOBAL_RNG) * haploidPopSize;
     return tmrca;
 }
 
@@ -86,9 +86,9 @@ const VectorString& Dist_neutralcoalescent::getClass( void ) const {
 
 
 /** Get member variable rules */
-RbPtr<const MemberRules> Dist_neutralcoalescent::getMemberRules( void ) const {
+const MemberRules* Dist_neutralcoalescent::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet )
@@ -97,14 +97,14 @@ RbPtr<const MemberRules> Dist_neutralcoalescent::getMemberRules( void ) const {
         // memberRules.push_back( new ValueRule( "lambda"   , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "mu"       , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "rho"      , Probability_name ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "tipNames", VectorString_name) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "haploidPopSize" , Natural_name, RbPtr<RbLanguageObject>( new Natural(1) ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "noTaxa" , RealPos_name ) ) );
+        memberRules->push_back( new ValueRule( "tipNames", VectorString_name) );
+        memberRules->push_back( new ValueRule( "haploidPopSize" , Natural_name, new Natural(1) ) );
+        memberRules->push_back( new ValueRule( "noTaxa" , RealPos_name ) );
 
         rulesSet = true;
     }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -141,10 +141,10 @@ const TypeSpec& Dist_neutralcoalescent::getVariableType( void ) const {
  */
 double Dist_neutralcoalescent::lnPdf( const RbLanguageObject *value ) const {
 
-    RbPtr<const VectorRealPos> waitingTimes     = RbPtr<const VectorRealPos>( static_cast<const VectorRealPos*>( value ) );
-    size_t haploidPopSize                       =                             static_cast<const Natural*      >( (const RbObject*)getMemberValue( "haploidPopSize" ) )->getValue();
-    size_t nWaitingTimes                        = waitingTimes->size();
-    size_t k                                    = nWaitingTimes + 1;
+    const VectorRealPos* waitingTimes   = static_cast<const VectorRealPos*>( value );
+    size_t haploidPopSize               = static_cast<const Natural*      >( getMemberValue( "haploidPopSize" ) )->getValue();
+    size_t nWaitingTimes                = waitingTimes->size();
+    size_t k                            = nWaitingTimes + 1;
 
     double log_p = 0.0;
 
@@ -197,7 +197,7 @@ double Dist_neutralcoalescent::pdf( const RbLanguageObject *value ) const {
  *
  * @return      Generate random coalescent tree
  */
-RbPtr<RbLanguageObject> Dist_neutralcoalescent::rv( void ) {
+RbLanguageObject* Dist_neutralcoalescent::rv( void ) {
 
 //    // Get the parameters
 //    // double b                    = static_cast<const RealPos*     >( getMemberValue( "lambda"   ) )->getValue();
@@ -279,7 +279,7 @@ RbPtr<RbLanguageObject> Dist_neutralcoalescent::rv( void ) {
 //    }
 //    return plate;
     
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return NULL;
 }
 
 

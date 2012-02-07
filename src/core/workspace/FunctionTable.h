@@ -36,9 +36,9 @@ const std::string FunctionTable_name = "Function Table";
 class FunctionTable : public RbInternal {
 
     public:
-        FunctionTable(RbPtr<FunctionTable> parent=RbPtr<FunctionTable>::getNullPtr());                                                  //!< Empty table
+        FunctionTable(FunctionTable* parent = NULL);                                                                                    //!< Empty table
         FunctionTable(const FunctionTable& x);                                                                                          //!< Copy constructor
-        virtual                                 ~FunctionTable();                                                                        //!< Delete functions
+        virtual                                 ~FunctionTable();                                                                       //!< Delete functions
 
         // Assignment operator
         FunctionTable&                          operator=(const FunctionTable& x);                                                      //!< Assignment operator 
@@ -52,23 +52,23 @@ class FunctionTable : public RbInternal {
         void                                    printValue(std::ostream& o) const;                                                      //!< Print table for user
 
         // FunctionTable functions
-        virtual void                            addFunction(const std::string name, RbPtr<RbFunction> func);                            //!< Add function
+        virtual void                            addFunction(const std::string name, RbFunction* func);                                  //!< Add function
         void                                    clear(void);                                                                            //!< Clear table
-        RbPtr<RbLanguageObject>                 executeFunction(const std::string&                   name,
-                                                                const std::vector<RbPtr<Argument> >& args);                             //!< Evaluate function (once)
+        RbLanguageObject*                       executeFunction(const std::string&                   name,
+                                                                const std::vector<Argument* >& args);                                   //!< Evaluate function (once)
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
-        std::vector<RbPtr<RbFunction> >         findFunctions(const std::string& name) const;                                           //!< Return functions matching name
-        RbPtr<RbFunction>                       getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args);        //!< Get function (a copy)
-        bool                                    isDistinctFormal(RbPtr<const ArgumentRules> x, RbPtr<const ArgumentRules> y) const;     //!< Are formals unique?
-        void                                    setParentTable(RbPtr<const FunctionTable> table) { parentTable = table; }               //!< Set parent table
+        std::vector<RbFunction* >               findFunctions(const std::string& name) const;                                           //!< Return functions matching name
+        RbFunction*                             getFunction(const std::string& name, const std::vector<Argument* >& args);              //!< Get function (a copy)
+        bool                                    isDistinctFormal(const ArgumentRules* x, const ArgumentRules* y) const;                 //!< Are formals unique?
+        void                                    setParentTable(const FunctionTable* table) { parentTable = table; }                     //!< Set parent table
 
     protected:
-        RbPtr<RbFunction>                       findFunction(const std::string&                     name,
-                                                             const std::vector<RbPtr<Argument> >&   args);                              //!< Find function, process args
+        RbFunction*                             findFunction(const std::string&                     name,
+                                                             const std::vector<Argument* >&   args);                                    //!< Find function, process args
         
         // Member variables
-        std::multimap<std::string, RbPtr<RbFunction> >  table;                                                                          //!< Table of functions
-        RbPtr<const FunctionTable>                      parentTable;                                                                    //!< Enclosing table
+        std::multimap<std::string, RbFunction* >  table;                                                                                //!< Table of functions
+        const FunctionTable*                    parentTable;                                                                            //!< Enclosing table
     
     private:
         static const TypeSpec       typeSpec;

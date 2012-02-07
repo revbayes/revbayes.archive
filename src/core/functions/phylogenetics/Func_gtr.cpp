@@ -42,11 +42,11 @@ Func_gtr* Func_gtr::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_gtr::executeFunction(void) {
+RbLanguageObject* Func_gtr::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    RbPtr<Simplex> r( static_cast<Simplex*>( (RbObject*)(*args)[0]->getValue() ) );
-    RbPtr<Simplex> f( static_cast<Simplex*>( (RbObject*)(*args)[1]->getValue() ) );
+    Simplex* r = static_cast<Simplex*>( (*args)[0]->getValue() );
+    Simplex* f = static_cast<Simplex*>( (*args)[1]->getValue() );
 
     // initialize the number of states
     const size_t nStates = 4;
@@ -71,7 +71,7 @@ RbPtr<RbLanguageObject> Func_gtr::executeFunction(void) {
         }
 
     // construct a rate matrix of the correct dimensions
-    RbPtr<RateMatrix> m( new RateMatrix(nStates) );
+    RateMatrix* m = new RateMatrix(nStates);
 
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0, k=0; i<nStates; i++)
@@ -112,19 +112,19 @@ RbPtr<RbLanguageObject> Func_gtr::executeFunction(void) {
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_gtr::getArgumentRules(void) const {
+const ArgumentRules* Func_gtr::getArgumentRules(void) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 
     if (!rulesSet)
         {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "rates", Simplex_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "freqs", Simplex_name ) ) );
+        argumentRules->push_back( new ValueRule( "rates", Simplex_name ) );
+        argumentRules->push_back( new ValueRule( "freqs", Simplex_name ) );
         rulesSet = true;
         }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

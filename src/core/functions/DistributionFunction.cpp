@@ -36,10 +36,10 @@
 const TypeSpec DistributionFunction::typeSpec(DistributionFunction_name);
 
 /** Constructor */
-DistributionFunction::DistributionFunction( RbPtr<Distribution> dist, FuncType funcType ) : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real_name : RealPos_name ) : dist->getVariableType() ) {
+DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcType ) : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real_name : RealPos_name ) : dist->getVariableType() ) {
 
     /* Ininitalize the argument rules */
-    argumentRules = RbPtr<ArgumentRules>( new ArgumentRules() );
+    argumentRules = new ArgumentRules();
     
     /* Set the distribution */
     distribution = dist;
@@ -48,21 +48,21 @@ DistributionFunction::DistributionFunction( RbPtr<Distribution> dist, FuncType f
     functionType = funcType;
 
     /* Get the distribution parameter rules and set type to value argument */
-    RbPtr<const ArgumentRules> memberRules = dist->getMemberRules();
+    const ArgumentRules* memberRules = dist->getMemberRules();
     for ( ArgumentRules::const_iterator i = memberRules->begin(); i != memberRules->end(); i++ ) {
         // check if this rule has a default value
         if ((*i)->hasDefault()) {
-            argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), RbPtr<RbLanguageObject>( (*i)->getDefaultVariable()->getValue()->clone() ) ) ) );
+            argumentRules->push_back( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), (*i)->getDefaultVariable()->getValue()->clone() ) );
         } else {
-            argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) ) );
+            argumentRules->push_back(new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
         }
     }
 
     /* Modify argument rules based on function type */
     if (functionType == DENSITY) {
 
-        argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "x"  , distribution->getVariableType() ) ) );
-        argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
+        argumentRules->insert( argumentRules->begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
+        argumentRules->push_back(                      new ValueRule( "log", new RbBoolean(false)            ) );
     }
     else if (functionType == RVALUE) {
 
@@ -70,11 +70,11 @@ DistributionFunction::DistributionFunction( RbPtr<Distribution> dist, FuncType f
     }
     else if (functionType == PROB) {
 
-        argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "q"  , distribution->getVariableType() ) ) );
+        argumentRules->insert( argumentRules->begin(), new ValueRule( "q"  , distribution->getVariableType() ) );
     }
     else if (functionType == QUANTILE) {
 
-        argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "p"  , RealPos_name                    ) ) );
+        argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos_name                    ) );
     }
 }
 
@@ -83,19 +83,19 @@ DistributionFunction::DistributionFunction( RbPtr<Distribution> dist, FuncType f
 DistributionFunction::DistributionFunction( const DistributionFunction& x ) : RbFunction(x), returnType( x.returnType ) {
 
     // copy the argument rules
-    argumentRules = RbPtr<ArgumentRules>( new ArgumentRules() );
-    for (std::vector<RbPtr<ArgumentRule> >::const_iterator it = x.argumentRules->begin(); it != x.argumentRules->end(); it++) {
+    argumentRules = new ArgumentRules();
+    for (std::vector<ArgumentRule* >::const_iterator it = x.argumentRules->begin(); it != x.argumentRules->end(); it++) {
         argumentRules->push_back( (*it)->clone() );
     }
     
-    distribution  = RbPtr<Distribution>( x.distribution->clone() );
+    distribution  = x.distribution->clone();
     functionType  = x.functionType;
 
     /* Modify argument rules based on function type */
     if (functionType == DENSITY) {
         
-        argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "x"  , distribution->getVariableType() ) ) );
-        argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
+        argumentRules->insert( argumentRules->begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
+        argumentRules->push_back(                      new ValueRule( "log", new RbBoolean(false)            ) );
     }
     else if (functionType == RVALUE) {
         
@@ -103,11 +103,11 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
     }
     else if (functionType == PROB) {
         
-        argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "q"  , distribution->getVariableType() ) ) );
+        argumentRules->insert( argumentRules->begin(), new ValueRule( "q"  , distribution->getVariableType() ) );
     }
     else if (functionType == QUANTILE) {
         
-        argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "p"  , RealPos_name                    ) ) );
+        argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos_name                    ) );
     }
 }
 
@@ -130,19 +130,19 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
             throw RbException( "Invalid assignment involving distributions on different types of random variables" );
         
         // copy the argument rules
-        argumentRules = RbPtr<ArgumentRules>( new ArgumentRules() );
-        for (std::vector<RbPtr<ArgumentRule> >::const_iterator it = x.argumentRules->begin(); it != x.argumentRules->end(); it++) {
+        argumentRules = new ArgumentRules();
+        for (std::vector<ArgumentRule* >::const_iterator it = x.argumentRules->begin(); it != x.argumentRules->end(); it++) {
             argumentRules->push_back( (*it)->clone() );
         }
         
-        distribution  = RbPtr<Distribution>( x.distribution->clone() );
+        distribution  = x.distribution->clone();
         functionType  = x.functionType;
 
         /* Modify argument rules based on function type */
         if (functionType == DENSITY) {
             
-            argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "x"  , distribution->getVariableType() ) ) );
-            argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
+            argumentRules->insert( argumentRules->begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
+            argumentRules->push_back(                      new ValueRule( "log", new RbBoolean(false)            ) );
         }
         else if (functionType == RVALUE) {
             
@@ -150,11 +150,11 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
         }
         else if (functionType == PROB) {
             
-            argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "q"  , distribution->getVariableType() ) ) );
+            argumentRules->insert( argumentRules->begin(), new ValueRule( "q"  , distribution->getVariableType() ) );
         }
         else if (functionType == QUANTILE) {
             
-            argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "p"  , RealPos_name                    ) ) );
+            argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos_name                    ) );
         }
     }
 
@@ -170,18 +170,18 @@ DistributionFunction* DistributionFunction::clone( void ) const {
 
 
 /** Execute operation: switch based on type */
-RbPtr<RbLanguageObject> DistributionFunction::executeFunction( void ) {
+RbLanguageObject* DistributionFunction::executeFunction( void ) {
 
     if ( functionType == DENSITY ) {
 
-        if ( static_cast<const RbBoolean*>( (RbObject*)(*args)["log"]->getValue() )->getValue() == false )
-            return RbPtr<RbLanguageObject>( new RealPos( distribution->pdf  ( (const RbLanguageObject*)(*args)[0]->getValue() ) ) );
+        if ( static_cast<const RbBoolean*>( (*args)["log"]->getValue() )->getValue() == false )
+            return new RealPos( distribution->pdf  ( (*args)[0]->getValue() ) );
         else
-            return RbPtr<RbLanguageObject>( new Real   ( distribution->lnPdf( (const RbLanguageObject*)(*args)[0]->getValue() ) ) );
+            return new Real( distribution->lnPdf( (*args)[0]->getValue() ) );
     }
     else if (functionType == RVALUE) {
 
-        RbPtr<RbLanguageObject> draw = distribution->rv();
+        RbLanguageObject* draw = distribution->rv();
         
         return draw;
     }
@@ -191,8 +191,8 @@ RbPtr<RbLanguageObject> DistributionFunction::executeFunction( void ) {
     }
     else if (functionType == QUANTILE) {
 
-        double    prob  = static_cast<const RealPos*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
-        RbPtr<RbLanguageObject> quant( static_cast<DistributionContinuous*>( (Distribution*)distribution )->quantile( prob ) );
+        double    prob  = static_cast<const RealPos*>( (*args)[0]->getValue() )->getValue();
+        RbLanguageObject* quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
         
         return quant;
     }
@@ -202,9 +202,9 @@ RbPtr<RbLanguageObject> DistributionFunction::executeFunction( void ) {
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> DistributionFunction::getArgumentRules(void) const {
+const ArgumentRules* DistributionFunction::getArgumentRules(void) const {
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 
@@ -229,7 +229,7 @@ const TypeSpec& DistributionFunction::getTypeSpec(void) const {
 }
 
 /** Process arguments */
-bool DistributionFunction::processArguments( std::vector<RbPtr<Argument> > args, RbPtr<VectorInteger> matchScore ) {
+bool DistributionFunction::processArguments( std::vector<Argument* > args, VectorInteger* matchScore ) {
 
     if ( !RbFunction::processArguments( args, matchScore ) )
         return false;

@@ -43,40 +43,36 @@ Func_clamp* Func_clamp::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_clamp::executeFunction( void ) {
+RbLanguageObject* Func_clamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
-    RbPtr<DAGNode> theDagNode = (*args)[0]->getDagNode();
-//    while (theDagNode->isType(DeterministicNode_name)) {
-//        RbPtr<RbLanguageObject> val = static_cast<DeterministicNode*>( (DAGNode*)theDagNode )->getFunction()->execute();
-//        theDagNode = 
-//    }
+    DAGNode* theDagNode = (*args)[0]->getDagNode();
     
-    RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*) theDagNode) );
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>( theDagNode );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
     // The following call will throw an error if the value type is wrong
-    theNode->clamp( RbPtr<RbLanguageObject>( (*args)[1]->getValue()->clone() ) );
+    theNode->clamp( (*args)[1]->getValue()->clone() );
 
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return NULL;
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_clamp::getArgumentRules( void ) const {
+const ArgumentRules* Func_clamp::getArgumentRules( void ) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "variable", RbObject_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "value",    RbObject_name ) ) );
+        argumentRules->push_back( new ValueRule ( "variable", RbObject_name ) );
+        argumentRules->push_back( new ValueRule ( "value",    RbObject_name ) );
         rulesSet = true;
     }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

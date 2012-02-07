@@ -34,14 +34,14 @@ class SyntaxStatement : public SyntaxElement {
         // Constructors and destructor
                                                     SyntaxStatement(statementT type);                                   //!< NEXT, BREAK, RETURN statements
                                                     SyntaxStatement(SyntaxStatement::statementT type,
-                                                                    RbPtr<SyntaxElement>              expr);            //!< RETURN statement
+                                                                    SyntaxElement*              expr);                  //!< RETURN statement
                                                     SyntaxStatement(statementT                  type,
-                                                                    RbPtr<SyntaxElement>              cond,
-                                                                    RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts);   //!< IF, FOR, WHILE statements
+                                                                    SyntaxElement*              cond,
+                                                                    std::list<SyntaxElement*>*  stmts);                 //!< IF, FOR, WHILE statements
                                                     SyntaxStatement(statementT                  type,
-                                                                    RbPtr<SyntaxElement>              expr,
-                                                                    RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts1,
-                                                                    RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts2);  //!< IF_ELSE statements
+                                                                    SyntaxElement*              expr,
+                                                                    std::list<SyntaxElement*>*  stmts1,
+                                                                    std::list<SyntaxElement*>*  stmts2);                //!< IF_ELSE statements
                                                     SyntaxStatement(const SyntaxStatement& x);                          //!< Copy constructor
 	    virtual                                    ~SyntaxStatement();                                                  //!< Destroy operands
 
@@ -56,15 +56,16 @@ class SyntaxStatement : public SyntaxElement {
         void                                        print(std::ostream& o) const;                                       //!< Print info about object
 
         // Regular functions
-        RbPtr<Variable>                             evaluateContent(const RbPtr<Environment>& env);                     //!< Get semantic value
+        Variable*                                   evaluateContent(void);                                              //!< Get semantic value
+        Variable*                                   evaluateContent(Environment& env);                                  //!< Get semantic value
 
     protected:
-        bool                                        isTrue(const RbPtr<SyntaxElement>& expression, const RbPtr<Environment>& env) const;//!< Does expression evaluate to true?
+        bool                                        isTrue(SyntaxElement* expression, Environment& env) const;          //!< Does expression evaluate to true?
 
         enum statementT                             statementType;                                                      //!< The type of statement
-        RbPtr<SyntaxElement>                        expression;                                                         //!< Expression, conditional expr, or for condition
-        RbPtr<std::list<RbPtr<SyntaxElement> > >    statements1;                                                        //!< First set of statements
-        RbPtr<std::list<RbPtr<SyntaxElement> > >    statements2;                                                        //!< Second set of statements
+        SyntaxElement*                              expression;                                                         //!< Expression, conditional expr, or for condition
+        std::list<SyntaxElement*>*                  statements1;                                                        //!< First set of statements
+        std::list<SyntaxElement*>*                  statements2;                                                        //!< Second set of statements
     
     private:
         static const TypeSpec                       typeSpec;

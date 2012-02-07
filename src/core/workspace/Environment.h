@@ -31,7 +31,6 @@
 #include "DAGNode.h"
 #include "RbInternal.h"
 #include "RbLanguageObject.h"
-#include "RbPtr.h"
 #include "Variable.h"
 #include "VariableSlot.h"
 
@@ -67,7 +66,7 @@ class Environment : public RbInternal {
     
 public:
     Environment(void);                                                                                                      //!< Constructor of Environment with NULL parent
-    Environment(RbPtr<Environment> parentFr);                                                                                     //!< Constructor of Environment with parent
+    Environment(Environment* parentFr);                                                                                     //!< Constructor of Environment with parent
     Environment(const Environment &x);                                                                                      //!< Copy Constructor
     
     virtual                                ~Environment();                                                                          //!< Destrcutor
@@ -86,10 +85,10 @@ public:
     virtual std::string                     richInfo(void) const;                                                                   //!< Complete info to string
     
     // Regular functions
-    void                                    addVariable(const std::string& name, VariableSlot* slot);                         //!< Add variable
+    void                                    addVariable(const std::string& name, VariableSlot* slot);                               //!< Add variable
     void                                    addVariable(const std::string& name, Variable* var);                                    //!< Add variable
-    void                                    addVariable(const std::string& name, const TypeSpec &ts, Variable* var);          //!< Add variable
-    void                                    addVariable(const std::string& name, const TypeSpec& typeSp, RbPtr<DAGNode> variable);  //!< Add variable
+    void                                    addVariable(const std::string& name, const TypeSpec &ts, Variable* var);                //!< Add variable
+    void                                    addVariable(const std::string& name, const TypeSpec& typeSp, DAGNode* variable);        //!< Add variable
     void                                    addVariable(const std::string& name, const TypeSpec& typeSp);                           //!< Add variable
     void                                    clear(void);                                                                            //!< clears the variable table
     void                                    eraseVariable(const std::string& name);                                                 //!< Erase a variable
@@ -101,15 +100,15 @@ public:
     const std::string&                      getName(size_t i) const { return varNames[i]; }                                         //!< Get name at position i.
     const RbLanguageObject*                 getValue(const std::string& name) const;                                                //!< Convenient alternative for [name]->getValue()
     RbLanguageObject*                       getValue(const std::string& name);                                                      //!< Convenient alternative for [name]->getValue() (non-const to return non-const value)
-    virtual bool                            isSameOrParentOf(RbPtr<Environment> otherEnvironment) const;                            //!< Is the Environment same or parent of other Environment?
+    virtual bool                            isSameOrParentOf(const Environment& otherEnvironment) const;                            //!< Is the Environment same or parent of other Environment?
     void                                    setName(size_t i, const std::string &n);                                                //!< Replace the name of the i'th variable
-    void                                    setParentEnvironment(RbPtr<Environment> newEnvironment) { parentEnvironment = newEnvironment; }//!< Set parent Environment
+    void                                    setParentEnvironment(Environment* newEnvironment) { parentEnvironment = newEnvironment; }//!< Set parent Environment
     size_t                                  size(void) const { return varNames.size(); }                                            //!< Get size of variable table 
     
 protected:
     
     VariableTable                           variableTable;                                                                          //!< Variable table
-    RbPtr<Environment>                      parentEnvironment;                                                                      //!< Pointer to enclosing Environment
+    Environment*                            parentEnvironment;                                                                      //!< Pointer to enclosing Environment
     std::vector<std::string>                varNames;
     
 private:

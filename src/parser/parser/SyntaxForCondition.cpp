@@ -31,7 +31,7 @@
 const TypeSpec SyntaxForCondition::typeSpec(SyntaxForCondition_name);
 
 /** Standard constructor */
-SyntaxForCondition::SyntaxForCondition(RbPtr<RbString> identifier, RbPtr<SyntaxElement> inExpr) : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL), nextElement(-1) {
+SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr) : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL), nextElement(-1) {
 
     if ( inExpression == NULL ) {
         throw RbException("The 'in' expression of for loop is empty");
@@ -42,9 +42,9 @@ SyntaxForCondition::SyntaxForCondition(RbPtr<RbString> identifier, RbPtr<SyntaxE
 /** Deep copy constructor */
 SyntaxForCondition::SyntaxForCondition(const SyntaxForCondition& x) : SyntaxElement(x) {
 
-    varName                 = RbPtr<RbString>( new RbString(*(x.varName)) );
-    inExpression            = RbPtr<SyntaxElement>( x.inExpression->clone() );
-    vector                  = RbPtr<AbstractVector>( NULL );
+    varName                 = new RbString(*(x.varName));
+    inExpression            = x.inExpression->clone();
+    vector                  = NULL;
     nextElement             = -1;
 }
 
@@ -64,7 +64,7 @@ SyntaxForCondition& SyntaxForCondition::operator=(const SyntaxForCondition& x) {
 
         varName                  = x.varName;
         inExpression             = x.inExpression;
-        vector                   = RbPtr<AbstractVector>::getNullPtr();
+        vector                   = NULL;
         nextElement              = -1;
     }
 
@@ -93,7 +93,7 @@ SyntaxElement* SyntaxForCondition::clone () const {
 
 
 /** Finalize loop. */
-void SyntaxForCondition::finalizeLoop(const RbPtr<Environment>& env) {
+void SyntaxForCondition::finalizeLoop(void) {
 
     if ( nextElement < 0 )
         return;
@@ -103,19 +103,19 @@ void SyntaxForCondition::finalizeLoop(const RbPtr<Environment>& env) {
 
 
 /** Get next loop state */
-bool SyntaxForCondition::getNextLoopState(const RbPtr<Environment>& env) {
+bool SyntaxForCondition::getNextLoopState(Environment& env) {
 
     if ( nextElement < 0 )
         initializeLoop( env );
     
     if ( nextElement == static_cast<int>(vector->size()) ) {
-        finalizeLoop( env );
+        finalizeLoop();
         return false;
     }
 
-    RbPtr<Variable> theVar = (*env)[ *varName ]->getVariable();
+    Variable* theVar = env[ *varName ]->getVariable();
     // set the new value of the iterator variable
-    theVar->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)vector->getElement( nextElement ) ) ) ) ) );
+    theVar->setDagNode( new ConstantNode( static_cast<RbLanguageObject*>( vector->getElement( nextElement ) ) ) );
     // the setting of the new iterator might have affected other nodes; therefore we call a keep
     theVar->getDagNode()->keep();
     
@@ -134,9 +134,9 @@ const VectorString& SyntaxForCondition::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxForCondition::evaluateContent(const RbPtr<Environment>& env) {
+Variable* SyntaxForCondition::evaluateContent(void) {
 
-    return RbPtr<Variable>::getNullPtr();
+    return NULL;
 }
 
 
@@ -147,26 +147,26 @@ const TypeSpec& SyntaxForCondition::getTypeSpec(void) const {
 
 
 /** Initialize loop state */
-void SyntaxForCondition::initializeLoop(const RbPtr<Environment>& env) {
+void SyntaxForCondition::initializeLoop(Environment& env) {
 
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    RbPtr<DAGNode> theNode = inExpression->evaluateContent(env)->getDagNode();
-    RbPtr<RbObject> theValue( theNode->getValue() );
+    DAGNode*  theNode  = inExpression->evaluateContent(env)->getDagNode();
+    RbObject* theValue = theNode->getValue();
 
     // Check that it is a vector
     if ( theValue->isTypeSpec( TypeSpec(AbstractVector_name) ) == false ) {
        throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = RbPtr<AbstractVector>( dynamic_cast<AbstractVector*>((RbObject*)theValue) );
+    vector = dynamic_cast<AbstractVector*>(theValue);
 
     // Initialize nextValue
     nextElement = 0;
 
     // Add loop variable to frame if it is not there already
-    if (!env->existsVariable(*varName)) {
-        env->addVariable( *varName, TypeSpec( vector->getElementType() ) );
+    if (!env.existsVariable(*varName)) {
+        env.addVariable( *varName, TypeSpec( vector->getElementType() ) );
     }
     
 }

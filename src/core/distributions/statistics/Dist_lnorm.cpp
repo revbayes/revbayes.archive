@@ -52,11 +52,11 @@ Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ) {
  * @return      Cumulative probability
  *
  */
-double Dist_lnorm::cdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_lnorm::cdf( const RbLanguageObject* value ) {
 	
-    double m    = static_cast<      Real*   >( (RbObject*)getMemberValue( "m" ) )->getValue();
-	double s    = static_cast<      RealPos*>( (RbObject*)getMemberValue( "s" ) )->getValue();
-    double q    = static_cast<const Real*   >( (const RbLanguageObject*)value           )->getValue();
+    double m    = static_cast<      Real*   >( getMemberValue( "m" ) )->getValue();
+	double s    = static_cast<      RealPos*>( getMemberValue( "s" ) )->getValue();
+    double q    = static_cast<const Real*   >( value                 )->getValue();
 	
 	return RbStatistics::Lognormal::cdf(m, s, q);
 }
@@ -78,20 +78,20 @@ const VectorString& Dist_lnorm::getClass( void ) const {
 
 
 /** Get member variable rules */
-RbPtr<const MemberRules> Dist_lnorm::getMemberRules( void ) const {
+const MemberRules* Dist_lnorm::getMemberRules( void ) const {
 	
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 	
     if ( !rulesSet ) {
 		
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "m", Real_name    ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "s"  , RealPos_name ) ) );
+        memberRules->push_back( new ValueRule( "m", Real_name    ) );
+        memberRules->push_back( new ValueRule( "s", RealPos_name ) );
 		
         rulesSet = true;
     }
 	
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -156,11 +156,11 @@ double Dist_lnorm::pdf( const RbLanguageObject *value ) const {
  * @return      Quantile
  *
  */
-RbPtr<Real> Dist_lnorm::quantile( const double p) {
-	double m = static_cast<Real*   >( (RbObject*)getMemberValue( "m" ) )->getValue();
-    double s = static_cast<RealPos*>( (RbObject*)getMemberValue( "s" ) )->getValue();
+Real* Dist_lnorm::quantile( const double p) {
+	double m = static_cast<Real*   >( getMemberValue( "m" ) )->getValue();
+    double s = static_cast<RealPos*>( getMemberValue( "s" ) )->getValue();
 	
-    return RbPtr<Real>(new Real (RbStatistics::Lognormal::quantile(m, s, p) ) );
+    return new Real (RbStatistics::Lognormal::quantile(m, s, p) );
     
 }
 
@@ -174,15 +174,15 @@ RbPtr<Real> Dist_lnorm::quantile( const double p) {
  *
  * @return      Random draw
  */
-RbPtr<RbLanguageObject> Dist_lnorm::rv(void) {
+RbLanguageObject* Dist_lnorm::rv(void) {
 	
-    double m = static_cast<Real*   >( (RbObject*)getMemberValue( "m" ) )->getValue();
-    double s = static_cast<RealPos*>( (RbObject*)getMemberValue( "s" ) )->getValue();
+    double m = static_cast<Real*   >( getMemberValue( "m" ) )->getValue();
+    double s = static_cast<RealPos*>( getMemberValue( "s" ) )->getValue();
 	
-    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
 	//std::vector<double> r(m.size());
 	
-	return RbPtr<RbLanguageObject>( new Real (RbStatistics::Lognormal::rv(m ,s, rng ) ) );
+	return new Real (RbStatistics::Lognormal::rv(m ,s, *rng ) );
 }
 
 

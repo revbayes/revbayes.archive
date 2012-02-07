@@ -33,11 +33,11 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
     
     // Func_memoryAllocations functions
-    RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
+    const ArgumentRules*        getArgumentRules(void) const;                       //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
   
 protected:
-    RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
+    RbLanguageObject*           executeFunction(void);                                      //!< Execute function
 
 private:
     static const TypeSpec       typeSpec;

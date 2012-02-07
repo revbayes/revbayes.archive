@@ -18,14 +18,12 @@
 #ifndef TypeSpec_H 
 #define TypeSpec_H
 
-#include "RbPtr.h"
-
 #include <string>
 
 class TypeSpec {
     
     public:
-                                    TypeSpec(const std::string& objType, RbPtr<TypeSpec> elemType = RbPtr<TypeSpec>::getNullPtr()); //!< Complete constructor
+                                    TypeSpec(const std::string& objType, TypeSpec* elemType = NULL);                                //!< Complete constructor
                                     TypeSpec(const TypeSpec& ts);                                                                   //!< Copy Constructor
         
                                     // Operators
@@ -36,7 +34,7 @@ class TypeSpec {
 
                                     // Regular functions
         const std::string&          getBaseType(void) const { return baseType; }                                                    //!< Get the element type
-        const RbPtr<TypeSpec>       getElementType(void) const { return elementType; }                                              //!< Get the element type
+        const TypeSpec*             getElementType(void) const { return elementType; }                                              //!< Get the element type
         const std::string&          getType(void) const { return type; }                                                            //!< Get object type
         const std::string&          toString(void) const;                                                                           //!< Express as a string
 
@@ -44,7 +42,7 @@ class TypeSpec {
                                     // Member variables
         const std::string           baseType;                                                                                       //!< The base type of the object or objects
         std::string                 type;                                                                                           //!< The full type including base and element types
-        RbPtr<TypeSpec>             elementType;                                                                                    //!< The type of the elements if this is a container
+        TypeSpec*                   elementType;                                                                                    //!< The type of the elements if this is a container
 };
 
                                     // Global functions using the class

@@ -36,11 +36,11 @@ class Func__mul :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        const ArgumentRules*        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
+        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
@@ -75,32 +75,32 @@ Func__mul<firstValType, secondValType, retType>* Func__mul<firstValType, secondV
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename firstValType, typename secondValType, typename retType>
-RbPtr<RbLanguageObject> Func__mul<firstValType,secondValType,retType>::executeFunction( void ) {
+RbLanguageObject* Func__mul<firstValType,secondValType,retType>::executeFunction( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbObject*)(*args)[0]->getValue() ) );
-    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbObject*)(*args)[1]->getValue() ) );
+    const firstValType*  val1 = static_cast<firstValType*> ( (*args)[0]->getValue() );
+    const secondValType* val2 = static_cast<secondValType*>( (*args)[1]->getValue() );
 
     retType              prod = *val1 * *val2;
         
-    return RbPtr<RbLanguageObject>( prod.clone() );
+    return prod.clone();
 }
 
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType, typename retType>
-RbPtr<const ArgumentRules> Func__mul<firstValType, secondValType, retType>::getArgumentRules( void ) const {
+const ArgumentRules* Func__mul<firstValType, secondValType, retType>::getArgumentRules( void ) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", firstValType() .getTypeSpec() ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", secondValType().getTypeSpec() ) ) );
+        argumentRules->push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules->push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
         }
 
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

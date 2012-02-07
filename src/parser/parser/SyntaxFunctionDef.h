@@ -32,10 +32,10 @@ const std::string SyntaxFunctionDef_name = "Function definition";
 class SyntaxFunctionDef : public SyntaxElement {
 
     public:
-                                        SyntaxFunctionDef(  RbPtr<RbString>                   type,
-                                                            RbPtr<RbString>                   name,
-                                                            RbPtr<std::list<RbPtr<SyntaxFormal> > >   formals,
-                                                            RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts);     //!< Standard constructor
+                                        SyntaxFunctionDef(RbString*                   type,
+                                                          RbString*                   name,
+                                                          std::list<SyntaxFormal*>*   formals,
+                                                          std::list<SyntaxElement*>*  stmts);       //!< Standard constructor
                                         SyntaxFunctionDef(const SyntaxFunctionDef& x);              //!< Copy constructor
 	    virtual                        ~SyntaxFunctionDef();                                        //!< Destructor
 
@@ -50,13 +50,14 @@ class SyntaxFunctionDef : public SyntaxElement {
         void                            print(std::ostream& o) const;                               //!< Print info about object
 
         // Regular functions
-        RbPtr<Variable>                 evaluateContent(const RbPtr<Environment>& env);             //!< Get semantic value
+        Variable*                       evaluateContent(void);                                      //!< Get semantic value
+        Variable*                       evaluateContent(Environment& env);                          //!< Get semantic value
 
     protected:
-        RbPtr<TypeSpec>                 returnType;                                                 //!< The return type specification of the function
-        RbPtr<RbString>                 functionName;                                               //!< The name of the function
-        RbPtr<std::list<RbPtr<SyntaxFormal> > >       formalArgs;                                                 //!< The formal arguments
-        RbPtr<std::list<RbPtr<SyntaxElement> > >      code;                                                       //!< The list of statements
+        TypeSpec*                       returnType;                                                 //!< The return type specification of the function
+        RbString*                       functionName;                                               //!< The name of the function
+        std::list<SyntaxFormal*>*       formalArgs;                                                 //!< The formal arguments
+        std::list<SyntaxElement*>*      code;                                                       //!< The list of statements
     
     private:
         static const TypeSpec       typeSpec;

@@ -32,7 +32,7 @@ Matrix::Matrix(const std::string& elemType) : Vector(TypeSpec(elemType)) {
 }
 
 /** Default constructor for matrix */
-Matrix::Matrix(const std::string& elemType, RbPtr<const MemberRules> memberRules) : Vector(TypeSpec(elemType)) {
+Matrix::Matrix(const std::string& elemType, const MemberRules* memberRules) : Vector(TypeSpec(elemType)) {
 }
 
 
@@ -51,7 +51,7 @@ const VectorString& Matrix::getClass(void) const {
 
 
 size_t Matrix::getNumberOfColumns(void) const {
-    return static_cast<const Container*>( (RbLanguageObject*)elements[0])->size();
+    return static_cast<const Container*>( elements[0] )->size();
 }
 
 

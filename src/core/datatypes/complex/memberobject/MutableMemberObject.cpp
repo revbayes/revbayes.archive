@@ -32,7 +32,7 @@ MutableMemberObject::MutableMemberObject() : MemberObject() {
 }
 
 /** Constructor: we set member variables here from member rules */
-MutableMemberObject::MutableMemberObject(RbPtr<const MemberRules> memberRules) : MemberObject(memberRules) {
+MutableMemberObject::MutableMemberObject(const MemberRules* memberRules) : MemberObject(memberRules) {
     
 }
 

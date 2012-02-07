@@ -205,7 +205,7 @@ double RbStatistics::F::quantile(double df1, double df2, double p) {
 }
 
 
-double RbStatistics::F::rv(double n1, double n2, RbPtr<RandomNumberGenerator> rng) {
+double RbStatistics::F::rv(double n1, double n2, RandomNumberGenerator& rng) {
 
     if (RbMath::isNan(n1) || RbMath::isNan(n2) || n1 <= 0.0 || n2 <= 0.0) 
         { 

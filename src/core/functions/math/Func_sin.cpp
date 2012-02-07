@@ -44,27 +44,27 @@ Func_sin* Func_sin::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_sin::executeFunction( void ) {
+RbLanguageObject* Func_sin::executeFunction( void ) {
     
-    const double x = static_cast<const Real*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
+    const double x = static_cast<const Real*>( (*args)[0]->getValue() )->getValue();
     
-    return RbPtr<RbLanguageObject>( new RealPos( sin(x) ) );
+    return new RealPos( sin(x) );
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_sin::getArgumentRules( void ) const {
+const ArgumentRules* Func_sin::getArgumentRules( void ) const {
     
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "x", Real_name ) ) );
+        argumentRules->push_back( new ValueRule( "x", Real_name ) );
         rulesSet = true;
     }
     
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

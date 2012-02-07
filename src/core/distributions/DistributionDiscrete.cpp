@@ -32,20 +32,20 @@
 
 
 /** Constructor passes member rules to base class */
-DistributionDiscrete::DistributionDiscrete( RbPtr<const MemberRules> memberRules ) : Distribution( memberRules ) {
+DistributionDiscrete::DistributionDiscrete( const MemberRules* memberRules ) : Distribution( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> DistributionDiscrete::executeOperationSimple( const std::string& name, const RbPtr<Environment>& args ) {
+RbLanguageObject* DistributionDiscrete::executeOperationSimple( const std::string& name, Environment* args ) {
 
     if ( name == "probMassVector" ) {
 
-        return RbPtr<RbLanguageObject>( getProbabilityMassVector()->clone() );
+        return getProbabilityMassVector()->clone();
     }
     else if ( name == "numStates" ) {
 
-        return RbPtr<RbLanguageObject>( new Natural( int( getNumberOfStates() ) ) );
+        return new Natural( int( getNumberOfStates() ) );
     }
 
     return Distribution::executeOperationSimple( name, args );
@@ -61,23 +61,23 @@ const VectorString& DistributionDiscrete::getClass( void ) const {
 
 
 /** Get method specifications */
-RbPtr<const MethodTable> DistributionDiscrete::getMethods( void ) const {
+const MethodTable* DistributionDiscrete::getMethods( void ) const {
 
-    static RbPtr<MethodTable> methods( new MethodTable() );
-    static RbPtr<ArgumentRules> probMassVectorArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> numStatesArgRules( new ArgumentRules() );
+    static MethodTable* methods = new MethodTable();
+    static ArgumentRules* probMassVectorArgRules = new ArgumentRules();
+    static ArgumentRules* numStatesArgRules = new ArgumentRules();
     static bool          methodsSet = false;
 
     if ( !methodsSet ) {
 
-        methods->addFunction( "probMassVector", RbPtr<RbFunction>( new MemberFunction( Simplex_name, probMassVectorArgRules ) ) );
-        methods->addFunction( "numStates",      RbPtr<RbFunction>( new MemberFunction( Natural_name, numStatesArgRules ) ) );
+        methods->addFunction( "probMassVector", new MemberFunction( Simplex_name, probMassVectorArgRules ) );
+        methods->addFunction( "numStates",      new MemberFunction( Natural_name, numStatesArgRules ) );
 
-        methods->setParentTable( RbPtr<const FunctionTable>( Distribution::getMethods() ) );
+        methods->setParentTable( Distribution::getMethods() );
 
         methodsSet = true;
     }
 
-    return RbPtr<const MethodTable>( methods );
+    return methods;
 }
 

@@ -15,7 +15,7 @@ XmlElementInstance::XmlElementInstance(const std::string& name, uintptr_t identi
     
 }
 
-void XmlElementInstance::addSubElement(const RbPtr<XmlElement> element) {
+void XmlElementInstance::addSubElement(XmlElement* element) {
 
     subElements.push_back(element);
 }
@@ -36,7 +36,7 @@ void XmlElementInstance::writeToStream(std::ostream &outStream, int indentLevel)
         outStream << ">" << std::endl;
     
         // call writeToStream with indent level += 1 for all sub-elements
-        for (std::vector<RbPtr<XmlElement> >::const_iterator it=subElements.begin(); it!=subElements.end(); ++it) {
+        for (std::vector<XmlElement*>::const_iterator it=subElements.begin(); it!=subElements.end(); ++it) {
             (*it)->writeToStream(outStream,indentLevel+1);
         }
     

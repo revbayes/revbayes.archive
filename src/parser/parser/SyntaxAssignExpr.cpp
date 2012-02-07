@@ -44,22 +44,22 @@ std::string SyntaxAssignExpr::opCode[] = { "ARROW_ASSIGN", "TILDE_ASSIGN", "TILD
 
 
 /** Construct from operator type, variable and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxVariable> var, RbPtr<SyntaxElement> expr) 
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, SyntaxVariable* var, SyntaxElement* expr) 
 : SyntaxElement(), variable(var), functionCall(NULL), expression(expr), opType(op) {
 }
 
 
 /** Construct from operator type, function call and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<SyntaxElement> expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr), opType(op) {
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, SyntaxFunctionCall* fxnCall, SyntaxElement* expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr), opType(op) {
 }
 
 /** Construct from operator type, variable and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxVariable> var, RbPtr<SyntaxFunctionCall> expr)  : SyntaxElement(), variable(var), functionCall(NULL), expression(RbPtr<SyntaxElement>( expr ) ), opType(op) {
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, SyntaxVariable* var, SyntaxFunctionCall* expr)  : SyntaxElement(), variable(var), functionCall(NULL), expression( expr ), opType(op) {
 }
 
 
 /** Construct from operator type, function call and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<SyntaxFunctionCall> expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(RbPtr<SyntaxElement>( expr ) ), opType(op) {
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, SyntaxFunctionCall* fxnCall, SyntaxFunctionCall* expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression( expr ), opType(op) {
 }
 
 
@@ -67,18 +67,22 @@ SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxF
 SyntaxAssignExpr::SyntaxAssignExpr(const SyntaxAssignExpr& x) : SyntaxElement(x) {
     
     if ( x.variable != NULL )
-        variable   = RbPtr<SyntaxVariable>( x.variable->clone() );
+        variable   = x.variable->clone();
 
     if ( x.functionCall != NULL )
-        functionCall = RbPtr<SyntaxFunctionCall>( x.functionCall->clone() );
+        functionCall = x.functionCall->clone();
 
-    expression = RbPtr<SyntaxElement>( x.expression->clone() );
+    expression = x.expression->clone();
     opType     = x.opType;
 }
 
 
 /** Destructor deletes operands */
 SyntaxAssignExpr::~SyntaxAssignExpr() {
+    
+    delete variable;
+    delete functionCall;
+    delete expression;
     
 }
 
@@ -88,8 +92,8 @@ SyntaxAssignExpr& SyntaxAssignExpr::operator=(const SyntaxAssignExpr& x) {
     
     if ( this != &x ) {
         
-        functionCall = RbPtr<SyntaxFunctionCall>(NULL);
-        variable = RbPtr<SyntaxVariable>(NULL);
+        functionCall = NULL;
+        variable = NULL;
         
         if ( x.variable != NULL )
             variable   = x.variable;
@@ -130,8 +134,13 @@ const VectorString& SyntaxAssignExpr::getClass(void) const {
 }
 
 
+/** We cannot perform this function and throw and error */
+Variable* SyntaxAssignExpr::evaluateContent( ) {
+    throw RbException("Cannot evaluate the content in SyntaxAssignExpr without environment!");
+}
+
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxAssignExpr::evaluateContent( const RbPtr<Environment>& env ) {
+Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
     
     PRINTF( "Evaluating assign expression\n" );
     
@@ -139,7 +148,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( const RbPtr<Environment>& env
     VariableSlot* theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
-    RbPtr<Variable> theVariable(NULL);
+    Variable* theVariable = NULL;
     
     // Deal with arrow assignments
     if ( opType == ArrowAssign ) {
@@ -152,13 +161,13 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( const RbPtr<Environment>& env
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        const RbPtr<RbLanguageObject>& value = theVariable->getDagNode()->getValue();
-        RbPtr<DAGNode> theNode;
+        RbLanguageObject* value = theVariable->getDagNode()->getValue();
+        DAGNode* theNode;
         if (value->isTypeSpec(TypeSpec(DAGNode_name))) {
-            theNode = RbPtr<DAGNode>(static_cast<DAGNode*>( (RbLanguageObject*)value ) );
+            theNode = static_cast<DAGNode*>( value );
         }
         else {
-            theNode = RbPtr<DAGNode>(new ConstantNode(value));
+            theNode = new ConstantNode(value);
         }
         theSlot->getVariable()->setDagNode( theNode );
     }
@@ -177,11 +186,11 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( const RbPtr<Environment>& env
         // if the right-hand-side was not a function then we interpret it as the user wanted a reference to the original object (e.g. b := a)
         // we therefore create a new reference function which will lookup the value of the original node each time. Hence, the new node (left-hand-side) is just a reference of the original node (right-hand-side).
         if ( !theVariable->getDagNode()->isType(DeterministicNode_name) ) {
-            RbPtr<RbFunction> func( new Func_reference() );
-            std::vector<RbPtr<Argument> > args;
-            args.push_back( RbPtr<Argument>( new Argument( theVariable ) ) );
+            RbFunction* func = new Func_reference();
+            std::vector<Argument*> args;
+            args.push_back( new Argument( theVariable ) );
             func->processArguments(args);
-            theVariable = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );
+            theVariable = new Variable( new DeterministicNode( func ) );
         }
         
         // fill the slot with the new variable
@@ -197,12 +206,12 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( const RbPtr<Environment>& env
         theVariable = expression->evaluateContent(env);
         
         // Get distribution, which should be the return value of the rhs function
-        const RbPtr<DAGNode>& exprValue = theVariable->getDagNode();
+        DAGNode* exprValue = theVariable->getDagNode();
         if ( exprValue == NULL ) {
             throw RbException( "Distribution function returns NULL" );
         }
         
-        RbPtr<DeterministicNode> detNode( dynamic_cast<DeterministicNode*>( (DAGNode*)exprValue ) );
+        DeterministicNode* detNode = dynamic_cast<DeterministicNode*>( exprValue );
         if ( detNode == NULL || detNode->getFunction() == NULL || !detNode->getFunction()->isType( ConstructorFunction_name ) ) {
             
             throw RbException( "Function does not return a distribution" );
@@ -210,12 +219,12 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( const RbPtr<Environment>& env
         
         // Make an independent copy of the distribution and delete the exprVal
 //        Distribution* distribution = (Distribution*) detNode->getFunctionPtr()->execute();
-        RbPtr<Distribution> distribution( dynamic_cast<Distribution*>( (RbObject*)detNode->getValue() ) );
+        Distribution* distribution = dynamic_cast<Distribution*>( detNode->getValue() );
         if ( distribution == NULL )
             throw RbException( "Function returns a NULL distribution" );
         
         // Create new stochastic node
-        RbPtr<DAGNode> node(new StochasticNode( distribution ) );
+        DAGNode* node = new StochasticNode( distribution );
         
         // fill the slot with the new variable
         theSlot->getVariable()->setDagNode( node );

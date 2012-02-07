@@ -36,7 +36,7 @@ const std::string SyntaxConstant_name = "Constant";
 class SyntaxConstant : public SyntaxElement {
 
     public:
-                                                SyntaxConstant(RbPtr<RbLanguageObject> val);                        //!< Constructor from value
+                                                SyntaxConstant(RbLanguageObject* val);                              //!< Constructor from value
                                                 SyntaxConstant(const SyntaxConstant& sc);                           //!< Copy constructor
 	    virtual                                ~SyntaxConstant();                                                   //!< Destructor deletes value
 
@@ -51,11 +51,11 @@ class SyntaxConstant : public SyntaxElement {
         void                                    print(std::ostream& o) const;                                       //!< Print info about object
 
         // Regular functions
-        RbPtr<Variable>                         evaluateContent(const RbPtr<Environment>& env);                     //!< Get semantic value
+        Variable*                               evaluateContent(void);                                              //!< Get semantic value
         bool                                    isConstExpression(void) const { return true; }                      //!< Is subtree constant expr?
 
     protected:
-        RbPtr<RbLanguageObject>                 value;                                                              //!< The constant value
+        RbLanguageObject*                       value;                                                              //!< The constant value
     
     private:
         static const TypeSpec                   typeSpec;

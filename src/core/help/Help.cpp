@@ -32,7 +32,7 @@
 Help::Help(void) {
 
     numHelpNodes = 0;
-    helpRoot = RbPtr<HelpNode>::getNullPtr();
+    helpRoot = NULL;
     isHelpInitialized = false;
 }
 
@@ -47,7 +47,7 @@ Help::~Help(void) {
 std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
 
     // get the base node in the tree for the query
-    RbPtr<HelpNode> h = getHelpNodeForQuery(qs);
+    HelpNode* h = getHelpNodeForQuery(qs);
     if (h == NULL)
         return "";
         
@@ -62,13 +62,13 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
     // far in the function)
     if ( h->hasChildWithTag("name") == true )
         {
-        RbPtr<HelpNode> hn = h->getChildWithTag("name");
+        HelpNode* hn = h->getChildWithTag("name");
         std::string tempStr = hn->getHelpEntry();
         
         // succinct
         if ( h->hasChildWithTag("succinct") == true )
             {
-            RbPtr<HelpNode> hn = h->getChildWithTag("succinct");
+            HelpNode* hn = h->getChildWithTag("succinct");
             tempStr += ": " + hn->getHelpEntry();
             }
         hStr += formatStringWithBreaks(tempStr, pad, columnWidth);
@@ -80,7 +80,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
     // verbose
     if ( h->hasChildWithTag("verbose") == true )
         {
-        RbPtr<HelpNode> hn = h->getChildWithTag("verbose");
+        HelpNode* hn = h->getChildWithTag("verbose");
         hStr += "\n";
         hStr += formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
         hStr += "\n";
@@ -122,7 +122,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         hStr += formatStringWithBreaks("Usage:\n", pad, columnWidth);
         for (size_t i=0; i<nUsage; i++)
             {
-            RbPtr<HelpNode> hn = h->getChildWithTag("usage", i)->getChildWithTag("theory");
+            HelpNode* hn = h->getChildWithTag("usage", i)->getChildWithTag("theory");
             hStr += "\n";
             hStr += formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
             }
@@ -139,7 +139,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
             hStr += formatStringWithBreaks("Usage examples:\n", pad, columnWidth);
         for (size_t i=0; i<nUsage; i++)
             {
-            RbPtr<HelpNode> hn = h->getChildWithTag("usage", i)->getChildWithTag("example");
+            HelpNode* hn = h->getChildWithTag("usage", i)->getChildWithTag("example");
             hStr += "\n";
             hStr += formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
             }
@@ -149,7 +149,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
     // author
     if ( h->hasChildWithTag("author") == true )
         {
-        RbPtr<HelpNode> hn = h->getChildWithTag("author");
+        HelpNode* hn = h->getChildWithTag("author");
         hStr += "\n";
         hStr += formatStringWithBreaks("Author: " + hn->getHelpEntry(), pad, columnWidth);
         hStr += "\n";
@@ -163,7 +163,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         hStr += formatStringWithBreaks("References:\n", pad, columnWidth);
         for (size_t i=0; i<nRef; i++)
             {
-            RbPtr<HelpNode> hn = h->getChildWithTag("reference", i);
+            HelpNode* hn = h->getChildWithTag("reference", i);
             hStr += "\n";
             hStr += formatStringWithBreaks(hn->getHelpEntry(), pad, pad+"   ", columnWidth);
             }
@@ -254,14 +254,14 @@ std::string Help::formatStringWithBreaks(const std::string s, std::string paddin
 
 
 /** Returns the help node for a query */
-RbPtr<HelpNode> Help::getHelpNodeForQuery(const std::string& qs) {
+HelpNode* Help::getHelpNodeForQuery(const std::string& qs) {
 
     std::string theString = qs;
     StringUtilities::toLower(theString);
 
     for (size_t i=0; i<helpRoot->getNumChildren(); i++)
         {
-        RbPtr<HelpNode> h = helpRoot->getChildIndexed(i);
+        HelpNode* h = helpRoot->getChildIndexed(i);
         if ( h->getTagName() == "help_entry" )
             {
             // look for the "name" tag
@@ -276,12 +276,12 @@ RbPtr<HelpNode> Help::getHelpNodeForQuery(const std::string& qs) {
             }
         }
 
-    return RbPtr<HelpNode>::getNullPtr();
+    return NULL;
 }
 
 
 /** Gets the next XML tag when parsing an XML help file */
-std::string Help::getNextTag(RbPtr<HelpNode> p, std::string& s) {
+std::string Help::getNextTag(HelpNode* p, std::string& s) {
 
     std::stringstream myStrm(s);
     return getNextTag(p, myStrm);
@@ -289,7 +289,7 @@ std::string Help::getNextTag(RbPtr<HelpNode> p, std::string& s) {
 
 
 /** Gets the next XML tag when parsing an XML help file */
-std::string Help::getNextTag(RbPtr<HelpNode> p, std::istream& inStream) {
+std::string Help::getNextTag(HelpNode* p, std::istream& inStream) {
 
     // remove leading white space
     skipWhiteSpace(inStream);
@@ -346,7 +346,7 @@ std::string Help::getNextTag(RbPtr<HelpNode> p, std::istream& inStream) {
                 if (tagName == theTagName && isClosingTag == true)
                     {
                     // make a new help node
-                    RbPtr<HelpNode> newNode( new HelpNode() );
+                    HelpNode* newNode = new HelpNode();
                     newNode->setIndex( numHelpNodes++ );
                     helpNodes.push_back( newNode );
                     StringUtilities::toLower(theTagName);
@@ -397,7 +397,7 @@ size_t Help::getNumHelpEntries(void) {
     size_t numHelpEntries = 0;
     for (size_t i=0; i<helpRoot->getNumChildren(); i++)
         {
-        RbPtr<HelpNode> h = helpRoot->getChildIndexed(i);
+        HelpNode* h = helpRoot->getChildIndexed(i);
         if ( h->getTagName() == "help_entry" )
             numHelpEntries++;
         }
@@ -463,7 +463,7 @@ void Help::initializeHelp(std::string f) {
         
     // open each help file (which is in XML format) and parse its contents
     if (helpRoot == NULL)
-        helpRoot = RbPtr<HelpNode>( new HelpNode() );
+        helpRoot = new HelpNode();
     helpRoot->setTagName("root");
     helpRoot->setHelpEntry("");
     for (std::vector<std::string>::iterator p = helpFiles.begin(); p != helpFiles.end(); p++)
@@ -479,7 +479,7 @@ void Help::initializeHelp(std::string f) {
         }
         
     // do some post-processing on the help tree, removing information from nodes that are not leaves
-    for (std::vector<RbPtr<HelpNode> >::iterator p = helpNodes.begin(); p != helpNodes.end(); p++)
+    for (std::vector<HelpNode*>::iterator p = helpNodes.begin(); p != helpNodes.end(); p++)
         {
         if ( (*p)->isLeaf() == false )
             (*p)->setHelpEntry("");
@@ -533,7 +533,7 @@ void Help::print(void) {
     return;
     
     size_t i = 0;
-    for (std::vector<RbPtr<HelpNode> >::iterator p = helpNodes.begin(); p != helpNodes.end(); p++)
+    for (std::vector<HelpNode*>::iterator p = helpNodes.begin(); p != helpNodes.end(); p++)
         {
         std::cout << (*p)->getIndex() << " -- (";
         for (size_t j=0; j<(*p)->getNumChildren(); j++)

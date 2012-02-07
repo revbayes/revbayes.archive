@@ -37,7 +37,7 @@ Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()) {
 }
 
 /** Constructor */
-Monitor::Monitor(RbPtr<const MemberRules> rules ) : ConstantMemberObject( rules ) {
+Monitor::Monitor(const MemberRules* rules ) : ConstantMemberObject( rules ) {
     
 }
 
@@ -62,20 +62,20 @@ const VectorString& Monitor::getClass() const {
 }
 
 /** Return member rules */
-RbPtr<const MemberRules> Monitor::getMemberRules( void ) const {
+const MemberRules* Monitor::getMemberRules( void ) const {
     
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) 
     {
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) ) );
+        memberRules->push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
+        memberRules->push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
+        memberRules->push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
         rulesSet = true;
     }
     
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -96,14 +96,14 @@ void Monitor::printValue(std::ostream& o) const {
 
 
 
-void Monitor::replaceDagNodes(std::vector<RbPtr<VariableNode> > &n) {
+void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
     
     // release all nodes
     nodes.clear();
     
     // add all nodes
     for (size_t i=0; i<n.size(); i++) {
-        RbPtr<VariableNode> theNode = n[i];
+        VariableNode* theNode = n[i];
         if (theNode != NULL) {
             nodes.push_back(theNode);
         }
@@ -124,17 +124,17 @@ std::string Monitor::richInfo(void) const {
     return o.str();
 }
 
-void Monitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
+void Monitor::setMemberVariable(std::string const &name, Variable* var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
-        RbPtr<DAGNode> theNode = var->getDagNode();
+        DAGNode* theNode = var->getDagNode();
         if (theNode->getValue()->isType(DagNodeContainer_name)) {
-            RbPtr<DagNodeContainer> theContainer( static_cast<DagNodeContainer*>( (RbLanguageObject*)theNode->getValue() ) );
+            DagNodeContainer* theContainer = static_cast<DagNodeContainer*>( theNode->getValue() );
             for (size_t i = 0; i < theContainer->size(); i++) {
-                theNode = static_cast<VariableSlot*>( (RbObject*)theContainer->getElement(i) )->getDagNode();
+                theNode = static_cast<VariableSlot*>( theContainer->getElement(i) )->getDagNode();
                 if (theNode->isType(VariableNode_name)) {
-                    nodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) ) );
+                    nodes.push_back( static_cast<VariableNode*>( theNode ) );
                     //                } else {
                     //                    throw RbException("Cannot monitor a constant node!");
                 }
@@ -142,7 +142,7 @@ void Monitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         }
         else {
             if (theNode->isType(VariableNode_name)) {
-                nodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) ) );
+                nodes.push_back( static_cast<VariableNode*>( theNode ) );
                 //            } else {
                 //                throw RbException("Cannot monitor a constant node!");
             }

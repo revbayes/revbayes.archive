@@ -29,7 +29,7 @@ const std::string SyntaxLabeledExpr_name = "Labeled expression";
 class SyntaxLabeledExpr : public SyntaxElement {
 
     public:
-                                SyntaxLabeledExpr(RbPtr<RbString> id, RbPtr<SyntaxElement> expr);   //!< Constructor
+                                SyntaxLabeledExpr(RbString* id, SyntaxElement* expr);   //!< Constructor
                                 SyntaxLabeledExpr(const SyntaxLabeledExpr& x);          //!< Copy constructor
 	    virtual                ~SyntaxLabeledExpr();                                    //!< Destructor
 
@@ -44,13 +44,13 @@ class SyntaxLabeledExpr : public SyntaxElement {
         void                    print(std::ostream& o) const;                           //!< Print info about object
 
         // Regular functions
-        RbPtr<SyntaxElement>    getExpression(void) const { return expression; }        //!< Return expression
-        const RbPtr<RbString>   getLabel() const { return label; }                      //!< Return label    
-        RbPtr<Variable>         evaluateContent(const RbPtr<Environment>& env);         //!< Get semantic value
+        SyntaxElement*          getExpression(void) const { return expression; }        //!< Return expression
+        RbString*               getLabel() const { return label; }                      //!< Return label    
+        Variable*               evaluateContent(void);                                  //!< Get semantic value
 
     protected:
-        RbPtr<RbString>         label;                                                  //!< The label of the argument
-        RbPtr<SyntaxElement>    expression;                                             //!< The expression for the argument value
+        RbString*               label;                                                  //!< The label of the argument
+        SyntaxElement*          expression;                                             //!< The expression for the argument value
     
     private:
         static const TypeSpec   typeSpec;

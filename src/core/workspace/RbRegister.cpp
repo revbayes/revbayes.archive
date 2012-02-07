@@ -139,7 +139,6 @@
 #include "Func_resize.h"
 
 /* Builtin templated functions */
-#include "Func_simplex.h"
 #include "Func_transpose.h"
 #include "Func_vector.h"
 
@@ -223,37 +222,37 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new TopologyNode()                 );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
-        addTypeWithConstructor( "mcmc",         RbPtr<MemberObject>( new Mcmc() )              );
-        addTypeWithConstructor( "fileMonitor",      RbPtr<MemberObject>( new FileMonitor() )   );
-        addTypeWithConstructor( "mixture",      RbPtr<MemberObject>( new Mixture() )           );
-        addTypeWithConstructor( "mmultinomial", RbPtr<MemberObject>( new Move_mmultinomial() ) );
-        addTypeWithConstructor( "model",        RbPtr<MemberObject>( new Model() )             );
-        addTypeWithConstructor( "msimplex",     RbPtr<MemberObject>( new Move_msimplex() )     );
-        addTypeWithConstructor( "mslide",       RbPtr<MemberObject>( new Move_mslide() )       );
-        addTypeWithConstructor( "mscale",       RbPtr<MemberObject>( new Move_mscale() )       );
-        addTypeWithConstructor( "objectMonitor",      RbPtr<MemberObject>( new ObjectMonitor()));
-        addTypeWithConstructor( "simulate",     RbPtr<MemberObject>( new Simulate() )          );
-        addTypeWithConstructor( "treeplate",    RbPtr<MemberObject>( new TreePlate() )         );
+        addTypeWithConstructor( "mcmc",          new Mcmc()              );
+        addTypeWithConstructor( "fileMonitor",   new FileMonitor()       );
+        addTypeWithConstructor( "mixture",       new Mixture()           );
+        addTypeWithConstructor( "mmultinomial",  new Move_mmultinomial() );
+        addTypeWithConstructor( "model",         new Model()             );
+        addTypeWithConstructor( "msimplex",      new Move_msimplex()     );
+        addTypeWithConstructor( "mslide",        new Move_mslide()       );
+        addTypeWithConstructor( "mscale",        new Move_mscale()       );
+        addTypeWithConstructor( "objectMonitor", new ObjectMonitor()     );
+        addTypeWithConstructor( "simulate",      new Simulate()          );
+        addTypeWithConstructor( "treeplate",     new TreePlate()         );
 
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
-        addDistribution( "beta",         RbPtr<DistributionContinuous>( new Dist_beta() )  );
+        addDistribution( "beta",         new Dist_beta()        );
         addDistribution( "birthdeath",   new Dist_birthdeath()  );
         addDistribution( "cat",          new Dist_cat()         );
         addDistribution( "ctmc",         new Dist_ctmm()        );
         addDistribution( "dtmm",         new Dist_dtmm()        );
-        addDistribution( "dirichlet",    RbPtr<DistributionContinuous>( new Dist_dirichlet() )   );
-        addDistribution( "exp",          RbPtr<DistributionContinuous>( new Dist_exp() )         );
-        addDistribution( "logis",        RbPtr<DistributionContinuous>( new Dist_logis() )       );
-        addDistribution( "multinomial",  RbPtr<DistributionContinuous>( new Dist_multinomial() ) );
-        addDistribution( "norm",         RbPtr<DistributionContinuous>( new Dist_norm() )        );
-        addDistribution( "lnorm",        RbPtr<DistributionContinuous>( new Dist_lnorm() )       );
+        addDistribution( "dirichlet",    new Dist_dirichlet()   );
+        addDistribution( "exp",          new Dist_exp()         );
+        addDistribution( "logis",        new Dist_logis()       );
+        addDistribution( "multinomial",  new Dist_multinomial() );
+        addDistribution( "norm",         new Dist_norm()        );
+        addDistribution( "lnorm",        new Dist_lnorm()       );
         addDistribution( "unifTopology", new Dist_topologyunif());
-        addDistribution( "unif",         RbPtr<DistributionContinuous>( new Dist_unif() )        );
+        addDistribution( "unif",         new Dist_unif()        );
 
         /* Now we have added all primitive and complex data types and can start type checking */
-        Workspace::globalWorkspace()->typesInitialized = true;
-        Workspace::userWorkspace()->typesInitialized   = true;
+        Workspace::globalWorkspace().typesInitialized = true;
+        Workspace::userWorkspace().typesInitialized   = true;
 
         /* Add basic internal functions (alphabetic order) */
         addFunction( "_range",    new Func__range()       );
@@ -398,9 +397,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "ctmmTransitionProbabilities", new Func_CtmmTransitionProbabilities());
 
         /* Add builtin templated functions */
-//        addFunction( "simplex",   new Func_simplex<         Integer                                                         >() );
-        addFunction( "simplex",   new Func_simplex<         RealPos                                                         >() );
-//        addFunction( "simplex",   new Func_simplex<         VectorRealPos                                                   >() );
         addFunction( "resize",    new Func_resize() );
 
         addFunction( "transpose", new Func_transpose<       MatrixReal                                                      >() );

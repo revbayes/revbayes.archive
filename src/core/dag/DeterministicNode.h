@@ -33,7 +33,7 @@ class DeterministicNode : public VariableNode {
 
 public:
                                             DeterministicNode(const std::string& valType);                      //!< Constructor from type
-                                            DeterministicNode(const RbPtr<RbFunction>& func);                   //!< Constructor with function
+                                            DeterministicNode(RbFunction* func);                                //!< Constructor with function
                                             DeterministicNode(const DeterministicNode& x);                      //!< Copy Constructor
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
 
@@ -42,8 +42,8 @@ public:
     const RbLanguageObject*                 getValue(void) const;                                               //!< Get value 
     RbLanguageObject*                       getValue(void);                                                     //!< Get value (non-const to return non-const value)
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
-    RbPtr<const RbFunction>                 getFunction(void) const;
-    RbPtr<RbFunction>                       getFunction(void);
+    const RbFunction*                       getFunction(void) const;
+    RbFunction*                             getFunction(void);
 
     // Utility functions you have to override
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node

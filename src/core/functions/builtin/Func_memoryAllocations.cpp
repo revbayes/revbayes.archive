@@ -40,7 +40,7 @@ Func_memoryAllocations* Func_memoryAllocations::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_memoryAllocations::executeFunction( void ) {
+RbLanguageObject* Func_memoryAllocations::executeFunction( void ) {
     
     size_t nObjects = RbMemoryManager::rbMemoryManager().numberOfRegisteredObjects();
     size_t nReferences = RbMemoryManager::rbMemoryManager().numberOfReferences();
@@ -53,16 +53,16 @@ RbPtr<RbLanguageObject> Func_memoryAllocations::executeFunction( void ) {
     
     RBOUT(s);
     
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return NULL;
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_memoryAllocations::getArgumentRules( void ) const {
+const ArgumentRules* Func_memoryAllocations::getArgumentRules( void ) const {
     
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

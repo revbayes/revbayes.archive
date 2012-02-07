@@ -50,7 +50,7 @@ Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRu
 }
 
 
-void Dist_topologyunif::buildRandomBinaryTree(std::vector<RbPtr<TopologyNode> > &tips, size_t numTaxa) {
+void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode*> &tips, size_t numTaxa) {
     
     if (tips.size() < numTaxa) {
         // Get the rng
@@ -172,22 +172,22 @@ const VectorString& Dist_topologyunif::getClass( void ) const {
 
 
 /** Get member variable rules */
-RbPtr<const MemberRules> Dist_topologyunif::getMemberRules( void ) const {
+const MemberRules* Dist_topologyunif::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet )
 		{
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "numberTaxa" , Natural_name      ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "tipNames"   , VectorString_name ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "isRooted"   , RbBoolean_name    ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "isBinary"   , RbPtr<RbLanguageObject>( new RbBoolean(true) ) ) ) );
+        memberRules->push_back( new ValueRule( "numberTaxa" , Natural_name      ) );
+        memberRules->push_back( new ValueRule( "tipNames"   , VectorString_name ) );
+        memberRules->push_back( new ValueRule( "isRooted"   , RbBoolean_name    ) );
+        memberRules->push_back( new ValueRule( "isBinary"   , new RbBoolean(true) ) );
 
         rulesSet = true;
 		}
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -199,12 +199,12 @@ size_t Dist_topologyunif::getNumberOfStates( void ) const {
 
 
 /** Get the probability mass vector */
-RbPtr<Simplex> Dist_topologyunif::getProbabilityMassVector( void ) {
+Simplex* Dist_topologyunif::getProbabilityMassVector( void ) {
 
-    int numTaxa  = static_cast<Natural*>( (RbObject*)getMemberValue( "numberTaxa"  ) )->getValue();
+    int numTaxa  = static_cast<Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
 
     if ( numTaxa <= 6 )
-        return RbPtr<Simplex>(new Simplex( getNumberOfStates() ) );
+        return new Simplex( getNumberOfStates() );
     else
         throw RbException( "Too many topologies to generate probability mass vector" );
 }
@@ -235,10 +235,10 @@ const TypeSpec& Dist_topologyunif::getVariableType( void ) const {
 double Dist_topologyunif::lnPdf( const RbLanguageObject *value ) const {
 
     // Get the parameters
-    RbPtr<const Topology> top( static_cast<const Topology*>( (const RbLanguageObject*)value ) );
-    unsigned int numTaxa   = static_cast<const Natural*   >( (const RbObject*)getMemberValue( "numberTaxa"  ) )->getValue();
-    bool         isRooted  = static_cast<const RbBoolean* >( (const RbObject*)getMemberValue( "isRooted"  ) )->getValue();
-    bool         isBinary  = static_cast<const RbBoolean* >( (const RbObject*)getMemberValue( "isBinary"  ) )->getValue();
+    const Topology* top = static_cast<const Topology*>( value );
+    unsigned int numTaxa   = static_cast<const Natural*   >( getMemberValue( "numberTaxa"  ) )->getValue();
+    bool         isRooted  = static_cast<const RbBoolean* >( getMemberValue( "isRooted"  ) )->getValue();
+    bool         isBinary  = static_cast<const RbBoolean* >( getMemberValue( "isBinary"  ) )->getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return negative infinity
@@ -261,10 +261,10 @@ double Dist_topologyunif::lnPdf( const RbLanguageObject *value ) const {
 double Dist_topologyunif::pdf( const RbLanguageObject *value ) const {
 
     // Get the parameters
-    RbPtr<const Topology> top( static_cast<const Topology*>( (const RbLanguageObject*)value ) );
-    unsigned int numTaxa   = static_cast<const Natural*>( (const RbObject*)getMemberValue( "numberTaxa"  ) )->getValue();
-    bool         isRooted  = static_cast<const RbBoolean*>( (const RbObject*)getMemberValue( "isRooted"  ) )->getValue();
-    bool         isBinary  = static_cast<const RbBoolean*>( (const RbObject*)getMemberValue( "isBinary"  ) )->getValue();
+    const Topology* top = static_cast<const Topology*>( value );
+    unsigned int numTaxa   = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    bool         isRooted  = static_cast<const RbBoolean*>( getMemberValue( "isRooted"  ) )->getValue();
+    bool         isBinary  = static_cast<const RbBoolean*>( getMemberValue( "isBinary"  ) )->getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return 0.0
@@ -282,25 +282,25 @@ double Dist_topologyunif::pdf( const RbLanguageObject *value ) const {
  *
  * @return      Randomly drawn topology
  */
-RbPtr<RbLanguageObject> Dist_topologyunif::rv( void ) {
+RbLanguageObject* Dist_topologyunif::rv( void ) {
 
     // Get the rng
-    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    int  numTaxa  = static_cast<Natural*>( (RbObject*)getMemberValue( "numberTaxa"  ) )->getValue();
-    bool isRooted = static_cast<RbBoolean*>( (RbObject*)getMemberValue( "isRooted"  ) )->getValue();
-    bool isBinary = static_cast<RbBoolean*>( (RbObject*)getMemberValue( "isBinary"  ) )->getValue();
-    RbPtr<VectorString> names( static_cast<VectorString*>( (RbObject*)getMemberValue( "tipNames" ) ) );
+    int  numTaxa  = static_cast<Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    bool isRooted = static_cast<RbBoolean*>( getMemberValue( "isRooted"  ) )->getValue();
+    bool isBinary = static_cast<RbBoolean*>( getMemberValue( "isBinary"  ) )->getValue();
+    VectorString* names = static_cast<VectorString*>( getMemberValue( "tipNames" ) );
 
     // Draw a random topology
     if (isBinary) {
-        RbPtr<Topology> top( new Topology() );
+        Topology* top = new Topology();
         // internally we treat unrooted topologies the same as rooted
         top->setIsRooted(isRooted);
         
-        RbPtr<TopologyNode> root( new TopologyNode((int)pow(2.0,numTaxa)-1) );
-        std::vector<RbPtr<TopologyNode> > nodes;
+        TopologyNode* root = new TopologyNode((int)pow(2.0,numTaxa)-1);
+        std::vector<TopologyNode* > nodes;
         nodes.push_back(root);
         // recursively build the tree
         buildRandomBinaryTree(nodes, numTaxa);
@@ -310,7 +310,7 @@ RbPtr<RbLanguageObject> Dist_topologyunif::rv( void ) {
             size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
             
             // get the node from the list
-            RbPtr<TopologyNode> node = nodes.at(index);
+            TopologyNode* node = nodes.at(index);
             
             // remove the randomly drawn node from the list
             nodes.erase(nodes.begin()+index);
@@ -323,15 +323,15 @@ RbPtr<RbLanguageObject> Dist_topologyunif::rv( void ) {
         // initialize the topology by setting the root
         top->setRoot(root);
         
-        return RbPtr<RbLanguageObject>( top );
+        return top;
     }
     // TODO: Draw a random multifurcating topology
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return NULL;
 }
 
 
 /** We intercept a call to set a member variable to make sure that the topology prob gets recalculated */
-void Dist_topologyunif::setMemberVariable( const std::string& name, RbPtr<Variable> var ) {
+void Dist_topologyunif::setMemberVariable( const std::string& name, Variable* var ) {
 
     DistributionDiscrete::setMemberVariable( name, var );
 

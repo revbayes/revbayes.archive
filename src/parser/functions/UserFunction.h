@@ -40,10 +40,10 @@ const std::string UserFunction_name = "user function";
 class UserFunction :  public RbFunction {
 
     public:
-                UserFunction(   RbPtr<const ArgumentRules>  argRules,
+                UserFunction(   const ArgumentRules*  argRules,
                                 const TypeSpec&             retType,
-                                RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts,
-                                RbPtr<Environment>                defineEnv);           //!< Constructor
+                                std::list<SyntaxElement*>*  stmts,
+                                Environment*                defineEnv);           //!< Constructor
                 UserFunction(const UserFunction& x);                                    //!< Copy constructor
                 virtual ~UserFunction();                                                //!< Delete the code
 
@@ -55,17 +55,17 @@ class UserFunction :  public RbFunction {
         std::string                                 richInfo() const;                   //!< Complete info about object
 
         // Regular functions
-        RbPtr<const ArgumentRules>                  getArgumentRules(void) const;       //!< Get arg rules
+        const ArgumentRules*                        getArgumentRules(void) const;       //!< Get arg rules
         const TypeSpec&                             getReturnType(void) const;          //!< Get return type
 
 	protected:
-        RbPtr<RbLanguageObject>                     executeFunction(void);              //!< Execute function
+        RbLanguageObject*                           executeFunction(void);              //!< Execute function
 
     
-        RbPtr<const ArgumentRules>                  argumentRules;                      //!< The argument rules
+        const ArgumentRules*                        argumentRules;                      //!< The argument rules
         const TypeSpec                              returnType;                         //!< The return type (complete specification)
-        RbPtr<std::list<RbPtr<SyntaxElement> > >    code;                               //!< The code
-        RbPtr<Environment>                          defineEnvironment;                  //!< The definition environment
+        std::list<SyntaxElement*>*                  code;                               //!< The code
+        Environment*                                defineEnvironment;                  //!< The definition environment
     
     private:
         static const TypeSpec       typeSpec;

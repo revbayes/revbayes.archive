@@ -33,7 +33,7 @@
 
 
 /** Constructor from real matrix */
-EigenSystem::EigenSystem(RbPtr<MatrixReal> m) {
+EigenSystem::EigenSystem(MatrixReal* m) {
 
     // set the pointer to the rate matrix for this system of eigen values and vectors
     qPtr = m;
@@ -74,6 +74,7 @@ EigenSystem::EigenSystem(const EigenSystem& e) {
 /** Destructor */
 EigenSystem::~EigenSystem(void) {
 
+    delete qPtr;
 }
 
 

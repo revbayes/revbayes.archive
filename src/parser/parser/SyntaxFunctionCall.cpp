@@ -35,31 +35,39 @@
 const TypeSpec SyntaxFunctionCall::typeSpec(SyntaxFunctionCall_name);
 
 /** Construct global function call from function name and arguments */
-SyntaxFunctionCall::SyntaxFunctionCall(RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > > args)
+SyntaxFunctionCall::SyntaxFunctionCall(RbString* id, std::list<SyntaxLabeledExpr*>* args)
     : SyntaxElement(), arguments(args), functionName(id), variable(NULL) {
 }
 
 
 /** Construct member function call from variable, function name and arguments */
-SyntaxFunctionCall::SyntaxFunctionCall(RbPtr<SyntaxVariable> var, RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > > args)
+SyntaxFunctionCall::SyntaxFunctionCall(SyntaxVariable* var, RbString* id, std::list<SyntaxLabeledExpr*>* args)
     : SyntaxElement(), arguments(args), functionName(id), variable(var) {
 }
 
 
 /** Deep copy constructor */
-SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x)
-    : SyntaxElement(x) {
+SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x) : SyntaxElement(x) {
 
-    functionName = RbPtr<RbString>(x.functionName);
-    variable     = RbPtr<SyntaxVariable>(new SyntaxVariable(*x.variable));
-    for (std::list<RbPtr<SyntaxLabeledExpr> >::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        arguments->push_back( RbPtr<SyntaxLabeledExpr>(new SyntaxLabeledExpr(*(*i))) );
+    functionName = x.functionName;
+    variable     = x.variable->clone();
+    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
+        arguments->push_back( (*i)->clone() );
 }
 
 
 /** Destructor deletes members */
 SyntaxFunctionCall::~SyntaxFunctionCall() {
     
+    delete functionName;
+    delete variable;
+    
+    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++) {
+        delete *i;
+    }
+    
+    delete arguments;
+
 }
 
 
@@ -71,9 +79,9 @@ SyntaxFunctionCall& SyntaxFunctionCall::operator=(const SyntaxFunctionCall& x) {
         SyntaxElement::operator=(x);
 
         functionName = x.functionName;
-        variable     = RbPtr<SyntaxVariable>( new SyntaxVariable(*x.variable) );
-        for (std::list<RbPtr<SyntaxLabeledExpr> >::iterator i=arguments->begin(); i!=arguments->end(); i++)
-            arguments->push_back(RbPtr<SyntaxLabeledExpr>(new SyntaxLabeledExpr(*(*i))) );
+        variable     = x.variable->clone();
+        for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
+            arguments->push_back( (*i)->clone() );
     }
 
     return (*this);
@@ -108,41 +116,47 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 }
 
 
+/** We cannot perform this function and throw and error */
+Variable* SyntaxFunctionCall::evaluateContent( void ) {
+    throw RbException("Cannot evaluate the content in SyntaxFunctionCall without environment!");
+}
+
+
 /** Convert element to a deterministic function node. */
-RbPtr<Variable> SyntaxFunctionCall::evaluateContent(const RbPtr<Environment>& env) {
+Variable* SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     // Package arguments
-    std::vector<RbPtr<Argument> > args;
-    for (std::list<RbPtr<SyntaxLabeledExpr> >::const_iterator i=arguments->begin(); i!=arguments->end(); i++) {
+    std::vector<Argument*> args;
+    for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++) {
         PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel()->getValue().c_str() );
-        RbPtr<Argument> theArg( new Argument(*(*i)->getLabel(), (*i)->getExpression()->evaluateContent(env) ) );
+        Argument* theArg = new Argument(*(*i)->getLabel(), (*i)->getExpression()->evaluateContent(env) );
         args.push_back(theArg);
     }
 
-    RbPtr<RbFunction> func;
+    RbFunction* func;
     if (variable == NULL) {
 
-        func = Workspace::userWorkspace()->getFunction(*functionName, args);
+        func = Workspace::userWorkspace().getFunction(*functionName, args);
         if (func == NULL)
             throw(RbException("Could not find function called '" + functionName->getValue() +
                 "' taking specified arguments"));
     }
     else {
 
-        const RbPtr<DAGNode>& theNode = variable->evaluateContent( env )->getDagNode();
+        DAGNode* theNode = variable->evaluateContent( env )->getDagNode();
         if ( theNode == NULL || !theNode->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 
-        RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>((RbObject*)theNode->getValue()) );
+        MemberObject* theMemberObject = dynamic_cast<MemberObject*>( theNode->getValue() );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
         // TODO: We shouldn't allow const casts!!!
-        MethodTable* mt = const_cast<MethodTable*>((const MethodTable*)theMemberObject->getMethods());
-        RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)mt->getFunction( *functionName, args ) ) );
+        MethodTable* mt = const_cast<MethodTable*>( theMemberObject->getMethods() );
+        MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt->getFunction( *functionName, args ) );
         theMemberFunction->setMemberObject(theMemberObject);
-        func = RbPtr<RbFunction>( theMemberFunction );
+        func = theMemberFunction;
     }
 
-    return RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );
+    return new Variable( new DeterministicNode( func ) );
 }
 
 
@@ -167,7 +181,7 @@ void SyntaxFunctionCall::print(std::ostream& o) const {
         o << "arguments     = []";
     else {
         int index = 1;
-        for (std::list<RbPtr<SyntaxLabeledExpr> >::const_iterator i=arguments->begin(); i!=arguments->end(); i++, index++)
+        for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++, index++)
             o << "arguments[" << index <<  "]  = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
     }
     o << std::endl;
@@ -175,7 +189,7 @@ void SyntaxFunctionCall::print(std::ostream& o) const {
     if (variable != NULL)
         variable->print(o);
 
-    for (std::list<RbPtr<SyntaxLabeledExpr> >::const_iterator i=arguments->begin(); i!=arguments->end(); i++)
+    for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++)
         (*i)->print(o);
 }
 

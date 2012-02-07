@@ -46,10 +46,10 @@ class ArgumentRule : public RbInternal {
         const std::string&          getArgumentLabel(void) const;                                                                       //!< Get label of argument
         const std::string&          getArgumentType(void) const;                                                                        //!< Get argument type
         const TypeSpec&             getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
-        RbPtr<const Variable>       getDefaultVariable(void) const;                                                                     //!< Get default argument
-        RbPtr<Variable>             getDefaultVariable(void);                                                                           //!< Get default argument (non-const to return non-const variable)
+        const Variable*             getDefaultVariable(void) const;                                                                     //!< Get default argument
+        Variable*                   getDefaultVariable(void);                                                                           //!< Get default argument (non-const to return non-const variable)
         bool                        hasDefault(void) const;                                                                             //!< Has default?
-        virtual bool                isArgumentValid(RbPtr<const DAGNode> var, bool& needsConversion) const;                             //!< Is var valid argument?
+        virtual bool                isArgumentValid(const DAGNode* var, bool& needsConversion) const;                                   //!< Is var valid argument?
 
     protected:
                                     ArgumentRule(const std::string& argName, RbLanguageObject *defValue);                               //!< Constructor of rule from default value

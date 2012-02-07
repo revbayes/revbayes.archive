@@ -31,7 +31,7 @@ namespace RbStatistics {
         double                      cdf(double m, double s, double x);                                 /*!< Lognormal(m,s) cumulative probability */
         double                      quantile(double p);                                                     /*!< Lognormal(0,1) quantile */
         double                      quantile(double m, double s, double p);                            /*!< Lognormal(m,s) quantile */
-        double                      rv(RbPtr<RandomNumberGenerator> rng);                                         /*!< Lognormal(0,1) random variable */
-        double                      rv(double m, double s, RbPtr<RandomNumberGenerator> rng);                /*!< Lognormal(m,s) random variable */
+        double                      rv(RandomNumberGenerator& rng);                                         /*!< Lognormal(0,1) random variable */
+        double                      rv(double m, double s, RandomNumberGenerator& rng);                /*!< Lognormal(m,s) random variable */
 	}
 }

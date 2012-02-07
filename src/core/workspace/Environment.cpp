@@ -42,7 +42,7 @@ Environment::Environment(void) : RbInternal(), parentEnvironment(NULL) {
 
 
 /** Construct Environment with parent */
-Environment::Environment(RbPtr<Environment> parentFr) : RbInternal(), parentEnvironment(parentFr) {
+Environment::Environment(Environment* parentFr) : RbInternal(), parentEnvironment(parentFr) {
     
 }
 
@@ -51,9 +51,9 @@ Environment::Environment(const Environment &x): RbInternal(x) {
     
     // make a deep copy of the parent environment
     if (x.parentEnvironment != NULL) {
-        parentEnvironment = RbPtr<Environment>(x.parentEnvironment->clone());    }
+        parentEnvironment = x.parentEnvironment->clone();    }
     else {
-        parentEnvironment = RbPtr<Environment>::getNullPtr();
+        parentEnvironment = NULL;
     }
     
     // make a deep copy of the variable names
@@ -180,13 +180,13 @@ void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, V
 /** Add variable */
 void Environment::addVariable(const std::string& name, Variable* theVar) {
     
-    addVariable( name, TypeSpec(RbObject_name), RbPtr<Variable>(theVar) );
+    addVariable( name, TypeSpec(RbObject_name), theVar );
 }
 
 /** Add variable to frame */
-void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, RbPtr<DAGNode> dagNode ) {
+void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, DAGNode* dagNode ) {
     // create a new variable object
-    RbPtr<Variable> var( new Variable(name, dagNode) );
+    Variable* var = new Variable(name, dagNode);
     
     // add the object to the list
     addVariable(name, typeSp, var );
@@ -195,7 +195,7 @@ void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, 
 /** Add variable to frame */
 void Environment::addVariable( const std::string& name, const TypeSpec& typeSp ) {
     // create a new variable object
-    RbPtr<Variable> var( new Variable( name ) );
+    Variable* var = new Variable( name );
     
     // add the object to the list
     addVariable(name, typeSp, var );
@@ -357,18 +357,15 @@ RbLanguageObject* Environment::getValue( const std::string& name ) {
  * that it is safe is when this Environment is identical to, or a parent of,
  * otherEnvironment.
  */
-bool Environment::isSameOrParentOf( RbPtr<Environment> otherEnvironment ) const {
+bool Environment::isSameOrParentOf( const Environment& otherEnvironment ) const {
     
-    if (otherEnvironment == NULL) 
-        return false;
-    
-    if ( this == otherEnvironment )
+    if ( this == &otherEnvironment )
         return true;
     
-    if ( otherEnvironment->parentEnvironment == NULL )
+    if ( otherEnvironment.parentEnvironment == NULL )
         return false;
     
-    return isSameOrParentOf( otherEnvironment->parentEnvironment );
+    return isSameOrParentOf( otherEnvironment.parentEnvironment );
 }
 
 

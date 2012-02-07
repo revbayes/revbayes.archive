@@ -47,24 +47,24 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object 
     
     // Member variable rules
-    RbPtr<const MemberRules>    getMemberRules(void) const;                                                     //!< Get member rules
-    void                        setMemberVariable(const std::string& name, RbPtr<Variable> var);                //!< Only constants allowed
+    const MemberRules*          getMemberRules(void) const;                                                     //!< Get member rules
+    void                        setMemberVariable(const std::string& name, Variable* var);                //!< Only constants allowed
     
     // Member method inits
-    RbPtr<const MethodTable>    getMethods(void) const;                                                         //!< Get methods
+    const MethodTable*          getMethods(void) const;                                                         //!< Get methods
     
     // Simulate functions
     void                        run(size_t ndata);                                                               //!< Simulates ndata data elements
-    RbPtr<Vector>               getValues(RbString varName);                                                  //!< Get the values for variable with name varName
+    Vector*                     getValues(RbString varName);                                                  //!< Get the values for variable with name varName
     
     
 protected:
-    RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);//!< Execute method
+    RbLanguageObject*           executeOperationSimple(const std::string& name, Environment* args);//!< Execute method
     
     
 private:
     static const TypeSpec       typeSpec;
-    void                        getOrderedStochasticNodes(const RbPtr<DAGNode>& dagNode,  std::vector<RbPtr<StochasticNode> >& orderedStochasticNodes, std::set<RbPtr<DAGNode> >& visitedNodes);
+    void                        getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<StochasticNode*>& orderedStochasticNodes, std::set<DAGNode*>& visitedNodes);
 
     
 };

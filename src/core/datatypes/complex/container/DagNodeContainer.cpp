@@ -63,10 +63,10 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
     if (type.getBaseType() == Vector_name) {
         // test whether each object in the container is actually a constant node holding a value
         Vector* valueVector = new Vector(*type.getElementType());
-        for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+        for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             const RbPtr<DAGNode>& theNode = (*it)->getDagNode();
             if (theNode->isType(ConstantNode_name) && theNode->getValue()->isTypeSpec(*type.getElementType())) {
-                RbPtr<const RbObject> element( theNode->getValue() );
+                const RbObject* element = theNode->getValue();
                 valueVector->push_back(element->clone());
             }
             else {
@@ -84,16 +84,16 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
 
 
 /** Execute a member method. We overwrite the executeOperation function here because we return DAG nodes directly. */
-RbPtr<RbLanguageObject> DagNodeContainer::executeOperation(std::string const &name, const RbPtr<Environment> &args) {
+RbLanguageObject* DagNodeContainer::executeOperation(std::string const &name, Environment* args) {
     if ( name == "[]") {
         // get the member with give index
-        RbPtr<const Natural> index( static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue()) );
+        const Natural* index = static_cast<const Natural*>( (*args)[0]->getValue() );
         
         if (size() < (size_t)(index->getValue())) {
             throw RbException("Index out of bounds in []");
         }
         
-        return RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (DAGNode*)elements[index->getValue() - 1]->getDagNode() ) );
+        return static_cast<RbLanguageObject*>( (DAGNode*)elements[index->getValue() - 1]->getDagNode() );
     }
     
     return ConstantMemberObject::executeOperation( name, args );
@@ -143,7 +143,7 @@ bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     
     if (type.getBaseType() == Vector_name) {
         // test whether each object in the container is actually a constant node holding a value
-        for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+        for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             const RbPtr<DAGNode>& theNode = (*it)->getDagNode();
             if (!theNode->isType(ConstantNode_name) || !theNode->getValue()->isTypeSpec(*type.getElementType())) {
                 return false;
@@ -204,7 +204,7 @@ void DagNodeContainer::push_front(RbObject* x) {
 void DagNodeContainer::printValue( std::ostream& o ) const {
     
     o << "[ ";
-    for ( std::vector<RbPtr<VariableSlot> >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
+    for ( std::vector<VariableSlot* >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
         if ( i != elements.begin() )
             o << ", ";
         if ( (*i) == NULL )
@@ -226,8 +226,8 @@ void DagNodeContainer::resize( size_t n ) {
     
     // add NULL elements for each new element
     for ( size_t i = elements.size(); i <= n; i++ ) {
-        RbPtr<Variable> emptyVar( new Variable(EmptyString) );
-        RbPtr<VariableSlot> emptySlot( new VariableSlot( EmptyString, emptyVar ) );
+        Variable* emptyVar = new Variable(EmptyString);
+        VariableSlot* emptySlot = new VariableSlot( EmptyString, emptyVar );
         elements.push_back( emptySlot );
     }
     
@@ -288,7 +288,7 @@ void DagNodeContainer::sort( void ) {
 void DagNodeContainer::unique(void) {
     
     sort();
-    std::vector<RbPtr<VariableSlot> > uniqueVector;
+    std::vector<VariableSlot* > uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (size_t i = 1 ; i< elements.size() ; i++)
     {

@@ -28,7 +28,7 @@
 const TypeSpec Argument::typeSpec(Argument_name);
 
 /** Construct from argument label and DAG node */
-Argument::Argument(RbPtr<Variable> v) : RbInternal() {
+Argument::Argument(Variable* v) : RbInternal() {
     
     label   = "";
     var     = v;
@@ -36,7 +36,7 @@ Argument::Argument(RbPtr<Variable> v) : RbInternal() {
 
 
 /** Construct from argument label and DAG node */
-Argument::Argument(const std::string& argLabel, RbPtr<Variable> v) : RbInternal() {
+Argument::Argument(const std::string& argLabel, Variable* v) : RbInternal() {
 
     label   = argLabel;
     var     = v;
@@ -46,13 +46,13 @@ Argument::Argument(const std::string& argLabel, RbPtr<Variable> v) : RbInternal(
 Argument::Argument(const Argument &x) : RbInternal(x) {
     
     label   = x.label;
-    var     = x.var;
+    var     = x.var->clone();
 }
 
 
 /** Destructor */
 Argument::~Argument() {
-    
+    delete var;
 }
 
 
@@ -85,12 +85,12 @@ const TypeSpec& Argument::getTypeSpec(void) const {
 }
 
 
-RbPtr<const Variable> Argument::getVariable(void) const {
-    return RbPtr<const Variable>( var );
+const Variable* Argument::getVariable(void) const {
+    return var;
 }
 
 
-RbPtr<Variable> Argument::getVariable(void) {
+Variable* Argument::getVariable(void) {
     return var;
 }
 
@@ -112,8 +112,12 @@ void Argument::setDagNode(RbPtr<DAGNode> newNode) {
 
 
 /** Set the variable of the argument */
-void Argument::setVariable(RbPtr<Variable> newVar) {
+void Argument::setVariable(Variable* newVar) {
     
+    // delete the old variable
+    if (var != NULL) {
+        delete var;
+    }
     var = newVar;
 }
 

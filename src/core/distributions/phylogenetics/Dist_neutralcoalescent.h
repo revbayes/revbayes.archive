@@ -36,7 +36,7 @@ public:
     Dist_neutralcoalescent(void);                                                                   //!< Default constructor
 
     // convenience
-    typedef std::map<RbPtr<TopologyNode>, double> TopologyNodeToRealMapType;                        //!< Save our fingers
+    typedef std::map<TopologyNode*, double> TopologyNodeToRealMapType;                        //!< Save our fingers
     typedef std::map<unsigned long, double> IntegerToRealMapType;
 
     // Basic utility functions
@@ -45,13 +45,13 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
     // Member variable setup
-    RbPtr<const MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
+    const MemberRules*          getMemberRules(void) const;                                         //!< Get member variable rules
 
     // Discrete distribution functions
     const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
     double                      lnPdf(const RbLanguageObject *value) const;                         //!< Ln probability density
     double                      pdf(const RbLanguageObject *value) const;                           //!< Probability density
-    RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate tree from the coalescent
+    RbLanguageObject*           rv(void);                                                           //!< Generate tree from the coalescent
 
 private:
     double                      drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize);

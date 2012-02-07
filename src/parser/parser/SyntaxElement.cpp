@@ -28,3 +28,10 @@ const VectorString& SyntaxElement::getClass(void) const {
 }
 
 
+/** Default implementation of evaluateContent. We do not need the environment and hence just delegate to the function without parameters. */
+Variable* SyntaxElement::evaluateContent(Environment &env) {
+    
+    return evaluateContent();
+}
+
+

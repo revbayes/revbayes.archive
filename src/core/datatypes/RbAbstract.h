@@ -28,7 +28,7 @@ class RbAbstract : public RbLanguageObject {
 
 public:
                             RbAbstract(const VectorString classVec,
-                                       RbPtr<TypeSpec> elemType = RbPtr<TypeSpec>::getNullPtr());                           //!< Constructor
+                                       TypeSpec* elemType = NULL);                           //!< Constructor
 
     // Basic utility functions
     RbAbstract*             clone(void) const;                                                      //!< Clone object
@@ -39,7 +39,7 @@ public:
 
 protected:
     VectorString            classVector;                                                            //!< Class vector describing type
-    RbPtr<TypeSpec>         elementType;                                                            //!< Element type, if any
+    TypeSpec*               elementType;                                                            //!< Element type, if any
     TypeSpec                typeSpec;
 };
 

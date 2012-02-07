@@ -50,7 +50,7 @@ public:
     virtual void                                    clear(void);                                                    //!< Clear
     virtual const RbObject*                         getElement(size_t index) const;                                 //!< Get element
     virtual RbObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
-    const std::vector<RbPtr<RbLanguageObject> >&    getValue(void) const;                                           //!< Get the stl vector of elements
+    const std::vector<RbLanguageObject* >&          getValue(void) const;                                           //!< Get the stl vector of elements
     void                                            pop_back(void);                                                 //!< Drop element at back
     void                                            pop_front(void);                                                //!< Drop element from front
     virtual void                                    push_back(RbObject* x);                                         //!< Append element to end
@@ -63,7 +63,7 @@ public:
     
     protected:
     
-    std::vector<RbPtr<RbLanguageObject> >           elements;
+    std::vector<RbLanguageObject* >                 elements;
     TypeSpec                                        typeSpec;
 };
 

@@ -38,8 +38,8 @@ class Categorical : public RbLanguageObject {
         // Basic utility functions you have to override
         virtual Categorical*                clone(void) const = 0;                                              //!< Clone object
         virtual const VectorString&         getClass(void) const;                                               //!< Get class vector
-        virtual RbPtr<const MemberRules>    getMemberRules(void) const;                                         //!< Get member rules
-        virtual void                        initialize(const RbPtr<Vector>& attributes);                        //!< Initialize this object with the values inside the vector
+        virtual const MemberRules*          getMemberRules(void) const;                                         //!< Get member rules
+        virtual void                        initialize(const Vector& attributes);                               //!< Initialize this object with the values inside the vector
         virtual std::string                 richInfo(void) const = 0;                                           //!< Complete info about object
 
         // Categorical functions you do not have to override

@@ -68,7 +68,7 @@ Variable::Variable(const std::string &n) : node(NULL) {
 Variable::Variable(const Variable& x) : node(NULL)  {
     
     if ( x.node != NULL ) {
-        setDagNode( RbPtr<DAGNode>( x.node->clone() ) );
+        setDagNode( x.node->clone() );
         
         // notify the variable that this is the new variable
         node->setVariable( this );

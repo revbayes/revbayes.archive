@@ -43,7 +43,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute operation */
-RbPtr<RbLanguageObject> Func_quit::executeFunction( void ) {
+RbLanguageObject* Func_quit::executeFunction( void ) {
 
     /* Ask if user really wants to quit */
     //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)
@@ -52,15 +52,16 @@ RbPtr<RbLanguageObject> Func_quit::executeFunction( void ) {
     if ( wantToQuit )
         throw RbException( RbException::QUIT );
 
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return NULL;
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_quit::getArgumentRules( void ) const {
+const ArgumentRules* Func_quit::getArgumentRules( void ) const {
 
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
-    return RbPtr<const ArgumentRules>( argumentRules );
+    static ArgumentRules* argumentRules = new ArgumentRules();
+    
+    return argumentRules;
 }
 
 

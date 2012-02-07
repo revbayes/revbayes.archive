@@ -79,16 +79,14 @@ const VectorString& Categorical::getClass() const {
 }
 
 
-RbPtr<const MemberRules> Categorical::getMemberRules(void) const {
+const MemberRules* Categorical::getMemberRules(void) const {
     
-    static RbPtr<const MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) {
         
-        RbPtr<MemberRules> mr( new MemberRules() );
-        mr->push_back( RbPtr<ArgumentRule>( new ValueRule( "state"  , Integer_name ) ) );
-        memberRules = RbPtr<const MemberRules>( mr );
+        memberRules->push_back( new ValueRule( "state"  , Integer_name ) );
         
         rulesSet = true;
     }
@@ -98,10 +96,10 @@ RbPtr<const MemberRules> Categorical::getMemberRules(void) const {
 
 
 /** Initialize the Categorical variable. We just set the value. */
-void Categorical::initialize(const RbPtr<Vector> &attributes) {
+void Categorical::initialize(const Vector &attributes) {
     
     // set the state
-    value = static_cast<Integer*>( (RbLanguageObject*)(*attributes)[0] )->getValue();
+    value = static_cast<const Integer*>( attributes[0] )->getValue();
 }
 
 /** Check if character code is valid */

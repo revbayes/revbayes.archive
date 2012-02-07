@@ -41,19 +41,19 @@ class Dist_topologyunif: public DistributionDiscrete {
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
     
         // Member variable setup
-        RbPtr<const MemberRules>        getMemberRules(void) const;                                         //!< Get member variable rules
-        void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);    //!< Set member variable (ensure topologyProb is updated)
+        const MemberRules*              getMemberRules(void) const;                                         //!< Get member variable rules
+        void                            setMemberVariable(const std::string& name, Variable* var);    //!< Set member variable (ensure topologyProb is updated)
 
         // Discrete distribution functions
         size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
-        virtual RbPtr<Simplex>          getProbabilityMassVector(void);                                     //!< Get probability mass vector
+        virtual Simplex*                getProbabilityMassVector(void);                                     //!< Get probability mass vector
         const TypeSpec&                 getVariableType(void) const;                                        //!< Get random variable type (Simplex)
         double                          lnPdf(const RbLanguageObject *value) const;                   //!< Ln probability density
         double                          pdf(const RbLanguageObject *value) const;                     //!< Probability density
-        RbPtr<RbLanguageObject>         rv(void);                                                           //!< Generate random variable
+        RbLanguageObject*               rv(void);                                                           //!< Generate random variable
 
     private:
-        void                            buildRandomBinaryTree(std::vector<RbPtr<TopologyNode> >& tips, size_t numTaxa);    //!< Build a random binary tree recursively until we have numTaxa tips
+        void                            buildRandomBinaryTree(std::vector<TopologyNode* >& tips, size_t numTaxa);    //!< Build a random binary tree recursively until we have numTaxa tips
         void                            calculateTopologyProb(void);                                        //!< Calculate and set probability member variables
         void                            calculateNumberOfStates(void);                                      //!< Calculate and set number of states member variables
 

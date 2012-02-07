@@ -34,7 +34,7 @@ class StochasticNode : public VariableNode {
 
 public:
                                         StochasticNode(const TypeSpec& type);                               //!< Construct empty stochastic node
-                                        StochasticNode(RbPtr<Distribution> dist);                           //!< Construct from distribution (raw object)
+                                        StochasticNode(Distribution* dist);                                 //!< Construct from distribution (raw object)
                                         StochasticNode(const StochasticNode& x);                            //!< Copy constructor
     virtual                            ~StochasticNode(void);                                               //!< Destructor
 
@@ -55,12 +55,12 @@ public:
 
     // StochasticNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
-    void                                clamp(RbPtr<RbLanguageObject> observedVal);                         //!< Clamp the node with an observed value
-    RbPtr<const Distribution>           getDistribution(void) const;                                        //!< Get distribution
-    RbPtr<Distribution>                 getDistribution(void);                                              //!< Get distribution (non-const to return non-const distribution)
+    void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
+    const Distribution*                 getDistribution(void) const;                                        //!< Get distribution
+    Distribution*                       getDistribution(void);                                              //!< Get distribution (non-const to return non-const distribution)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
-    void                                setValue(RbPtr<RbLanguageObject> value);                            //!< Set value but do not clamp; get affected nodes
+    void                                setValue(RbLanguageObject* value);                                  //!< Set value but do not clamp; get affected nodes
     void                                unclamp(void);                                                      //!< Unclamp the node
     
     // DAG functions

@@ -41,13 +41,13 @@ DeterministicNode::DeterministicNode( const std::string& valType ) : VariableNod
 }
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( const RbPtr<RbFunction>& func ) : VariableNode(func->getReturnType()), needsUpdate( true ), function( func ) {
+DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->getReturnType()), needsUpdate( true ), function( func ) {
     
     // increment the reference count for myself
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
     
     /* Check for cycles */
-    const RbPtr<Environment>& arguments = func->getArguments();
+    Environment* arguments = func->getArguments();
     std::list<DAGNode*> done;
     for ( size_t i = 0; i < arguments->size(); i++ ) {
         const std::string &name = arguments->getName(i);
@@ -67,10 +67,10 @@ DeterministicNode::DeterministicNode( const RbPtr<RbFunction>& func ) : Variable
 //    function = func;
     
     /* Set value and stored value */
-    const RbPtr<RbLanguageObject>& retVal = function->execute();
+    RbLanguageObject* retVal = function->execute();
     
     value           = retVal;
-    storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
+    storedValue     = NULL;
     
     // decrement the reference count for myself
     RbMemoryManager::rbMemoryManager().decrementCountForAddress(this);
@@ -80,17 +80,17 @@ DeterministicNode::DeterministicNode( const RbPtr<RbFunction>& func ) : Variable
 /** Copy constructor */
 DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNode( x ) {
     
-    function         = RbPtr<RbFunction>( x.function->clone() );
+    function         = x.function->clone();
     touched          = x.touched;
     needsUpdate      = x.needsUpdate;
     if ( x.storedValue != NULL ) {
-        storedValue  = RbPtr<RbLanguageObject>( x.storedValue->clone() );
+        storedValue  = x.storedValue->clone();
     }
     else
-        storedValue  = RbPtr<RbLanguageObject>::getNullPtr();
+        storedValue  = NULL;
     
     /* Set parents and add this node as a child node of these */
-    RbPtr<Environment> args = function->getArguments();
+    Environment* args = function->getArguments();
     for ( size_t i = 0; i < args->size(); i++ ) {
         const std::string &name = args->getName(i);
         
@@ -132,26 +132,26 @@ RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNo
     copy->setName(name);
     
     /* Set the copy member variables */
-    copy->function      = RbPtr<RbFunction>( function->clone() );
+    copy->function      = function->clone();
     copy->touched       = touched;
     copy->needsUpdate   = needsUpdate;
     if (value != NULL)
-        copy->value    = RbPtr<RbLanguageObject>( value->clone() );
+        copy->value    = value->clone();
     if (storedValue == NULL)
-        copy->storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+        copy->storedValue = NULL;
     else
-        copy->storedValue = RbPtr<RbLanguageObject>( storedValue->clone() );
+        copy->storedValue = storedValue->clone();
     
     /* Set the copy arguments to their matches in the new DAG */
-    const RbPtr<Environment>& args      = function->getArguments();
-    const RbPtr<Environment>& copyArgs  = ( copy->function->getArguments() );
+    Environment* args      = function->getArguments();
+    Environment* copyArgs  = ( copy->function->getArguments() );
     
     for ( size_t i = 0; i < args->size(); i++ ) {
         const std::string &name = args->getName(i);
         
         // clone the parameter DAG node
         RbPtr<DAGNode> theArgClone( (*args)[name]->getDagNode()->cloneDAG(newNodes) );
-        (*copyArgs)[name]->setVariable(RbPtr<Variable>( new Variable(theArgClone) ) );
+        (*copyArgs)[name]->setVariable(new Variable(theArgClone) );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
         copy->addParentNode( theArgClone );
@@ -193,13 +193,13 @@ const TypeSpec& DeterministicNode::getTypeSpec(void) const {
 
 
 
-RbPtr<const RbFunction> DeterministicNode::getFunction(void) const {
-    return RbPtr<const RbFunction>(function);
+const RbFunction* DeterministicNode::getFunction(void) const {
+    return function;
 }
 
 
-RbPtr<RbFunction> DeterministicNode::getFunction(void) {
-    return (function);
+RbFunction* DeterministicNode::getFunction(void) {
+    return function;
 }
 
 
@@ -240,7 +240,10 @@ void DeterministicNode::keepMe( void ) {
         if ( needsUpdate )
             update();
         
-        storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+        if (storedValue != NULL) {
+            delete storedValue;
+        }
+        storedValue = NULL;
         
     }
     touched = false;
@@ -320,7 +323,10 @@ void DeterministicNode::restoreMe( void ) {
     if ( touched ) {
         // no matter if this node has been changed we just set it back to its stored value
         value       = storedValue;
-        storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+        
+        // delete the stored value
+        delete storedValue;
+        storedValue = NULL;
         
         // restore all children
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
@@ -379,6 +385,11 @@ void DeterministicNode::update( void ) {
         
 //        // set the stored value and release the old stored value
 //        storedValue     = value;
+        
+        // free the memory of the old value
+        if (value != NULL) {
+            delete value;
+        }
         
         // compute a new value
         value = function->execute();

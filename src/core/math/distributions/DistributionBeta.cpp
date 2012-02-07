@@ -166,7 +166,7 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
  */
 #define expmax	(DBL_MAX_EXP * RbConstants::LN2)/* = log(DBL_MAX) */
 
-double RbStatistics::Beta::rv(double aa, double bb, RbPtr<RandomNumberGenerator> rng) {
+double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator& rng) {
     double a, b, alpha;
     double r, s, t, u1, u2, v, w, y, z;
 
@@ -222,8 +222,8 @@ w = RbConstants::Double::max
         /* FIXME: "do { } while()", but not trivially because of "continue"s:*/
         for(;;)
             {
-            u1 = rng->uniform01();
-            u2 = rng->uniform01();
+            u1 = rng.uniform01();
+            u2 = rng.uniform01();
             if (u1 < 0.5)
                 {
                 y = u1 * u2;
@@ -259,8 +259,8 @@ w = RbConstants::Double::max
             gamma = a + 1.0 / beta;
             }
         do {
-            u1 = rng->uniform01();
-            u2 = rng->uniform01();
+            u1 = rng.uniform01();
+            u2 = rng.uniform01();
 
             v_w_from__u1_bet(a);
 

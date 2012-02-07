@@ -64,22 +64,22 @@ const VectorString& FileMonitor::getClass() const {
 }
 
 /** Return member rules */
-RbPtr<const MemberRules> FileMonitor::getMemberRules( void ) const {
+const MemberRules* FileMonitor::getMemberRules( void ) const {
     
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) 
     {
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "printgen"  , TypeSpec(Integer_name),  RbPtr<RbLanguageObject>(new Integer(1)    ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "separator" , TypeSpec(RbString_name), RbPtr<RbLanguageObject>(new RbString(";") ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) ) );
+        memberRules->push_back( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) );
+        memberRules->push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name),  new Integer(1)    ) );
+        memberRules->push_back( new ValueRule( "separator" , TypeSpec(RbString_name), new RbString("\t") ) );
+        memberRules->push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
+        memberRules->push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
         rulesSet = true;
     }
     
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -92,7 +92,7 @@ const TypeSpec& FileMonitor::getTypeSpec(void) const {
 /** Monitor value unconditionally */
 void FileMonitor::monitor(void) {
 
-    for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
             outStream << separator;
@@ -111,13 +111,13 @@ void FileMonitor::monitor(void) {
 void FileMonitor::monitor(int gen) {
 
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer*>( getMemberValue("printgen") )->getValue();
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first
         outStream << gen;
         
-        for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element
             outStream << separator;
             
@@ -147,11 +147,11 @@ void FileMonitor::printHeader() {
     // print one column for the iteration number
     outStream << "Sample";
     
-    for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
         outStream << separator;
         
-         RbPtr<VariableNode> theNode = *it;
+         VariableNode* theNode = *it;
         
         // print the header
         if (theNode->getName() != "")
@@ -186,17 +186,17 @@ std::string FileMonitor::richInfo(void) const {
     return o.str();
 }
 
-void FileMonitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
+void FileMonitor::setMemberVariable(std::string const &name, Variable* var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
-        RbPtr<DAGNode> theNode = var->getDagNode();
+        DAGNode* theNode = var->getDagNode();
         if (theNode->getValue()->isType(DagNodeContainer_name)) {
-            RbPtr<DagNodeContainer> theContainer( static_cast<DagNodeContainer*>( (RbLanguageObject*)theNode->getValue() ) );
+            DagNodeContainer* theContainer = static_cast<DagNodeContainer*>( theNode->getValue() );
             for (size_t i = 0; i < theContainer->size(); i++) {
                 theNode = static_cast<VariableSlot*>( (RbObject*)theContainer->getElement(i) )->getDagNode();
                 if (theNode->isType(VariableNode_name)) {
-                    nodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) ) );
+                    nodes.push_back( static_cast<VariableNode*>( theNode ) );
 //                } else {
 //                    throw RbException("Cannot monitor a constant node!");
                 }
@@ -204,14 +204,14 @@ void FileMonitor::setMemberVariable(std::string const &name, RbPtr<Variable> var
         }
         else {
             if (theNode->isType(VariableNode_name)) {
-                nodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) ) );
+                nodes.push_back( static_cast<VariableNode*>( theNode ) );
 //            } else {
 //                throw RbException("Cannot monitor a constant node!");
             }
         }
     } 
     else if (name == "separator") {
-        separator = static_cast<RbString*>( (RbObject*)var->getValue() )->getValue();
+        separator = static_cast<RbString*>( var->getValue() )->getValue();
         
         // call parent class to set member variable
         ConstantMemberObject::setMemberVariable( name, var );

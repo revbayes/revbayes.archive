@@ -60,26 +60,26 @@ const VectorString& Move_mslide::getClass() const {
 
 
 /** Return member rules */
-RbPtr<const MemberRules> Move_mslide::getMemberRules( void ) const {
+const MemberRules* Move_mslide::getMemberRules( void ) const {
 
-    static RbPtr<MemberRules> memberRules( new MemberRules() );
+    static MemberRules* memberRules = new MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
         
         TypeSpec varType( Real_name );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable", varType ) ) );
+        memberRules->push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        RbPtr<const MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        const MemberRules* inheritedRules = MoveSimple::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "delta", RealPos_name ) ) );
+        memberRules->push_back( new ValueRule( "delta", RealPos_name ) );
 
         rulesSet = true;
     }
 
-    return RbPtr<const MemberRules>( memberRules );
+    return memberRules;
 }
 
 
@@ -100,15 +100,15 @@ const TypeSpec Move_mslide::getVariableType( void ) const {
 double Move_mslide::perform( void ) {
 
     // Get random number generator    
-    RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    RbPtr<StochasticNode> nodePtr( static_cast<StochasticNode*>( (DAGNode*)nodes[0] ) );
-    RbPtr<const RealPos> delta( static_cast<const RealPos*>( (const RbObject*)getMemberValue("delta") ) );
+    StochasticNode* nodePtr = static_cast<StochasticNode*>( nodes[0] );
+    const RealPos* delta = static_cast<const RealPos*>( getMemberValue("delta") );
 
-    double curVal  =  ( static_cast<const Real*>( (const RbObject*)nodePtr->getValue() ) )->getValue();
-    RbPtr<const Real> minPtr = static_cast<const DistributionContinuous*>( (const Distribution*)nodePtr->getDistribution() )->getMin();
-    RbPtr<const Real> maxPtr = static_cast<const DistributionContinuous*>( (const Distribution*)nodePtr->getDistribution() )->getMax();
+    double curVal  =  static_cast<const Real*>( nodePtr->getValue() )->getValue();
+    const Real* minPtr = static_cast<const DistributionContinuous*>( nodePtr->getDistribution() )->getMin();
+    const Real* maxPtr = static_cast<const DistributionContinuous*>( nodePtr->getDistribution() )->getMax();
     double minVal  = minPtr->getValue();
     double maxVal  = maxPtr->getValue();
 
@@ -125,7 +125,7 @@ double Move_mslide::perform( void ) {
 
     // FIXME: not the most efficient way of handling multiple reflections :-P
 
-    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ) );
+    nodePtr->setValue( newVal.clone() );
 	
     return 0.0;
 }

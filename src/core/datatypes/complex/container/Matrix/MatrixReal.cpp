@@ -49,7 +49,7 @@ MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matri
         throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
 
     for ( size_t i = 0; i < nRows; i++ )
-        elements.push_back( RbPtr<RbLanguageObject>( new VectorReal( nCols, x ) ) );
+        elements.push_back( new VectorReal( nCols, x ) );
 }
 
 
@@ -63,7 +63,7 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
     }
 
     for ( size_t i = 0; i < numCols; i++ )
-        elements.push_back( RbPtr<RbLanguageObject>( new VectorReal( x[i] ) ) );
+        elements.push_back( new VectorReal( x[i] ) );
 }
 
 
@@ -73,7 +73,7 @@ const VectorReal* MatrixReal::operator[]( const size_t i ) const {
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
-    return static_cast<const VectorReal*>( (RbLanguageObject*)elements[i] );
+    return static_cast<const VectorReal*>( elements[i] );
 }
 
 
@@ -83,7 +83,7 @@ VectorReal* MatrixReal::operator[]( const size_t i ) {
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
     
-    return static_cast<VectorReal*>( (RbLanguageObject*)elements[i] );
+    return static_cast<VectorReal*>( elements[i] );
 }
 
 
@@ -241,11 +241,11 @@ void MatrixReal::resize( size_t rows, size_t cols ) {
 
     // First add the new rows with the right number of columns
     for ( size_t i = numRows; i < rows; i++ )
-        elements.push_back( RbPtr<RbLanguageObject>( new VectorReal( cols ) ) );
+        elements.push_back( new VectorReal( cols ) );
 
     // Now add columns to the old rows
     for ( size_t i = 0; i < numRows; i++ )
-      static_cast<VectorReal*>( (RbLanguageObject*)elements[i])->resize( cols );
+      static_cast<VectorReal*>( elements[i])->resize( cols );
 
   
     // Set new length specification
@@ -298,7 +298,7 @@ void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
 
     elements.clear();
     for ( size_t i = 0; i < size(); i++ )
-        elements.push_back( RbPtr<RbLanguageObject>( new VectorReal( x[i] ) ) );
+        elements.push_back( new VectorReal( x[i] ) );
 }
 
 
@@ -312,7 +312,7 @@ void MatrixReal::setElement( size_t row, size_t col, RbLanguageObject* value ) {
         throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
     
     // We rely on the setElement of VectorReal for type cast and to throw an error with a meaningful message
-    static_cast<VectorReal*>( (RbLanguageObject*)elements[row])->setElement(col,value);
+    static_cast<VectorReal*>( elements[row] )->setElement(col,value);
     
     
 }

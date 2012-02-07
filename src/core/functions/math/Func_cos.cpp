@@ -44,27 +44,27 @@ Func_cos* Func_cos::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_cos::executeFunction( void ) {
+RbLanguageObject* Func_cos::executeFunction( void ) {
     
-    const double x = static_cast<const Real*>( (RbObject*)(*args)[0]->getValue() )->getValue();
+    const double x = static_cast<const Real*>( (*args)[0]->getValue() )->getValue();
     
-    return RbPtr<RbLanguageObject>( new Real( cos( x ) ) );
+    return new Real( cos( x ) );
 }
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_cos::getArgumentRules( void ) const {
+const ArgumentRules* Func_cos::getArgumentRules( void ) const {
     
-    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
+    static ArgumentRules* argumentRules = new ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "x", Real_name ) ) );
+        argumentRules->push_back( new ValueRule( "x", Real_name ) );
         rulesSet = true;
     }
     
-    return RbPtr<const ArgumentRules>( argumentRules );
+    return argumentRules;
 }
 
 

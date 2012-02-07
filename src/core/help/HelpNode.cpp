@@ -35,35 +35,35 @@ HelpNode::HelpNode(const HelpNode& h) {
 
 
 /** Return the idx-th child of this node */
-RbPtr<HelpNode> HelpNode::getChildIndexed(size_t idx) {
+HelpNode* HelpNode::getChildIndexed(size_t idx) {
 
     if (idx >= childrenNodes.size())
-        return RbPtr<HelpNode>::getNullPtr();
+        return NULL;
     return childrenNodes[idx];
 }
 
 
 /** Return the first (only) child of the node with the tag */
-RbPtr<HelpNode> HelpNode::getChildWithTag(const std::string& ts) {
+HelpNode* HelpNode::getChildWithTag(const std::string& ts) {
 
     std::string tn = ts;
     StringUtilities::toLower(tn);
-    for (std::vector<RbPtr<HelpNode> >::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
+    for (std::vector<HelpNode*>::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
         {
         if ( (*it)->getTagName() == tn )
             return (*it);
         }
-    return RbPtr<HelpNode>::getNullPtr();
+    return NULL;
 }
 
 
 /** Return the idx-th child of this node with the tag (there may be multiple children with the same tag) */
-RbPtr<HelpNode> HelpNode::getChildWithTag(const std::string& ts, size_t idx) {
+HelpNode* HelpNode::getChildWithTag(const std::string& ts, size_t idx) {
 
     std::string tn = ts;
     StringUtilities::toLower(tn);
     size_t nMatches = 0;
-    for (std::vector<RbPtr<HelpNode> >::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
+    for (std::vector<HelpNode*>::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
         {
         if ( (*it)->getTagName() == tn )
             {
@@ -72,7 +72,7 @@ RbPtr<HelpNode> HelpNode::getChildWithTag(const std::string& ts, size_t idx) {
             nMatches++;
             }
         }
-    return RbPtr<HelpNode>::getNullPtr();
+    return NULL;
 }
 
 
@@ -82,7 +82,7 @@ size_t HelpNode::getNumChildrenWithTag(const std::string& ts) {
     std::string tn = ts;
     StringUtilities::toLower(tn);
     size_t nMatches = 0;
-    for (std::vector<RbPtr<HelpNode> >::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
+    for (std::vector<HelpNode*>::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
         {
         if ( (*it)->getTagName() == tn )
             nMatches++;
@@ -96,7 +96,7 @@ bool HelpNode::hasChildWithTag(const std::string& ts) {
 
     std::string tn = ts;
     StringUtilities::toLower(tn);
-    for (std::vector<RbPtr<HelpNode> >::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
+    for (std::vector<HelpNode*>::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
         {
         if ( (*it)->getTagName() == tn )
             return true;
@@ -123,14 +123,14 @@ void HelpNode::print(void) {
 
 
 /** Used for printing the help tree in a nicely indented manner */
-void HelpNode::showNode(RbPtr<HelpNode> p, size_t indent) {
+void HelpNode::showNode(HelpNode* p, size_t indent) {
 
     if (p != NULL)
         {
         for (size_t i=0; i<indent; i++)
             std::cout << " ";
         std::cout << tagName << " \"" << helpEntry << "\"" << std::endl;
-        for (std::vector<RbPtr<HelpNode> >::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
+        for (std::vector<HelpNode*>::iterator it = childrenNodes.begin(); it != childrenNodes.end(); it++)
             {
             (*it)->showNode(*it, indent+3);
             }
