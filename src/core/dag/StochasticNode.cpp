@@ -153,9 +153,9 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         instantiated        = x.instantiated;
         needsRecalculation  = x.needsRecalculation;
         
-        value               = x.value;
+        value               = x.value->clone();
         touched             = x.touched;
-        storedValue         = x.storedValue;
+        storedValue         = x.storedValue->clone();
         lnProb              = x.lnProb;
         storedLnProb        = x.storedLnProb;
         
@@ -213,6 +213,10 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
 
     if ( touched )
         throw RbException( "Cannot clamp stochastic node in volatile state" );
+
+    // touch for recalculation
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++)
+        (*i)->touch();
     
     // check for type conversion
     if (observedVal->isTypeSpec(distribution->getVariableType())) {
@@ -230,8 +234,6 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
     clamped = true;
     lnProb  = calculateLnProbability();
 
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++)
-        (*i)->touch();
 }
 
 
@@ -450,13 +452,15 @@ void StochasticNode::restoreMe() {
 
     if ( touched ) {
         
-        value           = storedValue;
-        
-        // delete the stored value
-        if (storedValue != NULL) {
-            delete storedValue;
+        if (!clamped) {
+            if (value != NULL) {
+                delete value;
+            }
+            value           = storedValue;
+            
+            // delete the stored value
+            storedValue = NULL;
         }
-        storedValue = NULL;
         
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
@@ -497,11 +501,22 @@ std::string StochasticNode::richInfo(void) const {
  */
 void StochasticNode::setValue( RbLanguageObject* val ) {
 
+    if (val == NULL) {
+        std::cerr << "Ooops ..." << std::endl;
+    }
+    
     if ( clamped )
         throw RbException( "Cannot change value of clamped node" );
 
     // touch the node (which will store the lnProb)
     touch();
+    
+    // delete the stored value
+    if (storedValue != NULL) {
+        delete storedValue;
+    }
+    
+    storedValue = value;
     
     // set the value
     value = val;
@@ -554,13 +569,6 @@ void StochasticNode::touchMe( void ) {
         touched      = true;
     
         storedLnProb = lnProb;
-        
-        // delete the stored value
-        if (storedValue != NULL) {
-            delete storedValue;
-        }
-        
-        storedValue  = value;
     }
     
     needsRecalculation = true;

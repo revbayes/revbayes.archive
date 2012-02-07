@@ -324,8 +324,6 @@ void DeterministicNode::restoreMe( void ) {
         // no matter if this node has been changed we just set it back to its stored value
         value       = storedValue;
         
-        // delete the stored value
-        delete storedValue;
         storedValue = NULL;
         
         // restore all children
@@ -361,7 +359,7 @@ void DeterministicNode::touchMe( void ) {
         // flag myself as being touched
         touched     = true;
         
-        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
+//        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
         storedValue = value;
     }
         
@@ -384,7 +382,7 @@ void DeterministicNode::update( void ) {
         
         
 //        // set the stored value and release the old stored value
-//        storedValue     = value;
+        storedValue     = value;
         
         // free the memory of the old value
         if (value != NULL) {

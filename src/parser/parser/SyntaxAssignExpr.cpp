@@ -260,8 +260,8 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
 //        throw RbException( "Support of ~iid not complete yet" );
 //    }
     
-    theSlot->getDagNode()->touch();
-    theSlot->getDagNode()->keep();
+//    theSlot->getDagNode()->touch();
+//    theSlot->getDagNode()->keep();
 
     
 #ifdef DEBUG_PARSER
