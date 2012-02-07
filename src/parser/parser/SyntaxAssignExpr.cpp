@@ -265,7 +265,7 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
 
     
 #ifdef DEBUG_PARSER
-    env->printValue(std::cerr);
+    env.printValue(std::cerr);
 #endif    
 
     return theVariable;

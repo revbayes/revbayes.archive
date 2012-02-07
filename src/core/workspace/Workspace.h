@@ -110,7 +110,7 @@ class Workspace : public Environment {
                                     }
         static Workspace&           userWorkspace(void)                                                                 //!< Get user workspace
                                     {
-                                         static Workspace userSpace = Workspace(globalWorkspace());
+                                         static Workspace userSpace = Workspace(&globalWorkspace());
                                          return userSpace;
                                     }
  

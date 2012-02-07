@@ -252,7 +252,7 @@ bool Workspace::existsType( const TypeSpec& name ) const {
 
 /** Get function */
 RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument*>& args) {
-
+    
     return functionTable->getFunction(name, args);
 }
 

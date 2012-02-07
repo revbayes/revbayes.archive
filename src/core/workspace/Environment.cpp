@@ -51,7 +51,7 @@ Environment::Environment(const Environment &x): RbInternal(x) {
     
     // make a deep copy of the parent environment
     if (x.parentEnvironment != NULL) {
-        parentEnvironment = x.parentEnvironment->clone();    }
+        parentEnvironment = x.parentEnvironment;    }
     else {
         parentEnvironment = NULL;
     }

@@ -230,7 +230,7 @@ int Parser::help(const RbString& symbol) const {
 #	if defined DEBUG_PARSER
     // Print syntax tree 
     std::cerr << std::endl;
-    std::cerr << "Parser trying to get help for symbol '" << std::string(*symbol) << "'";
+    std::cerr << "Parser trying to get help for symbol '" << std::string(symbol) << "'";
     std::cerr << std::endl;
 #	endif
 
@@ -270,7 +270,7 @@ int Parser::help(const SyntaxFunctionCall& root) const {
     // Print syntax tree
     std::cerr << std::endl;
     std::cerr << "Syntax tree root before help:\n";
-    root->print(std::cerr);
+    root.print(std::cerr);
     std::cerr << std::endl;
 #	endif
 

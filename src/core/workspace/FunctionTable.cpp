@@ -163,7 +163,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
     
     std::pair<std::multimap<std::string, RbFunction* >::iterator,
               std::multimap<std::string, RbFunction* >::iterator> retVal;
-
+    
     size_t count = table.count(name);
     if (count == 0) {
         if (parentTable != NULL) {// TODO: We shouldn't allow const casts!!!
