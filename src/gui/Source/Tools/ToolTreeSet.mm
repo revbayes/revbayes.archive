@@ -181,10 +181,10 @@
         }
     
     // updating the outlets and inlets
-    [self setInletsAndOutlets];
+    //[self setInletsAndOutlets];
     
     // resetting the window size
-    [self setControlWindowSize];
+    //[self setControlWindowSize];
 }
 
 - (IBAction)okButtonAction:(id)sender {

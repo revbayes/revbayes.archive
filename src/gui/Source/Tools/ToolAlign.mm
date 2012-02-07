@@ -208,7 +208,7 @@
     
     // check the workspace and make certain that we use an unused name for the
     // data variable
-    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+    std::string variableName = Workspace::userWorkspace().generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
 		    
     // format a string command to read the data file(s) and send the
@@ -226,7 +226,7 @@
 
     // retrieve the value (character data matrix or matrices) from the workspace
     RbPtr<RbLanguageObject> dv = NULL;
-    dv = Workspace::userWorkspace()->getValue(variableName);
+    dv = Workspace::userWorkspace().getValue(variableName);
     if ( dv == NULL )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -307,7 +307,7 @@
     
     [self makeDataInspector];
 
-    if ( Workspace::userWorkspace()->existsVariable(variableName) )
+    if ( Workspace::userWorkspace().existsVariable(variableName) )
         std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
 
     errorExit:

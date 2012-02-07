@@ -80,8 +80,8 @@
         }
 
     // get a variable name from the workspace for the data and distance matrix
-    std::string dataName = Workspace::userWorkspace()->generateUniqueVariableName();
-    std::string distName = Workspace::userWorkspace()->generateUniqueVariableName();
+    std::string dataName = Workspace::userWorkspace().generateUniqueVariableName();
+    std::string distName = Workspace::userWorkspace().generateUniqueVariableName();
 		    
     // format a string command to read the data file(s) and send the
     // formatted string to the parser
@@ -152,8 +152,8 @@
 
 
     // remove the variables from the core
-    Workspace::userWorkspace()->eraseVariable(dataName);
-    Workspace::userWorkspace()->eraseVariable(distName);
+    Workspace::userWorkspace().eraseVariable(dataName);
+    Workspace::userWorkspace().eraseVariable(distName);
 
     [self stopProgressIndicator];
 }
