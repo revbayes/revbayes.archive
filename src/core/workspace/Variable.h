@@ -62,8 +62,8 @@ public:
     const std::string&                  getName(void) const;                                //!< Get name of variable
     const DAGNode*                      getDagNode(void) const;                             //!< Get the variable 
     DAGNode*                            getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
-    const RbLanguageObject*             getValue(void) const;                               //!< Get the value of the variable
-    RbLanguageObject*                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
+    const RbLanguageObject&             getValue(void) const;                               //!< Get the value of the variable
+    RbLanguageObject&                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
     void                                setName(const std::string &n);                      //!< Replacing the name of the variable
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable
     void                                setDagNode(DAGNode* newVar);                        //!< Set a variable with a variable

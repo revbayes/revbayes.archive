@@ -356,16 +356,17 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment& env ) cons
     if ( temp == NULL )
         return false;
     
-    if ( temp->getValue()->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
+    if ( temp->getValue().isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
         
-        bool retValue = static_cast<const RbBoolean*>( temp->getValue() )->getValue();
+        bool retValue = static_cast<const RbBoolean&>( temp->getValue() ).getValue();
         
         return retValue;
     }
     else {
         
-        RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue()->convertTo( RbBoolean_name ) );
+        RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue().convertTo( RbBoolean_name ) );
         bool     retValue = tempBool->getValue();
+        delete tempBool;
         
         return   retValue;
     }

@@ -46,9 +46,10 @@ public:
 
     const VectorString&                 getClass(void) const;                                               //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
-    const RbLanguageObject*             getStoredValue(void) const;                                         //!< Get stored value
-    const RbLanguageObject*             getValue(void) const;                                               //!< Get value 
-    RbLanguageObject*                   getValue(void);                                                     //!< Get value (non-const to return non-const value)
+    const RbLanguageObject&             getStoredValue(void) const;                                         //!< Get stored value
+    const RbLanguageObject&             getValue(void) const;                                               //!< Get value (const)
+    RbLanguageObject&                   getValue(void);                                                     //!< Get value (non-const)
+    const RbLanguageObject*             getValuePtr(void) const;                                                  //!< Get value pointer
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
     void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
     std::string                         richInfo(void) const;                                               //!< Complete info about object
@@ -56,8 +57,8 @@ public:
     // StochasticNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
     void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
-    const Distribution*                 getDistribution(void) const;                                        //!< Get distribution
-    Distribution*                       getDistribution(void);                                              //!< Get distribution (non-const to return non-const distribution)
+    const Distribution&                 getDistribution(void) const;                                        //!< Get distribution (const)
+    Distribution&                       getDistribution(void);                                              //!< Get distribution (non-const)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
     void                                setValue(RbLanguageObject* value);                                  //!< Set value but do not clamp; get affected nodes

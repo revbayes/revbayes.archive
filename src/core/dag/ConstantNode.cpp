@@ -96,8 +96,8 @@ const VectorString& ConstantNode::getClass() const {
 }
 
 
-const RbLanguageObject* ConstantNode::getStoredValue(void) const {
-    return value;
+const RbLanguageObject& ConstantNode::getStoredValue(void) const {
+    return *value;
 }
 
 
@@ -107,14 +107,18 @@ const TypeSpec& ConstantNode::getTypeSpec(void) const {
 }
 
 
-const RbLanguageObject* ConstantNode::getValue(void) const {
-    return value;
+const RbLanguageObject& ConstantNode::getValue(void) const {
+    return *value;
 }
 
 
+RbLanguageObject& ConstantNode::getValue(void) {
+    return *value;
+}
 
-RbLanguageObject* ConstantNode::getValue(void) {
-    return ( value );
+
+const RbLanguageObject* ConstantNode::getValuePtr(void) const {
+    return value;
 }
 
 /** Keep value of node */

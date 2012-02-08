@@ -102,10 +102,10 @@ double Move_msimplex::perform( void ) {
 
     // Get relevant values
     StochasticNode*        nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos*>( (const RbObject*)getMemberValue("tuning")   )->getValue();
-    int                    k       = static_cast<const Natural*>( (const RbObject*)getMemberValue("num_cats") )->getValue();
+    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning")   )->getValue();
+    int                    k       = static_cast<const Natural*>( getMemberValue("num_cats") )->getValue();
 
-	std::vector<double> curVal = static_cast<const Simplex*>( (const RbObject*)nodePtr->getValue() )->getValue();
+	std::vector<double> curVal = static_cast<const Simplex&>( nodePtr->getValue() ).getValue();
 	std::vector<double> newVal = curVal;
     int                 n      = int( curVal.size() );
 

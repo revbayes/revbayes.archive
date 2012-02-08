@@ -328,16 +328,16 @@ RbLanguageObject* Mixture::executeOperation(const std::string& name, Environment
 void Mixture::setMemberVariable(const std::string& name, Variable* var) {
     
     if ( name == "allocationVector" ) {
-        allocationVector_ = static_cast<DagNodeContainer*>( var->getValue() );
+        allocationVector_ = static_cast<DagNodeContainer*>( var->getValue().clone() );
     }
     if ( name == "parameters" ) {
-        parameters_ = static_cast<DagNodeContainer*>( var->getValue() );
+        parameters_ = static_cast<DagNodeContainer*>( var->getValue().clone() );
     }
     if ( name == "classProbabilities" ) {
-        classProbabilities_ =  static_cast<VectorRealPos*>( var->getValue() );
+        classProbabilities_ =  static_cast<VectorRealPos*>( var->getValue().clone() );
     }
     if ( name == "numObservations" ) {
-      int numObservations = static_cast<Integer*>( var->getValue() )->getValue();
+      int numObservations = static_cast<Integer&>( var->getValue() ).getValue();
       if (allocationVector_ != 0) {
         throw RbException("Mixture already constructed. Cannot reconstruct it in Mixture::setMemberVariable.");
       }
@@ -358,9 +358,9 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
         std::cout <<"setMemberVariable"<<std::endl;
         const Variable* slot = static_cast<const Variable*>( allocationVector_->getElement(0) );
         std::cout <<"setMemberVariable 2"<<std::endl;
-        const Integer* nat = static_cast<const Integer*>( slot->getValue() );
+        const Integer& nat = static_cast<const Integer&>( slot->getValue() );
         std::cout <<"setMemberVariable 3"<<std::endl;
-        int formerlyAssignedValue = nat->getValue();
+        int formerlyAssignedValue = nat.getValue();
         std::cout <<"setMemberVariable 4: "<< formerlyAssignedValue<<std::endl;
 
         
@@ -525,8 +525,8 @@ void Mixture::indexAllocationVector() {
       var->getValue();
       std::cout <<"indexAllocationVector 6"<<std::endl;
 
-      const Integer* j = static_cast<const  Integer*> ( (RbLanguageObject *) (var->getValue() ) );
-      j->printValue(std::cout);
+      const Integer& j = static_cast<const  Integer&> (  (var->getValue() ) );
+      j.printValue(std::cout);
       std::cout <<std::endl;
       
       rvToNumber[static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue()] = maxIntSeen;

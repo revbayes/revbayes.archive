@@ -153,13 +153,13 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
 
     // Evaluate expression and check that we get a vector
     DAGNode*  theNode  = inExpression->evaluateContent(env)->getDagNode();
-    RbObject* theValue = theNode->getValue();
+    const RbObject& theValue = theNode->getValue();
 
     // Check that it is a vector
-    if ( theValue->isTypeSpec( TypeSpec(AbstractVector_name) ) == false ) {
+    if ( theValue.isTypeSpec( TypeSpec(AbstractVector_name) ) == false ) {
        throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = dynamic_cast<AbstractVector*>(theValue);
+    vector = dynamic_cast<AbstractVector*>(theValue.clone());
 
     // Initialize nextValue
     nextElement = 0;

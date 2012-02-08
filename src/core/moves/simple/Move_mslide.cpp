@@ -106,9 +106,9 @@ double Move_mslide::perform( void ) {
     StochasticNode* nodePtr = static_cast<StochasticNode*>( nodes[0] );
     const RealPos* delta = static_cast<const RealPos*>( getMemberValue("delta") );
 
-    double curVal  =  static_cast<const Real*>( nodePtr->getValue() )->getValue();
-    const Real* minPtr = static_cast<const DistributionContinuous*>( nodePtr->getDistribution() )->getMin();
-    const Real* maxPtr = static_cast<const DistributionContinuous*>( nodePtr->getDistribution() )->getMax();
+    double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();
+    const Real* minPtr = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMin();
+    const Real* maxPtr = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMax();
     double minVal  = minPtr->getValue();
     double maxVal  = maxPtr->getValue();
 

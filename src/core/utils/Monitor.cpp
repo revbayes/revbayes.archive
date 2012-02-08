@@ -129,10 +129,10 @@ void Monitor::setMemberVariable(std::string const &name, Variable* var) {
     // catch setting of the variables 
     if (name == "variable" || name == "") {
         DAGNode* theNode = var->getDagNode();
-        if (theNode->getValue()->isType(DagNodeContainer_name)) {
-            DagNodeContainer* theContainer = static_cast<DagNodeContainer*>( theNode->getValue() );
-            for (size_t i = 0; i < theContainer->size(); i++) {
-                theNode = static_cast<VariableSlot*>( theContainer->getElement(i) )->getDagNode();
+        if (theNode->getValue().isType(DagNodeContainer_name)) {
+            DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( theNode->getValue() );
+            for (size_t i = 0; i < theContainer.size(); i++) {
+                theNode = static_cast<VariableSlot*>( theContainer.getElement(i) )->getDagNode();
                 if (theNode->isType(VariableNode_name)) {
                     nodes.push_back( static_cast<VariableNode*>( theNode ) );
                     //                } else {

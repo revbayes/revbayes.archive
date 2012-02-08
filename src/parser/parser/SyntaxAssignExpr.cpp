@@ -157,17 +157,17 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
         
         // Calculate the value of the rhs expression
         theVariable = expression->evaluateContent( env );
-        if ( theVariable == NULL || theVariable->getValue() == NULL )
+        if ( theVariable == NULL )
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        RbLanguageObject* value = theVariable->getDagNode()->getValue();
+        const RbLanguageObject& value = theVariable->getDagNode()->getValue();
         DAGNode* theNode;
-        if (value->isTypeSpec(TypeSpec(DAGNode_name))) {
-            theNode = static_cast<DAGNode*>( value );
+        if (value.isTypeSpec(TypeSpec(DAGNode_name))) {
+            theNode = static_cast<DAGNode*>( value.clone() );
         }
         else {
-            theNode = new ConstantNode(value);
+            theNode = new ConstantNode(value.clone() );
         }
         theSlot->getVariable()->setDagNode( theNode );
     }
@@ -212,14 +212,14 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
         }
         
         DeterministicNode* detNode = dynamic_cast<DeterministicNode*>( exprValue );
-        if ( detNode == NULL || detNode->getFunction() == NULL || !detNode->getFunction()->isType( ConstructorFunction_name ) ) {
+        if ( detNode == NULL || !detNode->getFunction().isType( ConstructorFunction_name ) ) {
             
             throw RbException( "Function does not return a distribution" );
         }
         
         // Make an independent copy of the distribution and delete the exprVal
 //        Distribution* distribution = (Distribution*) detNode->getFunctionPtr()->execute();
-        Distribution* distribution = dynamic_cast<Distribution*>( detNode->getValue() );
+        Distribution* distribution = dynamic_cast<Distribution*>( detNode->getValue().clone() );
         if ( distribution == NULL )
             throw RbException( "Function returns a NULL distribution" );
         

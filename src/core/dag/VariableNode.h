@@ -39,9 +39,10 @@ public:
     // Utility functions you have to override
     virtual VariableNode*                       clone(void) const = 0;                                                          //!< Clone this node
     virtual const VectorString&                 getClass(void) const;                                                           //!< Get DAG node class 
-    virtual const RbLanguageObject*             getStoredValue(void) const = 0;                                                 //!< Get stored value
-    virtual const RbLanguageObject*             getValue(void) const = 0;                                                       //!< Get value
-    virtual RbLanguageObject*                   getValue(void) = 0;                                                             //!< Get value (non-const to return non-const value)
+    virtual const RbLanguageObject&             getStoredValue(void) const = 0;                                                 //!< Get stored value
+    virtual const RbLanguageObject&             getValue(void) const = 0;                                                       //!< Get value (const)
+    virtual RbLanguageObject&                   getValue(void) = 0;                                                             //!< Get value (non-const)
+    virtual const RbLanguageObject*             getValuePtr(void) const = 0;                                                    //!< Get value pointer
     virtual void                                printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
     virtual void                                printValue(std::ostream& o) const = 0;                                          //!< Print value for user
 

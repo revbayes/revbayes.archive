@@ -95,12 +95,12 @@ double Move_mscale::perform( void ) {
 
     // Get relevant values
     StochasticNode*        nodePtr = static_cast<StochasticNode*>( nodes[0] );
-    const RealPos          lambda  = *( static_cast<const RealPos*>( (const RbObject*)getMemberValue("lambda")  ) );
-    const RealPos          curVal  = *( static_cast<const RealPos*>( (const RbObject*)nodePtr->getValue() ) );
+    const RealPos*         lambda  = static_cast<const RealPos*>( getMemberValue("lambda") );
+    const RealPos&         curVal  = static_cast<const RealPos&>( nodePtr->getValue() );
 
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     RealPos u      = rng->uniform01();
-    RealPos newVal = curVal * std::exp( lambda * ( u - 0.5 ) );
+    RealPos newVal = curVal * std::exp( *lambda * ( u - 0.5 ) );
 
     // Propose new value
     nodePtr->setValue( newVal.clone() );

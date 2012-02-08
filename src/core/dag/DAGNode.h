@@ -56,9 +56,10 @@ class DAGNode : public RbLanguageObject {
         // Basic utility functions you have to override
         virtual DAGNode*                                    clone(void) const = 0;                                                  //!< Clone this node
         virtual const VectorString&                         getClass(void) const;                                                   //!< Get DAG node class vector
-        virtual const RbLanguageObject*                     getStoredValue(void) const = 0;                                         //!< Get stored value
-        virtual const RbLanguageObject*                     getValue(void) const = 0;                                               //!< Get value
-        virtual RbLanguageObject*                           getValue(void) = 0;                                                     //!< Get value (non-const to return non-const value)
+        virtual const RbLanguageObject&                     getStoredValue(void) const = 0;                                         //!< Get stored value
+        virtual const RbLanguageObject&                     getValue(void) const = 0;                                               //!< Get value (const)
+        virtual RbLanguageObject&                           getValue(void) = 0;                                                     //!< Get value (non-const)
+        virtual const RbLanguageObject*                     getValuePtr(void) const = 0;                                            //!< Get value pointer
         virtual void                                        printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
     
@@ -69,11 +70,11 @@ class DAGNode : public RbLanguageObject {
         void                                                addChildNode(VariableNode *c);                                          //!< Add child node
         void                                                getAffectedNodes(std::set<StochasticNode* >& affected);                 //!< Mark and get affected nodes
         const std::set<VariableNode*>&                      getChildren(void) const { return children; }                            //!< Return children
-        const RbObject*                                     getElement(size_t index) const ;                                        //!< Get element at index (container function)
+        const RbObject*                                     getElement(size_t index) const;                                         //!< Get element at index (container function)
         RbObject*                                           getElement(size_t index);                                               //!< Get element at index (container function)
         const std::string&                                  getName(void) const;                                                    //!< get the name
-		const std::set<RbPtr<DAGNode> >&                    getParents(void) const { return parents; }                              //!< Return parents
-        Variable*                                           getVariable(void) const { return variable; }                            //!< Get the variable owning this node
+        const std::set<RbPtr<DAGNode> >&                    getParents(void) const;                                                 //!< Return parents
+        const Variable&                                     getVariable(void) const;                                                //!< Get the variable owning this node
         bool                                                isParentInDAG(const RbPtr<DAGNode>& x, std::list<DAGNode*>& done) const;//!< Is node x a parent of the caller in the DAG?
         void                                                keep(void);                                                             //!< Keep current state of this node and all affected nodes
         size_t                                              numberOfChildren(void) const { return children.size(); }                //!< Number of children

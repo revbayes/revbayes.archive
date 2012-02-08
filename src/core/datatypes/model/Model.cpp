@@ -229,17 +229,17 @@ void Model::printValue(std::ostream& o) const {
         if ((*i)->isType(DeterministicNode_name)) {
             DAGNode* dnode = *i;
             DeterministicNode* node = static_cast<DeterministicNode*>( dnode );
-            msg << "   Function     = " << node->getFunction()->briefInfo();
+            msg << "   Function     = " << node->getFunction().briefInfo();
         } else if ((*i)->isType(StochasticNode_name)) {
             DAGNode* dnode = *i;
             StochasticNode* node = static_cast<StochasticNode*>( dnode );
-            msg << "   Distribution = " << node->getDistribution()->getType();
+            msg << "   Distribution = " << node->getDistribution().getType();
         }
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
 		msg.str("");
        
-        msg << "   Value        = " << (*i)->getValue()->richInfo();
+        msg << "   Value        = " << (*i)->getValue().richInfo();
             
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
@@ -284,14 +284,14 @@ std::string Model::richInfo(void) const {
 
 /** Set a member variable */
 void Model::setMemberVariable(const std::string& name, Variable* var) {
-    RbPtr<DAGNode> theNode = var->getDagNode();
+    RbPtr<const DAGNode> theNode = var->getDagNode();
     if (name == "sinknode") {
         // test whether var is a DagNodeContainer
-        while (theNode->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
-            RbObject* objPtr = theNode->getValue();
-            DagNodeContainer* container = dynamic_cast<DagNodeContainer*>( objPtr );
-            RbObject* elemPtr = container->getElement(0);
-            theNode = static_cast<VariableSlot*>( elemPtr )->getDagNode();
+        while (theNode->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
+            const RbObject& objPtr = theNode->getValue();
+            const DagNodeContainer& container = dynamic_cast<const DagNodeContainer&>( objPtr );
+            const RbObject* elemPtr = container.getElement(0);
+            theNode = static_cast<const VariableSlot*>( elemPtr )->getDagNode();
         }
         
         
@@ -309,10 +309,10 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
             // do not add myself into the list of nodes
             if (theNewNode->isType(DeterministicNode_name)) {
                 RbPtr<DeterministicNode> theDetNode( dynamic_cast<DeterministicNode*>((DAGNode*)theNewNode) );
-                RbFunction* theFunction = theDetNode->getFunction();
-                if (theFunction->isType(ConstructorFunction_name)) {
-                    ConstructorFunction* theConstructorFunction = dynamic_cast<ConstructorFunction*>( theFunction );
-                    if (theConstructorFunction->getTemplateObjectType() == Model_name) {
+                const RbFunction& theFunction = theDetNode->getFunction();
+                if (theFunction.isType(ConstructorFunction_name)) {
+                    const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
+                    if (theConstructorFunction.getTemplateObjectType() == Model_name) {
                         // remove the dag node holding the model constructor function from the dag
                         std::set<RbPtr<DAGNode> > parents = theDetNode->getParents();
                         for (std::set<RbPtr<DAGNode> >::iterator it=parents.begin(); it!=parents.end(); it++) {

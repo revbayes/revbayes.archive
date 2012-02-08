@@ -171,6 +171,14 @@ const std::string& DAGNode::getName( void ) const {
 }
 
 
+const std::set<RbPtr<DAGNode> >& DAGNode::getParents( void ) const {
+    return parents;
+}
+
+const Variable& DAGNode::getVariable(void) const {
+    return *variable;
+}
+
 
 /** Is this a constant node */
 bool DAGNode::isConst( void ) const {

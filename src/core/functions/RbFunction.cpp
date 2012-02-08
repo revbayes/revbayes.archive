@@ -395,7 +395,7 @@ bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorIn
         int k = passedArgIndex[argIndex];
         if ( k >= 0 ) {
             
-            const VectorString& argClass = passedArgs[k]->getDagNode()->getValue()->getClass();
+            const VectorString& argClass = passedArgs[k]->getDagNode()->getValue().getClass();
 
             size_t j;
             for (j=0; j<argClass.size(); j++)

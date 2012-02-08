@@ -184,10 +184,10 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
             
             DAGNode* indexVar = (*i)->evaluateContent( env )->getDagNode();
             
-            if ( indexVar->getValue()->isTypeSpec( TypeSpec(Integer_name) ) ) {
+            if ( indexVar->getValue().isTypeSpec( TypeSpec(Integer_name) ) ) {
                 
                 // Calculate (or get) an integer index
-                int intIndex = static_cast<Integer*>( (RbObject*)indexVar->getValue() )->getValue(); 
+                int intIndex = static_cast<const Integer&>( indexVar->getValue() ).getValue(); 
                 
                 if ( intIndex < 1 ) {
                     
@@ -204,7 +204,7 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
                 theIndex.push_back(intIndex-1);
             }
             
-            else if ( indexVar->getValue()->isTypeSpec( TypeSpec(RbString_name) ) ) {
+            else if ( indexVar->getValue().isTypeSpec( TypeSpec(RbString_name) ) ) {
                 
                 // Push string index onto index vector
 //                theIndex.push_back( indexVar->getValue()->clone() );
@@ -296,15 +296,15 @@ VariableSlot* SyntaxVariable::createVariable( Environment& env) {
         while (!indices.empty()) {
             // test whether the value of the DAG node allows assignment of variable to its elemens
             // e.g.: A simplex might not allow assignment of its elements whereas a DagNodeContainer does
-            if (theDagNode != NULL && !theDagNode->getValue()->allowsVariableInsertion()) {
+            if (theDagNode != NULL && !theDagNode->getValue().allowsVariableInsertion()) {
                 // throw expection because we don't allow insertion of variable
                 std::ostringstream msg;
-                msg << "Object of type " << theDagNode->getValue()->getType() << " does not allow insertion of variables.";
+                msg << "Object of type " << theDagNode->getValue().getType() << " does not allow insertion of variables.";
                 throw RbException(msg);
             }
             
             // test whether this element support subscipting
-            if (theDagNode != NULL && !theDagNode->getValue()->supportsIndex()) {
+            if (theDagNode != NULL && !theDagNode->getValue().supportsIndex()) {
                 throw RbException("DAG node does not support indexing.");
             }
             
@@ -323,12 +323,12 @@ VariableSlot* SyntaxVariable::createVariable( Environment& env) {
                 theSlot->getVariable()->setDagNode(theDagNode);
             }
             
-            Container* con = static_cast<Container*>( theDagNode->getValue() );
+            Container& con = static_cast<Container&>( theDagNode->getValue() );
             // test if the container is large enough
-            if (con->size() <= indexValue) {
-                con->resize(indexValue);
+            if (con.size() <= indexValue) {
+                con.resize(indexValue);
             }
-            RbObject* subElement = con->getElement(indexValue);
+            RbObject* subElement = con.getElement(indexValue);
             
             // test whether the element exists and needs 
             if (subElement == NULL) {
@@ -386,13 +386,13 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
             Variable* baseVar = baseVariable->evaluateContent( env );
-            if ( !baseVar->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
+            if ( !baseVar->getValue().isTypeSpec( TypeSpec(MemberObject_name) ) )
                 throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members" );       
         
             if ( identifier == NULL )
                 throw RbException( "Member variable identifier missing" );
 
-            MemberObject* theMemberObject = static_cast<MemberObject*>( baseVar->getDagNode()->getValue() );
+            MemberObject* theMemberObject = static_cast<const MemberObject&>( baseVar->getDagNode()->getValue() ).clone();
             Environment* members = theMemberObject->getMembers();
             theVar = (*members)[ (*identifier) ]->getVariable();
         }
@@ -409,17 +409,17 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
         for (std::list<SyntaxElement*>::const_iterator it=index->begin(); it!=index->end(); it++) {
             SyntaxElement*         indexSyntaxElement     = *it;
             Variable*              indexVar               = indexSyntaxElement->evaluateContent(env);
-            RbLanguageObject*      theValue               = indexVar->getValue();
-            if ( !theValue->isTypeSpec(Natural_name) ) {
-                if (!theValue->isConvertibleTo(Natural_name)) {
-                    theValue = static_cast<RbLanguageObject*>( theValue->convertTo(Natural_name) );
+            RbLanguageObject&      theValue               = indexVar->getValue();
+            if ( !theValue.isTypeSpec(Natural_name) ) {
+                if (!theValue.isConvertibleTo(Natural_name)) {
+                    theValue = *static_cast<RbLanguageObject*>( theValue.convertTo(Natural_name) );
                 }
                 else { 
                     throw RbException("Could not access index with type xxx because only natural indices are supported!");
                 }
             }
             
-            size_t                  indexValue             = dynamic_cast<const Natural*>( (RbLanguageObject*)theValue)->getValue() - 1;
+            size_t                  indexValue             = dynamic_cast<const Natural&>( theValue).getValue() - 1;
             RbObject*               subElement             = theVar->getDagNode()->getElement(indexValue);
             
             if (subElement != NULL && subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))

@@ -120,12 +120,12 @@ bool ArgumentRule::isArgumentValid(const DAGNode* var, bool& needsConversion) co
 
     
    /* We need safe argument matching for repeated evaluation in a function node */
-   if ( var->getValue()->isTypeSpec(argSlot.getSlotTypeSpec()) == true ) {
+   if ( var->getValue().isTypeSpec(argSlot.getSlotTypeSpec()) == true ) {
        needsConversion = false;
        return true;
    }
 
-   if ( var->getValue()->isConvertibleTo(argSlot.getSlotTypeSpec() ) == true) {
+   if ( var->getValue().isConvertibleTo(argSlot.getSlotTypeSpec() ) == true) {
        needsConversion = true;
        return true;
    }

@@ -139,35 +139,35 @@ const TypeSpec& VariableSlot::getTypeSpec(void) const {
 /** Get the value of the variable */
 const RbLanguageObject* VariableSlot::getValue( void ) const {
     
-    const RbLanguageObject* retVal = variable->getDagNode()->getValue();
+    const RbLanguageObject& retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
-    if (!retVal->isTypeSpec(varTypeSpec)) {
-        return dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec));
+    if (!retVal.isTypeSpec(varTypeSpec)) {
+        return dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
         
 //        return convRetVal;
     }
     
-    return retVal;
+    return &retVal;
 }
 
 
 /** Get the value of the variable */
 RbLanguageObject* VariableSlot::getValue( void ) {
     
-    RbLanguageObject* retVal = variable->getDagNode()->getValue();
+    RbLanguageObject& retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
-    if (!retVal->isTypeSpec(varTypeSpec)) {
+    if (!retVal.isTypeSpec(varTypeSpec)) {
         
       //  variable->getDagNode()->setValue(convRetVal);
         
         //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
         
-        return dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec));
+        return dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
     }
     
-    return retVal;
+    return &retVal;
 }
 
 

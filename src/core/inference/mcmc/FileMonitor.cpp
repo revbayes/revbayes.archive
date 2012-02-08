@@ -191,10 +191,10 @@ void FileMonitor::setMemberVariable(std::string const &name, Variable* var) {
     // catch setting of the variables 
     if (name == "variable" || name == "") {
         DAGNode* theNode = var->getDagNode();
-        if (theNode->getValue()->isType(DagNodeContainer_name)) {
-            DagNodeContainer* theContainer = static_cast<DagNodeContainer*>( theNode->getValue() );
-            for (size_t i = 0; i < theContainer->size(); i++) {
-                theNode = static_cast<VariableSlot*>( (RbObject*)theContainer->getElement(i) )->getDagNode();
+        if (theNode->getValue().isType(DagNodeContainer_name)) {
+            const DagNodeContainer& theContainer = static_cast<const DagNodeContainer&>( theNode->getValue() );
+            for (size_t i = 0; i < theContainer.size(); i++) {
+                theNode = static_cast<const VariableSlot*>( theContainer.getElement(i) )->getDagNode()->clone();
                 if (theNode->isType(VariableNode_name)) {
                     nodes.push_back( static_cast<VariableNode*>( theNode ) );
 //                } else {
@@ -211,7 +211,7 @@ void FileMonitor::setMemberVariable(std::string const &name, Variable* var) {
         }
     } 
     else if (name == "separator") {
-        separator = static_cast<RbString*>( var->getValue() )->getValue();
+        separator = static_cast<RbString&>( var->getValue() ).getValue();
         
         // call parent class to set member variable
         ConstantMemberObject::setMemberVariable( name, var );

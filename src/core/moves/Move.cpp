@@ -228,12 +228,12 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
         nodes.clear();
         
         // test whether we want to set multiple variable
-        if (var->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
-            DagNodeContainer* container = dynamic_cast<DagNodeContainer*>( var->getValue() );
+        if (var->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
+            DagNodeContainer& container = dynamic_cast<DagNodeContainer&>( var->getValue() );
             
             // add all nodes
-            for (size_t i=0; i<container->size(); i++) {
-                RbObject* theElement = container->getElement(i);
+            for (size_t i=0; i<container.size(); i++) {
+                RbObject* theElement = container.getElement(i);
                 
                 // check if it is a stochastic node
                 if (theElement->isTypeSpec( TypeSpec(StochasticNode_name) )) {

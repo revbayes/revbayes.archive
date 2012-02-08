@@ -148,10 +148,10 @@ Variable* SyntaxVariableDecl::evaluateContent( Environment& env ) {
         else {
             
             DAGNode*            temp    = (*i)->evaluateContent( env )->getDagNode();
-            RbLanguageObject*   value   = temp->getValue();
+            const RbLanguageObject&   value   = temp->getValue();
             
-            if ( value->isTypeSpec( TypeSpec(Integer_name) ) )
-                length.push_back( static_cast<const Integer*>( value )->getValue() );
+            if ( value.isTypeSpec( TypeSpec(Integer_name) ) )
+                length.push_back( static_cast<const Integer&>( value ).getValue() );
             else
                 throw RbException( "Expression in length specification of variable declaration does not evaluate to an integer" );
         }

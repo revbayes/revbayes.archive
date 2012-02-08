@@ -104,7 +104,7 @@ RbLanguageObject* UserFunction::executeFunction( void ) {
     }
 
     // Return the return value
-    return retValue->getDagNode()->getValue();
+    return retValue->getDagNode()->getValue().clone();
 }
 
 

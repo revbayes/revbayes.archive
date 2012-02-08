@@ -38,12 +38,12 @@ public:
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
 
     // Utility functions implemented here
-    const RbLanguageObject*                 getStoredValue(void) const;                                         //!< Get stored value 
-    const RbLanguageObject*                 getValue(void) const;                                               //!< Get value 
-    RbLanguageObject*                       getValue(void);                                                     //!< Get value (non-const to return non-const value)
+    const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
+    const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)
+    RbLanguageObject&                       getValue(void);                                                     //!< Get value (non-const)
+    const RbLanguageObject*                 getValuePtr(void) const;                                            //!< Get value pointer
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
-    const RbFunction*                       getFunction(void) const;
-    RbFunction*                             getFunction(void);
+    const RbFunction&                       getFunction(void) const;
 
     // Utility functions you have to override
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node

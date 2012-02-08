@@ -144,10 +144,10 @@ Variable* SyntaxFunctionCall::evaluateContent(Environment& env) {
     else {
 
         DAGNode* theNode = variable->evaluateContent( env )->getDagNode();
-        if ( theNode == NULL || !theNode->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
+        if ( theNode == NULL || !theNode->getValue().isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 
-        MemberObject* theMemberObject = dynamic_cast<MemberObject*>( theNode->getValue() );
+        MemberObject* theMemberObject = dynamic_cast<MemberObject*>( theNode->getValue().clone() );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
         // TODO: We shouldn't allow const casts!!!
         MethodTable* mt = const_cast<MethodTable*>( theMemberObject->getMethods() );

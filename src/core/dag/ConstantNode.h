@@ -46,9 +46,10 @@ public:
     std::string                         richInfo(void) const;                                                       //!< Complete info on object
 
     // ConstantNode functions
-    const RbLanguageObject*             getStoredValue(void) const;                                                 //!< Get stored value
-    const RbLanguageObject*             getValue(void) const;                                                       //!< Get value 
-    RbLanguageObject*                   getValue(void);                                                             //!< Get value (non-const to return non-const value)
+    const RbLanguageObject&             getStoredValue(void) const;                                                 //!< Get stored value
+    const RbLanguageObject&             getValue(void) const;                                                       //!< Get value 
+    RbLanguageObject&                   getValue(void);                                                             //!< Get value 
+    const RbLanguageObject*             getValuePtr(void) const;                                                    //!< Get value 
 
     // DAG functions
     RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;        //!< Clone entire graph

@@ -93,7 +93,7 @@ void ObjectMonitor::monitor(void) {
     for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         
         // save the value        
-        RbLanguageObject* temp = (*it)->getValue()->clone();
+        RbLanguageObject* temp = (*it)->getValue().clone();
         values[(*it)->getName()].push_back( temp );
     }
     
@@ -111,7 +111,7 @@ void ObjectMonitor::monitor(int gen) {
         for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             
             // save the value
-            RbLanguageObject* temp = (*it)->getValue()->clone();
+            RbLanguageObject* temp = (*it)->getValue().clone();
             values[(*it)->getName()].push_back( temp );
         }
         
@@ -147,10 +147,10 @@ void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
     // catch setting of the variables 
     if (name == "variable" || name == "") {
         DAGNode* theNode = var->getDagNode();
-        if (theNode->getValue()->isType(DagNodeContainer_name)) {
-            DagNodeContainer* theContainer = static_cast<DagNodeContainer*>( theNode->getValue() );
-            for (size_t i = 0; i < theContainer->size(); i++) {
-                theNode = static_cast<VariableSlot*>( theContainer->getElement(i) )->getDagNode();
+        if (theNode->getValue().isType(DagNodeContainer_name)) {
+            DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( theNode->getValue() );
+            for (size_t i = 0; i < theContainer.size(); i++) {
+                theNode = static_cast<VariableSlot*>( theContainer.getElement(i) )->getDagNode();
                 if (theNode->isType(VariableNode_name)) {
                     nodes.push_back( static_cast<VariableNode*>( theNode ) );
                     values[static_cast<VariableNode*>( theNode )->getName()] = Vector();

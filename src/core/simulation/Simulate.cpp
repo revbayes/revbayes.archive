@@ -151,7 +151,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
         // get the DAG nodes
         const Model* theModel = static_cast<Model*>( getMemberValue("model") );
         
-        Vector* monitors = static_cast<Vector*>(var->getValue()->convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
+        Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
                 // get the monitor #i
                 FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors->getElement(i) );
@@ -186,7 +186,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
             // get the DAG nodes
             const Model* theModel = static_cast<Model*>( getMemberValue("model") );
             
-            Vector* monitors = static_cast<Vector*>(var->getValue()->convertTo(TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
+            Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
                 // get the monitor #i
                 ObjectMonitor* theMonitor = static_cast<ObjectMonitor*>( monitors->getElement(i) );
@@ -272,8 +272,8 @@ void Simulate::run(size_t ndata) {
     getOrderedStochasticNodes(dagNodes[0], orderedStochasticNodes, visitedNodes);
 
     /* Get the monitors */
-    Vector* fileMonitors    = static_cast<Vector*>( getMemberDagNode( "fileMonitors" )->getValue() );
-    Vector* objectMonitors  = static_cast<Vector*>( getMemberDagNode( "objectMonitors" )->getValue() );
+    Vector& fileMonitors    = static_cast<Vector&>( getMemberDagNode( "fileMonitors" )->getValue() );
+    Vector& objectMonitors  = static_cast<Vector&>( getMemberDagNode( "objectMonitors" )->getValue() );
 
     
     /* Get the chain settings */
@@ -283,9 +283,9 @@ void Simulate::run(size_t ndata) {
     
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;
-    for (size_t i=0; i<fileMonitors->size(); i++) {
+    for (size_t i=0; i<fileMonitors.size(); i++) {
         // get the monitor
-        FileMonitor* theMonitor = static_cast<FileMonitor*>( fileMonitors->getElement(i) );
+        FileMonitor* theMonitor = static_cast<FileMonitor*>( fileMonitors.getElement(i) );
         
         // open the file stream for the monitor
         theMonitor->openStream();
@@ -303,18 +303,18 @@ void Simulate::run(size_t ndata) {
 
         //Random draws from the ordered stochastic nodes
         for (size_t i = 0; i < orderedStochasticNodes.size() ; i++) {
-            Distribution* dist = orderedStochasticNodes[i]->getDistribution();
-            orderedStochasticNodes[i]->setValue( dist->rv() );
+            Distribution& dist = orderedStochasticNodes[i]->getDistribution();
+            orderedStochasticNodes[i]->setValue( dist.rv() );
             // we need to call keep so that the values get recalculated properly
             orderedStochasticNodes[i]->keep();
         }
         
         /* Monitor */
-        for (size_t i=0; i<fileMonitors->size(); i++) {
-            static_cast<FileMonitor*>( fileMonitors->getElement(i) )->monitor(data);
+        for (size_t i=0; i<fileMonitors.size(); i++) {
+            static_cast<FileMonitor*>( fileMonitors.getElement(i) )->monitor(data);
         }
-        for (size_t i=0; i<objectMonitors->size(); i++) {
-            static_cast<ObjectMonitor*>( objectMonitors->getElement(i) )->monitor(data);
+        for (size_t i=0; i<objectMonitors.size(); i++) {
+            static_cast<ObjectMonitor*>( objectMonitors.getElement(i) )->monitor(data);
         }
 
                 
@@ -327,14 +327,14 @@ void Simulate::run(size_t ndata) {
 
 /** Get the values for variable with name varName */
 Vector* Simulate::getValues(RbString varName) {
-    Vector* objectMonitors = static_cast<Vector*>( getMemberDagNode( "objectMonitors" )->getValue() );
-    if (objectMonitors->size() == 0) {
+    Vector& objectMonitors = static_cast<Vector&>( getMemberDagNode( "objectMonitors" )->getValue() );
+    if (objectMonitors.size() == 0) {
         std::cerr << "Error: No objectMonitor is included in the simulate object. We therefore cannot get the values of variable "<< varName <<std::endl;
         return NULL;
     }
-    for (size_t i=0; i<objectMonitors->size(); i++) {
-        if (static_cast<ObjectMonitor*>( (*objectMonitors)[i] )->monitorsVariable(varName) ) {
-            Vector* toReturn = static_cast<ObjectMonitor*>( (*objectMonitors)[i] )->getValues(varName) ;
+    for (size_t i=0; i<objectMonitors.size(); i++) {
+        if (static_cast<ObjectMonitor*>( objectMonitors[i] )->monitorsVariable(varName) ) {
+            Vector* toReturn = static_cast<ObjectMonitor*>( objectMonitors[i] )->getValues(varName) ;
             return (toReturn); 
         }
     }

@@ -193,41 +193,47 @@ const TypeSpec& DeterministicNode::getTypeSpec(void) const {
 
 
 
-const RbFunction* DeterministicNode::getFunction(void) const {
-    return function;
-}
-
-
-RbFunction* DeterministicNode::getFunction(void) {
-    return function;
+const RbFunction& DeterministicNode::getFunction(void) const {
+    return *function;
 }
 
 
 
 /** Get stored value */
-const RbLanguageObject* DeterministicNode::getStoredValue( void ) const {
+const RbLanguageObject& DeterministicNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return value;
+        return *value;
     
-    return storedValue;
+    return *storedValue;
 }
 
 
 /** Get value */
-const RbLanguageObject* DeterministicNode::getValue( void ) const {
+const RbLanguageObject& DeterministicNode::getValue( void ) const {
     
     if ( touched && needsUpdate )
         const_cast<DeterministicNode*>(this)->update();
     
-    return value;
+    return *value;
 }
 
+
 /** Get value */
-RbLanguageObject* DeterministicNode::getValue( void ) {
+RbLanguageObject& DeterministicNode::getValue( void ) {
     
     if ( touched && needsUpdate )
         update();
+    
+    return *value;
+}
+
+
+/** Get value pointer */
+const RbLanguageObject* DeterministicNode::getValuePtr( void ) const {
+    
+    if ( touched && needsUpdate )
+        const_cast<DeterministicNode*>(this)->update();
     
     return value;
 }
@@ -360,7 +366,7 @@ void DeterministicNode::touchMe( void ) {
         touched     = true;
         
 //        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
-        storedValue = value;
+//        storedValue = value;
     }
         
     // flag myself for an update

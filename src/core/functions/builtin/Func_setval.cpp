@@ -57,7 +57,7 @@ RbLanguageObject* Func_setval::executeFunction( void ) {
         if ( (*it)->isType(DeterministicNode_name) ) {
             DeterministicNode* detNode = static_cast<DeterministicNode*>( *it );
             // test the function
-            if ( detNode->getFunction() == this ) {
+            if ( &detNode->getFunction() == this ) {
                 theNode->removeChildNode(detNode);
             }
         }
@@ -65,9 +65,9 @@ RbLanguageObject* Func_setval::executeFunction( void ) {
     
     // The following call will throw an error if the value type is wrong
     RbLanguageObject* newVal = (*args)[1]->getValue();
-    if (!newVal->isTypeSpec(theNode->getDistribution()->getVariableType() ) ) {
-        if (newVal->isConvertibleTo(theNode->getDistribution()->getVariableType())) {
-            newVal = static_cast<RbLanguageObject*>( newVal->convertTo(theNode->getDistribution()->getVariableType() ) );
+    if (!newVal->isTypeSpec(theNode->getDistribution().getVariableType() ) ) {
+        if (newVal->isConvertibleTo(theNode->getDistribution().getVariableType())) {
+            newVal = static_cast<RbLanguageObject*>( newVal->convertTo(theNode->getDistribution().getVariableType() ) );
         } else {
             throw RbException( "Cannot set the value of the stochastic node because the types do not match." );
         }

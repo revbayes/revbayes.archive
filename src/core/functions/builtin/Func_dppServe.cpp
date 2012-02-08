@@ -69,7 +69,7 @@ RbLanguageObject* Func_dppServe::executeFunction( void ) {
 	std::vector<double> paramValues( numClusters, 0.0 );
 	
 	StochasticNode* paramVar( dynamic_cast<StochasticNode*>( (DAGNode*)(*args)[1]->getDagNode() ) );
-    DistributionContinuous* baseDistribution( static_cast<DistributionContinuous*>( paramVar->getDistribution() ) );
+    const DistributionContinuous& baseDistribution = static_cast<const DistributionContinuous&>( paramVar->getDistribution() );
 	
 	// Question: should this function take a stochastic node as an argument, or a distribution? I think maybe it should be a distribution...
 	

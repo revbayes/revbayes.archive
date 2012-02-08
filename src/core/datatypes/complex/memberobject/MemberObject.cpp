@@ -104,7 +104,7 @@ RbLanguageObject* MemberObject::executeOperationSimple(const std::string& name, 
         
         // check if a member with that name exists
         if (members->existsVariable(*varName)) {
-            return (*members)[*varName]->getDagNode()->getValue();
+            return (*members)[*varName]->getDagNode()->getValue().clone();
         }
         
         // there was no variable with the given name

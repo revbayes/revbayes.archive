@@ -107,9 +107,9 @@ double Move_mmultinomial::perform( void ) {
     double                 alpha0  = static_cast<const RealPos*>( (const RbObject*)getMemberValue("tuning")   )->getValue();
     int                    k       = static_cast<const Integer*>( (const RbObject*)getMemberValue("num_cats") )->getValue();
 
-    VectorReal* valPtr = static_cast<VectorReal*>( nodePtr->getValue() );
+    const VectorReal& valPtr = static_cast<const VectorReal&>( nodePtr->getValue() );
 
-    std::vector<double>    curVal  = valPtr->getValue();
+    std::vector<double>    curVal  = valPtr.getValue();
     int                    n       = int( curVal.size() );
 
     double sum = 0.0;
@@ -215,7 +215,7 @@ double Move_mmultinomial::perform( void ) {
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
         
-    for ( size_t i = 0; i < valPtr->size(); i++ )
+    for ( size_t i = 0; i < valPtr.size(); i++ )
         newVal[i] *= sum;
 		
     nodePtr->setValue( new VectorReal( newVal ) );

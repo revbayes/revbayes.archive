@@ -91,9 +91,9 @@ bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion ) const {
     bool        valid = false;
     RbString* value = NULL;
     if ( needsConversion )
-        value = static_cast<RbString*>( var->getValue()->convertTo( RbString_name ) );
+        value = static_cast<RbString*>( var->getValue().convertTo( RbString_name ) );
     else
-        value = static_cast<RbString*>( var->getValue()->clone() );
+        value = static_cast<RbString*>( var->getValue().clone() );
 
     std::string valString = value->getValue();
     for ( size_t i = 0; i < options.size(); i++ ) {

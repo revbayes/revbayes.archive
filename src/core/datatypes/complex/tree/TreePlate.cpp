@@ -98,13 +98,13 @@ std::string TreePlate::buildNewickString(const TopologyNode* node) const {
             const std::string &varName = *it;
             
             // get the container with the variables for this node
-            const RbObject* vars = (*members)[varName]->getDagNode()->getValue();
+            const RbObject& vars = (*members)[varName]->getDagNode()->getValue();
             
             // get the index of the node
             size_t nodeIndex = getNodeIndex(node) - 1;
             
             // get the variable
-            const RbObject* obj = vars->getElement(nodeIndex);
+            const RbObject* obj = vars.getElement(nodeIndex);
             const Variable* var = static_cast<const VariableSlot*>( obj )->getVariable();
             
             // check if this node also has the parameter (already) set and only if so, add it
@@ -113,7 +113,7 @@ std::string TreePlate::buildNewickString(const TopologyNode* node) const {
                 if (it != nodeVariableNames.begin()) {
                     newick += ",";
                 }
-                newick += varName + ":" + var->getDagNode()->getValue()->briefInfo();
+                newick += varName + ":" + var->getDagNode()->getValue().briefInfo();
             }
         }
         
@@ -388,8 +388,8 @@ std::string TreePlate::richInfo(void) const {
 void TreePlate::setMemberVariable(const std::string& name, Variable* var) {
     
     if ( name == "topology" ) {
-        RbLanguageObject* obj = var->getValue();
-        orderingTopology = static_cast<Topology*>( obj );
+        RbLanguageObject& obj = var->getValue();
+        orderingTopology = static_cast<Topology*>( obj.clone() );
     }
     
     MemberObject::setMemberVariable(name, var);

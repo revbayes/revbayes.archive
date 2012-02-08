@@ -335,13 +335,13 @@ void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
 }
 
 
-const Distribution* StochasticNode::getDistribution(void) const {
-    return distribution;
+const Distribution& StochasticNode::getDistribution(void) const {
+    return *distribution;
 }
 
 
-Distribution* StochasticNode::getDistribution(void) {
-    return distribution;
+Distribution& StochasticNode::getDistribution(void) {
+    return *distribution;
 }
 
 
@@ -361,26 +361,32 @@ double StochasticNode::getLnProbabilityRatio( void ) {
 
 
 /** Get stored value */
-const RbLanguageObject* StochasticNode::getStoredValue( void ) const {
+const RbLanguageObject& StochasticNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return value;
+        return *value;
 
-    return storedValue;
+    return *storedValue;
 }
 
 
 /** Get const value; we always know our value. */
-const RbLanguageObject* StochasticNode::getValue( void ) const {
+const RbLanguageObject& StochasticNode::getValue( void ) const {
 
-    return value;
+    return *value;
 }
 
-
-/** Get const value; we always know our value. */
-RbLanguageObject* StochasticNode::getValue( void ) {
+/** Get non-const value; we always know our value. */
+RbLanguageObject& StochasticNode::getValue( void ) {
     
-    return ( value );
+    return *value;
+}
+
+
+/** Get value pointer; we always know our value. */
+const RbLanguageObject* StochasticNode::getValuePtr( void ) const {
+    
+    return value;
 }
 
 
