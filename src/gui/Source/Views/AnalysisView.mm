@@ -19,6 +19,7 @@
 #import "ToolMcmcDiagnostic.h"
 #import "ToolModel.h"
 #import "ToolNeighborJoining.h"
+#import "ToolParsimony.h"
 #import "ToolReadData.h"
 #import "ToolSimulate.h"
 #import "ToolTreeMcmcDiagnostic.h"
@@ -1950,6 +1951,8 @@
             newTool = [[ToolDistanceMatrix alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_NEIGHBORJOINING)
             newTool = [[ToolNeighborJoining alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_PARSIMONY)
+            newTool = [[ToolParsimony alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_TREECONTAINER)
             newTool = [[ToolTreeSet alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_NUMBERSET)

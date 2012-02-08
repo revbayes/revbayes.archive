@@ -833,6 +833,18 @@
 		223D440514E1F0AB00091B1D /* ProgressBarWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 223D428214E1F0AB00091B1D /* ProgressBarWindow.xib */; };
 		223D440614E1F0AB00091B1D /* RegistrationPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 223D428314E1F0AB00091B1D /* RegistrationPanel.xib */; };
 		223D440714E1F0AB00091B1D /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 223D428414E1F0AB00091B1D /* TextEditorWindow.xib */; };
+		223D441114E1F2A400091B1D /* Tool_Parsimony.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D440814E1F2A300091B1D /* Tool_Parsimony.icns */; };
+		223D441214E1F2A400091B1D /* Tool_Parsimony25.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D440914E1F2A300091B1D /* Tool_Parsimony25.icns */; };
+		223D441314E1F2A400091B1D /* Tool_Parsimony50.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D440A14E1F2A300091B1D /* Tool_Parsimony50.icns */; };
+		223D441414E1F2A400091B1D /* Tool_Parsimony75.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D440B14E1F2A300091B1D /* Tool_Parsimony75.icns */; };
+		223D441514E1F2A400091B1D /* Tool_Parsimony100.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D440C14E1F2A300091B1D /* Tool_Parsimony100.icns */; };
+		223D441614E1F2A400091B1D /* Tool_Parsimony125.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D440D14E1F2A300091B1D /* Tool_Parsimony125.icns */; };
+		223D441714E1F2A400091B1D /* Tool_Parsimony150.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D440E14E1F2A300091B1D /* Tool_Parsimony150.icns */; };
+		223D441814E1F2A400091B1D /* Tool_Parsimony200.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D440F14E1F2A300091B1D /* Tool_Parsimony200.icns */; };
+		223D441914E1F2A400091B1D /* Tool_Parsimony400.icns in Resources */ = {isa = PBXBuildFile; fileRef = 223D441014E1F2A300091B1D /* Tool_Parsimony400.icns */; };
+		223D441C14E1F2D100091B1D /* ToolParsimony.mm in Sources */ = {isa = PBXBuildFile; fileRef = 223D441B14E1F2D100091B1D /* ToolParsimony.mm */; };
+		223D441F14E1F3B500091B1D /* WindowControllerParsimony.mm in Sources */ = {isa = PBXBuildFile; fileRef = 223D441E14E1F3B500091B1D /* WindowControllerParsimony.mm */; };
+		223D442114E1F42800091B1D /* ControlWindowParsimony.xib in Resources */ = {isa = PBXBuildFile; fileRef = 223D442014E1F42800091B1D /* ControlWindowParsimony.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -1848,6 +1860,20 @@
 		223D428214E1F0AB00091B1D /* ProgressBarWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressBarWindow.xib; sourceTree = "<group>"; };
 		223D428314E1F0AB00091B1D /* RegistrationPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RegistrationPanel.xib; sourceTree = "<group>"; };
 		223D428414E1F0AB00091B1D /* TextEditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditorWindow.xib; sourceTree = "<group>"; };
+		223D440814E1F2A300091B1D /* Tool_Parsimony.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony.icns; sourceTree = "<group>"; };
+		223D440914E1F2A300091B1D /* Tool_Parsimony25.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony25.icns; sourceTree = "<group>"; };
+		223D440A14E1F2A300091B1D /* Tool_Parsimony50.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony50.icns; sourceTree = "<group>"; };
+		223D440B14E1F2A300091B1D /* Tool_Parsimony75.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony75.icns; sourceTree = "<group>"; };
+		223D440C14E1F2A300091B1D /* Tool_Parsimony100.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony100.icns; sourceTree = "<group>"; };
+		223D440D14E1F2A300091B1D /* Tool_Parsimony125.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony125.icns; sourceTree = "<group>"; };
+		223D440E14E1F2A300091B1D /* Tool_Parsimony150.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony150.icns; sourceTree = "<group>"; };
+		223D440F14E1F2A300091B1D /* Tool_Parsimony200.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony200.icns; sourceTree = "<group>"; };
+		223D441014E1F2A300091B1D /* Tool_Parsimony400.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_Parsimony400.icns; sourceTree = "<group>"; };
+		223D441A14E1F2D100091B1D /* ToolParsimony.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToolParsimony.h; sourceTree = "<group>"; };
+		223D441B14E1F2D100091B1D /* ToolParsimony.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ToolParsimony.mm; sourceTree = "<group>"; };
+		223D441D14E1F3B500091B1D /* WindowControllerParsimony.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerParsimony.h; sourceTree = "<group>"; };
+		223D441E14E1F3B500091B1D /* WindowControllerParsimony.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerParsimony.mm; sourceTree = "<group>"; };
+		223D442014E1F42800091B1D /* ControlWindowParsimony.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ControlWindowParsimony.xib; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -2837,6 +2863,15 @@
 				223D40D814E1F0AA00091B1D /* Tool_NumberSetDiagnosis400.icns */,
 				223D40D914E1F0AA00091B1D /* Tool_NumberSetDiagnosis50.icns */,
 				223D40DA14E1F0AA00091B1D /* Tool_NumberSetDiagnosis75.icns */,
+				223D440814E1F2A300091B1D /* Tool_Parsimony.icns */,
+				223D440914E1F2A300091B1D /* Tool_Parsimony25.icns */,
+				223D440A14E1F2A300091B1D /* Tool_Parsimony50.icns */,
+				223D440B14E1F2A300091B1D /* Tool_Parsimony75.icns */,
+				223D440C14E1F2A300091B1D /* Tool_Parsimony100.icns */,
+				223D440D14E1F2A300091B1D /* Tool_Parsimony125.icns */,
+				223D440E14E1F2A300091B1D /* Tool_Parsimony150.icns */,
+				223D440F14E1F2A300091B1D /* Tool_Parsimony200.icns */,
+				223D441014E1F2A300091B1D /* Tool_Parsimony400.icns */,
 				223D40DB14E1F0AA00091B1D /* Tool_ReadData.icns */,
 				223D40DC14E1F0AA00091B1D /* Tool_ReadData.psd */,
 				223D40DD14E1F0AA00091B1D /* Tool_ReadData100.icns */,
@@ -3234,6 +3269,8 @@
 				223D41F414E1F0AB00091B1D /* ToolNeighborJoining.mm */,
 				223D41F514E1F0AB00091B1D /* ToolNumericalMcmcOutput.h */,
 				223D41F614E1F0AB00091B1D /* ToolNumericalMcmcOutput.mm */,
+				223D441A14E1F2D100091B1D /* ToolParsimony.h */,
+				223D441B14E1F2D100091B1D /* ToolParsimony.mm */,
 				223D41F714E1F0AB00091B1D /* ToolReadData.h */,
 				223D41F814E1F0AB00091B1D /* ToolReadData.mm */,
 				223D41F914E1F0AB00091B1D /* ToolSimulate.h */,
@@ -3345,6 +3382,8 @@
 				223D425114E1F0AB00091B1D /* WindowControllerNumberMatrix.mm */,
 				223D425214E1F0AB00091B1D /* WindowControllerParm.h */,
 				223D425314E1F0AB00091B1D /* WindowControllerParm.mm */,
+				223D441D14E1F3B500091B1D /* WindowControllerParsimony.h */,
+				223D441E14E1F3B500091B1D /* WindowControllerParsimony.mm */,
 				223D425414E1F0AB00091B1D /* WindowControllerPartitionSelector.h */,
 				223D425514E1F0AB00091B1D /* WindowControllerPartitionSelector.mm */,
 				223D425614E1F0AB00091B1D /* WindowControllerPreferences.h */,
@@ -3379,6 +3418,7 @@
 				223D426F14E1F0AB00091B1D /* ControlWindowNeighborJoining.xib */,
 				223D427014E1F0AB00091B1D /* ControlWindowNumericalMcmcOutput.xib */,
 				223D427114E1F0AB00091B1D /* ControlWindowPalette.xib */,
+				223D442014E1F42800091B1D /* ControlWindowParsimony.xib */,
 				223D427214E1F0AB00091B1D /* ControlWindowPartitionSelector.xib */,
 				223D427314E1F0AB00091B1D /* ControlWindowPlate.xib */,
 				223D427414E1F0AB00091B1D /* ControlWindowRandomVariable.xib */,
@@ -3777,6 +3817,16 @@
 				223D440514E1F0AB00091B1D /* ProgressBarWindow.xib in Resources */,
 				223D440614E1F0AB00091B1D /* RegistrationPanel.xib in Resources */,
 				223D440714E1F0AB00091B1D /* TextEditorWindow.xib in Resources */,
+				223D441114E1F2A400091B1D /* Tool_Parsimony.icns in Resources */,
+				223D441214E1F2A400091B1D /* Tool_Parsimony25.icns in Resources */,
+				223D441314E1F2A400091B1D /* Tool_Parsimony50.icns in Resources */,
+				223D441414E1F2A400091B1D /* Tool_Parsimony75.icns in Resources */,
+				223D441514E1F2A400091B1D /* Tool_Parsimony100.icns in Resources */,
+				223D441614E1F2A400091B1D /* Tool_Parsimony125.icns in Resources */,
+				223D441714E1F2A400091B1D /* Tool_Parsimony150.icns in Resources */,
+				223D441814E1F2A400091B1D /* Tool_Parsimony200.icns in Resources */,
+				223D441914E1F2A400091B1D /* Tool_Parsimony400.icns in Resources */,
+				223D442114E1F42800091B1D /* ControlWindowParsimony.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4371,6 +4421,8 @@
 				223D43E314E1F0AB00091B1D /* WindowControllerReadData.mm in Sources */,
 				223D43E414E1F0AB00091B1D /* WindowControllerRegistration.mm in Sources */,
 				223D43E514E1F0AB00091B1D /* YRKSpinningProgressIndicator.mm in Sources */,
+				223D441C14E1F2D100091B1D /* ToolParsimony.mm in Sources */,
+				223D441F14E1F3B500091B1D /* WindowControllerParsimony.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

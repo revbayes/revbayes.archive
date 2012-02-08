@@ -74,9 +74,11 @@
             toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
         else if (i == TOOL_DISTANCEMATRIX)
             toolImage = [NSImage imageNamed:@"Tool_Distance.icns"];
-         else if (i == TOOL_NEIGHBORJOINING)
+        else if (i == TOOL_NEIGHBORJOINING)
             toolImage = [NSImage imageNamed:@"Tool_NeighborJoining.icns"];
-       else if (i == TOOL_TREECONTAINER)
+        else if (i == TOOL_PARSIMONY)
+            toolImage = [NSImage imageNamed:@"Tool_Parsimony.icns"];
+        else if (i == TOOL_TREECONTAINER)
             toolImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
         else if (i == TOOL_NUMBERSET)
             toolImage = [NSImage imageNamed:@"ToolNumberSet.icns"];
@@ -127,6 +129,8 @@
 			myTip = [NSString stringWithString:@" Distance Matrix Tool "];
         else if (toolForToolTip == TOOL_NEIGHBORJOINING)
 			myTip = [NSString stringWithString:@" Neighbor Joining Tool "];
+        else if (toolForToolTip == TOOL_PARSIMONY)
+			myTip = [NSString stringWithString:@" Parsimony Tool "];
         else if (toolForToolTip == TOOL_TREECONTAINER)
 			myTip = [NSString stringWithString:@" Tree Container Tool "];
         else if (toolForToolTip == TOOL_NUMBERSET)
@@ -236,6 +240,8 @@
 		anImage = [NSImage imageNamed:@"Tool_Distance.icns"];
 	else if (whichToolSelected == TOOL_NEIGHBORJOINING)
 		anImage = [NSImage imageNamed:@"Tool_NeighborJoining.icns"];
+	else if (whichToolSelected == TOOL_PARSIMONY)
+		anImage = [NSImage imageNamed:@"Tool_Parsimony.icns"];
 	else if (whichToolSelected == TOOL_TREECONTAINER)
 		anImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
 	else if (whichToolSelected == TOOL_NUMBERSET)
