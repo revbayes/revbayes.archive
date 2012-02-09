@@ -49,7 +49,6 @@ public:
     VectorString*               clone(void) const;                                              //!< Clone object
     const VectorString&         getClass(void) const;                                           //!< Get class
     const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
-    std::string                 richInfo(void) const;                                           //!< Complete info about object
 
     // Vector functions
     void                        clear(void);                                                    //!< Clear

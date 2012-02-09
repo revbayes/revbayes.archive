@@ -280,17 +280,6 @@ void VectorReal::resize(size_t n) {
 }
 
 
-/** Complete info about object */
-std::string VectorReal::richInfo(void) const {
-
-    std::ostringstream o;
-    o <<  "VectorReal: value = ";
-    printValue(o);
-
-    return o.str();
-}
-
-
 void VectorReal::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary

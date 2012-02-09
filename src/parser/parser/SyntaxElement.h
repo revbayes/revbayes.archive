@@ -69,10 +69,9 @@ class SyntaxElement : public RbInternal {
         virtual                    ~SyntaxElement(void) {}                                      //!< Destructor; delete syntax subtree
 
         // Basic utility functions you have to override
-        virtual std::string         briefInfo(void) const = 0;                                  //!< Brief info about object
         virtual SyntaxElement*      clone(void) const = 0;                                      //!< Clone object
         virtual const VectorString& getClass(void) const;                                       //!< Get class vector 
-        virtual void                print(std::ostream& o) const = 0;                           //!< Print info about object
+        virtual void                printValue(std::ostream& o) const = 0;                      //!< Print info about object
 
         // Regular functions
         virtual Variable*           evaluateContent(Environment& env);                          //!< Get semantic value

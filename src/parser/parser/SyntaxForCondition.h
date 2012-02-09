@@ -40,11 +40,10 @@ class SyntaxForCondition : public SyntaxElement {
         SyntaxForCondition&         operator=(const SyntaxForCondition& x);                                 //!< Assignment operator
         
         // Basic utility functions
-        std::string                 briefInfo() const;                                                      //!< Brief info about object
         SyntaxElement*              clone() const;                                                          //!< Clone object
         const VectorString&         getClass(void) const;                                                   //!< Get class vector 
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
-        void                        print(std::ostream& o) const;                                           //!< Print info about object
+        void                        printValue(std::ostream& o) const;                                      //!< Print info about object
 
         // Regular functions
         void                        finalizeLoop(void);                                                     //!< Finalize loop

@@ -314,17 +314,6 @@ void VectorNatural::resize(size_t n) {
 }
 
 
-/** Complete info about object */
-std::string VectorNatural::richInfo( void ) const {
-
-    std::ostringstream o;
-    o <<  "VectorNatural: value = ";
-    printValue( o );
-
-    return o.str();
-}
-
-
 void VectorNatural::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary

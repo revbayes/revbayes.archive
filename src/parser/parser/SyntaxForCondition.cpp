@@ -72,19 +72,6 @@ SyntaxForCondition& SyntaxForCondition::operator=(const SyntaxForCondition& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxForCondition::briefInfo () const {
-
-    std::ostringstream   o;
-
-    o << "SyntaxForCondition: variable = '" << std::string(*varName);
-    o << "', in expression = ";
-    o << inExpression->briefInfo();
-
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxElement* SyntaxForCondition::clone () const {
 
@@ -173,13 +160,13 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
 
 
 /** Print info about syntax element */
-void SyntaxForCondition::print(std::ostream& o) const {
+void SyntaxForCondition::printValue(std::ostream& o) const {
 
     o << "SyntaxForCondition:" << std::endl;
     o << "varName      = " << std::string(*varName) << std::endl;
     o << "inExpression = " << inExpression;
     o << std::endl;
 
-    inExpression->print(o);
+    inExpression->printValue(o);
 }
 

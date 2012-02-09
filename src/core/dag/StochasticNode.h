@@ -43,7 +43,7 @@ public:
 
     // Basic utility functions
     StochasticNode*                     clone(void) const;                                                  //!< Clone the stochastic node
-
+    std::string                         debugInfo(void) const;                                               //!< Complete info about object
     const VectorString&                 getClass(void) const;                                               //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
     const RbLanguageObject&             getStoredValue(void) const;                                         //!< Get stored value
@@ -52,7 +52,6 @@ public:
     const RbLanguageObject*             getValuePtr(void) const;                                                  //!< Get value pointer
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
     void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
-    std::string                         richInfo(void) const;                                               //!< Complete info about object
 
     // StochasticNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability

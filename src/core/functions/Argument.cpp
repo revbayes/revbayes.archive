@@ -96,13 +96,11 @@ Variable* Argument::getVariable(void) {
 
 
 /** Complete info about object */
-std::string Argument::richInfo(void) const {
+void Argument::printValue(std::ostream &o) const {
 
-    std::ostringstream o;
-    o << "Argument: label = \"" << label << "\", value = ";
+    o << label << " = ";
     var->printValue(o);
 
-    return o.str();
 }
 
 /** Set the DAG node of the argument */

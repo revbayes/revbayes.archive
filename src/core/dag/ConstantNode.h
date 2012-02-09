@@ -43,7 +43,6 @@ public:
     const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
     void                                printStruct(std::ostream& o) const;                                         //!< Print struct for user
     void                                printValue(std::ostream& o) const;                                          //!< Print value for user
-    std::string                         richInfo(void) const;                                                       //!< Complete info on object
 
     // ConstantNode functions
     const RbLanguageObject&             getStoredValue(void) const;                                                 //!< Get stored value

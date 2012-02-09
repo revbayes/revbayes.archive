@@ -54,8 +54,6 @@ public:
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
     virtual bool                        supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]
         
-    // Basic utility functions you should not have to orverwrite
-    void                                print(std::ostream& o) const;                                           //!< Print complete object info
     
 protected:
     RbLanguageObject(void) {}                                                                               //!< No objects of this class

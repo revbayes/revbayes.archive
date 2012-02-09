@@ -233,17 +233,6 @@ void VectorString::resize(size_t n) {
 }
 
 
-/** Complete info about object */
-std::string VectorString::richInfo(void) const {
-
-    std::ostringstream o;
-    o << "VectorString: value = ";
-    printValue(o);
-    
-    return o.str();
-}
-
-
 void VectorString::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary

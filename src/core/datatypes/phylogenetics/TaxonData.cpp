@@ -105,23 +105,6 @@ void TaxonData::printValue(std::ostream &o) const {
 }
 
 
-/** Print value for user */
-std::string TaxonData::richInfo(void) const {
-       
-    std::string info = taxonName + " [ ";
-    for ( std::vector<RbLanguageObject* >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
-        if ( i != elements.begin() )
-            info += ", ";
-        if ( (*i) == NULL )
-            info += "NULL";
-        else 
-            info += (*i)->richInfo();
-    }
-    info +=  " ]";
-    
-    return info;
-}
-
 
 void TaxonData::setTaxonName(std::string tn) {
 

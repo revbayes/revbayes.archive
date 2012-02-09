@@ -239,7 +239,8 @@ void Model::printValue(std::ostream& o) const {
 			RBOUT(msg.str());
 		msg.str("");
        
-        msg << "   Value        = " << (*i)->getValue().richInfo();
+        msg << "   Value        = ";
+        (*i)->getValue().printValue(o);
             
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
@@ -271,16 +272,6 @@ void Model::printValue(std::ostream& o) const {
     RBOUT("-------------------------------------");
 }
 
-
-/** Complete info about object */
-std::string Model::richInfo(void) const {
-
-    std::ostringstream o;
-    o << "Model:" << std::endl;
-    printValue(o);
-    
-    return o.str();
-}
 
 /** Set a member variable */
 void Model::setMemberVariable(const std::string& name, Variable* var) {

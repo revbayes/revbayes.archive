@@ -43,11 +43,10 @@ class SyntaxFunctionDef : public SyntaxElement {
         SyntaxFunctionDef&              operator=(const SyntaxFunctionDef& x);                      //!< Assignment operator
 
         // Basic utility functions
-        std::string                     briefInfo() const;                                          //!< Brief info about object
         SyntaxFunctionDef*              clone() const;                                              //!< Clone object
         const VectorString&             getClass(void) const;                                       //!< Get class vector 
         const TypeSpec&                 getTypeSpec(void) const;                                    //!< Get language type of the object
-        void                            print(std::ostream& o) const;                               //!< Print info about object
+        void                            printValue(std::ostream& o) const;                          //!< Print info about object
 
         // Regular functions
         Variable*                       evaluateContent(void);                                      //!< Get semantic value

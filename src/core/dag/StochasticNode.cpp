@@ -303,6 +303,29 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
 }
 
 
+/** Complete info about object */
+std::string StochasticNode::debugInfo(void) const {
+    
+    std::ostringstream o;
+    o << "StochasticNode:" << std::endl;
+    o << "Clamped      = " << ( clamped ? "true" : "false" ) << std::endl;
+    o << "Touched      = " << ( touched ? "true" : "false" ) << std::endl;
+    o << "Distribution = ";
+    distribution->printValue( o );
+    o << std::endl;
+    o << "Value        = ";
+    value->printValue( o );
+    o << std::endl;
+    o << "Stored value = ";
+    if ( storedValue == NULL )
+        o << "NULL";
+    else
+        storedValue->printValue( o );
+    
+    return o.str();
+}
+
+
 /** Get class vector describing type of DAG node */
 const VectorString& StochasticNode::getClass() const {
 
@@ -421,12 +444,19 @@ void StochasticNode::printStruct( std::ostream& o ) const {
     o << "_Class        = " << getClass() << std::endl;
     o << "_Adress       = " << this << std::endl;
     o << "_valueType    = " << getValueType() << std::endl;
-    o << "_distribution = " << distribution->briefInfo() << std::endl;
+    o << "_distribution = ";
+    distribution->printValue(o);
+    o << std::endl;
     o << "_touched      = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
     o << "_clamped      = " << ( clamped ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
-    o << "_value        = " << value->briefInfo() << std::endl;
-    if ( touched )
-        o << "_storedValue  = " << storedValue->briefInfo() << std::endl;
+    o << "_value        = ";
+    value->printValue(o);
+    o << std::endl;
+    if ( touched ) {
+        o << "_storedValue  = "; 
+        storedValue->printValue(o);
+        o << std::endl;
+    }
     o << "_lnProb       = " << lnProb << std::endl;
     if ( touched )
         o << "_storedLnProb = " << storedLnProb << std::endl;    
@@ -475,29 +505,6 @@ void StochasticNode::restoreMe() {
     }
 
     touched = false;
-}
-
-
-/** Complete info about object */
-std::string StochasticNode::richInfo(void) const {
-
-    std::ostringstream o;
-    o << "StochasticNode:" << std::endl;
-    o << "Clamped      = " << ( clamped ? "true" : "false" ) << std::endl;
-    o << "Touched      = " << ( touched ? "true" : "false" ) << std::endl;
-    o << "Distribution = ";
-    distribution->printValue( o );
-    o << std::endl;
-    o << "Value        = ";
-    value->printValue( o );
-    o << std::endl;
-    o << "Stored value = ";
-    if ( storedValue == NULL )
-        o << "NULL";
-    else
-        storedValue->printValue( o );
-
-    return o.str();
 }
 
 

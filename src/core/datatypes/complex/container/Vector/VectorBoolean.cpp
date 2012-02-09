@@ -220,17 +220,6 @@ void VectorBoolean::resize(size_t n) {
 }
 
 
-/** Complete info about object */
-std::string VectorBoolean::richInfo(void) const {
-
-    std::ostringstream o;
-    o <<  "VectorBoolean: value = ";
-    printValue(o);
-
-    return o.str();
-}
-
-
 void VectorBoolean::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary

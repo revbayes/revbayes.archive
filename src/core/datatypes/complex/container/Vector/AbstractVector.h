@@ -36,7 +36,6 @@ class AbstractVector : public Container {
         virtual AbstractVector*         clone(void) const = 0;                                              //!< Clone object
         virtual const VectorString&     getClass(void) const;                                               //!< Get class
         virtual void                    printValue(std::ostream& o) const;                                  //!< Print value for user
-        virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
             
         // Container functions you have to override
         virtual void                    pop_back(void) = 0;                                                 //!< Drop element at back

@@ -63,22 +63,6 @@ SyntaxLabeledExpr& SyntaxLabeledExpr::operator=(const SyntaxLabeledExpr& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxLabeledExpr::briefInfo () const {
-
-    std::ostringstream   o;
-
-    if (expression == NULL)
-        o << "SyntaxLabeledExpr:  '" << std::string(*label) << "' = <empty>";
-    else {
-        o << "SyntaxLabeledExpr:  '" << std::string(*label) << "' = ";
-        o << expression->briefInfo();
-    }
-
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxLabeledExpr* SyntaxLabeledExpr::clone () const {
 
@@ -108,13 +92,15 @@ const TypeSpec& SyntaxLabeledExpr::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxLabeledExpr::print(std::ostream& o) const {
+void SyntaxLabeledExpr::printValue(std::ostream& o) const {
 
     o << "[" << this << "] SyntaxLabeledExpr:" << std::endl;
     o << "label      = " << label->richInfo() << std::endl;
-    o << "expression = [" << expression << "]" << expression->briefInfo() << std::endl;
+    o << "expression = [" << expression << "]";
+    expression->printValue(o);
+    o << std::endl;
     o << std::endl;
 
-    expression->print(o);
+    expression->printValue(o);
 }
 

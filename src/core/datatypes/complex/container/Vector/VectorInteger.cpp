@@ -294,17 +294,6 @@ void VectorInteger::resize(size_t n) {
 }
 
 
-/** Complete info about object */
-std::string VectorInteger::richInfo(void) const {
-
-    std::ostringstream o;
-    o <<  "VectorInteger: value = ";
-    printValue(o);
-
-    return o.str();
-}
-
-
 void VectorInteger::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary

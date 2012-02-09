@@ -268,15 +268,6 @@ void VectorComplex::resize(size_t n) {
 }
 
 
-/** Complete info about object */
-std::string VectorComplex::richInfo(void) const {
-
-    std::ostringstream o;
-    printValue(o);
-    return o.str();
-}
-
-
 void VectorComplex::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary

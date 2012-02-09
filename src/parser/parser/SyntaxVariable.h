@@ -51,11 +51,10 @@ class SyntaxVariable : public SyntaxElement {
         SyntaxVariable&                     operator=(const SyntaxVariable& x);                                                     //!< Assignment operator
 
         // Basic utility functions
-        std::string                         briefInfo(void) const;                                                                  //!< Brief info about object
         SyntaxVariable*                     clone(void) const;                                                                      //!< Clone object
         const VectorString&                 getClass(void) const;                                                                   //!< Get class vector 
         const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
-        void                                print(std::ostream& o) const;                                                           //!< Print info about object
+        void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
 
         // Regular functions
         RbString*                           getIdentifier(void) { return identifier; }                                              //!< Get identifier

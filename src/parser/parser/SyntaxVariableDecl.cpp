@@ -85,23 +85,6 @@ SyntaxVariableDecl& SyntaxVariableDecl::operator=(const SyntaxVariableDecl& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxVariableDecl::briefInfo() const {
-    
-    std::ostringstream   o;
-    o << "SyntaxVariableDecl: " << *elementTypeName;
-    for ( std::list<SyntaxElement*>::const_iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++ ) {
-        if ( (*i) == NULL )
-            o << "[]";
-        else
-            o << "[<expr>]";
-    }
-
-    o << *referenceSymbol;
-    
-    return o.str();
-}
-
 
 /** Clone syntax element */
 SyntaxVariableDecl* SyntaxVariableDecl::clone() const {
@@ -197,8 +180,17 @@ const TypeSpec& SyntaxVariableDecl::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxVariableDecl::print(std::ostream& o) const {
+void SyntaxVariableDecl::printValue(std::ostream& o) const {
     
-    o << "SyntaxVariableDecl: " << briefInfo() << std::endl;
+    o << "SyntaxVariableDecl: " << *elementTypeName;
+    for ( std::list<SyntaxElement*>::const_iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++ ) {
+        if ( (*i) == NULL )
+            o << "[]";
+        else
+            o << "[<expr>]";
+    }
+    
+    o << *referenceSymbol;
+    
 }
 

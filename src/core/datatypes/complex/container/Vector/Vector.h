@@ -40,7 +40,6 @@ public:
     const VectorString&                             getClass(void) const;                                           //!< Get class
     virtual const TypeSpec&                         getTypeSpec(void) const;                                        //!< Get language type of the object
     void                                            printValue(std::ostream& o) const;                              //!< Print value for user
-    std::string                                     richInfo(void) const;                                           //!< Complete info about object
     
     RbLanguageObject*                               operator[](size_t i);                                           //!< Index op allowing change
     const RbLanguageObject*                         operator[](size_t i) const;                                     //!< Const index op

@@ -61,7 +61,6 @@ class VectorReal : public AbstractVector {
     const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
     bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
     void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
-    std::string                 richInfo(void) const;                                           //!< Complete info about object
 
         // Vector functions, including STL-like functions
     void                        clear(void);                                                    //!< Clear

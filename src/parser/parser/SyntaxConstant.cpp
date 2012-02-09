@@ -58,13 +58,6 @@ SyntaxConstant& SyntaxConstant::operator=(const SyntaxConstant& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxConstant::briefInfo (void) const {
-
-    return "SyntaxConstant: value = " + value->briefInfo();
-}
-
-
 /** Clone syntax element */
 SyntaxConstant* SyntaxConstant::clone (void) const {
 
@@ -98,8 +91,10 @@ const TypeSpec& SyntaxConstant::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxConstant::print(std::ostream& o) const {
+void SyntaxConstant::printValue(std::ostream& o) const {
 
-    o << "SyntaxConstant: value = " << value->briefInfo() << std::endl;
+    o << "SyntaxConstant: value = ";
+    value->printValue(o);
+    o << std::endl;
 }
 

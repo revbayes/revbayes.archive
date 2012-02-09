@@ -76,13 +76,6 @@ bool RbLanguageObject::isConvertibleTo(const TypeSpec& type) const {
 }
 
 
-/** Print info about object simply by using richInfo function */
-void RbLanguageObject::print(std::ostream& o) const {
-    
-    o << richInfo() << std::endl;
-}
-
-
 /** Make sure we can print the value of the object easily */
 std::ostream& operator<<(std::ostream& o, const RbLanguageObject& x) {
     

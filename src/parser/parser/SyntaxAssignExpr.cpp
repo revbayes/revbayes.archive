@@ -109,16 +109,6 @@ SyntaxAssignExpr& SyntaxAssignExpr::operator=(const SyntaxAssignExpr& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxAssignExpr::briefInfo () const {
-    
-    std::ostringstream   o;
-    o << "SyntaxAssignExpr: operation = " << opCode[opType];
-    
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxAssignExpr* SyntaxAssignExpr::clone () const {
     
@@ -279,11 +269,15 @@ const TypeSpec& SyntaxAssignExpr::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxAssignExpr::print(std::ostream& o) const {
+void SyntaxAssignExpr::printValue(std::ostream& o) const {
     
     o << "SyntaxAssignExpr:" << std::endl;
-    o << "variable      = " << variable->briefInfo() << std::endl;
-    o << "expression    = " << expression->briefInfo() << std::endl;
+    o << "variable      = ";
+    variable->printValue(o);
+    o << std::endl;
+    o << "expression    = ";
+    expression->printValue(o);
+    o << std::endl;
     o << "operation     = " << opCode[opType];
 }
 

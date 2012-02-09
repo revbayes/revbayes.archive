@@ -34,7 +34,6 @@ public:
     const VectorString&     getClass(void) const { return classVector; }                            //!< Get class vector
     const TypeSpec&         getTypeSpec() const;                                                    //!< Get type spec
     void                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
-    std::string             richInfo(void) const;                                                   //!< Complete info about object
 
 protected:
     VectorString            classVector;                                                            //!< Class vector describing type

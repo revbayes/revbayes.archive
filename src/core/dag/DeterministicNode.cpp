@@ -167,6 +167,32 @@ RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNo
 }
 
 
+/** Complete info about object */
+std::string DeterministicNode::debugInfo( void ) const {
+    
+    std::ostringstream o;
+    
+    o << "Deterministic Node:" << std::endl;
+    
+    o << "touched     = " << (touched ? "true" : "false") << std::endl;
+    o << "needsUpdate = " << (needsUpdate ? "true" : "false") << std::endl;
+    
+    o << "function    = ";
+    function->printValue(o);
+    o << std::endl;
+    
+    o << "value       = ";
+    value->printValue(o);
+    o << std::endl;
+    
+    o << "storedValue = ";
+    storedValue->printValue(o);
+    o << std::endl;
+    
+    return o.str();
+}
+
+
 
 /** Get affected nodes: pass through to next stochastic node */
 void DeterministicNode::getAffected( std::set<StochasticNode* >& affected ) {
@@ -273,9 +299,14 @@ void DeterministicNode::printValue( std::ostream& o ) const {
 void DeterministicNode::printStruct( std::ostream& o ) const {
     
     o << "_DAGClass    = " << getClass() << std::endl;
-    o << "_value       = " << value->briefInfo() << std::endl;
-    if ( touched && !needsUpdate )
-        o << "_storedValue = " << storedValue->briefInfo() << std::endl;
+    o << "_value       = ";
+    value->printValue(o);
+    o << std::endl;
+    if ( touched && !needsUpdate ) {
+        o << "_storedValue = ";
+        storedValue->printValue(o);
+        o << std::endl;
+    }
     
     o << "_valueType   = " << getValueType() << std::endl;
     o << "_function    = " << function->getType() << std::endl;
@@ -292,33 +323,6 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
     
     o << std::endl;
 }
-
-
-/** Complete info about object */
-std::string DeterministicNode::richInfo( void ) const {
-    
-    std::ostringstream o;
-    
-    o << "Deterministic Node:" << std::endl;
-    
-    o << "touched     = " << (touched ? "true" : "false") << std::endl;
-    o << "needsUpdate = " << (needsUpdate ? "true" : "false") << std::endl;
-    
-    o << "function    = ";
-    function->printValue(o);
-    o << std::endl;
-    
-    o << "value       = ";
-    value->printValue(o);
-    o << std::endl;
-    
-    o << "storedValue = ";
-    storedValue->printValue(o);
-    o << std::endl;
-    
-    return o.str();
-}
-
 
 
 /** 

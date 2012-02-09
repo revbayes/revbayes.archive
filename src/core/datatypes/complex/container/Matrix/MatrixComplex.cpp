@@ -187,7 +187,9 @@ void MatrixComplex::printValue(std::ostream& o) const {
         
         
         const VectorComplex* vec = operator[](i);
-        lineStr += vec->briefInfo();
+        std::ostringstream ss;
+        vec->printValue(ss);
+        lineStr += ss.str();
         if (i == size()-1)
             lineStr += " ]";
         else 

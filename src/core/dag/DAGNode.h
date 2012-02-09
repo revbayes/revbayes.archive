@@ -45,7 +45,6 @@ class DAGNode : public RbLanguageObject {
         virtual                                            ~DAGNode(void);                                                          //!< Virtual destructor
 
         // Basic utility functions you should not override
-        std::string                                         briefInfo(void) const;                                                  //!< Brief info about object
         const std::string&                                  getValueType(void) const { return valueTypeSpec.getType(); }            //!< Get value type
         const TypeSpec&                                     getValueTypeSpec(void) const { return valueTypeSpec; }                  //!< Get value type
         bool                                                isValueOfTypeSpec(const TypeSpec& typeSp) const;                        //!< Is DAG node of language type typeSpec?

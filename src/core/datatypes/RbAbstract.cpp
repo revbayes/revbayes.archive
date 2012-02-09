@@ -51,14 +51,4 @@ void RbAbstract::printValue(std::ostream &o) const {
     o << classVector;
 }
 
-/** Get complete info about object */
-std::string RbAbstract::richInfo(void) const {
-
-	std::ostringstream o;
-    o << "RbAbstract(";
-    printValue(o);
-	o<< ")";
-
-    return o.str();
-}
 

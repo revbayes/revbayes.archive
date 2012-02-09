@@ -113,7 +113,9 @@ std::string TreePlate::buildNewickString(const TopologyNode* node) const {
                 if (it != nodeVariableNames.begin()) {
                     newick += ",";
                 }
-                newick += varName + ":" + var->getDagNode()->getValue().briefInfo();
+                std::ostringstream ss;
+                var->getDagNode()->getValue().printValue(ss);
+                newick += varName + ":" + ss.str();
             }
         }
         
@@ -370,18 +372,6 @@ void TreePlate::printValue(std::ostream& o) const {
     
 }
 
-
-/* Get a lot of information about the TreePlate */
-std::string TreePlate::richInfo(void) const {
-    
-    std::ostringstream o;
-    o << "Tree Plate:\n";
-    o << "Topology:\n";
-    orderingTopology->printValue(o);
-    o << "\n";
-    o << buildNewickString(orderingTopology->getRoot());
-    return o.str();
-}
 
 
 /** Catch setting of the topology variable */

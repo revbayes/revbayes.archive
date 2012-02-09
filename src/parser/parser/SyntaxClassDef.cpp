@@ -67,16 +67,6 @@ SyntaxClassDef& SyntaxClassDef::operator=(const SyntaxClassDef& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxClassDef::briefInfo () const {
-
-    std::ostringstream   o;
-    o << "SyntaxClassDef:  definition of a class called  " << std::string(*className);
-
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxElement* SyntaxClassDef::clone () const {
 
@@ -109,7 +99,7 @@ const TypeSpec& SyntaxClassDef::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxClassDef::print(std::ostream& o) const {
+void SyntaxClassDef::printValue(std::ostream& o) const {
 
     o << "SyntaxClassDef:" << std::endl;
     o << "className   = ";

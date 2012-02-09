@@ -47,10 +47,10 @@ public:
 
     // Utility functions you have to override
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node
+    std::string                             debugInfo(void) const;                                               //!< Complete info about object
     const VectorString&                     getClass(void) const;                                               //!< Get class vector
     const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
-    std::string                             richInfo(void) const;                                               //!< Complete info about object
 
     // DAG functions implemented here
     void                                    swapParentNode(RbPtr<DAGNode> oldP, RbPtr<DAGNode> newP);           //!< Swap a parent node

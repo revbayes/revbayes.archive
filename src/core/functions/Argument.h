@@ -42,7 +42,7 @@ class Argument : public RbInternal {
         Argument*                           clone(void) const { return new Argument (*this); }                  //!< Clone object
         const VectorString&                 getClass(void) const;                                               //!< Get class vector
         const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
-        std::string                         richInfo(void) const;                                               //!< Complete info about object
+        void                                printValue(std::ostream& o) const;                                  //!< Complete info about object
 
         // Regular functions
         const std::string&                  getLabel(void) const;                                               //!< Get label of argument

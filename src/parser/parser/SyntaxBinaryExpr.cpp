@@ -74,16 +74,6 @@ SyntaxBinaryExpr& SyntaxBinaryExpr::operator=(const SyntaxBinaryExpr& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxBinaryExpr::briefInfo () const {
-
-    std::ostringstream   o;
-    o << "SyntaxBinaryExpr: operation = " << opCode[operation];
-
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxElement* SyntaxBinaryExpr::clone () const {
 
@@ -136,15 +126,19 @@ const TypeSpec& SyntaxBinaryExpr::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxBinaryExpr::print(std::ostream& o) const {
+void SyntaxBinaryExpr::printValue(std::ostream& o) const {
 
     o << "[" << this << "] SyntaxBinaryExpr:" << std::endl;
-    o << "left operand  = [" << leftOperand  << "]" << leftOperand->briefInfo()  << std::endl;
-    o << "right operand = [" << rightOperand << "]" << rightOperand->briefInfo() << std::endl;
+    o << "left operand  = [" << leftOperand  << "]";
+    leftOperand->printValue(o);
+    o << std::endl;
+    o << "right operand = [" << rightOperand << "]" ;
+    rightOperand->printValue(o);
+    o << std::endl;
     o << "operation     = " << opCode[operation];
     o << std::endl;
 
-    leftOperand->print(o);
-    rightOperand->print(o);
+    leftOperand->printValue(o);
+    rightOperand->printValue(o);
 }
 

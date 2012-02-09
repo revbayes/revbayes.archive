@@ -31,13 +31,6 @@ const VectorString& RbInternal::getClass(void) const {
 }
 
 
-/** Print info about object simply by using richInfo function */
-void RbInternal::printValue(std::ostream& o) const {
-    
-    o << "Instance of RbInternal:" << std::endl;
-    o << getType() << std::endl;
-}
-
 
 
 

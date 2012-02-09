@@ -218,7 +218,8 @@ std::ostream& operator<<(std::ostream& o, const VariableSlot& x) {
     if ( x.getDagNode() == NULL )
         o << " NULL";
     else {
-        o << " " << x.getDagNode()->briefInfo();
+        o << " ";
+        x.getDagNode()->printValue(o);
     }
     return o;
 }

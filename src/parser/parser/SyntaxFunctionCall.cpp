@@ -88,19 +88,6 @@ SyntaxFunctionCall& SyntaxFunctionCall::operator=(const SyntaxFunctionCall& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxFunctionCall::briefInfo () const {
-
-    std::ostringstream   o;
-    if (variable == NULL)
-        o << "SyntaxFunctionCall:  global call to " << std::string(*functionName) << " with " << arguments->size() << " arguments";
-    else
-        o << "SyntaxFunctionCall:  member call to " << std::string(*functionName) << " with " << arguments->size() << " arguments";
-
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxFunctionCall* SyntaxFunctionCall::clone () const {
 
@@ -168,28 +155,34 @@ const TypeSpec& SyntaxFunctionCall::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxFunctionCall::print(std::ostream& o) const {
+void SyntaxFunctionCall::printValue(std::ostream& o) const {
 
     o << "[" << this << "] SyntaxFunctionCall:" << std::endl;
     o << "functionName  = " << *functionName << std::endl;
     o << "variable      = ";
     if (variable == NULL)
         o << "NULL" << std::endl;
-    else
-        o << "[" << variable << "] " << variable->briefInfo() << std::endl;
+    else {
+        o << "[" << variable << "] ";
+        variable->printValue(o);
+        o << std::endl;
+    }
     if (arguments->size() == 0)
         o << "arguments     = []";
     else {
         int index = 1;
-        for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++, index++)
-            o << "arguments[" << index <<  "]  = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
+        for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++, index++) {
+            o << "arguments[" << index <<  "]  = [" << (*i) << "] ";
+            (*i)->printValue(o);
+            o << std::endl;
+        }
     }
     o << std::endl;
 
     if (variable != NULL)
-        variable->print(o);
+        variable->printValue(o);
 
     for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++)
-        (*i)->print(o);
+        (*i)->printValue(o);
 }
 

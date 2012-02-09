@@ -106,22 +106,6 @@ SyntaxFormal& SyntaxFormal::operator=(const SyntaxFormal& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxFormal::briefInfo () const {
-
-    std::ostringstream   o;
-
-    if (defaultExpr == NULL)
-        o << "SyntaxFormal:  '" << argType->toString() << " " << std::string(*label);
-    else {
-        o << "SyntaxFormal:  '" << argType->toString() << " " << std::string(*label) << " = ";
-        o << defaultExpr->briefInfo();
-    }
-
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxFormal* SyntaxFormal::clone () const {
 
@@ -173,12 +157,14 @@ const TypeSpec& SyntaxFormal::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxFormal::print(std::ostream& o) const {
+void SyntaxFormal::printValue(std::ostream& o) const {
 
     o << "SyntaxFormal:" << std::endl;
     o << "type        = " << argType->toString() << std::endl;
     o << "label       = " << *label << std::endl;
-    o << "defaultExpr = " << defaultExpr->briefInfo() << std::endl;
+    o << "defaultExpr = ";
+    defaultExpr->printValue(o);
+    o << std::endl;
 }
 
 

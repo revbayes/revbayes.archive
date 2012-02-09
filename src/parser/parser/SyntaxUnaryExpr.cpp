@@ -71,15 +71,6 @@ SyntaxUnaryExpr& SyntaxUnaryExpr::operator=(const SyntaxUnaryExpr& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxUnaryExpr::briefInfo () const {
-
-    std::ostringstream   o;
-    o << "SyntaxUnaryExpr: operation = " << opCode[operation];
-
-    return o.str();
-}
-
 
 /** Clone syntax element */
 SyntaxUnaryExpr* SyntaxUnaryExpr::clone () const {
@@ -126,13 +117,15 @@ const TypeSpec& SyntaxUnaryExpr::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxUnaryExpr::print(std::ostream& o) const {
+void SyntaxUnaryExpr::printValue(std::ostream& o) const {
 
     o << "[" << this << "] SyntaxUnaryExpr:" << std::endl;
-    o << "expression    = [" << expression << "] " << expression->briefInfo() << std::endl;
+    o << "expression    = [" << expression << "] ";
+    expression->printValue(o);
+    o << std::endl;
     o << "operation     = " << opCode[operation];
     o << std::endl;
 
-    expression->print(o);
+    expression->printValue(o);
 }
 

@@ -292,17 +292,6 @@ void VectorRealPos::resize(size_t n) {
 }
 
 
-/** Complete info about object */
-std::string VectorRealPos::richInfo( void ) const {
-
-    std::ostringstream o;
-    o <<  "VectorRealPos: value = ";
-    printValue( o );
-
-    return o.str();
-}
-
-
 void VectorRealPos::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary

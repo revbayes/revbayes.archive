@@ -42,18 +42,6 @@ RbObject::~RbObject() {
 
 }
 
-/** 
- * Brief info about object: 
- * Return the brief debug information about this object.
- * This is the default implementation which you can overwrite. It return only the class name.
- */
-std::string RbObject::briefInfo(void) const {
-    
-    std::ostringstream o;
-    o << "Object of type ";
-    getClass().printValue(o);
-    return o.str();
-}
 
 /** Convert to object of language type typeSpec with base type and element type.
     Here we just convert from scalar types to vectors and overwritten function do more fancy stuff. */
@@ -68,6 +56,25 @@ RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
     
     return NULL;
 }
+
+
+/** 
+ * Rich info about object: 
+ * The debugInfo gives detailed debug information.
+ * This is the default implementation when no detailed information is available 
+ * and therefore it prints the class name and the value.
+ */
+std::string RbObject::debugInfo(void) const {
+    
+    std::ostringstream o;
+    o << "Object of type: ";
+    getClass().printValue(o);
+    o << std::endl;
+    o << "Value: ";
+    printValue(o);
+    return o.str();
+}
+
 
 
 /** Encode the object into a serializable xml-object */
@@ -161,15 +168,6 @@ bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 }
 
 
-/** 
- * Rich info about object: 
- * The richInfo gives detailed debug information.
- * This is the default implementation when no detailed information is available and therefore it calls briefInfo.
- */
-std::string RbObject::richInfo(void) const {
-    
-    return briefInfo();
-}
 
 
 /** Make sure we can print the value of the object easily */

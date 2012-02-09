@@ -141,7 +141,9 @@ void ConstantNode::printStruct(std::ostream &o) const {
 
     o << "_Class        = " << getClass() << std::endl;
     o << "_valueType    = " << getValueType() << std::endl;
-    o << "_value        = " << value->briefInfo() << std::endl;
+    o << "_value        = ";
+    value->printValue(o);
+    o << std::endl;
 
     o << "_children     = ";
     printChildren(o);
@@ -155,15 +157,6 @@ void ConstantNode::restoreMe( void ) {
     // do nothing
 }
 
-
-/** Complete info on object */
-std::string ConstantNode::richInfo( void ) const {
-
-    std::ostringstream o;
-    o << "ConstantNode: value = " << value->briefInfo();
-
-    return o.str();
-}
 
 /** Touch value of node */
 void ConstantNode::touchMe( void ) {

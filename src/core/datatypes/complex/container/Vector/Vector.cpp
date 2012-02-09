@@ -215,23 +215,6 @@ void Vector::resize( size_t n ) {
 }
 
 
-/** Print value for user */
-std::string Vector::richInfo(void) const {
-    
-    std::string info = "Vector[ ";
-    for ( std::vector<RbLanguageObject* >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
-        if ( i != elements.begin() )
-            info += ", ";
-        if ( (*i) == NULL )
-            info += "NULL";
-        else 
-            info += (*i)->richInfo();
-    }
-    info +=  " ]";
-    
-    return info;
-}
-
 /** Set element */
 void Vector::setElement(const size_t index, RbLanguageObject* elem) {
     if (index >= elements.size()) {

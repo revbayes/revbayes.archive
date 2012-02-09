@@ -123,22 +123,6 @@ SyntaxVariable& SyntaxVariable::operator=(const SyntaxVariable& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxVariable::briefInfo () const {
-
-    std::ostringstream   o;
-
-    if (baseVariable == NULL)
-        o << "SyntaxVariable: " << std::string(*identifier);
-    else
-        o << "SyntaxVariable: <base>." << std::string(*identifier);
-
-    for (std::list<SyntaxElement*>::const_iterator i=index->begin(); i!=index->end(); i++)
-        o << "[<" << (*i) << ">]";
-
-    return o.str();
-}
-
 
 /** Clone syntax element */
 SyntaxVariable* SyntaxVariable::clone () const {
@@ -440,22 +424,29 @@ const TypeSpec& SyntaxVariable::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxVariable::print(std::ostream& o) const {
+void SyntaxVariable::printValue(std::ostream& o) const {
 
     o << "<" << this << "> SyntaxVariable:" << std::endl;
     o << "identifier = " << *identifier << std::endl;
-    if (baseVariable != NULL)
-        o << "base variable   = <" << baseVariable << "> " << baseVariable->briefInfo() << std::endl;
+    if (baseVariable != NULL) {
+        o << "base variable   = <" << baseVariable << "> ";
+        baseVariable->printValue(o);
+        o << std::endl;
+    }
     int count = 1;
     for (std::list<SyntaxElement*>::const_iterator i=(*index).begin(); i!=(*index).end(); i++, count++) {
-        if ( (*i) != NULL )
-            o << "index " << count << " = <" << (*i) << "> " << (*i)->briefInfo() << std::endl;
-        else
+        if ( (*i) != NULL ) {
+            o << "index " << count << " = <" << (*i) << "> ";
+            (*i)->printValue(o);
+            o << std::endl;
+        }
+        else {
             o << "index " << count << " = < NULL >" << std::endl;
+        }
     }
     o << std::endl;
 
     for (std::list<SyntaxElement*>::const_iterator i=index->begin(); i!=index->end(); i++)
-        (*i)->print(o);
+        (*i)->printValue(o);
 }
 

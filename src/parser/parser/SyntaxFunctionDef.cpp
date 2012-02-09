@@ -113,16 +113,6 @@ SyntaxFunctionDef& SyntaxFunctionDef::operator=(const SyntaxFunctionDef& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxFunctionDef::briefInfo () const {
-
-    std::ostringstream   o;
-    o << "SyntaxFunctionDef:  definition of a funtion called  " << std::string(*functionName);
-
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxFunctionDef* SyntaxFunctionDef::clone () const {
 
@@ -180,7 +170,7 @@ const TypeSpec& SyntaxFunctionDef::getTypeSpec(void) const {
 
 
 /** Print info about the syntax element */
-void SyntaxFunctionDef::print(std::ostream& o) const {
+void SyntaxFunctionDef::printValue(std::ostream& o) const {
 
     o << "SyntaxFunctionDef:" << std::endl;
     o << "returnType   = " << returnType->toString() << std::endl;

@@ -122,16 +122,6 @@ SyntaxStatement& SyntaxStatement::operator= (const SyntaxStatement& x) {
 }
 
 
-/** Return brief info about object */
-std::string SyntaxStatement::briefInfo () const {
-
-    std::ostringstream   o;
-    o << "SyntaxStatement: type = " << stmtName[statementType];
-
-    return o.str();
-}
-
-
 /** Clone syntax element */
 SyntaxStatement* SyntaxStatement::clone () const {
 
@@ -374,21 +364,26 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment& env ) cons
 
 
 /** Print info about the syntax element */
-void SyntaxStatement::print(std::ostream& o) const {
+void SyntaxStatement::printValue(std::ostream& o) const {
 
     o << "SyntaxStatement:" << std::endl;
     o << "statementType = " << stmtName[statementType] << std::endl;
     if (expression == NULL)
         o << "expression    = NULL" << std::endl;
-    else
-        o << "expression    = [" << expression << "] " << expression->briefInfo() << std::endl;
+    else {
+        o << "expression    = [" << expression << "] ";
+        expression->printValue(o);
+        o << std::endl;
+    }
     if (statements1 == NULL)
         o << "statements1   = NULL" << std::endl;
     else {
         o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
         int count=1;
         for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++, count++) {
-            o << "   stmt " << count << " = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
+            o << "   stmt " << count << " = [" << (*i) << "] ";
+            (*i)->printValue(o);
+            o << std::endl;
         }
     }
     if (statements2 == NULL)
@@ -397,21 +392,23 @@ void SyntaxStatement::print(std::ostream& o) const {
         o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
         int count=1;
         for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++, count++) {
-            o << "   stmt " << count << " = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
+            o << "   stmt " << count << " = [" << (*i) << "] ";
+            (*i)->printValue(o);
+            o << std::endl;
         }
     }
     o << std::endl;
 
     if (expression != NULL)
-        expression->print(o);
+        expression->printValue(o);
     if (statements1 != NULL) {
         for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++) {
-            (*i)->print(o);
+            (*i)->printValue(o);
         }
     }
     if (statements2 != NULL) {
         for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++) {
-            (*i)->print(o);
+            (*i)->printValue(o);
         }
     }
 }

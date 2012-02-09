@@ -96,22 +96,6 @@ void DAGNode::addChildNode(VariableNode *c) {
 }
 
 
-/** Return brief info about variable */
-std::string DAGNode::briefInfo( void ) const {
-
-    std::ostringstream o;
-
-    if ( value == NULL )
-        o << "NULL";
-    else
-        value->printValue( o );
-
-    if ( o.str().size() > 10 )
-        return value->briefInfo();
-    else
-        return o.str();
-}
-
 /** Get class vector describing type of DAG node */
 const VectorString& DAGNode::getClass() const {
 
@@ -239,8 +223,11 @@ void DAGNode::printChildren( std::ostream& o ) const {
     for ( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++) {
         if ( i != children.begin() )
             o << ", ";
-        if ( getName() == "" )
-            o << "<" << (*i)->briefInfo() << ">";
+        if ( getName() == "" ) {
+            o << "<";
+            (*i)->printValue(o);
+            o << ">";
+        }
         else
             o << (*i)->getName();
     }
@@ -256,8 +243,11 @@ void DAGNode::printParents( std::ostream& o ) const {
     for ( std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( i != parents.begin() )
             o << ", ";
-        if ( getName() == "" )
-            o << "<" << (*i)->briefInfo() << ">";
+        if ( getName() == "" ) {
+            o << "<";
+            (*i)->printValue(o);
+            o << ">";
+        }
         else
             o << (*i)->getName();
     }
