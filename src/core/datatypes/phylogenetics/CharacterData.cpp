@@ -298,11 +298,11 @@ RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name,
             std::cout << "   ";
             for (int j=0; j<nc; j++)
                 {
-                RbObject* o = getElement(i, j);
-                Character* c = dynamic_cast<Character*>(o);
+                RbObject& o = getElement(i, j);
+                Character& c = dynamic_cast<Character&>(o);
                 if (c == NULL)
                     throw RbException( "Problem retreiving character from Character Data object" );
-                std::string s = c->getStringValue();
+                std::string s = c.getStringValue();
                 
                 std::cout << s;
                 if ( (j+1) % 100 == 0 && (j+1) != nc )
@@ -346,14 +346,14 @@ const std::string& CharacterData::getDataType(void) const {
 }
 
 
-const RbObject* CharacterData::getElement(size_t row, size_t col) const {
+const RbObject& CharacterData::getElement(size_t row, size_t col) const {
 
     const TaxonData* sequence = dynamic_cast<const TaxonData*>( (RbLanguageObject*)elements[row] );
     return sequence->getElement(col);
 }
 
 
-RbObject* CharacterData::getElement(size_t row, size_t col) {
+RbObject& CharacterData::getElement(size_t row, size_t col) {
 
     TaxonData* sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
     return (sequence->getElement(col));

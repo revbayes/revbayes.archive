@@ -67,7 +67,7 @@ RbObject* AbstractVector::convertTo(const TypeSpec &type) const {
     if (type.getBaseType() == Vector_name) {
         Vector* newVector = new Vector(*type.getElementType());
         for (size_t i = 0; i < size(); i++) {
-            newVector->push_back(getElement(i)->clone());
+            newVector->push_back(getElement(i).clone());
         }
         return newVector;
     }
@@ -91,10 +91,7 @@ void AbstractVector::printValue( std::ostream& o ) const {
     for ( size_t i = 0; i<size(); i++) {
         if ( i != 0 )
             o << ", ";
-        if ( getElement(i) == NULL )
-            o << "NULL";
-        else
-            (dynamic_cast<const RbLanguageObject*>( getElement(i) ))->printValue(o);
+        (dynamic_cast<const RbLanguageObject&>( getElement(i) )).printValue(o);
     }
     o <<  " ]";
     

@@ -194,7 +194,7 @@ void FileMonitor::setMemberVariable(std::string const &name, Variable* var) {
         if (theNode->getValue().isType(DagNodeContainer_name)) {
             const DagNodeContainer& theContainer = static_cast<const DagNodeContainer&>( theNode->getValue() );
             for (size_t i = 0; i < theContainer.size(); i++) {
-                theNode = static_cast<const VariableSlot*>( theContainer.getElement(i) )->getDagNode()->clone();
+                theNode = static_cast<const VariableSlot&>( theContainer.getElement(i) ).getDagNode()->clone();
                 if (theNode->isType(VariableNode_name)) {
                     nodes.push_back( static_cast<VariableNode*>( theNode ) );
 //                } else {

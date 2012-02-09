@@ -116,18 +116,18 @@ const VectorString& MatrixReal::getClass(void) const {
 
 
 /** Overloaded container method to get element or subcontainer */
-const RbObject* MatrixReal::getElement( size_t row, size_t col ) const {
+const RbObject& MatrixReal::getElement( size_t row, size_t col ) const {
     
-    const VectorReal* tmp = static_cast<const VectorReal*>( Vector::getElement(row) );
-    return tmp->getElement(col);
+    const VectorReal& tmp = static_cast<const VectorReal&>( Vector::getElement(row) );
+    return tmp.getElement(col);
 }
 
 
 /** Overloaded container method to get element or subcontainer */
-RbObject* MatrixReal::getElement( size_t row, size_t col ) {
+RbObject& MatrixReal::getElement( size_t row, size_t col ) {
     
-    VectorReal* tmp = static_cast<VectorReal*>( Vector::getElement(row) );
-    return tmp->getElement(col);
+    VectorReal& tmp = static_cast<VectorReal&>( Vector::getElement(row) );
+    return tmp.getElement(col);
 }
 
 

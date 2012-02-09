@@ -216,25 +216,25 @@ std::vector<unsigned int> VectorNatural::getValue( void ) const {
 }
 
 
-const RbObject* VectorNatural::getElement(size_t index) const {
+const RbObject& VectorNatural::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
     const RbObject* n = new Natural(elements[index]);
     
-    return n;
+    return *n;
 }
 
 
-RbObject* VectorNatural::getElement(size_t index) {
+RbObject& VectorNatural::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
     RbObject* n = new Natural(elements[index]);
     
-    return n;
+    return *n;
 }
 
 

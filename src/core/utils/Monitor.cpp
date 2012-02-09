@@ -132,7 +132,7 @@ void Monitor::setMemberVariable(std::string const &name, Variable* var) {
         if (theNode->getValue().isType(DagNodeContainer_name)) {
             DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( theNode->getValue() );
             for (size_t i = 0; i < theContainer.size(); i++) {
-                theNode = static_cast<VariableSlot*>( theContainer.getElement(i) )->getDagNode();
+                theNode = static_cast<VariableSlot&>( theContainer.getElement(i) ).getDagNode();
                 if (theNode->isType(VariableNode_name)) {
                     nodes.push_back( static_cast<VariableNode*>( theNode ) );
                     //                } else {

@@ -131,7 +131,7 @@ void DAGNode::getAffectedNodes(std::set<StochasticNode* > &affected) {
         (*i)->getAffected(affected);
 }
 
-const RbObject* DAGNode::getElement(size_t index) const {
+const RbObject& DAGNode::getElement(size_t index) const {
     
     // test whether the value supports indexing, i.e. is a container
     if (value->supportsIndex()) {
@@ -148,7 +148,7 @@ const RbObject* DAGNode::getElement(size_t index) const {
 }
 
 
-RbObject* DAGNode::getElement(size_t index) {
+RbObject& DAGNode::getElement(size_t index) {
     
     // test whether the value supports indexing, i.e. is a container
     if (value->supportsIndex()) {

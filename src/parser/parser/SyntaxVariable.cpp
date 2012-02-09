@@ -328,14 +328,12 @@ VariableSlot* SyntaxVariable::createVariable( Environment& env) {
             if (con.size() <= indexValue) {
                 con.resize(indexValue);
             }
-            RbObject* subElement = con.getElement(indexValue);
+            RbObject& subElement = con.getElement(indexValue);
             
-            // test whether the element exists and needs 
-            if (subElement == NULL) {
-                throw RbException("Missing slot in variable");
-            }
-            else if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) )) {
-                theSlot = dynamic_cast<VariableSlot*>(subElement);
+            // test whether the element needs type conversion
+            if (subElement.isTypeSpec( TypeSpec(VariableSlot_name) )) {
+                // TODO: We should not do 
+                theSlot = &dynamic_cast<VariableSlot&>(subElement);
                 theDagNode = theSlot->getDagNode();
                 theSlot->getVariable()->setName(name);
             }
@@ -420,12 +418,12 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
             }
             
             size_t                  indexValue             = dynamic_cast<const Natural&>( theValue).getValue() - 1;
-            RbObject*               subElement             = theVar->getDagNode()->getElement(indexValue);
+            RbObject&               subElement             = theVar->getDagNode()->getElement(indexValue);
             
-            if (subElement != NULL && subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
-                theVar = dynamic_cast<VariableSlot*>( subElement )->getVariable();
+            if (subElement.isTypeSpec( TypeSpec(VariableSlot_name) ))
+                theVar = dynamic_cast<VariableSlot&>( subElement ).getVariable();
             else 
-                theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement ) ) );
+                theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
 
         }
     }

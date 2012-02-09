@@ -104,8 +104,8 @@ std::string TreePlate::buildNewickString(const TopologyNode* node) const {
             size_t nodeIndex = getNodeIndex(node) - 1;
             
             // get the variable
-            const RbObject* obj = vars.getElement(nodeIndex);
-            const Variable* var = static_cast<const VariableSlot*>( obj )->getVariable();
+            const RbObject& obj = vars.getElement(nodeIndex);
+            const Variable* var = static_cast<const VariableSlot&>( obj ).getVariable();
             
             // check if this node also has the parameter (already) set and only if so, add it
             if (var->getDagNode() != NULL) {
@@ -170,7 +170,7 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
             size_t nodeIndex = getNodeIndex(theNode) - 1;
             
             // get the variable
-            Variable* var = static_cast<VariableSlot*>( vars->getElement(nodeIndex) )->getVariable();
+            Variable* var = static_cast<VariableSlot&>( vars->getElement(nodeIndex) ).getVariable();
             
             return static_cast<RbLanguageObject*>( var->getDagNode() );
         }

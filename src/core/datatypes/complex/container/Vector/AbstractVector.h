@@ -47,8 +47,8 @@ class AbstractVector : public Container {
         virtual size_t                  size(void) const = 0;                                               //!< get the number of elements in the AbstractVector
         
         virtual void                    clear(void) = 0;                                                    //!< Clear
-        virtual const RbObject*         getElement(size_t index) const = 0;                                 //!< Get element
-        virtual RbObject*               getElement(size_t index) = 0;                                       //!< Get element (non-const to return non-const element)
+        virtual const RbObject&         getElement(size_t index) const = 0;                                 //!< Get element
+        virtual RbObject&               getElement(size_t index) = 0;                                       //!< Get element (non-const to return non-const element)
         virtual void                    setElement(const size_t index, RbLanguageObject* elem) = 0;         //!< Set element with type conversion
         virtual void                    sort(void) = 0;                                                     //!< sort the AbstractVector
         virtual void                    unique(void) = 0;                                                   //!< removes consecutive duplicates

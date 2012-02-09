@@ -55,8 +55,8 @@ class VectorComplex : public AbstractVector {
 
     // Vector functions, including STL-like functions
     void                                clear(void);                                                    //!< Clear
-    const RbObject*                     getElement(size_t index) const;                                 //!< Get element
-    RbObject*                           getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+    const RbObject&                     getElement(size_t index) const;                                 //!< Get element
+    RbObject&                           getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
     std::vector<std::complex<double> >  getValue(void) const;                                           //!< Get value
     void                                pop_back(void);                                                 //!< Drop element at back
     void                                pop_front(void);                                                //!< Drop element from front

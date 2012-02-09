@@ -192,7 +192,7 @@ void Mixture::printValue(std::ostream& o) const {
   std::cout <<"printValue"<<std::endl;
   o << "Parameter vector:\n";
   for ( size_t i = 0; i < parameters_->size(); i++ ) {
-     RbPtr<const DAGNode> theNode = static_cast<const VariableSlot*>( parameters_->getElement(i) )->getDagNode();
+     RbPtr<const DAGNode> theNode = static_cast<const VariableSlot&>( parameters_->getElement(i) ).getDagNode();
      theNode->printValue(o) ;
      o << "\t";
   }
@@ -237,7 +237,7 @@ RbLanguageObject* Mixture::executeOperation(const std::string& name, Environment
         throw RbException("Index out of bounds in Mixture::getParameter");
       }
      // (DagNodeContainer*) getParameter(index->getValue());
-      return static_cast<RbLanguageObject*>( getParameter(index->getValue()) );
+      return static_cast<RbLanguageObject*>( getParameter(index->getValue()).clone() );
       
 //      
 //      const std::string& numString = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
@@ -356,9 +356,9 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
         
         //TEST
         std::cout <<"setMemberVariable"<<std::endl;
-        const Variable* slot = static_cast<const Variable*>( allocationVector_->getElement(0) );
+        const Variable& slot = static_cast<const Variable&>( allocationVector_->getElement(0) );
         std::cout <<"setMemberVariable 2"<<std::endl;
-        const Integer& nat = static_cast<const Integer&>( slot->getValue() );
+        const Integer& nat = static_cast<const Integer&>( slot.getValue() );
         std::cout <<"setMemberVariable 3"<<std::endl;
         int formerlyAssignedValue = nat.getValue();
         std::cout <<"setMemberVariable 4: "<< formerlyAssignedValue<<std::endl;
@@ -401,7 +401,7 @@ void Mixture::computeNumberOfElementsInClasses() {
     numberOfElementsInClasses_.clear();
     std::vector <int> numberOfElementsInClasses;
     for (unsigned int i = 0 ; i <  allocationVector_->size() ; i++) {
-       int index =  static_cast<const Natural*>( static_cast<const VariableSlot*>( allocationVector_->getElement(i) )->getValue() ) ->getValue() ;
+       int index =  static_cast<const Natural*>( static_cast<const VariableSlot&>( allocationVector_->getElement(i) ).getValue() ) ->getValue() ;
         while (index   > numberOfElementsInClasses_.size()) {
             numberOfElementsInClasses.push_back(0);
         }
@@ -437,12 +437,12 @@ void Mixture::removeClass(unsigned int classId) {
     else {
       if (i > classId) 
         oldToNew[i] = i -1 ;
-        numberOfElementsInClasses_.AbstractVector::setElement(i, numberOfElementsInClasses_.getElement(i+1) );
+        numberOfElementsInClasses_.AbstractVector::setElement(i, numberOfElementsInClasses_.getElement(i+1).clone() );
     }
   }
   numberOfElementsInClasses_.pop_back();
   VectorRealPos copy = *(classProbabilities_->clone());
-  double classProba =  *(static_cast<const RealPos*>( (const RbObject*)classProbabilities_->getElement(classId) ) );
+  double classProba =  *(static_cast<const RealPos*>( (const RbObject*)classProbabilities_->getElement(classId).clone() ) );
   //double classProba =  *(static_cast<RealPos*> ( (static_cast<VectorRealPos*> (classProbabilities_) )->getElement(classId) ) );
   double multiplier = 1.0/ ( 1.0 - classProba);
   classProbabilities_->clear();
@@ -472,8 +472,8 @@ void Mixture::setParameter(unsigned int classId, DagNodeContainer* parameter) {
 }
 
 /** Set the vector of parameter values associated to the classes of the mixture*/
-DagNodeContainer* Mixture::getParameter(unsigned int classId) {
-  return static_cast<DagNodeContainer*>( parameters_->getElement(classId) );
+DagNodeContainer& Mixture::getParameter(unsigned int classId) {
+  return static_cast<DagNodeContainer&>( parameters_->getElement(classId) );
 }
 
 
@@ -501,9 +501,9 @@ void Mixture::indexAllocationVector() {
     int formerlyAssignedValue = nat->getValue();*/
     
     //TEST
-    const VariableSlot* slot = static_cast<const VariableSlot*>( allocationVector_->getElement(i) );
+    const VariableSlot& slot = static_cast<const VariableSlot&>( allocationVector_->getElement(i) );
     std::cout <<"indexAllocationVector"<<std::endl;
-    const Variable* tmp_var = slot->getVariable();
+    const Variable* tmp_var = slot.getVariable();
     std::cout <<"indexAllocationVector 2"<<std::endl;
     const  RbLanguageObject* lango = (const RbLanguageObject*)( tmp_var);
     const Natural* nat = static_cast<const Natural*>(lango);
@@ -518,9 +518,9 @@ void Mixture::indexAllocationVector() {
     if (rvToNumber.find(formerlyAssignedValue) != rvToNumber.end())
       allocationVector_->setElement(i, new Integer(rvToNumber[formerlyAssignedValue]) );
     else {
-      const VariableSlot* slot = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) );
+      const VariableSlot& slot = static_cast<const VariableSlot&>( (allocationVector_->getElement(i) ) );
       std::cout <<"indexAllocationVector 4"<<std::endl;
-      const Variable* var = slot->getVariable();
+      const Variable* var = slot.getVariable();
       std::cout <<"indexAllocationVector 5"<<std::endl;
       var->getValue();
       std::cout <<"indexAllocationVector 6"<<std::endl;
@@ -529,14 +529,14 @@ void Mixture::indexAllocationVector() {
       j.printValue(std::cout);
       std::cout <<std::endl;
       
-      rvToNumber[static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue()] = maxIntSeen;
+      rvToNumber[static_cast<const Natural*>( static_cast<const VariableSlot&>( (allocationVector_->getElement(i) ) ).getValue() ) ->getValue()] = maxIntSeen;
       maxIntSeen = maxIntSeen +1;
     }
   }
   //Renumber the classProbabilities_ vector
   VectorRealPos copy = *(classProbabilities_->clone());
   for (unsigned int i = 0 ; i < classProbabilities_->size() ; i++ ) { 
-      classProbabilities_->AbstractVector::setElement(i, copy.getElement(rvToNumber[i] ) );
+      classProbabilities_->AbstractVector::setElement(i, copy.getElement(rvToNumber[i] ).clone() );
   }
 }
 

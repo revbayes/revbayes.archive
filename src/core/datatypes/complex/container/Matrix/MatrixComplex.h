@@ -60,8 +60,8 @@ public:
     std::string                                         richInfo(void) const;                                                                           //!< Complete info about object
         
     // Matrix functions
-    const RbObject*                                     getElement(size_t row, size_t col) const;                                                       //!< Get element or subcontainer
-    RbObject*                                           getElement(size_t row, size_t col);                                                             //!< Get element or subcontainer (non-const to return non-const element)
+    const RbObject&                                     getElement(size_t row, size_t col) const;                                                       //!< Get element or subcontainer
+    RbObject&                                           getElement(size_t row, size_t col);                                                             //!< Get element or subcontainer (non-const to return non-const element)
     void                                                setElement(size_t row, size_t col, RbLanguageObject* var);                                      //!< set element
     void                                                resize(size_t nRows, size_t nCols);                                                             //!< Resize to new length vector
     void                                                transpose(void);                                                                                //!< Transpose the matrix

@@ -99,7 +99,7 @@ const VectorString& MatrixComplex::getClass(void) const {
 
 
 /** Overloaded container method to get element or subcontainer */
-const RbObject* MatrixComplex::getElement( size_t row , size_t col) const {
+const RbObject& MatrixComplex::getElement( size_t row , size_t col) const {
     
     const VectorComplex* tmp = operator[](row);
     return tmp->getElement(col);
@@ -107,7 +107,7 @@ const RbObject* MatrixComplex::getElement( size_t row , size_t col) const {
 
 
 /** Overloaded container method to get element or subcontainer */
-RbObject* MatrixComplex::getElement( size_t row , size_t col) {
+RbObject& MatrixComplex::getElement( size_t row , size_t col) {
     
     VectorComplex* tmp = operator[](row);
     return tmp->getElement(col);

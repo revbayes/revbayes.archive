@@ -107,7 +107,7 @@ const VectorString& DagNodeContainer::getClass(void) const {
 }
 
 /** Get element */
-const RbObject* DagNodeContainer::getElement(const size_t index) const {
+const RbObject& DagNodeContainer::getElement(const size_t index) const {
     
     // test if the index is outside the current range
     if (index >= size()) {
@@ -115,12 +115,12 @@ const RbObject* DagNodeContainer::getElement(const size_t index) const {
         throw RbException("Index out of bounds in DagNodeContainer.");
     }
     
-    return elements[index];
+    return *elements[index];
 }
 
 
 /** Get element */
-RbObject* DagNodeContainer::getElement(const size_t index) {
+RbObject& DagNodeContainer::getElement(const size_t index) {
     
     // test if the index is outside the current range
     if (index >= size()) {
@@ -128,7 +128,7 @@ RbObject* DagNodeContainer::getElement(const size_t index) {
         throw RbException("Index out of bounds in DagNodeContainer.");
     }
     
-    return elements[index];
+    return *elements[index];
 }
 
 

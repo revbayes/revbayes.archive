@@ -233,15 +233,15 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
             
             // add all nodes
             for (size_t i=0; i<container.size(); i++) {
-                RbObject* theElement = container.getElement(i);
+                RbObject& theElement = container.getElement(i);
                 
                 // check if it is a stochastic node
-                if (theElement->isTypeSpec( TypeSpec(StochasticNode_name) )) {
+                if (theElement.isTypeSpec( TypeSpec(StochasticNode_name) )) {
                     // cast to stochastic node
-                    StochasticNode* theNode = dynamic_cast<StochasticNode*>( theElement );
+                    StochasticNode& theNode = dynamic_cast<StochasticNode&>( theElement );
                     
                     // add
-                    nodes.push_back(theNode);
+                    nodes.push_back(theNode.clone());
                 }
                 else {
                     throw RbException("Cannot add non variable node to a move.");

@@ -290,8 +290,8 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
         while (theNode->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
             const RbObject& objPtr = theNode->getValue();
             const DagNodeContainer& container = dynamic_cast<const DagNodeContainer&>( objPtr );
-            const RbObject* elemPtr = container.getElement(0);
-            theNode = static_cast<const VariableSlot*>( elemPtr )->getDagNode();
+            const RbObject& elemPtr = container.getElement(0);
+            theNode = static_cast<const VariableSlot&>( elemPtr ).getDagNode();
         }
         
         

@@ -154,10 +154,10 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
         Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
                 // get the monitor #i
-                FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors->getElement(i) );
+                FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
                 
                 // get the DAG node for this monitor
-                std::vector<VariableNode*> &theOldNodes = theMonitor->getDagNodes();
+                std::vector<VariableNode*> &theOldNodes = theMonitor.getDagNodes();
                 
                 // convert the old nodes from Stochastic nodes to DAGNode
                 std::vector<DAGNode*> oldNodes;
@@ -168,7 +168,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                 std::vector<DAGNode*> theNewNodes = theModel->getClonedDagNodes(oldNodes);
                 
                 // clone the move and replace the node
-                FileMonitor* newMonitor = theMonitor->clone();
+                FileMonitor* newMonitor = theMonitor.clone();
                 // convert the new nodes from DAGNode to Stochastic Nodes
                 std::vector<VariableNode*> newNodes;
                 for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
@@ -189,10 +189,10 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
             Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
                 // get the monitor #i
-                ObjectMonitor* theMonitor = static_cast<ObjectMonitor*>( monitors->getElement(i) );
+                ObjectMonitor& theMonitor = static_cast<ObjectMonitor&>( monitors->getElement(i) );
                 
                 // get the DAG node for this monitor
-                std::vector<VariableNode*> &theOldNodes = theMonitor->getDagNodes();
+                std::vector<VariableNode*> &theOldNodes = theMonitor.getDagNodes();
                 
                 // convert the old nodes from Stochastic nodes to DAGNode
                 std::vector<DAGNode*> oldNodes;
@@ -203,7 +203,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                 std::vector<DAGNode*> theNewNodes = theModel->getClonedDagNodes(oldNodes);
                 
                 // clone the move and replace the node
-                ObjectMonitor* newMonitor = theMonitor->clone();
+                ObjectMonitor* newMonitor = theMonitor.clone();
                 // convert the new nodes from DAGNode to Stochastic Nodes
                 std::vector<VariableNode*> newNodes;
                 for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
@@ -285,13 +285,13 @@ void Simulate::run(size_t ndata) {
     std::cerr << "Opening file and printing headers ..." << std::endl;
     for (size_t i=0; i<fileMonitors.size(); i++) {
         // get the monitor
-        FileMonitor* theMonitor = static_cast<FileMonitor*>( fileMonitors.getElement(i) );
+        FileMonitor& theMonitor = static_cast<FileMonitor&>( fileMonitors.getElement(i) );
         
         // open the file stream for the monitor
-        theMonitor->openStream();
+        theMonitor.openStream();
         
         // print the header information
-        theMonitor->printHeader();
+        theMonitor.printHeader();
     }
 
         
@@ -311,10 +311,10 @@ void Simulate::run(size_t ndata) {
         
         /* Monitor */
         for (size_t i=0; i<fileMonitors.size(); i++) {
-            static_cast<FileMonitor*>( fileMonitors.getElement(i) )->monitor(data);
+            static_cast<FileMonitor&>( fileMonitors.getElement(i) ).monitor(data);
         }
         for (size_t i=0; i<objectMonitors.size(); i++) {
-            static_cast<ObjectMonitor*>( objectMonitors.getElement(i) )->monitor(data);
+            static_cast<ObjectMonitor&>( objectMonitors.getElement(i) ).monitor(data);
         }
 
                 

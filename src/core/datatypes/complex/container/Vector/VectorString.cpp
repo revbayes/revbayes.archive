@@ -143,25 +143,25 @@ const VectorString& VectorString::getClass() const {
 }
 
 
-const RbObject* VectorString::getElement(size_t index) const {
+const RbObject& VectorString::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
     const RbObject* n = new RbString(elements[index]);
     
-    return n;
+    return *n;
 }
 
 
-RbObject* VectorString::getElement(size_t index) {
+RbObject& VectorString::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
     RbObject* n = new RbString(elements[index]);
     
-    return n;
+    return *n;
 }
 
 

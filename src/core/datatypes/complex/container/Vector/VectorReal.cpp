@@ -142,25 +142,25 @@ const VectorString& VectorReal::getClass(void) const {
 }
 
 
-const RbObject* VectorReal::getElement(size_t index) const {
+const RbObject& VectorReal::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
     const RbObject* n = new Real(elements[index]);
     
-    return n;
+    return *n;
 }
 
 
-RbObject* VectorReal::getElement(size_t index) {
+RbObject& VectorReal::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
     RbObject* n = new Real(elements[index]);
     
-    return n;
+    return *n;
 }
 
 /** Export value as STL vector */

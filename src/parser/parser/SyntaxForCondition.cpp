@@ -115,7 +115,7 @@ bool SyntaxForCondition::getNextLoopState(Environment& env) {
 
     Variable* theVar = env[ *varName ]->getVariable();
     // set the new value of the iterator variable
-    theVar->setDagNode( new ConstantNode( static_cast<RbLanguageObject*>( vector->getElement( nextElement ) ) ) );
+    theVar->setDagNode( new ConstantNode( static_cast<RbLanguageObject*>( vector->getElement( nextElement ).clone() ) ) );
     // the setting of the new iterator might have affected other nodes; therefore we call a keep
     theVar->getDagNode()->keep();
     

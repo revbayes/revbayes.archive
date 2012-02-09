@@ -145,10 +145,10 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         Vector* moves = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(Move_name) ) ) );
         for (size_t i=0; i<moves->size(); i++) {
             // get the move #i
-            Move* theMove( static_cast<Move*>( moves->getElement(i) ) );
+            Move& theMove = static_cast<Move&>( moves->getElement(i) );
             
             // get the DAG node for this move
-            std::vector<StochasticNode*> &theOldNodes = theMove->getDagNodes();
+            std::vector<StochasticNode*> &theOldNodes = theMove.getDagNodes();
             
             // convert the old nodes from Stochastic nodes to DAGNode
             std::vector<DAGNode*> oldNodes;
@@ -160,7 +160,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
             std::vector<DAGNode*> theNewNodes = theModel->getClonedDagNodes(oldNodes);
             
             // clone the move and replace the node
-            Move* newMove = theMove->clone();
+            Move* newMove = theMove.clone();
             // convert the new nodes from DAGNode to Stochastic Nodes
             std::vector<StochasticNode*> newNodes;
             for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
@@ -180,10 +180,10 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
         for (size_t i=0; i<monitors->size(); i++) {
             // get the monitor #i
-            FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors->getElement(i) );
+            FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
             
             // get the DAG node for this monitor
-            std::vector<VariableNode*> &theOldNodes = theMonitor->getDagNodes();
+            std::vector<VariableNode*> &theOldNodes = theMonitor.getDagNodes();
             
             // convert the old nodes from Stochastic nodes to DAGNode
             std::vector<DAGNode*> oldNodes;
@@ -194,7 +194,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
             std::vector<DAGNode*> theNewNodes = theModel->getClonedDagNodes(oldNodes);
             
             // clone the move and replace the node
-            FileMonitor* newMonitor = theMonitor->clone();
+            FileMonitor* newMonitor = theMonitor.clone();
             // convert the new nodes from DAGNode to Stochastic Nodes
             std::vector<VariableNode*> newNodes;
             for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
@@ -234,13 +234,13 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Opening file and printing headers ..." << std::endl;
     for (size_t i=0; i<monitors.size(); i++) {
         // get the monitor
-        FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors.getElement(i) );
+        FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors.getElement(i) );
         
         // open the file stream for the monitor
-        theMonitor->openStream();
+        theMonitor.openStream();
         
         // print the header information
-        theMonitor->printHeader();
+        theMonitor.printHeader();
     }
 
 
@@ -267,18 +267,18 @@ void Mcmc::run(size_t ngen) {
     
     /* Monitor */
     for (size_t i=0; i<monitors.size(); i++) {
-        static_cast<FileMonitor*>( monitors.getElement(i) )->monitor(0);
+        static_cast<FileMonitor&>( monitors.getElement(i) ).monitor(0);
     }
 
     for (unsigned int gen=1; gen<=ngen; gen++) {
 
         for (size_t i=0; i<moves.size(); i++) {
             /* Get the move */
-            Move* theMove = static_cast<Move*>( moves.getElement(i) );
+            Move& theMove = static_cast<Move&>( moves.getElement(i) );
 
             /* Propose a new value */
             double lnProbabilityRatio;
-            double lnHastingsRatio = theMove->performMove(lnProbabilityRatio);
+            double lnHastingsRatio = theMove.performMove(lnProbabilityRatio);
             // QUESTION: How to Gibbs samplers by-pass the accept-reject?
             /* Calculate acceptance ratio */
             double lnR = lnProbabilityRatio + lnHastingsRatio;
@@ -293,11 +293,11 @@ void Mcmc::run(size_t ngen) {
             /* Accept or reject the move */
             double u = rng->uniform01(); // TODO No need to draw rng if lnR > 0.0x
             if (u < r) {
-                theMove->acceptMove();
+                theMove.acceptMove();
                 lnProbability += lnProbabilityRatio;
             }
             else {
-                theMove->rejectMove();
+                theMove.rejectMove();
             }
 
 #ifdef DEBUG_MCMC
@@ -319,7 +319,7 @@ void Mcmc::run(size_t ngen) {
 
         /* Monitor */
         for (size_t i=0; i<monitors.size(); i++) {
-            static_cast<FileMonitor*>( monitors.getElement(i) )->monitor(gen);
+            static_cast<FileMonitor&>( monitors.getElement(i) ).monitor(gen);
         }
 
         /* Print to screen */

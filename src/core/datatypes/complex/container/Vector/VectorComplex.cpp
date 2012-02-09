@@ -147,23 +147,23 @@ const VectorString& VectorComplex::getClass(void) const {
 }
 
 
-const RbObject* VectorComplex::getElement(size_t index) const {
+const RbObject& VectorComplex::getElement(size_t index) const {
     
     if (index >= elements.size())
         throw RbException("Index out of bounds");
     
     const RbObject* c = new Complex(elements[index]);
-    return c;
+    return *c;
 }
 
 
-RbObject* VectorComplex::getElement(size_t index) {
+RbObject& VectorComplex::getElement(size_t index) {
     
     if (index >= elements.size())
         throw RbException("Index out of bounds");
     
     RbObject* c = new Complex(elements[index]);
-    return c;
+    return *c;
 }
 
 

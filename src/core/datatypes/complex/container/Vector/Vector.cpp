@@ -116,16 +116,16 @@ const VectorString& Vector::getClass(void) const {
 
 
 /** Get element */
-const RbObject* Vector::getElement(size_t index) const {
+const RbObject& Vector::getElement(size_t index) const {
     
-    return elements[index];
+    return *elements[index];
 }
 
 
 /** Get element */
-RbObject* Vector::getElement(size_t index) {
+RbObject& Vector::getElement(size_t index) {
     
-    return elements[index];
+    return *elements[index];
 }
 
 

@@ -70,8 +70,8 @@ class DAGNode : public RbLanguageObject {
         void                                                addChildNode(VariableNode *c);                                          //!< Add child node
         void                                                getAffectedNodes(std::set<StochasticNode* >& affected);                 //!< Mark and get affected nodes
         const std::set<VariableNode*>&                      getChildren(void) const { return children; }                            //!< Return children
-        const RbObject*                                     getElement(size_t index) const;                                         //!< Get element at index (container function)
-        RbObject*                                           getElement(size_t index);                                               //!< Get element at index (container function)
+        const RbObject&                                     getElement(size_t index) const;                                         //!< Get element at index (container function)
+        RbObject&                                           getElement(size_t index);                                               //!< Get element at index (container function)
         const std::string&                                  getName(void) const;                                                    //!< get the name
         const std::set<RbPtr<DAGNode> >&                    getParents(void) const;                                                 //!< Return parents
         const Variable&                                     getVariable(void) const;                                                //!< Get the variable owning this node

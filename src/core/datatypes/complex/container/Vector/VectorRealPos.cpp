@@ -156,25 +156,25 @@ const VectorString& VectorRealPos::getClass( void ) const {
 }
 
 
-const RbObject* VectorRealPos::getElement(size_t index) const {
+const RbObject& VectorRealPos::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
     const RbObject* n = new RealPos(elements[index]);
     
-    return n;
+    return *n;
 }
 
 
-RbObject* VectorRealPos::getElement(size_t index) {
+RbObject& VectorRealPos::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
     RbObject* n = new RealPos(elements[index]);
     
-    return n;
+    return *n;
 }
 
 

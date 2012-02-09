@@ -56,8 +56,8 @@ class Matrix : public Vector {
         virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
    
         // Matrix functions you have to override
-        virtual const RbObject*         getElement(size_t row, size_t col) const = 0;                       //!< Get element or subcontainer
-        virtual RbObject*               getElement(size_t row, size_t col) = 0;                             //!< Get element or subcontainer (non-const to return non-const element)
+        virtual const RbObject&         getElement(size_t row, size_t col) const = 0;                       //!< Get element or subcontainer
+        virtual RbObject&               getElement(size_t row, size_t col) = 0;                             //!< Get element or subcontainer (non-const to return non-const element)
         virtual void                    setElement(size_t row, size_t col, RbLanguageObject* var) = 0;      //!< set element
         virtual void                    resize(size_t rows, size_t cols) = 0;                               //!< Resize to new length vector
         virtual void                    transpose(void) = 0;                                                //!< Transpose matrix

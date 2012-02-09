@@ -69,25 +69,17 @@ Func_resize* Func_resize::clone( void ) const {
 void Func_resize::resizeVector(Container &vec, Environment *args, unsigned int numArg) { 
     unsigned int nrows = ( static_cast<Natural*>( (*args)[numArg]->getValue() ) )->getValue();
     for (unsigned int j = 0 ; j < vec.size() ; j ++) {
-        if (vec.getElement(j) != NULL && vec.getElement(j)->isTypeSpec(Vector_name )) { //if element j already a vector
-            static_cast<Vector*>( vec.getElement(j))->resize(nrows);
+        if (vec.getElement(j).isTypeSpec(Vector_name )) { //if element j already a vector
+            static_cast<Vector&>( vec.getElement(j)).resize(nrows);
         }
         else {
-            if (vec.getElement(j) != NULL) { //if element j not a vector but not NULL
-                Vector* v2 = new Vector(vec.getElement(j)->getTypeSpec() );
-                v2->push_back(vec.getElement(j));
-                v2->resize(nrows);
-                vec.setElement(j, v2);
-            }
-            else { //if element j NULL
-                Vector* v2 = new Vector(RbObject_name);
-                for ( size_t i = 0; i < nrows; i++ )
-                    v2->push_back( NULL );
-                vec.setElement(j, v2);
-            }
+            Vector* v2 = new Vector(vec.getElement(j).getTypeSpec() );
+            v2->push_back(vec.getElement(j).clone());
+            v2->resize(nrows);
+            vec.setElement(j, v2);
         }
         if (args->size() != numArg +1) { //if we still have dimensions to populate
-            resizeVector(*(static_cast<Vector*>( vec.getElement(j))), args, numArg+1);
+            resizeVector((static_cast<Vector&>( vec.getElement(j))), args, numArg+1);
         }
         
     }

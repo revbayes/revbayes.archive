@@ -113,8 +113,8 @@ RbLanguageObject* Container::executeOperationSimple(const std::string& name, Env
         }
         
         // TODO: Check what happens with DAGNodeContainers
-        RbLanguageObject* element = static_cast<RbLanguageObject*>( getElement(index->getValue() - 1) );
-        return element;
+        RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index->getValue() - 1) );
+        return element.clone();
     }
     
     return ConstantMemberObject::executeOperationSimple( name, args );
