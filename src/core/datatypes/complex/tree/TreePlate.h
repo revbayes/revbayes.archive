@@ -35,7 +35,7 @@ public:
                                     TreePlate(void);                                                                //!< Default constructor
                                     TreePlate(Topology* top);                                                       //!< constructor
                                     TreePlate(const TreePlate& t);                                                  //!< Copy constructor
-                                    ~TreePlate(void);                                                               //!< Destructor
+                                   ~TreePlate(void);                                                                //!< Destructor
 
     // Basic utility functions
     TreePlate*                      clone(void) const;                                                              //!< Clone object

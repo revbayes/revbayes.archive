@@ -1601,6 +1601,7 @@
 				// set the new plate
 				[selection.selectedItem setItemLocation:newRect.origin];
 				[selection.selectedItem setLoopRect:newRect];
+                //[selection.selectedItem setItemSize:newRect.size];
 				[selection.selectedItem setImageWithSize:newRect.size];
 				}
 				
@@ -2318,8 +2319,8 @@
 			NSRect pRect;
 			pRect.origin = [element itemLocation];
 			pRect.size   = [element itemSize];
-            pRect.size.width *= scaleFactor;
-            pRect.size.height *= scaleFactor;
+            //pRect.size.width *= scaleFactor;
+            //pRect.size.height *= scaleFactor;
 			[self transformToBottomLeftCoordinates:(&pRect.origin)];
             
 			NSRect brRect;

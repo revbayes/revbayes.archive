@@ -32,6 +32,8 @@ class CharacterData;
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
 - (int)numDataMatrices;
+- (int)numAlignedMatrices;
+- (int)numUnalignedMatrices;
 - (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName;
 - (void)removeAllDataMatrices;
 - (void)removeDataInspector;

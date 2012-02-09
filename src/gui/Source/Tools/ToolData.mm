@@ -366,6 +366,32 @@
 	return (int)[dataMatrices count];
 }
 
+- (int)numAlignedMatrices {
+
+    int n = 0;
+    NSEnumerator* matrixEnumerator = [dataMatrices objectEnumerator];
+    RbData* d = nil;
+    while ( (d = [matrixEnumerator nextObject]) )
+        {
+        if ( [d isHomologyEstablished] == YES )
+            n++;
+        }
+    return n;
+}
+
+- (int)numUnalignedMatrices {
+
+    int n = 0;
+    NSEnumerator* matrixEnumerator = [dataMatrices objectEnumerator];
+    RbData* d = nil;
+    while ( (d = [matrixEnumerator nextObject]) )
+        {
+        if ( [d isHomologyEstablished] == NO )
+            n++;
+        }
+    return n;
+}
+
 - (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName {
 
     NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);

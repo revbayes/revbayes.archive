@@ -17,9 +17,9 @@
  */
 
 #include "CharacterData.h"
+#include "DistanceMatrix.h"
 #include "DnaState.h"
 #include "Func_distance.h"
-#include "MatrixReal.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
@@ -38,7 +38,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_distance::typeSpec(Func_distance_name);
-const TypeSpec Func_distance::returnTypeSpec(MatrixReal_name);
+const TypeSpec Func_distance::returnTypeSpec(DistanceMatrix_name);
 
 /** Clone object */
 Func_distance* Func_distance::clone(void) const {
@@ -57,11 +57,7 @@ RbLanguageObject* Func_distance::executeFunction(void) {
     RbString*      asrv   = static_cast<RbString*>     ( (*args)[3]->getValue() );
     Real*          shape  = static_cast<Real*>         ( (*args)[4]->getValue() );
     Real*          pinvar = static_cast<Real*>         ( (*args)[5]->getValue() );
-
-    //CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
-    
-    std::cout << "m = " << m << std::endl;
-    
+        
     // check that the data matrix is aligned
     if ( m->getIsHomologyEstablished() == false )
         throw( RbException("Data is not aligned") );
@@ -100,8 +96,8 @@ RbLanguageObject* Func_distance::executeFunction(void) {
     int n = (int)m->getNumberOfTaxa();
 
     // allocate the distance matrix
-    MatrixReal* d = new MatrixReal(n, n, 0.0);
-    
+    DistanceMatrix* d = new DistanceMatrix(n);
+
     // fill in the distance matrix
     for (int i=0; i<n; i++)
         {
@@ -132,6 +128,13 @@ RbLanguageObject* Func_distance::executeFunction(void) {
             (*(*d)[i])[j] = dist;
             (*(*d)[j])[i] = dist;
             }
+        }
+        
+    // fill in the taxa
+    for (int i=0; i<n; i++)
+        {
+        std::string tName = m->getTaxonNameWithIndex(i);
+        d->addTaxonWithName(tName);
         }
 
     return d;

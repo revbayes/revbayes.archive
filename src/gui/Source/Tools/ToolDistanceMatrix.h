@@ -28,6 +28,8 @@
     int                                baseFreqTreatment;
     double                             proportionInvariableSites;
     double                             gammaShape;
+    NSMutableArray*                    distances;
+    int                                numTaxa;
 
     WindowControllerDistanceMatrix*    controlWindow;
     WindowControllerDistanceViewer*    distanceViewer;

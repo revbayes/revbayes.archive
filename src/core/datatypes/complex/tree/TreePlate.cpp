@@ -71,6 +71,7 @@ TreePlate::~TreePlate(void) {
 
 /* Build newick string */
 std::string TreePlate::buildNewickString(const TopologyNode* node) const {
+
     // create the newick string
     std::string newick;
     

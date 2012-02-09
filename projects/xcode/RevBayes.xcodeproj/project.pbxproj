@@ -845,6 +845,10 @@
 		223D441C14E1F2D100091B1D /* ToolParsimony.mm in Sources */ = {isa = PBXBuildFile; fileRef = 223D441B14E1F2D100091B1D /* ToolParsimony.mm */; };
 		223D441F14E1F3B500091B1D /* WindowControllerParsimony.mm in Sources */ = {isa = PBXBuildFile; fileRef = 223D441E14E1F3B500091B1D /* WindowControllerParsimony.mm */; };
 		223D442114E1F42800091B1D /* ControlWindowParsimony.xib in Resources */ = {isa = PBXBuildFile; fileRef = 223D442014E1F42800091B1D /* ControlWindowParsimony.xib */; };
+		223D442814E2194D00091B1D /* DistanceMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 223D442714E2194D00091B1D /* DistanceMatrix.cpp */; };
+		223D442914E2194D00091B1D /* DistanceMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 223D442714E2194D00091B1D /* DistanceMatrix.cpp */; };
+		223D442B14E34B1600091B1D /* Func_nj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 223D442A14E34B1600091B1D /* Func_nj.cpp */; };
+		223D442C14E34B1600091B1D /* Func_nj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 223D442A14E34B1600091B1D /* Func_nj.cpp */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -1874,6 +1878,10 @@
 		223D441D14E1F3B500091B1D /* WindowControllerParsimony.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerParsimony.h; sourceTree = "<group>"; };
 		223D441E14E1F3B500091B1D /* WindowControllerParsimony.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerParsimony.mm; sourceTree = "<group>"; };
 		223D442014E1F42800091B1D /* ControlWindowParsimony.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ControlWindowParsimony.xib; sourceTree = "<group>"; };
+		223D442614E2193D00091B1D /* DistanceMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistanceMatrix.h; sourceTree = "<group>"; };
+		223D442714E2194D00091B1D /* DistanceMatrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DistanceMatrix.cpp; sourceTree = "<group>"; };
+		223D442A14E34B1600091B1D /* Func_nj.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_nj.cpp; sourceTree = "<group>"; };
+		223D442D14E34B2700091B1D /* Func_nj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_nj.h; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -2112,6 +2120,8 @@
 			children = (
 				223D3CFD14E1F09E00091B1D /* CharacterData.cpp */,
 				223D3CFE14E1F09E00091B1D /* CharacterData.h */,
+				223D442714E2194D00091B1D /* DistanceMatrix.cpp */,
+				223D442614E2193D00091B1D /* DistanceMatrix.h */,
 				223D3CFF14E1F09E00091B1D /* characters */,
 				223D3D1014E1F09E00091B1D /* RateMatrix.cpp */,
 				223D3D1114E1F09E00091B1D /* RateMatrix.h */,
@@ -2371,6 +2381,8 @@
 				223D3DBB14E1F09E00091B1D /* Func_distance.h */,
 				223D3DBC14E1F09E00091B1D /* Func_gtr.cpp */,
 				223D3DBD14E1F09E00091B1D /* Func_gtr.h */,
+				223D442A14E34B1600091B1D /* Func_nj.cpp */,
+				223D442D14E34B2700091B1D /* Func_nj.h */,
 			);
 			path = phylogenetics;
 			sourceTree = "<group>";
@@ -4057,6 +4069,8 @@
 				223D405714E1F09E00091B1D /* SyntaxVariable.cpp in Sources */,
 				223D405914E1F09E00091B1D /* SyntaxVariableDecl.cpp in Sources */,
 				223D405B14E1F09E00091B1D /* RbMain.cpp in Sources */,
+				223D442914E2194D00091B1D /* DistanceMatrix.cpp in Sources */,
+				223D442C14E34B1600091B1D /* Func_nj.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4423,6 +4437,8 @@
 				223D43E514E1F0AB00091B1D /* YRKSpinningProgressIndicator.mm in Sources */,
 				223D441C14E1F2D100091B1D /* ToolParsimony.mm in Sources */,
 				223D441F14E1F3B500091B1D /* WindowControllerParsimony.mm in Sources */,
+				223D442814E2194D00091B1D /* DistanceMatrix.cpp in Sources */,
+				223D442B14E34B1600091B1D /* Func_nj.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

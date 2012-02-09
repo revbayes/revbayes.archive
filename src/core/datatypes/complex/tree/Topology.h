@@ -65,10 +65,10 @@ class Topology: public ConstantMemberObject {
         void                                setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
         void                                setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the tree from it
 
-protected:
+    protected:
         RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment* args);     //!< Execute method
     
-private:
+    private:
         static const TypeSpec               typeSpec;
         void                                fillNodesByPreorderTraversal(TopologyNode* node);                       //!< fill the nodes vector by a preorder traversal recursively starting with this node.
         void                                fillNodesByPhylogeneticTraversal(TopologyNode* node);                   //!< fill the nodes vector by a preorder traversal recursively starting with this node.

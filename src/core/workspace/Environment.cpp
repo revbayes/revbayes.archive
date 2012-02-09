@@ -229,6 +229,7 @@ void Environment::clear(void) {
 
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Environment::getTypeSpec(void) const {
+
     return typeSpec;
 }
 
@@ -242,18 +243,19 @@ void Environment::eraseVariable( const std::string& name ) {
     
     PRINTF( "Erasing %s %s from frame\n", name.c_str(), it->second->getTypeSpec().toString().c_str() );
     
+    // free the memory for the variable and remove it from the map of variables
+    delete it->second;
     variableTable.erase( it );
     
     // remove the name from the var name list
-    for (std::vector<std::string>::iterator it=varNames.begin(); it!=varNames.end(); it++) {
-        if (*it == name) {
+    for (std::vector<std::string>::iterator it=varNames.begin(); it!=varNames.end(); it++) 
+        {
+        if (*it == name) 
+            {
             varNames.erase(it);
             break;
+            }
         }
-    }
-    
-    // free the memory
-    delete it->second;
 }
 
 

@@ -7,8 +7,11 @@
 #import "ToolDistanceMatrix.h"
 #import "WindowControllerDistanceMatrix.h"
 
+#include "DistanceMatrix.h"
 #include "Parser.h"
 #include "Workspace.h"
+#include <iomanip>
+#include <iostream>
 #include <string>
 
 
@@ -79,15 +82,15 @@
         [d writeToFile:dFilePath];
         }
 
-    // get a variable name from the workspace for the data and distance matrix
+    // get a variable name from the workspace for the data 
     std::string dataName = Workspace::userWorkspace().generateUniqueVariableName();
-    std::string distName = Workspace::userWorkspace().generateUniqueVariableName();
 		    
     // format a string command to read the data file(s) and send the
     // formatted string to the parser
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = dataName + " <- read(\"" + cmdAsStlStr + "\")";
+    std::cout << line << std::endl;
     int coreResult = Parser::getParser().processCommand(line);
     if (coreResult != 0)
         {
@@ -95,6 +98,8 @@
         return;
         }
         
+    std::string distName = Workspace::userWorkspace().generateUniqueVariableName();
+
     // get string for specifying distance commands
     std::string cmdStr = distName;
     cmdStr += " <- distances(data=";
@@ -147,10 +152,54 @@
         // possibly return, after erasing the temporary variable names
         }
 
+    // retrieve the value (character data matrix or matrices) from the workspace
+    RbPtr<RbLanguageObject> dv = NULL;
+    dv = Workspace::userWorkspace().getValue(distName);
+    if ( dv == NULL )
+        {
+        //[self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not find matrix in work space", @"OK", nil, nil);
+        [self stopProgressIndicator];
+        return;
+        }
+    
+    // instantiate data matrices for the gui, by reading the matrices that were 
+    // read in by the core
+    DistanceMatrix* dm = dynamic_cast<DistanceMatrix*>( (RbObject*)dv );
+    if ( dm == NULL )
+        {
+        NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not convert matrix in work space", @"OK", nil, nil);
+        [self stopProgressIndicator];
+        return;
+        }
+        
+    // remove all of the distances from the distances container (we only hold the upper diagonal of the distances)
+    [distances removeAllObjects];
 
+    // fill in the distance matrix in the tool
+    std::vector<std::vector<double> > dMat = dm->getValue();
+    numTaxa = (int)dm->getNumberOfTaxa();
+    for (int i=0; i<numTaxa; i++)
+        {
+        for (int j=0; j<numTaxa; j++)
+            {
+            NSNumber* myNumber = [[NSNumber alloc] initWithDouble:(dMat[i][j])];
+            [distances addObject:myNumber];
+            [myNumber release];
+            }
+        }
 
-
-
+    for (int i=0, k=0; i<numTaxa; i++)
+        {
+        for (int j=0; j<numTaxa; j++)
+            {
+            double x = [[distances objectAtIndex:k] doubleValue];
+            std::cout << std::fixed << std::setprecision(4) << x << " ";
+            k++;
+            }
+        std::cout << std::endl;
+        }
+    
     // remove the variables from the core
     Workspace::userWorkspace().eraseVariable(dataName);
     Workspace::userWorkspace().eraseVariable(distName);
@@ -166,6 +215,7 @@
 
 - (void)dealloc {
 
+    [distances release];
     [controlWindow release];
 	[super dealloc];
 }
@@ -177,6 +227,7 @@
 	[aCoder encodeInt:baseFreqTreatment            forKey:@"baseFreqTreatment"];
 	[aCoder encodeDouble:proportionInvariableSites forKey:@"proportionInvariableSites"];
 	[aCoder encodeDouble:gammaShape                forKey:@"gammaShape"];
+    [aCoder encodeObject:distances                 forKey:@"distances"];
 
 	[super encodeWithCoder:aCoder];
 }
@@ -216,6 +267,7 @@
         baseFreqTreatment         = EQUAL_FREQS;
         proportionInvariableSites = 0.0;
         gammaShape                = 0.5;
+        distances                 = [[NSMutableArray alloc] init];
 		
 		// initialize the control window
 		controlWindow = [[WindowControllerDistanceMatrix alloc] initWithTool:self];
@@ -237,6 +289,8 @@
 		baseFreqTreatment         = [aDecoder decodeIntForKey:@"baseFreqTreatment"];
 		proportionInvariableSites = [aDecoder decodeDoubleForKey:@"proportionInvariableSites"];
 		gammaShape                = [aDecoder decodeDoubleForKey:@"gammaShape"];
+        distances                 = [aDecoder decodeObjectForKey:@"distances"];
+        [distances retain];
 
 		// initialize the control window
 		controlWindow = [[WindowControllerDistanceMatrix alloc] initWithTool:self];

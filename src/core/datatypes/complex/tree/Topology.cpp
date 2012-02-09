@@ -39,6 +39,7 @@ Topology::Topology(void) : ConstantMemberObject( getMemberRules() ) {
 
 /* Copy constructor */
 Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() ) {
+
     // set the parameters
     isRooted = t.isRooted;
     isBinary = t.isBinary;
@@ -58,9 +59,8 @@ Topology::~Topology(void) {
     nodes.clear();
 }
 
-
-
 TopologyNode* Topology::cloneTree(const TopologyNode& parent) {
+
     // get first a shallow copy
     TopologyNode* node = parent.clone();
     
@@ -106,6 +106,7 @@ RbLanguageObject* Topology::executeOperationSimple(const std::string& name, Envi
 
 /* fill the nodes vector by a preorder traversal recursively starting with this node. */
 void Topology::fillNodesByPreorderTraversal(TopologyNode* node) {
+
     // this is preorder so add yourself first
     nodes.push_back(node);
     
@@ -235,6 +236,7 @@ const TopologyNode* Topology::getTipNode( size_t indx ) const {
 
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Topology::getTypeSpec(void) const {
+
     return typeSpec;
 }
 
@@ -256,13 +258,14 @@ std::string Topology::richInfo(void) const {
 }
 
 void Topology::setRoot( TopologyNode* r) {
+
     // set the root
     root = r;
     
     nodes.clear();
     
     // bootstrap all nodes from the root and add the in a pre-order traversal
-//    fillNodesByPreorderTraversal(r);
+    // fillNodesByPreorderTraversal(r);
     fillNodesByPhylogeneticTraversal(r);
 }
 

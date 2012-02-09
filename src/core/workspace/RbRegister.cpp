@@ -155,6 +155,7 @@
 /* Phylogeny functions */
 #include "Func_distance.h"
 #include "Func_gtr.h"
+#include "Func_nj.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrees.h"
 #include "Func_CtmmTransitionProbabilities.h"
@@ -176,8 +177,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( VectorString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(RbLanguageObject_name) + VectorString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(RbInternal_name) + VectorString(RbObject_name) ) );
-//        addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name) ) );
-//        addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Move_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Distribution_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
@@ -188,7 +187,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbBoolean()                      );
         addType( new Complex()                        );
         addType( new CharacterContinuous()            );
-        //addType( new DnaState()                       );
         addType( new Integer()                        );
         addType( new Natural()                        );
         addType( new Probability()                    );
@@ -378,7 +376,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sort",                     new Func_sort<Vector>()             );
 
         /* Add math functions (alphabetical order) */
-
         addFunction( "abs",       new Func_abs()   );
         addFunction( "cos",       new Func_cos()   );
         addFunction( "expf",      new Func_exp()   );
@@ -391,6 +388,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add phylogeny-related functions (alphabetical order) */
         addFunction( "distances", new Func_distance()          );
         addFunction( "gtr",       new Func_gtr()               );
+        addFunction( "nj",        new Func_nj()                );
         addFunction( "read",      new Func_readCharacterData() );
         addFunction( "readTrees", new Func_readTrees()         );
         addFunction( "ctmmtp",    new Func_CtmmTransitionProbabilities()           );

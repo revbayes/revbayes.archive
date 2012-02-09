@@ -153,6 +153,40 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (BOOL)isFullyConnected {
+
+    // we check the number of connections for the inlets and outlets
+    // if any inlet or outlet has 0 connections, then the tool is not fully
+    // connected
+	NSEnumerator* enumerator = [inlets objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+        {
+        if ([element numberOfConnections] == 0)
+            return NO;
+        }
+    
+	enumerator = [outlets objectEnumerator];
+	while ( (element = [enumerator nextObject]) )
+        {
+        if ([element numberOfConnections] == 0)
+            {
+            if ( [element toolColor] == [NSColor greenColor] )
+                {
+                if ( [self numAlignedMatrices] > 0 )
+                    return NO;
+                }
+            else if ( [element toolColor] == [NSColor cyanColor] )
+                {
+                if ( [self numUnalignedMatrices] > 0 )
+                    return NO;
+                }
+            }
+        }
+
+    return YES;
+}
+
 - (BOOL)readDataFile {
 
     // make an array containing the valid file types that can be chosen

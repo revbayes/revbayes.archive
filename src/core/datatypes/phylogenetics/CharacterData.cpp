@@ -378,26 +378,26 @@ const MemberRules* CharacterData::getMemberRules(void) const {
 /** Get methods */
 const MethodTable* CharacterData::getMethods(void) const {
 
-    static MethodTable* methods = new MethodTable();
-    static ArgumentRules* ncharArgRules = new ArgumentRules();
-    static ArgumentRules* namesArgRules = new ArgumentRules();
-    static ArgumentRules* ntaxaArgRules = new ArgumentRules();
-    static ArgumentRules* chartypeArgRules = new ArgumentRules();    
-    static ArgumentRules* nexcludedtaxaArgRules = new ArgumentRules();    
-    static ArgumentRules* nexcludedcharsArgRules = new ArgumentRules();    
-    static ArgumentRules* nincludedtaxaArgRules = new ArgumentRules();    
-    static ArgumentRules* nincludedcharsArgRules = new ArgumentRules();    
-    static ArgumentRules* excludedtaxaArgRules = new ArgumentRules();    
-    static ArgumentRules* excludedcharsArgRules = new ArgumentRules();    
-    static ArgumentRules* includedtaxaArgRules = new ArgumentRules();    
-    static ArgumentRules* includedcharsArgRules = new ArgumentRules();    
-    static ArgumentRules* nconstantpatternsArgRules = new ArgumentRules();    
+    static MethodTable*   methods                     = new MethodTable();
+    static ArgumentRules* ncharArgRules               = new ArgumentRules();
+    static ArgumentRules* namesArgRules               = new ArgumentRules();
+    static ArgumentRules* ntaxaArgRules               = new ArgumentRules();
+    static ArgumentRules* chartypeArgRules            = new ArgumentRules();    
+    static ArgumentRules* nexcludedtaxaArgRules       = new ArgumentRules();    
+    static ArgumentRules* nexcludedcharsArgRules      = new ArgumentRules();    
+    static ArgumentRules* nincludedtaxaArgRules       = new ArgumentRules();    
+    static ArgumentRules* nincludedcharsArgRules      = new ArgumentRules();    
+    static ArgumentRules* excludedtaxaArgRules        = new ArgumentRules();    
+    static ArgumentRules* excludedcharsArgRules       = new ArgumentRules();    
+    static ArgumentRules* includedtaxaArgRules        = new ArgumentRules();    
+    static ArgumentRules* includedcharsArgRules       = new ArgumentRules();    
+    static ArgumentRules* nconstantpatternsArgRules   = new ArgumentRules();    
     static ArgumentRules* ncharswithambiguityArgRules = new ArgumentRules();
-    static ArgumentRules* excludecharArgRules = new ArgumentRules();
-    static ArgumentRules* excludecharArgRules2 = new ArgumentRules();
-    static ArgumentRules* showdataArgRules = new ArgumentRules();
-    static ArgumentRules* ishomologousArgRules = new ArgumentRules();    
-    static bool methodsSet = false;
+    static ArgumentRules* excludecharArgRules         = new ArgumentRules();
+    static ArgumentRules* excludecharArgRules2        = new ArgumentRules();
+    static ArgumentRules* showdataArgRules            = new ArgumentRules();
+    static ArgumentRules* ishomologousArgRules        = new ArgumentRules();    
+    static bool           methodsSet                  = false;
 
     if ( methodsSet == false ) 
         {
