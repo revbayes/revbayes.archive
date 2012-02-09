@@ -53,11 +53,9 @@ RbLanguageObject* Func_nj::executeFunction(void) {
     RbString*       useBioNj    = static_cast<RbString*>      ( (*args)[1]->getValue() );
     RbString*       tieBreaking = static_cast<RbString*>      ( (*args)[2]->getValue() );
         
-    Topology* top = neighborJoining(d);
-    
-    TreePlate* t = new TreePlate(top);
-    
-    return t;
+    TreePlate* tp = neighborJoining(d);
+        
+    return tp;
 }
 
 
@@ -102,7 +100,7 @@ const TypeSpec& Func_nj::getTypeSpec(void) const {
 
 void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips) {
 
-    if (nTips > 2)
+    if (nTips > 3)
         {
         for (size_t i=0; i<distances.size(); i++)
             {
@@ -197,28 +195,14 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
         // recursively call function again
         buildNj(newDistances, newNodes, nTips-1);
         }
-    else if (nTips == 2)
+    else
         {
-        /*TopologyNode* ndeI = nodes[0];
-        TopologyNode* ndeJ = nodes[1];
-        TopologyNode* rootNode = ndeI->getParent();
-        if (ndeJ->getParent() != rootNode)
-            {
-            // problem
-            }
-        rootNode->removeChild(ndeI);
-        rootNode->removeChild(ndeJ);
-        TopologyNode* newNode = new TopologyNode;
-        newNode->setParent(rootNode);
-        rootNode->addChild(newNode);
-        newNode->addChild(ndeI);
-        newNode->addChild(ndeJ);
-        ndeI->setParent(newNode);
-        ndeJ->setParent(newNode);*/
+        // nothing to do -- the tree should be fully resolved now -- except
+        // calculate the last branch lengths
         }
 }
 
-Topology* Func_nj::neighborJoining(DistanceMatrix* d) {
+TreePlate* Func_nj::neighborJoining(DistanceMatrix* d) {
 
     // allocate a topology
     Topology* topo = new Topology;
@@ -247,5 +231,5 @@ Topology* Func_nj::neighborJoining(DistanceMatrix* d) {
     std::string newickStr = tp->buildNewickString(topo->getRoot());
     std::cout << newickStr << std::endl;
     
-    return topo;
+    return tp;
 }

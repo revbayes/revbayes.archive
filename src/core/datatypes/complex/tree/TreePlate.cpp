@@ -187,21 +187,23 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
 RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Environment* args) {
     
     // special handling for adding a variable
-    if (name == "addVariable") {
+    if (name == "addVariable") 
+        {
         // get the name of the variable
         const std::string& varName = static_cast<const RbString*>( (*args)[0]->getValue() )->getValue();
         
         // check if a container already exists with that name
-        if (!members->existsVariable(varName)) {
+        if (!members->existsVariable(varName)) 
+            {
             // we don't have a container for this variable name yet
             // so we just create one
-            Variable* var = new Variable( new ConstantNode( new DagNodeContainer(orderingTopology->getNumberOfNodes() ) ) );
+            Variable* var = new Variable( new ConstantNode( new DagNodeContainer( orderingTopology->getNumberOfNodes() ) ) );
             
             members->addVariable(varName, var );
             
             // and we add it to our names list
             nodeVariableNames.push_back(varName);
-        }
+            }
         
         // get the container with the variables for this node
         DagNodeContainer *vars = static_cast<DagNodeContainer*>( (*members)[varName]->getValue() );
@@ -220,28 +222,33 @@ RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Env
         vars->setElement(nodeIndex - 1, var );
         
         return NULL;
-    }
-    else if (name == "nnodes") {
+        }
+    else if (name == "nnodes") 
+        {
         return new Natural( orderingTopology->getNumberOfNodes() );
-    }
-    else if (name == "node") {
+        }
+    else if (name == "node") 
+        {
         // we assume that the node indices in the RevLanguage are from 1:nnodes()
         int index = dynamic_cast<const Natural *>( args->getValue("index") )->getValue() - 1;
         
         return orderingTopology->getNodes()[index];
-    }
-    else if (name == "index") {
+        }
+    else if (name == "index") 
+        {
         const TopologyNode* theNode = dynamic_cast<const TopologyNode*>( (*args)[0]->getValue() );
         return new Natural(getNodeIndex(theNode) );
-    }
-    else if (name == "tipIndex") {
+        }
+    else if (name == "tipIndex") 
+        {
         const TopologyNode* theNode = dynamic_cast<const TopologyNode*>( (*args)[0]->getValue() );
         size_t tIndex = getTipIndex(theNode);
         return new Natural(tIndex);
-    }
-    else {
+        }
+    else 
+        {
         return MemberObject::executeOperationSimple( name, args );
-    }
+        }
 }
 
 /* Get method specifications */

@@ -23,6 +23,7 @@ class DAGNode;
 class DistanceMatrix;
 class Topology;
 class TopologyNode;
+class TreePlate;
 class VectorString;
 
 
@@ -45,7 +46,7 @@ class Func_nj :  public RbFunction {
         RbLanguageObject*           executeFunction(void);                                                   //!< Execute function
 
     private:
-        Topology*                   neighborJoining(DistanceMatrix* d);
+        TreePlate*                  neighborJoining(DistanceMatrix* d);
         void                        buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips);
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
