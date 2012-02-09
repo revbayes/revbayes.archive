@@ -124,7 +124,7 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
             {
             for (int j=i+1; j<nTips; j++)
                 {
-                double x = distances[i][j] - u[i] - u[j];
+                double x = distances[i][j] - ui[i] - ui[j];
                 if (v < 0.0 || x < v)
                     {
                     smallestI = i;

@@ -228,7 +228,7 @@ const VectorString& DistanceMatrix::getClass(void) const {
 }
 
 
-const RbObject* DistanceMatrix::getElement(size_t row, size_t col) const {
+const RbObject& DistanceMatrix::getElement(size_t row, size_t col) const {
 
     //RealPos* x(value[row][col]);
     //const TaxonData* sequence = dynamic_cast<const TaxonData*>( (RbLanguageObject*)elements[row] );
@@ -236,7 +236,7 @@ const RbObject* DistanceMatrix::getElement(size_t row, size_t col) const {
 }
 
 
-RbObject* DistanceMatrix::getElement(size_t row, size_t col) {
+RbObject& DistanceMatrix::getElement(size_t row, size_t col) {
 
     //TaxonData* sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
     //return (sequence->getElement(col));

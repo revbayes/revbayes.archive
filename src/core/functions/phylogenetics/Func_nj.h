@@ -22,6 +22,7 @@
 class DAGNode;
 class DistanceMatrix;
 class Topology;
+class TopologyNode;
 class VectorString;
 
 
