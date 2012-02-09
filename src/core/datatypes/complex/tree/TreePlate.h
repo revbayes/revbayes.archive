@@ -53,6 +53,7 @@ public:
 
     // Tree plate functions
     const Topology*                 getTopology(void) const;                                                        //!< Get the topology for this tree
+    std::string                     buildNewickString(const TopologyNode* node) const;                              //!< compute the newick string for a tree rooting at this node
     
 protected:
     RbLanguageObject*               executeOperationSimple(const std::string& name, Environment* args);             //!< Execute method
@@ -61,8 +62,6 @@ private:
     static const TypeSpec           typeSpec;
     
     std::vector<std::string>        nodeVariableNames;                                                              //!< The vector of variables names for each node
-    
-    std::string                     buildNewickString(const TopologyNode* node) const;                              //!< compute the newick string for a tree rooting at this node
     
     void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }                   //!< Order the topology
     size_t                          getNodeIndex(const TopologyNode* theNode) const;                                //!< Get the index of the node

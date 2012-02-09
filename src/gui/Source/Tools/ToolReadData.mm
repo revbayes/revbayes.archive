@@ -275,8 +275,8 @@
             [self removeAllDataMatrices];
             for (int i=0; i<dnc->size(); i++)
                 {
-                VariableSlot* vs = static_cast<VariableSlot*>( (RbObject*)(dnc->getElement(i)) );
-                RbPtr<RbLanguageObject> theDagNode = vs->getDagNode()->getValue();
+                VariableSlot* vs = static_cast<VariableSlot*>( (RbObject*)(&dnc->getElement(i)) );
+                RbPtr<RbLanguageObject> theDagNode = &vs->getDagNode()->getValue();
                 CharacterData* cd = static_cast<CharacterData*>( (RbObject*)theDagNode );
                 RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
                 [newMatrix setAlignmentMethod:@"Unknown"];

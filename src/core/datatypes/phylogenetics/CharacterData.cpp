@@ -50,13 +50,14 @@ CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, 
 
 
 /** Copy constructor */
-CharacterData::CharacterData( const CharacterData& x ) : Matrix( x ), typeSpec(CharacterData_name, new TypeSpec(characterType) ) {
+CharacterData::CharacterData(const CharacterData& x) : Matrix( x ), typeSpec(CharacterData_name, new TypeSpec(characterType) ) {
 
-    characterType     = x.characterType;
-    deletedTaxa       = x.deletedTaxa;
-    deletedCharacters = x.deletedCharacters;
-    fileName          = x.fileName;
-    sequenceNames     = x.sequenceNames;
+    characterType         = x.characterType;
+    deletedTaxa           = x.deletedTaxa;
+    deletedCharacters     = x.deletedCharacters;
+    fileName              = x.fileName;
+    sequenceNames         = x.sequenceNames;
+    isHomologyEstablished = x.isHomologyEstablished;
 }
 
 
@@ -69,19 +70,20 @@ CharacterData::~CharacterData( void ) {
 /** Assignment operator */
 CharacterData& CharacterData::operator=( const CharacterData& x ) {
 
-    if ( this != &x ) {
-
+    if ( this != &x ) 
+        {
         if ( characterType != x.characterType )
             throw RbException( "Invalid assignment of character matrices: sequence data types differ" );
 
         MemberObject::operator=( x );
 
-        deletedTaxa       = x.deletedTaxa;
-        deletedCharacters = x.deletedCharacters;
-        fileName          = x.fileName;
-    
-    }
-
+        characterType         = x.characterType;
+        deletedTaxa           = x.deletedTaxa;
+        deletedCharacters     = x.deletedCharacters;
+        fileName              = x.fileName;
+        sequenceNames         = x.sequenceNames;
+        isHomologyEstablished = x.isHomologyEstablished;
+        }
     return (*this);
 }
 
@@ -130,9 +132,9 @@ void CharacterData::clear( void ) {
 
 
 /** Clone object */
-CharacterData* CharacterData::clone( void ) const {
+CharacterData* CharacterData::clone(void) const {
 
-    return new CharacterData( *this );
+    return new CharacterData(*this);
 }
 
 

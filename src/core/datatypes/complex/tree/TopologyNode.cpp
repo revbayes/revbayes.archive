@@ -242,9 +242,9 @@ const MemberRules* TopologyNode::getMemberRules(void) const {
 }
 
 
-const TopologyNode* TopologyNode::getParent(void) const { 
-    return parent; 
+TopologyNode* TopologyNode::getParent(void) { 
 
+    return parent; 
 }
 
 

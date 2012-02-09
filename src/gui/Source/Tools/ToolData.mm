@@ -298,6 +298,7 @@
         [m setIsHomologyEstablished:YES];
     else
         [m setIsHomologyEstablished:NO];
+        
     [m setNumCharacters:(int)(cd->getNumberOfCharacters())];
     [m setName:nsfn];
     if ( cd->getDataType() == DnaState_name )

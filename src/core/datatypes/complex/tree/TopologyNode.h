@@ -73,7 +73,7 @@ class TopologyNode : public ConstantMemberObject {
         int                                 getIndex(void) const { return index; }                                      //!< Get index of node
         std::string                         getName(void) const { return name; }                                        //!< Get name of node
         size_t                              getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
-        const TopologyNode*                 getParent(void) const;                                                      //!< Returns the node's parent
+        TopologyNode*                       getParent(void);                                                            //!< Returns the node's parent
         int                                 getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
         bool                                isTip(void) const { return children.size() == 0; }                          //!< Is node tip?
         bool                                isRoot(void) const { return parent == NULL; }                               //!< Is node root?

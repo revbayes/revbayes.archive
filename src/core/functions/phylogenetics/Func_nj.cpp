@@ -29,6 +29,7 @@
 #include "ValueRule.h"
 #include "VectorString.h"
 #include <cmath>
+#include <iomanip>
 #include <sstream>
 #include <vector>
 
@@ -103,6 +104,16 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
 
     if (nTips > 2)
         {
+        for (size_t i=0; i<distances.size(); i++)
+            {
+            for (size_t j=0; j<distances[i].size(); j++)
+                std::cout << std::fixed << std::setprecision(4) << distances[i][j] << " ";
+            std::cout << std::endl;
+            }
+        for (size_t i=0; i<nodes.size(); i++)
+            std::cout << nodes[i] << " ";
+        std::cout << std::endl;
+
         // calculate the u_i for each tip
         std::vector<double> ui;
         for (size_t i=0; i<nTips; i++)
@@ -116,16 +127,19 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
             sum /= (nTips - 2);
             ui.push_back(sum);
             }
+        for (int i=0; i<ui.size(); i++)
+            std::cout << "u[" << i << "] = " << ui[i] << std::endl;
             
         // find i-j tip pair for which d_ij - ui - uj is smallest
         int smallestI = -1, smallestJ = -1;
-        double v = -1.0;
+        double v = 1.0e100;
         for (int i=0; i<nTips; i++)
             {
             for (int j=i+1; j<nTips; j++)
                 {
                 double x = distances[i][j] - ui[i] - ui[j];
-                if (v < 0.0 || x < v)
+                std::cout << i << " " << j << " " << x << std::endl;
+                if (x < v)
                     {
                     smallestI = i;
                     smallestJ = j;
@@ -133,11 +147,15 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
                     }
                 }
             }
+        std::cout << "smallestI = " << smallestI << std::endl;
+        std::cout << "smallestJ = " << smallestJ << std::endl;
+        std::cout << "v = " << v << std::endl;
             
         // join tips i and j
         TopologyNode* ndeI = nodes[smallestI];
         TopologyNode* ndeJ = nodes[smallestJ];
         TopologyNode* rootNode = ndeI->getParent();
+        std::cout << "(" << ndeI << " " << ndeJ << " " << rootNode << ")" << std::endl;
         if (ndeJ->getParent() != rootNode)
             {
             // problem
@@ -155,24 +173,48 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
         // construct a new distance matrix that is one row and column smaller
         std::vector<std::vector<double> > newDistances;
         newDistances.resize(nTips-1);
-        for (size_t i=0; i<nTips-1; i++)
-            newDistances[i].resize(nTips-1);
         std::vector<TopologyNode*> newNodes;
-        for (size_t i=0; i<nTips; i++)  
+        for (size_t i=0, k=0; i<nTips; i++)  
             {
             if (i != smallestI && i != smallestJ)
                 {
                 newNodes.push_back(nodes[i]);
                 for (size_t j=0; j<nTips; j++)
                     {
-                    
+                    if (j != smallestI && j != smallestJ)
+                        newDistances[k].push_back(distances[i][j]);
                     }
+                double x = distances[i][smallestI] + distances[i][smallestJ] - distances[smallestI][smallestJ];
+                newDistances[k].push_back(x);
+                newDistances[nTips-2].push_back(x);
+                k++;
                 }
             }
+        newNodes.push_back(newNode);
+        newDistances[nTips-2].push_back(0.0);
+        
+        
+        // recursively call function again
+        buildNj(newDistances, newNodes, nTips-1);
         }
     else if (nTips == 2)
         {
-        
+        /*TopologyNode* ndeI = nodes[0];
+        TopologyNode* ndeJ = nodes[1];
+        TopologyNode* rootNode = ndeI->getParent();
+        if (ndeJ->getParent() != rootNode)
+            {
+            // problem
+            }
+        rootNode->removeChild(ndeI);
+        rootNode->removeChild(ndeJ);
+        TopologyNode* newNode = new TopologyNode;
+        newNode->setParent(rootNode);
+        rootNode->addChild(newNode);
+        newNode->addChild(ndeI);
+        newNode->addChild(ndeJ);
+        ndeI->setParent(newNode);
+        ndeJ->setParent(newNode);*/
         }
 }
 
@@ -200,7 +242,10 @@ Topology* Func_nj::neighborJoining(DistanceMatrix* d) {
     std::vector<std::vector<double> > activeDistances = d->getValue();
         
     // recursively build the neighbor-joining tree
-    buildNj(activeDistances, activeNodes, nTaxa);
+    buildNj(activeDistances, activeNodes, (int)nTaxa);
+    TreePlate* tp = new TreePlate(topo);
+    std::string newickStr = tp->buildNewickString(topo->getRoot());
+    std::cout << newickStr << std::endl;
     
     return topo;
 }
