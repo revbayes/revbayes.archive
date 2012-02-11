@@ -37,11 +37,7 @@ MethodTable& MethodTable::operator=(const MethodTable& x) {
     
     if (this != &x) {
         
-        table.clear();
-        for (std::multimap<std::string, RbFunction* >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
-            table.insert(std::pair<std::string, RbFunction* >((*i).first, (*i).second->clone()));
-        
-        parentTable = x.parentTable;
+        FunctionTable::operator=(x);
     }
     
     return (*this);
@@ -56,16 +52,6 @@ void MethodTable::addFunction( const std::string name, RbFunction* func ) {
 
     if ( func->isType( MemberFunction_name ) )
         static_cast<MemberFunction*>( func )->setMethodName( name );
-}
-
-
-/** Return brief info about object */
-std::string MethodTable::briefInfo () const {
-
-    std::ostringstream   o;
-    o << "MethodTable with " << table.size() << " functions";
-
-    return o.str();
 }
 
 
@@ -84,7 +70,7 @@ const TypeSpec& MethodTable::getTypeSpec(void) const {
 
 
 /** Complete info about object */
-std::string MethodTable::richInfo(void) const {
+std::string MethodTable::debugInfo(void) const {
 
     std::ostringstream o;
     if (table.size() == 0)

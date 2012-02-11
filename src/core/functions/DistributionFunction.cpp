@@ -114,7 +114,8 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
 
 /** Destructor */
 DistributionFunction::~DistributionFunction(void) {
-
+    delete distribution;
+    delete argumentRules;
 }
 
 

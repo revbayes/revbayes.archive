@@ -44,11 +44,10 @@ class FunctionTable : public RbInternal {
         FunctionTable&                          operator=(const FunctionTable& x);                                                      //!< Assignment operator 
 
         // Basic utility functions
-        virtual std::string                     briefInfo(void) const;                                                                  //!< Brief info to string
+        virtual std::string                     debugInfo(void) const;                                                                  //!< Brief info to string
         virtual FunctionTable*                  clone(void) const { return new FunctionTable(*this); }                                  //!< Clone object
         virtual const TypeSpec&                 getTypeSpec(void) const;                                                                //!< Get language type of the object
         virtual const VectorString&             getClass() const;                                                                       //!< Get class vector
-        virtual std::string                     richInfo(void) const;                                                                   //!< Complete info to string
         void                                    printValue(std::ostream& o) const;                                                      //!< Print table for user
 
         // FunctionTable functions
@@ -63,7 +62,7 @@ class FunctionTable : public RbInternal {
         void                                    setParentTable(const FunctionTable* table) { parentTable = table; }                     //!< Set parent table
 
     protected:
-        RbFunction*                             findFunction(const std::string&                     name,
+        RbFunction&                             findFunction(const std::string&                     name,
                                                              const std::vector<Argument* >&   args);                                    //!< Find function, process args
         
         // Member variables

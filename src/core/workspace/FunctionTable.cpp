@@ -55,7 +55,7 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
 
     if (this != &x) {
 
-        table.clear();
+        clear();
         for (std::multimap<std::string, RbFunction* >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
             table.insert(std::pair<std::string, RbFunction* >((*i).first, ((*i).second->clone())));
 
@@ -87,20 +87,13 @@ void FunctionTable::addFunction(const std::string name, RbFunction* func) {
 }
 
 
-/** Return brief info about object */
-std::string FunctionTable::briefInfo () const {
-
-    std::ostringstream   o;
-    o << "FunctionTable with " << table.size() << " functions";
-
-    return o.str();
-}
-
-
 /** Clear table */
 void FunctionTable::clear(void) {
 
-    table.clear();
+    for (std::multimap<std::string, RbFunction*>::iterator it = table.begin(); it != table.end(); it++) {
+        RbFunction* theFunction = it->second;
+        delete theFunction;
+    }
 }
 
 
@@ -118,10 +111,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 /** Execute function and get its variable value (evaluate once) */
 RbLanguageObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument* >& args) {
 
-    RbFunction*       theFunction = findFunction(name, args);
-    RbLanguageObject* theValue    = theFunction->execute();
+    RbFunction&       theFunction = findFunction(name, args);
+    RbLanguageObject* theValue    = theFunction.execute();
 
-    theFunction->clearArguments();
+    theFunction.clearArguments();
 
     return theValue;
 }
@@ -152,14 +145,14 @@ std::vector<RbFunction* > FunctionTable::findFunctions(const std::string& name) 
 
     std::multimap<std::string, RbFunction* >::const_iterator it;
     for ( it=retVal.first; it!=retVal.second; it++ )
-        theFunctions.push_back( (*it).second );
+        theFunctions.push_back( (*it).second->clone() );
 
     return theFunctions;
 }
 
 
 /** Find function (also processes arguments) */
-RbFunction* FunctionTable::findFunction(const std::string& name, const std::vector<Argument* >& args) {
+RbFunction& FunctionTable::findFunction(const std::string& name, const std::vector<Argument* >& args) {
     
     std::pair<std::multimap<std::string, RbFunction* >::iterator,
               std::multimap<std::string, RbFunction* >::iterator> retVal;
@@ -183,7 +176,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
             msg << std::endl;
             throw RbException( msg );
         }
-        return retVal.first->second;
+        return *retVal.first->second;
     }
     else {
         VectorInteger* matchScore = new VectorInteger();
@@ -236,7 +229,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
             throw RbException( msg );
         }
         else {
-            return bestMatch;
+            return *bestMatch;
         }
     }
 }
@@ -254,13 +247,13 @@ const VectorString& FunctionTable::getClass() const {
 RbFunction* FunctionTable::getFunction(const std::string& name, const std::vector<Argument* >& args) {
     
     // find the template function
-    RbFunction* theFunction = findFunction(name, args);
+    RbFunction& theFunction = findFunction(name, args);
 
     // we need a copy because we got the template function
-    RbFunction* copy = theFunction->clone();
+    RbFunction* copy = theFunction.clone();
 
     // clear the arguments of the template function
-    theFunction->clearArguments();
+    theFunction.clearArguments();
 
     return copy;
 }
@@ -347,7 +340,7 @@ void FunctionTable::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string FunctionTable::richInfo(void) const {
+std::string FunctionTable::debugInfo(void) const {
 
     std::ostringstream o;
     if (table.size() == 0)

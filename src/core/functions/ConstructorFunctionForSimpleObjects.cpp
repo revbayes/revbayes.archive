@@ -45,6 +45,11 @@ ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(const C
 }
 
 
+ConstructorFunctionForSimpleObjects::~ConstructorFunctionForSimpleObjects() {
+    delete templateObject;
+}
+
+
 /** Clone the object */
 ConstructorFunctionForSimpleObjects* ConstructorFunctionForSimpleObjects::clone(void) const {
     

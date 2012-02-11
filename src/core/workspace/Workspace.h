@@ -77,7 +77,7 @@ const std::string Workspace_name = "Workspace";
 class Workspace : public Environment {
 
     public:
-                                   ~Workspace(void);                                                                    //!< Delete function table
+        virtual                     ~Workspace(void);                                                                    //!< Delete function table
     
         // Frame functions you have to override
         Workspace*                  clone(void) const;                                                                  //!< Clone frame
@@ -100,7 +100,8 @@ class Workspace : public Environment {
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
 //        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
         const VectorString&         getClassOfType(const TypeSpec& type) const;                                         //!< Get reference to class vector of type
-        FunctionTable*              getFunctionTable(void) const { return functionTable; }                              //!< Get function table
+        const FunctionTable&        getFunctionTable(void) const { return *functionTable; }                             //!< Get function table (const)
+        FunctionTable&              getFunctionTable(void) { return *functionTable; }                                   //!< Get function table (non-const)
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument*>& args);           //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace

@@ -34,7 +34,8 @@ class ConstructorFunctionForSimpleObjects :  public RbFunction {
     
 public:
     ConstructorFunctionForSimpleObjects(RbLanguageObject* obj);                                                             //!< Object constructor
-    ConstructorFunctionForSimpleObjects(const ConstructorFunctionForSimpleObjects& obj);                                   //!< Copy constructor
+    ConstructorFunctionForSimpleObjects(const ConstructorFunctionForSimpleObjects& obj);                                    //!< Copy constructor
+    virtual ~ConstructorFunctionForSimpleObjects(void);                                                                     //!< Destructor
     
     // Basic utility functions
     ConstructorFunctionForSimpleObjects*    clone(void) const;                                                              //!< Clone the object
@@ -47,7 +48,7 @@ public:
     const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
     
 protected:
-    RbLanguageObject*                       executeFunction(void);                                                                  //!< Execute function
+    RbLanguageObject*                       executeFunction(void);                                                          //!< Execute function
 
     const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
     RbLanguageObject*                       templateObject;                                                                 //!< The template object

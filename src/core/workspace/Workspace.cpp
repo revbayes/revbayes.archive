@@ -55,7 +55,7 @@ Workspace::Workspace(Environment* parentSpace) : Environment(parentSpace), funct
 
 
 /** Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
+Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), functionTable(new FunctionTable(&parentSpace->getFunctionTable())), typesInitialized(false) {
 
 }
 
@@ -96,8 +96,8 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
     typeTable.insert(std::pair<std::string, RbObject*>(dist->getType(),dist->clone()));
 
     functionTable->addFunction(name, new ConstructorFunction( dist ) );
-    functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
-    functionTable->addFunction("r" + name, new DistributionFunction((Distribution*)(dist->clone()), DistributionFunction::RVALUE));
+    functionTable->addFunction("d" + name, new DistributionFunction(dist->clone(), DistributionFunction::DENSITY));
+    functionTable->addFunction("r" + name, new DistributionFunction((dist->clone()), DistributionFunction::RVALUE));
 
     return true;
 }
@@ -114,7 +114,7 @@ bool Workspace::addDistribution(const std::string& name, DistributionContinuous*
     typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
 
     functionTable->addFunction(name      , new ConstructorFunction ( dist ));
-    functionTable->addFunction("d" + name, new DistributionFunction( dist , DistributionFunction::DENSITY));
+    functionTable->addFunction("d" + name, new DistributionFunction( dist->clone() , DistributionFunction::DENSITY));
     functionTable->addFunction("r" + name, new DistributionFunction(dist->clone(), DistributionFunction::RVALUE));
     functionTable->addFunction("p" + name, new DistributionFunction(dist->clone(), DistributionFunction::PROB));
     functionTable->addFunction("q" + name, new DistributionFunction(dist->clone(), DistributionFunction::QUANTILE));
