@@ -96,13 +96,13 @@ class Workspace : public Environment {
         bool                        addTypeWithConstructor(const std::string& name, RbLanguageObject* templ);           //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
         RbLanguageObject*           executeFunction(    const std::string&              name,
-                                                        const std::vector<Argument*>&   args);                          //!< Execute function
+                                                        const std::vector<Argument>&   args);                           //!< Execute function
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
 //        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
         const VectorString&         getClassOfType(const TypeSpec& type) const;                                         //!< Get reference to class vector of type
         const FunctionTable&        getFunctionTable(void) const { return *functionTable; }                             //!< Get function table (const)
         FunctionTable&              getFunctionTable(void) { return *functionTable; }                                   //!< Get function table (non-const)
-        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument*>& args);           //!< Get function copy
+        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                     {

@@ -76,7 +76,8 @@ public:
     const VariableSlot&                     operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
     VariableSlot&                           operator[](const size_t index);                                                         //!< Get named variable slot reference
     const VariableSlot&                     operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
-    
+    Environment&                            operator=(const Environment& x);                                                        //!< Assignment
+   
     // Basic utility functions
     virtual Environment*                    clone(void) const;                                                                      //!< Clone Environment
     virtual const VectorString&             getClass() const;                                                                       //!< Get class vector

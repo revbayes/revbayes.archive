@@ -93,7 +93,7 @@ Variable& Variable::operator=(const Variable& x) {
     if ( &x != this ) {
         
         // Copy the new variable
-        node = x.node->clone();
+        node = x.node;
         name = x.name;
     }
     

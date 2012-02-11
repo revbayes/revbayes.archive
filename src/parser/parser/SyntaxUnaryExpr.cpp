@@ -97,8 +97,8 @@ Variable* SyntaxUnaryExpr::evaluateContent( void ) {
 Variable* SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Package the argument
-    std::vector<Argument*> arg;
-    arg.push_back( new Argument("", expression->evaluateContent(env) ) );
+    std::vector<Argument> arg;
+    arg.push_back( Argument("", expression->evaluateContent(env) ) );
 
     // Find the function
     std::string funcName = "_" + opCode[operation];

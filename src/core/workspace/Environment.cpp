@@ -51,12 +51,13 @@ Environment::Environment(const Environment &x): RbInternal(x) {
     
     // make a deep copy of the parent environment
     if (x.parentEnvironment != NULL) {
-        parentEnvironment = x.parentEnvironment;    }
+        parentEnvironment = x.parentEnvironment;   
+    }
     else {
         parentEnvironment = NULL;
     }
     
-    // make a deep copy of the variable names
+    // make a shallow copy of the variable names
     varNames = x.varNames;
     
     // make a deep copy of the variable table
@@ -73,6 +74,41 @@ Environment::Environment(const Environment &x): RbInternal(x) {
         
     }
     
+}
+
+Environment& Environment::operator=(const Environment &x) {
+    
+    if (this != &x) {
+        // clean up first
+        clear();
+        
+        // make a shallow copy of the parent environment
+        if (x.parentEnvironment != NULL) {
+            parentEnvironment = x.parentEnvironment;   
+        }
+        else {
+            parentEnvironment = NULL;
+        }
+        
+        // make a deep copy of the variable names
+        varNames = x.varNames;
+        
+        // make a deep copy of the variable table
+        for (size_t i=0; i<x.size(); i++) {
+            // get the name of the i-th variable
+            const std::string &name = x.getName(i);
+            
+            
+            const VariableSlot& slotOrg = x[name];
+            VariableSlot* slotCopy = slotOrg.clone();
+            
+            // add the copy
+            variableTable.insert( std::pair<std::string, VariableSlot* >( name, slotCopy ) );
+            
+        }
+    }
+    
+    return *this;
 }
 
 /** Index operator to variable slot from string */

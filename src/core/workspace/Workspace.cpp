@@ -60,7 +60,7 @@ Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), functio
 }
 
 /** Constructor of user workspace */
-Workspace::Workspace(const Workspace& x) : Environment(x.parentEnvironment), functionTable(x.functionTable->clone()), typesInitialized(x.typesInitialized) {
+Workspace::Workspace(const Workspace& x) : Environment(x), functionTable(x.functionTable->clone()), typesInitialized(x.typesInitialized) {
     
 }
 
@@ -76,7 +76,9 @@ Workspace::~Workspace() {
 Workspace& Workspace::operator=(const Workspace& x) {
 
     if (this != &x) {
-
+        // first we need to delegate to the base class assignment operator
+        Environment::operator=(x);
+        
         functionTable = x.functionTable->clone();
     }
 
@@ -126,7 +128,7 @@ bool Workspace::addDistribution(const std::string& name, DistributionContinuous*
 /** Add function to the workspace */
 bool Workspace::addFunction(const std::string& name, RbFunction* func) {
 
-    PRINTF( "Adding function %s = %s to workspace\n", name.c_str(), func->briefInfo().c_str() );
+    PRINTF( "Adding function %s = %s to workspace\n", name.c_str(), func->debugInfo().c_str() );
     
     if (existsVariable(name))
         throw RbException("There is already a variable named '" + name + "' in the workspace");
@@ -212,7 +214,7 @@ const VectorString& Workspace::getClass() const {
 
 
 /** Execute function to get its value (workspaces only evaluate functions once) */
-RbLanguageObject* Workspace::executeFunction(const std::string& name, const std::vector<Argument*>& args) {
+RbLanguageObject* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
     /* Using this calling convention indicates that we are only interested in
        evaluating the function once */
@@ -251,7 +253,7 @@ bool Workspace::existsType( const TypeSpec& name ) const {
 
 
 /** Get function */
-RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument*>& args) {
+RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument>& args) {
     
     return functionTable->getFunction(name, args);
 }

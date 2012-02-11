@@ -109,7 +109,7 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-RbLanguageObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument* >& args) {
+RbLanguageObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
     RbFunction&       theFunction = findFunction(name, args);
     RbLanguageObject* theValue    = theFunction.execute();
@@ -152,7 +152,7 @@ std::vector<RbFunction* > FunctionTable::findFunctions(const std::string& name) 
 
 
 /** Find function (also processes arguments) */
-RbFunction& FunctionTable::findFunction(const std::string& name, const std::vector<Argument* >& args) {
+RbFunction& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args) {
     
     std::pair<std::multimap<std::string, RbFunction* >::iterator,
               std::multimap<std::string, RbFunction* >::iterator> retVal;
@@ -244,7 +244,7 @@ const VectorString& FunctionTable::getClass() const {
 
 
 /** Get function copy (for repeated evaluation in a DeterministicNode) */
-RbFunction* FunctionTable::getFunction(const std::string& name, const std::vector<Argument* >& args) {
+RbFunction* FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
     
     // find the template function
     RbFunction& theFunction = findFunction(name, args);

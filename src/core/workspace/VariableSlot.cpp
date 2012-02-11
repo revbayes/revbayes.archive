@@ -62,7 +62,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbI
 VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x.varTypeSpec), label(x.label) {
     
     if ( x.variable != NULL ) {
-        variable = x.variable;
+        variable = x.variable->clone();
     } else {
         variable = NULL;
     }
@@ -71,7 +71,8 @@ VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x
 
 /** Call a help function to remove the variable intelligently */
 VariableSlot::~VariableSlot(void) {
-    
+    if (variable != NULL)
+        delete variable;
 }
 
 
@@ -84,6 +85,9 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         if ( varTypeSpec != x.varTypeSpec )
             throw RbException ( "Invalid slot assignment: type difference" );
         
+        if (variable != NULL) {
+            delete variable;
+        }
         // Copy the new variable
         if ( x.variable != NULL ) {
             variable = x.variable->clone();

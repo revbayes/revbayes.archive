@@ -43,9 +43,10 @@ MemberFunction::MemberFunction(const TypeSpec retType, ArgumentRules* argRules) 
 }
 
 MemberFunction::~MemberFunction() {
-    if (object != NULL) {
-        delete object;
-    }
+    // we do not own the object
+//    if (object != NULL) {
+//        delete object;
+//    }
 }
 
 
@@ -92,11 +93,12 @@ const TypeSpec& MemberFunction::getTypeSpec(void) const {
 }
 
 
-void MemberFunction::setMemberObject(MemberObject* obj) {
+void MemberFunction::setMemberObject(MemberObject& obj) {
     
-    if (object != NULL) {
-        delete object;
-    }
-    object = obj;
+    // we do not own the object itself because one object can have multiple member functions
+//    if (object != NULL) {
+//        delete object;
+//    }
+    object = &obj;
 }
 

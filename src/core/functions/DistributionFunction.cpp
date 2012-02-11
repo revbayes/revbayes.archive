@@ -115,7 +115,10 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
 /** Destructor */
 DistributionFunction::~DistributionFunction(void) {
     delete distribution;
-    delete argumentRules;
+    if (argumentRules != NULL) {
+        delete argumentRules;
+    }
+    
 }
 
 
@@ -130,12 +133,21 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
         if ( returnType != x.returnType )
             throw RbException( "Invalid assignment involving distributions on different types of random variables" );
         
+        // free memory
+        if (argumentRules != NULL) {
+            delete argumentRules;
+        }
+        
         // copy the argument rules
         argumentRules = new ArgumentRules();
         for (std::vector<ArgumentRule* >::const_iterator it = x.argumentRules->begin(); it != x.argumentRules->end(); it++) {
             argumentRules->push_back( (*it)->clone() );
         }
         
+        // free memory
+        if (distribution != NULL) {
+            delete distribution;
+        }
         distribution  = x.distribution->clone();
         functionType  = x.functionType;
 
@@ -230,7 +242,7 @@ const TypeSpec& DistributionFunction::getTypeSpec(void) const {
 }
 
 /** Process arguments */
-bool DistributionFunction::processArguments( std::vector<Argument* > args, VectorInteger* matchScore ) {
+bool DistributionFunction::processArguments( const std::vector<Argument>& args, VectorInteger* matchScore ) {
 
     if ( !RbFunction::processArguments( args, matchScore ) )
         return false;

@@ -43,8 +43,9 @@ class SyntaxLabeledExpr : public SyntaxElement {
         void                    printValue(std::ostream& o) const;                      //!< Print info about object
 
         // Regular functions
-        SyntaxElement*          getExpression(void) const { return expression; }        //!< Return expression
-        RbString*               getLabel() const { return label; }                      //!< Return label    
+        const SyntaxElement&    getExpression(void) const { return *expression; }       //!< Return expression
+        SyntaxElement&          getExpression(void) { return *expression; }             //!< Return expression
+        const RbString&         getLabel() const { return *label; }                     //!< Return label    
         Variable*               evaluateContent(void);                                  //!< Get semantic value
 
     protected:

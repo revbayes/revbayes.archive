@@ -25,7 +25,8 @@ class TypeSpec {
     public:
                                     TypeSpec(const std::string& objType, TypeSpec* elemType = NULL);                                //!< Complete constructor
                                     TypeSpec(const TypeSpec& ts);                                                                   //!< Copy Constructor
-        
+        virtual                    ~TypeSpec(void);                                                                                 //!< Destructor
+                
                                     // Operators
         TypeSpec&                   operator=(const TypeSpec& x);                                                                   //!< Assignment operator
         bool                        operator==(const TypeSpec& x) const;                                                            //!< Equals operator

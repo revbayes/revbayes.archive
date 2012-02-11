@@ -37,6 +37,10 @@ class Argument : public RbInternal {
                                             Argument(const std::string& argLabel, Variable* arg);               //!< Constructor 
                                             Argument(const Argument &x);                                        //!< Copy constructor 
     virtual                                ~Argument(void);                                                     //!< Destructor
+   
+        // Assignment operator
+        Argument&                           operator=(const Argument& x);                                       //!< Assignment
+
 
         // Basic utility functions
         Argument*                           clone(void) const { return new Argument (*this); }                  //!< Clone object

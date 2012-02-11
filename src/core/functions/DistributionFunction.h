@@ -40,7 +40,7 @@ class DistributionFunction :  public RbFunction {
 
                                     DistributionFunction(Distribution* dist, FuncType funcType);            //!< Constructor
                                     DistributionFunction(const DistributionFunction& x);                    //!< Copy constructor
-                                   ~DistributionFunction(void);                                             //!< Destructor
+        virtual                    ~DistributionFunction(void);                                             //!< Destructor
 
         // Assignment operator
         DistributionFunction&       operator=(const DistributionFunction& x);                               //!< Assignment operator
@@ -53,7 +53,7 @@ class DistributionFunction :  public RbFunction {
         // DistributionFunction functions
         const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type spec of return value
-        bool                        processArguments(std::vector<Argument* > passedArgs,
+        bool                        processArguments(const std::vector<Argument>& passedArgs,
                                                      VectorInteger*          matchScore=NULL);              //!< Process args, set member variables of distribution
 
 	protected:

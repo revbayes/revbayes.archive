@@ -66,7 +66,7 @@ class MemberObject: public RbLanguageObject {
         virtual void                        setMemberVariable(const std::string& name, Variable* var);                          //!< Set member variable
 
         // Member method functions
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument* >& args);        //!< Direct call of member method
+        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
         virtual RbLanguageObject*           executeOperation(const std::string& name, Environment& args);                       //!< Override to map member methods to internal functions
         virtual const MethodTable&          getMethods(void) const;                                                             //!< Get member methods (const)
 

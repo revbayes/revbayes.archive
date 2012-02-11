@@ -129,7 +129,7 @@ int Parser::execute(SyntaxElement* root) const {
     // Print syntax tree
     std::cerr << std::endl;
     std::cerr << "Syntax tree root before execution:\n";
-    root->print(std::cerr);
+    root->printValue(std::cerr);
     std::cerr << std::endl;
 #	endif
 
@@ -274,7 +274,7 @@ int Parser::help(const SyntaxFunctionCall& root) const {
     // Print syntax tree
     std::cerr << std::endl;
     std::cerr << "Syntax tree root before help:\n";
-    root.print(std::cerr);
+    root.printValue(std::cerr);
     std::cerr << std::endl;
 #	endif
 

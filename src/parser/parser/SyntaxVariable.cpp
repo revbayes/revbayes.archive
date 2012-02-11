@@ -356,7 +356,7 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
-            theVar = &env[ (*identifier) ].getVariable(); // TODO: We should not use dereferencing
+            theVar = env[ (*identifier) ].getVariable().clone();
         } else {
             theVar = functionCall->evaluateContent( env );
         }

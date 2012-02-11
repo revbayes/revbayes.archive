@@ -49,7 +49,7 @@ SyntaxFunctionCall::SyntaxFunctionCall(SyntaxVariable* var, RbString* id, std::l
 /** Deep copy constructor */
 SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x) : SyntaxElement(x) {
 
-    functionName = x.functionName;
+    functionName = x.functionName->clone();
     variable     = x.variable->clone();
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
         arguments->push_back( (*i)->clone() );
@@ -78,7 +78,12 @@ SyntaxFunctionCall& SyntaxFunctionCall::operator=(const SyntaxFunctionCall& x) {
 
         SyntaxElement::operator=(x);
 
-        functionName = x.functionName;
+        if (functionName != NULL) {
+            delete functionName;
+        }
+        functionName = x.functionName->clone();
+        if (variable != NULL)
+            delete variable;
         variable     = x.variable->clone();
         for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
             arguments->push_back( (*i)->clone() );
@@ -113,11 +118,13 @@ Variable* SyntaxFunctionCall::evaluateContent( void ) {
 Variable* SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     // Package arguments
-    std::vector<Argument*> args;
+    std::vector<Argument> args;
     for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++) {
-        PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel()->getValue().c_str() );
-        Argument* theArg = new Argument(*(*i)->getLabel(), (*i)->getExpression()->evaluateContent(env) );
-        args.push_back(theArg);
+        PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel().getValue().c_str() );
+        const RbString& theLabel = (*i)->getLabel();
+        Variable* theVar = (*i)->getExpression().evaluateContent(env);
+        Argument theArg = Argument( theLabel, theVar );
+        args.push_back( theArg );
     }
 
     RbFunction* func;
@@ -134,10 +141,10 @@ Variable* SyntaxFunctionCall::evaluateContent(Environment& env) {
         if ( theNode == NULL || !theNode->getValue().isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 
-        MemberObject* theMemberObject = dynamic_cast<MemberObject*>( theNode->getValue().clone() );
+        MemberObject& theMemberObject = dynamic_cast<MemberObject&>( theNode->getValue() );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
         // TODO: We shouldn't allow const casts!!!
-        MethodTable& mt = const_cast<MethodTable&>( theMemberObject->getMethods() );
+        MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
         MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( *functionName, args ) );
         theMemberFunction->setMemberObject(theMemberObject);
         func = theMemberFunction;

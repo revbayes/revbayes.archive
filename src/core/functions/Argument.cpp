@@ -46,13 +46,35 @@ Argument::Argument(const std::string& argLabel, Variable* v) : RbInternal() {
 Argument::Argument(const Argument &x) : RbInternal(x) {
     
     label   = x.label;
-    var     = x.var->clone();
+    if (x.var != NULL)
+        var     = x.var->clone();
 }
 
 
 /** Destructor */
 Argument::~Argument() {
     delete var;
+}
+
+
+Argument& Argument::operator=(const Argument &x) {
+    
+    if ( &x != this ) {
+        
+        if (var != NULL) {
+            delete var;
+        }
+        // Copy the new variable
+        if (x.var == NULL) {
+            var = NULL;
+        }
+        else {
+            var     = x.var->clone();
+        }
+        label   = x.label;
+    }
+    
+    return (*this);
 }
 
 

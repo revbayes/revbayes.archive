@@ -104,11 +104,11 @@ Variable* SyntaxBinaryExpr::evaluateContent( ) {
 Variable* SyntaxBinaryExpr::evaluateContent( Environment& env) {
 
     // Package the arguments
-    std::vector<Argument*> args;
+    std::vector<Argument> args;
     Variable* left = leftOperand->evaluateContent(env);
-    args.push_back( new Argument("", left ) );
+    args.push_back( Argument("", left ) );
     Variable* right = rightOperand->evaluateContent(env);
-    args.push_back(new Argument("", right ) );
+    args.push_back( Argument("", right ) );
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];

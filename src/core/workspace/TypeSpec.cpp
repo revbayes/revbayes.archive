@@ -51,6 +51,11 @@ TypeSpec::TypeSpec(const TypeSpec& ts) : baseType(ts.baseType) {
     }
 }
 
+TypeSpec::~TypeSpec(void) {
+    if (elementType != NULL)
+        delete elementType;
+}
+
 
 /** Assignment operator; make sure we get independent elements */
 TypeSpec& TypeSpec::operator=( const TypeSpec& x ) {

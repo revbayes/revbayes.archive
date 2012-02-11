@@ -49,6 +49,11 @@ RbFunction::RbFunction(const RbFunction &x) : RbInternal(x), args( new Environme
 }
 
 
+/** Destructor. We need to free the arguments here. */
+RbFunction::~RbFunction(void) {
+    delete args;
+}
+
 
 /* Delete processed args */
 void RbFunction::clearArguments(void) {
@@ -186,7 +191,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorInteger* matchScore) {
+bool  RbFunction::processArguments( const std::vector<Argument>& passedArgs, VectorInteger* matchScore) {
     
     bool    conversionNeeded;
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
@@ -246,18 +251,18 @@ bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorIn
 
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 
-            Argument* theArgument = passedArgs[i];
-            const DAGNode* theDAGNode = theArgument->getDagNode();
+            const Argument& theArgument = passedArgs[i];
+            const DAGNode* theDAGNode = theArgument.getDagNode();
             if ( theDAGNode == NULL )
                 return false;   // This should never happen
             if ( !theRules[nRules-1]->isArgumentValid( theDAGNode, conversionNeeded ) )
                 return false;
             
             // add this variable to the argument list
-            (*args)[i].setVariable( theArgument->getVariable().clone() );
+            (*args)[i].setVariable( theArgument.getVariable().clone() );
 
-            if ( theArgument->getLabel() != "" )
-                args->setName( i, theArgument->getLabel() );
+            if ( theArgument.getLabel() != "" )
+                args->setName( i, theArgument.getLabel() );
 
             taken[i]          = true;
             filled[i]         = true;
@@ -276,21 +281,21 @@ bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorIn
             break;
 
         /* Skip if no label */
-        if ( passedArgs[i]->getLabel().size() == 0 )
+        if ( passedArgs[i].getLabel().size() == 0 )
             continue;
 
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
         for (size_t j=0; j<numRegularRules; j++) {
 
-            if ( passedArgs[i]->getLabel() == theRules[j]->getArgumentLabel() ) {
+            if ( passedArgs[i].getLabel() == theRules[j]->getArgumentLabel() ) {
 
-                if ( theRules[j]->isArgumentValid((const DAGNode*)passedArgs[i]->getDagNode(), conversionNeeded) && !filled[j] ) {
+                if ( theRules[j]->isArgumentValid(passedArgs[i].getDagNode(), conversionNeeded) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    (*args)[j].setVariable( passedArgs[i]->getVariable().clone() );
+                    (*args)[j].setVariable( passedArgs[i].getVariable().clone() );
                 }
                 else
                     return false;
@@ -312,7 +317,7 @@ bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorIn
             continue;
 
         /* Skip if no label */
-        if ( passedArgs[i]->getLabel().size() == 0 )
+        if ( passedArgs[i].getLabel().size() == 0 )
             continue;
 
         /* Initialize match index and number of matches */
@@ -322,7 +327,7 @@ bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorIn
         /* Try all rules */
         for (size_t j=0; j<numRegularRules; j++) {
 
-            if ( !filled[j] && theRules[j]->getArgumentLabel().compare(0, passedArgs[i]->getLabel().size(), passedArgs[i]->getLabel()) == 0 ) {
+            if ( !filled[j] && theRules[j]->getArgumentLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) {
                 ++nMatches;
                 matchRule = static_cast<int>( j );
             }
@@ -331,13 +336,13 @@ bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorIn
         if (nMatches != 1)
             return false;
  
-        if ( theRules[matchRule]->isArgumentValid((const DAGNode*)passedArgs[i]->getDagNode(), conversionNeeded) ) {
+        if ( theRules[matchRule]->isArgumentValid((const DAGNode*)passedArgs[i].getDagNode(), conversionNeeded) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
             
             // add this variable to the argument list
-            (*args)[matchRule].setVariable( passedArgs[i]->getVariable().clone() );
+            (*args)[matchRule].setVariable( passedArgs[i].getVariable().clone() );
         }
         else
             return false;
@@ -357,14 +362,14 @@ bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorIn
         for (size_t j=0; j<numRegularRules; j++) {
 
             if ( filled[j] == false ) {
-                DAGNode* argVar = passedArgs[i]->getDagNode();
+                const DAGNode* argVar = passedArgs[i].getDagNode();
                 if ( theRules[j]->isArgumentValid( (const DAGNode*)argVar, conversionNeeded ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    (*args)[j].setVariable( passedArgs[i]->getVariable().clone() );
+                    (*args)[j].setVariable( passedArgs[i].getVariable().clone() );
                     
                     break;
                 }
@@ -404,7 +409,7 @@ bool  RbFunction::processArguments( std::vector<Argument* > passedArgs, VectorIn
         int k = passedArgIndex[argIndex];
         if ( k >= 0 ) {
             
-            const VectorString& argClass = passedArgs[k]->getDagNode()->getValue().getClass();
+            const VectorString& argClass = passedArgs[k].getDagNode()->getValue().getClass();
 
             size_t j;
             for (j=0; j<argClass.size(); j++)

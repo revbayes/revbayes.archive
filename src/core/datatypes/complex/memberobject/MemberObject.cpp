@@ -68,7 +68,7 @@ MemberObject::~MemberObject(void) {
 
 
 /** Execute member method: delegate to method table. */
-RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument* >& args) {
+RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument>& args) {
     // TODO: We shouldn't allow const casts!!!
     MethodTable& mt = const_cast<MethodTable&>( getMethods() );
     return mt.executeFunction(name, args);

@@ -58,7 +58,7 @@ const std::string RbFunction_name = "function";
 class RbFunction :  public RbInternal {
 
     public:
-        virtual                                        ~RbFunction(void) {}                                                                 //!< Destructor
+    virtual                                            ~RbFunction(void);                                                                  //!< Destructor
                                                         RbFunction(const RbFunction &x);                                                    //!< Copy constuctor
 
         // Basic utility functions you have to override
@@ -77,7 +77,7 @@ class RbFunction :  public RbInternal {
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                                    processArguments(std::vector<Argument* > passedArgs,
+        virtual bool                                    processArguments(const std::vector<Argument>& passedArgs,
                                                                          VectorInteger*          matchScore = NULL);                        //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
     
