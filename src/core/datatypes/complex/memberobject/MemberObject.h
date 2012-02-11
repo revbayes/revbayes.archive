@@ -38,7 +38,7 @@ const std::string MemberObject_name = "Member Object";
 class MemberObject: public RbLanguageObject {
 
     public:
-        virtual                            ~MemberObject(void) {}                                                               //!< Destructor
+        virtual                            ~MemberObject(void);                                                               //!< Destructor
 
         // Basic utility functions you have to override
         virtual MemberObject*               clone(void) const = 0;                                                              //!< Clone object

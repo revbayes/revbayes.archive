@@ -36,6 +36,15 @@ ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(RbLangu
 }
 
 
+/** Constructor */
+ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(const ConstructorFunctionForSimpleObjects& obj) : RbFunction(obj) {
+    templateObject = obj.templateObject->clone();
+    
+    // Hack: We know that we do not own the member rules.
+    argRules = &templateObject->getMemberRules();
+}
+
+
 /** Clone the object */
 ConstructorFunctionForSimpleObjects* ConstructorFunctionForSimpleObjects::clone(void) const {
     

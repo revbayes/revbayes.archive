@@ -61,6 +61,12 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 }
 
 
+/** Destructor. Just frees the memory of the members. */
+MemberObject::~MemberObject(void) {
+    delete members;
+}
+
+
 /** Execute member method: delegate to method table. */
 RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument* >& args) {
     // TODO: We shouldn't allow const casts!!!

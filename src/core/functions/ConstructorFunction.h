@@ -34,6 +34,7 @@ class ConstructorFunction :  public RbFunction {
 
     public:
                                                 ConstructorFunction(MemberObject* obj);                                         //!< Object constructor
+                                                ConstructorFunction(const ConstructorFunction& obj);                            //!< Copy constructor
     virtual                                    ~ConstructorFunction();
 
         // Basic utility functions
@@ -48,6 +49,7 @@ class ConstructorFunction :  public RbFunction {
 
 	protected:
         RbLanguageObject*                       executeFunction(void);                                                          //!< Execute function
+
         const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
         MemberObject*                           templateObject;                                                                 //!< The template object
     

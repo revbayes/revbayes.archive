@@ -135,7 +135,7 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
     PRINTF( "Evaluating assign expression\n" );
     
     // Get variable info from lhs
-    VariableSlot* theSlot = variable->createVariable( env );
+    VariableSlot& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
     Variable* theVariable = NULL;
@@ -159,7 +159,7 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
         else {
             theNode = new ConstantNode(value.clone() );
         }
-        theSlot->getVariable().setDagNode( theNode );
+        theSlot.getVariable().setDagNode( theNode );
     }
     
     // Deal with equation assignments
@@ -184,7 +184,7 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
         }
         
         // fill the slot with the new variable
-        theSlot->getVariable().setDagNode( theVariable->getDagNode() );
+        theSlot.getVariable().setDagNode( theVariable->getDagNode() );
     }
     
     // Deal with tilde assignments
@@ -217,7 +217,7 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
         DAGNode* node = new StochasticNode( distribution );
         
         // fill the slot with the new variable
-        theSlot->getVariable().setDagNode( node );
+        theSlot.getVariable().setDagNode( node );
         
     }
 //    

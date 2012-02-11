@@ -111,6 +111,7 @@ DeterministicNode::~DeterministicNode( void ) {
     }
     parents.clear();
 
+    delete function;
 }
 
 DeterministicNode* DeterministicNode::clone() const {

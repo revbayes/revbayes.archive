@@ -67,6 +67,9 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
 
     /* We use a random draw as the initial value */
     value = distribution->rv();
+    if (value == NULL) {
+        std::cerr << "Ooops, rv return NULL!\n";
+    }
     
     /* Get initial probability */
     lnProb = calculateLnProbability();
@@ -118,6 +121,8 @@ StochasticNode::~StochasticNode( void ) {
         node->removeChildNode( this );
     }
     parents.clear();
+    
+    delete distribution;
 }
 
 
@@ -224,9 +229,15 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
             delete value;
         }
         value = observedVal;
+        if (value == NULL) {
+            std::cerr << "Ooops, observed value was NULL!\n";
+        }
     }
     else if (observedVal->isConvertibleTo(distribution->getVariableType())) {
         value = static_cast<RbLanguageObject*>(observedVal->convertTo(distribution->getVariableType()) );
+        if (value == NULL) {
+            std::cerr << "Ooops, observed value was NULL!\n";
+        }
         // we own the parameter so we need to delete it
         delete observedVal;
     }
@@ -538,6 +549,9 @@ void StochasticNode::setValue( RbLanguageObject* val ) {
 
     // set the value
     value = val;
+    if (value == NULL) {
+        std::cerr << "Ooops, setting value to NULL!\n";
+    }
 }
 
 

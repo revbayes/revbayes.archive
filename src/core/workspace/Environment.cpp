@@ -204,15 +204,11 @@ Environment* Environment::clone() const {
 /** Clear the variable table */
 void Environment::clear(void) {
     // empty the variable table
-    for (size_t i=0; i<size(); i++) {
-        // get the name of the i-th variable
-        const std::string &name = getName(i);
-        
-        // get the variable slot
-        VariableSlot& theSlot = operator[](name);
+    for (std::map<std::string, VariableSlot*>::iterator it = variableTable.begin(); it != variableTable.end(); it++) {
+        VariableSlot* theSlot = it->second;
         
         // free the memory of the slot
-        delete &theSlot;
+        delete theSlot;
     }
     
     // empty the two vectors

@@ -221,7 +221,7 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-VariableSlot* SyntaxVariable::createVariable( Environment& env) {
+VariableSlot& SyntaxVariable::createVariable( Environment& env) {
     
     /* Get index */
     VectorNatural indices = computeIndex(env);
@@ -325,7 +325,7 @@ VariableSlot* SyntaxVariable::createVariable( Environment& env) {
         }
     }
 
-    return theSlot;
+    return *theSlot;
 }
 
 

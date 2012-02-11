@@ -33,7 +33,8 @@ const std::string ConstructorFunctionForSimpleObjects_name = "constructor functi
 class ConstructorFunctionForSimpleObjects :  public RbFunction {
     
 public:
-    ConstructorFunctionForSimpleObjects(RbLanguageObject* obj);                                                       //!< Object constructor
+    ConstructorFunctionForSimpleObjects(RbLanguageObject* obj);                                                             //!< Object constructor
+    ConstructorFunctionForSimpleObjects(const ConstructorFunctionForSimpleObjects& obj);                                   //!< Copy constructor
     
     // Basic utility functions
     ConstructorFunctionForSimpleObjects*    clone(void) const;                                                              //!< Clone the object
@@ -47,6 +48,7 @@ public:
     
 protected:
     RbLanguageObject*                       executeFunction(void);                                                                  //!< Execute function
+
     const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
     RbLanguageObject*                       templateObject;                                                                 //!< The template object
     

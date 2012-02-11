@@ -92,10 +92,12 @@ SyntaxStatement::~SyntaxStatement() {
     }
     delete statements1;
     
-    for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++) {
-        delete *i;
+    if (statements2 != NULL) {
+        for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++) {
+            delete *i;
+        }
+        delete statements2;
     }
-    delete statements2;
 }
 
 

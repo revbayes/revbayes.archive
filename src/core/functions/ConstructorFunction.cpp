@@ -36,6 +36,16 @@ ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), temp
     argRules = &templateObject->getMemberRules();
 }
 
+
+/** Constructor */
+ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : RbFunction(obj) {
+    
+    templateObject = obj.templateObject->clone();
+    
+    // Hack: we know that we will not own the argRules.
+    argRules = &templateObject->getMemberRules();
+}
+
 ConstructorFunction::~ConstructorFunction() {
     delete templateObject;
     // we do not delete the argRules because we know that we do not own them!

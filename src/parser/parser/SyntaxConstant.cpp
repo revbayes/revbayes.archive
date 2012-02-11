@@ -80,7 +80,7 @@ Variable* SyntaxConstant::evaluateContent(void) {
     if (value == NULL)
         return new Variable(new ConstantNode( NULL ) );
     else
-        return new Variable(new ConstantNode( value ) );
+        return new Variable(new ConstantNode( value->clone() ) );
 }
 
 

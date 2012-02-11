@@ -155,8 +155,8 @@ int Parser::execute(SyntaxElement* root) const {
         SyntaxVariable* theVariable = rootPtr;
         if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
 
-            RbString* fxnName = theVariable->getIdentifier();
-            std::vector<RbFunction*> functions = Workspace::userWorkspace().getFunctionTable()->findFunctions( *fxnName );
+            RbString& fxnName = theVariable->getIdentifier();
+            std::vector<RbFunction*> functions = Workspace::userWorkspace().getFunctionTable()->findFunctions( fxnName );
             if ( functions.size() != 0 ) {
                 RBOUT( "Usage:" );
                 for ( std::vector<RbFunction*>::iterator i=functions.begin(); i!=functions.end(); i++ ) {
@@ -182,6 +182,10 @@ int Parser::execute(SyntaxElement* root) const {
         result->getDagNode()->printValue(msg);
         RBOUT( msg.str() );
     }
+    
+    // free the memory
+    delete result;
+    delete root;
 
     // Return success
     return 0;

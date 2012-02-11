@@ -57,10 +57,10 @@ class SyntaxVariable : public SyntaxElement {
         void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
 
         // Regular functions
-        RbString*                           getIdentifier(void) { return identifier; }                                              //!< Get identifier
+        RbString&                           getIdentifier(void) { return *identifier; }                                             //!< Get identifier
         VectorNatural                       computeIndex(Environment& env);                                                         //!< Evaluate index
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
-        VariableSlot*                       createVariable(Environment& env);                                                       //!< Get semantic value
+        VariableSlot&                       createVariable(Environment& env);                                                       //!< Get semantic value
         Variable*                           evaluateContent(void);                                                                  //!< Get semantic value
         Variable*                           evaluateContent(Environment& env);                                                      //!< Get semantic value
         bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?

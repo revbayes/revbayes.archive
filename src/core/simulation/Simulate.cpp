@@ -157,11 +157,11 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                 FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
                 
                 // get the DAG node for this monitor
-                std::vector<VariableNode*> &theOldNodes = theMonitor.getDagNodes();
+                std::vector<RbPtr<VariableNode> > &theOldNodes = theMonitor.getDagNodes();
                 
                 // convert the old nodes from Stochastic nodes to DAGNode
                 std::vector<DAGNode*> oldNodes;
-                for (std::vector<VariableNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+                for (std::vector<RbPtr<VariableNode> >::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
                     oldNodes.push_back( *it );
                 }
                 // get the DAG node which corresponds in the model to the cloned original node
@@ -192,11 +192,11 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                 ObjectMonitor& theMonitor = static_cast<ObjectMonitor&>( monitors->getElement(i) );
                 
                 // get the DAG node for this monitor
-                std::vector<VariableNode*> &theOldNodes = theMonitor.getDagNodes();
+                std::vector<RbPtr<VariableNode> > &theOldNodes = theMonitor.getDagNodes();
                 
                 // convert the old nodes from Stochastic nodes to DAGNode
                 std::vector<DAGNode*> oldNodes;
-                for (std::vector<VariableNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+                for (std::vector<RbPtr<VariableNode> >::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
                     oldNodes.push_back( *it );
                 }
                 // get the DAG node which corresponds in the model to the cloned original node
