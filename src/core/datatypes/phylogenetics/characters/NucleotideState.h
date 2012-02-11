@@ -37,7 +37,6 @@ class NucleotideState : public CharacterStateDiscrete {
         // Basic utility functions you have to override
         virtual NucleotideState*        clone(void) const = 0;                               //!< Clone object
         virtual const VectorString&     getClass(void) const;                                //!< Get class vector
-        virtual std::string             richInfo(void) const = 0;                            //!< Complete info about object
 
         // Discrete character observation functions
         void                            addState(const char s);                              //!< Add a character state to the set of character states

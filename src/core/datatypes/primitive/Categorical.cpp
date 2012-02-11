@@ -79,14 +79,14 @@ const VectorString& Categorical::getClass() const {
 }
 
 
-const MemberRules* Categorical::getMemberRules(void) const {
+const MemberRules& Categorical::getMemberRules(void) const {
     
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) {
         
-        memberRules->push_back( new ValueRule( "state"  , Integer_name ) );
+        memberRules.push_back( new ValueRule( "state"  , Integer_name ) );
         
         rulesSet = true;
     }
@@ -99,7 +99,7 @@ const MemberRules* Categorical::getMemberRules(void) const {
 void Categorical::initialize(const Vector &attributes) {
     
     // set the state
-    value = static_cast<const Integer*>( attributes[0] )->getValue();
+    value = static_cast<const Integer&>( attributes[0] ).getValue();
 }
 
 /** Check if character code is valid */

@@ -59,13 +59,12 @@ Real::Real(const bool v) : RbLanguageObject() {
     else value = 0.0;
 }
 
-/** Get brief info about object */
-std::string Real::briefInfo(void) const {
+/** Copy Construct */
+Real::Real(const Real& x) : RbLanguageObject() {
     
-	std::ostringstream o;
-    printValue(o);
-    return o.str();
+    value = x.value;
 }
+
 
 /** Clone object */
 Real* Real::clone(void) const {

@@ -34,7 +34,7 @@ Container::Container(const TypeSpec& elemType) : ConstantMemberObject(), element
 }
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType, const MemberRules* memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
+Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
     
 }
 
@@ -74,23 +74,23 @@ const VectorString& Container::getClass(void) const {
 
 
 /* Get method specifications */
-const MethodTable* Container::getMethods(void) const {
+const MethodTable& Container::getMethods(void) const {
     
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* sizeArgRules = new ArgumentRules();
     static ArgumentRules* squareBracketArgRules = new ArgumentRules();
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) 
     {
-        methods->addFunction("size", new MemberFunction(TypeSpec(Natural_name), sizeArgRules) );
+        methods.addFunction("size", new MemberFunction(TypeSpec(Natural_name), sizeArgRules) );
         
         // add method for call "x[]" as a function
         squareBracketArgRules->push_back( new ValueRule( "index" , Natural_name ) );
-        methods->addFunction("[]",  new MemberFunction(TypeSpec(RbObject_name), squareBracketArgRules) );
+        methods.addFunction("[]",  new MemberFunction(TypeSpec(RbObject_name), squareBracketArgRules) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( ConstantMemberObject::getMethods() );
+        methods.setParentTable( &ConstantMemberObject::getMethods() );
         methodsSet = true;
     }
     
@@ -99,21 +99,21 @@ const MethodTable* Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Container::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* Container::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "size") {
         
         return new Natural(size());
     } else if ( name == "[]") {
         // get the member with give index
-        const Natural* index = static_cast<const Natural*>( (*args)[0]->getValue() );
+        const Natural& index = static_cast<const Natural&>( args[0].getValue() );
 
-        if (size() < (size_t)(index->getValue()) ) {
+        if (size() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in []");
         }
         
         // TODO: Check what happens with DAGNodeContainers
-        RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index->getValue() - 1) );
+        RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index.getValue() - 1) );
         return element.clone();
     }
     

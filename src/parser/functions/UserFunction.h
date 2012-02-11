@@ -48,14 +48,13 @@ class UserFunction :  public RbFunction {
                 virtual ~UserFunction();                                                //!< Delete the code
 
         // Basic utility functions
-        std::string                                 briefInfo() const;                  //!< Brief info about object
         UserFunction*                               clone() const;                      //!< Clone object
         const VectorString&                         getClass() const;                   //!< Get class vector
         const TypeSpec&                             getTypeSpec(void) const;            //!< Get language type of the object
-        std::string                                 richInfo() const;                   //!< Complete info about object
+        virtual void                                printValue(std::ostream& o) const;  //!< Print the value
 
         // Regular functions
-        const ArgumentRules*                        getArgumentRules(void) const;       //!< Get arg rules
+        const ArgumentRules&                        getArgumentRules(void) const;       //!< Get arg rules
         const TypeSpec&                             getReturnType(void) const;          //!< Get return type
 
 	protected:

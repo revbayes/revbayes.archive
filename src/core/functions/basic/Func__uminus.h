@@ -34,7 +34,7 @@ class Func__uminus :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-        const ArgumentRules*        getArgumentRules(void) const;                               //!< Get argument rules
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
@@ -70,8 +70,8 @@ Func__uminus<valType, retType>* Func__uminus<valType, retType>::clone( void ) co
 template <typename valType, typename retType>
 RbLanguageObject* Func__uminus<valType, retType>::executeFunction( void ) {
 
-    const valType* val = static_cast<valType*> ( (*args)[0]->getValue() );
-    retType         res = -( *val );
+    const valType& val = static_cast<valType&> ( (*args)[0].getValue() );
+    retType         res = -( val );
 
     return res.clone();
 }
@@ -79,14 +79,14 @@ RbLanguageObject* Func__uminus<valType, retType>::executeFunction( void ) {
 
 /** Get argument rules */
 template <typename valType, typename retType>
-const ArgumentRules* Func__uminus<valType, retType>::getArgumentRules( void ) const {
+const ArgumentRules& Func__uminus<valType, retType>::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules->push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
         rulesSet = true;
         }
 

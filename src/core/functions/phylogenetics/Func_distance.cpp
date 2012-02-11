@@ -51,25 +51,25 @@ Func_distance* Func_distance::clone(void) const {
 RbLanguageObject* Func_distance::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    CharacterData* m      = static_cast<CharacterData*>( (*args)[0]->getValue() );
-    RbString*      dName  = static_cast<RbString*>     ( (*args)[1]->getValue() );
-    RbString*      freqs  = static_cast<RbString*>     ( (*args)[2]->getValue() );
-    RbString*      asrv   = static_cast<RbString*>     ( (*args)[3]->getValue() );
-    Real*          shape  = static_cast<Real*>         ( (*args)[4]->getValue() );
-    Real*          pinvar = static_cast<Real*>         ( (*args)[5]->getValue() );
+    CharacterData& m      = static_cast<CharacterData&>( (*args)[0].getValue() );
+    RbString&      dName  = static_cast<RbString&>     ( (*args)[1].getValue() );
+    RbString&      freqs  = static_cast<RbString&>     ( (*args)[2].getValue() );
+    RbString&      asrv   = static_cast<RbString&>     ( (*args)[3].getValue() );
+    Real&          shape  = static_cast<Real&>         ( (*args)[4].getValue() );
+    Real&          pinvar = static_cast<Real&>         ( (*args)[5].getValue() );
         
     // check that the data matrix is aligned
-    if ( m->getIsHomologyEstablished() == false )
+    if ( m.getIsHomologyEstablished() == false )
         throw( RbException("Data is not aligned") );
 
     // check that we have DNA or RNA sequences
-    if  ( !(m->getDataType() == DnaState_name || m->getDataType() == RnaState_name) )
+    if  ( !(m.getDataType() == DnaState_name || m.getDataType() == RnaState_name) )
         throw( RbException("Data must be DNA or RNA") );
         
     // determine the distance model
     enum distanceModel { p_dist, jc69, f81, tn93, k2p, hky85, k3p, gtr, logdet };
     distanceModel myModel;
-    std::string distanceStr = dName->getValue();
+    std::string distanceStr = dName.getValue();
     StringUtilities::toLower(distanceStr);
     if ( distanceStr == "p" )
         myModel = p_dist;
@@ -93,7 +93,7 @@ RbLanguageObject* Func_distance::executeFunction(void) {
         throw( RbException("Unknown distance model \"" + distanceStr + "\"") );
     
     // get the dimensions of the distance matrix
-    int n = (int)m->getNumberOfTaxa();
+    int n = (int)m.getNumberOfTaxa();
 
     // allocate the distance matrix
     DistanceMatrix* d = new DistanceMatrix(n);
@@ -101,10 +101,10 @@ RbLanguageObject* Func_distance::executeFunction(void) {
     // fill in the distance matrix
     for (int i=0; i<n; i++)
         {
-        const TaxonData* td_i = m->getTaxonData(i);
+        const TaxonData& td_i = m.getTaxonData(i);
         for (int j=i+1; j<n; j++)
             {
-            const TaxonData* td_j = m->getTaxonData(j);
+            const TaxonData& td_j = m.getTaxonData(j);
             
             double dist = 0.0;
             if (myModel == p_dist)
@@ -125,15 +125,15 @@ RbLanguageObject* Func_distance::executeFunction(void) {
                 dist = distanceJC69(td_i, td_j);
             else if (myModel == logdet)
                 dist = distanceJC69(td_i, td_j);
-            (*(*d)[i])[j] = dist;
-            (*(*d)[j])[i] = dist;
+            d[i][j] = dist;
+            d[j][i] = dist;
             }
         }
         
     // fill in the taxa
     for (int i=0; i<n; i++)
         {
-        std::string tName = m->getTaxonNameWithIndex(i);
+        std::string tName = m.getTaxonNameWithIndex(i);
         d->addTaxonWithName(tName);
         }
 
@@ -141,55 +141,55 @@ RbLanguageObject* Func_distance::executeFunction(void) {
 }
 
 
-double Func_distance::distanceJC69(const TaxonData* td1, const TaxonData* td2) {
+double Func_distance::distanceJC69(const TaxonData& td1, const TaxonData& td2) {
 
     int numDiff = 0;
-    for (int c=0; c<td1->getNumberOfCharacters(); c++)
+    for (int c=0; c<td1.getNumberOfCharacters(); c++)
         {
-        const Character* c1 = td1->getCharacter(c);
-        const Character* c2 = td2->getCharacter(c);
-        unsigned a = c1->getUnsignedValue();
-        unsigned b = c2->getUnsignedValue();
+        const Character& c1 = td1.getCharacter(c);
+        const Character& c2 = td2.getCharacter(c);
+        unsigned a = c1.getUnsignedValue();
+        unsigned b = c2.getUnsignedValue();
         if (a != b)
             numDiff++;
         }
-    double p = (double)numDiff / td1->getNumberOfCharacters();
+    double p = (double)numDiff / td1.getNumberOfCharacters();
     if (p >= 0.75)
         return 10.0;
     return -0.75 * log(1.0 - (4.0/3.0)*p);
 }
 
 
-double Func_distance::distanceP(const TaxonData* td1, const TaxonData* td2) {
+double Func_distance::distanceP(const TaxonData& td1, const TaxonData& td2) {
 
     int numDiff = 0;
-    for (int c=0; c<td1->getNumberOfCharacters(); c++)
+    for (int c=0; c<td1.getNumberOfCharacters(); c++)
         {
-        const Character* c1 = td1->getCharacter(c);
-        const Character* c2 = td2->getCharacter(c);
-        unsigned a = c1->getUnsignedValue();
-        unsigned b = c2->getUnsignedValue();
+        const Character& c1 = td1.getCharacter(c);
+        const Character& c2 = td2.getCharacter(c);
+        unsigned a = c1.getUnsignedValue();
+        unsigned b = c2.getUnsignedValue();
         if (a != b)
             numDiff++;
         }
-    double p = (double)numDiff / td1->getNumberOfCharacters();
+    double p = (double)numDiff / td1.getNumberOfCharacters();
     return p;
 }
 
 /** Get argument rules */
-const ArgumentRules* Func_distance::getArgumentRules(void) const {
+const ArgumentRules& Func_distance::getArgumentRules(void) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
 
     if (!rulesSet)
         {
-        argumentRules->push_back( new ValueRule( "data",   CharacterData_name ) );
-        argumentRules->push_back( new ValueRule( "model",  RbString_name      ) );
-        argumentRules->push_back( new ValueRule( "freqs",  RbString_name      ) );
-        argumentRules->push_back( new ValueRule( "asrv",   RbString_name      ) );
-        argumentRules->push_back( new ValueRule( "shape",  Real_name          ) );
-        argumentRules->push_back( new ValueRule( "pinvar", Real_name          ) );
+        argumentRules.push_back( new ValueRule( "data",   CharacterData_name ) );
+        argumentRules.push_back( new ValueRule( "model",  RbString_name      ) );
+        argumentRules.push_back( new ValueRule( "freqs",  RbString_name      ) );
+        argumentRules.push_back( new ValueRule( "asrv",   RbString_name      ) );
+        argumentRules.push_back( new ValueRule( "shape",  Real_name          ) );
+        argumentRules.push_back( new ValueRule( "pinvar", Real_name          ) );
         rulesSet = true;
         }
 

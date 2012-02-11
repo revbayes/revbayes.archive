@@ -60,21 +60,21 @@ const VectorString& Move_mslide::getClass() const {
 
 
 /** Return member rules */
-const MemberRules* Move_mslide::getMemberRules( void ) const {
+const MemberRules& Move_mslide::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
         
         TypeSpec varType( Real_name );
-        memberRules->push_back( new ValueRule( "variable", varType ) );
+        memberRules.push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const MemberRules* inheritedRules = MoveSimple::getMemberRules();
-        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
+        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules->push_back( new ValueRule( "delta", RealPos_name ) );
+        memberRules.push_back( new ValueRule( "delta", RealPos_name ) );
 
         rulesSet = true;
     }
@@ -104,7 +104,7 @@ double Move_mslide::perform( void ) {
 
     // Get relevant values
     StochasticNode* nodePtr = static_cast<StochasticNode*>( nodes[0] );
-    const RealPos* delta = static_cast<const RealPos*>( getMemberValue("delta") );
+    const RealPos& delta = static_cast<const RealPos&>( getMemberValue("delta") );
 
     double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();
     const Real* minPtr = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMin();
@@ -113,7 +113,7 @@ double Move_mslide::perform( void ) {
     double maxVal  = maxPtr->getValue();
 
     Real u      = rng->uniform01();
-    Real newVal = curVal + ( delta->getValue() * ( u - 0.5 ) );
+    Real newVal = curVal + ( delta.getValue() * ( u - 0.5 ) );
 
     /* reflect the new value */
     do {

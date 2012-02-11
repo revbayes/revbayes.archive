@@ -109,7 +109,7 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 			double r = 0.0;
 			for (int i=0; i<=k; i++)
 				if ( i != j )  
-					r += fabs((*a[j])[i]);
+					r += fabs(a[j][i]);
 			if ( r == 0.0 )
 				{
 				scale[k] = (double)j;
@@ -117,15 +117,15 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 					{
 					for (int i=0; i<=k; i++) 
 						{
-						double tempD = (*a[i])[j];
-						(*a[i])[j] = (*a[i])[k];
-						(*a[i])[k] = tempD;
+						double tempD = a[i][j];
+						a[i][j] = a[i][k];
+						a[i][k] = tempD;
 						}
 					for (int i=m; i<n; i++)
 						{
-						double tempD = (*a[j])[i];
-						(*a[j])[i] = (*a[k])[i];
-						(*a[k])[i] = tempD;
+						double tempD = a[j][i];
+						a[j][i] = a[k][i];
+						a[k][i] = tempD;
 						}
 					}
 				k--;
@@ -142,7 +142,7 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 			double c = 0.0;
 			for (int i=m; i<=k; i++)
 				if (i != j) 
-					c += fabs((*a[i])[j]);
+					c += fabs(a[i][j]);
 			if ( c == 0.0 )
 				{
 				scale[m] = (double)j;
@@ -150,15 +150,15 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 					{
 					for (int i=0; i<=k; i++)
 						{
-						double tempD = (*a[i])[m];
-						(*a[i])[j] = (*a[i])[m];
-						(*a[i])[m] = tempD;
+						double tempD = a[i][m];
+						a[i][j] = a[i][m];
+						a[i][m] = tempD;
 						}
 					for (int i=m; i<n; i++)
 						{
-						double tempD = (*a[j])[i];
-						(*a[j])[i] = (*a[m])[i];
-						(*a[m])[i] = tempD;
+						double tempD = a[j][i];
+						a[j][i] = a[m][i];
+						a[m][i] = tempD;
 						}
 					}
 				m++;
@@ -182,8 +182,8 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 			for (int j=m; j<=k; j++)
 				if (j !=i)
 					{
-					c += fabs((*a[j])[i]);
-					r += fabs((*a[i])[j]);
+					c += fabs(a[j][i]);
+					r += fabs(a[i][j]);
 					}
 			double g = r / RADIX;
 			double f = 1.0;
@@ -208,9 +208,9 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 				scale[i] *= f;
 				continueLoop = true;
 				for (int j=m; j<n; j++) 
-					(*a[i])[j] *= g;
+					a[i][j] *= g;
 				for (int j=0; j<=k; j++) 
-					(*a[j])[i] *= f;
+					a[j][i] *= f;
 				}
 			}
 		} while (continueLoop);
@@ -233,7 +233,7 @@ void EigenSystem::balback(int low, int high, std::vector<double>& scale, MatrixR
 		{
 		double s = scale[i];
 		for (int j=0; j<n; j++) 
-			(*eivec[i])[j] *= s;
+			eivec[i][j] *= s;
 		}
 	for (int i=low-1; i>=0; i--)
 		{
@@ -241,9 +241,9 @@ void EigenSystem::balback(int low, int high, std::vector<double>& scale, MatrixR
 		if ( k != i )
 			for (int j=0; j<n; j++) 
 				{
-				double tempD = (*eivec[i])[j];
-				(*eivec[i])[j] = (*eivec[k])[j];
-				(*eivec[k])[j] = tempD;
+				double tempD = eivec[i][j];
+				eivec[i][j] = eivec[k][j];
+				eivec[k][j] = tempD;
 				}
 		}
 	for (int i=high+1; i<n; i++)
@@ -252,9 +252,9 @@ void EigenSystem::balback(int low, int high, std::vector<double>& scale, MatrixR
 		if ( k != i )
 		for (int j=0; j<n; j++) 
 			{
-			double tempD = (*eivec[i])[j];
-			(*eivec[i])[j] = (*eivec[k])[j];
-			(*eivec[k])[j] = tempD;
+			double tempD = eivec[i][j];
+			eivec[i][j] = eivec[k][j];
+			eivec[k][j] = tempD;
 			}
 		}
 }
@@ -308,7 +308,7 @@ void EigenSystem::complexLUBackSubstitution(MatrixComplex& a, int* indx, VectorC
 		if ( ii >= 0 ) 
 			{
 			for (j = ii; j <= i - 1; j++)
-				sum -= (*a[i])[j] * b[j];
+				sum -= a[i][j] * b[j];
 				// was originally sum = a[i][j] - b[j]; this must be wrong!!
 				//sum = ComplexSubtraction (sum, ComplexMultiplication (a[i][j], b[j]));
 			} 
@@ -321,10 +321,10 @@ void EigenSystem::complexLUBackSubstitution(MatrixComplex& a, int* indx, VectorC
 		sum = b[i];
 		for (j=i+1; j<n; j++)
 			{
-			sum -= (*a[i])[j] * b[j];
+			sum -= a[i][j] * b[j];
 			//sum = ComplexSubtraction (sum, ComplexMultiplication (a[i][j], b[j]));
 			}
-		b[i] = sum / (*a[i])[i];
+		b[i] = sum / a[i][i];
 		//b[i] = ComplexDivision (sum, a[i][i]);
 		}
 }
@@ -349,7 +349,7 @@ bool EigenSystem::complexLUDecompose(MatrixComplex& a, double* vv, int* indx, do
 		for (int j=0; j<n; j++) 
 			{
 			double temp;
-			if ((temp = abs((*a[i])[j])) > big)
+			if ((temp = abs(a[i][j])) > big)
 				big = temp;
 			}
 		if ( big == 0.0 ) 
@@ -361,24 +361,24 @@ bool EigenSystem::complexLUDecompose(MatrixComplex& a, double* vv, int* indx, do
 		{
 		for (int i=0; i<j; i++) 
 			{
-			std::complex<double>sum = (*a[i])[j];
+			std::complex<double>sum = a[i][j];
 			for (int k=0; k<i; k++) 
 				{
-				std::complex<double> x = (*a[i])[k] * (*a[k])[j];
+				std::complex<double> x = a[i][k] * a[k][j];
 				sum -= x;
 				}
-			(*a[i])[j] = sum;
+			a[i][j] = sum;
 			}
 		double big = 0.0;
 		for (int i = j; i < n; i++) 
 			{
-			std::complex<double> sum = (*a[i])[j];
+			std::complex<double> sum = a[i][j];
 			for (int k=0; k<j; k++)
 				{
-				std::complex<double> x = (*a[i])[k] * (*a[k])[j];
+				std::complex<double> x = a[i][k] * a[k][j];
 				sum -= x;
 				}
-			(*a[i])[j] = sum;
+			a[i][j] = sum;
 			double dum = vv[i] * abs(sum);
 			if ( dum >= big ) 
 				{
@@ -390,22 +390,22 @@ bool EigenSystem::complexLUDecompose(MatrixComplex& a, double* vv, int* indx, do
 			{
 			for (int k=0; k<n; k++) 
 				{
-				std::complex<double> cdum = (*a[imax])[k];
-				(*a[imax])[k] = (*a[j])[k];
-				(*a[j])[k] = cdum;
+				std::complex<double> cdum = a[imax][k];
+				a[imax][k] = a[j][k];
+				a[j][k] = cdum;
 				}       
 			d = -d;
 			vv[imax] = vv[j];
 			}
 		indx[j] = imax;
-		if ( (*a[j])[j].real() == 0.0 && (*a[j])[j].imag() == 0.0 )
-			(*a[j])[j] = std::complex<double>(1.0e-20, 1.0e-20);
+		if ( a[j][j].real() == 0.0 && a[j][j].imag() == 0.0 )
+			a[j][j] = std::complex<double>(1.0e-20, 1.0e-20);
 		if ( j != n - 1 )
 			{
 			std::complex<double> x = std::complex<double>(1.0, 0.0);
-			std::complex<double> cdum = x / (*a[j])[j];
+			std::complex<double> cdum = x / a[j][j];
 			for (int i=j+1; i<n; i++)
-				(*a[i])[j] = (*a[i])[j] * cdum;
+				a[i][j] = a[i][j] * cdum;
 			}
 		}
 
@@ -433,9 +433,9 @@ void EigenSystem::elmhes(int low, int high, MatrixReal& a, std::vector<int>& per
 		double x = 0.0;
 		for (int j=m; j<=high; j++)
 			{
-			if ( fabs((*a[j])[m-1]) > fabs(x) )
+			if ( fabs(a[j][m-1]) > fabs(x) )
 				{
-				x = (*a[j])[m-1];
+				x = a[j][m-1];
 				i = j;
 				}
 			}
@@ -445,15 +445,15 @@ void EigenSystem::elmhes(int low, int high, MatrixReal& a, std::vector<int>& per
 			{
 			for (int j=m-1; j<n; j++)
 				{
-				double tempD = (*a[i])[j];
-				(*a[i])[j] = (*a[m])[j];
-				(*a[m])[j] = tempD;
+				double tempD = a[i][j];
+				a[i][j] = a[m][j];
+				a[m][j] = tempD;
 				}
 			for (int j=0; j<=high; j++)
 				{
-				double tempD = (*a[j])[i];
-				(*a[j])[i] = (*a[j])[m];
-				(*a[j])[m] = tempD;
+				double tempD = a[j][i];
+				a[j][i] = a[j][m];
+				a[j][m] = tempD;
 				}
 			}
 
@@ -461,15 +461,15 @@ void EigenSystem::elmhes(int low, int high, MatrixReal& a, std::vector<int>& per
 			{
 			for (i=m+1; i<=high; i++)
 				{
-				double y = (*a[i])[m-1];
+				double y = a[i][m-1];
 				if ( y != 0.0 )
 					{
 					y /= x;
-					(*a[i])[m-1] = y;
+					a[i][m-1] = y;
 					for (int j=m; j<n; j++) 
-						(*a[i])[j] -= y * (*a[m])[j];
+						a[i][j] -= y * a[m][j];
 					for (int j=0; j<=high; j++) 
-						(*a[j])[m] += y * (*a[j])[i];
+						a[j][m] += y * a[j][i];
 					}
 				}
 			}
@@ -491,23 +491,23 @@ void EigenSystem::elmtrans(int low, int high, MatrixReal& a, std::vector<int>& p
 	for (int i=0; i<n; i++)
 		{
 		for (int k=0; k<n; k++) 
-			(*h[i])[k] = 0.0;
-		(*h[i])[i] = 1.0;
+			h[i][k] = 0.0;
+		h[i][i] = 1.0;
 		}
 
 	for (int i=high-1; i>low; i--)
 		{
 		int j = perm[i];
 		for (int k=i+1; k<=high; k++) 
-			(*h[k])[i] = (*a[k])[i-1];
+			h[k][i] = a[k][i-1];
 		if ( i != j )
 			{
 			for (int k=i; k<=high; k++)
 				{
-				(*h[i])[k] = (*h[j])[k];
-				(*h[j])[k] = 0.0;
+				h[i][k] = h[j][k];
+				h[j][k] = 0.0;
 				}
-			(*h[j])[i] = 1.0;
+			h[j][i] = 1.0;
 			}
 		}
 }
@@ -557,12 +557,12 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 	for (int i=0; i<n; i++)
 		{
 		for (int j=k; j<n; j++)
-			norm += fabs((*h[i])[j]);
+			norm += fabs(h[i][j]);
 
 		k = i;
 		if ((i < low) || (i > high))
 			{
-			wr[i] = (*h[i])[i];
+			wr[i] = h[i][i];
 			wi[i] = 0.0;
 			}
 		}
@@ -582,21 +582,21 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 			int l, m;
 			for (l=en; l>low; l--)
 				{
-				s = fabs((*h[l-1])[l-1]) + fabs((*h[l])[l]);
+				s = fabs(h[l-1][l-1]) + fabs(h[l][l]);
 				if (s == 0.0)
 					s = norm;
 				double tst1 = s;
-				double tst2 = tst1 + fabs((*h[l])[l-1]);
+				double tst2 = tst1 + fabs(h[l][l-1]);
 				if (tst2 == tst1)
 					break;
 				}
 	
 			/* form shift */
-			x = (*h[en])[en];
+			x = h[en][en];
 			if ( l == en )
 				break;
-			y = (*h[na])[na];
-			w = (*h[en])[na] * (*h[na])[en];
+			y = h[na][na];
+			w = h[en][na] * h[na][en];
 			if (l == na)
 				{
 				twoRoots = true;
@@ -610,8 +610,8 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 				{
 				t += x;
 				for (int i=low; i<=en; i++)
-					(*h[i])[i] -= x;
-				s = fabs((*h[en])[na]) + fabs((*h[na])[enm2]);
+					h[i][i] -= x;
+				s = fabs(h[en][na]) + fabs(h[na][enm2]);
 				x = 0.75 * s;
 				y = x;
 				w = -0.4375 * s * s;
@@ -622,20 +622,20 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 			/* look for two consecutive small sub-diagonal elements */
 			for (m=enm2; m>=l; m--)
 				{
-				z = (*h[m])[m];
+				z = h[m][m];
 				r = x - z;
 				s = y - z;
-				p = (r * s - w) / (*h[m+1])[m] + (*h[m])[m+1];
-				q = (*h[m+1])[m+1] - z - r - s;
-				r = (*h[m+2])[m+1];
+				p = (r * s - w) / h[m+1][m] + h[m][m+1];
+				q = h[m+1][m+1] - z - r - s;
+				r = h[m+2][m+1];
 				s = fabs(p) + fabs(q) + fabs(r);
 				p /= s;
 				q /= s;
 				r /= s;
 				if ( m == l )
 					break;
-				double tst1 = fabs(p) * (fabs((*h[m-1])[m-1]) + fabs(z) + fabs((*h[m+1])[m+1]));
-				double tst2 = tst1 + fabs((*h[m])[m-1]) * (fabs(q) + fabs(r));
+				double tst1 = fabs(p) * (fabs(h[m-1][m-1]) + fabs(z) + fabs(h[m+1][m+1]));
+				double tst2 = tst1 + fabs(h[m][m-1]) * (fabs(q) + fabs(r));
 				if ( tst2 == tst1 )
 					break;
 				}
@@ -643,9 +643,9 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 			int mp2 = m + 2;
 			for (int i=mp2; i<=en; i++)
 				{
-				(*h[i])[i-2] = 0.0;
+				h[i][i-2] = 0.0;
 				if ( i != mp2 )
-					(*h[i])[i-3] = 0.0;
+					h[i][i-3] = 0.0;
 				}
 	
 			/* double QR step involving rows l to en and columns m to en */
@@ -653,9 +653,9 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 				{
 				if ( k != m )
 					{
-					p = (*h[k])[k-1];
-					q = (*h[k+1])[k-1];
-					r = (k != na) ? (*h[k+2])[k-1] : 0.0;
+					p = h[k][k-1];
+					q = h[k+1][k-1];
+					r = (k != na) ? h[k+2][k-1] : 0.0;
 					x = fabs(p) + fabs(q) + fabs(r);
 					if (x == 0.0)
 						continue;
@@ -669,9 +669,9 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 
 				
 				if ( k != m )
-					(*h[k])[k-1] = -s * x;
+					h[k][k-1] = -s * x;
 				else if ( l != m )
-					(*h[k])[k-1] = -(*h[k])[k-1];
+					h[k][k-1] = -h[k][k-1];
 				p += s;
 				x = p / s;
 				y = q / s;
@@ -683,26 +683,26 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 					/* row modification */
 					for (int j=k; j<n; j++)
 						{
-						p = (*h[k])[j] + q * (*h[k+1])[j];
-						(*h[k])[j] -= p * x;
-						(*h[k+1])[j] -= p * y;
+						p = h[k][j] + q * h[k+1][j];
+						h[k][j] -= p * x;
+						h[k+1][j] -= p * y;
 						} 
 					int stop = (k + 3 < en) ? (k + 3) : en;
 					
 					/* column modification */
 					for (int i=0; i<=stop; i++)
 						{
-						p = x * (*h[i])[k] + y * (*h[i])[k+1];
-						(*h[i])[k] -= p;
-						(*h[i])[k+1] -= p * q;
+						p = x * h[i][k] + y * h[i][k+1];
+						h[i][k] -= p;
+						h[i][k+1] -= p * q;
 						}
 						
 					/* accumulate transformations */
 					for (int i=low; i<=high; i++)
 						{
-						p = x * (*eivec[i])[k] + y * (*eivec[i])[k+1];
-						(*eivec[i])[k] -= p;
-						(*eivec[i])[k+1] -= p * q;
+						p = x * eivec[i][k] + y * eivec[i][k+1];
+						eivec[i][k] -= p;
+						eivec[i][k+1] -= p * q;
 						}
 					}
 				else
@@ -710,29 +710,29 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 					/* row modification */
 					for (int j=k; j<n; j++)
 						{
-						p = (*h[k])[j] + q * (*h[k+1])[j] + r * (*h[k+2])[j];
-						(*h[k])[j] -= p * x;
-						(*h[k+1])[j] -= p * y;
-						(*h[k+2])[j] -= p * z;
+						p = h[k][j] + q * h[k+1][j] + r * h[k+2][j];
+						h[k][j] -= p * x;
+						h[k+1][j] -= p * y;
+						h[k+2][j] -= p * z;
 						}
 					int stop = (k + 3 < en) ? (k + 3) : en;
 					
 					/* column modification */
 					for (int i=0; i<=stop; i++)
 						{
-						p = x * (*h[i])[k] + y * (*h[i])[k+1] + z * (*h[i])[k+2];
-						(*h[i])[k] -= p;
-						(*h[i])[k+1] -= p * q;
-						(*h[i])[k+2] -= p * r;
+						p = x * h[i][k] + y * h[i][k+1] + z * h[i][k+2];
+						h[i][k] -= p;
+						h[i][k+1] -= p * q;
+						h[i][k+2] -= p * r;
 						}
 						
 					/* accumulate transformations */
 					for (int i=low; i<=high; i++)
 						{
-						p = x * (*eivec[i])[k] + y * (*eivec[i])[k+1] + z * (*eivec[i])[k+2];
-						(*eivec[i])[k] -= p;
-						(*eivec[i])[k+1] -= p * q;
-						(*eivec[i])[k+2] -= p * r;
+						p = x * eivec[i][k] + y * eivec[i][k+1] + z * eivec[i][k+2];
+						eivec[i][k] -= p;
+						eivec[i][k+1] -= p * q;
+						eivec[i][k+2] -= p * r;
 						}
 					}
 				}
@@ -744,9 +744,9 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 			p = (y - x) / 2.0;
 			q = p * p + w;
 			z = sqrt(fabs(q));
-			(*h[en])[en] = x + t;
-			x = (*h[en])[en];
-			(*h[na])[na] = y + t;
+			h[en][en] = x + t;
+			x = h[en][en];
+			h[na][na] = y + t;
 			if (q >= -1e-12)
 				{
 				/* real pair */
@@ -757,7 +757,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 					wr[en] = x - w / z;
 				wi[na] = 0.0;
 				wi[en] = 0.0;
-				x = (*h[en])[na];
+				x = h[en][na];
 				s = fabs(x) + fabs(z);
 				p = x / s;
 				q = z / s;
@@ -768,25 +768,25 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 				/* row modification */
 				for (int j=na; j<n; j++)
 					{
-					z = (*h[na])[j];
-					(*h[na])[j] = q * z + p * (*h[en])[j];
-					(*h[en])[j] = q * (*h[en])[j] - p * z;
+					z = h[na][j];
+					h[na][j] = q * z + p * h[en][j];
+					h[en][j] = q * h[en][j] - p * z;
 					}
 					
 				/* column modification */
 				for (int i=0; i<=en; i++)
 					{
-					z = (*h[i])[na];
-					(*h[i])[na] = q * z + p * (*h[i])[en];
-					(*h[i])[en] = q * (*h[i])[en] - p * z;
+					z = h[i][na];
+					h[i][na] = q * z + p * h[i][en];
+					h[i][en] = q * h[i][en] - p * z;
 					}
 					
 				/* accumulate transformations */
 				for (int i=low; i<=high; i++)
 					{
-					z = (*eivec[i])[na];
-					(*eivec[i])[na] = q * z + p * (*eivec[i])[en];
-					(*eivec[i])[en] = q * (*eivec[i])[en] - p * z;
+					z = eivec[i][na];
+					eivec[i][na] = q * z + p * eivec[i][en];
+					eivec[i][en] = q * eivec[i][en] - p * z;
 					}
 				}
 			else
@@ -802,8 +802,8 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 		else
 			{
 			/* one root found */
-			(*h[en])[en] = x + t;
-			wr[en] = (*h[en])[en];
+			h[en][en] = x + t;
+			wr[en] = h[en][en];
 			wi[en] = 0.0;
 			en = na;
 			}
@@ -823,36 +823,36 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 			/* last vector component chosen imaginary so that eigenvector
 			   matrix is triangular */
 			int m = na;
-			if (fabs((*h[en])[na]) > fabs((*h[na])[en]))
+			if (fabs(h[en][na]) > fabs(h[na][en]))
 				{
-				(*h[na])[na] = q / (*h[en])[na];
-				(*h[na])[en] = -((*h[en])[en] - p) / (*h[en])[na];
+				h[na][na] = q / h[en][na];
+				h[na][en] = -(h[en][en] - p) / h[en][na];
 				}
 			else
 				{
 				//complexDivision(0.0, -h[na][en], h[na][na] - p, q, &h[na][na], &h[na][en]);
-				std::complex<double> ca(         0.0, -(*h[na])[en] );
-				std::complex<double> cb( (*h[na])[na]-p,          q );
+				std::complex<double> ca(         0.0, -h[na][en] );
+				std::complex<double> cb( h[na][na]-p,          q );
 				std::complex<double> cc = ca / cb;
-				(*h[na])[na] = cc.real();
-				(*h[na])[en] = cc.imag();
+				h[na][na] = cc.real();
+				h[na][en] = cc.imag();
 				}
 
-			(*h[en])[na] = 0.0;
-			(*h[en])[en] = 1.0;
+			h[en][na] = 0.0;
+			h[en][en] = 1.0;
 			int enm2 = na - 1;
 			if ( enm2 >= 0 )
 				{
 				for (int i=enm2; i>=0; i--)
 					{
-					w = (*h[i])[i] - p;
+					w = h[i][i] - p;
 					double ra = 0.0;
 					double sa = 0.0;
 			
 					for (int j=m; j<=en; j++)
 						{
-						ra += (*h[i])[j] * (*h[j])[na];
-						sa += (*h[i])[j] * (*h[j])[en];
+						ra += h[i][j] * h[j][na];
+						sa += h[i][j] * h[j][en];
 						}
 			
 					if ( wi[i] < 0.0 )
@@ -870,8 +870,8 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 							std::complex<double> ca( -ra, -sa );
 							std::complex<double> cb(   w,   q );
 							std::complex<double> cc = ca / cb;
-							(*h[i])[na] = cc.real();
-							(*h[i])[en] = cc.imag();
+							h[i][na] = cc.real();
+                            h[i][en] = cc.imag();
 							}
 						else
 							{
@@ -879,8 +879,8 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 							/* | w+i*q     x | | h[i][na] + i*h[i][en]  |   | -ra+i*sa | */
 							/* |             | |                        | = |          | */
 							/* |   y    z+i*q| | h[i+1][na]+i*h[i+1][en]|   | -r+i*s   | */
-							x = (*h[i])[i+1];
-							y = (*h[i+1])[i];
+							x = h[i][i+1];
+							y = h[i+1][i];
 							double vr = (wr[i] - p) * (wr[i] - p) + wi[i] * wi[i] - q * q;
 							double vi = (wr[i] - p) * 2.0 * q;
 							if ( (vr == 0.0) && (vi == 0.0) )
@@ -898,27 +898,27 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 							std::complex<double> ca( x * r - z * ra + q * sa, x * s - z * sa - q * ra );
 							std::complex<double> cb(                      vr,                      vi );
 							std::complex<double> cc = ca / cb;
-							(*h[i])[na] = cc.real();
-							(*h[i])[en] = cc.imag();
+							h[i][na] = cc.real();
+							h[i][en] = cc.imag();
 							if ( fabs(x) > fabs(z) + fabs(q) )
 								{
-								(*h[i+1])[na] = (-ra - w * (*h[i])[na] + q * (*h[i])[en]) / x;
-								(*h[i+1])[en] = (-sa - w * (*h[i])[en] - q * (*h[i])[na]) / x;
+								h[i+1][na] = (-ra - w * h[i][na] + q * h[i][en]) / x;
+								h[i+1][en] = (-sa - w * h[i][en] - q * h[i][na]) / x;
 								}
 							else
 								{
 								//complexDivision(-r - y * h[i][na], -s - y * h[i][en], z, q, &h[i+1][na], &h[i+1][en]);
-								ca = std::complex<double>( -r - y * (*h[i])[na], -s - y * (*h[i])[en] );
+								ca = std::complex<double>( -r - y * h[i][na], -s - y * h[i][en] );
 								cb = std::complex<double>(                 z,                 q );
 								cc = ca / cb;
-								(*h[i+1])[na] = cc.real();
-								(*h[i+1])[en] = cc.imag();
+								h[i+1][na] = cc.real();
+								h[i+1][en] = cc.imag();
 								}
 							}
 							
 						/* overflow control */
-						double tst1 = fabs((*h[i])[na]);
-						double tst2 = fabs((*h[i])[en]);
+						double tst1 = fabs(h[i][na]);
+						double tst2 = fabs(h[i][en]);
 						t = (tst2 > tst1) ? tst2 : tst1;
 						if (t != 0.0)
 							{
@@ -928,8 +928,8 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 								{
 								for (int j=i; j<=en; j++)
 									{
-									(*h[j])[na] /= t;
-									(*h[j])[en] /= t;
+									h[j][na] /= t;
+									h[j][en] /= t;
 									}
 								}
 							}
@@ -941,15 +941,15 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 			{
 			/* real vector */
 			int m = en;
-			(*h[en])[en] = 1.0;
+			h[en][en] = 1.0;
 			if (na >= 0)
 				{
 				for (int i=na; i>=0; i--)
 					{
-					w = (*h[i])[i] - p;
+					w = h[i][i] - p;
 					r = 0.0;
 					for (int j = m; j <= en; j++)
-						r += (*h[i])[j] * (*h[j])[en];
+						r += h[i][j] * h[j][en];
 					if ( wi[i] < 0.0 )
 						{
 						z = w;
@@ -972,7 +972,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 									}
 									while (tst2 > tst1);
 								}			
-							(*h[i])[en] = -r / t;
+							h[i][en] = -r / t;
 							}
 						else
 							{
@@ -980,19 +980,19 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 							/* | w   x |  | h[i][en]   |   | -r |  */
 							/* |       |  |            | = |    |  */
 							/* | y   z |  | h[i+1][en] |   | -s |  */
-							x = (*h[i])[i+1];
-							y = (*h[i+1])[i];
+							x = h[i][i+1];
+							y = h[i+1][i];
 							q = (wr[i] - p) * (wr[i] - p) + wi[i] * wi[i];
 							t = (x * s - z * r) / q;
-							(*h[i])[en] = t;
+							h[i][en] = t;
 							if ( fabs(x) > fabs(z) )
-								(*h[i+1])[en] = (-r - w * t) / x;
+								h[i+1][en] = (-r - w * t) / x;
 							else
-								(*h[i+1])[en] = (-s - y * t) / z;
+								h[i+1][en] = (-s - y * t) / z;
 							}
 				
 						/* overflow control */
-						t = fabs((*h[i])[en]);
+						t = fabs(h[i][en]);
 						if (t != 0.0)
 							{
 							double tst1 = t;
@@ -1000,7 +1000,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 							if (tst2 <= tst1)
 								{
 								for (int j=i; j<=en; j++)
-									(*h[j])[en] /= t;
+									h[j][en] /= t;
 								}
 							}
 						}
@@ -1014,7 +1014,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 		if ( (i < low) || (i > high) )
 			{
 			for (int j=i; j<n; j++)
-				(*eivec[i])[j] = (*h[i])[j];
+				eivec[i][j] = h[i][j];
 			}
 		}
 
@@ -1026,8 +1026,8 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 			{
 			z = 0.0;
 			for (k=low; k<=m; k++)
-				z += (*eivec[i])[k] * (*h[k])[j];
-			(*eivec[i])[j] = z;
+				z += eivec[i][k] * h[k][j];
+			eivec[i][j] = z;
 			}
 		}
 
@@ -1055,20 +1055,20 @@ void EigenSystem::initializeComplexEigenvectors(void) {
 		if (imaginaryEigenvalues[i] == 0.0) 
             { 
 			for(int j=0; j<n; j++)
-				(*complexEigenvectors[j])[i] = std::complex<double>((*eigenvectors[j])[i], 0.0);
+				complexEigenvectors[j][i] = std::complex<double>(eigenvectors[j][i], 0.0);
             }
 		// complex eigenvector with positive imaginary part
 		else if (imaginaryEigenvalues[i] > 0.0) 
             { 
 			for (int j=0; j<n; j++)
-				(*complexEigenvectors[j])[i] = std::complex<double>((*eigenvectors[j])[i], (*eigenvectors[j])[i+1]);
+				complexEigenvectors[j][i] = std::complex<double>(eigenvectors[j][i], eigenvectors[j][i+1]);
             }
 		// complex eigenvector with negative imaginary part
 		// retrieve this as the conjugate of the preceding eigenvector
 		else if (imaginaryEigenvalues[i] < 0.0) 
             { 
 			for (int j=0; j<n; j++)
-				(*complexEigenvectors[j])[i] = std::complex<double>((*eigenvectors[j])[i-1], -(*eigenvectors[j])[i]);
+				complexEigenvectors[j][i] = std::complex<double>(eigenvectors[j][i-1], -eigenvectors[j][i]);
             }
         }
 }
@@ -1106,7 +1106,7 @@ int EigenSystem::invertComplexMatrix(MatrixComplex& a, MatrixComplex& aInv) {
 			col[j] = std::complex<double>(1.0, 0.0);
 			complexLUBackSubstitution(tempA, indx, col);
 			for (int i=0; i<n; i++)
-				(*aInv[i])[j] = col[i];
+				aInv[i][j] = col[i];
 			}
 		}
 
@@ -1142,7 +1142,7 @@ int EigenSystem::invertMatrix(MatrixReal& a, MatrixReal& aInv) {
 			col[j] = 1.0;
 			luBackSubstitution(a, indx, col);
 			for (int i=0; i<n; i++)
-				(*aInv[i])[j] = col[i];
+				aInv[i][j] = col[i];
 			}
 		}
 	
@@ -1171,7 +1171,7 @@ void EigenSystem::luBackSubstitution(MatrixReal& a, int* indx, double* b) {
 		if (ii >= 0)
 			{
 			for (int j=ii; j<=i-1; j++)
-				sum -= (*a[i])[j] * b[j];
+				sum -= a[i][j] * b[j];
 			}
 		else if (sum != 0.0)
 			ii = i;
@@ -1181,8 +1181,8 @@ void EigenSystem::luBackSubstitution(MatrixReal& a, int* indx, double* b) {
 		{
 		double sum = b[i];
 		for (int j=i+1; j<n; j++)
-			sum -= (*a[i])[j] * b[j];
-		b[i] = sum / (*a[i])[i];
+			sum -= a[i][j] * b[j];
+		b[i] = sum / a[i][i];
 		}
 }
 
@@ -1207,7 +1207,7 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
 		for (int j=0; j<n; j++)
 			{
 			double temp;
-			if ( (temp = fabs((*a[i])[j])) > big )
+			if ( (temp = fabs(a[i][j])) > big )
 				big = temp;
 			}
 		if ( big == 0.0 )
@@ -1219,18 +1219,18 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
 		{
 		for (int i=0; i<j; i++)
 			{
-			double sum = (*a[i])[j];
+			double sum = a[i][j];
 			for (int k=0; k<i; k++)
-				sum -= (*a[i])[k] * (*a[k])[j];
-			(*a[i])[j] = sum;
+				sum -= a[i][k] * a[k][j];
+			a[i][j] = sum;
 			}
 		double big = 0.0;
 		for (int i=j; i<n; i++)
 			{
-			double sum = (*a[i])[j];
+			double sum = a[i][j];
 			for (int k=0; k<j; k++)
-				sum -= (*a[i])[k] * (*a[k])[j];
-			(*a[i])[j] = sum;
+				sum -= a[i][k] * a[k][j];
+			a[i][j] = sum;
 			double dum = vv[i] * fabs(sum);
 			if ( dum >= big )
 				{
@@ -1242,21 +1242,21 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
 			{
 			for (int k=0; k<n; k++)
 				{
-				double dum = (*a[imax])[k];
-				(*a[imax])[k] = (*a[j])[k];
-				(*a[j])[k] = dum;
+				double dum = a[imax][k];
+				a[imax][k] = a[j][k];
+				a[j][k] = dum;
 				}	
 			d = -d;
 			vv[imax] = vv[j];
 			}
 		indx[j] = imax;
-		if ( (*a[j])[j] == 0.0 )
-			(*a[j])[j] = 1.0e-20;
+		if ( a[j][j] == 0.0 )
+			a[j][j] = 1.0e-20;
 		if ( j != n - 1 )
 			{
-			double dum = 1.0 / ((*a[j])[j]);
+			double dum = 1.0 / (a[j][j]);
 			for (int i=j+1; i<n; i++)
-				(*a[i])[j] *= dum;
+				a[i][j] *= dum;
 			}
 		}
 	if ( pd != NULL )

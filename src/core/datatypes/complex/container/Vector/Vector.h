@@ -41,8 +41,8 @@ public:
     virtual const TypeSpec&                         getTypeSpec(void) const;                                        //!< Get language type of the object
     void                                            printValue(std::ostream& o) const;                              //!< Print value for user
     
-    RbLanguageObject*                               operator[](size_t i);                                           //!< Index op allowing change
-    const RbLanguageObject*                         operator[](size_t i) const;                                     //!< Const index op
+    RbLanguageObject&                               operator[](size_t i);                                           //!< Index op allowing change
+    const RbLanguageObject&                         operator[](size_t i) const;                                     //!< Const index op
     Vector&                                         operator=(const Vector& x);                                     //!< Assignment operator
     
     // Vector functions

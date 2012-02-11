@@ -46,22 +46,22 @@ class Distribution: public ConstantMemberObject {
         virtual const VectorString&         getClass(void) const;                                                               //!< Get class vector   
 
         // Member object function you have to override
-        virtual const MemberRules*          getMemberRules(void) const = 0;                                                     //!< Get member rules
+        virtual const MemberRules&          getMemberRules(void) const = 0;                                                     //!< Get member rules
 
         // Member object functions you may want to override
-        virtual const MethodTable*          getMethods(void) const;                                                             //!< Get member methods
+        virtual const MethodTable&          getMethods(void) const;                                                             //!< Get member methods
 
 
         // Distribution functions you have to override
         virtual const TypeSpec&             getVariableType(void) const = 0;                                                    //!< Get random variable type
-        virtual double                      lnPdf( const RbLanguageObject *value) const = 0;                                    //!< Ln probability density
-        virtual double                      pdf( const RbLanguageObject *value) const = 0;                                      //!< Probability density function
+        virtual double                      lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
+        virtual double                      pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function
         virtual RbLanguageObject*           rv(void) = 0;                                                                       //!< Generate a random draw
 
     protected:
-                                            Distribution( const MemberRules* memberRules);                                      //!< Simple constructor
+                                            Distribution( const MemberRules& memberRules);                                      //!< Simple constructor
 
-        virtual RbLanguageObject*           executeOperationSimple(const std::string& name, Environment* args);                 //!< Map member methods to internal functions
+        virtual RbLanguageObject*           executeOperationSimple(const std::string& name, Environment& args);                 //!< Map member methods to internal functions
 
 };
 

@@ -40,13 +40,12 @@ public:
     
     // Basic utility functions you may want to override
     virtual void                    printValue(std::ostream& o) const;                                                  //!< Print value for user
-    virtual std::string             richInfo(void) const;                                                               //!< Complete info
     
     // Basic utility functions you do not have to override
     bool                            isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
     
     protected:
-    MutableMemberObject(const MemberRules* memberRules);                                                            //!< Standard constructor
+    MutableMemberObject(const MemberRules& memberRules);                                                            //!< Standard constructor
     MutableMemberObject(void);                                                                                      //!< Default constructor; no members or methods
     
 };

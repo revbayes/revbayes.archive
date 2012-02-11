@@ -59,21 +59,21 @@ const VectorString& Move_mmultinomial::getClass() const {
 
 
 /** Return member rules */
-const MemberRules* Move_mmultinomial::getMemberRules(void) const {
+const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
 		{
-        memberRules->push_back( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) );
+        memberRules.push_back( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const MemberRules* inheritedRules = MoveSimple::getMemberRules();
-        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
+        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules->push_back(new ValueRule("tuning", RealPos_name) );
-        memberRules->push_back(new ValueRule("num_cats", Integer_name) );
+        memberRules.push_back(new ValueRule("tuning", RealPos_name) );
+        memberRules.push_back(new ValueRule("num_cats", Integer_name) );
 
         rulesSet = true;
 		}
@@ -104,8 +104,8 @@ double Move_mmultinomial::perform( void ) {
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
     StochasticNode*        nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos*>( (const RbObject*)getMemberValue("tuning")   )->getValue();
-    int                    k       = static_cast<const Integer*>( (const RbObject*)getMemberValue("num_cats") )->getValue();
+    double                 alpha0  = static_cast<const RealPos&>( getMemberValue("tuning")   ).getValue();
+    int                    k       = static_cast<const Integer&>( getMemberValue("num_cats") ).getValue();
 
     const VectorReal& valPtr = static_cast<const VectorReal&>( nodePtr->getValue() );
 

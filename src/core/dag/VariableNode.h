@@ -47,16 +47,16 @@ public:
     virtual void                                printValue(std::ostream& o) const = 0;                                          //!< Print value for user
 
     // DAG function you should not override
-    void                                        addParentNode(RbPtr<DAGNode> p);                                                //!< Add parent node
+    void                                        addParentNode(const RbPtr<DAGNode>& p);                                         //!< Add parent node
     bool                                        isTouched(void) const { return touched; }                                       //!< Is node touched by move or parser?
-    void                                        removeParentNode(RbPtr<DAGNode> p) { parents.erase(p); }                        //!< Remove a child node
+    void                                        removeParentNode(const RbPtr<DAGNode>& p) { parents.erase(p); }                 //!< Remove a child node
 
     // DAG functions you may want to override
     virtual bool                                isConst(void) const { return false; }                                           //!< Is DAG node const value?
 
     // DAG functions you have to override
     virtual RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;        //!< Clone entire graph
-    virtual void                                swapParentNode(RbPtr<DAGNode> oldP, RbPtr<DAGNode> newP) = 0;                   //!< Swap a parent node
+    virtual void                                swapParentNode(const RbPtr<DAGNode>& oldP, const RbPtr<DAGNode>& newP) = 0;     //!< Swap a parent node
 
 protected:
     VariableNode(const std::string& valType);                                                                       //!< Constructor of empty node

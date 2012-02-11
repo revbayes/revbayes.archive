@@ -46,29 +46,29 @@ Func_clamp* Func_clamp::clone( void ) const {
 RbLanguageObject* Func_clamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
-    DAGNode* theDagNode = (*args)[0]->getDagNode();
+    DAGNode* theDagNode = (*args)[0].getDagNode();
     
     StochasticNode* theNode = dynamic_cast<StochasticNode*>( theDagNode );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
     // The following call will throw an error if the value type is wrong
-    theNode->clamp( (*args)[1]->getValue()->clone() );
+    theNode->clamp( (*args)[1].getValue().clone() );
 
     return NULL;
 }
 
 
 /** Get argument rules */
-const ArgumentRules* Func_clamp::getArgumentRules( void ) const {
+const ArgumentRules& Func_clamp::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules->push_back( new ValueRule ( "variable", RbObject_name ) );
-        argumentRules->push_back( new ValueRule ( "value",    RbObject_name ) );
+        argumentRules.push_back( new ValueRule ( "variable", RbObject_name ) );
+        argumentRules.push_back( new ValueRule ( "value",    RbObject_name ) );
         rulesSet = true;
     }
 

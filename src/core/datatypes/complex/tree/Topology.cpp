@@ -45,7 +45,7 @@ Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() )
     isBinary = t.isBinary;
 
     // need to perform a deep copy of the tree nodes
-    root = cloneTree(*t.getRoot());
+    root = cloneTree(t.getRoot());
     
     // fill the nodes vector
 //    fillNodesByPreorderTraversal(root);
@@ -67,10 +67,10 @@ TopologyNode* Topology::cloneTree(const TopologyNode& parent) {
     // replace all children by depp copies of the children
     for (size_t i=0; i<node->getNumberOfChildren(); i++) {
         // get the old child
-        const TopologyNode* oldChild = node->getChild(0);
+        const TopologyNode& oldChild = node->getChild(0);
         
         // get a deep copy of the child
-        TopologyNode* newChild = cloneTree(*oldChild);
+        TopologyNode* newChild = cloneTree(oldChild);
         node->removeChild(oldChild);
         node->addChild(newChild);
         
@@ -89,7 +89,7 @@ Topology* Topology::clone(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Topology::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* Topology::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "ntips") {
     
@@ -105,25 +105,25 @@ RbLanguageObject* Topology::executeOperationSimple(const std::string& name, Envi
 
 
 /* fill the nodes vector by a preorder traversal recursively starting with this node. */
-void Topology::fillNodesByPreorderTraversal(TopologyNode* node) {
+void Topology::fillNodesByPreorderTraversal(const TopologyNode* node) {
 
     // this is preorder so add yourself first
     nodes.push_back(node);
     
     // now call this function recursively for all your children
     for (size_t i=0; i<node->getNumberOfChildren(); i++) {
-        fillNodesByPreorderTraversal(node->getChild(i));
+        fillNodesByPreorderTraversal(&node->getChild(i));
     }
 }
 
 /* fill the nodes vector by a phylogenetic traversal recursively starting with this node. 
  * The tips fill the slots 0,...,n-1 followed by the internal nodes and then the root.
  */
-void Topology::fillNodesByPhylogeneticTraversal(TopologyNode* node) {
+void Topology::fillNodesByPhylogeneticTraversal(const TopologyNode* node) {
     
     // now call this function recursively for all your children
     for (size_t i=0; i<node->getNumberOfChildren(); i++) {
-        fillNodesByPhylogeneticTraversal(node->getChild(i));
+        fillNodesByPhylogeneticTraversal(&node->getChild(i));
     }
     
     if (node->isTip()) {
@@ -147,9 +147,9 @@ const VectorString& Topology::getClass(void) const {
 
 
 /* Get member rules */
-const MemberRules* Topology::getMemberRules(void) const {
+const MemberRules& Topology::getMemberRules(void) const {
     
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) 
@@ -162,20 +162,20 @@ const MemberRules* Topology::getMemberRules(void) const {
 
 
 /* Get method specifications */
-const MethodTable* Topology::getMethods(void) const {
+const MethodTable& Topology::getMethods(void) const {
     
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* ntipsArgRules = new ArgumentRules();
     static ArgumentRules* nnodesArgRules = new ArgumentRules();
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) 
     {
-        methods->addFunction("ntips",  new MemberFunction(TypeSpec(Natural_name), ntipsArgRules) );
-        methods->addFunction("nnodes", new MemberFunction(TypeSpec(Natural_name), nnodesArgRules) );
+        methods.addFunction("ntips",  new MemberFunction(TypeSpec(Natural_name), ntipsArgRules) );
+        methods.addFunction("nnodes", new MemberFunction(TypeSpec(Natural_name), nnodesArgRules) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
     
@@ -212,25 +212,25 @@ size_t Topology::getNumberOfTips(void) const {
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the root is always the last and the tips the first in the nodes vector. */
-const TopologyNode* Topology::getInteriorNode( int indx ) const {
+const TopologyNode& Topology::getInteriorNode( int indx ) const {
     
     // TODO: Bound checking, maybe draw from downpass array instead
-    return nodes[ indx + getNumberOfTips() ];
+    return *nodes[ indx + getNumberOfTips() ];
 }
 
 
-const TopologyNode* Topology::getRoot( void ) const {
+const TopologyNode& Topology::getRoot( void ) const {
     
-    return root;
+    return *root;
 }
 
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the tips are first in the nodes vector. */
-const TopologyNode* Topology::getTipNode( size_t indx ) const {
+const TopologyNode& Topology::getTipNode( size_t indx ) const {
     
     // TODO: Bound checking
-    return nodes[ indx ];
+    return *nodes[ indx ];
 }
 
 
@@ -247,15 +247,6 @@ void Topology::printValue(std::ostream& o) const {
     o << root->getName();
 }
 
-
-/* Get a lot of information about the topology */
-std::string Topology::richInfo(void) const {
-
-    std::ostringstream o;
-    o <<  "Tree: ";
-    printValue(o);
-    return o.str();
-}
 
 void Topology::setRoot( TopologyNode* r) {
 

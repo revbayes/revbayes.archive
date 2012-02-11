@@ -44,28 +44,29 @@ public:
     void                            printValue(std::ostream& o) const;                                              //!< Print value for user
 
     // Member variable functions
-    RbLanguageObject*               executeOperation(const std::string& name, Environment* args);                   //!< Override to map member methods to internal functions
-    const MemberRules*              getMemberRules(void) const;                                                     //!< Get member rules
+    RbLanguageObject*               executeOperation(const std::string& name, Environment& args);                   //!< Override to map member methods to internal functions
+    const MemberRules&              getMemberRules(void) const;                                                     //!< Get member rules
     void                            setMemberVariable(const std::string& name, Variable* var);                      //!< Catch setting of the topology
 
     // Member method inits
-    const MethodTable*              getMethods(void) const;                                                         //!< Get methods
+    const MethodTable&              getMethods(void) const;                                                         //!< Get methods
 
     // Tree plate functions
-    const Topology*                 getTopology(void) const;                                                        //!< Get the topology for this tree
-    std::string                     buildNewickString(const TopologyNode* node) const;                              //!< compute the newick string for a tree rooting at this node
+    const Topology&                 getTopology(void) const;                                                        //!< Get the topology for this tree
     
 protected:
-    RbLanguageObject*               executeOperationSimple(const std::string& name, Environment* args);             //!< Execute method
+    RbLanguageObject*               executeOperationSimple(const std::string& name, Environment& args);             //!< Execute method
 
 private:
     static const TypeSpec           typeSpec;
     
     std::vector<std::string>        nodeVariableNames;                                                              //!< The vector of variables names for each node
     
+    std::string                     buildNewickString(const TopologyNode& node) const;                              //!< compute the newick string for a tree rooting at this node
+    
     void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }                   //!< Order the topology
-    size_t                          getNodeIndex(const TopologyNode* theNode) const;                                //!< Get the index of the node
-    size_t                          getTipIndex(const TopologyNode* theNode) const;                                 //!< Get the index of the node
+    size_t                          getNodeIndex(const TopologyNode& theNode) const;                                //!< Get the index of the node
+    size_t                          getTipIndex(const TopologyNode& theNode) const;                                 //!< Get the index of the node
 
     Topology*                       orderingTopology;                                                               //!< The topology that orders the tree plate
 };

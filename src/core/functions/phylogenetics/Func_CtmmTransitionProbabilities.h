@@ -36,7 +36,7 @@ class Func_CtmmTransitionProbabilities :  public RbFunction {
         const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules*                getArgumentRules(void) const;                                           //!< Get argument rules
+        const ArgumentRules&                getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                     getReturnType(void) const;                                              //!< Get type of return value
 
     protected:

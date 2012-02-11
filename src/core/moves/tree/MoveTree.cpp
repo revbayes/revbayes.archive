@@ -31,7 +31,7 @@
 
 
 /** Constructor for parser use */
-MoveTree::MoveTree( const MemberRules* memberRules) : Move(memberRules) {
+MoveTree::MoveTree( const MemberRules& memberRules) : Move(memberRules) {
 
 }
 
@@ -56,18 +56,18 @@ const VectorString& MoveTree::getClass(void) const {
 
 
 /** Return member rules */
-const MemberRules* MoveTree::getMemberRules( void ) const {
+const MemberRules& MoveTree::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) {
         
-        memberRules->push_back( new ValueRule ( "tree", TypeSpec(TreePlate_name) ) );
+        memberRules.push_back( new ValueRule ( "tree", TypeSpec(TreePlate_name) ) );
 
         /* Inherit weight from Move, put it after topology and tree variables */
-        const MemberRules* inheritedRules = MoveTree::getMemberRules();
-        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
+        const MemberRules& inheritedRules = MoveTree::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
         rulesSet = true;
     }
@@ -79,11 +79,11 @@ const MemberRules* MoveTree::getMemberRules( void ) const {
 /**
  * We provide a convenience function in the base class for retrieving the topology.
  */
-const Topology* MoveTree::getTopology( void ) const {
+const Topology& MoveTree::getTopology( void ) const {
 
-    const TreePlate* tree = static_cast<const TreePlate*>( (*members)["tree"]->getValue() );
+    const TreePlate& tree = static_cast<const TreePlate&>( (*members)["tree"].getValue() );
     
-    return tree->getTopology();
+    return tree.getTopology();
 }
 
 
@@ -126,7 +126,7 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
 void MoveTree::rejectMove(void) {
 
     // Get topology and tree variable info
-    RbPtr<StochasticNode> topNode( static_cast<StochasticNode*>( (DAGNode*)(*members)["topology"]->getDagNode() ) );
+    RbPtr<StochasticNode> topNode( static_cast<StochasticNode*>( (*members)["topology"].getDagNode() ) );
 
 
     // Send derived class a reject message

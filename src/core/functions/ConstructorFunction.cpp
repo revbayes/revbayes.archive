@@ -32,11 +32,13 @@ const TypeSpec ConstructorFunction::typeSpec(ConstructorFunction_name);
 /** Constructor */
 ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), templateObject(obj) {
 
-    argRules = templateObject->getMemberRules();
+    // Hack: we know that we will not own the argRules.
+    argRules = &templateObject->getMemberRules();
 }
 
 ConstructorFunction::~ConstructorFunction() {
     delete templateObject;
+    // we do not delete the argRules because we know that we do not own them!
 }
 
 
@@ -53,7 +55,7 @@ RbLanguageObject* ConstructorFunction::executeFunction(void) {
    MemberObject* copy = templateObject->clone();
 
     for ( size_t i = 0; i < args->size(); i++ ) {
-        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
+        copy->setMemberVariable( (*args)[i].getLabel(), (*args)[i].getVariable().clone() );
     }
  
     return copy;
@@ -61,9 +63,9 @@ RbLanguageObject* ConstructorFunction::executeFunction(void) {
 
 
 /** Get argument rules */
-const ArgumentRules* ConstructorFunction::getArgumentRules(void) const {
+const ArgumentRules& ConstructorFunction::getArgumentRules(void) const {
 
-    return argRules;
+    return *argRules;
 }
 
 

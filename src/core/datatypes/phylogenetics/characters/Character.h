@@ -36,7 +36,6 @@ class Character : public Categorical {
         // Basic utility functions you have to override
         virtual Character*              clone(void) const = 0;                     //!< Clone object
         virtual const VectorString&     getClass(void) const;                      //!< Get class vector
-        virtual std::string             richInfo(void) const = 0;                  //!< Complete info about object
         
         virtual bool                    getIsGapState(void) const = 0;             //!< Get whether this is a gapped character state
         virtual size_t                  getNumberOfStates(void) const { return 0; }//!< Get the number states for a character (return 0 in base class)

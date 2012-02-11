@@ -35,8 +35,8 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
                                             TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m); //!< Copy constructor
                                             TransitionProbabilityMatrix(size_t n);                             //!< Construct rate matrix with n states
                                            ~TransitionProbabilityMatrix(void);                                 //!< Destructor
-        VectorReal*                         operator[](size_t i);                                              //!< Subscript operator
-        const VectorReal*                   operator[](size_t i) const;                                        //!< Subscript operator (const)
+        VectorReal&                         operator[](size_t i);                                              //!< Subscript operator
+        const VectorReal&                   operator[](size_t i) const;                                        //!< Subscript operator (const)
     
         // Basic utility functions
         TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object
@@ -46,13 +46,13 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
         std::string                         richInfo(void) const;                                              //!< Complete info
 
         // Member variable rules
-        const MemberRules*                  getMemberRules(void) const;                                        //!< Get member rules
+        const MemberRules&                  getMemberRules(void) const;                                        //!< Get member rules
 
         // Member method inits
-        const MethodTable*                  getMethods(void) const;                                            //!< Get methods
+        const MethodTable&                  getMethods(void) const;                                            //!< Get methods
 
     protected:
-        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment* args);//!< Map method call to internal functions
+        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);//!< Map method call to internal functions
 
     private:
         size_t                              numStates;                                                         //!< The number of character states

@@ -31,8 +31,8 @@ const TypeSpec ConstructorFunctionForSimpleObjects::typeSpec(ConstructorFunction
 
 /** Constructor */
 ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(RbLanguageObject* obj) : RbFunction(), templateObject(obj) {
-    
-    argRules = templateObject->getMemberRules();
+    // Hack: We know that we do not own the member rules.
+    argRules = &templateObject->getMemberRules();
 }
 
 
@@ -50,7 +50,7 @@ RbLanguageObject* ConstructorFunctionForSimpleObjects::executeFunction(void) {
     
     Vector params = Vector(RbObject_name);
     for ( size_t i = 0; i < args->size(); i++ ) {
-        params.push_back( (*args)[i]->getValue() );
+        params.push_back( (*args)[i].getValue().clone() );
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
     
@@ -61,9 +61,9 @@ RbLanguageObject* ConstructorFunctionForSimpleObjects::executeFunction(void) {
 
 
 /** Get argument rules */
-const ArgumentRules* ConstructorFunctionForSimpleObjects::getArgumentRules(void) const {
+const ArgumentRules& ConstructorFunctionForSimpleObjects::getArgumentRules(void) const {
     
-    return ( argRules );
+    return *argRules;
 }
 
 

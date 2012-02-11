@@ -68,7 +68,9 @@ Variable::Variable(const std::string &n) : node(NULL) {
 Variable::Variable(const Variable& x) : node(NULL)  {
     
     if ( x.node != NULL ) {
-        setDagNode( x.node->clone() );
+        // We do not clone the DAG node because we just create a new variable
+        // holding currently the same DAG node
+        setDagNode( x.node );
         
         // notify the variable that this is the new variable
         node->setVariable( this );

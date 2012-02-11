@@ -97,11 +97,14 @@ RateMatrix::RateMatrix(const RateMatrix& m) {
 /** Destructor */
 RateMatrix::~RateMatrix(void) {
     
+    delete theRateMatrix;
+    delete theStationaryFreqs;
+    delete theEigenSystem;
 }
 
 
 /** Index operator (const) */
-const VectorReal* RateMatrix::operator[]( const size_t i ) const {
+const VectorReal& RateMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates )
         throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
@@ -110,7 +113,7 @@ const VectorReal* RateMatrix::operator[]( const size_t i ) const {
 
 
 /** Index operator */
-VectorReal* RateMatrix::operator[]( const size_t i ) {
+VectorReal& RateMatrix::operator[]( const size_t i ) {
 
     if ( i >= numStates )
         throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
@@ -123,7 +126,7 @@ double RateMatrix::averageRate(void) const {
 
     double ave = 0.0;
     for (size_t i=0; i<numStates; i++)
-        ave += -(*theStationaryFreqs)[i] * (*(*theRateMatrix)[i])[i];
+        ave += -(*theStationaryFreqs)[i] * (*theRateMatrix)[i][i];
     return ave;
 }
 
@@ -140,7 +143,7 @@ void RateMatrix::calculateCijk(void) {
         for (size_t i=0; i<numStates; i++)
             for (size_t j=0; j<numStates; j++)
                 for (size_t k=0; k<numStates; k++)
-                    *(pc++) = (*ev[i])[k] * (*iev[k])[j];   
+                    *(pc++) = ev[i][k] * iev[k][j];   
         }
     else
         {
@@ -151,7 +154,7 @@ void RateMatrix::calculateCijk(void) {
         for (size_t i=0; i<numStates; i++)
             for (size_t j=0; j<numStates; j++)
                 for (size_t k=0; k<numStates; k++)
-                    *(pc++) = (*cev[i])[k] * (*ciev[k])[j];
+                    *(pc++) = cev[i][k] * ciev[k][j];
         }
 }
 
@@ -198,7 +201,7 @@ void RateMatrix::calculateStationaryFrequencies(void) {
     MatrixReal QT(numStates, numStates);
     for (size_t i=0; i<numStates; i++)
         for (size_t j=0; j<numStates; j++)
-            (*QT[i])[j] = (*(*theRateMatrix)[j])[i];
+            QT[i][j] = (*theRateMatrix)[j][i];
 
 	// compute the LU decomposition of the transposed rate matrix
     MatrixReal L(numStates, numStates);
@@ -212,8 +215,8 @@ void RateMatrix::calculateStationaryFrequencies(void) {
 		{
 		double dotProduct = 0.0;
 		for (size_t j=i+1; j<numStates; j++)
-			dotProduct += (*U[i])[j] * pi[j];
-		pi[i] = (0.0 - dotProduct) / (*U[i])[i];
+			dotProduct += U[i][j] * pi[j];
+		pi[i] = (0.0 - dotProduct) / U[i][i];
 		}
 		
 	// normalize the solution vector
@@ -229,7 +232,7 @@ void RateMatrix::calculateStationaryFrequencies(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix* P) const {
+void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
 
 	if ( theEigenSystem->isComplex() == false )
 		tiProbsEigens(t, P);
@@ -251,7 +254,7 @@ bool RateMatrix::checkTimeReversibity(double tolerance) {
 	double diff = 0.0;
 	for (size_t i=0; i<numStates; i++)
 		for (size_t j=i+1; j<numStates; j++)
-			diff += fabs( (*theStationaryFreqs)[i] * (*(*theRateMatrix)[i])[j] - (*theStationaryFreqs)[j] * (*(*theRateMatrix)[j])[i] );
+			diff += fabs( (*theStationaryFreqs)[i] * (*theRateMatrix)[i][j] - (*theStationaryFreqs)[j] * (*theRateMatrix)[j][i] );
     reversibilityChecked = true;
 	if (diff < tolerance)
         return true;
@@ -267,7 +270,7 @@ RateMatrix* RateMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* RateMatrix::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* RateMatrix::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "nstates") {
         return new Natural((int)numStates);
@@ -311,9 +314,9 @@ bool RateMatrix::getIsTimeReversible(void) {
 
 
 /** Get member rules */
-const MemberRules* RateMatrix::getMemberRules(void) const {
+const MemberRules& RateMatrix::getMemberRules(void) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
@@ -326,9 +329,9 @@ const MemberRules* RateMatrix::getMemberRules(void) const {
 
 
 /** Get methods */
-const MethodTable* RateMatrix::getMethods(void) const {
+const MethodTable& RateMatrix::getMethods(void) const {
 
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* nstatesArgRules = new ArgumentRules();
     static ArgumentRules* stationaryfreqsArgRules = new ArgumentRules();
     static ArgumentRules* averateArgRules = new ArgumentRules();
@@ -338,13 +341,13 @@ const MethodTable* RateMatrix::getMethods(void) const {
     if ( methodsSet == false ) 
         {
         
-        methods->addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
-        methods->addFunction("stationaryfreqs", new MemberFunction(Simplex_name, stationaryfreqsArgRules) );
-        methods->addFunction("averate",         new MemberFunction(RealPos_name, averateArgRules)         );
-        methods->addFunction("reversible",      new MemberFunction(RbBoolean_name, reversibleArgRules)    );
+        methods.addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
+        methods.addFunction("stationaryfreqs", new MemberFunction(Simplex_name, stationaryfreqsArgRules) );
+        methods.addFunction("averate",         new MemberFunction(RealPos_name, averateArgRules)         );
+        methods.addFunction("reversible",      new MemberFunction(RbBoolean_name, reversibleArgRules)    );
         
         // necessary call for proper inheritance
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
         }
 
@@ -371,7 +374,7 @@ void RateMatrix::rescaleToAverageRate(const double r) {
     double scaleFactor = r / curAve;
     for (size_t i=0; i<numStates; i++)
         for (size_t j=0; j<numStates; j++)
-            (*(*theRateMatrix)[i])[j] *= scaleFactor;
+            (*theRateMatrix)[i][j] *= scaleFactor;
 }
 
 
@@ -393,9 +396,9 @@ void RateMatrix::setDiagonal(void) {
         for (size_t j=0; j<numStates; j++)
             {
             if (i != j)
-                sum += (*(*theRateMatrix)[i])[j];
+                sum += (*theRateMatrix)[i][j];
             }
-        (*(*theRateMatrix)[i])[i] = -sum;
+        (*theRateMatrix)[i][i] = -sum;
         }
 }
 
@@ -418,7 +421,7 @@ void RateMatrix::setStationaryFrequencies(const std::vector<double>& f) {
 
 
 /** Calculate the transition probabilities for the real case */
-void RateMatrix::tiProbsEigens(const double t, TransitionProbabilityMatrix* P) const {
+void RateMatrix::tiProbsEigens(const double t, TransitionProbabilityMatrix& P) const {
 
     // get a reference to the eigenvalues
     const VectorReal& eigenValue = theEigenSystem->getRealEigenvalues();
@@ -437,14 +440,14 @@ void RateMatrix::tiProbsEigens(const double t, TransitionProbabilityMatrix* P) c
 			double sum = 0.0;
 			for(size_t s=0; s<numStates; s++)
 				sum += (*ptr++) * eigValExp[s];
-			(*(*P)[i])[j] = (sum < 0.0) ? 0.0 : sum;
+			P[i][j] = (sum < 0.0) ? 0.0 : sum;
 			}
 		}
 }
 
 
 /** Calculate the transition probabilities for the complex case */
-void RateMatrix::tiProbsComplexEigens(const double t, TransitionProbabilityMatrix* P) const {
+void RateMatrix::tiProbsComplexEigens(const double t, TransitionProbabilityMatrix& P) const {
 
     // get a reference to the eigenvalues
     const VectorReal& eigenValueReal = theEigenSystem->getRealEigenvalues();
@@ -467,7 +470,7 @@ void RateMatrix::tiProbsComplexEigens(const double t, TransitionProbabilityMatri
 			std::complex<double> sum = std::complex<double>(0.0, 0.0);
 			for(size_t s=0; s<numStates; s++)
 				sum += (*ptr++) * ceigValExp[s];
-			(*(*P)[i])[j] = (sum.real() < 0.0) ? 0.0 : sum.real();
+			P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
 			}
 		}
 }

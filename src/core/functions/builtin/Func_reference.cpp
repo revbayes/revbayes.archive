@@ -43,21 +43,25 @@ Func_reference* Func_reference::clone( void ) const {
 RbLanguageObject* Func_reference::executeFunction( void ) {
     
     // reference to the original variable
-    RbLanguageObject* val = (*args)[0]->getValue();
+    RbLanguageObject* val = (*args)[0].getValue().clone(); 
+    // TODO: need to check if cloning this object will not destroy the functionality
+    // It might be the case that the reference function should actually return a reference
+    // to the object and not create a clone all the time.
+    // Nevertheless, making an exception for exactly this case will break our memory allocation scheme.
     
     return val;
 }
 
 
 /** Get argument rules */
-const ArgumentRules* Func_reference::getArgumentRules( void ) const {
+const ArgumentRules& Func_reference::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
         
-        argumentRules->push_back( new ValueRule( "variable", TypeSpec(RbLanguageObject_name) ) );
+        argumentRules.push_back( new ValueRule( "variable", TypeSpec(RbLanguageObject_name) ) );
         rulesSet = true;
     }
 

@@ -58,9 +58,9 @@ RbLanguageObject* Func_memoryAllocations::executeFunction( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func_memoryAllocations::getArgumentRules( void ) const {
+const ArgumentRules& Func_memoryAllocations::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     
     return argumentRules;
 }

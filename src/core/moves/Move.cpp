@@ -37,7 +37,7 @@
 
 
 /** Constructor */
-Move::Move( const MemberRules* memberRules ) : ConstantMemberObject( memberRules ) {
+Move::Move( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ) {
 
     numAccepted = 0;
     numTried    = 0;
@@ -80,15 +80,7 @@ std::string Move::briefInfo(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* Move::executeOperationSimple(const std::string& name, Environment* args) {
-
-    static ArgumentRules acceptArgRules;
-    static ArgumentRules acceptanceRatioArgRules;    
-    static ArgumentRules numAcceptedArgRules;    
-    static ArgumentRules numTriedArgRules;
-    static ArgumentRules proposeArgRules;
-    static ArgumentRules rejectArgRules;
-    static ArgumentRules resetCountersArgRules;
+RbLanguageObject* Move::executeOperationSimple(const std::string& name, Environment& args) {
 
     if ( name == "accept" ) {
 
@@ -147,13 +139,13 @@ const VectorString& Move::getClass( void ) const {
 
 
 /** Return member rules */
-const MemberRules* Move::getMemberRules( void ) const {
+const MemberRules& Move::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) {
-        memberRules->push_back( new ValueRule( "weight"  , new RealPos(1.0) ) );
+        memberRules.push_back( new ValueRule( "weight"  , new RealPos(1.0) ) );
         rulesSet = true;
     }
 
@@ -162,9 +154,9 @@ const MemberRules* Move::getMemberRules( void ) const {
 
 
 /** Get move methods */
-const MethodTable* Move::getMethods(void) const {
+const MethodTable& Move::getMethods(void) const {
 
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     
     static ArgumentRules* acceptArgRules            = new ArgumentRules();
     static ArgumentRules* acceptanceRatioArgRules   = new ArgumentRules();    
@@ -181,17 +173,17 @@ const MethodTable* Move::getMethods(void) const {
         {
         
         // Add functions
-        methods->addFunction( "accept",          new MemberFunction( RbVoid_name,     acceptArgRules            ) );
-        methods->addFunction( "acceptanceRatio", new MemberFunction( Real_name,       acceptanceRatioArgRules   ) );
-        methods->addFunction( "numAccepted",     new MemberFunction( Natural_name,    numAcceptedArgRules       ) );
-        methods->addFunction( "numRejected",     new MemberFunction( Natural_name,    numRejectedArgRules       ) );
-        methods->addFunction( "numTried",        new MemberFunction( Natural_name,    numTriedArgRules          ) );
-        methods->addFunction( "propose",         new MemberFunction( VectorReal_name, proposeArgRules           ) );
-        methods->addFunction( "reject",          new MemberFunction( RbVoid_name,     rejectArgRules            ) );
-        methods->addFunction( "resetCounters",   new MemberFunction( RbVoid_name,     resetCountersArgRules     ) );
+        methods.addFunction( "accept",          new MemberFunction( RbVoid_name,     acceptArgRules            ) );
+        methods.addFunction( "acceptanceRatio", new MemberFunction( Real_name,       acceptanceRatioArgRules   ) );
+        methods.addFunction( "numAccepted",     new MemberFunction( Natural_name,    numAcceptedArgRules       ) );
+        methods.addFunction( "numRejected",     new MemberFunction( Natural_name,    numRejectedArgRules       ) );
+        methods.addFunction( "numTried",        new MemberFunction( Natural_name,    numTriedArgRules          ) );
+        methods.addFunction( "propose",         new MemberFunction( VectorReal_name, proposeArgRules           ) );
+        methods.addFunction( "reject",          new MemberFunction( RbVoid_name,     rejectArgRules            ) );
+        methods.addFunction( "resetCounters",   new MemberFunction( RbVoid_name,     resetCountersArgRules     ) );
         
         // Set parent table for proper inheritance
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
 
@@ -203,7 +195,7 @@ const MethodTable* Move::getMethods(void) const {
  *  from its member variable "weight". */
 double Move::getUpdateWeight( void ) const {
 
-    return static_cast<const RealPos*>( (*members)["weight"]->getValue() )->getValue();
+    return static_cast<const RealPos&>( (*members)["weight"].getValue() ).getValue();
 }
 
 

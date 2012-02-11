@@ -51,7 +51,7 @@ class DistributionFunction :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // DistributionFunction functions
-        const ArgumentRules*        getArgumentRules(void) const;                                           //!< Get argument rules
+        const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type spec of return value
         bool                        processArguments(std::vector<Argument* > passedArgs,
                                                      VectorInteger*          matchScore=NULL);              //!< Process args, set member variables of distribution

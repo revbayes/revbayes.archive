@@ -46,21 +46,21 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
     
     /* Get distribution parameters */
-    Environment* params = dist->getMembers();
+    Environment& params = dist->getMembers();
 
     /* Check for cycles */
     std::list<DAGNode*> done;
-    for ( size_t i = 0; i < params->size(); i++ ) {
+    for ( size_t i = 0; i < params.size(); i++ ) {
         done.clear();
-        const std::string &name = params->getName(i);
-        if ( (*params)[name]->getDagNode()->isParentInDAG( RbPtr<DAGNode>( this ), done ) )
+        const std::string &name = params.getName(i);
+        if ( params[name].getDagNode()->isParentInDAG( RbPtr<DAGNode>( this ), done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
 
     /* Set parent(s) and add myself as a child to these */
-    for ( size_t i = 0; i < params->size(); i++ ) {
-        const std::string &name = params->getName(i);
-        RbPtr<DAGNode> theParam = (*params)[name]->getDagNode();
+    for ( size_t i = 0; i < params.size(); i++ ) {
+        const std::string &name = params.getName(i);
+        DAGNode* theParam = params[name].getDagNode();
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -84,12 +84,12 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     distribution = x.distribution->clone();
 
     /* Get distribution parameters */
-    Environment* params = distribution->getMembers();
+    Environment& params = distribution->getMembers();
 
     /* Set parent(s) and add myself as a child to these */
-    for ( size_t i = 0; i < params->size(); i++ ) {
-        const std::string &name = params->getName(i);
-        RbPtr<DAGNode> theParam = (*params)[name]->getDagNode();
+    for ( size_t i = 0; i < params.size(); i++ ) {
+        const std::string &name = params.getName(i);
+        const RbPtr<DAGNode>& theParam = params[name].getDagNode();
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -140,11 +140,11 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         distribution = x.distribution;
 
         /* Get distribution parameters */
-        Environment* params = distribution->getMembers();
+        Environment& params = distribution->getMembers();
 
         /* Set parent(s) and add myself as a child to these */
-        for ( size_t i = 0; i < params->size(); i++ ) {
-            RbPtr<DAGNode> theParam = (*params)[params->getName(i)]->getVariable()->getDagNode();
+        for ( size_t i = 0; i < params.size(); i++ ) {
+            const RbPtr<DAGNode>& theParam = params[params.getName(i)].getVariable().getDagNode();
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -170,12 +170,12 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 /** Are any distribution params touched? Get distribution params and check if any one is touched */
 bool StochasticNode::areDistributionParamsTouched( void ) const {
 
-    Environment* params = distribution->getMembers();
+    Environment& params = distribution->getMembers();
 
-    for ( size_t i = 0; i < params->size(); i++ ) {
+    for ( size_t i = 0; i < params.size(); i++ ) {
         
-        const std::string &name = params->getName(i);
-        const RbPtr<DAGNode> theNode  = (*params)[name]->getDagNode();
+        const std::string &name = params.getName(i);
+        const RbPtr<DAGNode>& theNode  = params[name].getDagNode();
 
         if ( !theNode->isType( VariableNode_name ) )
             continue;
@@ -193,7 +193,7 @@ double StochasticNode::calculateLnProbability( void ) {
     
     if (needsRecalculation) {
         if (instantiated) {
-            lnProb = distribution->lnPdf( value );
+            lnProb = distribution->lnPdf( *value );
         }
         else {
             // we need to iterate over my states
@@ -220,6 +220,9 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
     
     // check for type conversion
     if (observedVal->isTypeSpec(distribution->getVariableType())) {
+        if (value != NULL) {
+            delete value;
+        }
         value = observedVal;
     }
     else if (observedVal->isConvertibleTo(distribution->getVariableType())) {
@@ -274,21 +277,21 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
     copy->needsRecalculation = needsRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
-    Environment* params     = distribution->getMembers();
-    Environment* copyParams = copy->distribution->getMembers();
+    Environment& params     = distribution->getMembers();
+    Environment& copyParams = copy->distribution->getMembers();
 
-    for ( size_t i = 0; i < params->size(); i++ ) {
+    for ( size_t i = 0; i < params.size(); i++ ) {
 
         // get the name if the i-th member
-        const std::string &name = params->getName(i);
+        const std::string &name = params.getName(i);
         
         // clone the member and get the clone back
-        const RbPtr<DAGNode> theParam = (*params)[name]->getDagNode();
+        const RbPtr<DAGNode>& theParam = params[name].getDagNode();
         // if we already have cloned this parent (parameter), then we will get the previously created clone
-        RbPtr<DAGNode> theParamClone( theParam->cloneDAG( newNodes ) );
+        RbPtr<DAGNode> theParamClone = theParam->cloneDAG( newNodes );
         
         // set the clone of the member as the member of the clone
-        (*copyParams)[name]->setVariable( new Variable(theParamClone) );
+        copyParams[name].setVariable( new Variable(theParamClone) );
 
         copy->addParentNode( theParamClone );
         theParamClone->addChildNode( copy );
@@ -425,8 +428,8 @@ void StochasticNode::keepMe() {
         if (storedValue != NULL) {
             delete storedValue;
         }
-        
         storedValue = NULL;
+        
         storedLnProb = 1.0E6;       // An almost impossible value for the density
         if (needsRecalculation) {
             lnProb = calculateLnProbability();
@@ -525,12 +528,14 @@ void StochasticNode::setValue( RbLanguageObject* val ) {
     touch();
     
     // delete the stored value
-    if (storedValue != NULL) {
-        delete storedValue;
+    if (storedValue == NULL) {
+        storedValue = value;
+    }
+    else {
+        delete value;
     }
     
-    storedValue = value;
-    
+
     // set the value
     value = val;
 }
@@ -542,7 +547,7 @@ void StochasticNode::setValue( RbLanguageObject* val ) {
  * This function should be called from the mutateTo function, otherwise it
  * is dangerous because the distribution parameters will not be accommodated.
  */
-void StochasticNode::swapParentNode( RbPtr<DAGNode> oldNode, RbPtr<DAGNode> newNode ) {
+void StochasticNode::swapParentNode(const RbPtr<DAGNode>& oldNode, const RbPtr<DAGNode>& newNode ) {
 
     if ( parents.find( oldNode ) == parents.end() )
         throw RbException( "Node is not a parent" );
@@ -554,18 +559,8 @@ void StochasticNode::swapParentNode( RbPtr<DAGNode> oldNode, RbPtr<DAGNode> newN
 
     if ( clamped == false ) {
 
-        if ( !touched ) {
-            
-            // delete the stored value
-            if (storedValue != NULL) {
-                delete storedValue;
-            }
-            
-            storedValue = value->clone();
-            storedLnProb = lnProb;
-            touched = true;
-        }
-
+        touchMe();
+        
         // We keep the current value; delegate moves can later change the value
         // if they are interested.
     }

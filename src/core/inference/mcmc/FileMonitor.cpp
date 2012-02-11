@@ -64,18 +64,18 @@ const VectorString& FileMonitor::getClass() const {
 }
 
 /** Return member rules */
-const MemberRules* FileMonitor::getMemberRules( void ) const {
+const MemberRules& FileMonitor::getMemberRules( void ) const {
     
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) 
     {
-        memberRules->push_back( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) );
-        memberRules->push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name),  new Integer(1)    ) );
-        memberRules->push_back( new ValueRule( "separator" , TypeSpec(RbString_name), new RbString("\t") ) );
-        memberRules->push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
-        memberRules->push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
+        memberRules.push_back( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) );
+        memberRules.push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name),  new Integer(1)    ) );
+        memberRules.push_back( new ValueRule( "separator" , TypeSpec(RbString_name), new RbString("\t") ) );
+        memberRules.push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
+        memberRules.push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
         rulesSet = true;
     }
     
@@ -111,7 +111,7 @@ void FileMonitor::monitor(void) {
 void FileMonitor::monitor(int gen) {
 
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first
@@ -134,7 +134,7 @@ void FileMonitor::monitor(int gen) {
 void FileMonitor::openStream(void) {
 
     // get the filename
-    std::string filename = dynamic_cast<const RbString*>( (const RbObject*)getMemberValue("filename") )->getValue();
+    std::string filename = dynamic_cast<const RbString&>( getMemberValue("filename") ).getValue();
     
     // open the stream to the file
     outStream.open(filename.c_str());
@@ -168,23 +168,11 @@ void FileMonitor::printHeader() {
 void FileMonitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
 
-
-/** Complete info about object */
-std::string FileMonitor::richInfo(void) const {
-    
-    // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
-    
-    std::ostringstream o;
-    o << "Monitor: interval = " << samplingFrequency;
-
-    return o.str();
-}
 
 void FileMonitor::setMemberVariable(std::string const &name, Variable* var) {
     

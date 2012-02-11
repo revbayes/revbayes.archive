@@ -70,22 +70,22 @@ TreePlate::~TreePlate(void) {
 
 
 /* Build newick string */
-std::string TreePlate::buildNewickString(const TopologyNode* node) const {
+std::string TreePlate::buildNewickString(const TopologyNode& node) const {
 
     // create the newick string
     std::string newick;
     
     // test whether this is a internal or external node
-    if (node->isTip()) {
+    if (node.isTip()) {
         // this is a tip so we just return the name of the node
-        newick = node->getName();
+        newick = node.getName();
     }
     else {
         newick = "(";
-        for (size_t i=0; i<(node->getNumberOfChildren()-1); i++) {
-            newick += buildNewickString(node->getChild(i)) + ",";
+        for (size_t i=0; i<(node.getNumberOfChildren()-1); i++) {
+            newick += buildNewickString(node.getChild(i)) + ",";
         }
-        newick += buildNewickString(node->getChild(node->getNumberOfChildren()-1)) + ")";
+        newick += buildNewickString(node.getChild(node.getNumberOfChildren()-1)) + ")";
     }
     
     // check whether we have additional information for the node
@@ -99,23 +99,23 @@ std::string TreePlate::buildNewickString(const TopologyNode* node) const {
             const std::string &varName = *it;
             
             // get the container with the variables for this node
-            const RbObject& vars = (*members)[varName]->getDagNode()->getValue();
+            const RbObject& vars = (*members)[varName].getDagNode()->getValue();
             
             // get the index of the node
             size_t nodeIndex = getNodeIndex(node) - 1;
             
             // get the variable
             const RbObject& obj = vars.getElement(nodeIndex);
-            const Variable* var = static_cast<const VariableSlot&>( obj ).getVariable();
+            const Variable& var = static_cast<const VariableSlot&>( obj ).getVariable();
             
             // check if this node also has the parameter (already) set and only if so, add it
-            if (var->getDagNode() != NULL) {
+            if (var.getDagNode() != NULL) {
                 // for every except the first element we need to add a delimiter
                 if (it != nodeVariableNames.begin()) {
                     newick += ",";
                 }
                 std::ostringstream ss;
-                var->getDagNode()->getValue().printValue(ss);
+                var.getDagNode()->getValue().printValue(ss);
                 newick += varName + ":" + ss.str();
             }
         }
@@ -149,11 +149,11 @@ const TypeSpec& TreePlate::getTypeSpec(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environment* args) {
+RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environment& args) {
 
     if (name == "getVariable") {
         // get the name of the variable
-        const std::string& varName = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
+        const std::string& varName = static_cast<const RbString&>( args[0].getValue() ).getValue();
         
         // check if a container already exists with that name
         if (!members->existsVariable(varName)) {
@@ -164,18 +164,18 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
         }
         else {
             // get the container with the variables for this node
-            DagNodeContainer *vars = static_cast<DagNodeContainer*>( (RbObject*)(*members)[varName]->getValue() );
+            DagNodeContainer& vars = static_cast<DagNodeContainer&>( (*members)[varName].getValue() );
             
             // get the node we want to associate it too
-            const TopologyNode* theNode = static_cast<const TopologyNode*>( (*args)[1]->getValue() );
+            const TopologyNode& theNode = static_cast<const TopologyNode&>( args[1].getValue() );
             
             // get the index of the node
             size_t nodeIndex = getNodeIndex(theNode) - 1;
             
             // get the variable
-            Variable* var = static_cast<VariableSlot&>( vars->getElement(nodeIndex) ).getVariable();
+            Variable& var = static_cast<VariableSlot&>( vars.getElement(nodeIndex) ).getVariable();
             
-            return static_cast<RbLanguageObject*>( var->getDagNode() );
+            return static_cast<RbLanguageObject*>( var.getDagNode() );
         }
     }
 
@@ -184,13 +184,13 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
 }
 
 /* Map calls to member methods */
-RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Environment& args) {
     
     // special handling for adding a variable
     if (name == "addVariable") 
         {
         // get the name of the variable
-        const std::string& varName = static_cast<const RbString*>( (*args)[0]->getValue() )->getValue();
+        const std::string& varName = static_cast<const RbString&>( args[0].getValue() ).getValue();
         
         // check if a container already exists with that name
         if (!members->existsVariable(varName)) 
@@ -206,20 +206,20 @@ RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Env
             }
         
         // get the container with the variables for this node
-        DagNodeContainer *vars = static_cast<DagNodeContainer*>( (*members)[varName]->getValue() );
+        DagNodeContainer& vars = static_cast<DagNodeContainer&>( (*members)[varName].getValue() );
         
         // get the variable
-        Environment* args2 = args;
-        Variable* var = (*args2)[1]->getVariable();
+        Environment& args2 = args;
+        Variable& var = args2[1].getVariable();
         
         // get the node we want to associate it too
-        const TopologyNode* theNode = static_cast<const TopologyNode*>( (*args)[2]->getValue() );
+        const TopologyNode& theNode = static_cast<const TopologyNode&>( args[2].getValue() );
         
         // get the index of the node
         size_t nodeIndex = getNodeIndex(theNode);
         
         // set the variable
-        vars->setElement(nodeIndex - 1, var );
+        vars.setElement(nodeIndex - 1, var.clone() );
         
         return NULL;
         }
@@ -230,18 +230,18 @@ RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Env
     else if (name == "node") 
         {
         // we assume that the node indices in the RevLanguage are from 1:nnodes()
-        int index = dynamic_cast<const Natural *>( args->getValue("index") )->getValue() - 1;
+        int index = dynamic_cast<const Natural &>( args.getValue("index") ).getValue() - 1;
         
-        return orderingTopology->getNodes()[index];
+        return orderingTopology->getNodes()[index]->clone();
         }
     else if (name == "index") 
         {
-        const TopologyNode* theNode = dynamic_cast<const TopologyNode*>( (*args)[0]->getValue() );
+        const TopologyNode& theNode = dynamic_cast<const TopologyNode&>( args[0].getValue() );
         return new Natural(getNodeIndex(theNode) );
         }
     else if (name == "tipIndex") 
         {
-        const TopologyNode* theNode = dynamic_cast<const TopologyNode*>( (*args)[0]->getValue() );
+        const TopologyNode& theNode = dynamic_cast<const TopologyNode&>( args[0].getValue() );
         size_t tIndex = getTipIndex(theNode);
         return new Natural(tIndex);
         }
@@ -252,9 +252,9 @@ RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Env
 }
 
 /* Get method specifications */
-const MethodTable* TreePlate::getMethods(void) const {
+const MethodTable& TreePlate::getMethods(void) const {
     
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* addVariableArgRules = new ArgumentRules();
     static ArgumentRules* getVariableArgRules = new ArgumentRules();
     static ArgumentRules* getNodeIndexArgRules = new ArgumentRules();
@@ -267,37 +267,37 @@ const MethodTable* TreePlate::getMethods(void) const {
         
         // add the 'addVariable()' method
         addVariableArgRules->push_back( new ValueRule( "name"      , RbString_name )     );
-        addVariableArgRules->push_back( new ValueRule( ""          , RbObject_name )     );
+        addVariableArgRules->push_back( new ValueRule( "value"     , RbObject_name )     );
         addVariableArgRules->push_back( new ValueRule( "node"      , TopologyNode_name ) );
         
-        methods->addFunction("addVariable", new MemberFunction(RbVoid_name, addVariableArgRules) );
+        methods.addFunction("addVariable", new MemberFunction(RbVoid_name, addVariableArgRules) );
         
         // add the 'getVariable()' method
         getVariableArgRules->push_back( new ValueRule( "name"      , RbString_name )     );
         getVariableArgRules->push_back( new ValueRule( "node"      , TopologyNode_name ) );
         
-        methods->addFunction("getVariable", new MemberFunction(RbObject_name, getVariableArgRules) );
+        methods.addFunction("getVariable", new MemberFunction(RbObject_name, getVariableArgRules) );
         
         // add the 'index(node)' method
         getNodeIndexArgRules->push_back( new ValueRule( "node", TopologyNode_name ) );
         
-        methods->addFunction("index", new MemberFunction(Natural_name, getNodeIndexArgRules) );
+        methods.addFunction("index", new MemberFunction(Natural_name, getNodeIndexArgRules) );
         
         // add the 'tipIndex(node)' method
         getTipIndexArgRules->push_back( new ValueRule( "node", TopologyNode_name ) );
         
-        methods->addFunction("tipIndex", new MemberFunction(Natural_name, getTipIndexArgRules) );
+        methods.addFunction("tipIndex", new MemberFunction(Natural_name, getTipIndexArgRules) );
         
         // add the 'node(i)' method
         nodeArgRules->push_back( new ValueRule( "index" , Natural_name  ) );
         
-        methods->addFunction("node", new MemberFunction(TopologyNode_name, nodeArgRules) );
+        methods.addFunction("node", new MemberFunction(TopologyNode_name, nodeArgRules) );
         
         // add the 'nnodes()' method
-        methods->addFunction("nnodes", new MemberFunction(Natural_name, nnodesArgRules) );
+        methods.addFunction("nnodes", new MemberFunction(Natural_name, nnodesArgRules) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
     
@@ -306,15 +306,15 @@ const MethodTable* TreePlate::getMethods(void) const {
 
 
 /* Get member rules */
-const MemberRules* TreePlate::getMemberRules(void) const {
+const MemberRules& TreePlate::getMemberRules(void) const {
     
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) 
     {
         TypeSpec varType(Topology_name);
-        memberRules->push_back( new ValueRule( "topology" , varType ) );
+        memberRules.push_back( new ValueRule( "topology" , varType ) );
         
         rulesSet = true;
     }
@@ -327,13 +327,13 @@ const MemberRules* TreePlate::getMemberRules(void) const {
 
 
 /** Find the index of the node */
-size_t TreePlate::getNodeIndex(const TopologyNode* theNode) const {
-    const std::vector<TopologyNode* >& nodes = orderingTopology->getNodes();
+size_t TreePlate::getNodeIndex(const TopologyNode& theNode) const {
+    const std::vector<const TopologyNode*>& nodes = orderingTopology->getNodes();
     
     size_t index = 0;
     for (; index<nodes.size(); index++) {
-        const TopologyNode* node = nodes[index];
-        if (theNode->equals( node ) ) {
+        const TopologyNode& node = *nodes[index];
+        if (theNode.equals( node ) ) {
             break;
         }
     }
@@ -344,20 +344,20 @@ size_t TreePlate::getNodeIndex(const TopologyNode* theNode) const {
 
 
 /** Find the tip-index of the node */
-size_t TreePlate::getTipIndex(const TopologyNode* theNode) const {
+size_t TreePlate::getTipIndex(const TopologyNode& theNode) const {
     
     size_t index = 0;
     for (; index<orderingTopology->getNumberOfTips(); index++) {
-        const TopologyNode* theTip = orderingTopology->getTipNode(index);
-        if (theNode->equals( theTip ) ) {
+        const TopologyNode& theTip = orderingTopology->getTipNode(index);
+        if (theNode.equals( theTip ) ) {
             break;
         }
     }
     if (index == orderingTopology->getNumberOfTips()) {
-        if (theNode->isTip()){
+        if (theNode.isTip()){
             std::cout << "Ooops ..." << std::endl;
         }
-        if (theNode->equals(orderingTopology->getTipNode(index))) {
+        if (theNode.equals(orderingTopology->getTipNode(index))) {
             std::cout << "Hm, wrong numbering scheme ... ?" << std::endl;
         }
     }
@@ -368,8 +368,8 @@ size_t TreePlate::getTipIndex(const TopologyNode* theNode) const {
 
 
 
-const Topology* TreePlate::getTopology(void) const {
-    return orderingTopology;
+const Topology& TreePlate::getTopology(void) const {
+    return *orderingTopology;
 }
 
 

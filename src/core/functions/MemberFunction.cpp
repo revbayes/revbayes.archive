@@ -48,15 +48,6 @@ MemberFunction::~MemberFunction() {
     }
 }
 
-/** Brief info on the function */
-std::string MemberFunction::briefInfo(void) const {
-
-    std::ostringstream o;
-    o << "MemberFunction: " << funcName;
-
-    return o.str();
-}
-
 
 /** Clone the object */
 MemberFunction* MemberFunction::clone(void) const {
@@ -68,7 +59,7 @@ MemberFunction* MemberFunction::clone(void) const {
 /** Execute function: call the object's internal implementation through executeOperation */
 RbLanguageObject* MemberFunction::execute( void ) {
 
-    return object->executeOperation( funcName, args );
+    return object->executeOperation( funcName, *args );
 
 }
 
@@ -82,9 +73,9 @@ const VectorString& MemberFunction::getClass(void) const {
 
 
 /** Get argument rules */
-const ArgumentRules* MemberFunction::getArgumentRules(void) const {
+const ArgumentRules& MemberFunction::getArgumentRules(void) const {
 
-    return argumentRules;
+    return *argumentRules;
 }
 
 
@@ -100,23 +91,6 @@ const TypeSpec& MemberFunction::getTypeSpec(void) const {
     return typeSpec;
 }
 
-
-/** Complete info about object */
-std::string MemberFunction::richInfo(void) const {
-
-    std::ostringstream o;
-    o << "MemberFunction: " << std::endl;
-    
-    if ( argsProcessed )
-        o << "Arguments processed; there are " << args->size() << " arguments." << std::endl;
-    else
-        o << "Arguments not processed" << std::endl;
-    
-    for( size_t i = 0; i < args->size(); i++ )
-        o << " args[" << i << "] = " << (*args)[i]->getValue() << std::endl;
-
-    return o.str();
-}
 
 void MemberFunction::setMemberObject(MemberObject* obj) {
     

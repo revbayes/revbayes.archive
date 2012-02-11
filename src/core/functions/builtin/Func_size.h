@@ -38,7 +38,7 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
-    const ArgumentRules*        getArgumentRules(void) const;                       //!< Get argument rules
+    const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 
 protected:
@@ -76,8 +76,8 @@ Func_size<valType>* Func_size<valType>::clone( void ) const {
 template <typename valType> 
 RbLanguageObject* Func_size<valType>::executeFunction( void ) {
     
-    const valType* val = static_cast<valType*> ( (*args)[0]->getValue() ) ;
-    RbLanguageObject* size = new Natural( val->size() ); 
+    const valType& val = static_cast<valType&> ( (*args)[0].getValue() ) ;
+    RbLanguageObject* size = new Natural( val.size() ); 
     
     return size;
 }
@@ -85,14 +85,14 @@ RbLanguageObject* Func_size<valType>::executeFunction( void ) {
 
 /** Get argument rules */
 template <typename valType>
-const ArgumentRules* Func_size<valType>::getArgumentRules( void ) const {
+const ArgumentRules& Func_size<valType>::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        argumentRules->push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
         rulesSet = true;
     }
     

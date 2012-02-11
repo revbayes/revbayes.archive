@@ -46,12 +46,12 @@ public:
     std::string                     richInfo(void) const;                                                   //!< Complete info
     
     // Member variable functions
-    const MemberRules*              getMemberRules(void) const;                                             //!< Get member rules
+    const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
     void                            setMemberVariable(const std::string& name, Variable* var);              //!< Catch setting of the topology
     
     // Member method inits
-    RbLanguageObject*               executeOperation(const std::string& name, Environment* args);           //!< Execute method
-    const MethodTable*              getMethods(void) const;                                                 //!< Get methods
+    RbLanguageObject*               executeOperation(const std::string& name, Environment& args);           //!< Execute method
+    const MethodTable&              getMethods(void) const;                                                 //!< Get methods
     
     // Mixture functions
     size_t                          getNumberOfClasses();                                                   //!< Get the number of classes in the mixture

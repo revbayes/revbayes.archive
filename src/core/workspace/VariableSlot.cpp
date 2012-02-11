@@ -137,23 +137,23 @@ const TypeSpec& VariableSlot::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-const RbLanguageObject* VariableSlot::getValue( void ) const {
+const RbLanguageObject& VariableSlot::getValue( void ) const {
     
     const RbLanguageObject& retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
     if (!retVal.isTypeSpec(varTypeSpec)) {
-        return dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
+        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
         
 //        return convRetVal;
     }
     
-    return &retVal;
+    return retVal;
 }
 
 
 /** Get the value of the variable */
-RbLanguageObject* VariableSlot::getValue( void ) {
+RbLanguageObject& VariableSlot::getValue( void ) {
     
     RbLanguageObject& retVal = variable->getDagNode()->getValue();
     
@@ -164,25 +164,25 @@ RbLanguageObject* VariableSlot::getValue( void ) {
         
         //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
         
-        return dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
+        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
     }
     
-    return &retVal;
+    return retVal;
 }
 
 
-const Variable* VariableSlot::getVariable(void) const {
-    return variable;
+const Variable& VariableSlot::getVariable(void) const {
+    return *variable;
 }
 
 
-Variable* VariableSlot::getVariable(void) {
-    return variable;
+Variable& VariableSlot::getVariable(void) {
+    return *variable;
 }
 
 
 /** Is variable valid for the slot? Additional type checking here */
-bool VariableSlot::isValidVariable( DAGNode* newVariable ) const {
+bool VariableSlot::isValidVariable( const DAGNode& newVariable ) const {
     
     return true;    // No additional requirements here, but see MemberSlot
 }

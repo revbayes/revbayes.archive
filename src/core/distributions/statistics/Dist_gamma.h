@@ -41,13 +41,13 @@ class Dist_gamma: public DistributionContinuous {
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
-        const MemberRules*          getMemberRules(void) const;                                         //!< Get member variable rules
+        const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Exponential distribution functions
-        double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
+        double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (RealPos)
-        double                      lnPdf(const RbLanguageObject *value) const;                         //!< Ln probability density
-        double                      pdf(const RbLanguageObject *value) const;                           //!< Probability density
+        double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
+        double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
         Real*                       quantile(const double p);                                           //!< Quantile
         RbLanguageObject*           rv(void);                                                           //!< Generate random variable
     

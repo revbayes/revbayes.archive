@@ -41,14 +41,14 @@ const VectorString& CharacterStateDiscrete::getClass() const {
 }
 
 
-const MemberRules* CharacterStateDiscrete::getMemberRules(void) const {
+const MemberRules& CharacterStateDiscrete::getMemberRules(void) const {
     
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) {
         
-        memberRules->push_back( new ValueRule( "state"  , RbString_name ) );
+        memberRules.push_back( new ValueRule( "state"  , RbString_name ) );
        
         rulesSet = true;
     }
@@ -92,7 +92,7 @@ unsigned CharacterStateDiscrete::getUnsignedValue(void) const {
 void CharacterStateDiscrete::initialize(const Vector &attributes) {
     
     // set the state
-    setState(static_cast<const RbString*>( attributes[0] )->getValue()[0]);
+    setState(static_cast<const RbString&>( attributes[0] ).getValue()[0]);
 //    numStates = static_cast<Natural*>( (RbLanguageObject*)(*attr)[0] )->getValue();
 }
 

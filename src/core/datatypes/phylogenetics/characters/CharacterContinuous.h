@@ -41,7 +41,6 @@ class CharacterContinuous : public Character {
         CharacterContinuous*            clone(void) const;                                   //!< Clone object
         const VectorString&             getClass(void) const;                                //!< Get class vector
         const TypeSpec&                 getTypeSpec(void) const;                             //!< Get language type of the object
-        std::string                     richInfo(void) const;                                //!< Complete info about object
 
         // Discrete character observation functions
         bool                            getIsGapState(void) const { return false; }          //!< Get whether this is a gapped character state

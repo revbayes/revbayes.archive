@@ -91,12 +91,12 @@ const VectorString& ArgumentRule::getClass(void) const {
 }
 
 
-const Variable* ArgumentRule::getDefaultVariable(void) const {
+const Variable& ArgumentRule::getDefaultVariable(void) const {
     return argSlot.getVariable(); 
 }
 
 
-Variable* ArgumentRule::getDefaultVariable(void) {
+Variable& ArgumentRule::getDefaultVariable(void) {
     return argSlot.getVariable(); 
 }
 

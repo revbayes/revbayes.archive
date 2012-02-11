@@ -76,26 +76,26 @@ void TopologyNode::addChild(TopologyNode* c) {
     // add the child to our internal vector
     children.push_back(c);
     
-    name = buildNewickString( this );
+    name = buildNewickString( *this );
 }
 
 
 /* Build newick string */
-std::string TopologyNode::buildNewickString(const TopologyNode* node) const {
+std::string TopologyNode::buildNewickString(const TopologyNode& node) const {
     // create the newick string
     std::string newick;
     
     // test whether this is a internal or external node
-    if (node->isTip()) {
+    if (node.isTip()) {
         // this is a tip so we just return the name of the node
-        newick = node->getName();
+        newick = node.getName();
     }
     else {
         newick = "(";
-        for (size_t i=0; i<(node->getNumberOfChildren()-1); i++) {
-            newick += buildNewickString(node->getChild(i)) + ",";
+        for (size_t i=0; i<(node.getNumberOfChildren()-1); i++) {
+            newick += buildNewickString(node.getChild(i)) + ",";
         }
-        newick += buildNewickString(node->getChild(node->getNumberOfChildren()-1)) + ")";
+        newick += buildNewickString(node.getChild(node.getNumberOfChildren()-1)) + ")";
     }
     
     return newick;
@@ -115,30 +115,30 @@ const TypeSpec& TopologyNode::getTypeSpec(void) const {
 }
 
 
-bool TopologyNode::equals(const TopologyNode* node) const {
+bool TopologyNode::equals(const TopologyNode& node) const {
     // test if the name is the same
-    if (name != node->name) {
+    if (name != node.name) {
         return false;
     }
     
     // test if the index is the same
-    if (index != node->index) {
+    if (index != node.index) {
         return false;
     }
     
     // test if the parent is the same
-    if (parent != node->parent) {
+    if (parent != node.parent) {
         return false;
     }
     
     // test if the size of the children differs
-    if (children.size() != node->children.size()) {
+    if (children.size() != node.children.size()) {
         return false;
     }
     
     // test if all children are the same
     for (size_t i=0; i<children.size(); i++) {
-        if (children[i] != node->children[i]) {
+        if (children[i] != node.children[i]) {
             return false;
         }
     }
@@ -147,7 +147,7 @@ bool TopologyNode::equals(const TopologyNode* node) const {
 }
 
 
-RbLanguageObject* TopologyNode::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* TopologyNode::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "isTip") {
         return new RbBoolean( isTip() );
@@ -169,16 +169,16 @@ RbLanguageObject* TopologyNode::executeOperationSimple(const std::string& name, 
 
 
 /** Get child at index i */
-const TopologyNode* TopologyNode::getChild(size_t i) const {
+const TopologyNode& TopologyNode::getChild(size_t i) const {
     
-    return children[i];
+    return *children[i];
 }
 
 
 /** Get child at index i */
-TopologyNode* TopologyNode::getChild(size_t i) {
+TopologyNode& TopologyNode::getChild(size_t i) {
     
-    return children[i];
+    return *children[i];
 }
 
 
@@ -203,9 +203,9 @@ const VectorString& TopologyNode::getClass() const {
 
 
 /** Get method specifications */
-const MethodTable* TopologyNode::getMethods(void) const {
+const MethodTable& TopologyNode::getMethods(void) const {
     
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* ancestorRules = new ArgumentRules();
     static ArgumentRules* isTipArgRules = new ArgumentRules();
     static ArgumentRules* isRootArgRules = new ArgumentRules();
@@ -214,13 +214,13 @@ const MethodTable* TopologyNode::getMethods(void) const {
 
     if ( methodsSet == false ) {
         
-        methods->addFunction("ancestor",   new MemberFunction(TopologyNode_name, ancestorRules) );
-        methods->addFunction("isTip",      new MemberFunction(RbBoolean_name,      isTipArgRules) );
-        methods->addFunction("isRoot",     new MemberFunction(RbBoolean_name,      isRootArgRules) );
-        methods->addFunction("isInterior", new MemberFunction(RbBoolean_name,      isInteriorArgRules) );
+        methods.addFunction("ancestor",   new MemberFunction(TopologyNode_name, ancestorRules) );
+        methods.addFunction("isTip",      new MemberFunction(RbBoolean_name,      isTipArgRules) );
+        methods.addFunction("isRoot",     new MemberFunction(RbBoolean_name,      isRootArgRules) );
+        methods.addFunction("isInterior", new MemberFunction(RbBoolean_name,      isInteriorArgRules) );
         
         // Necessary call for proper inheritance
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
 
@@ -228,9 +228,9 @@ const MethodTable* TopologyNode::getMethods(void) const {
 }
 
 
-const MemberRules* TopologyNode::getMemberRules(void) const {
+const MemberRules& TopologyNode::getMemberRules(void) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
@@ -242,9 +242,9 @@ const MemberRules* TopologyNode::getMemberRules(void) const {
 }
 
 
-TopologyNode* TopologyNode::getParent(void) { 
+const TopologyNode& TopologyNode::getParent(void) const { 
+    return *parent; 
 
-    return parent; 
 }
 
 
@@ -257,7 +257,7 @@ void TopologyNode::printValue(std::ostream& o) const {
 
 
 void TopologyNode::refreshNewickString(void) {
-    name = buildNewickString( this );
+    name = buildNewickString( *this );
     
     // call the parent to refresh its newick string
     if (parent != NULL) {
@@ -276,25 +276,16 @@ void TopologyNode::removeAllChildren(void) {
 }
 
 /** Remove a child from the vector of children */
-void TopologyNode::removeChild(const TopologyNode* p) {
+void TopologyNode::removeChild(const TopologyNode& p) {
     
-    std::vector<TopologyNode* >::iterator it = find(children.begin(), children.end(), p);
+    std::vector<TopologyNode* >::iterator it = find(children.begin(), children.end(), &p);
     if ( it != children.end() ) {
         children.erase(it);
     }
     else 
         throw(RbException("Cannot find node in list of children nodes"));
     
-    name = buildNewickString( this );
-}
-
-
-std::string TopologyNode::richInfo(void) const {
-
-    std::ostringstream o;
-    o <<  "Topology node: ";
-    printValue(o);
-    return o.str();
+    name = buildNewickString( *this );
 }
 
 

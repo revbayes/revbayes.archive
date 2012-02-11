@@ -37,7 +37,7 @@ class Func__ge :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-        const ArgumentRules*        getArgumentRules(void) const;                               //!< Get argument rules
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
@@ -82,23 +82,23 @@ Func__ge<firstValType, secondValType>* Func__ge<firstValType, secondValType>::cl
 template <typename firstValType, typename secondValType>
 RbLanguageObject* Func__ge<firstValType,secondValType>::executeFunction( void ) {
 
-    const firstValType*  val1 = static_cast<firstValType*> ( (*args)[0]->getValue() );
-    const secondValType* val2 = static_cast<secondValType*>( (*args)[1]->getValue() );
+    const firstValType&  val1 = static_cast<firstValType&> ( (*args)[0].getValue() );
+    const secondValType& val2 = static_cast<secondValType&>( (*args)[1].getValue() );
     
-    return new RbBoolean( *val1 >= *val2 );
+    return new RbBoolean( val1 >= val2 );
 }
 
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType>
-const ArgumentRules* Func__ge<firstValType, secondValType>::getArgumentRules(void) const {
+const ArgumentRules& Func__ge<firstValType, secondValType>::getArgumentRules(void) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
-        argumentRules->push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
-        argumentRules->push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
     }
 

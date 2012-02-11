@@ -86,9 +86,9 @@ const VectorString& Dist_neutralcoalescent::getClass( void ) const {
 
 
 /** Get member variable rules */
-const MemberRules* Dist_neutralcoalescent::getMemberRules( void ) const {
+const MemberRules& Dist_neutralcoalescent::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet )
@@ -97,9 +97,9 @@ const MemberRules* Dist_neutralcoalescent::getMemberRules( void ) const {
         // memberRules.push_back( new ValueRule( "lambda"   , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "mu"       , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "rho"      , Probability_name ) );
-        memberRules->push_back( new ValueRule( "tipNames", VectorString_name) );
-        memberRules->push_back( new ValueRule( "haploidPopSize" , Natural_name, new Natural(1) ) );
-        memberRules->push_back( new ValueRule( "noTaxa" , RealPos_name ) );
+        memberRules.push_back( new ValueRule( "tipNames", VectorString_name) );
+        memberRules.push_back( new ValueRule( "haploidPopSize" , Natural_name, new Natural(1) ) );
+        memberRules.push_back( new ValueRule( "noTaxa" , RealPos_name ) );
 
         rulesSet = true;
     }
@@ -139,18 +139,18 @@ const TypeSpec& Dist_neutralcoalescent::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_neutralcoalescent::lnPdf( const RbLanguageObject *value ) const {
+double Dist_neutralcoalescent::lnPdf( const RbLanguageObject& value ) const {
 
-    const VectorRealPos* waitingTimes   = static_cast<const VectorRealPos*>( value );
-    size_t haploidPopSize               = static_cast<const Natural*      >( getMemberValue( "haploidPopSize" ) )->getValue();
-    size_t nWaitingTimes                = waitingTimes->size();
+    const VectorRealPos& waitingTimes   = static_cast<const VectorRealPos&>( value );
+    size_t haploidPopSize               = static_cast<const Natural&      >( getMemberValue( "haploidPopSize" ) ).getValue();
+    size_t nWaitingTimes                = waitingTimes.size();
     size_t k                            = nWaitingTimes + 1;
 
     double log_p = 0.0;
 
     for (size_t i = 0; i < nWaitingTimes; ++i) {
         double k2N = (k*(k-1)/2) / haploidPopSize;
-        log_p = log_p + log(k2N) - (k2N * (*waitingTimes)[i]);
+        log_p = log_p + log(k2N) - (k2N * waitingTimes[i]);
         k -= 1;
     }
 
@@ -167,7 +167,7 @@ double Dist_neutralcoalescent::lnPdf( const RbLanguageObject *value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_neutralcoalescent::pdf( const RbLanguageObject *value ) const {
+double Dist_neutralcoalescent::pdf( const RbLanguageObject& value ) const {
 
     // // get the number of speciation events
     // size_t events = times->size();

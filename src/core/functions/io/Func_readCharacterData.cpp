@@ -52,18 +52,17 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 RbLanguageObject* Func_readCharacterData::executeFunction( void ) {
 
     // get the information from the arguments for reading the file
-    RbString* fn = static_cast<RbString*>( (*args)[0]->getValue() );
+    RbString& fn = static_cast<RbString&>( (*args)[0].getValue() );
     
-    Environment* xyz = getArguments(); 
-    xyz->richInfo();
+    Environment& xyz = getArguments();
 
     // check that the file/path name has been correctly specified
-    RbFileManager myFileManager( fn->getValue() );
+    RbFileManager myFileManager( fn.getValue() );
     if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
         {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
-        throw RbException("Could not find file or path with name \"" + fn->getValue() + "\"");
+        throw RbException("Could not find file or path with name \"" + fn.getValue() + "\"");
         }
 
     // are we reading a single file or are we reading the contents of a directory?
@@ -244,14 +243,14 @@ void Func_readCharacterData::formatError(RbFileManager& fm, std::string& errorSt
 
 
 /** Get argument rules */
-const ArgumentRules* Func_readCharacterData::getArgumentRules( void ) const {
+const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
     if (!rulesSet) 
         {
-        argumentRules->push_back( new ValueRule( "file",    RbString_name ) );
+        argumentRules.push_back( new ValueRule( "file",    RbString_name ) );
         rulesSet = true;
         }
             

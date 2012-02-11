@@ -52,7 +52,7 @@ public:
     virtual void                        unique(void) = 0;                                                   //!< removes consecutive duplicates
     
     // Member method inits
-    virtual const MethodTable*          getMethods(void) const;                                             //!< Get methods
+    virtual const MethodTable&          getMethods(void) const;                                             //!< Get methods
 
     // Container functions you do not have to override
     const TypeSpec&                     getElementType(void) const { return elementType; }                  //!< Get element type
@@ -63,12 +63,12 @@ public:
     
 protected:
     Container(const TypeSpec &elemType);                                                                    //!< Set type spec of container from type of elements
-    Container(const TypeSpec &elemType, const MemberRules* memberRules);                              //!< Set type spec of container from type of elements
+    Container(const TypeSpec &elemType, const MemberRules& memberRules);                                    //!< Set type spec of container from type of elements
     Container(const Container &v);                                                                          //!< Copy Constructor
     
     Container&                          operator=(const Container& x);                                          //!< Assignment operator
 
-    virtual RbLanguageObject*           executeOperationSimple(const std::string& name, Environment* args);//!< Execute method
+    virtual RbLanguageObject*           executeOperationSimple(const std::string& name, Environment& args);//!< Execute method
 
     // Member variables
     const TypeSpec                      elementType;                                                            //!< Type of elements

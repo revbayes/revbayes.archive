@@ -33,20 +33,20 @@ TaxonData::TaxonData(const std::string& elemType, const std::string tname) : Vec
 
 
 /** Subscript operator */
-Character* TaxonData::operator[](size_t i) {
+Character& TaxonData::operator[](size_t i) {
     
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return static_cast<Character*>( elements[i] );
+    return *static_cast<Character*>( elements[i] );
 }
 
 
 /** Subscript const operator */
-const Character* TaxonData::operator[](size_t i) const {
+const Character& TaxonData::operator[](size_t i) const {
     
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return static_cast<const Character*>( elements[i] );
+    return *static_cast<const Character*>( elements[i] );
 }
 
 /** Push back a new character */
@@ -73,7 +73,7 @@ const VectorString& TaxonData::getClass(void) const {
 }
 
 
-const Character* TaxonData::getCharacter(size_t index) const {
+const Character& TaxonData::getCharacter(size_t index) const {
 
     return operator[](index);
 }

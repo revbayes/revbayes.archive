@@ -174,14 +174,14 @@ std::vector<DAGNode*> Model::getClonedDagNodes(std::vector<DAGNode*> &orgNodes) 
 }
 
 
-const MemberRules* Model::getMemberRules(void) const {
+const MemberRules& Model::getMemberRules(void) const {
     
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) {
         
-        memberRules->push_back( new ValueRule( "sinknode"  , RbObject_name ) );
+        memberRules.push_back( new ValueRule( "sinknode"  , RbObject_name ) );
         
         rulesSet = true;
     }
@@ -229,7 +229,7 @@ void Model::printValue(std::ostream& o) const {
         if ((*i)->isType(DeterministicNode_name)) {
             DAGNode* dnode = *i;
             DeterministicNode* node = static_cast<DeterministicNode*>( dnode );
-            msg << "   Function     = " << node->getFunction().briefInfo();
+            msg << "   Function     = " << node->getFunction().debugInfo();
         } else if ((*i)->isType(StochasticNode_name)) {
             DAGNode* dnode = *i;
             StochasticNode* node = static_cast<StochasticNode*>( dnode );

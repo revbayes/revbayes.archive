@@ -50,15 +50,15 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 RbLanguageObject* Func_readTrees::executeFunction( void ) {
     
     // get the information from the arguments for reading the file
-    RbString* fn = static_cast<RbString*>( (*args)[0]->getValue() );
+    RbString& fn = static_cast<RbString&>( (*args)[0].getValue() );
     
     // check that the file/path name has been correctly specified
-    RbFileManager myFileManager( fn->getValue() );
+    RbFileManager myFileManager( fn.getValue() );
     if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
     {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
-        throw RbException("Could not find file or path with name \"" + fn->getValue() + "\"");
+        throw RbException("Could not find file or path with name \"" + fn.getValue() + "\"");
     }
     
     // are we reading a single file or are we reading the contents of a directory?
@@ -161,7 +161,7 @@ RbLanguageObject* Func_readTrees::executeFunction( void ) {
         return trees;
     }
     else if ( trees->size() == 1 ) {
-        return (*trees)[0];
+        return (*trees)[0].clone();
     }
     else {
         // Return null object
@@ -193,14 +193,14 @@ void Func_readTrees::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func_readTrees::getArgumentRules( void ) const {
+const ArgumentRules& Func_readTrees::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( new ValueRule( "file", RbString_name ) );
+        argumentRules.push_back( new ValueRule( "file", RbString_name ) );
         rulesSet = true;
     }
     

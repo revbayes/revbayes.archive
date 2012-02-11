@@ -64,16 +64,16 @@ const VectorString& ObjectMonitor::getClass() const {
 }
 
 /** Return member rules */
-const MemberRules* ObjectMonitor::getMemberRules( void ) const {
+const MemberRules& ObjectMonitor::getMemberRules( void ) const {
     
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) 
     {
-        memberRules->push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
-        memberRules->push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
-        memberRules->push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
+        memberRules.push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
+        memberRules.push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
+        memberRules.push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
         rulesSet = true;
     }
     
@@ -104,7 +104,7 @@ void ObjectMonitor::monitor(void) {
 void ObjectMonitor::monitor(int gen) {
     
     // get the sampling frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
 
     if (gen % samplingFrequency == 0) {
         
@@ -123,7 +123,7 @@ void ObjectMonitor::monitor(int gen) {
 void ObjectMonitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
@@ -134,7 +134,7 @@ void ObjectMonitor::printValue(std::ostream& o) const {
 std::string ObjectMonitor::richInfo(void) const {
     
     // get the sampling frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
     
     std::ostringstream o;
     o << "Monitor: interval = " << samplingFrequency;
@@ -176,7 +176,7 @@ void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
 
 
 /** returns the values contained in the values vector for variable with name varName */
-Vector* ObjectMonitor::getValues(RbString varName) {
+Vector* ObjectMonitor::getValues(const RbString& varName) {
     std::map<RbString,Vector>::iterator it = values.find(varName);
     if (it != values.end()) {
         Vector* toReturn = it->second.clone();

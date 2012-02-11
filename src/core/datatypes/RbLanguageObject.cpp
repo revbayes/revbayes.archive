@@ -51,10 +51,11 @@ const VectorString& RbLanguageObject::getClass(void) const {
 }
 
 
+
 /** Return member rules (no members) */
-const MemberRules* RbLanguageObject::getMemberRules(void) const {
+const MemberRules& RbLanguageObject::getMemberRules(void) const {
     
-    static const MemberRules* rules = new MemberRules();
+    static const MemberRules rules = MemberRules();
     
     return rules;
 }

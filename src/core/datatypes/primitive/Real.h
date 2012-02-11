@@ -43,12 +43,12 @@ class Real : public RbLanguageObject {
                                     Real(const int v);                                                      //!< Construct from int 
                                     Real(const unsigned int v);                                             //!< Construct from unsigned int 
                                     Real(const bool v);                                                     //!< Construct from bool
-
+                                    Real(const Real& x);                                                    //!< Copy constructor
+    
         // Overloaded operators
                                     operator double(void) const { return value; }                           //!< Type conversion to double for convenience
         
         // Basic utility functions
-        virtual std::string         briefInfo(void) const;                                                  //!< Brief info about the object
         virtual Real*               clone(void) const;                                                      //!< Clone object
         virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         virtual const VectorString& getClass(void) const;                                                   //!< Get class vector

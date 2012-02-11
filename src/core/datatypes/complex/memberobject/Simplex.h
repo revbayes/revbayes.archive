@@ -57,7 +57,6 @@ public:
     const VectorString&         getClass(void) const;                                       //!< Get class
     const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
     void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
-    std::string                 richInfo(void) const;                                       //!< Complete info about object
 
     // Vector functions, including STL-like functions
     void                        push_back(double x);                                        //!< Append element to end

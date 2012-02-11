@@ -49,27 +49,29 @@ Func_nj* Func_nj::clone(void) const {
 RbLanguageObject* Func_nj::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    DistanceMatrix* d           = static_cast<DistanceMatrix*>( (*args)[0]->getValue() );
-    RbString*       useBioNj    = static_cast<RbString*>      ( (*args)[1]->getValue() );
-    RbString*       tieBreaking = static_cast<RbString*>      ( (*args)[2]->getValue() );
+    DistanceMatrix& d           = static_cast<DistanceMatrix&>( (*args)[0].getValue() );
+    RbString&       useBioNj    = static_cast<RbString&>      ( (*args)[1].getValue() );
+    RbString&       tieBreaking = static_cast<RbString&>      ( (*args)[2].getValue() );
         
-    TreePlate* tp = neighborJoining(d);
-        
-    return tp;
+    Topology* top = neighborJoining(d);
+    
+    TreePlate* t = new TreePlate(top);
+    
+    return t;
 }
 
 
 /** Get argument rules */
-const ArgumentRules* Func_nj::getArgumentRules(void) const {
+const ArgumentRules& Func_nj::getArgumentRules(void) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
-    static bool           rulesSet      = false;
+    static ArgumentRules argumentRules = ArgumentRules();
+    static bool          rulesSet      = false;
 
     if (!rulesSet)
         {
-        argumentRules->push_back( new ValueRule( "d",     DistanceMatrix_name ) );
-        argumentRules->push_back( new ValueRule( "bionj", RbString_name       ) );
-        argumentRules->push_back( new ValueRule( "ties",  RbString_name       ) );
+        argumentRules.push_back( new ValueRule( "d",     DistanceMatrix_name ) );
+        argumentRules.push_back( new ValueRule( "bionj", RbString_name       ) );
+        argumentRules.push_back( new ValueRule( "ties",  RbString_name       ) );
         rulesSet = true;
         }
 
@@ -100,7 +102,7 @@ const TypeSpec& Func_nj::getTypeSpec(void) const {
 
 void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips) {
 
-    if (nTips > 3)
+    if (nTips > 2)
         {
         for (size_t i=0; i<distances.size(); i++)
             {
@@ -152,17 +154,17 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
         // join tips i and j
         TopologyNode* ndeI = nodes[smallestI];
         TopologyNode* ndeJ = nodes[smallestJ];
-        TopologyNode* rootNode = ndeI->getParent();
-        std::cout << "(" << ndeI << " " << ndeJ << " " << rootNode << ")" << std::endl;
-        if (ndeJ->getParent() != rootNode)
-            {
-            // problem
-            }
-        rootNode->removeChild(ndeI);
-        rootNode->removeChild(ndeJ);
+//        TopologyNode* rootNode = new TopologyNode();
+//        std::cout << "(" << ndeI << " " << ndeJ << " " << rootNode << ")" << std::endl;
+//        if (ndeJ->getParent() != rootNode)
+//            {
+//            // problem
+//            }
+//        rootNode.removeChild(ndeI);
+//        rootNode.removeChild(ndeJ);
         TopologyNode* newNode = new TopologyNode;
-        newNode->setParent(rootNode);
-        rootNode->addChild(newNode);
+//        newNode->setParent(rootNode);
+//        rootNode->addChild(newNode);
         newNode->addChild(ndeI);
         newNode->addChild(ndeJ);
         ndeI->setParent(newNode);
@@ -195,41 +197,59 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
         // recursively call function again
         buildNj(newDistances, newNodes, nTips-1);
         }
-    else
+    else if (nTips == 2)
         {
-        // nothing to do -- the tree should be fully resolved now -- except
-        // calculate the last branch lengths
+        /*TopologyNode* ndeI = nodes[0];
+        TopologyNode* ndeJ = nodes[1];
+        TopologyNode* rootNode = ndeI->getParent();
+        if (ndeJ->getParent() != rootNode)
+            {
+            // problem
+            }
+        rootNode->removeChild(ndeI);
+        rootNode->removeChild(ndeJ);
+        TopologyNode* newNode = new TopologyNode;
+        newNode->setParent(rootNode);
+        rootNode->addChild(newNode);
+        newNode->addChild(ndeI);
+        newNode->addChild(ndeJ);
+        ndeI->setParent(newNode);
+        ndeJ->setParent(newNode);*/
         }
 }
 
-TreePlate* Func_nj::neighborJoining(DistanceMatrix* d) {
+Topology* Func_nj::neighborJoining(const DistanceMatrix& d) {
 
     // allocate a topology
     Topology* topo = new Topology;
     
     // set the initial tree to be a start tree
-    size_t nTaxa = d->getNumberOfTaxa();
-    TopologyNode* rootNode = new TopologyNode;
-    topo->setRoot(rootNode);
+    size_t nTaxa = d.getNumberOfTaxa();
+//    TopologyNode* rootNode = new TopologyNode();
+//    topo->setRoot(rootNode);
     std::vector<TopologyNode*> activeNodes;
     for (int i=0; i<nTaxa; i++)
         {
-        TopologyNode* nde = new TopologyNode;
-        nde->setName(d->getTaxonNameWithIndex(i));
-        nde->setParent(rootNode);
+        TopologyNode* nde = new TopologyNode();
+        nde->setName(d.getTaxonNameWithIndex(i));
+//        nde->setParent(rootNode);
         //nde->setIndex(i);
-        rootNode->addChild(nde);
+//        rootNode->addChild(nde);
         activeNodes.push_back(nde);
         }
         
     // initialize a distance matrix
-    std::vector<std::vector<double> > activeDistances = d->getValue();
+    const std::vector<std::vector<double> >& activeDistances = d.getValue();
         
     // recursively build the neighbor-joining tree
     buildNj(activeDistances, activeNodes, (int)nTaxa);
+    // after the neighbor joining the matrix should only contain 1 node, which is our new root
+    topo->setRoot(activeNodes[0]);
     TreePlate* tp = new TreePlate(topo);
-    std::string newickStr = tp->buildNewickString(topo->getRoot());
-    std::cout << newickStr << std::endl;
     
-    return tp;
+    tp->printValue(std::cout);
+//    std::string newickStr = tp->buildNewickString(topo->getRoot());
+//    std::cout << newickStr << std::endl;
+    
+    return topo;
 }

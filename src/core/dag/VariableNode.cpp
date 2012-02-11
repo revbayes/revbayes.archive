@@ -45,13 +45,17 @@ VariableNode::~VariableNode( void ) {
 
     /* Remove this node as a child node of parents and delete these if appropriate */
     for ( std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++ ) {
-        RbPtr<DAGNode> node = *i;
+        const RbPtr<DAGNode>& node = *i;
         node->removeChildNode( this );
+    }
+    
+    if (storedValue != NULL) {
+        delete storedValue;
     }
 }
 
 /** add a child node */
-void VariableNode::addParentNode(RbPtr<DAGNode> p) {
+void VariableNode::addParentNode(const RbPtr<DAGNode>& p) {
     PRINTF("Adding parent with name \"%s\" to child with name \"%s\".\n",p->getName().c_str(),getName().c_str());
 
     // retain and add the parent

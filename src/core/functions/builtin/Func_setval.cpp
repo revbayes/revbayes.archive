@@ -47,7 +47,7 @@ Func_setval* Func_setval::clone( void ) const {
 RbLanguageObject* Func_setval::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>( (DAGNode*)(*args)[0]->getDagNode() );
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>( (*args)[0].getDagNode() );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
@@ -64,7 +64,7 @@ RbLanguageObject* Func_setval::executeFunction( void ) {
     }
     
     // The following call will throw an error if the value type is wrong
-    RbLanguageObject* newVal = (*args)[1]->getValue();
+    RbLanguageObject* newVal = (*args)[1].getValue().clone();
     if (!newVal->isTypeSpec(theNode->getDistribution().getVariableType() ) ) {
         if (newVal->isConvertibleTo(theNode->getDistribution().getVariableType())) {
             newVal = static_cast<RbLanguageObject*>( newVal->convertTo(theNode->getDistribution().getVariableType() ) );
@@ -82,15 +82,15 @@ RbLanguageObject* Func_setval::executeFunction( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func_setval::getArgumentRules( void ) const {
+const ArgumentRules& Func_setval::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules->push_back( new ValueRule ( "variable", RbObject_name ) );
-        argumentRules->push_back( new ValueRule ( "value",    RbObject_name ) );
+        argumentRules.push_back( new ValueRule ( "variable", RbObject_name ) );
+        argumentRules.push_back( new ValueRule ( "value",    RbObject_name ) );
         rulesSet = true;
     }
 

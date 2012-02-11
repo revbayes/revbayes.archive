@@ -65,19 +65,19 @@ const VectorString& Move_mlocal::getClass() const {
 
 
 /** Return member rules */
-const MemberRules* Move_mlocal::getMemberRules( void ) const {
+const MemberRules& Move_mlocal::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
 		{
         /* Inherit topology, treeVariables and weight from MoveTree, put them at front */
-        const MemberRules* inheritedRules = MoveTree::getMemberRules();
-        memberRules->insert( memberRules->begin(), inheritedRules->begin(), inheritedRules->end() ); 
+        const MemberRules& inheritedRules = MoveTree::getMemberRules();
+        memberRules.insert( memberRules.begin(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules->push_back( new ValueRule ( "branchlengths", RbString_name ) );   // Identifier of branch length tree variable
-        memberRules->push_back( new ValueRule ( "lambda",        RealPos_name  ) );
+        memberRules.push_back( new ValueRule ( "branchlengths", RbString_name ) );   // Identifier of branch length tree variable
+        memberRules.push_back( new ValueRule ( "lambda",        RealPos_name  ) );
 
         rulesSet = true;
 		}

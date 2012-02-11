@@ -46,23 +46,23 @@ Func_log* Func_log::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func_log::executeFunction( void ) {
     
-    const double a = static_cast<const RealPos*>( (*args)[0]->getValue() )->getValue();
-    const double b = static_cast<const RealPos*>( (*args)[1]->getValue() )->getValue();
+    const double a = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
+    const double b = static_cast<const RealPos&>( (*args)[1].getValue() ).getValue();
     
     return new Real( log10(a)/log10(b) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules* Func_log::getArgumentRules( void ) const {
+const ArgumentRules& Func_log::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( new ValueRule( "x", RealPos_name ) );
-        argumentRules->push_back( new ValueRule( "base", RealPos_name, new RealPos(10.0) ) );
+        argumentRules.push_back( new ValueRule( "x", RealPos_name ) );
+        argumentRules.push_back( new ValueRule( "base", RealPos_name, new RealPos(10.0) ) );
         rulesSet = true;
     }
     

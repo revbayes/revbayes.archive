@@ -34,7 +34,7 @@ class Func__unot :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-        const ArgumentRules*        getArgumentRules(void) const;                               //!< Get argument rules
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
@@ -74,8 +74,8 @@ Func__unot<valType>* Func__unot<valType>::clone( void ) const {
 template <typename valType>
 RbLanguageObject* Func__unot<valType>::executeFunction( void ) {
 
-    const valType* val = static_cast<valType*> ( (*args)[0]->getValue() );
-    RbBoolean         res = ! (*val);
+    const valType& val = static_cast<valType&> ( (*args)[0].getValue() );
+    RbBoolean         res = ! (val);
 
     return res.clone();
 }
@@ -83,14 +83,14 @@ RbLanguageObject* Func__unot<valType>::executeFunction( void ) {
 
 /** Get argument rules */
 template <typename valType>
-const ArgumentRules* Func__unot<valType>::getArgumentRules( void ) const {
+const ArgumentRules& Func__unot<valType>::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules->push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
         rulesSet = true;
         }
 

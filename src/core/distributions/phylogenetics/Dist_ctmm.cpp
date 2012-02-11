@@ -62,15 +62,15 @@ const VectorString& Dist_ctmm::getClass( void ) const {
 
 
 /** Get member variable rules */
-const MemberRules* Dist_ctmm::getMemberRules( void ) const {
+const MemberRules& Dist_ctmm::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
-        memberRules->push_back( new ValueRule( "Q", RateMatrix_name             ) );
-        memberRules->push_back( new ValueRule( "v", RealPos_name                ) );
-        memberRules->push_back( new ValueRule( "a", CharacterStateDiscrete_name ) );
+        memberRules.push_back( new ValueRule( "Q", RateMatrix_name             ) );
+        memberRules.push_back( new ValueRule( "v", RealPos_name                ) );
+        memberRules.push_back( new ValueRule( "a", CharacterStateDiscrete_name ) );
 
         rulesSet = true;
     }
@@ -82,7 +82,7 @@ const MemberRules* Dist_ctmm::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_ctmm::getNumberOfStates( void ) const {
 
-    size_t numStates  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a"  ) )->getNumberOfStates();
+    size_t numStates  = static_cast<const CharacterStateDiscrete&>( getMemberValue( "a"  ) ).getNumberOfStates();
     
     return numStates;
 }
@@ -92,12 +92,12 @@ size_t Dist_ctmm::getNumberOfStates( void ) const {
 Simplex* Dist_ctmm::getProbabilityMassVector( void ) {
 
     // get the information from the arguments for reading the file
-    RateMatrix*                q = static_cast<RateMatrix*>( (*members)[0]->getValue() );
-    RealPos*                   t = static_cast<RealPos*>( (*members)[1]->getValue() );
+    RateMatrix&                q = static_cast<RateMatrix&>( (*members)[0].getValue() );
+    RealPos&                   t = static_cast<RealPos&>( (*members)[1].getValue() );
 //    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
     
     // initialize the number of states
-    const size_t nStates = q->getNumberOfStates();
+    const size_t nStates = q.getNumberOfStates();
     
     // check that the number of states isn't 1
     if ( nStates < 2 )
@@ -108,10 +108,10 @@ Simplex* Dist_ctmm::getProbabilityMassVector( void ) {
     }
     
     // construct a rate matrix of the correct dimensions
-    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    TransitionProbabilityMatrix m = TransitionProbabilityMatrix(nStates);
     
     // calculate the transition probabilities    
-    q->calculateTransitionProbabilities( t->getValue(), m );
+    q.calculateTransitionProbabilities( t.getValue(), m );
     
     //
     return NULL; // TODO Return vector
@@ -140,37 +140,37 @@ const TypeSpec& Dist_ctmm::getVariableType( void ) const {
  * @param value Observed character state
  * @return      Natural log of the probability
  */
-double Dist_ctmm::lnPdf( const RbLanguageObject *value ) const {
+double Dist_ctmm::lnPdf( const RbLanguageObject& value ) const {
 
     // Get the parameters
-    const RateMatrix*             Q      = static_cast<const RateMatrix*            >( getMemberValue( "Q" ) );
-    double                        t      = static_cast<const RealPos*               >( getMemberValue( "v" ) )->getValue();
-    const CharacterStateDiscrete* start  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a" ) );
-    const CharacterStateDiscrete* stop   = static_cast<const CharacterStateDiscrete*>( value );
+    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( getMemberValue( "Q" ) );
+    double                        t      = static_cast<const RealPos&               >( getMemberValue( "v" ) ).getValue();
+    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( getMemberValue( "a" ) );
+    const CharacterStateDiscrete& stop   = static_cast<const CharacterStateDiscrete&>( value );
     
     // calculate the transition probability matrix
     
     // initialize the number of states
-    size_t nStates = Q->getNumberOfStates();
+    size_t nStates = Q.getNumberOfStates();
     
     // construct a rate matrix of the correct dimensions
-    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    TransitionProbabilityMatrix m = TransitionProbabilityMatrix(nStates);
     
     // calculate the transition probabilities    
-    Q->calculateTransitionProbabilities( t, m );
+    Q.calculateTransitionProbabilities( t, m );
     
     double lnprob = 0.0;
-    std::vector<bool> startState = start->getStateVector();
-    std::vector<bool> stopState  = stop->getStateVector();
+    const std::vector<bool>& startState = start.getStateVector();
+    const std::vector<bool>& stopState  = stop.getStateVector();
     size_t indexStart=0;
     size_t indexEnd=0;
-    for (std::vector<bool>::iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
+    for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
         // test whether the state is set
         if (*itStart) {
-            for (std::vector<bool>::iterator itStop=stopState.begin(); itStop!=stopState.end(); itStop++, indexEnd++) {
+            for (std::vector<bool>::const_iterator itStop=stopState.begin(); itStop!=stopState.end(); itStop++, indexEnd++) {
                 // test whether the state is set
                 if (*itStop) {
-                    lnprob += log((*(*m)[indexStart])[indexEnd]);
+                    lnprob += log(m[indexStart][indexEnd]);
                 }
             }
         }
@@ -189,37 +189,37 @@ double Dist_ctmm::lnPdf( const RbLanguageObject *value ) const {
  * @param value Observed character state
  * @return      Probability
  */
-double Dist_ctmm::pdf( const RbLanguageObject *value ) const {
+double Dist_ctmm::pdf( const RbLanguageObject& value ) const {
 
     // Get the parameters
-    const RateMatrix*             Q      = static_cast<const RateMatrix*            >( getMemberValue( "Q" ) );
-    double                        t      = static_cast<const RealPos*               >( getMemberValue( "v" ) )->getValue();
-    const CharacterStateDiscrete* start  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a" ) );
-    const CharacterStateDiscrete* stop   = static_cast<const CharacterStateDiscrete*>( value );
+    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( getMemberValue( "Q" ) );
+    double                        t      = static_cast<const RealPos&               >( getMemberValue( "v" ) ).getValue();
+    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( getMemberValue( "a" ) );
+    const CharacterStateDiscrete& stop   = static_cast<const CharacterStateDiscrete&>( value );
 
     // calculate the transition probability matrix
     
     // initialize the number of states
-    size_t nStates = Q->getNumberOfStates();
+    size_t nStates = Q.getNumberOfStates();
     
     // construct a rate matrix of the correct dimensions
-    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    TransitionProbabilityMatrix m = TransitionProbabilityMatrix(nStates);
     
     // calculate the transition probabilities    
-    Q->calculateTransitionProbabilities( t, m );
+    Q.calculateTransitionProbabilities( t, m );
     
     double prob = 1.0;
-    std::vector<bool> startState = start->getStateVector();
-    std::vector<bool> stopState  = stop->getStateVector();
+    const std::vector<bool>& startState = start.getStateVector();
+    const std::vector<bool>& stopState  = stop.getStateVector();
     size_t indexStart=0;
     size_t indexEnd=0;
-    for (std::vector<bool>::iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
+    for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
         // test whether the state is set
         if (*itStart) {
-            for (std::vector<bool>::iterator itStop=stopState.begin(); itStop!=stopState.end(); itStop++, indexEnd++) {
+            for (std::vector<bool>::const_iterator itStop=stopState.begin(); itStop!=stopState.end(); itStop++, indexEnd++) {
                 // test whether the state is set
                 if (*itStop) {
-                    prob *= ((*(*m)[indexStart])[indexEnd]);
+                    prob *= (m[indexStart][indexEnd]);
                 }
             }
         }
@@ -242,33 +242,33 @@ RbLanguageObject* Dist_ctmm::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    RateMatrix*             Q      = static_cast<RateMatrix*            >( getMemberValue( "Q" ) );
-    double                  t      = static_cast<const RealPos*         >( getMemberValue( "v" ) )->getValue();
-    CharacterStateDiscrete* start  = static_cast<CharacterStateDiscrete*>( getMemberValue( "a" ) );
+    RateMatrix&             Q      = static_cast<RateMatrix&            >( getMemberValue( "Q" ) );
+    double                  t      = static_cast<const RealPos&         >( getMemberValue( "v" ) ).getValue();
+    CharacterStateDiscrete& start  = static_cast<CharacterStateDiscrete&>( getMemberValue( "a" ) );
     
     // calculate the transition probability matrix
     
     // initialize the number of states
-    const size_t nStates = Q->getNumberOfStates();
+    const size_t nStates = Q.getNumberOfStates();
     
     // construct a rate matrix of the correct dimensions
-    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    TransitionProbabilityMatrix m = TransitionProbabilityMatrix(nStates);
     
     // calculate the transition probabilities    
-    Q->calculateTransitionProbabilities( t, m );
+    Q.calculateTransitionProbabilities( t, m );
     
-    CharacterStateDiscrete* draw = start->clone();
-    std::vector<bool> startState = start->getStateVector();
+    CharacterStateDiscrete* draw = start.clone();
+    const std::vector<bool>& startState = start.getStateVector();
     size_t indexStart=0;
-    for (std::vector<bool>::iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
+    for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
         // test whether the state is set
         if (*itStart) {
-            VectorReal* probs = (*m)[indexStart];
+            VectorReal& probs = m[indexStart];
             double u = rng->uniform01();
-            for (size_t i=0; i<probs->size(); i++) {
-                u -= (*probs)[i];
+            for (size_t i=0; i<probs.size(); i++) {
+                u -= probs[i];
                 if (u <= 0) {
-                    std::vector<bool> values = std::vector<bool>(start->getNumberOfStates());
+                    std::vector<bool> values = std::vector<bool>(start.getNumberOfStates());
                     values[i] = true;
                     draw->setValue(values);
                     break;

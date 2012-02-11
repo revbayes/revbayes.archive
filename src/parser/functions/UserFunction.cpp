@@ -64,17 +64,6 @@ UserFunction::~UserFunction() {
 }
 
 
-/** Brief info on the function */
-std::string UserFunction::briefInfo(void) const {
-
-    std::ostringstream o;
-    o << "UserFunction: ";
-    printValue(o);
-
-    return o.str();
-}
-
-
 /** Clone function */
 UserFunction* UserFunction::clone(void) const {
 
@@ -109,9 +98,9 @@ RbLanguageObject* UserFunction::executeFunction( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules* UserFunction::getArgumentRules() const {
+const ArgumentRules& UserFunction::getArgumentRules() const {
 
-    return argumentRules;
+    return *argumentRules;
 }
 
 
@@ -137,9 +126,8 @@ const TypeSpec& UserFunction::getTypeSpec(void) const {
 
 
 /** Complete info about object */
-std::string UserFunction::richInfo() const {
+void UserFunction::printValue(std::ostream &o) const {
 
-    std::ostringstream o;
     o << "User-defined function:" << std::endl;
     o << "formals     = " << argumentRules->size() << " formal arguments" << std::endl;
     o << "return type = " << returnType << std::endl;
@@ -147,6 +135,5 @@ std::string UserFunction::richInfo() const {
     o << "definition environment:" << std::endl;
     defineEnvironment->printValue(o);
 
-    return o.str();
 }
 

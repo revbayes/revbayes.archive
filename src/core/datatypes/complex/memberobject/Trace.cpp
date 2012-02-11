@@ -189,13 +189,3 @@ void Trace::removeLastObject()
 }
 
 
-/** Complete info about object */
-std::string Trace::richInfo(void) const {
-    
-    std::ostringstream o;
-    o <<  "Trace: value = ";
-    printValue(o);
-    
-    return o.str();
-}
-

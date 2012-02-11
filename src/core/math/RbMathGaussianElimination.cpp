@@ -35,13 +35,13 @@
 void RbMath::backSubstitutionRow(MatrixComplex& u, std::vector<std::complex<double> >& b) {
     
 	size_t n = u.getNumberOfRows();
-	b[n-1] /= (*u[n-1])[n-1];
+	b[n-1] /= u[n-1][n-1];
 	for ( int i = static_cast<int>( n ) - 2; i >= 0; i-- ) 
         {
 		std::complex<double> dotProduct(0.0, 0.0);
 		for (size_t j=i+1; j<n; j++)
-			dotProduct += (*u[i])[j] * b[j];
-		b[i] = (b[i] - dotProduct) / (*u[i])[i];
+			dotProduct += u[i][j] * b[j];
+		b[i] = (b[i] - dotProduct) / u[i][i];
         }
 }
 
@@ -57,13 +57,13 @@ void RbMath::backSubstitutionRow(MatrixComplex& u, std::vector<std::complex<doub
 void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
     
 	size_t n = u.getNumberOfRows();
-	b[n-1] /= (*u[n-1])[n-1];
+	b[n-1] /= u[n-1][n-1];
 	for ( int i = static_cast<int>( n ) - 2; i >= 0; i-- ) 
         {
 		double dotProduct = 0.0;
 		for (size_t j=i+1; j<n; j++)
-			dotProduct += (*u[i])[j] * b[j];
-		b[i] = (b[i] - dotProduct) / (*u[i])[i];
+			dotProduct += u[i][j] * b[j];
+		b[i] = (b[i] - dotProduct) / u[i][i];
         }
 }
 
@@ -79,15 +79,15 @@ void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
 void RbMath::forwardSubstitutionRow(MatrixComplex& L, std::vector<std::complex<double> >& b) {
     
 	size_t n = L.getNumberOfRows();
-	b[0] = b[0] / (*L[0])[0];
+	b[0] = b[0] / L[0][0];
 	for (size_t i=1; i<n; i++) 
         {
 		std::complex<double> dotProduct(0.0,0.0);
 		for (size_t j=0; j<i; j++)
             {
-	      	dotProduct += (*L[i])[j] * b[j];
+	      	dotProduct += L[i][j] * b[j];
             }
-		b[i] = (b[i] - dotProduct) / (*L[i])[i];
+		b[i] = (b[i] - dotProduct) / L[i][i];
         }
 }
 
@@ -103,15 +103,15 @@ void RbMath::forwardSubstitutionRow(MatrixComplex& L, std::vector<std::complex<d
 void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
     
 	size_t n = L.getNumberOfRows();
-	b[0] = b[0] / (*L[0])[0];
+	b[0] = b[0] / L[0][0];
 	for (size_t i=1; i<n; i++) 
         {
 		double dotProduct = 0.0;
 		for (size_t j=0; j<i; j++)
             {
-	      	dotProduct += (*L[i])[j] * b[j];
+	      	dotProduct += L[i][j] * b[j];
             }
-		b[i] = (b[i] - dotProduct) / (*L[i])[i];
+		b[i] = (b[i] - dotProduct) / L[i][i];
         }
 }
 
@@ -136,7 +136,7 @@ void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xM
 	for (size_t k=0; k<n; k++) 
         {
 		for (size_t i=0; i<n; i++)
-			bVec[i] = (*bMat[i])[k];
+			bVec[i] = bMat[i][k];
         
 		/* Answer of Ly = b (which is solving for y) is copied into b. */
 		forwardSubstitutionRow(lMat, bVec);
@@ -145,7 +145,7 @@ void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xM
          is also copied into b. */
 		backSubstitutionRow(uMat, bVec);
 		for (size_t i=0; i<n; i++)
-			(*xMat[i])[k] = bVec[i];
+			xMat[i][k] = bVec[i];
         }
 }
 

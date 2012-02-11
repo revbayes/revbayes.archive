@@ -46,23 +46,23 @@ Func_power* Func_power::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func_power::executeFunction( void ) {
     
-    const double a = static_cast<const Real*>( (*args)[0]->getValue() )->getValue();
-    const double b = static_cast<const Real*>( (*args)[1]->getValue() )->getValue();
+    const double a = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
+    const double b = static_cast<const Real&>( (*args)[1].getValue() ).getValue();
     
     return new Real( pow(a,b) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules* Func_power::getArgumentRules( void ) const {
+const ArgumentRules& Func_power::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( new ValueRule( "a", Real_name ) );
-        argumentRules->push_back( new ValueRule( "b", Real_name ) );
+        argumentRules.push_back( new ValueRule( "a", Real_name ) );
+        argumentRules.push_back( new ValueRule( "b", Real_name ) );
         rulesSet = true;
     }
     

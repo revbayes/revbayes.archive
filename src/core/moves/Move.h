@@ -38,10 +38,10 @@ class Move : public ConstantMemberObject {
         virtual void                            printValue(std::ostream& o) const;
     
         // Member variable rules
-        virtual const MemberRules*              getMemberRules(void) const;                                             //!< Get member rules
+        virtual const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
 
         // Member methods
-        virtual const MethodTable*              getMethods(void) const;                                                 //!< Get methods
+        virtual const MethodTable&              getMethods(void) const;                                                 //!< Get methods
         void                                    setMemberVariable(const std::string& name, Variable* var);              //!< set the member variables
 
         // Move functions you have to override
@@ -58,10 +58,10 @@ class Move : public ConstantMemberObject {
         void                                    resetCounters(void);                                                    //!< Reset numTried/numAccepted
 
 	protected:
-        Move(const MemberRules* memberRules);                                                                           //!< Default constructor
+        Move(const MemberRules& memberRules);                                                                           //!< Default constructor
         Move(const Move& m);                                                                                            //!< Copy constructor
 
-        RbLanguageObject*                 executeOperationSimple(const std::string& name, Environment* args);           //!< Map method call to internal functions
+        RbLanguageObject*                       executeOperationSimple(const std::string& name, Environment& args);     //!< Map method call to internal functions
 
     
         // Hidden member variables

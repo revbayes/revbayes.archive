@@ -37,7 +37,7 @@ Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()) {
 }
 
 /** Constructor */
-Monitor::Monitor(const MemberRules* rules ) : ConstantMemberObject( rules ) {
+Monitor::Monitor(const MemberRules& rules ) : ConstantMemberObject( rules ) {
     
 }
 
@@ -62,16 +62,16 @@ const VectorString& Monitor::getClass() const {
 }
 
 /** Return member rules */
-const MemberRules* Monitor::getMemberRules( void ) const {
+const MemberRules& Monitor::getMemberRules( void ) const {
     
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) 
     {
-        memberRules->push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
-        memberRules->push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
-        memberRules->push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
+        memberRules.push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
+        memberRules.push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
+        memberRules.push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
         rulesSet = true;
     }
     
@@ -89,7 +89,7 @@ const TypeSpec& Monitor::getTypeSpec(void) const {
 void Monitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
@@ -111,18 +111,6 @@ void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
     
 }
 
-
-/** Complete info about object */
-std::string Monitor::richInfo(void) const {
-    
-    // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
-    
-    std::ostringstream o;
-    o << "Monitor: interval = " << samplingFrequency;
-    
-    return o.str();
-}
 
 void Monitor::setMemberVariable(std::string const &name, Variable* var) {
     
@@ -156,7 +144,7 @@ void Monitor::setMemberVariable(std::string const &name, Variable* var) {
 
 
 /** Tell whether the variable with name is monitored by this monitor */
-bool Monitor::monitorsVariable (RbString varName) {
+bool Monitor::monitorsVariable( const RbString& varName) {
     for (size_t j=0; j<nodes.size(); j++) {
         if (nodes[j]->getName() == varName) {
             return( true);

@@ -52,11 +52,11 @@ Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ) {
  * @return      Cumulative probability
  *
  */
-double Dist_lnorm::cdf( const RbLanguageObject* value ) {
+double Dist_lnorm::cdf( const RbLanguageObject& value ) {
 	
-    double m    = static_cast<      Real*   >( getMemberValue( "m" ) )->getValue();
-	double s    = static_cast<      RealPos*>( getMemberValue( "s" ) )->getValue();
-    double q    = static_cast<const Real*   >( value                 )->getValue();
+    double m    = static_cast<      Real&   >( getMemberValue( "m" ) ).getValue();
+	double s    = static_cast<      RealPos&>( getMemberValue( "s" ) ).getValue();
+    double q    = static_cast<const Real&   >( value                 ).getValue();
 	
 	return RbStatistics::Lognormal::cdf(m, s, q);
 }
@@ -78,15 +78,15 @@ const VectorString& Dist_lnorm::getClass( void ) const {
 
 
 /** Get member variable rules */
-const MemberRules* Dist_lnorm::getMemberRules( void ) const {
+const MemberRules& Dist_lnorm::getMemberRules( void ) const {
 	
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 	
     if ( !rulesSet ) {
 		
-        memberRules->push_back( new ValueRule( "m", Real_name    ) );
-        memberRules->push_back( new ValueRule( "s", RealPos_name ) );
+        memberRules.push_back( new ValueRule( "m", Real_name    ) );
+        memberRules.push_back( new ValueRule( "s", RealPos_name ) );
 		
         rulesSet = true;
     }
@@ -117,11 +117,11 @@ const TypeSpec& Dist_lnorm::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_lnorm::lnPdf(const RbLanguageObject *value) const {
+double Dist_lnorm::lnPdf(const RbLanguageObject& value) const {
 	
-    double m = static_cast<const Real*   >( (const RbObject*)getMemberValue( "m" ) )->getValue();
-    double s = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "s" ) )->getValue();
-    double x = static_cast<const Real*   >( value )->getValue();
+    double m = static_cast<const Real&   >( getMemberValue( "m" ) ).getValue();
+    double s = static_cast<const RealPos&>( getMemberValue( "s" ) ).getValue();
+    double x = static_cast<const Real&   >( value ).getValue();
 	
     return RbStatistics::Lognormal::lnPdf(m, s, x);
 }
@@ -136,11 +136,11 @@ double Dist_lnorm::lnPdf(const RbLanguageObject *value) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_lnorm::pdf( const RbLanguageObject *value ) const {
+double Dist_lnorm::pdf( const RbLanguageObject& value ) const {
 	
-    double m = static_cast<const Real*   >( (const RbObject*)getMemberValue( "m" ) )->getValue();
-    double s = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "s" ) )->getValue();
-    double x = static_cast<const Real*   >( value )->getValue();
+    double m = static_cast<const Real&   >( getMemberValue( "m" ) ).getValue();
+    double s = static_cast<const RealPos&>( getMemberValue( "s" ) ).getValue();
+    double x = static_cast<const Real&   >( value ).getValue();
 	
     return RbStatistics::Lognormal::pdf(m, s, x);
 }
@@ -157,8 +157,8 @@ double Dist_lnorm::pdf( const RbLanguageObject *value ) const {
  *
  */
 Real* Dist_lnorm::quantile( const double p) {
-	double m = static_cast<Real*   >( getMemberValue( "m" ) )->getValue();
-    double s = static_cast<RealPos*>( getMemberValue( "s" ) )->getValue();
+	double m = static_cast<Real&   >( getMemberValue( "m" ) ).getValue();
+    double s = static_cast<RealPos&>( getMemberValue( "s" ) ).getValue();
 	
     return new Real (RbStatistics::Lognormal::quantile(m, s, p) );
     
@@ -176,8 +176,8 @@ Real* Dist_lnorm::quantile( const double p) {
  */
 RbLanguageObject* Dist_lnorm::rv(void) {
 	
-    double m = static_cast<Real*   >( getMemberValue( "m" ) )->getValue();
-    double s = static_cast<RealPos*>( getMemberValue( "s" ) )->getValue();
+    double m = static_cast<Real&   >( getMemberValue( "m" ) ).getValue();
+    double s = static_cast<RealPos&>( getMemberValue( "s" ) ).getValue();
 	
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	//std::vector<double> r(m.size());

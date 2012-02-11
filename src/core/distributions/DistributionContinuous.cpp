@@ -32,20 +32,20 @@
 
 
 /** Constructor passes member rules to base class */
-DistributionContinuous::DistributionContinuous( const MemberRules* memberRules ) : Distribution( memberRules ) {
+DistributionContinuous::DistributionContinuous( const MemberRules& memberRules ) : Distribution( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbLanguageObject* DistributionContinuous::executeOperationSimple( const std::string& name, Environment* args ) {
+RbLanguageObject* DistributionContinuous::executeOperationSimple( const std::string& name, Environment& args ) {
 
     if ( name == "cdf" ) {
 
-        return new RealPos( cdf( (*args)[1]->getValue() ) );
+        return new RealPos( cdf( args[1].getValue() ) );
     }
     else if ( name == "quantile" ) {
 
-        return quantile( static_cast<const Real*>( (*args)[1]->getValue() )->getValue() );
+        return quantile( static_cast<const Real&>( args[1].getValue() ).getValue() );
     }
 
     return Distribution::executeOperationSimple( name, args );
@@ -75,9 +75,9 @@ const Real* DistributionContinuous::getMin( void ) const {
 
 
 /** Get method specifications */
-const MethodTable* DistributionContinuous::getMethods( void ) const {
+const MethodTable& DistributionContinuous::getMethods( void ) const {
 
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* cdfArgRules = new ArgumentRules();
     static ArgumentRules* quantileArgRules = new ArgumentRules();
     static bool          methodsSet = false;
@@ -88,10 +88,10 @@ const MethodTable* DistributionContinuous::getMethods( void ) const {
 
         quantileArgRules->push_back( new ValueRule    ( "p", RealPos_name      ) );
 
-        methods->addFunction( "cdf",      new MemberFunction( Real_name, cdfArgRules      ) );
-        methods->addFunction( "quantile", new MemberFunction( Real_name, quantileArgRules ) );
+        methods.addFunction( "cdf",      new MemberFunction( Real_name, cdfArgRules      ) );
+        methods.addFunction( "quantile", new MemberFunction( Real_name, quantileArgRules ) );
 
-        methods->setParentTable( Distribution::getMethods() );
+        methods.setParentTable( &Distribution::getMethods() );
 
         methodsSet = true;
     }

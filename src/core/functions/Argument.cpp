@@ -85,13 +85,13 @@ const TypeSpec& Argument::getTypeSpec(void) const {
 }
 
 
-const Variable* Argument::getVariable(void) const {
-    return var;
+const Variable& Argument::getVariable(void) const {
+    return *var;
 }
 
 
-Variable* Argument::getVariable(void) {
-    return var;
+Variable& Argument::getVariable(void) {
+    return *var;
 }
 
 

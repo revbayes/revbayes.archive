@@ -65,7 +65,7 @@ public:
     
     // DAG functions
     RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;//!< Clone entire graph
-    void                                swapParentNode(RbPtr<DAGNode> oldP, RbPtr<DAGNode> newP);           //!< Swap a parent node
+    void                                swapParentNode(const RbPtr<DAGNode>& oldP, const RbPtr<DAGNode>& newP);//!< Swap a parent node
 
 protected:
     // Help function

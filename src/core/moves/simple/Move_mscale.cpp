@@ -52,20 +52,20 @@ const VectorString& Move_mscale::getClass() const {
 
 
 /** Return member rules */
-const MemberRules* Move_mscale::getMemberRules( void ) const {
+const MemberRules& Move_mscale::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules;
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
         TypeSpec varType( RealPos_name );
-        memberRules->push_back( new ValueRule( "variable", varType ) );
+        memberRules.push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const MemberRules* inheritedRules = MoveSimple::getMemberRules();
-        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
+        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules->push_back( new ValueRule( "lambda", RealPos_name ) );
+        memberRules.push_back( new ValueRule( "lambda", RealPos_name ) );
 
         rulesSet = true;
     }
@@ -95,12 +95,12 @@ double Move_mscale::perform( void ) {
 
     // Get relevant values
     StochasticNode*        nodePtr = static_cast<StochasticNode*>( nodes[0] );
-    const RealPos*         lambda  = static_cast<const RealPos*>( getMemberValue("lambda") );
+    const RealPos&         lambda  = static_cast<const RealPos&>( getMemberValue("lambda") );
     const RealPos&         curVal  = static_cast<const RealPos&>( nodePtr->getValue() );
 
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     RealPos u      = rng->uniform01();
-    RealPos newVal = curVal * std::exp( *lambda * ( u - 0.5 ) );
+    RealPos newVal = curVal * std::exp( lambda * ( u - 0.5 ) );
 
     // Propose new value
     nodePtr->setValue( newVal.clone() );

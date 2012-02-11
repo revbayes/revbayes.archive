@@ -154,14 +154,6 @@ void StandardState::printValue(std::ostream &o) const {
 }
 
 
-/** Get complete info about object */
-std::string StandardState::richInfo( void ) const {
-
-	std::ostringstream o;
-    printValue( o );
-    return o.str();
-}
-
 
 /** Set the observation */
 void StandardState::setState(const char s) {

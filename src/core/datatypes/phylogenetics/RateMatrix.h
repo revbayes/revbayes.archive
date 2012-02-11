@@ -40,8 +40,8 @@ class RateMatrix : public MemberObject {
                                             RateMatrix(const RateMatrix& m);                                                  //!< Copy constructor
                                             RateMatrix(size_t n);                                                             //!< Construct rate matrix with n states
                                            ~RateMatrix(void);                                                                 //!< Destructor
-        VectorReal*                         operator[](size_t i);                                                             //!< Subscript operator
-        const VectorReal*                   operator[](size_t i) const;                                                       //!< Subscript operator (const)
+        VectorReal&                         operator[](size_t i);                                                             //!< Subscript operator
+        const VectorReal&                   operator[](size_t i) const;                                                       //!< Subscript operator (const)
     
         // Basic utility functions
         RateMatrix*                         clone(void) const;                                                                  //!< Clone object
@@ -51,15 +51,15 @@ class RateMatrix : public MemberObject {
         std::string                         richInfo(void) const;                                                               //!< Complete info
 
         // Member variable rules
-        const MemberRules*                  getMemberRules(void) const;                                                         //!< Get member rules
+        const MemberRules&                  getMemberRules(void) const;                                                         //!< Get member rules
 
         // Member method inits
-        const MethodTable*                  getMethods(void) const;                                                             //!< Get methods
+        const MethodTable&                  getMethods(void) const;                                                             //!< Get methods
     
         // RateMatrix functions
         double                              averageRate(void) const;                                                            //!< Calculate the average rate
         void                                calculateStationaryFrequencies(void);                                               //!< Calculate the stationary frequencies for the rate matrix
-        void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix* P) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         bool                                getAreEigensDirty(void) { return areEigensDirty; }                                  //!< Returns whether the eigensystem is in need of recalculation
         bool                                getIsTimeReversible(void);                                                          //!< Return whether the rate matrix is time reversible
         size_t                              getNumberOfStates(void) const { return numStates; }                                 //!< Return the number of states
@@ -70,13 +70,13 @@ class RateMatrix : public MemberObject {
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
 
     protected:
-        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment* args);                       //!< Map method call to internal functions
+        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);                       //!< Map method call to internal functions
 
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
         bool                                checkTimeReversibity(double tolerance);                                             //!< Checks if the rate matrix is time reversible
-        void                                tiProbsEigens(const double t, TransitionProbabilityMatrix* P) const;          //!< Calculate transition probabilities for real case
-        void                                tiProbsComplexEigens(const double t, TransitionProbabilityMatrix* P) const;   //!< Calculate transition probabilities for complex case
+        void                                tiProbsEigens(const double t, TransitionProbabilityMatrix& P) const;                //!< Calculate transition probabilities for real case
+        void                                tiProbsComplexEigens(const double t, TransitionProbabilityMatrix& P) const;         //!< Calculate transition probabilities for complex case
 
         bool                                areEigensDirty;                                                                     //!< Does the eigensystem need to be recalculated
         bool                                reversibilityChecked;                                                               //!< Flag indicating if time reversibility has been checked

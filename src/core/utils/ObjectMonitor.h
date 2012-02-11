@@ -39,9 +39,9 @@ class ObjectMonitor : public Monitor {
     
 public:
     // Constructors and Destructors
-    ObjectMonitor();                                                                                              //!< Default Constructor
-    ObjectMonitor(const ObjectMonitor &x);                                                                              //!< Copy Constructor
-    virtual ~ObjectMonitor(void);                                                                                 //!< Destructor
+    ObjectMonitor();                                                                                        //!< Default Constructor
+    ObjectMonitor(const ObjectMonitor &x);                                                                  //!< Copy Constructor
+    virtual ~ObjectMonitor(void);                                                                           //!< Destructor
     
     // Basic utility functions
     ObjectMonitor*                      clone(void) const;                                                  //!< Clone object
@@ -51,7 +51,7 @@ public:
     std::string                         richInfo(void) const;                                               //!< Complete info about object
     
     // Member Object Functions
-    const MemberRules*                  getMemberRules( void ) const;                                       //!< The member rules for an ObjectMonitor
+    const MemberRules&                  getMemberRules( void ) const;                                       //!< The member rules for an ObjectMonitor
     void                                setMemberVariable(const std::string &name, Variable* var);          //!< Set a member variable. We catch here setting of variable nodes
     
     // Monitor functions
@@ -59,10 +59,10 @@ public:
     void                                monitor(int gen);                                                   //!< Monitor at generation gen
 
     // ObjectMonitor function
-    Vector*                             getValues(RbString varName);                                        //!< returns the values contained in the values vector for variable with name varName
+    Vector*                             getValues(const RbString& varName);                                 //!< returns the values contained in the values vector for variable with name varName
     
 private:
-    std::map<RbString, Vector >                   values;                                                             //!< Vector of values from the monitored node
+    std::map<RbString, Vector >         values;                                                             //!< Vector of values from the monitored node
     
     static const TypeSpec               typeSpec;
 };

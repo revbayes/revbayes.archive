@@ -49,10 +49,10 @@ class DistanceMatrix : public MatrixReal {
         std::string                         richInfo(void) const;                                                       //!< Complete info
 
         // Member variable rules
-        const MemberRules*                  getMemberRules(void) const;                                                 //!< Get member rules
+        const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
 
         // Member method inits
-        const MethodTable*                  getMethods(void) const;                                                     //!< Get methods
+        const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
     
         // Container functions
         void                                clear(void);
@@ -78,7 +78,7 @@ class DistanceMatrix : public MatrixReal {
         void                                showData(void);                                                             //!< Show the data in the character matrix
 
     protected:
-        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment* args);         //!< Execute method
+        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
 
     private:
         // Utility functions

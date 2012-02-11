@@ -45,22 +45,22 @@ Func_gtr* Func_gtr::clone(void) const {
 RbLanguageObject* Func_gtr::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    Simplex* r = static_cast<Simplex*>( (*args)[0]->getValue() );
-    Simplex* f = static_cast<Simplex*>( (*args)[1]->getValue() );
+    Simplex& r = static_cast<Simplex&>( (*args)[0].getValue() );
+    Simplex& f = static_cast<Simplex&>( (*args)[1].getValue() );
 
     // initialize the number of states
     const size_t nStates = 4;
 
     // check the sizes of the simplices, to make certain that they are consistent
     // with a model with nStates states
-    if ( f->size() != nStates )
+    if ( f.size() != nStates )
         {
         std::stringstream o;
         o << "The simplex containing the state frequencies is not of size ";
         o << nStates;
         throw( RbException(o.str()) );
         }
-    if (r->size() != nStates*(nStates-1)/2)
+    if (r.size() != nStates*(nStates-1)/2)
         {
         std::stringstream o;
         o << "The simplex containing the rates is not of size (";
@@ -78,8 +78,8 @@ RbLanguageObject* Func_gtr::executeFunction(void) {
         {
         for (size_t j=i+1; j<nStates; j++)
             {
-            (*(*m)[i])[j] = (*r)[k] * (*f)[j];
-            (*(*m)[j])[i] = (*r)[k] * (*f)[i];
+            (*m)[i][j] = r[k] * f[j];
+            (*m)[j][i] = r[k] * f[i];
             k++;
             }
         }
@@ -93,7 +93,7 @@ RbLanguageObject* Func_gtr::executeFunction(void) {
     // frequencies using only knowledge of the rate matrix. Second, we can set
     // the stationary frequencies directly. This is what we do here, because the
     // stationary frequencies have been build directly into the rate matrix.
-    std::vector<double> tempFreqs = f->getValue();
+    std::vector<double> tempFreqs = f.getValue();
     m->setStationaryFrequencies(tempFreqs);
 
     // rescale the rate matrix such that the average rate is 1.0
@@ -112,15 +112,15 @@ RbLanguageObject* Func_gtr::executeFunction(void) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func_gtr::getArgumentRules(void) const {
+const ArgumentRules& Func_gtr::getArgumentRules(void) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if (!rulesSet)
         {
-        argumentRules->push_back( new ValueRule( "rates", Simplex_name ) );
-        argumentRules->push_back( new ValueRule( "freqs", Simplex_name ) );
+        argumentRules.push_back( new ValueRule( "rates", Simplex_name ) );
+        argumentRules.push_back( new ValueRule( "freqs", Simplex_name ) );
         rulesSet = true;
         }
 

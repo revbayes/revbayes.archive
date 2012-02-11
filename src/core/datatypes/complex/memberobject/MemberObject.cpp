@@ -39,12 +39,12 @@ MemberObject::MemberObject() : RbLanguageObject() {
 
 
 /** Constructor: we set member variables here from member rules */
-MemberObject::MemberObject(const MemberRules* memberRules) : RbLanguageObject() {
+MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() {
 
     members = new Environment();
     
     /* Fill member table (frame) based on member rules */
-    for ( MemberRules::const_iterator i = memberRules->begin(); i != memberRules->end(); i++ ) {
+    for ( MemberRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
         // creare variable slots with name and type
         members->addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
     }
@@ -64,15 +64,15 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 /** Execute member method: delegate to method table. */
 RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument* >& args) {
     // TODO: We shouldn't allow const casts!!!
-    MethodTable* mt = const_cast<MethodTable*>(getMethods());
-    return mt->executeFunction(name, args);
+    MethodTable& mt = const_cast<MethodTable&>( getMethods() );
+    return mt.executeFunction(name, args);
 }
 
 
 /* Execute method. This method just delegate the call to executeOperationSimple and wraps the return value into
  * a constant node. If you don't want this, you have to overwrite this method.
  */
-RbLanguageObject* MemberObject::executeOperation(std::string const &name, Environment* args) {
+RbLanguageObject* MemberObject::executeOperation(std::string const &name, Environment& args) {
     
     // get the return value
     RbLanguageObject* value = executeOperationSimple(name, args);
@@ -89,7 +89,7 @@ RbLanguageObject* MemberObject::executeOperation(std::string const &name, Enviro
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-RbLanguageObject* MemberObject::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* MemberObject::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "memberNames") {
         for (size_t i=0; i<members->size(); i++) {
@@ -100,11 +100,11 @@ RbLanguageObject* MemberObject::executeOperationSimple(const std::string& name, 
     } 
     else if (name == "get") {
         // get the member with give name
-        const RbString* varName = static_cast<const RbString*>( (*args)[0]->getValue() );
+        const RbString& varName = static_cast<const RbString&>( args[0].getValue() );
         
         // check if a member with that name exists
-        if (members->existsVariable(*varName)) {
-            return (*members)[*varName]->getDagNode()->getValue().clone();
+        if (members->existsVariable(varName)) {
+            return (*members)[varName].getDagNode()->getValue().clone();
         }
         
         // there was no variable with the given name
@@ -126,34 +126,35 @@ const VectorString& MemberObject::getClass(void) const {
 
 
 /** Return member rules (no members) */
-const MemberRules* MemberObject::getMemberRules(void) const {
-
+const MemberRules& MemberObject::getMemberRules(void) const {
+    
     throw RbException( "Object does not have members" );
 }
 
 
 /** Get type specification for a member variable */
-const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
-    return (*members)[name]->getTypeSpec();
+const TypeSpec& MemberObject::getMemberTypeSpec(const std::string& name) const {
+    return (*members)[name].getTypeSpec();
 }
 
 
 /** Get method specifications (no methods) */
-const MethodTable* MemberObject::getMethods(void) const {
+const MethodTable& MemberObject::getMethods(void) const {
 
-    static MethodTable* methods = new MethodTable();
-    static ArgumentRules* getMemberNamesArgRules = new ArgumentRules();
-    static ArgumentRules* getArgRules = new ArgumentRules();
-    static bool          methodsSet = false;
+    static MethodTable methods = MethodTable();
+    static bool        methodsSet = false;
     
     if ( methodsSet == false ) {
         
+        ArgumentRules* getMemberNamesArgRules = new ArgumentRules();
+        ArgumentRules* getArgRules = new ArgumentRules();
+        
         // add the 'memberNames()' method
-        methods->addFunction("memberNames", new MemberFunction(RbVoid_name, getMemberNamesArgRules) );
+        methods.addFunction("memberNames", new MemberFunction(RbVoid_name, getMemberNamesArgRules) );
         
         // add the 'memberNames()' method
         getArgRules->push_back( new ValueRule( "name" , RbString_name ) );
-        methods->addFunction("get", new MemberFunction(RbLanguageObject_name, getArgRules) );
+        methods.addFunction("get", new MemberFunction(RbLanguageObject_name, getArgRules) );
         
         methodsSet = true;
     }   
@@ -162,26 +163,26 @@ const MethodTable* MemberObject::getMethods(void) const {
 }
 
 
-const Environment* MemberObject::getMembers(void) const {
-    return members;
+const Environment& MemberObject::getMembers(void) const {
+    return *members;
 }
 
 
-Environment* MemberObject::getMembers(void) {
-    return members;
+Environment& MemberObject::getMembers(void) {
+    return *members;
 }
 
 
 
 /** Get const value of a member variable */
-const RbLanguageObject* MemberObject::getMemberValue(const std::string& name) const {
+const RbLanguageObject& MemberObject::getMemberValue(const std::string& name) const {
 
     return members->getValue(name);
 }
 
 
 /** Get const value of a member variable */
-RbLanguageObject* MemberObject::getMemberValue(const std::string& name) {
+RbLanguageObject& MemberObject::getMemberValue(const std::string& name) {
     
     return members->getValue(name);
 }
@@ -221,37 +222,23 @@ void MemberObject::printValue(std::ostream& o) const {
     for ( size_t i = 0; i < members->size(); i++ ) {
 
         o << "." << members->getName(i) << std::endl;
-        if ( (*members)[members->getName(i)]->getValue() == NULL)
-            o << "NULL";
-        else
-            (*members)[members->getName(i)]->getValue()->printValue(o);
+        (*members)[members->getName(i)].getValue().printValue(o);
         o << std::endl << std::endl;
     }
-}
-
-
-/** Complete info about object */
-std::string MemberObject::richInfo(void) const {
-
-    std::ostringstream o;
-    o << getType() << ":" << std::endl;
-    printValue(o);
-
-    return o.str();
 }
 
 
 /** Set a member DAG node */
 void MemberObject::setMemberDagNode(const std::string& name, DAGNode* var) {
     
-    (*members)[name]->getVariable()->setDagNode(var);
+    (*members)[name].getVariable().setDagNode(var);
 }
 
 
 /** Set a member variable */
 void MemberObject::setMemberVariable(const std::string& name, Variable* var) {
 
-    (*members)[name]->setVariable(var);
+    (*members)[name].setVariable(var);
 }
 
 

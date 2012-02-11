@@ -46,10 +46,10 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func_readTraces::executeFunction( void ) {
     // get the information from the arguments for reading the file
-    RbString* fn = static_cast<RbString*>( (*args)[0]->getValue() );
+    RbString& fn = static_cast<RbString&>( (*args)[0].getValue() );
     
     // check that the file/path name has been correctly specified
-    RbFileManager myFileManager( fn->getValue() );
+    RbFileManager myFileManager( fn.getValue() );
     if ( (myFileManager.isFileNamePresent() == false && myFileManager.testDirectory() == false) ||
         (myFileManager.isFileNamePresent() == true  && (myFileManager.testFile() == false || myFileManager.testDirectory() == false)) )
     {
@@ -59,7 +59,7 @@ RbLanguageObject* Func_readTraces::executeFunction( void ) {
     }
     
     // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = myFileManager.isDirectory(fn->getValue());
+    bool readingDirectory = myFileManager.isDirectory(fn.getValue());
     if (readingDirectory == true)
         RBOUT("Recursively reading the contents of a directory");
     else
@@ -95,7 +95,7 @@ RbLanguageObject* Func_readTraces::executeFunction( void ) {
         bool hasHeaderBeenRead = false;
         
         /* Open file */
-        std::string filename = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
+        std::string filename = static_cast<const RbString&>( (*args)[0].getValue() ).getValue();
         std::ifstream inFile( filename.c_str() );
         
         if ( !inFile )
@@ -160,10 +160,10 @@ RbLanguageObject* Func_readTraces::executeFunction( void ) {
             
             // adding values to the Tracess
             for (size_t j=0; j<columns.size(); j++) {
-                Trace* t = static_cast<Trace*>( (*data)[j] );
+                Trace& t = static_cast<Trace&>( (*data)[j] );
                 std::string tmp = columns[j];
                 double d = 1.0;
-                t->addObject(d);
+                t.addObject(d);
             }
         }
     }
@@ -198,14 +198,14 @@ void Func_readTraces::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func_readTraces::getArgumentRules( void ) const {
+const ArgumentRules& Func_readTraces::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( new ValueRule( "file", RbString_name ) );
+        argumentRules.push_back( new ValueRule( "file", RbString_name ) );
         rulesSet = true;
     }
     

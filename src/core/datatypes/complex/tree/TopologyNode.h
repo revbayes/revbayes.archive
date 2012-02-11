@@ -53,40 +53,39 @@ class TopologyNode : public ConstantMemberObject {
         virtual                            ~TopologyNode(void);                                                         //!< Destructor
         // Basic utility functions
         TopologyNode*                       clone(void) const;                                                          //!< Clone object
-        bool                                equals(const TopologyNode* node) const;                                     //!< Test whether this is the same node
+        bool                                equals(const TopologyNode& node) const;                                     //!< Test whether this is the same node
         const VectorString&                 getClass(void) const;                                                       //!< Get class vector
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
-        std::string                         richInfo(void) const;                                                       //!< Complete info
 
         // Member variable rules
-        const MemberRules*                  getMemberRules(void) const;                                                 //!< Get member rules
+        const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
 
         // Member method inits
-        const MethodTable*                  getMethods(void) const;                                                     //!< Get methods
+        const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
             
         // TopologyNode functions
         void                                addChild(TopologyNode* c);                                                  //!< Adds a child node
-        const TopologyNode*                 getChild(size_t i) const;                                                   //!< Returns the i-th child
-        TopologyNode*                       getChild(size_t i);                                                         //!< Returns the i-th child (non-const to return non-const node)
+        const TopologyNode&                 getChild(size_t i) const;                                                   //!< Returns the i-th child
+        TopologyNode&                       getChild(size_t i);                                                         //!< Returns the i-th child (non-const to return non-const node)
         std::vector<int>                    getChildrenIndices(void) const;                                             //!< Return children indices
         int                                 getIndex(void) const { return index; }                                      //!< Get index of node
         std::string                         getName(void) const { return name; }                                        //!< Get name of node
         size_t                              getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
-        TopologyNode*                       getParent(void);                                                            //!< Returns the node's parent
+        const TopologyNode&                 getParent(void) const;                                                      //!< Returns the node's parent
         int                                 getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
         bool                                isTip(void) const { return children.size() == 0; }                          //!< Is node tip?
         bool                                isRoot(void) const { return parent == NULL; }                               //!< Is node root?
         void                                setName(const std::string& n);                                              //!< Set the name of this node
         void                                setParent(TopologyNode* p);                                                 //!< Sets the node's parent
         void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
-        void                                removeChild(const TopologyNode* p);                                         //!< Removes a specific child
+        void                                removeChild(const TopologyNode& p);                                         //!< Removes a specific child
          
     protected:
-        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment* args);         //!< Execute method
+        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
         
     private:
-        std::string                         buildNewickString(const TopologyNode* node) const;                          //!< compute the newick string for a tree rooting at this node
+        std::string                         buildNewickString(const TopologyNode& node) const;                          //!< compute the newick string for a tree rooting at this node
         void                                refreshNewickString(void);                                                  //!< recompute the newick string
         
         static const TypeSpec               typeSpec;

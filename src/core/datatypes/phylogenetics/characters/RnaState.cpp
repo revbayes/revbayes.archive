@@ -171,11 +171,3 @@ void RnaState::printValue(std::ostream &o) const {
     o << getState();
 }
 
-
-/** Get complete info about object */
-std::string RnaState::richInfo( void ) const {
-
-	std::ostringstream o;
-    printValue( o );
-    return o.str();
-}

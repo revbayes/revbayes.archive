@@ -84,16 +84,16 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
 
 
 /** Execute a member method. We overwrite the executeOperation function here because we return DAG nodes directly. */
-RbLanguageObject* DagNodeContainer::executeOperation(std::string const &name, Environment* args) {
+RbLanguageObject* DagNodeContainer::executeOperation(std::string const &name, Environment& args) {
     if ( name == "[]") {
         // get the member with give index
-        const Natural* index = static_cast<const Natural*>( (*args)[0]->getValue() );
+        const Natural& index = static_cast<const Natural&>( args[0].getValue() );
         
-        if (size() < (size_t)(index->getValue())) {
+        if (size() < (size_t)(index.getValue())) {
             throw RbException("Index out of bounds in []");
         }
         
-        return static_cast<RbLanguageObject*>( (DAGNode*)elements[index->getValue() - 1]->getDagNode() );
+        return static_cast<RbLanguageObject*>( elements[index.getValue() - 1]->getDagNode() );
     }
     
     return ConstantMemberObject::executeOperation( name, args );

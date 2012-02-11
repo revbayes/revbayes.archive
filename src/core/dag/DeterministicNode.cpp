@@ -47,18 +47,18 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->ge
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
     
     /* Check for cycles */
-    Environment* arguments = func->getArguments();
+    Environment& arguments = func->getArguments();
     std::list<DAGNode*> done;
-    for ( size_t i = 0; i < arguments->size(); i++ ) {
-        const std::string &name = arguments->getName(i);
-        if ( (*arguments)[name]->getDagNode() != NULL && (*arguments)[name]->getDagNode()->isParentInDAG( RbPtr<DAGNode>(this), done ) )
+    for ( size_t i = 0; i < arguments.size(); i++ ) {
+        const std::string &name = arguments.getName(i);
+        if ( arguments[name].getDagNode() != NULL && arguments[name].getDagNode()->isParentInDAG( RbPtr<DAGNode>(this), done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
     
     /* Set parents and add this node as a child node of these */
-    for ( size_t i = 0; i < arguments->size(); i++ ) {
-        const std::string &name = arguments->getName(i);
-        const RbPtr<DAGNode>& theArgument = (*arguments)[name]->getDagNode();
+    for ( size_t i = 0; i < arguments.size(); i++ ) {
+        const std::string &name = arguments.getName(i);
+        const RbPtr<DAGNode>& theArgument = arguments[name].getDagNode();
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -90,11 +90,11 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
         storedValue  = NULL;
     
     /* Set parents and add this node as a child node of these */
-    Environment* args = function->getArguments();
-    for ( size_t i = 0; i < args->size(); i++ ) {
-        const std::string &name = args->getName(i);
+    Environment& args = function->getArguments();
+    for ( size_t i = 0; i < args.size(); i++ ) {
+        const std::string &name = args.getName(i);
         
-        RbPtr<DAGNode> theArgument = (*args)[name]->getDagNode();
+        RbPtr<DAGNode> theArgument = args[name].getDagNode();
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -143,15 +143,15 @@ RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNo
         copy->storedValue = storedValue->clone();
     
     /* Set the copy arguments to their matches in the new DAG */
-    Environment* args      = function->getArguments();
-    Environment* copyArgs  = ( copy->function->getArguments() );
+    Environment& args      = function->getArguments();
+    Environment& copyArgs  = ( copy->function->getArguments() );
     
-    for ( size_t i = 0; i < args->size(); i++ ) {
-        const std::string &name = args->getName(i);
+    for ( size_t i = 0; i < args.size(); i++ ) {
+        const std::string &name = args.getName(i);
         
         // clone the parameter DAG node
-        RbPtr<DAGNode> theArgClone( (*args)[name]->getDagNode()->cloneDAG(newNodes) );
-        (*copyArgs)[name]->setVariable(new Variable(theArgClone) );
+        RbPtr<DAGNode> theArgClone( args[name].getDagNode()->cloneDAG(newNodes) );
+        copyArgs[name].setVariable(new Variable(theArgClone) );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
         copy->addParentNode( theArgClone );
@@ -331,6 +331,8 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
 void DeterministicNode::restoreMe( void ) {
 
     if ( touched ) {
+        delete value;
+        
         // no matter if this node has been changed we just set it back to its stored value
         value       = storedValue;
         
@@ -346,7 +348,7 @@ void DeterministicNode::restoreMe( void ) {
 
 
 /** Swap parent node */
-void DeterministicNode::swapParentNode( RbPtr<DAGNode> oldParent, RbPtr<DAGNode> newParent ) {
+void DeterministicNode::swapParentNode( const RbPtr<DAGNode>& oldParent, const RbPtr<DAGNode>& newParent ) {
 
     if ( parents.find( oldParent ) == parents.end() )
         throw RbException( "Node is not a parent" );
@@ -370,7 +372,11 @@ void DeterministicNode::touchMe( void ) {
         touched     = true;
         
 //        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
-//        storedValue = value;
+        if (storedValue != NULL) {
+            delete storedValue;
+        }
+        storedValue = value;
+        value = NULL;
     }
         
     // flag myself for an update
@@ -389,15 +395,11 @@ void DeterministicNode::update( void ) {
     if ( touched && needsUpdate ) {
         
 //        assert( storedValue == NULL );
-        
+        if (value != NULL)
+            delete value;
         
 //        // set the stored value and release the old stored value
-        storedValue     = value;
-        
-        // free the memory of the old value
-        if (value != NULL) {
-            delete value;
-        }
+//        storedValue     = value;
         
         // compute a new value
         value = function->execute();

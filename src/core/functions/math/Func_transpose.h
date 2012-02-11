@@ -36,7 +36,7 @@ class Func_transpose :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-        const ArgumentRules*        getArgumentRules(void) const;                               //!< Get argument rules
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
@@ -70,13 +70,13 @@ Func_transpose<matrixType>* Func_transpose<matrixType>::clone( void ) const {
 template <typename matrixType>
 RbLanguageObject* Func_transpose<matrixType>::executeFunction( void ) {
 
-    const matrixType* mat = static_cast<matrixType*>( (*args)[0]->getValue() );
+    const matrixType& mat = static_cast<matrixType&>( (*args)[0].getValue() );
 
-    matrixType* matT = new matrixType( mat->getNumberOfColumns(), mat->getNumberOfRows() );
+    matrixType* matT = new matrixType( mat.getNumberOfColumns(), mat.getNumberOfRows() );
     
-    for ( size_t i = 0; i < mat->getNumberOfRows(); i++ )
-        for ( size_t j = 0; j < mat->getNumberOfColumns(); j++ )
-            (*(*matT)[j])[i] = (*(*mat)[i])[j];
+    for ( size_t i = 0; i < mat.getNumberOfRows(); i++ )
+        for ( size_t j = 0; j < mat.getNumberOfColumns(); j++ )
+            (*matT)[j][i] = mat[i][j];
 
     return matT;
 }
@@ -84,14 +84,14 @@ RbLanguageObject* Func_transpose<matrixType>::executeFunction( void ) {
 
 /** Get argument rules */
 template <typename matrixType>
-const ArgumentRules* Func_transpose<matrixType>::getArgumentRules( void ) const {
+const ArgumentRules& Func_transpose<matrixType>::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if (!rulesSet) {
 
-        argumentRules->push_back( new ValueRule( "", matrixType().getType() ) );
+        argumentRules.push_back( new ValueRule( "", matrixType().getType() ) );
 
         rulesSet = true;
     }

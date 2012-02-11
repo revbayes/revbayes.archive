@@ -45,7 +45,7 @@ class VectorNatural : public AbstractVector {
                                 VectorNatural(const VectorInteger& x);                          //!< Constructor from vector of Integer
 
     // Overloaded operators
-    unsigned int                operator[](size_t i) const;                                     //!< Index op (value, no reference - no modification)
+    unsigned int               operator[](size_t i) const;                                     //!< Index op (value, no reference - no modification)
     bool                        operator==(const VectorNatural& x) const;                       //!< Equals comparison
     bool                        operator!=(const VectorNatural& x) const;                       //!< Not equals comparison
     

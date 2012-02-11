@@ -26,7 +26,7 @@
 
 
 /** Constructor */
-MoveSimple::MoveSimple(const MemberRules* memberRules) : Move(memberRules) {
+MoveSimple::MoveSimple(const MemberRules& memberRules) : Move(memberRules) {
 
 //    if ( !members.existsVariable("variable") )
 //        throw RbException( "A simple move must have a member called 'variable'" );
@@ -62,16 +62,16 @@ const VectorString& MoveSimple::getClass(void) const {
 
 
 /** Return member rules */
-const MemberRules* MoveSimple::getMemberRules( void ) const {
+const MemberRules& MoveSimple::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
 		{
         /* Inherit weight from Move */
-        const MemberRules* inheritedRules = Move::getMemberRules();
-        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
+        const MemberRules& inheritedRules = Move::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
         rulesSet = true;
 		}

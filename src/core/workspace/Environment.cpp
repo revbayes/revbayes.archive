@@ -64,25 +64,19 @@ Environment::Environment(const Environment &x): RbInternal(x) {
         // get the name of the i-th variable
         const std::string &name = x.getName(i);
         
-        // get a copy of the variable slot
-        if (x[name] == NULL) {
-            
-            // add a NULL pointer as a placeholder
-            variableTable.insert( std::pair<std::string, VariableSlot* >( name, NULL ) );
-        }
-        else {
-            const VariableSlot* slotOrg = x[name];
-            VariableSlot* slotCopy = slotOrg->clone();
         
-            // add the copy
-            variableTable.insert( std::pair<std::string, VariableSlot* >( name, slotCopy ) );
-        }
+        const VariableSlot& slotOrg = x[name];
+        VariableSlot* slotCopy = slotOrg.clone();
+        
+        // add the copy
+        variableTable.insert( std::pair<std::string, VariableSlot* >( name, slotCopy ) );
+        
     }
     
 }
 
 /** Index operator to variable slot from string */
-VariableSlot* Environment::operator[]( const std::string& name ) {
+VariableSlot& Environment::operator[]( const std::string& name ) {
     
     std::map<std::string, VariableSlot* >::iterator it = variableTable.find(name);
     if ( variableTable.find(name) == variableTable.end() ) {
@@ -94,12 +88,12 @@ VariableSlot* Environment::operator[]( const std::string& name ) {
     
     PRINTF( "Retrieving \"%s\" from frame\n", name.c_str() );
     
-    return it->second;
+    return *it->second;
 }
 
 
 /** Index operator (const) to variable slot from string */
-const VariableSlot* Environment::operator[]( const std::string& name ) const {
+const VariableSlot& Environment::operator[]( const std::string& name ) const {
     
     std::map<std::string, VariableSlot* >::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
@@ -111,12 +105,12 @@ const VariableSlot* Environment::operator[]( const std::string& name ) const {
     
     PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
     
-    return it->second;
+    return *it->second;
 }
 
 
 /** Index operator to variable slot from int */
-VariableSlot* Environment::operator[]( const size_t index ) {
+VariableSlot& Environment::operator[]( const size_t index ) {
     
     // get the name at the index
     const std::string &name = getName(index);
@@ -126,7 +120,7 @@ VariableSlot* Environment::operator[]( const size_t index ) {
 
 
 /** Index operator (const) to variable slot from int */
-const VariableSlot* Environment::operator[]( const size_t index ) const {
+const VariableSlot& Environment::operator[]( const size_t index ) const {
     
     // get the name at the index
     const std::string &name = getName(index);
@@ -215,10 +209,10 @@ void Environment::clear(void) {
         const std::string &name = getName(i);
         
         // get the variable slot
-        VariableSlot* theSlot = operator[](name);
+        VariableSlot& theSlot = operator[](name);
         
         // free the memory of the slot
-        delete theSlot;
+        delete &theSlot;
     }
     
     // empty the two vectors
@@ -304,19 +298,19 @@ const VectorString& Environment::getClass() const {
 /** Get reference, alternative method */
 DAGNode* Environment::getDagNode( const std::string& name ) {
     
-    return operator[]( name )->getDagNode();
+    return operator[]( name ).getDagNode();
 }
 
 
 /** Get variable, alternative method */
 const DAGNode* Environment::getDagNode( const std::string& name ) const {
     
-    return operator[]( name )->getDagNode();
+    return operator[]( name ).getDagNode();
 }
 
 
 /** Get value, alternative method */
-const RbLanguageObject* Environment::getValue( const std::string& name ) const {
+const RbLanguageObject& Environment::getValue( const std::string& name ) const {
     
     // find the variable slot first
     const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find( name );
@@ -334,7 +328,7 @@ const RbLanguageObject* Environment::getValue( const std::string& name ) const {
 
 
 /** Get value, alternative method */
-RbLanguageObject* Environment::getValue( const std::string& name ) {
+RbLanguageObject& Environment::getValue( const std::string& name ) {
     
     // find the variable slot first
     const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find( name );
@@ -386,16 +380,6 @@ void Environment::printValue(std::ostream& o) const {
 }
 
 
-/** Complete info about object to string */
-std::string Environment::richInfo( void ) const {
-    
-    std::ostringstream o;
-    o << "Environment:" << std::endl;
-    printValue( o );
-    
-    return o.str();
-}
-
 
 /** Replace the name of a variable */
 void Environment::setName(size_t i, const std::string &name) {
@@ -404,13 +388,13 @@ void Environment::setName(size_t i, const std::string &name) {
     const std::string &oldName = varNames[i];
     
     // get the variable slot associated with the old name
-    VariableSlot* theSlot = operator[](oldName);
+    VariableSlot& theSlot = operator[](oldName);
     
     // remove the entry with the old name
     eraseVariable(oldName);
     
     // insert the slot with its new name
-    variableTable.insert( std::pair<std::string, VariableSlot* >( name, theSlot ) );
+    variableTable.insert( std::pair<std::string, VariableSlot* >( name, &theSlot ) );
     
     // insert the name at it's old position
     varNames.insert(varNames.begin() + i, name);

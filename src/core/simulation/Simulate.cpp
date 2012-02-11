@@ -69,17 +69,17 @@ Simulate* Simulate::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* Simulate::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* Simulate::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "run") {
-        RbLanguageObject* argument = (*args)[0]->getValue();
-        int n = static_cast<Natural*>( argument )->getValue();
+        RbLanguageObject& argument = args[0].getValue();
+        int n = static_cast<Natural&>( argument ).getValue();
         run(n);
         return NULL;
     }
     if (name == "getValues") {
-        RbLanguageObject* argument = (*args)[0]->getValue();
-        RbString n = static_cast<RbString*>( argument )->getValue();
+        RbLanguageObject& argument = args[0].getValue();
+        const RbString& n = static_cast<RbString&>( argument ).getValue();
         Vector* vec = getValues(n);
         return vec;
     }
@@ -97,16 +97,16 @@ const VectorString& Simulate::getClass(void) const {
 
 
 /** Get member rules */
-const MemberRules* Simulate::getMemberRules(void) const {
+const MemberRules& Simulate::getMemberRules(void) const {
     
-    static MemberRules* memberRules = new ArgumentRules();
+    static MemberRules memberRules = ArgumentRules();
     static bool        rulesSet = false;
     
     if (!rulesSet) {
         
-        memberRules->push_back( new ValueRule ( "model"         , Model_name    ) );
-        memberRules->push_back( new ValueRule ( "fileMonitors"  , TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
-        memberRules->push_back( new ValueRule ( "objectMonitors", TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
+        memberRules.push_back( new ValueRule ( "model"         , Model_name    ) );
+        memberRules.push_back( new ValueRule ( "fileMonitors"  , TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
+        memberRules.push_back( new ValueRule ( "objectMonitors", TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
         
         rulesSet = true;
     }
@@ -116,9 +116,9 @@ const MemberRules* Simulate::getMemberRules(void) const {
 
 
 /** Get methods */
-const MethodTable* Simulate::getMethods(void) const {
+const MethodTable& Simulate::getMethods(void) const {
     
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* updateArgRules = new ArgumentRules();
     static ArgumentRules* getValuesArgRules = new ArgumentRules();
 
@@ -127,10 +127,10 @@ const MethodTable* Simulate::getMethods(void) const {
     if (!methodsSet) {
         
         updateArgRules->push_back( new ValueRule( "dataElements", Natural_name     ) );
-        methods->addFunction("run", new MemberFunction( RbVoid_name, updateArgRules ) );
+        methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules ) );
         getValuesArgRules->push_back( new ValueRule( "varName", RbString_name     ) );
-        methods->addFunction("getValues", new MemberFunction( RbVoid_name, getValuesArgRules ) );
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.addFunction("getValues", new MemberFunction( RbVoid_name, getValuesArgRules ) );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
     
@@ -149,7 +149,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
     
         if ( name == "fileMonitors" ) {
         // get the DAG nodes
-        const Model* theModel = static_cast<Model*>( getMemberValue("model") );
+        const Model& theModel = static_cast<Model&>( getMemberValue("model") );
         
         Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
@@ -165,7 +165,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                     oldNodes.push_back( *it );
                 }
                 // get the DAG node which corresponds in the model to the cloned original node
-                std::vector<DAGNode*> theNewNodes = theModel->getClonedDagNodes(oldNodes);
+                std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
                 
                 // clone the move and replace the node
                 FileMonitor* newMonitor = theMonitor.clone();
@@ -184,7 +184,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
     }
         else if ( name == "objectMonitors" ) {
             // get the DAG nodes
-            const Model* theModel = static_cast<Model*>( getMemberValue("model") );
+            const Model& theModel = static_cast<Model&>( getMemberValue("model") );
             
             Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
@@ -200,7 +200,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                     oldNodes.push_back( *it );
                 }
                 // get the DAG node which corresponds in the model to the cloned original node
-                std::vector<DAGNode*> theNewNodes = theModel->getClonedDagNodes(oldNodes);
+                std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
                 
                 // clone the move and replace the node
                 ObjectMonitor* newMonitor = theMonitor.clone();
@@ -263,7 +263,7 @@ void Simulate::run(size_t ndata) {
     std::cerr << "Initializing the simulation ..." << std::endl;
     
     /* Get the dag nodes from the model */
-    std::vector<RbPtr<DAGNode> > dagNodes = static_cast<Model*>( getMemberValue("model") )->getDAGNodes();
+    std::vector<RbPtr<DAGNode> > dagNodes = static_cast<Model&>( getMemberValue("model") ).getDAGNodes();
     
     /* Get the stochastic nodes in an ordered manner */
     std::vector<StochasticNode*> orderedStochasticNodes; 
@@ -333,8 +333,8 @@ Vector* Simulate::getValues(RbString varName) {
         return NULL;
     }
     for (size_t i=0; i<objectMonitors.size(); i++) {
-        if (static_cast<ObjectMonitor*>( objectMonitors[i] )->monitorsVariable(varName) ) {
-            Vector* toReturn = static_cast<ObjectMonitor*>( objectMonitors[i] )->getValues(varName) ;
+        if (static_cast<ObjectMonitor&>( objectMonitors[i] ).monitorsVariable(varName) ) {
+            Vector* toReturn = static_cast<ObjectMonitor&>( objectMonitors[i] ).getValues(varName) ;
             return (toReturn); 
         }
     }

@@ -241,9 +241,9 @@ VariableSlot* SyntaxVariable::createVariable( Environment& env) {
             }
             
             // get the slot and variable
-            theSlot          = env[ (*identifier) ];
-            Variable* theVar = theSlot->getVariable();
-            theDagNode       = theVar->getDagNode();
+            theSlot          = &env[ (*identifier) ]; // TODO: We should not allow dereferencing!!!
+            Variable& theVar = theSlot->getVariable();
+            theDagNode       = theVar.getDagNode();
                 
         }
         else {
@@ -304,7 +304,7 @@ VariableSlot* SyntaxVariable::createVariable( Environment& env) {
             // get the element at the index
             if (theDagNode == NULL) {
                 theDagNode = new ConstantNode( new DagNodeContainer(indexValue+1) );
-                theSlot->getVariable()->setDagNode(theDagNode);
+                theSlot->getVariable().setDagNode(theDagNode);
             }
             
             Container& con = static_cast<Container&>( theDagNode->getValue() );
@@ -319,7 +319,7 @@ VariableSlot* SyntaxVariable::createVariable( Environment& env) {
                 // TODO: We should not do 
                 theSlot = &dynamic_cast<VariableSlot&>(subElement);
                 theDagNode = theSlot->getDagNode();
-                theSlot->getVariable()->setName(name);
+                theSlot->getVariable().setName(name);
             }
 
         }
@@ -356,7 +356,7 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
-            theVar = env[ (*identifier) ]->getVariable();
+            theVar = &env[ (*identifier) ].getVariable(); // TODO: We should not use dereferencing
         } else {
             theVar = functionCall->evaluateContent( env );
         }
@@ -375,8 +375,8 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
                 throw RbException( "Member variable identifier missing" );
 
             MemberObject* theMemberObject = static_cast<const MemberObject&>( baseVar->getDagNode()->getValue() ).clone();
-            Environment* members = theMemberObject->getMembers();
-            theVar = (*members)[ (*identifier) ]->getVariable();
+            const Environment& members = theMemberObject->getMembers();
+            theVar = members[ (*identifier) ].getVariable().clone();
         }
         else {
             
@@ -405,7 +405,7 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
             RbObject&               subElement             = theVar->getDagNode()->getElement(indexValue);
             
             if (subElement.isTypeSpec( TypeSpec(VariableSlot_name) ))
-                theVar = dynamic_cast<VariableSlot&>( subElement ).getVariable();
+                theVar = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
             else 
                 theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
 

@@ -65,11 +65,11 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* Mcmc::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* Mcmc::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "run") {
-        const RbLanguageObject* argument = (*args)[0]->getValue();
-        int n = static_cast<const Natural*>( argument )->getValue();
+        const RbLanguageObject& argument = args[0].getValue();
+        int n = static_cast<const Natural&>( argument ).getValue();
         run(n);
         return NULL;
     }
@@ -87,16 +87,16 @@ const VectorString& Mcmc::getClass(void) const {
 
 
 /** Get member rules */
-const MemberRules* Mcmc::getMemberRules(void) const {
+const MemberRules& Mcmc::getMemberRules(void) const {
 
-    static MemberRules* memberRules = new ArgumentRules();
+    static MemberRules memberRules = ArgumentRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) {
 
-        memberRules->push_back( new ValueRule ( "model"    , Model_name    ) );
-        memberRules->push_back( new ValueRule ( "moves"    , TypeSpec(Vector_name,new TypeSpec(Move_name) ) ) );
-        memberRules->push_back( new ValueRule ( "monitors" , TypeSpec(Vector_name,new TypeSpec(FileMonitor_name) ) ) );
+        memberRules.push_back( new ValueRule ( "model"    , Model_name    ) );
+        memberRules.push_back( new ValueRule ( "moves"    , TypeSpec(Vector_name,new TypeSpec(Move_name) ) ) );
+        memberRules.push_back( new ValueRule ( "monitors" , TypeSpec(Vector_name,new TypeSpec(FileMonitor_name) ) ) );
 
         rulesSet = true;
     }
@@ -106,18 +106,18 @@ const MemberRules* Mcmc::getMemberRules(void) const {
 
 
 /** Get methods */
-const MethodTable* Mcmc::getMethods(void) const {
+const MethodTable& Mcmc::getMethods(void) const {
 
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* updateArgRules = new ArgumentRules();
     static bool          methodsSet = false;
 
     if (!methodsSet) {
 
         updateArgRules->push_back( new ValueRule( "generations", Natural_name     ) );
-        methods->addFunction("run", new MemberFunction( RbVoid_name, updateArgRules) );
+        methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules) );
 
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
 
@@ -140,7 +140,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
     // Hence we need to set the DAG nodes of the moves to these clones.
     if ( name == "moves" ) {
         // get the DAG nodes
-        const Model* theModel = dynamic_cast<Model*>( getMemberValue("model") );
+        const Model& theModel = dynamic_cast<Model&>( getMemberValue("model") );
         
         Vector* moves = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(Move_name) ) ) );
         for (size_t i=0; i<moves->size(); i++) {
@@ -157,7 +157,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
             }
             
             // get the DAG node which corresponds in the model to the cloned original node
-            std::vector<DAGNode*> theNewNodes = theModel->getClonedDagNodes(oldNodes);
+            std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
             
             // clone the move and replace the node
             Move* newMove = theMove.clone();
@@ -175,7 +175,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
     }
     else if ( name == "monitors" ) {
         // get the DAG nodes
-        const Model* theModel = static_cast<Model*>( getMemberValue("model") );
+        const Model& theModel = static_cast<Model&>( getMemberValue("model") );
         
         Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
         for (size_t i=0; i<monitors->size(); i++) {
@@ -191,7 +191,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
                 oldNodes.push_back( *it );
             }
             // get the DAG node which corresponds in the model to the cloned original node
-            std::vector<DAGNode*> theNewNodes = theModel->getClonedDagNodes(oldNodes);
+            std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
             
             // clone the move and replace the node
             FileMonitor* newMonitor = theMonitor.clone();
@@ -219,7 +219,7 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
     /* Get the dag nodes from the model */
-    std::vector<RbPtr<DAGNode> > dagNodes = (static_cast<Model*>( getMemberValue("model") ) )->getDAGNodes();
+    std::vector<RbPtr<DAGNode> > dagNodes = (static_cast<Model&>( getMemberValue("model") ) ).getDAGNodes();
 
     /* Get the moves and monitors */
     Vector& monitors = static_cast<Vector&>( getMemberDagNode( "monitors" )->getValue() );

@@ -47,11 +47,11 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object 
     
     // Member variable rules
-    const MemberRules*          getMemberRules(void) const;                                                     //!< Get member rules
+    const MemberRules&          getMemberRules(void) const;                                                     //!< Get member rules
     void                        setMemberVariable(const std::string& name, Variable* var);                //!< Only constants allowed
     
     // Member method inits
-    const MethodTable*          getMethods(void) const;                                                         //!< Get methods
+    const MethodTable&          getMethods(void) const;                                                         //!< Get methods
     
     // Simulate functions
     void                        run(size_t ndata);                                                               //!< Simulates ndata data elements
@@ -59,7 +59,7 @@ public:
     
     
 protected:
-    RbLanguageObject*           executeOperationSimple(const std::string& name, Environment* args);//!< Execute method
+    RbLanguageObject*           executeOperationSimple(const std::string& name, Environment& args);//!< Execute method
     
     
 private:

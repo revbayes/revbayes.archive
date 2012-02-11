@@ -47,7 +47,7 @@ class Model : public ConstantMemberObject {
         const TypeSpec&                         getTypeSpec(void) const;                                    //!< Get language type of the object
         void                                    printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
     
-        const MemberRules*                      getMemberRules(void) const;                                 //!< Get member rules
+        const MemberRules&                      getMemberRules(void) const;                                 //!< Get member rules
     
         // Model functions
         std::vector<DAGNode*>                   getClonedDagNodes(std::vector<DAGNode*> &orgNodes) const;   //!< Get cloned nodes corresponding to originals

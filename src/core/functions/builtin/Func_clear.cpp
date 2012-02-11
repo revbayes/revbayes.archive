@@ -49,9 +49,9 @@ RbLanguageObject* Func_clear::executeFunction( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func_clear::getArgumentRules( void ) const {
+const ArgumentRules& Func_clear::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     
     return argumentRules;
 }

@@ -42,26 +42,26 @@ class DistributionContinuous: public Distribution {
         virtual const VectorString&             getClass(void) const;                                                       //!< Get class vector   
 
         // Member object function you have to override
-        virtual const MemberRules*              getMemberRules(void) const = 0;                                             //!< Get member rules
+        virtual const MemberRules&              getMemberRules(void) const = 0;                                             //!< Get member rules
 
         // Member object functions you should not have to override
-        const MethodTable*                      getMethods(void) const;                                                     //!< Get member methods
+        const MethodTable&                      getMethods(void) const;                                                     //!< Get member methods
 
         // Interval distribution functions you probably want to override
         virtual const Real*                     getMax(void) const;                                                         //!< Get max value of coverage
         virtual const Real*                     getMin(void) const;                                                         //!< Get min value of coverage
 
         // Interval distribution functions you have to override
-        virtual double                          cdf( const RbLanguageObject* value) = 0;                                    //!< Cumulative probability
+        virtual double                          cdf( const RbLanguageObject& value) = 0;                                    //!< Cumulative probability
         virtual const TypeSpec&                 getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                          lnPdf( const RbLanguageObject *value) const = 0;                            //!< Ln probability density
-        virtual double                          pdf( const RbLanguageObject *value) const = 0;                              //!< Probability density
+        virtual double                          lnPdf( const RbLanguageObject& value) const = 0;                            //!< Ln probability density
+        virtual double                          pdf( const RbLanguageObject& value) const = 0;                              //!< Probability density
         virtual Real*                           quantile(const double p) = 0;                                               //!< Quantile
         virtual RbLanguageObject*               rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
-                                                DistributionContinuous( const MemberRules* memberRules);                     //!< Constructor
-        RbLanguageObject*                       executeOperationSimple(const std::string& name, Environment* args);         //!< Direct call of member method
+                                                DistributionContinuous( const MemberRules& memberRules);                     //!< Constructor
+        RbLanguageObject*                       executeOperationSimple(const std::string& name, Environment& args);         //!< Direct call of member method
 
 };
 

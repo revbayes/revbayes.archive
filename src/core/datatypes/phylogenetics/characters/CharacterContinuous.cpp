@@ -104,12 +104,3 @@ void CharacterContinuous::printValue(std::ostream &o) const {
 }
 
 
-/** Get complete info about object */
-std::string CharacterContinuous::richInfo( void ) const {
-
-	std::ostringstream o;
-    printValue( o );
-
-    return o.str();
-}
-

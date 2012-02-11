@@ -34,7 +34,7 @@ class Func__uplus :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-        const ArgumentRules*        getArgumentRules(void) const;                               //!< Get argument rules
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
@@ -70,22 +70,22 @@ Func__uplus<valType, retType>* Func__uplus<valType, retType>::clone( void ) cons
 template <typename valType, typename retType>
 RbLanguageObject* Func__uplus<valType, retType>::executeFunction( void ) {
 
-    const valType* val = static_cast<valType*> ( (*args)[0]->getValue() );
+    const valType& val = static_cast<valType&> ( (*args)[0].getValue() );
 
-    return val->clone();
+    return val.clone();
 }
 
 
 /** Get argument rules */
 template <typename valType, typename retType>
-const ArgumentRules* Func__uplus<valType, retType>::getArgumentRules( void ) const {
+const ArgumentRules& Func__uplus<valType, retType>::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules->push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
         rulesSet = true;
         }
 

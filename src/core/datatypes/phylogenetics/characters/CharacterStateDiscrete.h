@@ -34,7 +34,7 @@ class CharacterStateDiscrete : public Character {
         virtual bool                            operator!=(const Character& x) const = 0;           //!< Inequality
 
         // Basic utility functions you can override
-        virtual const MemberRules*              getMemberRules(void) const;                         //!< Get member rules
+        virtual const MemberRules&              getMemberRules(void) const;                         //!< Get member rules
         virtual void                            initialize(const Vector& attributes);                     //!< Initialize this object with the values inside the vector
 
         // Basic utility functions you have to override

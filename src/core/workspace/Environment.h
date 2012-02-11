@@ -72,17 +72,16 @@ public:
     virtual                                ~Environment();                                                                          //!< Destrcutor
     
     // Operators
-    VariableSlot*                           operator[](const std::string& name);                                                    //!< Get named variable slot reference
-    const VariableSlot*                     operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
-    VariableSlot*                           operator[](const size_t index);                                                         //!< Get named variable slot reference
-    const VariableSlot*                     operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
+    VariableSlot&                           operator[](const std::string& name);                                                    //!< Get named variable slot reference
+    const VariableSlot&                     operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
+    VariableSlot&                           operator[](const size_t index);                                                         //!< Get named variable slot reference
+    const VariableSlot&                     operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
     
     // Basic utility functions
     virtual Environment*                    clone(void) const;                                                                      //!< Clone Environment
     virtual const VectorString&             getClass() const;                                                                       //!< Get class vector
     virtual const TypeSpec&                 getTypeSpec(void) const;                                                                //!< Get language type of the object
     virtual void                            printValue(std::ostream& o) const;                                                      //!< Print table for user
-    virtual std::string                     richInfo(void) const;                                                                   //!< Complete info to string
     
     // Regular functions
     void                                    addVariable(const std::string& name, VariableSlot* slot);                               //!< Add variable
@@ -98,8 +97,8 @@ public:
     const DAGNode*                          getDagNode(const std::string& name) const;                                              //!< Convenient alternative for [name]->getDagNode()
     DAGNode*                                getDagNode(const std::string& name);                                                    //!< Convenient alternative for [name]->getDagNode() (non-const to return non-const node)
     const std::string&                      getName(size_t i) const { return varNames[i]; }                                         //!< Get name at position i.
-    const RbLanguageObject*                 getValue(const std::string& name) const;                                                //!< Convenient alternative for [name]->getValue()
-    RbLanguageObject*                       getValue(const std::string& name);                                                      //!< Convenient alternative for [name]->getValue() (non-const to return non-const value)
+    const RbLanguageObject&                 getValue(const std::string& name) const;                                                //!< Convenient alternative for [name]->getValue()
+    RbLanguageObject&                       getValue(const std::string& name);                                                      //!< Convenient alternative for [name]->getValue() (non-const to return non-const value)
     virtual bool                            isSameOrParentOf(const Environment& otherEnvironment) const;                            //!< Is the Environment same or parent of other Environment?
     void                                    setName(size_t i, const std::string &n);                                                //!< Replace the name of the i'th variable
     void                                    setParentEnvironment(Environment* newEnvironment) { parentEnvironment = newEnvironment; }//!< Set parent Environment

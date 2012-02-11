@@ -48,11 +48,11 @@ DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcTyp
     functionType = funcType;
 
     /* Get the distribution parameter rules and set type to value argument */
-    const ArgumentRules* memberRules = dist->getMemberRules();
-    for ( ArgumentRules::const_iterator i = memberRules->begin(); i != memberRules->end(); i++ ) {
+    const ArgumentRules& memberRules = dist->getMemberRules();
+    for ( ArgumentRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
         // check if this rule has a default value
         if ((*i)->hasDefault()) {
-            argumentRules->push_back( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), (*i)->getDefaultVariable()->getValue().clone() ) );
+            argumentRules->push_back( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), (*i)->getDefaultVariable().getValue().clone() ) );
         } else {
             argumentRules->push_back(new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
         }
@@ -174,10 +174,10 @@ RbLanguageObject* DistributionFunction::executeFunction( void ) {
 
     if ( functionType == DENSITY ) {
 
-        if ( static_cast<const RbBoolean*>( (*args)["log"]->getValue() )->getValue() == false )
-            return new RealPos( distribution->pdf  ( (*args)[0]->getValue() ) );
+        if ( static_cast<const RbBoolean&>( (*args)["log"].getValue() ).getValue() == false )
+            return new RealPos( distribution->pdf  ( (*args)[0].getValue() ) );
         else
-            return new Real( distribution->lnPdf( (*args)[0]->getValue() ) );
+            return new Real( distribution->lnPdf( (*args)[0].getValue() ) );
     }
     else if (functionType == RVALUE) {
 
@@ -187,11 +187,11 @@ RbLanguageObject* DistributionFunction::executeFunction( void ) {
     }
     else if (functionType == PROB) {
 
-        return new RealPos( static_cast<DistributionContinuous*>( (Distribution*)distribution )->cdf( (const RbLanguageObject*)(*args)[0]->getValue() ) );
+        return new RealPos( static_cast<DistributionContinuous*>( distribution )->cdf( (*args)[0].getValue() ) );
     }
     else if (functionType == QUANTILE) {
 
-        double    prob  = static_cast<const RealPos*>( (*args)[0]->getValue() )->getValue();
+        double    prob  = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
         RbLanguageObject* quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
         
         return quant;
@@ -202,9 +202,9 @@ RbLanguageObject* DistributionFunction::executeFunction( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules* DistributionFunction::getArgumentRules(void) const {
+const ArgumentRules& DistributionFunction::getArgumentRules(void) const {
 
-    return argumentRules;
+    return *argumentRules;
 }
 
 
@@ -248,9 +248,9 @@ bool DistributionFunction::processArguments( std::vector<Argument* > args, Vecto
 
         /* All distribution variables are references but we have value arguments here
            so a const cast is needed to deal with the mismatch */
-        VariableSlot* arg = this->args->operator[](i);
+        VariableSlot& arg = this->args->operator[](i);
         
-        distribution->setMemberVariable( name, arg->getVariable() );
+        distribution->setMemberVariable( name, arg.getVariable().clone() );
     }
 
     return true;

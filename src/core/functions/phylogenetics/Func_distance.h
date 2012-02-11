@@ -35,7 +35,7 @@ class Func_distance :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                                 //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules*        getArgumentRules(void) const;                                            //!< Get argument rules
+        const ArgumentRules&        getArgumentRules(void) const;                                            //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
@@ -44,8 +44,8 @@ class Func_distance :  public RbFunction {
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
-        double                      distanceP(const TaxonData* td1, const TaxonData* td2);
-        double                      distanceJC69(const TaxonData* td1, const TaxonData* td2);
+        double                      distanceP(const TaxonData& td1, const TaxonData& td2);
+        double                      distanceJC69(const TaxonData& td1, const TaxonData& td2);
 };
 
 #endif

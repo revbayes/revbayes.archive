@@ -68,7 +68,7 @@ class Matrix : public Vector {
 
     protected:
                                         Matrix(const std::string& elemType);                                //!< Set type of elements
-                                        Matrix(const std::string& elemType, const MemberRules* memberRules);//!< Set type of elements
+                                        Matrix(const std::string& elemType, const MemberRules& memberRules);//!< Set type of elements
                                         Matrix(const Matrix& m);                                            //!< Copy constructor
 
 };

@@ -56,21 +56,21 @@ Func_abs* Func_abs::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func_abs::executeFunction( void ) {
     
-    const double x = static_cast<const Real*>( (*args)[0]->getValue() )->getValue();
+    const double x = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
     
     return new RealPos( fabs(x) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules* Func_abs::getArgumentRules( void ) const {
+const ArgumentRules& Func_abs::getArgumentRules( void ) const {
     
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules->push_back( new ValueRule( "x", Real_name ) );
+        argumentRules.push_back( new ValueRule( "x", Real_name ) );
         rulesSet = true;
     }
     

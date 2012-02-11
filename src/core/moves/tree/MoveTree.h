@@ -42,7 +42,7 @@ class MoveTree : public Move {
         virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
 
         // Member variable rules
-        virtual const MemberRules*          getMemberRules(void) const;                                             //!< Get member rules
+        virtual const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
 
         // MoveTree functions
         void                                acceptMove(void);				                                        //!< Accept the move, update statistics
@@ -50,7 +50,7 @@ class MoveTree : public Move {
         void                                rejectMove(void);                                                       //!< Reject the move
 
 	protected:
-                                            MoveTree(const MemberRules* memberRules);                               //!< Parser constructor
+                                            MoveTree(const MemberRules& memberRules);                               //!< Parser constructor
 
         // Function you have to override
 //        virtual double                  perform(std::set<StochasticNode*>&      movedNodes,
@@ -62,7 +62,7 @@ class MoveTree : public Move {
         virtual void                    reject(void) {}                                                         //!< Reject the move
 
         // Help functions
-        const Topology*                 getTopology(void) const;                                                //!< Get topology
+        const Topology&                 getTopology(void) const;                                                //!< Get topology
 
 };
 

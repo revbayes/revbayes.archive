@@ -49,8 +49,8 @@ public:
                                                         MatrixComplex(const std::vector<std::vector<std::complex<double> > >& x);                      //!< Construct matrix from a two-dimensional set of STL vectors
 
     // Overoaded operators
-    VectorComplex*                                      operator[](size_t i);                                                                           //!< Subscript operator
-    const VectorComplex*                                operator[](size_t i) const;                                                                     //!< Subscript operator (const)
+    VectorComplex&                                      operator[](size_t i);                                                                           //!< Subscript operator
+    const VectorComplex&                                operator[](size_t i) const;                                                                     //!< Subscript operator (const)
 
     // Basic utility functions
     MatrixComplex*                                      clone(void) const;                                                                              //!< Clone object

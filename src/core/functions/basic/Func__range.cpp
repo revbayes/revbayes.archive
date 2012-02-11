@@ -43,8 +43,8 @@ Func__range* Func__range::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func__range::executeFunction( void ) {
 
-    int first = static_cast<const Integer*>( (*args)[0]->getValue() )->getValue();
-    int last  = static_cast<const Integer*>( (*args)[1]->getValue() )->getValue();
+    int first = static_cast<const Integer&>( (*args)[0].getValue() ).getValue();
+    int last  = static_cast<const Integer&>( (*args)[1].getValue() ).getValue();
 
     std::vector<int> temp;
     if (first < last) {
@@ -63,15 +63,15 @@ RbLanguageObject* Func__range::executeFunction( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func__range::getArgumentRules( void ) const {
+const ArgumentRules& Func__range::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if (!rulesSet) {
 
-        argumentRules->push_back( new ValueRule( "", Integer_name ) );
-        argumentRules->push_back( new ValueRule( "", Integer_name ) );
+        argumentRules.push_back( new ValueRule( "", Integer_name ) );
+        argumentRules.push_back( new ValueRule( "", Integer_name ) );
         rulesSet = true;
     }
 

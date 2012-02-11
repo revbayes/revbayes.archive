@@ -111,7 +111,7 @@ void DistanceMatrix::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbLanguageObject* DistanceMatrix::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* DistanceMatrix::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "names") 
         {
@@ -183,30 +183,30 @@ RbLanguageObject* DistanceMatrix::executeOperationSimple(const std::string& name
         }
     else if (name == "excludetaxa")
         {
-        RbLanguageObject* argument = (*args)[1]->getValue();
-        if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) 
+        RbLanguageObject& argument = args[1].getValue();
+        if ( argument.isTypeSpec( TypeSpec(Natural_name) ) ) 
             {
             std::cout << "excluded b" << std::endl;
-            int n = static_cast<const Natural*>( argument )->getValue();
+            int n = static_cast<const Natural&>( argument ).getValue();
             std::cout << "n = " << n << std::endl;
             deletedTaxa.insert( n-1 );
             std::cout << "excluded e" << std::endl;
             }
-        else if ( argument->isTypeSpec( TypeSpec(VectorNatural_name) ) ) 
+        else if ( argument.isTypeSpec( TypeSpec(VectorNatural_name) ) ) 
             {
-            std::vector<unsigned int> x = static_cast<const VectorNatural*>( argument )->getValue();
+            std::vector<unsigned int> x = static_cast<const VectorNatural&>( argument ).getValue();
             for ( size_t i=0; i<x.size(); i++ )
                 deletedTaxa.insert( x[i]-1 );
             }
-        else if ( argument->isTypeSpec( TypeSpec(RbString_name) ) ) 
+        else if ( argument.isTypeSpec( TypeSpec(RbString_name) ) ) 
             {
-            std::string x = static_cast<const RbString*>( argument )->getValue();
+            std::string x = static_cast<const RbString&>( argument ).getValue();
             size_t idx = indexOfTaxonWithName(x);
             deletedTaxa.insert(idx);
             }
-        else if ( argument->isTypeSpec( TypeSpec(VectorString_name) ) ) 
+        else if ( argument.isTypeSpec( TypeSpec(VectorString_name) ) ) 
             {
-            std::vector<std::string> x = static_cast<const VectorString*>( argument )->getValue();
+            std::vector<std::string> x = static_cast<const VectorString&>( argument ).getValue();
             for (std::vector<std::string>::iterator it = x.begin(); it != x.end(); it++)
                 {
                 size_t idx = indexOfTaxonWithName(*it);
@@ -244,18 +244,18 @@ RbObject& DistanceMatrix::getElement(size_t row, size_t col) {
 
 
 /** Get member rules */
-const MemberRules* DistanceMatrix::getMemberRules(void) const {
+const MemberRules& DistanceMatrix::getMemberRules(void) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     
     return memberRules;
 }
 
 
 /** Get methods */
-const MethodTable* DistanceMatrix::getMethods(void) const {
+const MethodTable& DistanceMatrix::getMethods(void) const {
 
-    static MethodTable*   methods               = new MethodTable();
+    static MethodTable    methods               = MethodTable();
     static ArgumentRules* namesArgRules         = new ArgumentRules();
     static ArgumentRules* ntaxaArgRules         = new ArgumentRules();
     static ArgumentRules* nexcludedtaxaArgRules = new ArgumentRules();    
@@ -276,20 +276,20 @@ const MethodTable* DistanceMatrix::getMethods(void) const {
         excludetaxaArgRules3->push_back(       new ValueRule(     "", RbString_name      ) );
         excludetaxaArgRules4->push_back(       new ValueRule(     "", VectorString_name  ) );
 
-        methods->addFunction("names",         new MemberFunction(VectorString_name,  namesArgRules              ) );
-        methods->addFunction("ntaxa",         new MemberFunction(Natural_name,       ntaxaArgRules              ) );
-        methods->addFunction("nexcludedtaxa", new MemberFunction(Natural_name,       nexcludedtaxaArgRules      ) );
-        methods->addFunction("nincludedtaxa", new MemberFunction(Natural_name,       nincludedtaxaArgRules      ) );
-        methods->addFunction("excludedtaxa",  new MemberFunction(VectorNatural_name, excludedtaxaArgRules       ) );
-        methods->addFunction("includedtaxa",  new MemberFunction(VectorNatural_name, includedtaxaArgRules       ) );
-        methods->addFunction("show",          new MemberFunction(RbVoid_name,        showdataArgRules           ) );
-        methods->addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules        ) );
-        methods->addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules2       ) );
-        methods->addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules3       ) );
-        methods->addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules4       ) );
+        methods.addFunction("names",         new MemberFunction(VectorString_name,  namesArgRules              ) );
+        methods.addFunction("ntaxa",         new MemberFunction(Natural_name,       ntaxaArgRules              ) );
+        methods.addFunction("nexcludedtaxa", new MemberFunction(Natural_name,       nexcludedtaxaArgRules      ) );
+        methods.addFunction("nincludedtaxa", new MemberFunction(Natural_name,       nincludedtaxaArgRules      ) );
+        methods.addFunction("excludedtaxa",  new MemberFunction(VectorNatural_name, excludedtaxaArgRules       ) );
+        methods.addFunction("includedtaxa",  new MemberFunction(VectorNatural_name, includedtaxaArgRules       ) );
+        methods.addFunction("show",          new MemberFunction(RbVoid_name,        showdataArgRules           ) );
+        methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules        ) );
+        methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules2       ) );
+        methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules3       ) );
+        methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules4       ) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
         }
 

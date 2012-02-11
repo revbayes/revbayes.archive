@@ -48,11 +48,11 @@ Func_source* Func_source::clone( void ) const {
 RbLanguageObject* Func_source::executeFunction( void ) {
 
     /* Open file */
-    std::string filename = static_cast<RbString*>( (*args)[0]->getValue() )->getValue();
+    std::string filename = static_cast<RbString&>( (*args)[0].getValue() ).getValue();
     std::ifstream inFile( filename.c_str() );
     
     
-    bool echo = static_cast<RbBoolean*>( (*args)[1]->getValue() )->getValue();
+    bool echo = static_cast<RbBoolean&>( (*args)[1].getValue() ).getValue();
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + filename + "\"" );
@@ -96,15 +96,15 @@ RbLanguageObject* Func_source::executeFunction( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func_source::getArgumentRules( void ) const {
+const ArgumentRules& Func_source::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules->push_back( new ValueRule( "file", RbString_name ) );
-        argumentRules->push_back( new ValueRule( "echo.on", RbBoolean_name, new RbBoolean(false) ) );
+        argumentRules.push_back( new ValueRule( "file", RbString_name ) );
+        argumentRules.push_back( new ValueRule( "echo.on", RbBoolean_name, new RbBoolean(false) ) );
         rulesSet = true;
     }
 

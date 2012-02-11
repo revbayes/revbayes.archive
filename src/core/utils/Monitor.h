@@ -37,7 +37,7 @@ class Monitor : public ConstantMemberObject {
 public:
     // Constructors and Destructors
     Monitor();                                                                                              //!< Default Constructor
-    Monitor(const MemberRules* rules ) ;                                                                    //!< Constructor
+    Monitor(const MemberRules& rules ) ;                                                                    //!< Constructor
     Monitor(const Monitor &x);                                                                              //!< Copy Constructor
     virtual ~Monitor(void);                                                                                 //!< Destructor
     
@@ -46,17 +46,16 @@ public:
     virtual const VectorString&         getClass(void) const;                                               //!< Get class
     virtual const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
     virtual void                        printValue(std::ostream& o) const;                                  //!< Print value (for user)
-    virtual std::string                 richInfo(void) const;                                               //!< Complete info about object
     
     // Member Object Functions
-    virtual const MemberRules*          getMemberRules( void ) const;                                       //!< The member rules for a monitor
+    virtual const MemberRules&          getMemberRules( void ) const;                                       //!< The member rules for a monitor
     virtual void                        setMemberVariable(const std::string &name, Variable* var);          //!< Set a member variable. We catch here setting of variable nodes
     
     std::vector<VariableNode*>&         getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
     virtual void                        monitor(void) = 0;                                                  //!< Monitor unconditionally
     virtual void                        monitor(int gen) = 0;                                               //!< Monitor at generation gen
     void                                replaceDagNodes(std::vector<VariableNode*> &n);                     //!< Set the nodes vector
-    bool                                monitorsVariable (RbString varName);                                //! Tell whether the variable with name is monitored by this monitor
+    bool                                monitorsVariable(const RbString& varName);                          //! Tell whether the variable with name is monitored by this monitor
     
 protected:
     std::vector<VariableNode*>          nodes;                                                              //!< Vector of nodes that this monitor monitors    

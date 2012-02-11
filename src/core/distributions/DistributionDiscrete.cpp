@@ -32,16 +32,16 @@
 
 
 /** Constructor passes member rules to base class */
-DistributionDiscrete::DistributionDiscrete( const MemberRules* memberRules ) : Distribution( memberRules ) {
+DistributionDiscrete::DistributionDiscrete( const MemberRules& memberRules ) : Distribution( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbLanguageObject* DistributionDiscrete::executeOperationSimple( const std::string& name, Environment* args ) {
+RbLanguageObject* DistributionDiscrete::executeOperationSimple( const std::string& name, Environment& args ) {
 
     if ( name == "probMassVector" ) {
 
-        return getProbabilityMassVector()->clone();
+        return getProbabilityMassVector();
     }
     else if ( name == "numStates" ) {
 
@@ -61,19 +61,19 @@ const VectorString& DistributionDiscrete::getClass( void ) const {
 
 
 /** Get method specifications */
-const MethodTable* DistributionDiscrete::getMethods( void ) const {
+const MethodTable& DistributionDiscrete::getMethods( void ) const {
 
-    static MethodTable* methods = new MethodTable();
-    static ArgumentRules* probMassVectorArgRules = new ArgumentRules();
-    static ArgumentRules* numStatesArgRules = new ArgumentRules();
+    static MethodTable methods = MethodTable();
     static bool          methodsSet = false;
 
     if ( !methodsSet ) {
+        static ArgumentRules* probMassVectorArgRules = new ArgumentRules();
+        static ArgumentRules* numStatesArgRules = new ArgumentRules();
 
-        methods->addFunction( "probMassVector", new MemberFunction( Simplex_name, probMassVectorArgRules ) );
-        methods->addFunction( "numStates",      new MemberFunction( Natural_name, numStatesArgRules ) );
+        methods.addFunction( "probMassVector", new MemberFunction( Simplex_name, probMassVectorArgRules ) );
+        methods.addFunction( "numStates",      new MemberFunction( Natural_name, numStatesArgRules ) );
 
-        methods->setParentTable( Distribution::getMethods() );
+        methods.setParentTable( &Distribution::getMethods() );
 
         methodsSet = true;
     }

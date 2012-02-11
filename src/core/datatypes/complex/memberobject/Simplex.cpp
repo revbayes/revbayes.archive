@@ -103,14 +103,6 @@ void Simplex::rescale(void) {
     
 }
 
-/** Complete info about object */
-std::string Simplex::richInfo(void) const {
-
-    std::ostringstream o;
-    printValue(o);
-    return o.str();
-}
-
 
 /** Set value of simplex using VectorReal */
 void Simplex::setValue(const VectorReal& x) {

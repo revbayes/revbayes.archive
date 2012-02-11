@@ -76,7 +76,7 @@ bool DnaState::operator!=(const Character& x) const {
 /** Clone object */
 DnaState* DnaState::clone(void) const {
 
-	return  new DnaState( *this );
+	return new DnaState( *this );
 }
 
 
@@ -171,11 +171,3 @@ void DnaState::printValue(std::ostream &o) const {
     o << getState();
 }
 
-
-/** Get complete info about object */
-std::string DnaState::richInfo( void ) const {
-
-	std::ostringstream o;
-    printValue( o );
-    return o.str();
-}

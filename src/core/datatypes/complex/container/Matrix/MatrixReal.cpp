@@ -68,22 +68,22 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
 
 
 /** Index operator (const) */
-const VectorReal* MatrixReal::operator[]( const size_t i ) const {
+const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
-    return static_cast<const VectorReal*>( elements[i] );
+    return static_cast<const VectorReal&>( *elements[i] );
 }
 
 
 /** Index operator */
-VectorReal* MatrixReal::operator[]( const size_t i ) {
+VectorReal& MatrixReal::operator[]( const size_t i ) {
 
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
     
-    return static_cast<VectorReal*>( elements[i] );
+    return static_cast<VectorReal&>( *elements[i] );
 }
 
 
@@ -346,7 +346,7 @@ MatrixReal operator-(const MatrixReal& A) {
     B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
-			(*B[i])[j] = -(*B[i])[j];
+			B[i][j] = -B[i][j];
 	return B;
 }
 
@@ -367,7 +367,7 @@ MatrixReal operator-(const MatrixReal& A, const double& b) {
     B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
-			(*B[i])[j] = (*A[i])[j] - b;
+			B[i][j] = A[i][j] - b;
 	return B;
 }
 
@@ -387,7 +387,7 @@ MatrixReal operator*(const MatrixReal& A, const double& b) {
     B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
-			(*B[i])[j] = (*A[i])[j] * b;
+			B[i][j] = A[i][j] * b;
 	return B;
 }
 
@@ -407,7 +407,7 @@ MatrixReal operator/(const MatrixReal& A, const double& b) {
     B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
-			(*B[i])[j] = (*A[i])[j] / b;
+			B[i][j] = A[i][j] / b;
 	return B;
 }
 
@@ -427,7 +427,7 @@ MatrixReal operator+(const double& a, const MatrixReal& B) {
     A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] = a + (*B[i])[j];
+			A[i][j] = a + B[i][j];
 	return A;
 }
 
@@ -447,7 +447,7 @@ MatrixReal operator-(const double& a, const MatrixReal& B) {
     A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] = a - (*B[i])[j];
+			A[i][j] = a - B[i][j];
 	return A;
 }
 
@@ -467,7 +467,7 @@ MatrixReal operator*(const double& a, const MatrixReal& B) {
     A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] = a * (*B[i])[j];
+			A[i][j] = a * B[i][j];
 	return A;
 }
 
@@ -487,7 +487,7 @@ MatrixReal operator/(const double& a, const MatrixReal& B) {
     A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] = a / (*B[i])[j];
+			A[i][j] = a / B[i][j];
 	return A;
 }
 
@@ -519,8 +519,8 @@ MatrixReal operator/(const MatrixReal& A, const MatrixReal& B) {
             {
 			double sum = 0.0;
 			for (size_t k=0; k<N; k++)
-				sum += (*A[i])[k] * (*B[k])[j];
-			(*C[i])[j] = sum;
+				sum += A[i][k] * B[k][j];
+			C[i][j] = sum;
             }
         }
 	return C;    
@@ -540,7 +540,7 @@ MatrixReal &operator+=(MatrixReal& A, const double& b) {
 
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] += b;
+			A[i][j] += b;
 	return A;
 }
 
@@ -558,7 +558,7 @@ MatrixReal &operator-=(MatrixReal& A, const double& b) {
 
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] -= b;
+			A[i][j] -= b;
 	return A;
 }
 
@@ -576,7 +576,7 @@ MatrixReal &operator*=(MatrixReal& A, const double& b) {
 
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] *= b;
+			A[i][j] *= b;
 	return A;
 }
 
@@ -594,7 +594,7 @@ MatrixReal &operator/=(MatrixReal& A, const double& b) {
 
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] /= b;
+			A[i][j] /= b;
 	return A;
 }
 
@@ -620,7 +620,7 @@ MatrixReal operator+(const MatrixReal& A, const MatrixReal& B) {
 		for (size_t i=0; i<m; i++) 
             {
 			for (size_t j=0; j<n; j++)
-				(*C[i])[j] = (*A[i])[j] + (*B[i])[j];
+				C[i][j] = A[i][j] + B[i][j];
             }
 		return C;
         }
@@ -648,7 +648,7 @@ MatrixReal operator-(const MatrixReal& A, const MatrixReal& B) {
 		for (size_t i=0; i<m; i++) 
             {
 			for (size_t j=0; j<n; j++)
-				(*C[i])[j] = (*A[i])[j] - (*B[i])[j];
+				C[i][j] = A[i][j] - B[i][j];
             }
 		return C;
         }
@@ -680,8 +680,8 @@ MatrixReal operator*(const MatrixReal& A, const MatrixReal& B) {
 		for (size_t j=0; j<K; j++) {
 			double sum = 0.0;
 			for (size_t k=0; k<N; k++)
-				sum += (*A[i])[k] * (*B[k])[j];
-			(*C[i])[j] = sum;
+				sum += A[i][k] * B[k][j];
+			C[i][j] = sum;
 		}
 	}
 	return C;
@@ -707,7 +707,7 @@ MatrixReal&  operator+=(MatrixReal& A, const MatrixReal& B) {
 		for (size_t i=0; i<m; i++) 
             {
 			for (size_t j=0; j<n; j++)
-				(*A[i])[j] += (*B[i])[j];
+				A[i][j] += B[i][j];
             }
         }
 	return A;
@@ -733,7 +733,7 @@ MatrixReal&  operator-=(MatrixReal& A, const MatrixReal& B) {
 		for (size_t i=0; i<m; i++) 
             {
 			for (size_t j=0; j<n; j++)
-				(*A[i])[j] -= (*B[i])[j];
+				A[i][j] -= B[i][j];
             }
         }
 	return A;
@@ -764,8 +764,8 @@ MatrixReal &operator*=(MatrixReal& A, const MatrixReal& B) {
                 {
 				double sum = 0.0;
 				for (size_t k=0; k<N; k++)
-					sum += (*A[i])[k] * (*B[k])[j];
-				(*C[i])[j] = sum;
+					sum += A[i][k] * B[k][j];
+				C[i][j] = sum;
                 }
             }
 		A = C;

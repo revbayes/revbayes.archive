@@ -137,8 +137,8 @@ Variable* SyntaxFunctionCall::evaluateContent(Environment& env) {
         MemberObject* theMemberObject = dynamic_cast<MemberObject*>( theNode->getValue().clone() );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
         // TODO: We shouldn't allow const casts!!!
-        MethodTable* mt = const_cast<MethodTable*>( theMemberObject->getMethods() );
-        MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt->getFunction( *functionName, args ) );
+        MethodTable& mt = const_cast<MethodTable&>( theMemberObject->getMethods() );
+        MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( *functionName, args ) );
         theMemberFunction->setMemberObject(theMemberObject);
         func = theMemberFunction;
     }

@@ -65,22 +65,22 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
 
 
 /** Index operator (const) */
-const VectorComplex* MatrixComplex::operator[]( const size_t i ) const {
+const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
 
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
-    return static_cast<const VectorComplex*>( (RbLanguageObject*)elements[i] );
+    return static_cast<const VectorComplex&>( *elements[i] );
 }
 
 
 /** Index operator */
-VectorComplex* MatrixComplex::operator[]( const size_t i ) {
+VectorComplex& MatrixComplex::operator[]( const size_t i ) {
 
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
     
-    return static_cast<VectorComplex*>( (RbLanguageObject*)elements[i] );
+    return static_cast<VectorComplex&>( *elements[i] );
 }
 
 /** Clone function */
@@ -101,16 +101,16 @@ const VectorString& MatrixComplex::getClass(void) const {
 /** Overloaded container method to get element or subcontainer */
 const RbObject& MatrixComplex::getElement( size_t row , size_t col) const {
     
-    const VectorComplex* tmp = operator[](row);
-    return tmp->getElement(col);
+    const VectorComplex& tmp = operator[](row);
+    return tmp.getElement(col);
 }
 
 
 /** Overloaded container method to get element or subcontainer */
 RbObject& MatrixComplex::getElement( size_t row , size_t col) {
     
-    VectorComplex* tmp = operator[](row);
-    return tmp->getElement(col);
+    VectorComplex& tmp = operator[](row);
+    return tmp.getElement(col);
 }
 
 
@@ -125,7 +125,7 @@ std::vector<std::vector<std::complex<double> > > MatrixComplex::getValue( void )
 
     std::vector<std::vector<std::complex<double> > > temp;
     for ( size_t i = 0; i < size(); i++ )
-        temp.push_back( operator[](i)->getValue() );
+        temp.push_back( operator[](i).getValue() );
     return temp;
 }
 
@@ -186,9 +186,9 @@ void MatrixComplex::printValue(std::ostream& o) const {
             lineStr += pad  + "  ";
         
         
-        const VectorComplex* vec = operator[](i);
+        const VectorComplex& vec = operator[](i);
         std::ostringstream ss;
-        vec->printValue(ss);
+        vec.printValue(ss);
         lineStr += ss.str();
         if (i == size()-1)
             lineStr += " ]";
@@ -267,7 +267,7 @@ void MatrixComplex::setElement( size_t row, size_t col, RbLanguageObject* value 
         throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
     
     // We rely on the setElement of VectorReal for type cast and to throw an error with a meaningful message
-    operator[](row)->setElement(col,value);
+    operator[](row).setElement(col,value);
     
 }
 
@@ -297,7 +297,7 @@ MatrixComplex operator+(const MatrixComplex& A, const double& b) {
     B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
-			(*B[i])[j] = (*A[i])[j] - b;
+			B[i][j] = A[i][j] - b;
 	return B;
 }
 
@@ -318,7 +318,7 @@ MatrixComplex operator-(const MatrixComplex& A, const double& b) {
     B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
-			(*B[i])[j] = (*A[i])[j] - b;
+			B[i][j] = A[i][j] - b;
 	return B;
 }
 
@@ -338,7 +338,7 @@ MatrixComplex operator*(const MatrixComplex& A, const double& b) {
     B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
-			(*B[i])[j] = (*A[i])[j] * b;
+			B[i][j] = A[i][j] * b;
 	return B;
 }
 
@@ -358,7 +358,7 @@ MatrixComplex operator/(const MatrixComplex& A, const double& b) {
     B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
-			(*B[i])[j] = (*A[i])[j] / b;
+			B[i][j] = A[i][j] / b;
 	return B;
 }
 
@@ -378,7 +378,7 @@ MatrixComplex operator+(const double& a, const MatrixComplex& B) {
     A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] = a + (*B[i])[j];
+			A[i][j] = a + B[i][j];
 	return A;
 }
 
@@ -398,7 +398,7 @@ MatrixComplex operator-(const double& a, const MatrixComplex& B) {
     A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] = a - (*B[i])[j];
+			A[i][j] = a - B[i][j];
 	return A;
 }
 
@@ -418,7 +418,7 @@ MatrixComplex operator*(const double& a, const MatrixComplex& B) {
     A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] = a * (*B[i])[j];
+			A[i][j] = a * B[i][j];
 	return A;
 }
 
@@ -438,7 +438,7 @@ MatrixComplex operator/(const double& a, const MatrixComplex& B) {
     A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] = a / (*B[i])[j];
+			A[i][j] = a / B[i][j];
 	return A;
 }
 
@@ -470,8 +470,8 @@ MatrixComplex operator/(const MatrixComplex& A, const MatrixComplex& B) {
             {
 			std::complex<double> sum = std::complex<double>(0.0,0.0);
 			for (size_t k=0; k<N; k++)
-				sum += (*A[i])[k] * (*B[k])[j];
-			(*C[i])[j] = sum;
+				sum += A[i][k] * B[k][j];
+			C[i][j] = sum;
             }
         }
 	return C;    
@@ -491,7 +491,7 @@ MatrixComplex &operator+=(MatrixComplex& A, const double& b) {
 
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] += b;
+			A[i][j] += b;
 	return A;
 }
 
@@ -509,7 +509,7 @@ MatrixComplex &operator-=(MatrixComplex& A, const double& b) {
 
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] -= b;
+			A[i][j] -= b;
 	return A;
 }
 
@@ -527,7 +527,7 @@ MatrixComplex &operator*=(MatrixComplex& A, const double& b) {
 
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] *= b;
+			A[i][j] *= b;
 	return A;
 }
 
@@ -545,7 +545,7 @@ MatrixComplex &operator/=(MatrixComplex& A, const double& b) {
 
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
-			(*A[i])[j] /= b;
+			A[i][j] /= b;
 	return A;
 }
 
@@ -571,7 +571,7 @@ MatrixComplex operator+(const MatrixComplex& A, const MatrixComplex& B) {
 		for (size_t i=0; i<m; i++) 
             {
 			for (size_t j=0; j<n; j++)
-				(*C[i])[j] = (*A[i])[j] + (*B[i])[j];
+				C[i][j] = A[i][j] + B[i][j];
             }
 		return C;
         }
@@ -599,7 +599,7 @@ MatrixComplex operator-(const MatrixComplex& A, const MatrixComplex& B) {
 		for (size_t i=0; i<m; i++) 
             {
 			for (size_t j=0; j<n; j++)
-				(*C[i])[j] = (*A[i])[j] - (*B[i])[j];
+				C[i][j] = A[i][j] - B[i][j];
             }
 		return C;
         }
@@ -633,8 +633,8 @@ MatrixComplex operator*(const MatrixComplex& A, const MatrixComplex& B) {
             {
 			std::complex<double> sum = std::complex<double>(0.0,0.0);
 			for (size_t k=0; k<N; k++)
-				sum += (*A[i])[k] * (*B[k])[j];
-			(*C[i])[j] = sum;
+				sum += A[i][k] * B[k][j];
+			C[i][j] = sum;
             }
         }
 	return C;
@@ -660,7 +660,7 @@ MatrixComplex&  operator+=(MatrixComplex& A, const MatrixComplex& B) {
 		for (size_t i=0; i<m; i++) 
             {
 			for (size_t j=0; j<n; j++)
-				(*A[i])[j] += (*B[i])[j];
+				A[i][j] += B[i][j];
             }
         }
 	return A;
@@ -686,7 +686,7 @@ MatrixComplex&  operator-=(MatrixComplex& A, const MatrixComplex& B) {
 		for (size_t i=0; i<m; i++) 
             {
 			for (size_t j=0; j<n; j++)
-				(*A[i])[j] -= (*B[i])[j];
+				A[i][j] -= B[i][j];
             }
         }
 	return A;
@@ -717,8 +717,8 @@ MatrixComplex &operator*=(MatrixComplex& A, const MatrixComplex& B) {
                 {
                 std::complex<double> sum = std::complex<double>(0.0,0.0);
 				for (size_t k=0; k<N; k++)
-					sum += (*A[i])[k] * (*B[k])[j];
-				(*C[i])[j] = sum;
+					sum += A[i][k] * B[k][j];
+				C[i][j] = sum;
                 }
             }
 		A = C;

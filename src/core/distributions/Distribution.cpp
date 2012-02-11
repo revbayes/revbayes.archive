@@ -30,20 +30,20 @@
 
 
 /** Constructor with inheritance for member rules */
-Distribution::Distribution( const MemberRules* memberRules ) : ConstantMemberObject( memberRules ) {
+Distribution::Distribution( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbLanguageObject* Distribution::executeOperationSimple( const std::string& name, Environment* args ) {
+RbLanguageObject* Distribution::executeOperationSimple( const std::string& name, Environment& args ) {
 
     if ( name == "lnPdf" ) {
 
-        return new RealPos( lnPdf( (*args)[1]->getValue() ) );
+        return new RealPos( lnPdf( args[1].getValue() ) );
     }
     else if ( name == "pdf" ) {
 
-        return new RealPos( pdf  ( (*args)[1]->getValue() ) );
+        return new RealPos( pdf  ( args[1].getValue() ) );
     }
     else if ( name == "rv" ) {
 
@@ -63,9 +63,9 @@ const VectorString& Distribution::getClass( void ) const {
 
 
 /** Get methods */
-const MethodTable* Distribution::getMethods( void ) const {
+const MethodTable& Distribution::getMethods( void ) const {
 
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules*    lnPdfArgRules = new ArgumentRules();
     static ArgumentRules*    pdfArgRules = new ArgumentRules();
     static ArgumentRules*    rvArgRules = new ArgumentRules();
@@ -77,11 +77,11 @@ const MethodTable* Distribution::getMethods( void ) const {
 
         pdfArgRules->push_back( new ValueRule( "x", RbObject_name ) );
 
-        methods->addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules ) );
-        methods->addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules   ) );
-        methods->addFunction( "rv",    new MemberFunction( RbObject_name, rvArgRules    ) );
+        methods.addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules ) );
+        methods.addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules   ) );
+        methods.addFunction( "rv",    new MemberFunction( RbObject_name, rvArgRules    ) );
 
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
 
         methodsSet = true;
     }

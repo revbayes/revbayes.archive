@@ -73,11 +73,12 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(const TransitionProbabi
 /** Destructor */
 TransitionProbabilityMatrix::~TransitionProbabilityMatrix(void) {
     
+    delete theMatrix;
 }
 
 
 /** Index operator (const) */
-const VectorReal* TransitionProbabilityMatrix::operator[]( const size_t i ) const {
+const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
@@ -86,7 +87,7 @@ const VectorReal* TransitionProbabilityMatrix::operator[]( const size_t i ) cons
 
 
 /** Index operator */
-VectorReal* TransitionProbabilityMatrix::operator[]( const size_t i ) {
+VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) {
 
     if ( i >= numStates )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
@@ -102,7 +103,7 @@ TransitionProbabilityMatrix* TransitionProbabilityMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* TransitionProbabilityMatrix::executeOperationSimple(const std::string& name, Environment* args) {
+RbLanguageObject* TransitionProbabilityMatrix::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "nstates") {
         return new Natural( (int)numStates );
@@ -121,9 +122,9 @@ const VectorString& TransitionProbabilityMatrix::getClass(void) const {
 
 
 /** Get member rules */
-const MemberRules* TransitionProbabilityMatrix::getMemberRules(void) const {
+const MemberRules& TransitionProbabilityMatrix::getMemberRules(void) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
@@ -136,19 +137,19 @@ const MemberRules* TransitionProbabilityMatrix::getMemberRules(void) const {
 
 
 /** Get methods */
-const MethodTable* TransitionProbabilityMatrix::getMethods(void) const {
+const MethodTable& TransitionProbabilityMatrix::getMethods(void) const {
 
-    static MethodTable* methods = new MethodTable();
+    static MethodTable methods = MethodTable();
     static ArgumentRules* nstatesArgRules = new ArgumentRules();
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 
         {
         
-        methods->addFunction("nstates", new MemberFunction(Natural_name, nstatesArgRules) );
+        methods.addFunction("nstates", new MemberFunction(Natural_name, nstatesArgRules) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( MemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
         }
 

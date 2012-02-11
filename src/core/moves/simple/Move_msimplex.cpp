@@ -57,22 +57,22 @@ const VectorString& Move_msimplex::getClass() const {
 
 
 /** Return member rules */
-const MemberRules* Move_msimplex::getMemberRules( void ) const {
+const MemberRules& Move_msimplex::getMemberRules( void ) const {
 
-    static MemberRules* memberRules = new MemberRules();
+    static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
 
     if (!rulesSet) 
     {
         TypeSpec varType( Simplex_name );
-        memberRules->push_back( new ValueRule( "variable", varType ) );
+        memberRules.push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const MemberRules* inheritedRules = MoveSimple::getMemberRules();
-        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
+        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules->push_back( new ValueRule( "tuning"  , RealPos_name ) );
-        memberRules->push_back( new ValueRule( "num_cats", Natural_name ) );
+        memberRules.push_back( new ValueRule( "tuning"  , RealPos_name ) );
+        memberRules.push_back( new ValueRule( "num_cats", Natural_name ) );
 
         rulesSet = true;
 		}
@@ -102,8 +102,8 @@ double Move_msimplex::perform( void ) {
 
     // Get relevant values
     StochasticNode*        nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning")   )->getValue();
-    int                    k       = static_cast<const Natural*>( getMemberValue("num_cats") )->getValue();
+    double                 alpha0  = static_cast<const RealPos&>( getMemberValue("tuning")   ).getValue();
+    int                    k       = static_cast<const Natural&>( getMemberValue("num_cats") ).getValue();
 
 	std::vector<double> curVal = static_cast<const Simplex&>( nodePtr->getValue() ).getValue();
 	std::vector<double> newVal = curVal;

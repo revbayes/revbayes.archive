@@ -23,7 +23,6 @@ class DAGNode;
 class DistanceMatrix;
 class Topology;
 class TopologyNode;
-class TreePlate;
 class VectorString;
 
 
@@ -39,14 +38,14 @@ class Func_nj :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                                 //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules*        getArgumentRules(void) const;                                            //!< Get argument rules
+        const ArgumentRules&        getArgumentRules(void) const;                                            //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
         RbLanguageObject*           executeFunction(void);                                                   //!< Execute function
 
     private:
-        TreePlate*                  neighborJoining(DistanceMatrix* d);
+        Topology*                   neighborJoining(const DistanceMatrix& d);
         void                        buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips);
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;

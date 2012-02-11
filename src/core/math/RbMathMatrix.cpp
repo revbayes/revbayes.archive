@@ -48,14 +48,14 @@ void RbMath::computeLandU(MatrixComplex& aMat, MatrixComplex& lMat, MatrixComple
         {
 		for (size_t k=0; k<j; k++)
 			for (size_t i=k+1; i<j; i++)
-				(*aMat[i])[j] = (*aMat[i])[j] - (*aMat[i])[k] * (*aMat[k])[j];
+				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
 
 		for (size_t k=0; k<j; k++)
 			for (size_t i=j; i<n; i++)
-				(*aMat[i])[j] = (*aMat[i])[j] - (*aMat[i])[k] * (*aMat[k])[j];
+				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
 
 		for (size_t m=j+1; m<n; m++)
-	  		(*aMat[m])[j] /= (*aMat[j])[j];
+	  		aMat[m][j] /= aMat[j][j];
         }
 
 	for (size_t row=0; row<n; row++)
@@ -64,13 +64,13 @@ void RbMath::computeLandU(MatrixComplex& aMat, MatrixComplex& lMat, MatrixComple
             {
 			if ( row <= col )
                 {
-				(*uMat[row])[col] = (*aMat[row])[col];
-				(*lMat[row])[col] = (row == col ? 1.0 : 0.0);
+				uMat[row][col] = aMat[row][col];
+				lMat[row][col] = (row == col ? 1.0 : 0.0);
                 }
 			else
                 {
-				(*lMat[row])[col] = (*aMat[row])[col];
-				(*uMat[row])[col] = std::complex<double>(0.0,0.0);
+				lMat[row][col] = aMat[row][col];
+				uMat[row][col] = std::complex<double>(0.0,0.0);
                 }
             }
         }
@@ -94,14 +94,14 @@ void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) 
         {
 		for (size_t k=0; k<j; k++)
 			for (size_t i=k+1; i<j; i++)
-				(*aMat[i])[j] = (*aMat[i])[j] - (*aMat[i])[k] * (*aMat[k])[j];
+				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
 
 		for (size_t k=0; k<j; k++)
 			for (size_t i=j; i<n; i++)
-				(*aMat[i])[j] = (*aMat[i])[j] - (*aMat[i])[k] * (*aMat[k])[j];
+				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
 
 		for (size_t m=j+1; m<n; m++)
-	  		(*aMat[m])[j] /= (*aMat[j])[j];
+	  		aMat[m][j] /= aMat[j][j];
         }
 
 	for (size_t row=0; row<n; row++)
@@ -110,13 +110,13 @@ void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) 
             {
 			if ( row <= col )
                 {
-				(*uMat[row])[col] = (*aMat[row])[col];
-				(*lMat[row])[col] = (row == col ? 1.0 : 0.0);
+				uMat[row][col] = aMat[row][col];
+				lMat[row][col] = (row == col ? 1.0 : 0.0);
                 }
 			else
                 {
-				(*lMat[row])[col] = (*aMat[row])[col];
-				(*uMat[row])[col] = 0.0;
+				lMat[row][col] = aMat[row][col];
+				uMat[row][col] = 0.0;
                 }
             }
         }
@@ -148,9 +148,9 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	MatrixReal X(dim, dim, 0.0);
 	for (size_t i=0; i<dim; i++)
         {
-		(*D[i])[i] = 1.0;
-        (*N[i])[i] = 1.0;
-        (*X[i])[i] = 1.0;
+		D[i][i] = 1.0;
+        N[i][i] = 1.0;
+        X[i][i] = 1.0;
         }
 
 	// create uninitialized matrix
@@ -162,7 +162,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	double normA = 0.0;
 	for (size_t i=0; i<dim; i++)
         {
-		double x = fabs ((*A[i])[i]);
+		double x = fabs (A[i][i]);
 		if (x > normA)
 			normA = x;
         }
@@ -211,8 +211,8 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
         {
 		for (j=0; j<int(dim); j++)
             {
-			if ((*F[i])[j] < 0.0)
-				(*F[i])[j] = fabs((*F[i])[j]);
+			if (F[i][j] < 0.0)
+				F[i][j] = fabs(F[i][j]);
             }
         }
 	return (0);
@@ -268,7 +268,7 @@ void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
 	MatrixComplex uMat(n, n, 0.0);
     MatrixComplex identity(n, n, 0.0);
     for (size_t i=0; i<n; i++)
-        (*identity[i])[i] = 1.0;
+        identity[i][i] = 1.0;
 	std::vector<std::complex<double> > bVec(n);
 
     // compute the matrix inverse
@@ -276,7 +276,7 @@ void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
 	for (size_t k=0; k<n; k++)
         {
 		for (size_t i=0; i<n; i++)
-			bVec[i] = (*identity[i])[k];
+			bVec[i] = identity[i][k];
 
 		/* Answer of Ly = b (which is solving for y) is copied into b. */
 		forwardSubstitutionRow(lMat, bVec);
@@ -285,7 +285,7 @@ void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
          is also copied into b. */
 		backSubstitutionRow(uMat, bVec);
 		for (size_t i=0; i<n; i++)
-			(*aInv[i])[k] = bVec[i];
+			aInv[i][k] = bVec[i];
         }
 }
 
@@ -303,7 +303,7 @@ void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
 	MatrixReal uMat(n, n, 0.0);
     MatrixReal identity(n, n, 0.0);
     for (size_t i=0; i<n; i++)
-        (*identity[i])[i] = 1.0;
+        identity[i][i] = 1.0;
 	std::vector<double> bVec(n);
 
     // compute the matrix inverse
@@ -311,7 +311,7 @@ void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
 	for (size_t k=0; k<n; k++)
         {
 		for (size_t i=0; i<n; i++)
-			bVec[i] = (*identity[i])[k];
+			bVec[i] = identity[i][k];
 
 		/* Answer of Ly = b (which is solving for y) is copied into b. */
 		forwardSubstitutionRow(lMat, bVec);
@@ -320,7 +320,7 @@ void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
          is also copied into b. */
 		backSubstitutionRow(uMat, bVec);
 		for (size_t i=0; i<n; i++)
-			(*aInv[i])[k] = bVec[i];
+			aInv[i][k] = bVec[i];
         }
 }
 
@@ -345,7 +345,7 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 
 	for (size_t i=0; i<m; i++)
 		for (size_t j=0; j<n; j++)
-			(*t[j])[i] = (*a[i])[j];
+			t[j][i] = a[i][j];
 	return (0);
 }
 
@@ -368,7 +368,7 @@ VectorReal RbMath::colSumMatrix(const MatrixReal& a) {
 
 	for (size_t i=0; i<m; i++) {
 		for (size_t j=0; j<n; j++) {
-            s[j] += (*a[i])[j];
+            s[j] += a[i][j];
 		}
 	}
 
@@ -392,7 +392,7 @@ VectorReal RbMath::rowSumMatrix(const MatrixReal& a) {
 
 	for (size_t i=0; i<m; i++) {
 		for (size_t j=0; j<n; j++) {
-            s[i] += (*a[i])[j];
+            s[i] += a[i][j];
 		}
 	}
 

@@ -57,9 +57,9 @@ RbLanguageObject* Func_quit::executeFunction( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules* Func_quit::getArgumentRules( void ) const {
+const ArgumentRules& Func_quit::getArgumentRules( void ) const {
 
-    static ArgumentRules* argumentRules = new ArgumentRules();
+    static ArgumentRules argumentRules = ArgumentRules();
     
     return argumentRules;
 }

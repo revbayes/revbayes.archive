@@ -32,7 +32,7 @@ MutableMemberObject::MutableMemberObject() : MemberObject() {
 }
 
 /** Constructor: we set member variables here from member rules */
-MutableMemberObject::MutableMemberObject(const MemberRules* memberRules) : MemberObject(memberRules) {
+MutableMemberObject::MutableMemberObject(const MemberRules& memberRules) : MemberObject(memberRules) {
     
 }
 
@@ -56,24 +56,11 @@ void MutableMemberObject::printValue(std::ostream& o) const {
     
     for ( size_t i = 0; i < members->size(); i++ ) {
         
-        o << "." << (*members)[i]->getLabel() << std::endl;
-        if ( (*members)[i]->getValue() == NULL)
-            o << "NULL";
-        else
-            (*members)[i]->getValue()->printValue(o);
+        o << "." << (*members)[i].getLabel() << std::endl;
+        (*members)[i].getValue().printValue(o);
         o << std::endl << std::endl;
     }
 }
 
-
-/** Complete info about object */
-std::string MutableMemberObject::richInfo(void) const {
-    
-    std::ostringstream o;
-    o << getType() << ":" << std::endl;
-    printValue(o);
-    
-    return o.str();
-}
 
 

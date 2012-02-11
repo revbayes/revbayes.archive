@@ -147,15 +147,6 @@ void AminoAcidState::printValue(std::ostream &o) const {
 }
 
 
-/** Get complete info about object */
-std::string AminoAcidState::richInfo( void ) const {
-
-	std::ostringstream o;
-    printValue( o );
-    return o.str();
-}
-
-
 void AminoAcidState::setState(const char s) {
 
     // wipe the value clean, setting all bool flags to false

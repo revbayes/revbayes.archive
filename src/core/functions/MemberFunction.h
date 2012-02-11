@@ -43,15 +43,13 @@ public:
     virtual ~MemberFunction(void);                                                                          //!< Destructor
 
     // Basic utility functions
-    std::string                 briefInfo(void) const;                                                      //!< Brief info about object
     MemberFunction*             clone(void) const;                                                          //!< Clone the object
     const VectorString&         getClass(void) const;                                                       //!< Get class vector
     const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
-    std::string                 richInfo(void) const;                                                       //!< Complete info about object
 
     // Regular functions   
     RbLanguageObject*           execute(void);                                                              //!< Execute function
-    const ArgumentRules*        getArgumentRules(void) const;                                               //!< Get argument rules
+    const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
     void                        setMemberObject(MemberObject* obj);                                         //!< Set the member object to which this function belongs
     void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
