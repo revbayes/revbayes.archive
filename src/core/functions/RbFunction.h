@@ -27,14 +27,13 @@
 
 #include "Argument.h"
 #include "ArgumentRule.h"
+#include "ArgumentRules.h"
 #include "Environment.h"
 #include "RbInternal.h"
 
 class DAGNode;
 class VectorInteger;
 class VectorString;
-
-typedef std::vector<ArgumentRule* > ArgumentRules;
 
 /**
  * This is the interface and abstract base class for functions in

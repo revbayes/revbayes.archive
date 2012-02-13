@@ -53,7 +53,7 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     for ( size_t i = 0; i < params.size(); i++ ) {
         done.clear();
         const std::string &name = params.getName(i);
-        if ( params[name].getDagNode()->isParentInDAG( RbPtr<DAGNode>( this ), done ) )
+        if ( params[name].getDagNode()->isParentInDAG( RbDagNodePtr( this ), done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
 
@@ -92,7 +92,7 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     /* Set parent(s) and add myself as a child to these */
     for ( size_t i = 0; i < params.size(); i++ ) {
         const std::string &name = params.getName(i);
-        const RbPtr<DAGNode>& theParam = params[name].getDagNode();
+        const RbDagNodePtr& theParam = params[name].getDagNode();
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -116,8 +116,8 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
 StochasticNode::~StochasticNode( void ) {
 
     /* Remove parents first */
-    for ( std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++ ) {
-        const RbPtr<DAGNode>& node = *i;
+    for ( std::set<RbDagNodePtr >::iterator i = parents.begin(); i != parents.end(); i++ ) {
+        const RbDagNodePtr& node = *i;
         node->removeChildNode( this );
     }
     parents.clear();
@@ -135,21 +135,21 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
             throw RbException( "Type mismatch in StochasticNode assignment" );
         
         /* Remove parents first */
-        for ( std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++ ) {
-            RbPtr<DAGNode> node = *i;
+        for ( std::set<RbDagNodePtr >::iterator i = parents.begin(); i != parents.end(); i++ ) {
+            RbDagNodePtr node = *i;
             node->removeChildNode( this );
         }
         parents.clear();
 
         /* Set distribution */
-        distribution = x.distribution;
+        distribution = x.distribution->clone();
 
         /* Get distribution parameters */
         Environment& params = distribution->getMembers();
 
         /* Set parent(s) and add myself as a child to these */
         for ( size_t i = 0; i < params.size(); i++ ) {
-            const RbPtr<DAGNode>& theParam = params[params.getName(i)].getVariable().getDagNode();
+            const RbDagNodePtr& theParam = params[params.getName(i)].getVariable().getDagNode();
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -180,7 +180,7 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
     for ( size_t i = 0; i < params.size(); i++ ) {
         
         const std::string &name = params.getName(i);
-        const RbPtr<DAGNode>& theNode  = params[name].getDagNode();
+        const RbDagNodePtr& theNode  = params[name].getDagNode();
 
         if ( !theNode->isType( VariableNode_name ) )
             continue;
@@ -202,7 +202,7 @@ double StochasticNode::calculateLnProbability( void ) {
         }
         else {
             // we need to iterate over my states
-            DistributionDiscrete* d = static_cast<DistributionDiscrete*>( (Distribution*)distribution );
+            DistributionDiscrete* d = static_cast<DistributionDiscrete*>( distribution );
             d->getNumberOfStates();
         }
         
@@ -220,8 +220,7 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
         throw RbException( "Cannot clamp stochastic node in volatile state" );
 
     // touch for recalculation
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++)
-        (*i)->touch();
+    touch(); 
     
     // check for type conversion
     if (observedVal->isTypeSpec(distribution->getVariableType())) {
@@ -259,7 +258,7 @@ StochasticNode* StochasticNode::clone( void ) const {
 
 
 /** Clone the entire graph: clone children, swap parents */
-RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes ) const {
+RbDagNodePtr StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr >& newNodes ) const {
 
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
@@ -297,9 +296,9 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
         const std::string &name = params.getName(i);
         
         // clone the member and get the clone back
-        const RbPtr<DAGNode>& theParam = params[name].getDagNode();
+        const RbDagNodePtr& theParam = params[name].getDagNode();
         // if we already have cloned this parent (parameter), then we will get the previously created clone
-        RbPtr<DAGNode> theParamClone = theParam->cloneDAG( newNodes );
+        RbDagNodePtr theParamClone = theParam->cloneDAG( newNodes );
         
         // set the clone of the member as the member of the clone
         copyParams[name].setVariable( new Variable(theParamClone) );
@@ -354,7 +353,7 @@ const TypeSpec& StochasticNode::getTypeSpec(void) const {
 }
 
 
-/** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
+/** Get affected nodes: RbDagNodePtr this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
 void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
     
     /* If we have already touched this node, we are done; otherwise, get the affected children */
@@ -561,7 +560,7 @@ void StochasticNode::setValue( RbLanguageObject* val ) {
  * This function should be called from the mutateTo function, otherwise it
  * is dangerous because the distribution parameters will not be accommodated.
  */
-void StochasticNode::swapParentNode(const RbPtr<DAGNode>& oldNode, const RbPtr<DAGNode>& newNode ) {
+void StochasticNode::swapParentNode(const RbDagNodePtr& oldNode, const RbDagNodePtr& newNode ) {
 
     if ( parents.find( oldNode ) == parents.end() )
         throw RbException( "Node is not a parent" );

@@ -135,7 +135,7 @@ Variable* SyntaxFunctionDef::evaluateContent( void ) {
 
 
 
-/** Get semantic value: insert a user-defined function in the user workspace */
+/** Get semantic value: RbDagNodePtr a user-defined function in the user workspace */
 Variable* SyntaxFunctionDef::evaluateContent(Environment& env) {
 
     // Get argument rules from the formals
@@ -155,7 +155,7 @@ Variable* SyntaxFunctionDef::evaluateContent(Environment& env) {
     // Create the function
     RbFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
 
-    // Insert in the user workspace
+    // RbDagNodePtr in the user workspace
     Workspace::userWorkspace().addFunction(*functionName, theFunction);
 
     // No return value 

@@ -80,10 +80,12 @@ VariableSlot::~VariableSlot(void) {
 VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
     
     if ( &x != this ) {
-        
-        // Check if assignment is possible
-        if ( varTypeSpec != x.varTypeSpec )
-            throw RbException ( "Invalid slot assignment: type difference" );
+
+        // TODO: Commented this out because I don't know if it is even necessary and
+//        // Check if assignment is possible
+//        if ( varTypeSpec != x.varTypeSpec )
+//            throw RbException ( "Invalid slot assignment: type difference" );
+        varTypeSpec = x.varTypeSpec;
         
         if (variable != NULL) {
             delete variable;
@@ -115,7 +117,7 @@ const VectorString& VariableSlot::getClass() const {
 
 
 /** Get a const pointer to the dag node */
-const DAGNode* VariableSlot::getDagNode( void ) const {
+DAGNode* VariableSlot::getDagNode( void ) const {
     
     if (variable == NULL) 
         return NULL;

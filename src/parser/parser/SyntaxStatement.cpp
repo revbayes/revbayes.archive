@@ -87,10 +87,12 @@ SyntaxStatement::~SyntaxStatement() {
     
     delete expression;
     
-    for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
-        delete *i;
+    if (statements1 != NULL) {
+        for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
+            delete *i;
+        }
+        delete statements1;
     }
-    delete statements1;
     
     if (statements2 != NULL) {
         for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++) {
@@ -175,15 +177,17 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                 // Execute statement
                 result = (*i)->evaluateContent(loopEnv);
                 
-                // Print result if it is not an assign expression (==NULL)
-                if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
-                    std::ostringstream msg;
-                    result->getDagNode()->printValue(msg);
-                    RBOUT( msg.str() );
-                }
+                // TODO: We should not print the result if it didn't return anything
+//                // Print result if it is not an assign expression (==NULL)
+//                if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
+//                    std::ostringstream msg;
+//                    result->getDagNode()->printValue(msg);
+//                    RBOUT( msg.str() );
+//                }
 
                 // Free memory
 				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL) {
+                    delete result;
                     result = NULL;  // discard result
                 }
 
@@ -233,6 +237,7 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
 	 
 	            // Free memory
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ){
+                    delete result;
                     result = NULL;  // discard result
                 }
 	 
@@ -276,6 +281,7 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
 
                 // Free memory
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL){
+                    delete result;
                     result = NULL;  // discard result
                 }
             }
@@ -301,6 +307,7 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                 
                 // Free memory
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ){
+                    delete result;
                     result = NULL;  // discard result
                 }
             }
@@ -320,6 +327,7 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                     
                 // Free memory
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
+                    delete result;
                     result = NULL;  // discard result
                 }
             }

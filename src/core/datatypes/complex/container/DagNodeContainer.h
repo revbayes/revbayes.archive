@@ -43,7 +43,7 @@ class DagNodeContainer : public Container {
         virtual                            ~DagNodeContainer(void);                                                     //!< Virtual destructor
         
         // Basic utility functions
-        bool                                allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be inserted
+        bool                                allowsVariableRbDagNodePtrion(void) const { return true; }                        //!< Yes we do allow variable to be RbDagNodePtred
         DagNodeContainer*                   clone(void) const;                                                          //!< Clone object
         RbObject*                           convertTo(const TypeSpec& type) const;                                      //!< Convert to type
         const VectorString&                 getClass(void) const;                                                       //!< Get class vector

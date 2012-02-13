@@ -22,7 +22,7 @@
 
 #include "DAGNode.h"
 #include "RbLanguageObject.h"
-#include "RbPtr.h"
+#include "RbDagNodePtr.h"
 
 class RbObject;
 class VectorString;
@@ -51,7 +51,7 @@ public:
     const RbLanguageObject*             getValuePtr(void) const;                                                    //!< Get value 
 
     // DAG functions
-    RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;        //!< Clone entire graph
+    RbDagNodePtr                      cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;        //!< Clone entire graph
     bool                                isTouched (void) const { return false; }                                    //!< Touched by a move?
    
 

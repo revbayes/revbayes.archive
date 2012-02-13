@@ -90,7 +90,7 @@ class TopologyNode : public ConstantMemberObject {
         
         static const TypeSpec               typeSpec;
         std::vector<TopologyNode*>          children;                                                                   //!< Vector holding the node's children. Note that the parent owns the children but not the other way around. 
-        TopologyNode*                       parent;                                                                     //!< Pointer to the parent of the node. It is a regular pointer instead of a RbPtr to avoid loops in the reference counting.
+        TopologyNode*                       parent;                                                                     //!< Pointer to the parent of the node. It is a regular pointer instead of a RbDagNodePtr to avoid loops in the reference counting.
         std::string                         name;                                                                       //!< Name of the node, i.e. identifier/taxon name
         int                                 index;                                                                      //!< Node index
 };

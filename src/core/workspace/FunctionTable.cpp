@@ -271,15 +271,15 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     /* Check that all labels are unique in both sets of argument rules */
     for (size_t i=0; i<x.size(); i++) {
         for (size_t j=i+1; j < y.size(); j++) {
-            if (x[i]->getArgumentLabel().size() != 0 && x[j]->getArgumentLabel().size() != 0)
-            if (x[i]->getArgumentLabel() == x[j]->getArgumentLabel())
+            if (x[i].getArgumentLabel().size() != 0 && x[j].getArgumentLabel().size() != 0)
+            if (x[i].getArgumentLabel() == x[j].getArgumentLabel())
                 return false;
         }
     }
     for (size_t i=0; i<y.size(); i++) {
         for (size_t j=i+1; j<y.size(); j++) {
-            if (y[i]->getArgumentLabel().size() != 0 && y[j]->getArgumentLabel().size() != 0)
-            if (y[i]->getArgumentLabel() == y[j]->getArgumentLabel())
+            if (y[i].getArgumentLabel().size() != 0 && y[j].getArgumentLabel().size() != 0)
+            if (y[i].getArgumentLabel() == y[j].getArgumentLabel())
                 return false;
         }
     }
@@ -287,13 +287,13 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     /* Check that the same labels are not used for different positions */
     for (size_t i=0; i<x.size(); i++) {
 
-        const std::string& xLabel = x[i]->getArgumentLabel();
+        const std::string& xLabel = x[i].getArgumentLabel();
         if (xLabel.size() == 0)
             continue;
 
         for (size_t j=0; j<y.size(); j++) {
 
-            const std::string& yLabel = y[i]->getArgumentLabel();
+            const std::string& yLabel = y[i].getArgumentLabel();
             if (yLabel.size() == 0)
                 continue;
 
@@ -305,21 +305,21 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     /* Check that types are different for at least one argument without default values */
     size_t i;
     for (i=0; i<x.size() && i<y.size(); i++) {
-        if (x[i]->hasDefault() == false &&
-            y[i]->hasDefault() == false &&
-            !x[i]->isType(Ellipsis_name) &&
-            !y[i]->isType(Ellipsis_name) &&
-            x[i]->getArgumentType() != y[i]->getArgumentType())
+        if (x[i].hasDefault() == false &&
+            y[i].hasDefault() == false &&
+            !x[i].isType(Ellipsis_name) &&
+            !y[i].isType(Ellipsis_name) &&
+            x[i].getArgumentType() != y[i].getArgumentType())
             return true;
     }
     for (size_t j=i; j<x.size(); j++) {
-        if (x[j]->hasDefault() == false &&
-            !x[j]->isType(Ellipsis_name))
+        if (x[j].hasDefault() == false &&
+            !x[j].isType(Ellipsis_name))
             return true;
     }
     for (size_t j=i; j<y.size(); j++) {
-        if (y[j]->hasDefault() == false &&
-            !y[j]->isType(Ellipsis_name))
+        if (y[j].hasDefault() == false &&
+            !y[j].isType(Ellipsis_name))
             return true;
     }
 

@@ -51,14 +51,14 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->ge
     std::list<DAGNode*> done;
     for ( size_t i = 0; i < arguments.size(); i++ ) {
         const std::string &name = arguments.getName(i);
-        if ( arguments[name].getDagNode() != NULL && arguments[name].getDagNode()->isParentInDAG( RbPtr<DAGNode>(this), done ) )
+        if ( arguments[name].getDagNode() != NULL && arguments[name].getDagNode()->isParentInDAG( RbDagNodePtr(this), done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
     
     /* Set parents and add this node as a child node of these */
     for ( size_t i = 0; i < arguments.size(); i++ ) {
         const std::string &name = arguments.getName(i);
-        const RbPtr<DAGNode>& theArgument = arguments[name].getDagNode();
+        const RbDagNodePtr& theArgument = arguments[name].getDagNode();
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -94,7 +94,7 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     for ( size_t i = 0; i < args.size(); i++ ) {
         const std::string &name = args.getName(i);
         
-        RbPtr<DAGNode> theArgument = args[name].getDagNode();
+        RbDagNodePtr theArgument = args[name].getDagNode();
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -105,8 +105,8 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
 DeterministicNode::~DeterministicNode( void ) {
     
     /* Remove parents first so that VariableNode destructor does not get in the way */
-    for ( std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++ ) {
-        RbPtr<DAGNode> node = *i;
+    for ( std::set<RbDagNodePtr >::iterator i = parents.begin(); i != parents.end(); i++ ) {
+        RbDagNodePtr node = *i;
         node->removeChildNode(this);
     }
     parents.clear();
@@ -120,7 +120,7 @@ DeterministicNode* DeterministicNode::clone() const {
 
 
 /** Clone the entire graph: clone children, swap parents */
-RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes ) const {
+RbDagNodePtr DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr >& newNodes ) const {
     
     if ( newNodes.find( this ) != newNodes.end() )
         return newNodes[ this ];
@@ -151,7 +151,7 @@ RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNo
         const std::string &name = args.getName(i);
         
         // clone the parameter DAG node
-        RbPtr<DAGNode> theArgClone( args[name].getDagNode()->cloneDAG(newNodes) );
+        RbDagNodePtr theArgClone( args[name].getDagNode()->cloneDAG(newNodes) );
         copyArgs[name].setVariable(new Variable(theArgClone) );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
@@ -349,7 +349,7 @@ void DeterministicNode::restoreMe( void ) {
 
 
 /** Swap parent node */
-void DeterministicNode::swapParentNode( const RbPtr<DAGNode>& oldParent, const RbPtr<DAGNode>& newParent ) {
+void DeterministicNode::swapParentNode( const RbDagNodePtr& oldParent, const RbDagNodePtr& newParent ) {
 
     if ( parents.find( oldParent ) == parents.end() )
         throw RbException( "Node is not a parent" );

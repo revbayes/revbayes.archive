@@ -11,7 +11,7 @@
 #include "RbMemoryManager.h"
 
 
-size_t RbMemoryManager::countForAddress(const void* qPtr) {
+size_t RbMemoryManager::countForAddress(const DAGNode* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return -1;
@@ -23,7 +23,7 @@ size_t RbMemoryManager::countForAddress(const void* qPtr) {
     return 0;
 }
 
-void RbMemoryManager::incrementCountForAddress(const void* qPtr) {
+void RbMemoryManager::incrementCountForAddress(const DAGNode* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return;
@@ -36,7 +36,7 @@ void RbMemoryManager::incrementCountForAddress(const void* qPtr) {
     }
 }
 
-bool RbMemoryManager::decrementCountForAddress(const void* qPtr) {
+bool RbMemoryManager::decrementCountForAddress(const DAGNode* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return false;
@@ -45,14 +45,15 @@ bool RbMemoryManager::decrementCountForAddress(const void* qPtr) {
         {
         RbException("Missing entry in memory map");
         return false;
-    }
+        }
     
     refCountMap[qPtr]--;
     
-    if ( refCountMap[qPtr] == 0 ) {
+    if ( refCountMap[qPtr] == 0 ) 
+        {
         refCountMap.erase(qPtr);
         return true;
-    }
+        }
       
     return false;
 }
@@ -61,7 +62,7 @@ bool RbMemoryManager::decrementCountForAddress(const void* qPtr) {
 size_t RbMemoryManager::numberOfReferences(void) const {
     size_t refs = 0;
     
-    for (std::map<const void*, size_t>::const_iterator it = refCountMap.begin(); it != refCountMap.end(); it++) {
+    for (std::map<const DAGNode*, size_t>::const_iterator it = refCountMap.begin(); it != refCountMap.end(); it++) {
         refs += it->second;
     }
     

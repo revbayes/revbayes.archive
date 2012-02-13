@@ -49,12 +49,12 @@ DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcTyp
 
     /* Get the distribution parameter rules and set type to value argument */
     const ArgumentRules& memberRules = dist->getMemberRules();
-    for ( ArgumentRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
+    for ( std::vector<ArgumentRule*>::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
         // check if this rule has a default value
         if ((*i)->hasDefault()) {
             argumentRules->push_back( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), (*i)->getDefaultVariable().getValue().clone() ) );
         } else {
-            argumentRules->push_back(new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
+            argumentRules->push_back( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
         }
     }
 
@@ -257,7 +257,7 @@ bool DistributionFunction::processArguments( const std::vector<Argument>& args, 
 
     for ( ; i < k; i++ ) {
 
-        std::string name = (*argumentRules)[i]->getArgumentLabel();
+        std::string name = (*argumentRules)[i].getArgumentLabel();
 
         /* All distribution variables are references but we have value arguments here
            so a const cast is needed to deal with the mismatch */

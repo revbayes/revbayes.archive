@@ -51,16 +51,16 @@ class Model : public ConstantMemberObject {
     
         // Model functions
         std::vector<DAGNode*>                   getClonedDagNodes(std::vector<DAGNode*> &orgNodes) const;   //!< Get cloned nodes corresponding to originals
-        std::vector<RbPtr<DAGNode> >            getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
+        std::vector<RbDagNodePtr >            getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
         void                                    setMemberVariable(const std::string& name, Variable* var);  //!< set a new member with name. catch setting of sinknode
 
 	private:
-        int                                     findIndexInVector(const std::vector<RbPtr<DAGNode> >& v, const RbPtr<DAGNode> p) const;
+        int                                     findIndexInVector(const std::vector<RbDagNodePtr >& v, const RbDagNodePtr p) const;
 
     // Member variables
     static const TypeSpec                       typeSpec;
-    std::vector<RbPtr<DAGNode> >                dagNodes;                
-    std::map<const DAGNode*, RbPtr<DAGNode> >   nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
+    std::vector<RbDagNodePtr >                dagNodes;                
+    std::map<const DAGNode*, RbDagNodePtr >   nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
 };
 
 #endif

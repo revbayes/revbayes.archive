@@ -280,10 +280,10 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
         while (!indices.empty()) {
             // test whether the value of the DAG node allows assignment of variable to its elemens
             // e.g.: A simplex might not allow assignment of its elements whereas a DagNodeContainer does
-            if (theDagNode != NULL && !theDagNode->getValue().allowsVariableInsertion()) {
-                // throw expection because we don't allow insertion of variable
+            if (theDagNode != NULL && !theDagNode->getValue().allowsVariableRbDagNodePtrion()) {
+                // throw expection because we don't allow RbDagNodePtrion of variable
                 std::ostringstream msg;
-                msg << "Object of type " << theDagNode->getValue().getType() << " does not allow insertion of variables.";
+                msg << "Object of type " << theDagNode->getValue().getType() << " does not allow RbDagNodePtrion of variables.";
                 throw RbException(msg);
             }
             

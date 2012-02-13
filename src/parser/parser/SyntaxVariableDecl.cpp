@@ -107,7 +107,7 @@ Variable* SyntaxVariableDecl::evaluateContent( void ) {
 }
 
 
-/** Get semantic value: insert symbol and return the rhs value of the assignment */
+/** Get semantic value: RbDagNodePtr symbol and return the rhs value of the assignment */
 Variable* SyntaxVariableDecl::evaluateContent( Environment& env ) {
     
     PRINTF( "Evaluating variable declaration\n" );

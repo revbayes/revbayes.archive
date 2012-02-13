@@ -86,12 +86,12 @@ const VectorString& Argument::getClass(void) const {
 }
 
 
-RbPtr<const DAGNode> Argument::getDagNode(void) const {
-    return RbPtr<const DAGNode>( var->getDagNode() );
+RbDagNodePtr Argument::getDagNode(void) const {
+    return var->getDagNode();
 }
 
 
-RbPtr<DAGNode> Argument::getDagNode(void) {
+RbDagNodePtr Argument::getDagNode(void) {
     return var->getDagNode();
 }
 
@@ -126,7 +126,7 @@ void Argument::printValue(std::ostream &o) const {
 }
 
 /** Set the DAG node of the argument */
-void Argument::setDagNode(RbPtr<DAGNode> newNode) {
+void Argument::setDagNode(RbDagNodePtr newNode) {
     var->setDagNode(newNode);
 }
 

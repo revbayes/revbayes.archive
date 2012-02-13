@@ -183,11 +183,11 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
             FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
             
             // get the DAG node for this monitor
-            std::vector<RbPtr<VariableNode> > &theOldNodes = theMonitor.getDagNodes();
+            std::vector<RbDagNodePtr> &theOldNodes = theMonitor.getDagNodes();
             
             // convert the old nodes from Stochastic nodes to DAGNode
             std::vector<DAGNode*> oldNodes;
-            for (std::vector<RbPtr<VariableNode> >::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+            for (std::vector<RbDagNodePtr>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
                 oldNodes.push_back( *it );
             }
             // get the DAG node which corresponds in the model to the cloned original node
@@ -219,7 +219,7 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
     /* Get the dag nodes from the model */
-    std::vector<RbPtr<DAGNode> > dagNodes = (static_cast<Model&>( getMemberValue("model") ) ).getDAGNodes();
+    std::vector<RbDagNodePtr > dagNodes = (static_cast<Model&>( getMemberValue("model") ) ).getDAGNodes();
 
     /* Get the moves and monitors */
     Vector& monitors = static_cast<Vector&>( getMemberDagNode( "monitors" )->getValue() );
@@ -247,7 +247,7 @@ void Mcmc::run(size_t ngen) {
     /* Get initial lnProbability of model */
     double lnProbability = 0.0;
     std::vector<double> initProb;
-    for (std::vector<RbPtr<DAGNode> >::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+    for (std::vector<RbDagNodePtr >::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
         DAGNode* node = (*i);
         if (node->isType(StochasticNode_name)) {
             StochasticNode* stochNode = dynamic_cast<StochasticNode*>( node );

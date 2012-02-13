@@ -155,7 +155,7 @@ const std::string& DAGNode::getName( void ) const {
 }
 
 
-const std::set<RbPtr<DAGNode> >& DAGNode::getParents( void ) const {
+const std::set<RbDagNodePtr >& DAGNode::getParents( void ) const {
     return parents;
 }
 
@@ -172,9 +172,9 @@ bool DAGNode::isConst( void ) const {
 
 
 /** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
-bool DAGNode::isParentInDAG( const RbPtr<DAGNode>& x, std::list<DAGNode*>& done ) const {
+bool DAGNode::isParentInDAG( const RbDagNodePtr& x, std::list<DAGNode*>& done ) const {
 
-    for( std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
+    for( std::set<RbDagNodePtr >::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
 
         if ( std::find( done.begin(), done.end(), (*i) ) == done.end() ) {
             if ( (*i)->isParentInDAG( x, done ) )
@@ -240,7 +240,7 @@ void DAGNode::printParents( std::ostream& o ) const {
 
     o << "[ ";
 
-    for ( std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++) {
+    for ( std::set<RbDagNodePtr >::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( i != parents.begin() )
             o << ", ";
         if ( getName() == "" ) {

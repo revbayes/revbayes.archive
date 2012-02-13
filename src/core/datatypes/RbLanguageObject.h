@@ -23,6 +23,7 @@
 #include <string>
 
 class ArgumentRule;
+class ArgumentRules;
 class DAGNode;
 class TypeSpec;
 class Vector;
@@ -33,7 +34,7 @@ class XmlElement;
 
 const std::string RbLanguageObject_name = "language object";
 
-typedef std::vector<ArgumentRule* >   MemberRules;                                                                       //!< Member rules type def, for convenience
+typedef ArgumentRules MemberRules;                                                                       //!< Member rules type def, for convenience
 
 class RbLanguageObject : public RbObject {
     

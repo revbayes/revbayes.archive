@@ -126,7 +126,7 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
 void MoveTree::rejectMove(void) {
 
     // Get topology and tree variable info
-    RbPtr<StochasticNode> topNode( static_cast<StochasticNode*>( (*members)["topology"].getDagNode() ) );
+    RbDagNodePtr topNode( static_cast<StochasticNode*>( (*members)["topology"].getDagNode() ) );
 
 
     // Send derived class a reject message

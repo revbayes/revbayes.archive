@@ -92,7 +92,7 @@ const TypeSpec& FileMonitor::getTypeSpec(void) const {
 /** Monitor value unconditionally */
 void FileMonitor::monitor(void) {
 
-    for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbDagNodePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
             outStream << separator;
@@ -117,7 +117,7 @@ void FileMonitor::monitor(int gen) {
         // print the iteration number first
         outStream << gen;
         
-        for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<RbDagNodePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element
             outStream << separator;
             
@@ -147,11 +147,11 @@ void FileMonitor::printHeader() {
     // print one column for the iteration number
     outStream << "Sample";
     
-    for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbDagNodePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
         outStream << separator;
         
-         VariableNode* theNode = *it;
+         const VariableNode* theNode = static_cast<const VariableNode*>((DAGNode*)*it);
         
         // print the header
         if (theNode->getName() != "")

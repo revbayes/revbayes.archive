@@ -36,7 +36,7 @@
 #include "DAGNode.h"
 #include "RbInternal.h"
 #include "RbLanguageObject.h"
-#include "RbPtr.h"
+#include "RbDagNodePtr.h"
 #include "TypeSpec.h"
 
 #include <string>
@@ -73,7 +73,7 @@ private:
     void                                replaceDagNode(DAGNode* newVariable );              //!< Replace the old DAG node with the new one and set the children and parent
     
     // Member variables
-    RbPtr<DAGNode>                      node;                                               //!< Pointer to the variable (reference or not)
+    RbDagNodePtr                        node;                                               //!< Pointer to the variable (reference or not)
     std::string                         name;                                               //!< the name of the variable
 
     static const TypeSpec               typeSpec;

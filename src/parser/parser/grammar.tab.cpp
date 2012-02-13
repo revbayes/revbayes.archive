@@ -2269,7 +2269,7 @@ yyreduce:
   case 43:
 #line 323 "./grammar.y"
     { 
-                        PRINTF("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring arrow assignment (ARROW_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, (yyvsp[(1) - (3)].syntaxVariable), (yyvsp[(3) - (3)].syntaxElement));
                     }
     break;
@@ -2277,7 +2277,7 @@ yyreduce:
   case 44:
 #line 328 "./grammar.y"
     { 
-                        PRINTF("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring arrow assignment (ARROW_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, (yyvsp[(1) - (3)].syntaxFunctionCall), (yyvsp[(3) - (3)].syntaxElement));
                     }
     break;
@@ -2285,7 +2285,7 @@ yyreduce:
   case 45:
 #line 335 "./grammar.y"
     {
-                        PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring tilde assignment (TILDE_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, (yyvsp[(1) - (3)].syntaxVariable), (yyvsp[(3) - (3)].syntaxFunctionCall));
                     }
     break;
@@ -2293,7 +2293,7 @@ yyreduce:
   case 46:
 #line 340 "./grammar.y"
     {
-                        PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring tilde assignment (TILDE_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, (yyvsp[(1) - (3)].syntaxFunctionCall), (yyvsp[(3) - (3)].syntaxFunctionCall));
                     }
     break;
@@ -2301,7 +2301,7 @@ yyreduce:
   case 47:
 #line 347 "./grammar.y"
     {
-                        PRINTF("Parser inserting tilde iid assignment (TILDEIID_ASSIGN) in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring tilde iid assignment (TILDEIID_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::TildeIidAssign, (yyvsp[(1) - (3)].syntaxVariable), (yyvsp[(3) - (3)].syntaxFunctionCall));
                     }
     break;
@@ -2309,7 +2309,7 @@ yyreduce:
   case 48:
 #line 352 "./grammar.y"
     {
-                        PRINTF("Parser inserting tilde iid assignment (TILDEIID_ASSIGN) in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring tilde iid assignment (TILDEIID_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::TildeIidAssign, (yyvsp[(1) - (3)].syntaxFunctionCall), (yyvsp[(3) - (3)].syntaxFunctionCall));
                     }
     break;
@@ -2317,7 +2317,7 @@ yyreduce:
   case 49:
 #line 359 "./grammar.y"
     {
-                        PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring equation assignment (EQUATION_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, (yyvsp[(1) - (3)].syntaxVariable), (yyvsp[(3) - (3)].syntaxElement)); 
                     }
     break;
@@ -2325,7 +2325,7 @@ yyreduce:
   case 50:
 #line 364 "./grammar.y"
     {
-                        PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring equation assignment (EQUATION_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, (yyvsp[(1) - (3)].syntaxFunctionCall), (yyvsp[(3) - (3)].syntaxElement)); 
                     }
     break;
@@ -2333,7 +2333,7 @@ yyreduce:
   case 51:
 #line 371 "./grammar.y"
     {
-                    PRINTF("Parser inserting variable (NAMED_VAR)in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring variable (NAMED_VAR)in syntax tree\n");
                     (yyval.syntaxVariable) = new SyntaxVariable((yyvsp[(1) - (2)].idString), (yyvsp[(2) - (2)].syntaxElementList));
                 }
     break;
@@ -2341,7 +2341,7 @@ yyreduce:
   case 52:
 #line 376 "./grammar.y"
     {
-                    PRINTF("Parser inserting variable (FUNCTION_VAR) in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring variable (FUNCTION_VAR) in syntax tree\n");
                     (yyvsp[(5) - (5)].syntaxElementList)->push_front((yyvsp[(3) - (5)].syntaxElement));
                     (yyval.syntaxVariable) = new SyntaxVariable((yyvsp[(1) - (5)].syntaxFunctionCall), (yyvsp[(5) - (5)].syntaxElementList));
                 }
@@ -2350,7 +2350,7 @@ yyreduce:
   case 53:
 #line 382 "./grammar.y"
     {
-                    PRINTF("Parser inserting member variable (NAMED_VAR)in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring member variable (NAMED_VAR)in syntax tree\n");
                     (yyval.syntaxVariable) = new SyntaxVariable((yyvsp[(1) - (4)].syntaxVariable), (yyvsp[(3) - (4)].idString), (yyvsp[(4) - (4)].syntaxElementList));
                 }
     break;
@@ -2358,7 +2358,7 @@ yyreduce:
   case 54:
 #line 387 "./grammar.y"
     {
-                    PRINTF("Parser inserting member variable (FUNCTION_VAR) in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring member variable (FUNCTION_VAR) in syntax tree\n");
                     (yyvsp[(7) - (7)].syntaxElementList)->push_front((yyvsp[(5) - (7)].syntaxElement));
                     (yyval.syntaxVariable) = new SyntaxVariable((yyvsp[(1) - (7)].syntaxVariable), (yyvsp[(3) - (7)].syntaxFunctionCall), (yyvsp[(7) - (7)].syntaxElementList));
                 }
@@ -2404,7 +2404,7 @@ yyreduce:
   case 62:
 #line 411 "./grammar.y"
     {
-                        PRINTF("Parser inserting function call in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring function call in syntax tree\n");
                         (yyval.syntaxFunctionCall) = (yyvsp[(1) - (1)].syntaxFunctionCall);
                     }
     break;
@@ -2412,7 +2412,7 @@ yyreduce:
   case 63:
 #line 416 "./grammar.y"
     {
-                        PRINTF("Parser inserting member call in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring member call in syntax tree\n");
                         (yyvsp[(3) - (3)].syntaxFunctionCall)->setBaseVariable((yyvsp[(1) - (3)].syntaxVariable));
                         (yyval.syntaxFunctionCall) = (yyvsp[(3) - (3)].syntaxFunctionCall);
                     }
@@ -2441,7 +2441,7 @@ yyreduce:
   case 68:
 #line 432 "./grammar.y"
     {
-                    PRINTF("Parser inserting unlabeled argument in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring unlabeled argument in syntax tree\n");
                     (yyval.syntaxLabeledExpr) = new SyntaxLabeledExpr( new RbString(""), (yyvsp[(1) - (1)].syntaxElement));
                 }
     break;
@@ -2449,7 +2449,7 @@ yyreduce:
   case 69:
 #line 437 "./grammar.y"
     { 
-                    PRINTF("Parser inserting labeled argument in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring labeled argument in syntax tree\n");
                     (yyval.syntaxLabeledExpr) = new SyntaxLabeledExpr((yyvsp[(1) - (3)].idString), (yyvsp[(3) - (3)].syntaxElement));
                 }
     break;
@@ -2457,7 +2457,7 @@ yyreduce:
   case 70:
 #line 444 "./grammar.y"
     {
-                    PRINTF("Parser inserting function definition in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring function definition in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxFunctionDef(NULL, (yyvsp[(2) - (6)].idString), (yyvsp[(4) - (6)].formalList), (yyvsp[(6) - (6)].syntaxElementList));
                 }
     break;
@@ -2465,7 +2465,7 @@ yyreduce:
   case 71:
 #line 450 "./grammar.y"
     {
-                    PRINTF("Parser inserting typed function definition in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring typed function definition in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxFunctionDef((yyvsp[(2) - (7)].idString), (yyvsp[(3) - (7)].idString), (yyvsp[(5) - (7)].formalList), (yyvsp[(7) - (7)].syntaxElementList));
                 }
     break;
@@ -2493,7 +2493,7 @@ yyreduce:
   case 76:
 #line 465 "./grammar.y"
     {
-                    PRINTF("Inserting labeled formal argument without default in syntax tree\n");
+                    PRINTF("RbDagNodePtring labeled formal argument without default in syntax tree\n");
                     (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (1)].idString), NULL );
                 }
     break;
@@ -2501,7 +2501,7 @@ yyreduce:
   case 77:
 #line 470 "./grammar.y"
     {
-                    PRINTF("Inserting labeled formal argument with default in syntax tree\n");
+                    PRINTF("RbDagNodePtring labeled formal argument with default in syntax tree\n");
                     (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (3)].idString), (yyvsp[(3) - (3)].syntaxElement));
                 }
     break;
@@ -2509,7 +2509,7 @@ yyreduce:
   case 78:
 #line 475 "./grammar.y"
     {
-                    PRINTF("Inserting typed labeled formal argument without default in syntax tree\n");
+                    PRINTF("RbDagNodePtring typed labeled formal argument without default in syntax tree\n");
                     (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (2)].idString), (yyvsp[(2) - (2)].idString), NULL);
                 }
     break;
@@ -2517,7 +2517,7 @@ yyreduce:
   case 79:
 #line 480 "./grammar.y"
     {
-                    PRINTF("Inserting typed labeled formal argument with default in syntax tree\n");
+                    PRINTF("RbDagNodePtring typed labeled formal argument with default in syntax tree\n");
                     (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (4)].idString), (yyvsp[(2) - (4)].idString), (yyvsp[(4) - (4)].syntaxElement));
                 }
     break;
@@ -2664,7 +2664,7 @@ yyreduce:
   case 107:
 #line 535 "./grammar.y"
     {
-                        PRINTF("Parser inserting variable declaration in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring variable declaration in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxVariableDecl((yyvsp[(1) - (4)].idString), (yyvsp[(2) - (4)].syntaxElementList), (yyvsp[(3) - (4)].idString), (yyvsp[(4) - (4)].idString));
                     }
     break;
@@ -2712,7 +2712,7 @@ yyreduce:
   case 116:
 #line 554 "./grammar.y"
     {
-                PRINTF("Parser inserting class definition (CLASS_DEF) in syntax tree\n");
+                PRINTF("Parser RbDagNodePtring class definition (CLASS_DEF) in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxClassDef((yyvsp[(2) - (7)].idString), (yyvsp[(4) - (7)].idString), (yyvsp[(6) - (7)].syntaxElementList));
                 }
     break;
@@ -2792,7 +2792,7 @@ yyreduce:
   case 131:
 #line 600 "./grammar.y"
     {
-                    PRINTF("Parser inserting bool constant (false) in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring bool constant (false) in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxConstant(new RbBoolean(false) );
                 }
     break;
@@ -2800,7 +2800,7 @@ yyreduce:
   case 132:
 #line 605 "./grammar.y"
     {
-                    PRINTF("Parser inserting bool constant (true) in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring bool constant (true) in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxConstant(new RbBoolean(true) );
                 }
     break;
@@ -2808,7 +2808,7 @@ yyreduce:
   case 133:
 #line 610 "./grammar.y"
     {
-                    PRINTF("Parser inserting null constant in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring null constant in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxConstant( NULL );
                 }
     break;
@@ -2817,11 +2817,11 @@ yyreduce:
 #line 615 "./grammar.y"
     {
                     if ( (yyvsp[(1) - (1)].intValue) < 0 ) {
-                        PRINTF("Parser inserting Integer constant in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring Integer constant in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxConstant(new Integer((yyvsp[(1) - (1)].intValue)) );
                     }
                     else { 
-                        PRINTF("Parser inserting Natural constant in syntax tree\n");
+                        PRINTF("Parser RbDagNodePtring Natural constant in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxConstant(new Natural((yyvsp[(1) - (1)].intValue)) );
                     }
                 }
@@ -2830,7 +2830,7 @@ yyreduce:
   case 135:
 #line 626 "./grammar.y"
     {
-                    PRINTF("Parser inserting String constant in syntax tree\n");
+                    PRINTF("Parser RbDagNodePtring String constant in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxConstant(new RbString((yyvsp[(1) - (1)].string)) );
                 }
     break;
@@ -2876,11 +2876,11 @@ yyreduce:
                     real->setScientific(sci);
                     */
                     if ((yyvsp[(1) - (1)].realValue) > 0.0) {
-                        PRINTF("Parser inserting RealPos constant in syntax tree \n");
+                        PRINTF("Parser RbDagNodePtring RealPos constant in syntax tree \n");
                         (yyval.syntaxElement) = new SyntaxConstant(new RealPos((yyvsp[(1) - (1)].realValue)) );
                     }
                     else {
-                        PRINTF("Parser inserting Real constant in syntax tree \n");
+                        PRINTF("Parser RbDagNodePtring Real constant in syntax tree \n");
                         (yyval.syntaxElement) = new SyntaxConstant(new Real((yyvsp[(1) - (1)].realValue)) );
                     }
                 }

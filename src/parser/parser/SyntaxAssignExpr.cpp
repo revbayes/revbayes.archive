@@ -129,7 +129,7 @@ Variable* SyntaxAssignExpr::evaluateContent( ) {
     throw RbException("Cannot evaluate the content in SyntaxAssignExpr without environment!");
 }
 
-/** Get semantic value: insert symbol and return the rhs value of the assignment */
+/** Get semantic value: RbDagNodePtr symbol and return the rhs value of the assignment */
 Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
     
     PRINTF( "Evaluating assign expression\n" );
@@ -250,8 +250,8 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
 //        throw RbException( "Support of ~iid not complete yet" );
 //    }
     
-//    theSlot->getDagNode()->touch();
-//    theSlot->getDagNode()->keep();
+    theSlot.getDagNode()->touch();
+    theSlot.getDagNode()->keep();
 
     
 #ifdef DEBUG_PARSER

@@ -169,7 +169,7 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
     
     std::string name = n;
     // we check if the name equals the empty string
-    // if so we replace it with the memory address of the slot we want to insert
+    // if so we replace it with the memory address of the slot we want to RbDagNodePtr
     // because we cannot add variable slot with an empty string as the identifier
     // caller will not be able to retrieve this slot via it's name
     // but it is their own fault if they tried to add it without a name to identify with
@@ -186,13 +186,13 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
     if ( variableTable.find( name ) != variableTable.end() )
         throw RbException( "Variable " + name + " already exists in frame" );
     
-    /* Insert new slot in variable table */
+    /* RbDagNodePtr new slot in variable table */
     variableTable.insert( std::pair<std::string, VariableSlot* >( name, theSlot ) );
     
     // add the name to the variable name list
     varNames.push_back(name);
     
-    PRINTF( "Inserted \"%s\" in frame\n", name.c_str() );
+    PRINTF( "RbDagNodePtred \"%s\" in frame\n", name.c_str() );
 }
 
 
@@ -425,9 +425,9 @@ void Environment::setName(size_t i, const std::string &name) {
     // remove the entry with the old name
     eraseVariable(oldName);
     
-    // insert the slot with its new name
+    // RbDagNodePtr the slot with its new name
     variableTable.insert( std::pair<std::string, VariableSlot* >( name, &theSlot ) );
     
-    // insert the name at it's old position
+    // RbDagNodePtr the name at it's old position
     varNames.insert(varNames.begin() + i, name);
 }

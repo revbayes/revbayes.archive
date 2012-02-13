@@ -44,7 +44,7 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() 
     members = new Environment();
     
     /* Fill member table (frame) based on member rules */
-    for ( MemberRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
+    for ( std::vector<ArgumentRule*>::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
         // creare variable slots with name and type
         members->addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
     }
