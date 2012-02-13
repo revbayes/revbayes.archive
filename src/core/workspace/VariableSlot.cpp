@@ -94,6 +94,9 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         if ( x.variable != NULL ) {
             variable = x.variable->clone();
         }
+        else {
+            variable = NULL;
+        }
         
         label = x.label;
     }

@@ -58,11 +58,15 @@ TopologyNode::TopologyNode(const TopologyNode &n) : ConstantMemberObject(n) {
     // copy the children
     for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
         TopologyNode* theNode = *it;
-        children.push_back( theNode->clone() );
+        TopologyNode* theClone = theNode->clone();
+        children.push_back( theClone );
+        theClone->setParent(this);
     }
     
     // add myself as a new child to the parent node
-    parent->addChild(this);
+//    if (parent != NULL) {
+//        parent->addChild(this);
+//    }
     
 }
 
@@ -321,8 +325,8 @@ void TopologyNode::removeChild(TopologyNode* p) {
         children.erase(it);
 //        delete p;
     }
-    else 
-        throw(RbException("Cannot find node in list of children nodes"));
+//    else 
+//        throw(RbException("Cannot find node in list of children nodes"));
     
     name = buildNewickString( *this );
 }
