@@ -35,7 +35,7 @@ class TypeSpec {
 
                                     // Regular functions
         const std::string&          getBaseType(void) const { return baseType; }                                                    //!< Get the element type
-        const TypeSpec*             getElementType(void) const { return elementType; }                                              //!< Get the element type
+        const TypeSpec&             getElementType(void) const { return *elementType; }                                             //!< Get the element type
         const std::string&          getType(void) const { return type; }                                                            //!< Get object type
         const std::string&          toString(void) const;                                                                           //!< Express as a string
 

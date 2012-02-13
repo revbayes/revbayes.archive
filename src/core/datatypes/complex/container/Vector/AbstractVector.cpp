@@ -65,7 +65,7 @@ AbstractVector& AbstractVector::operator=( const AbstractVector& x ) {
 RbObject* AbstractVector::convertTo(const TypeSpec &type) const {
     
     if (type.getBaseType() == Vector_name) {
-        Vector* newVector = new Vector(*type.getElementType());
+        Vector* newVector = new Vector(type.getElementType());
         for (size_t i = 0; i < size(); i++) {
             newVector->push_back(getElement(i).clone());
         }

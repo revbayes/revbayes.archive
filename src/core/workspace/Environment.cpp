@@ -192,7 +192,7 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
     // add the name to the variable name list
     varNames.push_back(name);
     
-    PRINTF( "RbDagNodePtred \"%s\" in frame\n", name.c_str() );
+    PRINTF( "Inserted \"%s\" in frame\n", name.c_str() );
 }
 
 

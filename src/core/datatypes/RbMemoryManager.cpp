@@ -48,8 +48,9 @@ bool RbMemoryManager::decrementCountForAddress(const DAGNode* qPtr) {
         }
     
     refCountMap[qPtr]--;
+    size_t currCount = refCountMap[qPtr];
     
-    if ( refCountMap[qPtr] == 0 ) 
+    if ( currCount == 0 ) 
         {
         refCountMap.erase(qPtr);
         return true;

@@ -35,19 +35,20 @@ public:
     RbDagNodePtr(DAGNode* inPtr = NULL);
     ~RbDagNodePtr(void);
     RbDagNodePtr(const RbDagNodePtr& src);
-    RbDagNodePtr&                      operator=(const RbDagNodePtr& rhs);
+    RbDagNodePtr&               operator=(const RbDagNodePtr& rhs);
     DAGNode&                    operator*(void) const;
     DAGNode*                    operator->(void) const;
     operator                    DAGNode*(void) const { return mPtr; }
     
-    
-protected:
-    static RbMemoryManager&     getMememoryManager(void)                                           //!< Get the memory manager
+    static RbMemoryManager&     getMemoryManager(void)                                           //!< Get the memory manager
     {
-        static RbMemoryManager& theMemoryManager = RbMemoryManager::rbMemoryManager();
+        static RbMemoryManager theMemoryManager = RbMemoryManager();
         return theMemoryManager;
     }
 
+    
+protected:
+    
     void                        finalizePointer(void);
     void                        initializePointer(DAGNode* inPtr);
     DAGNode*                    mPtr;

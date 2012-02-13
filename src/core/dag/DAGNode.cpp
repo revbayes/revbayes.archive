@@ -91,7 +91,7 @@ DAGNode::~DAGNode( void ) {
 /** add a child node */
 void DAGNode::addChildNode(VariableNode *c) {
     PRINTF("Adding child with name \"%s\" to parent with name \"%s\".\n",c->getName().c_str(),getName().c_str());
-    
+        
     children.insert(c);
 }
 

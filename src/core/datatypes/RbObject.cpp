@@ -48,7 +48,7 @@ RbObject::~RbObject() {
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
     if (typeSpec.getBaseType() == Vector_name) {
-        Vector *v = new Vector(typeSpec.getElementType()->getBaseType());
+        Vector *v = new Vector(typeSpec.getElementType().getBaseType());
         v->push_back( this->clone() );
         
         return v;
@@ -131,7 +131,7 @@ const std::string& RbObject::getType(void) const {
 /** Is convertible to type and dim? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
     
-    if (typeSpec.getBaseType() == Vector_name && isTypeSpec(*typeSpec.getElementType())) {
+    if (typeSpec.getBaseType() == Vector_name && isTypeSpec(typeSpec.getElementType())) {
         return true;
     }
 

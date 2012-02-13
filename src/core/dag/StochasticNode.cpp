@@ -43,7 +43,7 @@ StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.
 StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ) {
 
     // increment the reference count for myself
-    RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
+    RbDagNodePtr::getMemoryManager().incrementCountForAddress(this);
     
     /* Get distribution parameters */
     Environment& params = dist->getMembers();
@@ -76,7 +76,7 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     
     
     // decrement the reference count for myself
-    RbMemoryManager::rbMemoryManager().decrementCountForAddress(this);
+    RbDagNodePtr::getMemoryManager().decrementCountForAddress(this);
 }
 
 
@@ -492,7 +492,12 @@ void StochasticNode::printValue( std::ostream& o ) const {
     if ( touched )
         RBOUT( "Warning: Variable in touched state" );
 
-    value->printValue(o);
+    if (value == NULL) {
+        o << "NULL";
+    }
+    else {
+        value->printValue(o);
+    }
 }
 
 
@@ -502,13 +507,15 @@ void StochasticNode::restoreMe() {
     if ( touched ) {
         
         if (!clamped) {
-            if (value != NULL) {
-                delete value;
-            }
-            value           = storedValue;
+            if (storedValue != NULL) {
+                if (value != NULL) {
+                    delete value;
+                }
+                value           = storedValue;
             
-            // delete the stored value
-            storedValue = NULL;
+                // delete the stored value
+                storedValue = NULL;
+            }
         }
         
         lnProb          = storedLnProb;

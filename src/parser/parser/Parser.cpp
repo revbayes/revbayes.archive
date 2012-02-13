@@ -164,6 +164,8 @@ int Parser::execute(SyntaxElement* root) const {
                 RBOUT( "Usage:" );
                 for ( std::vector<RbFunction*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
                     RBOUT( (*i)->debugInfo() );
+                    RbFunction* theFunction = *i;
+                    delete theFunction;
                 }
                 delete result;
                 delete root;
@@ -263,6 +265,8 @@ int Parser::help(const RbString& symbol) const {
             RBOUT( "Usage:" );
             for ( std::vector<RbFunction*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
                 RBOUT( (*i)->debugInfo() );
+                RbFunction* theFunction = *i;
+                delete theFunction;
             }
         }
     }

@@ -71,6 +71,7 @@ class FunctionTable : public RbInternal {
     
     private:
         static const TypeSpec       typeSpec;
+
 };
 
 #endif

@@ -59,8 +59,8 @@ class Model : public ConstantMemberObject {
 
     // Member variables
     static const TypeSpec                       typeSpec;
-    std::vector<RbDagNodePtr >                dagNodes;                
-    std::map<const DAGNode*, RbDagNodePtr >   nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
+    std::vector<RbDagNodePtr>                   dagNodes;                
+    std::map<const DAGNode*, RbDagNodePtr>      nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
 };
 
 #endif

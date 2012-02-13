@@ -229,7 +229,7 @@ void Model::printValue(std::ostream& o) const {
         if ((*i)->isType(DeterministicNode_name)) {
             DAGNode* dnode = *i;
             DeterministicNode* node = static_cast<DeterministicNode*>( dnode );
-            msg << "   Function     = " << node->getFunction().debugInfo();
+            msg << "   Function     = " << node->getFunction().getType();
         } else if ((*i)->isType(StochasticNode_name)) {
             DAGNode* dnode = *i;
             StochasticNode* node = static_cast<StochasticNode*>( dnode );
@@ -240,7 +240,7 @@ void Model::printValue(std::ostream& o) const {
 		msg.str("");
        
         msg << "   Value        = ";
-        (*i)->getValue().printValue(o);
+        (*i)->getValue().printValue(msg);
             
 		if ( msg.str() != "" )
 			RBOUT(msg.str());

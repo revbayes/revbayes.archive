@@ -20,6 +20,11 @@ class DAGNode;
 class RbMemoryManager {
 
     public:
+        RbMemoryManager(void) { }                                       //!< Prevent construction
+        RbMemoryManager(const RbMemoryManager& x) { }                   //!< Prevent copy construction
+        virtual                        ~RbMemoryManager(void) { }                                       //!< Destructor
+        RbMemoryManager&                operator=(const RbMemoryManager& m) { return (*this); }         //!< Prevent assignment
+
         static RbMemoryManager&     rbMemoryManager(void)                                           //!< Get the memory manager
 		                               {
 		                               static RbMemoryManager theMemoryManager = RbMemoryManager();
@@ -35,11 +40,8 @@ class RbMemoryManager {
         size_t                          numberOfReferences(void) const;
 
     protected:
-                                        RbMemoryManager(void) { }                                       //!< Prevent construction
-                                        RbMemoryManager(const RbMemoryManager& x) { }                   //!< Prevent copy construction
-        virtual                        ~RbMemoryManager(void) { }                                       //!< Destructor
-        std::map<const DAGNode*,size_t> refCountMap;
-        RbMemoryManager&                operator=(const RbMemoryManager& m) { return (*this); }         //!< Prevent assignment
+    std::map<const DAGNode*,size_t> refCountMap;
+
 };
 
 #endif

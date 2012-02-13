@@ -44,7 +44,7 @@ DeterministicNode::DeterministicNode( const std::string& valType ) : VariableNod
 DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->getReturnType()), needsUpdate( true ), function( func ) {
     
     // increment the reference count for myself
-    RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
+    RbDagNodePtr::getMemoryManager().incrementCountForAddress(this);
     
     /* Check for cycles */
     Environment& arguments = func->getArguments();
@@ -63,9 +63,6 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->ge
         theArgument->addChildNode( this );
     }
     
-    /* Set the function */
-//    function = func;
-    
     /* Set value and stored value */
     RbLanguageObject* retVal = function->execute();
     
@@ -73,7 +70,7 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->ge
     storedValue     = NULL;
     
     // decrement the reference count for myself
-    RbMemoryManager::rbMemoryManager().decrementCountForAddress(this);
+    RbDagNodePtr::getMemoryManager().decrementCountForAddress(this);
 }
 
 
@@ -103,13 +100,6 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
 
 /** Destructor */
 DeterministicNode::~DeterministicNode( void ) {
-    
-    /* Remove parents first so that VariableNode destructor does not get in the way */
-    for ( std::set<RbDagNodePtr >::iterator i = parents.begin(); i != parents.end(); i++ ) {
-        RbDagNodePtr node = *i;
-        node->removeChildNode(this);
-    }
-    parents.clear();
 
     delete function;
 }

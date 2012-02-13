@@ -1,4 +1,5 @@
 
+#include "DAGNode.h"
 #include "RbDagNodePtr.h"
 
 #include <iostream>
@@ -37,17 +38,17 @@ RbDagNodePtr& RbDagNodePtr::operator=(const RbDagNodePtr& rhs) {
 void RbDagNodePtr::initializePointer(DAGNode* inPtr) {
     
     mPtr = inPtr;
-    RbMemoryManager& myMemoryManager = getMememoryManager();
+    RbMemoryManager& myMemoryManager = getMemoryManager();
     myMemoryManager.incrementCountForAddress(mPtr);
 }
 
 void RbDagNodePtr::finalizePointer(void) {
     
-    RbMemoryManager& myMemoryManager = getMememoryManager();
+    RbMemoryManager& myMemoryManager = getMemoryManager();
     
     if ( myMemoryManager.decrementCountForAddress(mPtr) ) { 
         delete mPtr;
-        //        std::cerr << "Destroying pointer " << mPtr << " of type " << typeid(mPtr).name() << std::endl;
+//                std::cerr << "Destroying pointer " << mPtr << " of type " << typeid(mPtr).name() << std::endl;
     }
 }
 

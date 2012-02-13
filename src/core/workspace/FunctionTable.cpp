@@ -31,15 +31,17 @@ const TypeSpec FunctionTable::typeSpec(FunctionTable_name);
 
 /** Basic constructor, empty table with or without parent */
 FunctionTable::FunctionTable(FunctionTable* parent) : RbInternal(), table(), parentTable(parent) {
+
 }
 
 
 /** Copy constructor */
 FunctionTable::FunctionTable(const FunctionTable& x) {
-
+    
     for (std::multimap<std::string, RbFunction* >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
+        {
         table.insert(std::pair<std::string, RbFunction* >( (*i).first, ( (*i).second->clone() )));
-
+        }
     parentTable = x.parentTable;
 }
 
@@ -48,6 +50,7 @@ FunctionTable::FunctionTable(const FunctionTable& x) {
 FunctionTable::~FunctionTable(void) {
 
     clear();
+    
 }
 
 /** Assignment operator */
@@ -57,8 +60,9 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
 
         clear();
         for (std::multimap<std::string, RbFunction* >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
+            {
             table.insert(std::pair<std::string, RbFunction* >((*i).first, ((*i).second->clone())));
-
+            }
         parentTable = x.parentTable;
     }
 
@@ -68,7 +72,6 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
 
 /** Add function to table */
 void FunctionTable::addFunction(const std::string name, RbFunction* func) {
-
     std::pair<std::multimap<std::string, RbFunction* >::iterator,
               std::multimap<std::string, RbFunction* >::iterator> retVal;
 
@@ -80,6 +83,11 @@ void FunctionTable::addFunction(const std::string name, RbFunction* func) {
             i->second->printValue(msg);
             msg << " cannot overload " << name << " = ";
             func->printValue(msg);
+            
+            // free the memory
+            delete func;
+            
+            // throw the error message
             throw RbException(msg.str());
         }
     }
@@ -94,6 +102,8 @@ void FunctionTable::clear(void) {
         RbFunction* theFunction = it->second;
         delete theFunction;
     }
+    
+    table.clear();
 }
 
 
@@ -105,6 +115,11 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
     retVal = table.equal_range(name);
     table.erase(retVal.first, retVal.second);
+    
+    for (std::multimap<std::string, RbFunction*>::iterator it=retVal.first; it!=retVal.second; it++) {
+        RbFunction* theFunction = it->second;
+        delete theFunction;
+    }
 }
 
 
