@@ -75,7 +75,7 @@ RbLanguageObject* Func_CtmmTransitionProbabilities::executeFunction(void) {
     q.calculateTransitionProbabilities( t.getValue(), *transProbsMatrix );
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return transProbsMatrix;
+    return transProbsMatrix->clone();
 }
 
 

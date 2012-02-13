@@ -51,6 +51,9 @@ class TopologyNode : public ConstantMemberObject {
                                             TopologyNode(const std::string& n, int indx=0);                             //!< Constructor with name and optional index
                                             TopologyNode(const TopologyNode &n);                                        //!< Copy constructor
         virtual                            ~TopologyNode(void);                                                         //!< Destructor
+        
+        TopologyNode&                       operator=(const TopologyNode& n);
+    
         // Basic utility functions
         TopologyNode*                       clone(void) const;                                                          //!< Clone object
         bool                                equals(const TopologyNode& node) const;                                     //!< Test whether this is the same node
@@ -79,7 +82,7 @@ class TopologyNode : public ConstantMemberObject {
         void                                setName(const std::string& n);                                              //!< Set the name of this node
         void                                setParent(TopologyNode* p);                                                 //!< Sets the node's parent
         void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
-        void                                removeChild(const TopologyNode& p);                                         //!< Removes a specific child
+        void                                removeChild(TopologyNode* p);                                         //!< Removes a specific child
          
     protected:
         RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method

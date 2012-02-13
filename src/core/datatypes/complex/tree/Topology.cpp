@@ -45,7 +45,7 @@ Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() )
     isBinary = t.isBinary;
 
     // need to perform a deep copy of the tree nodes
-    root = cloneTree(t.getRoot());
+    root = t.getRoot().clone();
     
     // fill the nodes vector
 //    fillNodesByPreorderTraversal(root);
@@ -57,29 +57,10 @@ Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() )
 Topology::~Topology(void) {
     
     nodes.clear();
+    
+    delete root;
 }
 
-TopologyNode* Topology::cloneTree(const TopologyNode& parent) {
-
-    // get first a shallow copy
-    TopologyNode* node = parent.clone();
-    
-    // replace all children by depp copies of the children
-    for (size_t i=0; i<node->getNumberOfChildren(); i++) {
-        // get the old child
-        const TopologyNode& oldChild = node->getChild(0);
-        
-        // get a deep copy of the child
-        TopologyNode* newChild = cloneTree(oldChild);
-        node->removeChild(oldChild);
-        node->addChild(newChild);
-        
-        // set this node as the parent of the new deep copy
-        newChild->setParent(node);
-    }
-    
-    return node;
-}
 
 /* Clone function */
 Topology* Topology::clone(void) const {

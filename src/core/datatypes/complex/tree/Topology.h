@@ -51,7 +51,6 @@ class Topology: public ConstantMemberObject {
         const MethodTable&                  getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions
-        TopologyNode*                       cloneTree(const TopologyNode& parent);                                  //!< Deep copy of the nodes
         bool                                getIsBinary(void) const { return isBinary; }                            //!< Is the tree rooted
         bool                                getIsRooted(void) const { return isRooted; }                            //!< Is the tree rooted
         std::vector<const TopologyNode*>    getNodes(void) const { return nodes; }                                  //!< Get a pointer to the nodes in the tree
@@ -72,7 +71,7 @@ class Topology: public ConstantMemberObject {
         void                                fillNodesByPreorderTraversal(const TopologyNode* node);                 //!< fill the nodes vector by a preorder traversal recursively starting with this node.
         void                                fillNodesByPhylogeneticTraversal(const TopologyNode* node);             //!< fill the nodes vector by a preorder traversal recursively starting with this node.
     
-        std::vector<const TopologyNode*>   nodes;                                                                  //!< Vector of pointers to all nodes
+        std::vector<const TopologyNode*>    nodes;                                                                  //!< Vector of pointers to all nodes
         TopologyNode*                       root;                                                                   //!< Pointer to the root node
         bool                                isRooted;                                                               //!< Is the topology rooted?
         bool                                isBinary;                                                               //!< Is the topology binary?

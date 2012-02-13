@@ -260,13 +260,14 @@ const RbLanguageObject* DeterministicNode::getValuePtr( void ) const {
 void DeterministicNode::keepMe( void ) {
     
     if ( touched ) {
-        if ( needsUpdate )
-            update();
         
         if (storedValue != NULL) {
             delete storedValue;
         }
         storedValue = NULL;
+        
+        if ( needsUpdate )
+            update();
         
     }
     touched = false;
@@ -322,12 +323,14 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
 void DeterministicNode::restoreMe( void ) {
 
     if ( touched ) {
-        delete value;
+        if (storedValue != NULL) {
+            delete value;
         
-        // no matter if this node has been changed we just set it back to its stored value
-        value       = storedValue;
+            // no matter if this node has been changed we just set it back to its stored value
+            value       = storedValue;
         
-        storedValue = NULL;
+            storedValue = NULL;
+        }
         
         // restore all children
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {

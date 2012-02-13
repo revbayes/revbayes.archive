@@ -20,6 +20,7 @@
 #include "Character.h"
 #include "CharacterContinuous.h"
 #include "CharacterData.h"
+#include "ConstantNode.h"
 #include "DnaState.h"
 #include "NclReader.h"
 #include "RbUtil.h"
@@ -1220,6 +1221,7 @@ TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
     Topology* myTreeFromNcl = new Topology();
     myTreeFromNcl->setRoot(root);
     
-    TreePlate* myTreePlateFromNcl = new TreePlate(myTreeFromNcl);
+    TreePlate* myTreePlateFromNcl = new TreePlate();
+    myTreeFromNcl->setMemberVariable("topology", new Variable( new ConstantNode(myTreeFromNcl) ) );
 	return myTreePlateFromNcl;
 }

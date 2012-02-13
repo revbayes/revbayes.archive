@@ -38,6 +38,13 @@ DagNodeContainer::DagNodeContainer(size_t l) : Container(RbLanguageObject_name),
     resize(l-1);
 }
 
+DagNodeContainer::DagNodeContainer(const DagNodeContainer& c) : Container(c), typeSpec(DagNodeContainer_name) {
+    
+    for (std::vector<VariableSlot*>::const_iterator it = c.elements.begin(); it != c.elements.end(); it++) {
+        elements.push_back((*it)->clone());
+    }
+}
+
 
 /* Destructor */
 DagNodeContainer::~DagNodeContainer(void) {
@@ -46,8 +53,31 @@ DagNodeContainer::~DagNodeContainer(void) {
 }
 
 
+DagNodeContainer& DagNodeContainer::operator=(const DagNodeContainer &c) {
+    
+    if (this != &c) {
+        
+        // free my memory
+        clear();
+        
+        // copy the elements
+        for (std::vector<VariableSlot*>::const_iterator it = c.elements.begin(); it != c.elements.end(); it++) {
+            elements.push_back((*it)->clone());
+        }
+    }
+    
+    return *this;
+}
+
+
 /** Clear contents of value container */
 void DagNodeContainer::clear( void ) {
+    
+    // free the memory of the single slots
+    for (std::vector<VariableSlot*>::iterator it = elements.begin(); it != elements.end(); it++) {
+        VariableSlot* theSlot = *it;
+        delete theSlot;
+    }
     
     elements.clear();
 }
@@ -248,7 +278,9 @@ std::string DagNodeContainer::richInfo(void) const {
 /** Set element */
 void DagNodeContainer::setElement(const size_t index, RbObject* elem) {
     if (index >= size()) {
-        throw RbException("Cannot set element in DagNodeContainer outside the current range.");
+        std::ostringstream o;
+        o << "Cannot set element at index " << index << " in DagNodeContainer(size=" << size()+1 << ") outside the current range.";
+        throw RbException(o.str());
     }
     // we expect to receive a parameter of type Variable
     Variable* var = dynamic_cast<Variable*>( elem );
@@ -265,7 +297,9 @@ void DagNodeContainer::setElement(const size_t index, RbObject* elem) {
 /** Set element */
 void DagNodeContainer::setElement(const size_t index, Variable* elem) {
     if (index >= size()) {
-        throw RbException("Cannot set element in DagNodeContainer outside the current range.");
+        std::ostringstream o;
+        o << "Cannot set element at index " << index << " in DagNodeContainer(size=" << size()+1 << ") outside the current range.";
+        throw RbException(o.str());
     }
     VariableSlot* theSlot = elements[index];
     theSlot->setVariable(elem);

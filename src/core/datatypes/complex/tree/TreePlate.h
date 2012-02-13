@@ -33,7 +33,6 @@ class TreePlate: public MutableMemberObject {
 
 public:
                                     TreePlate(void);                                                                //!< Default constructor
-                                    TreePlate(Topology* top);                                                       //!< constructor
                                     TreePlate(const TreePlate& t);                                                  //!< Copy constructor
                                    ~TreePlate(void);                                                                //!< Destructor
 
@@ -64,11 +63,11 @@ private:
     
     std::string                     buildNewickString(const TopologyNode& node) const;                              //!< compute the newick string for a tree rooting at this node
     
-    void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }                   //!< Order the topology
+//    void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }                   //!< Order the topology
     size_t                          getNodeIndex(const TopologyNode& theNode) const;                                //!< Get the index of the node
     size_t                          getTipIndex(const TopologyNode& theNode) const;                                 //!< Get the index of the node
 
-    Topology*                       orderingTopology;                                                               //!< The topology that orders the tree plate
+//    Topology*                       orderingTopology;                                                               //!< The topology that orders the tree plate
 };
 
 #endif

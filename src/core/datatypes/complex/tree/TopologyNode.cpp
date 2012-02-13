@@ -55,7 +55,14 @@ TopologyNode::TopologyNode(const TopologyNode &n) : ConstantMemberObject(n) {
     name = n.name;
     index = n.index;
     parent = n.parent;
-    children = n.children;
+    // copy the children
+    for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
+        TopologyNode* theNode = *it;
+        children.push_back( theNode->clone() );
+    }
+    
+    // add myself as a new child to the parent node
+    parent->addChild(this);
     
 }
 
@@ -67,6 +74,31 @@ TopologyNode::~TopologyNode(void) {
     
     // free memory of children
     removeAllChildren();
+    
+    // make sure that I was removed from my parent
+    parent->removeChild(this);
+}
+
+
+TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
+    
+    if (this == &n) {
+        removeAllChildren();
+        
+        // copy the members
+        name = n.name;
+        index = n.index;
+        parent = n.parent;
+        // copy the children
+        for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
+            children.push_back( (*it)->clone() );
+        }
+        
+        // add myself as a new child to the parent node
+        parent->addChild(this);
+    }
+    
+    return *this;
 }
 
 
@@ -138,7 +170,7 @@ bool TopologyNode::equals(const TopologyNode& node) const {
     
     // test if all children are the same
     for (size_t i=0; i<children.size(); i++) {
-        if (children[i] != node.children[i]) {
+        if (children[i]->equals(*node.children[i])) {
             return false;
         }
     }
@@ -159,7 +191,7 @@ RbLanguageObject* TopologyNode::executeOperationSimple(const std::string& name, 
         return new RbBoolean( !isTip() );
     }
     else if (name == "ancestor") {
-        return parent;
+        return parent->clone();
     }
     else
         throw RbException("No member method called '" + name + "'");
@@ -269,6 +301,12 @@ void TopologyNode::refreshNewickString(void) {
 /** Remove all children. We need to call intelligently the destructor here. */
 void TopologyNode::removeAllChildren(void) {
     
+    // free the memory
+    for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); it++) {
+        TopologyNode* theNode = *it;
+        delete theNode;
+    }
+    
     // empty the children vector
     children.clear();
     
@@ -276,11 +314,12 @@ void TopologyNode::removeAllChildren(void) {
 }
 
 /** Remove a child from the vector of children */
-void TopologyNode::removeChild(const TopologyNode& p) {
+void TopologyNode::removeChild(TopologyNode* p) {
     
-    std::vector<TopologyNode* >::iterator it = find(children.begin(), children.end(), &p);
+    std::vector<TopologyNode* >::iterator it = find(children.begin(), children.end(), p);
     if ( it != children.end() ) {
         children.erase(it);
+//        delete p;
     }
     else 
         throw(RbException("Cannot find node in list of children nodes"));

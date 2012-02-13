@@ -40,7 +40,10 @@ class DagNodeContainer : public Container {
     public: 
                                             DagNodeContainer(void);                                                     //!< Default constructor 
                                             DagNodeContainer(size_t length);                                            //!< Default constructor with number of elements
+                                            DagNodeContainer(const DagNodeContainer& c);                                //!< Copy constructor 
         virtual                            ~DagNodeContainer(void);                                                     //!< Virtual destructor
+        
+        DagNodeContainer&                   operator=(const DagNodeContainer& c);
         
         // Basic utility functions
         bool                                allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be RbDagNodePtred

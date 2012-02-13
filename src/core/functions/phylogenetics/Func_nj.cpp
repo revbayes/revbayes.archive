@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ConstantNode.h"
 #include "DistanceMatrix.h"
 #include "Func_nj.h"
 #include "RbException.h"
@@ -55,7 +56,8 @@ RbLanguageObject* Func_nj::executeFunction(void) {
         
     Topology* top = neighborJoining(d);
     
-    TreePlate* t = new TreePlate(top);
+    TreePlate* t = new TreePlate();
+    t->setMemberVariable("topology", new Variable( new ConstantNode(top) ) );
     
     return t;
 }
@@ -245,7 +247,8 @@ Topology* Func_nj::neighborJoining(const DistanceMatrix& d) {
     buildNj(activeDistances, activeNodes, (int)nTaxa);
     // after the neighbor joining the matrix should only contain 1 node, which is our new root
     topo->setRoot(activeNodes[0]);
-    TreePlate* tp = new TreePlate(topo);
+    TreePlate* tp = new TreePlate();
+    tp->setMemberVariable("topology", new Variable( new ConstantNode(topo) ) );
     
     tp->printValue(std::cout);
 //    std::string newickStr = tp->buildNewickString(topo->getRoot());
