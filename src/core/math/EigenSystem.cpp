@@ -74,7 +74,8 @@ EigenSystem::EigenSystem(const EigenSystem& e) {
 /** Destructor */
 EigenSystem::~EigenSystem(void) {
 
-    delete qPtr;
+    // We do not own the matrix so we do not delete it
+//    delete qPtr;
 }
 
 
