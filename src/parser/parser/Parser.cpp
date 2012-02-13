@@ -134,7 +134,7 @@ int Parser::execute(SyntaxElement* root) const {
 #	endif
 
     // Declare a variable for the result
-    Variable* result;
+    Variable* result = NULL;
     
     //! Execute syntax tree
     try {
@@ -146,8 +146,11 @@ int Parser::execute(SyntaxElement* root) const {
         std::ostringstream msg;
 
         // Catch a quit request
-        if (rbException.getExceptionType() == RbException::QUIT)
+        if (rbException.getExceptionType() == RbException::QUIT) {
+            delete result;
+            delete root;
             exit(0);
+        }
 
         // Catch a missing variable exception that might be interpreted as a request for
         // usage help on a function
@@ -162,6 +165,8 @@ int Parser::execute(SyntaxElement* root) const {
                 for ( std::vector<RbFunction*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
                     RBOUT( (*i)->debugInfo() );
                 }
+                delete result;
+                delete root;
                 return 0;
             }
         }
@@ -173,6 +178,8 @@ int Parser::execute(SyntaxElement* root) const {
         RBOUT( msg.str() );
 
         // Return signal indicating problem
+        delete result;
+        delete root;
         return 2;
     }
 
