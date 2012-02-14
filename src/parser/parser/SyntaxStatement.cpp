@@ -174,8 +174,9 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
 
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
+                SyntaxElement* theSyntaxElement = *i;
                 // Execute statement
-                result = (*i)->evaluateContent(loopEnv);
+                result = theSyntaxElement->evaluateContent(loopEnv);
                 
                 // TODO: We should not print the result if it didn't return anything
 //                // Print result if it is not an assign expression (==NULL)

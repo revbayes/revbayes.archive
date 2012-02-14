@@ -67,6 +67,22 @@ MemberObject::~MemberObject(void) {
 }
 
 
+/** Assignment operator. We need to make a deep copy of the members */
+MemberObject& MemberObject::operator=(const MemberObject &m) {
+    
+    if (this != &m) {
+        
+        if (members != NULL) {
+            delete members;
+        }
+        
+        members = m.members->clone();
+    }
+    
+    return (*this);
+}
+
+
 /** Execute member method: delegate to method table. */
 RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument>& args) {
     // TODO: We shouldn't allow const casts!!!

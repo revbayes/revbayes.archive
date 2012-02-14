@@ -38,6 +38,8 @@ class Topology: public ConstantMemberObject {
                                                     Topology(const Topology& t);                                            //!< Copy constructor
                                                    ~Topology(void);                                                         //!< Destructor
 
+        Topology&                                   operator=(const Topology& t);
+    
         // Basic utility functions
         Topology*                                   clone(void) const;                                                      //!< Clone object
         const VectorString&                         getClass(void) const;                                                   //!< Get class vector 

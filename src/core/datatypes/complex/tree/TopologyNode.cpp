@@ -80,13 +80,17 @@ TopologyNode::~TopologyNode(void) {
     removeAllChildren();
     
     // make sure that I was removed from my parent
-    parent->removeChild(this);
+    if (parent != NULL)
+        parent->removeChild(this);
 }
 
 
 TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
     
     if (this == &n) {
+        // delegate to the parent
+        ConstantMemberObject::operator=(n);
+        
         removeAllChildren();
         
         // copy the members

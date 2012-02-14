@@ -62,6 +62,26 @@ Topology::~Topology(void) {
 }
 
 
+Topology& Topology::operator=(const Topology &t) {
+    
+    if (this != &t) {
+        // delegate to the base class
+        ConstantMemberObject::operator=(t);
+        
+        nodes.clear();
+        delete root;
+        
+        isBinary = t.isBinary;
+        isRooted = t.isRooted;
+        
+        // set the root. This will also set the nodes vector.
+        setRoot(t.root->clone());
+    }
+    
+    return *this;
+}
+
+
 /* Clone function */
 Topology* Topology::clone(void) const {
 

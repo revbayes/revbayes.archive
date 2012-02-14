@@ -76,6 +76,8 @@ class MemberObject: public RbLanguageObject {
                                             MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
                                             MemberObject(void);                                                                 //!< Default constructor; no members or methods
                                             MemberObject(const MemberObject &m);                                                //!< Copy constructor
+    
+        MemberObject&                       operator=(const MemberObject& m);
  
         virtual RbLanguageObject*           executeOperationSimple(const std::string& name, Environment& args);                 //!< Override to map member methods to internal functions
 
