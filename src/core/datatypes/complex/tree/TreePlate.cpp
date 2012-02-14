@@ -332,6 +332,16 @@ size_t TreePlate::getNodeIndex(const TopologyNode& theNode) const {
         }
     }
     
+    if (index == nodes.size()) {
+        std::cerr << "Ooops, could not find node!" << std::endl;
+        for (size_t idx = 0; idx<nodes.size(); idx++) {
+            const TopologyNode& node = *nodes[idx];
+            if (theNode.equals( node ) ) {
+                break;
+            }
+        }
+    }
+    
     // return -1 if the node does not exist in the tree
     return (index < nodes.size() ? index + 1 : 0);
 }

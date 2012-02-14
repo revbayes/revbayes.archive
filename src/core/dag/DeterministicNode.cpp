@@ -69,6 +69,8 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->ge
     value           = retVal;
     storedValue     = NULL;
     
+    needsUpdate     = false;
+    
     // decrement the reference count for myself
     RbDagNodePtr::getMemoryManager().decrementCountForAddress(this);
 }

@@ -156,6 +156,10 @@ const TypeSpec& TopologyNode::getTypeSpec(void) const {
 
 
 bool TopologyNode::equals(const TopologyNode& node) const {
+    
+    if (this == &node) {
+        return true;
+    }
     // test if the name is the same
     if (name != node.name) {
         return false;
