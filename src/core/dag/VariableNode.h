@@ -42,7 +42,7 @@ public:
     virtual const RbLanguageObject&             getStoredValue(void) const = 0;                                                 //!< Get stored value
     virtual const RbLanguageObject&             getValue(void) const = 0;                                                       //!< Get value (const)
     virtual RbLanguageObject&                   getValue(void) = 0;                                                             //!< Get value (non-const)
-    virtual const RbLanguageObject*             getValuePtr(void) const = 0;                                                    //!< Get value pointer
+//    virtual const RbLanguageObject*             getValuePtr(void) const = 0;                                                    //!< Get value pointer
     virtual void                                printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
     virtual void                                printValue(std::ostream& o) const = 0;                                          //!< Print value for user
 

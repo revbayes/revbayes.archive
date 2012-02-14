@@ -35,7 +35,7 @@ public:
     ConstantNode(RbLanguageObject* val);                                                                            //!< Constructor from value
     ConstantNode(const std::string& typeSpec);                                                                      //!< Constructor from language object type
     ConstantNode(const ConstantNode &x);                                                                            //!< Copy constructor
-
+    virtual                             ~ConstantNode(void);                                                        //!< Destructor
 
     // Basic utility functions
     ConstantNode*                       clone(void) const;                                                          //!< Clone this object
@@ -48,7 +48,7 @@ public:
     const RbLanguageObject&             getStoredValue(void) const;                                                 //!< Get stored value
     const RbLanguageObject&             getValue(void) const;                                                       //!< Get value 
     RbLanguageObject&                   getValue(void);                                                             //!< Get value 
-    const RbLanguageObject*             getValuePtr(void) const;                                                    //!< Get value 
+//    const RbLanguageObject*             getValuePtr(void) const;                                                    //!< Get value 
 
     // DAG functions
     RbDagNodePtr                      cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;        //!< Clone entire graph
@@ -64,6 +64,8 @@ protected:
 
 private:
     static const TypeSpec               typeSpec;
+    RbLanguageObject*                   value;                                                                      //!< Value
+
 };
 
 #endif

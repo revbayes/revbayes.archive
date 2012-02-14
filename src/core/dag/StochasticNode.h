@@ -49,7 +49,7 @@ public:
     const RbLanguageObject&             getStoredValue(void) const;                                         //!< Get stored value
     const RbLanguageObject&             getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                   getValue(void);                                                     //!< Get value (non-const)
-    const RbLanguageObject*             getValuePtr(void) const;                                                  //!< Get value pointer
+//    const RbLanguageObject*             getValuePtr(void) const;                                                  //!< Get value pointer
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
     void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
 
@@ -64,7 +64,7 @@ public:
     void                                unclamp(void);                                                      //!< Unclamp the node
     
     // DAG functions
-    RbDagNodePtr                      cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;//!< Clone entire graph
+    RbDagNodePtr                        cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;//!< Clone entire graph
     void                                swapParentNode(const RbDagNodePtr& oldP, const RbDagNodePtr& newP);//!< Swap a parent node
 
 protected:
@@ -85,6 +85,8 @@ protected:
 
 private:
     static const TypeSpec               typeSpec;
+    RbLanguageObject*                   value;                                                              //!< Value
+
 };
 
 #endif

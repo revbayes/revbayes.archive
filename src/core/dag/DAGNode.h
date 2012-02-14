@@ -58,7 +58,7 @@ class DAGNode : public RbLanguageObject {
         virtual const RbLanguageObject&                     getStoredValue(void) const = 0;                                         //!< Get stored value
         virtual const RbLanguageObject&                     getValue(void) const = 0;                                               //!< Get value (const)
         virtual RbLanguageObject&                           getValue(void) = 0;                                                     //!< Get value (non-const)
-        virtual const RbLanguageObject*                     getValuePtr(void) const = 0;                                            //!< Get value pointer
+//        virtual const RbLanguageObject*                     getValuePtr(void) const = 0;                                            //!< Get value pointer
         virtual void                                        printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
     
@@ -88,7 +88,7 @@ class DAGNode : public RbLanguageObject {
 
 
     protected:
-                                                            DAGNode(RbLanguageObject* value);                                       //!< Constructor of filled node
+                                                            DAGNode(void);                                                          //!< Constructor of empty node
                                                             DAGNode(const std::string& valType);                                    //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                              //!< Copy constructor
 
@@ -108,7 +108,6 @@ class DAGNode : public RbLanguageObject {
 
         // Member value variables
         TypeSpec                                            valueTypeSpec;                                                          //!< the TypeSpec of the value
-        RbLanguageObject*                                   value;                                                                  //!< Value
         std::string                                         name;                                                                   //!< The name/identifier of the DAG node
 };
 

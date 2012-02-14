@@ -35,21 +35,20 @@ public:
     RbDagNodePtr(DAGNode* inPtr = NULL);
     ~RbDagNodePtr(void);
     RbDagNodePtr(const RbDagNodePtr& src);
-    RbDagNodePtr&               operator=(const RbDagNodePtr& rhs);
-    DAGNode&                    operator*(void) const;
-    DAGNode*                    operator->(void) const;
-    operator                    DAGNode*(void) const { return mPtr; }
+    RbDagNodePtr&                               operator=(const RbDagNodePtr& rhs);
+    DAGNode&                                    operator*(void) const;
+    DAGNode*                                    operator->(void) const;
+    operator                                    DAGNode*(void) const { return mPtr; }
+    static bool                                 decrementCountForAddress(const DAGNode* qPtr);
+    static std::map<const DAGNode*,size_t>&     getRefCountMap(void);                                           //!< Get the memory manager
+    static void                                 incrementCountForAddress(const DAGNode* qPtr);
     
-    static RbMemoryManager&     getMemoryManager(void)                                           //!< Get the memory manager
-    {
-        static RbMemoryManager theMemoryManager = RbMemoryManager();
-        return theMemoryManager;
-    }
+private:
+    size_t                                      countForAddress(const DAGNode* qPtr);
+    void                                        finalizePointer(void);
+
 
     
-protected:
-    
-    void                        finalizePointer(void);
     void                        initializePointer(DAGNode* inPtr);
     DAGNode*                    mPtr;
 };

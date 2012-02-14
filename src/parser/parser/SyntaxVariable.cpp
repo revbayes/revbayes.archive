@@ -391,24 +391,46 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
         for (std::list<SyntaxElement*>::const_iterator it=index->begin(); it!=index->end(); it++) {
             SyntaxElement*         indexSyntaxElement     = *it;
             Variable*              indexVar               = indexSyntaxElement->evaluateContent(env);
-            RbLanguageObject&      theValue               = indexVar->getValue();
-            if ( !theValue.isTypeSpec(Natural_name) ) {
-                if (!theValue.isConvertibleTo(Natural_name)) {
-                    theValue = *static_cast<RbLanguageObject*>( theValue.convertTo(Natural_name) );
+            
+            if (theVar->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
+                RbLanguageObject&      theValue               = indexVar->getValue();
+                if ( !theValue.isTypeSpec(Natural_name) ) {
+                    if (!theValue.isConvertibleTo(Natural_name)) {
+                        theValue = *static_cast<RbLanguageObject*>( theValue.convertTo(Natural_name) );
+                    }
+                    else { 
+                        throw RbException("Could not access index with type xxx because only natural indices are supported!");
+                    }
                 }
-                else { 
-                    throw RbException("Could not access index with type xxx because only natural indices are supported!");
-                }
+            
+                size_t      indexValue  = dynamic_cast<const Natural&>( theValue ).getValue() - 1;
+                RbObject&   subElement  = theVar->getDagNode()->getElement(indexValue);
+                            theVar      = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
             }
+            else {
+                //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
+                
+                // convert the value into a member object
+                MemberObject& mObject = static_cast<MemberObject&>( theVar->getValue() );
             
-            size_t                  indexValue             = dynamic_cast<const Natural&>( theValue ).getValue() - 1;
-            RbObject&               subElement             = theVar->getDagNode()->getElement(indexValue);
+                // get the method table for this member object
+                // TODO: We should not allow const casts
+                MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
             
-            if (subElement.isTypeSpec( TypeSpec(VariableSlot_name) ))
-                theVar = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
-            else 
-                theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
-
+                // create the arguments which consist only of the single paramater inside the square brackets
+                std::vector<Argument> args;
+                args.push_back( Argument( indexVar ) );
+            
+                // get the member function with name "[]"
+                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ) )->clone(); 
+                // We need to clone because otherwise we overwrite all methods for this object
+            
+                // set the member object for the member function
+                theMemberFunction->setMemberObject(mObject);
+//            RbPtr<RbFunction> func( theMemberFunction );
+            
+                theVar = new Variable( new DeterministicNode( theMemberFunction ) );
+            }
         }
     }
         

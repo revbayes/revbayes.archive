@@ -36,8 +36,8 @@
 const TypeSpec ConstantNode::typeSpec(ConstantNode_name);
 
 /** Constructor from value */
-ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( val ) {
-
+ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( ) {
+    value = val;
 }
 
 
@@ -48,9 +48,14 @@ ConstantNode::ConstantNode( const std::string& valType ) : DAGNode( valType ) {
 
 /** Copy constructor */
 ConstantNode::ConstantNode( const ConstantNode &x ) : DAGNode( x ) {
-    
+    value = x.value->clone();
 }
 
+
+/** Destructor. We own the object, so we will delete it. */
+ConstantNode::~ConstantNode(void) {
+    delete value;
+}
 
 /** Clone this object */
 ConstantNode* ConstantNode::clone( void ) const {
@@ -117,9 +122,9 @@ RbLanguageObject& ConstantNode::getValue(void) {
 }
 
 
-const RbLanguageObject* ConstantNode::getValuePtr(void) const {
-    return value;
-}
+//const RbLanguageObject* ConstantNode::getValuePtr(void) const {
+//    return value;
+//}
 
 /** Keep value of node */
 void ConstantNode::keepMe( void ) {

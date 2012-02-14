@@ -43,7 +43,7 @@ StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.
 StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ) {
 
     // increment the reference count for myself
-    RbDagNodePtr::getMemoryManager().incrementCountForAddress(this);
+    RbDagNodePtr::incrementCountForAddress(this);
     
     /* Get distribution parameters */
     Environment& params = dist->getMembers();
@@ -76,7 +76,7 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     
     
     // decrement the reference count for myself
-    RbDagNodePtr::getMemoryManager().decrementCountForAddress(this);
+    RbDagNodePtr::decrementCountForAddress(this);
 }
 
 
@@ -123,6 +123,8 @@ StochasticNode::~StochasticNode( void ) {
     parents.clear();
     
     delete distribution;
+    
+    delete value;
 }
 
 
@@ -419,11 +421,11 @@ RbLanguageObject& StochasticNode::getValue( void ) {
 }
 
 
-/** Get value pointer; we always know our value. */
-const RbLanguageObject* StochasticNode::getValuePtr( void ) const {
-    
-    return value;
-}
+///** Get value pointer; we always know our value. */
+//const RbLanguageObject* StochasticNode::getValuePtr( void ) const {
+//    
+//    return value;
+//}
 
 
 /**

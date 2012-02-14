@@ -36,7 +36,7 @@
 
 
 /** Constructor of empty node */
-DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeSpec(valType), value(NULL) {
+DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeSpec(valType) {
 
     // initialize the variable
     variable = NULL;
@@ -44,11 +44,7 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeS
 
 
 /** Constructor of filled node */
-DAGNode::DAGNode(RbLanguageObject* val) : children(), parents(), value(val), valueTypeSpec(RbObject_name) {
-    
-    if (val != NULL) {
-        valueTypeSpec = val->getTypeSpec();
-    }
+DAGNode::DAGNode(void) : children(), parents(), valueTypeSpec(RbObject_name) {
     
     // initialize the variable
     variable = NULL;
@@ -64,11 +60,7 @@ DAGNode::DAGNode(RbLanguageObject* val) : children(), parents(), value(val), val
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.valueTypeSpec), value( NULL ) {
-
-    if ( x.value != NULL ) {
-        value = x.value->clone();
-    }
+DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.valueTypeSpec) {
     
     // the variable is always set to NULL and needs to be set manually!
     variable = NULL;
@@ -82,9 +74,6 @@ DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.va
 /** Destructor deletes value if not NULL */
 DAGNode::~DAGNode( void ) {
 
-    if (value != NULL) {
-        delete value;
-    }
 }
 
 
@@ -118,14 +107,14 @@ void DAGNode::getAffectedNodes(std::set<StochasticNode* > &affected) {
 const RbObject& DAGNode::getElement(size_t index) const {
     
     // test whether the value supports indexing, i.e. is a container
-    if (value->supportsIndex()) {
+    if (getValue().supportsIndex()) {
         
-        return value->getElement(index);
+        return getValue().getElement(index);
     
     } else {
         
         std::ostringstream  msg;
-        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << value->getType() << "\"";
+        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << getValue().getType() << "\"";
         throw RbException( msg );
     }
     
@@ -135,14 +124,14 @@ const RbObject& DAGNode::getElement(size_t index) const {
 RbObject& DAGNode::getElement(size_t index) {
     
     // test whether the value supports indexing, i.e. is a container
-    if (value->supportsIndex()) {
+    if (getValue().supportsIndex()) {
         
-        return value->getElement(index);
+        return getValue().getElement(index);
         
     } else {
         
         std::ostringstream  msg;
-        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << value->getType() << "\"";
+        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << getValue().getType() << "\"";
         throw RbException( msg );
     }
     
@@ -189,7 +178,7 @@ bool DAGNode::isParentInDAG( const RbDagNodePtr& x, std::list<DAGNode*>& done ) 
 /** Is the node of language type typeSpec? */
 bool DAGNode::isValueOfTypeSpec( const TypeSpec& typeSp ) const {
 
-    return value->isTypeSpec( typeSp );
+    return getValue().isTypeSpec( typeSp );
 }
 
 

@@ -44,7 +44,7 @@ DeterministicNode::DeterministicNode( const std::string& valType ) : VariableNod
 DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->getReturnType()), needsUpdate( true ), function( func ) {
     
     // increment the reference count for myself
-    RbDagNodePtr::getMemoryManager().incrementCountForAddress(this);
+    RbDagNodePtr::incrementCountForAddress(this);
     
     /* Check for cycles */
     Environment& arguments = func->getArguments();
@@ -72,21 +72,18 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->ge
     needsUpdate     = false;
     
     // decrement the reference count for myself
-    RbDagNodePtr::getMemoryManager().decrementCountForAddress(this);
+    RbDagNodePtr::decrementCountForAddress(this);
 }
 
 
 /** Copy constructor */
 DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNode( x ) {
     
-    function         = x.function->clone();
-    touched          = x.touched;
-    needsUpdate      = x.needsUpdate;
-    if ( x.storedValue != NULL ) {
-        storedValue  = x.storedValue->clone();
-    }
-    else
-        storedValue  = NULL;
+    function        = x.function->clone();
+    touched         = x.touched;
+    needsUpdate     = x.needsUpdate;
+    // We do not own the stored value, but the function does
+    storedValue     = x.storedValue;
     
     /* Set parents and add this node as a child node of these */
     Environment& args = function->getArguments();
@@ -128,12 +125,9 @@ RbDagNodePtr DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr 
     copy->function      = function->clone();
     copy->touched       = touched;
     copy->needsUpdate   = needsUpdate;
-    if (value != NULL)
-        copy->value    = value->clone();
-    if (storedValue == NULL)
-        copy->storedValue = NULL;
-    else
-        copy->storedValue = storedValue->clone();
+    // We do not own the value so we do not need to clone it
+    copy->value         = value;
+    copy->storedValue   = storedValue;
     
     /* Set the copy arguments to their matches in the new DAG */
     Environment& args      = function->getArguments();
@@ -248,14 +242,14 @@ RbLanguageObject& DeterministicNode::getValue( void ) {
 }
 
 
-/** Get value pointer */
-const RbLanguageObject* DeterministicNode::getValuePtr( void ) const {
-    
-    if ( touched && needsUpdate )
-        const_cast<DeterministicNode*>(this)->update();
-    
-    return value;
-}
+///** Get value pointer */
+//const RbLanguageObject* DeterministicNode::getValuePtr( void ) const {
+//    
+//    if ( touched && needsUpdate )
+//        const_cast<DeterministicNode*>(this)->update();
+//    
+//    return value;
+//}
 
 
 /** Keep value of node and affected variable nodes */
@@ -263,9 +257,6 @@ void DeterministicNode::keepMe( void ) {
     
     if ( touched ) {
         
-        if (storedValue != NULL) {
-            delete storedValue;
-        }
         storedValue = NULL;
         
         if ( needsUpdate )
@@ -326,7 +317,7 @@ void DeterministicNode::restoreMe( void ) {
 
     if ( touched ) {
         if (storedValue != NULL) {
-            delete value;
+//            delete value;
         
             // no matter if this node has been changed we just set it back to its stored value
             value       = storedValue;
@@ -368,9 +359,6 @@ void DeterministicNode::touchMe( void ) {
         touched     = true;
         
 //        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
-        if (storedValue != NULL) {
-            delete storedValue;
-        }
         storedValue = value;
         value = NULL;
     }
@@ -391,8 +379,6 @@ void DeterministicNode::update( void ) {
     if ( touched && needsUpdate ) {
         
 //        assert( storedValue == NULL );
-        if (value != NULL)
-            delete value;
         
 //        // set the stored value and release the old stored value
 //        storedValue     = value;

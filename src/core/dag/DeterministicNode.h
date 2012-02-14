@@ -41,7 +41,7 @@ public:
     const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
     const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                       getValue(void);                                                     //!< Get value (non-const)
-    const RbLanguageObject*                 getValuePtr(void) const;                                            //!< Get value pointer
+//    const RbLanguageObject*                 getValuePtr(void) const;                                            //!< Get value pointer
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
     const RbFunction&                       getFunction(void) const;
 
@@ -56,7 +56,7 @@ public:
     void                                    swapParentNode(const RbDagNodePtr& oldP, const RbDagNodePtr& newP); //!< Swap a parent node
 
     // DAG function you have to override
-    virtual RbDagNodePtr                  cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;//!< Clone entire graph
+    virtual RbDagNodePtr                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;//!< Clone entire graph
 
 protected:
 
@@ -73,6 +73,8 @@ protected:
     
 private:
     static const TypeSpec                   typeSpec;
+    RbLanguageObject*                       value;                                                               //!< Value
+
 };
 
 #endif
