@@ -18,6 +18,7 @@
 #define Func_exp_H
 
 #include "RbFunction.h"
+#include "RealPos.h"
 
 #include <map>
 #include <string>
@@ -44,9 +45,10 @@ public:
     const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
 protected:
-    RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+    const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
 private:
+    RealPos                     value;
     static const TypeSpec       typeSpec;  
     static const TypeSpec       returnTypeSpec; 
 };

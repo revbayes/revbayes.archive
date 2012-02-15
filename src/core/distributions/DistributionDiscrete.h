@@ -17,6 +17,8 @@
 #define DistributionDiscrete_H
 
 #include "Distribution.h"
+#include "Natural.h"
+#include "Simplex.h"
 #include "Real.h"
 
 #include <set>
@@ -48,15 +50,20 @@ class DistributionDiscrete: public Distribution {
 
         // Categorical distribution functions you have to override
         virtual size_t                      getNumberOfStates(void) const = 0;                                          //!< Get number of states
-        virtual Simplex*                    getProbabilityMassVector(void) = 0;                                         //!< Get probability mass vector
+        virtual const Simplex&              getProbabilityMassVector(void) = 0;                                         //!< Get probability mass vector
         virtual const TypeSpec&             getVariableType(void) const = 0;                                            //!< Get random variable type spec
         virtual double                      lnPdf( const RbLanguageObject& value) const = 0;                            //!< Ln probability density
         virtual double                      pdf( const RbLanguageObject& value) const = 0;                              //!< Probability density
-        virtual RbLanguageObject*           rv(void) = 0;                                                               //!< Generate a random draw
+        virtual const RbLanguageObject&     rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
                                             DistributionDiscrete( const MemberRules& memberRules);                      //!< Constructor
-        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);         //!< Direct call of member method
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);         //!< Direct call of member method
+
+    
+        // member function return values
+        Simplex                             probMassVector;
+        Natural                             numStates;
 
 };
 

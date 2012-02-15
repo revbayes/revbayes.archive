@@ -50,7 +50,7 @@ Func_normalizeVector* Func_normalizeVector::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_normalizeVector::executeFunction( void ) {
+const RbLanguageObject& Func_normalizeVector::executeFunction( void ) {
 
     // Get first element
     std::vector<double> tempVec    = static_cast<const VectorRealPos&>( (*args)[0].getValue() ).getValue();
@@ -58,8 +58,9 @@ RbLanguageObject* Func_normalizeVector::executeFunction( void ) {
     
     // normalize the vector
     RbMath::normalize(tempVec, desiredSum);
-        
-    return new Simplex( tempVec );
+    normalizedVector.setValue( tempVec );
+    
+    return normalizedVector;
 }
 
 

@@ -44,11 +44,13 @@ Func_sin* Func_sin::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_sin::executeFunction( void ) {
+const RbLanguageObject& Func_sin::executeFunction( void ) {
     
     const double x = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
     
-    return new RealPos( sin(x) );
+    value.setValue( sin(x) );
+    
+    return value;
 }
 
 

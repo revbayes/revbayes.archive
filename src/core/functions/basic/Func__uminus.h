@@ -38,10 +38,13 @@ class Func__uminus :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
+    
+        // function return value
+        retType                     retValue;
 };
 
 #endif
@@ -68,12 +71,12 @@ Func__uminus<valType, retType>* Func__uminus<valType, retType>::clone( void ) co
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType, typename retType>
-RbLanguageObject* Func__uminus<valType, retType>::executeFunction( void ) {
+const RbLanguageObject& Func__uminus<valType, retType>::executeFunction( void ) {
 
     const valType& val = static_cast<valType&> ( (*args)[0].getValue() );
-    retType         res = -( val );
+             retValue = -( val );
 
-    return res.clone();
+    return retValue;
 }
 
 

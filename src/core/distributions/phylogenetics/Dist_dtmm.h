@@ -47,13 +47,16 @@ public:
     
     // Discrete distribution functions
     size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
-    virtual Simplex*                getProbabilityMassVector(void);                                     //!< Get probability mass vector
+    virtual const Simplex&          getProbabilityMassVector(void);                                     //!< Get probability mass vector
     const TypeSpec&                 getVariableType(void) const;                                        //!< Get random variable type (Simplex)
     double                          lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
     double                          pdf(const RbLanguageObject& value) const;                           //!< Probability density
-    RbLanguageObject*               rv(void);                                                           //!< Generate random variable
+    const RbLanguageObject&         rv(void);                                                           //!< Generate random variable
     
 private:
+    
+    // member function return values
+    CharacterStateDiscrete*         randomValue;
     
     static const TypeSpec           typeSpec;
     static const TypeSpec           varTypeSpec;

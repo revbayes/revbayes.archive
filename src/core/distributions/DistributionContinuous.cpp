@@ -32,16 +32,17 @@
 
 
 /** Constructor passes member rules to base class */
-DistributionContinuous::DistributionContinuous( const MemberRules& memberRules ) : Distribution( memberRules ) {
+DistributionContinuous::DistributionContinuous( const MemberRules& memberRules ) : Distribution( memberRules ), max( RbConstants::Double::max ), min( -RbConstants::Double::max ){
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbLanguageObject* DistributionContinuous::executeOperationSimple( const std::string& name, Environment& args ) {
+const RbLanguageObject& DistributionContinuous::executeOperationSimple( const std::string& name, Environment& args ) {
 
     if ( name == "cdf" ) {
 
-        return new RealPos( cdf( args[1].getValue() ) );
+        cd.setValue( cdf( args[1].getValue() ) );
+        return cd;
     }
     else if ( name == "quantile" ) {
 
@@ -61,16 +62,16 @@ const VectorString& DistributionContinuous::getClass( void ) const {
 
 
 /** Get max value of distribution */
-const Real* DistributionContinuous::getMax( void ) const {
+const Real& DistributionContinuous::getMax( void ) const {
 
-    return new Real(RbConstants::Double::max);
+    return max;
 }
 
 
 /** Get min value of distribution */
-const Real* DistributionContinuous::getMin( void ) const {
+const Real& DistributionContinuous::getMin( void ) const {
 
-    return new Real(-RbConstants::Double::max);
+    return min;
 }
 
 

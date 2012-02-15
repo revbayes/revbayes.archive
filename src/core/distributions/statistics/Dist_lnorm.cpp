@@ -156,11 +156,13 @@ double Dist_lnorm::pdf( const RbLanguageObject& value ) const {
  * @return      Quantile
  *
  */
-Real* Dist_lnorm::quantile( const double p) {
+const Real& Dist_lnorm::quantile( const double p) {
 	double m = static_cast<Real&   >( getMemberValue( "m" ) ).getValue();
     double s = static_cast<RealPos&>( getMemberValue( "s" ) ).getValue();
 	
-    return new Real (RbStatistics::Lognormal::quantile(m, s, p) );
+    quant.setValue( RbStatistics::Lognormal::quantile(m, s, p) );
+    
+    return quant;
     
 }
 
@@ -174,15 +176,15 @@ Real* Dist_lnorm::quantile( const double p) {
  *
  * @return      Random draw
  */
-RbLanguageObject* Dist_lnorm::rv(void) {
+const RbLanguageObject& Dist_lnorm::rv(void) {
 	
     double m = static_cast<Real&   >( getMemberValue( "m" ) ).getValue();
     double s = static_cast<RealPos&>( getMemberValue( "s" ) ).getValue();
 	
     RandomNumberGenerator* rng = GLOBAL_RNG;
-	//std::vector<double> r(m.size());
+	randomVariable.setValue( RbStatistics::Lognormal::rv(m ,s, *rng ) );
 	
-	return new Real (RbStatistics::Lognormal::rv(m ,s, *rng ) );
+	return randomVariable;
 }
 
 

@@ -28,6 +28,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RangeRule.h"
 #include "RbUtil.h"
 #include "RbString.h"
@@ -65,13 +66,13 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* Mcmc::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "run") {
         const RbLanguageObject& argument = args[0].getValue();
         int n = static_cast<const Natural&>( argument ).getValue();
         run(n);
-        return NULL;
+        return RbNullObject::getInstance();
     }
 
     return MemberObject::executeOperationSimple( name, args );

@@ -53,7 +53,7 @@ class FunctionTable : public RbInternal {
         // FunctionTable functions
         virtual void                            addFunction(const std::string name, RbFunction* func);                                  //!< Add function
         void                                    clear(void);                                                                            //!< Clear table
-        RbLanguageObject*                       executeFunction(const std::string&           name,
+        const RbLanguageObject&                 executeFunction(const std::string&           name,
                                                                 const std::vector<Argument>& args);                                     //!< Evaluate function (once)
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<RbFunction* >               findFunctions(const std::string& name) const;                                           //!< Return functions matching name

@@ -44,12 +44,14 @@ Func_power* Func_power::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_power::executeFunction( void ) {
+const RbLanguageObject& Func_power::executeFunction( void ) {
     
     const double a = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
     const double b = static_cast<const Real&>( (*args)[1].getValue() ).getValue();
     
-    return new Real( pow(a,b) );
+    value.setValue( pow(a,b) );
+
+    return value;
 }
 
 

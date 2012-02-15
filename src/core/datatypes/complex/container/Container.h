@@ -23,6 +23,8 @@
 #include <iostream>
 #include <vector>
 
+class Natural;
+
 
 const std::string Container_name = "Container";
 
@@ -68,10 +70,15 @@ protected:
     
     Container&                          operator=(const Container& x);                                          //!< Assignment operator
 
-    virtual RbLanguageObject*           executeOperationSimple(const std::string& name, Environment& args);//!< Execute method
+    virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, Environment& args);//!< Execute method
 
     // Member variables
     const TypeSpec                      elementType;                                                            //!< Type of elements
+
+private:
+    Natural*                            returnValueSize;
+
+
 };
 
 #endif

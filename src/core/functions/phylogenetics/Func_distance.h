@@ -18,6 +18,7 @@
 #define Func_distance_H
 
 #include "RbFunction.h"
+#include "DistanceMatrix.h"
 
 class DAGNode;
 class VectorString;
@@ -29,6 +30,8 @@ const std::string Func_distance_name = "Distance matrix function";
 class Func_distance :  public RbFunction {
     
     public:
+    Func_distance(void);
+    
         // Basic utility functions
         Func_distance*              clone(void) const;                                                       //!< Clone the object
         const VectorString&         getClass(void) const;                                                    //!< Get class vector
@@ -39,13 +42,17 @@ class Func_distance :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                                   //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                                   //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
         double                      distanceP(const TaxonData& td1, const TaxonData& td2);
         double                      distanceJC69(const TaxonData& td1, const TaxonData& td2);
+
+        // function return value
+        DistanceMatrix              matrix;
+
 };
 
 #endif

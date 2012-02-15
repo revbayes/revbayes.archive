@@ -21,6 +21,7 @@
 #include "Func_structure.h"
 #include "Integer.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
@@ -43,11 +44,11 @@ Func_structure* Func_structure::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_structure::executeFunction( void ) {
+const RbLanguageObject& Func_structure::executeFunction( void ) {
 
     (*args)[0].getDagNode()->printStruct( std::cout );
 
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

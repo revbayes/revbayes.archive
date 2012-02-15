@@ -42,10 +42,13 @@ class Func__add :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
+
+        // function return value
+        retType                     retValue;
 };
 
 #endif
@@ -75,13 +78,13 @@ Func__add<firstValType, secondValType, retType>* Func__add<firstValType, secondV
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename firstValType, typename secondValType, typename retType>
-RbLanguageObject* Func__add<firstValType,secondValType,retType>::executeFunction( void ) {
+const RbLanguageObject& Func__add<firstValType,secondValType,retType>::executeFunction( void ) {
 
-    const firstValType&  val1 = static_cast<firstValType&> ( (*args)[0].getValue() );
-    const secondValType& val2 = static_cast<secondValType&>( (*args)[1].getValue() );
-    retType              sum  = val1 + val2;
+    const firstValType&  val1       = static_cast<firstValType&> ( (*args)[0].getValue() );
+    const secondValType& val2       = static_cast<secondValType&>( (*args)[1].getValue() );
+                         retValue   = val1 + val2;
 
-    return sum.clone();
+    return retValue;
 }
 
 

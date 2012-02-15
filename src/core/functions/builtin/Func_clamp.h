@@ -41,7 +41,7 @@ class Func_clamp :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute operation
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute operation
 
     private:
         static const TypeSpec       typeSpec;

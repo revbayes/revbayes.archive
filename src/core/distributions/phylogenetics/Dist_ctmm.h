@@ -34,8 +34,13 @@ const std::string Dist_ctmm_name = "Dist_ctmm";
 class Dist_ctmm: public DistributionDiscrete {
 
     public:
-                                        Dist_ctmm(void);                                                    //!< Parser constructor
-
+                                        Dist_ctmm(void);                                                    //!< Constructor
+                                        Dist_ctmm(const Dist_ctmm& d);                                      //!< Copy constructor
+        virtual                         ~Dist_ctmm(void);
+        
+        // overloaded operators
+        Dist_ctmm&                      operator=(const Dist_ctmm& d);
+    
         // Basic utility functions
         Dist_ctmm*                      clone(void) const;                                                  //!< Clone object
         const VectorString&             getClass(void) const;                                               //!< Get class vector
@@ -47,15 +52,19 @@ class Dist_ctmm: public DistributionDiscrete {
 
         // Discrete distribution functions
         size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
-        virtual Simplex*                getProbabilityMassVector(void);                                     //!< Get probability mass vector
+        virtual const Simplex&          getProbabilityMassVector(void);                                     //!< Get probability mass vector
         const TypeSpec&                 getVariableType(void) const;                                        //!< Get random variable type (Simplex)
         double                          lnPdf( const RbLanguageObject& value) const;                        //!< Ln probability density
         double                          pdf( const RbLanguageObject& value) const;                          //!< Probability density
-        RbLanguageObject*               rv(void);                                                           //!< Generate random variable
+        const RbLanguageObject&         rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec           typeSpec;
         static const TypeSpec           varTypeSpec;
+
+        // memberfunction return values
+        CharacterStateDiscrete*         randomVariable;
+
 };
 
 #endif

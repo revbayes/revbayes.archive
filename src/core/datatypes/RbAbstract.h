@@ -26,7 +26,7 @@
 class RbAbstract : public RbLanguageObject {
 
 public:
-                            RbAbstract(const VectorString classVec,
+                            RbAbstract(const VectorString& classVec,
                                        TypeSpec* elemType = NULL);                           //!< Constructor
 
     // Basic utility functions

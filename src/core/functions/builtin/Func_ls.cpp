@@ -22,6 +22,7 @@
 #include "Func_ls.h"
 #include "Model.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
@@ -44,7 +45,7 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_ls::executeFunction( void ) {
+const RbLanguageObject& Func_ls::executeFunction( void ) {
 
     /* Open file */
     const bool printAll = static_cast<const RbBoolean&>( (*args)[0].getValue() ).getValue();
@@ -66,7 +67,7 @@ RbLanguageObject* Func_ls::executeFunction( void ) {
         std::cout << std::endl;
     }
 
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

@@ -54,11 +54,11 @@ Func_abs* Func_abs::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_abs::executeFunction( void ) {
+const RbLanguageObject& Func_abs::executeFunction( void ) {
     
     const double x = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
-    
-    return new RealPos( fabs(x) );
+    value.setValue( fabs(x) );
+    return value;
 }
 
 

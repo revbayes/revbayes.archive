@@ -45,7 +45,7 @@ public:
     const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
     double                      lnPdf( const RbLanguageObject& value) const;                        //!< Ln probability density
     double                      pdf( const RbLanguageObject& value) const;                          //!< Probability density
-    RbLanguageObject*           rv(void);                                                           //!< Generate random variable
+    const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
     
 private:
     double                      nj(double t, double t_prime, double T, double lambda, double mu, double rho) const;
@@ -58,6 +58,8 @@ private:
     static const TypeSpec       typeSpec;
     static const TypeSpec       varTypeSpec;
     
+    // memberfunction return value
+    RealPos                     randomVariable;
 };
 
 #endif

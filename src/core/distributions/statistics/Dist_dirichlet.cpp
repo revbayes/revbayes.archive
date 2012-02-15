@@ -171,7 +171,7 @@ double Dist_dirichlet::pdf( const RbLanguageObject& value ) const {
  * @return      Quantile
  *
  */
-Real* Dist_dirichlet::quantile( const double p ) {
+const Real& Dist_dirichlet::quantile( const double p ) {
 
     /* TO DO: See notes (above) on the cdf function for a Dirichlet rv. */
     throw RbException( "Quantile function of Dirichlet distribution not implemented yet" );
@@ -186,13 +186,15 @@ Real* Dist_dirichlet::quantile( const double p ) {
  *
  * @return      Random draw from Dirichlet distribution
  */
-RbLanguageObject* Dist_dirichlet::rv( void ) {
+const RbLanguageObject& Dist_dirichlet::rv( void ) {
 
     std::vector<double> a = static_cast<VectorRealPos&>( getMemberValue("alpha") ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<double> r(a.size());
 
 	r = RbStatistics::Dirichlet::rv( a, *rng );
-    return new Simplex( r );
+    randomVariable.setValue( r );
+    
+    return randomVariable;
 }
 

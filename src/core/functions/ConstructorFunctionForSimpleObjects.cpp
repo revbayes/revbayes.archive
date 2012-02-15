@@ -58,9 +58,9 @@ ConstructorFunctionForSimpleObjects* ConstructorFunctionForSimpleObjects::clone(
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbLanguageObject* ConstructorFunctionForSimpleObjects::executeFunction(void) {
+const RbLanguageObject& ConstructorFunctionForSimpleObjects::executeFunction(void) {
     
-    RbLanguageObject* copy = templateObject->clone();
+    copyObject = templateObject->clone();
     
     Vector params = Vector(RbObject_name);
     for ( size_t i = 0; i < args->size(); i++ ) {
@@ -68,9 +68,9 @@ RbLanguageObject* ConstructorFunctionForSimpleObjects::executeFunction(void) {
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
     
-    copy->initialize(params);
+    copyObject->initialize(params);
     
-    return copy;
+    return *copyObject;
 }
 
 

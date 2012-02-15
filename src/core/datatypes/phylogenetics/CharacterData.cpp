@@ -25,6 +25,7 @@
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "StochasticNode.h"
@@ -173,16 +174,17 @@ void CharacterData::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& CharacterData::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "names") 
         {
-        return new VectorString(sequenceNames);
+        return sequenceNames;
         }
     else if (name == "ntaxa") 
         {
         int n = (int)getNumberOfTaxa();
-        return new Natural(n);
+        numTaxa.setValue( n );
+        return numTaxa;
         }
     else if (name == "nchar")
         {
@@ -198,32 +200,36 @@ RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name,
                     nc.push_back( (int)getTaxonData(i).getNumberOfCharacters() );
                 }
             }
-        return new VectorNatural(nc);
+        numChar.setValue( nc );
+        return numChar;
         }
     else if (name == "chartype")
         {
-        std::string ct = getDataType();
-        return new RbString(ct);
+        return characterType;
         }
     else if (name == "nexcludedtaxa")
         {
         int n = (int)deletedTaxa.size();
-        return new Natural(n);
+        numExcludedTaxa.setValue( n );
+        return numExcludedTaxa;
         }
     else if (name == "nexcludedchars")
         {
         int n = (int)deletedCharacters.size();
-        return new Natural(n);
+        numExcludedChars.setValue( n );
+        return numExcludedChars;
         }
     else if (name == "nincludedtaxa")
         {
         int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
-        return new Natural(n);
+        numIncludedTaxa.setValue( n );
+        return numIncludedTaxa;
         }
     else if (name == "nincludedchars")
         {
         int n = (int)(getNumberOfCharacters() - deletedCharacters.size());
-        return new Natural(n);
+        numIncludedChars.setValue( n );
+        return numIncludedTaxa;
         }
     else if (name == "excludedtaxa")
         {
@@ -233,14 +239,16 @@ RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name,
             std::string tn = getTaxonNameWithIndex(*it);
             et.push_back( tn );
             }
-        return new VectorString(et);
+        excludedTaxa.setValue( et );
+        return excludedTaxa;
         }
     else if (name == "excludedchars")
         {
         std::vector<int> ec;
         for (std::set<size_t>::iterator it = deletedCharacters.begin(); it != deletedCharacters.end(); it++)
             ec.push_back( (int)(*it) );
-        return new VectorNatural(ec);
+        excludedChars.setValue( ec );
+        return excludedChars;
         }
     else if (name == "includedtaxa")
         {
@@ -250,7 +258,8 @@ RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name,
             if ( isTaxonExcluded(i) == false )
                 it.push_back( getTaxonNameWithIndex(i) );
             }
-        return new VectorString(it);
+        includedTaxa.setValue( it );
+        return includedTaxa;
         }
     else if (name == "includedchars")
         {
@@ -260,17 +269,20 @@ RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name,
             if ( isCharacterExcluded(i) == false )
                 ic.push_back( (int)(i+1) );
             }
-        return new VectorNatural(ic);
+        includedChars.setValue( ic );
+        return includedTaxa;
         }
     else if (name == "nconstantpatterns")
         {
         int n = (int)numConstantPatterns();
-        return new Natural(n);
+        numConstPatterns.setValue( n );
+        return numConstPatterns;
         }
     else if (name == "ncharswithambiguity")
         {
         int n = (int)numMissAmbig();
-        return new Natural(n);
+            numMissing.setValue( n );
+        return numMissing;
         }
     else if (name == "excludechar")
         {
@@ -286,7 +298,7 @@ RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name,
             for ( size_t i=0; i<x.size(); i++ )
                 deletedCharacters.insert( x[i] );
             }
-        return NULL;
+        return RbNullObject::getInstance();
         }
     else if (name == "show")
         {
@@ -312,15 +324,16 @@ RbLanguageObject* CharacterData::executeOperationSimple(const std::string& name,
                 }
             std::cout << std::endl;
             }
-        return NULL;
+        return RbNullObject::getInstance();
         }
     else if (name == "ishomologous")
         {
         bool ih = getIsHomologyEstablished();
-        return new RbBoolean(ih);
+        isHomologous.setValue( ih );
+        return isHomologous;
         }
 
-    return ConstantMemberObject::executeOperationSimple( name, args );
+    return Matrix::executeOperationSimple( name, args );
 }
 
 
@@ -427,7 +440,7 @@ const MethodTable& CharacterData::getMethods(void) const {
         methods.addFunction("ishomologous",        new MemberFunction(RbBoolean_name,     ishomologousArgRules       ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &MemberObject::getMethods() );
+        methods.setParentTable( &Matrix::getMethods() );
         methodsSet = true;
         }
 
@@ -690,8 +703,9 @@ void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
     if (var->isTypeSpec(TypeSpec(TaxonData_name))) {
         TaxonData* seq = static_cast<TaxonData*>( var );
         
-        sequenceNames.erase(sequenceNames.begin() + index);
-        sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());
+//        sequenceNames.erase(sequenceNames.begin() + index);
+//        sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());        
+        sequenceNames[index] = seq->getTaxonName();
         elements.insert( elements.begin() + index, var );
         
         // add the sequence also as a member so that we can access it by name

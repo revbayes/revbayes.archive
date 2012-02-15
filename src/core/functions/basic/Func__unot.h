@@ -18,6 +18,7 @@
 #define Func__unot_H
 
 #include "RbFunction.h"
+#include "RbBoolean.h"
 
 #include <string>
 
@@ -38,11 +39,14 @@ class Func__unot :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+    
+        // function return value
+        RbBoolean                   retValue;
 };
 
 #endif
@@ -72,12 +76,12 @@ Func__unot<valType>* Func__unot<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType>
-RbLanguageObject* Func__unot<valType>::executeFunction( void ) {
+const RbLanguageObject& Func__unot<valType>::executeFunction( void ) {
 
     const valType& val = static_cast<valType&> ( (*args)[0].getValue() );
-    RbBoolean         res = ! (val);
+    retValue = ! (val);
 
-    return res.clone();
+    return retValue;
 }
 
 

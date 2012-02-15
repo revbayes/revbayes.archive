@@ -107,13 +107,10 @@ double Move_mslide::perform( void ) {
     const RealPos& delta = static_cast<const RealPos&>( getMemberValue("delta") );
 
     double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();
-    const Real* minPtr = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMin();
-    const Real* maxPtr = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMax();
-    double minVal  = minPtr->getValue();
-    double maxVal  = maxPtr->getValue();
-    
-    delete minPtr;
-    delete maxPtr;
+    const Real& min = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMin();
+    const Real& max = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMax();
+    double minVal  = min.getValue();
+    double maxVal  = max.getValue();
 
     Real u      = rng->uniform01();
     Real newVal = curVal + ( delta.getValue() * ( u - 0.5 ) );

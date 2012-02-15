@@ -32,24 +32,27 @@
 const TypeSpec Topology::typeSpec(Topology_name);
 
 /* Default constructor */
-Topology::Topology(void) : ConstantMemberObject( getMemberRules() ) {
+Topology::Topology(void) : ConstantMemberObject( getMemberRules() ), root( NULL ) {
 
 }
 
 
 /* Copy constructor */
-Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() ) {
+Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() ), root( NULL ) {
 
     // set the parameters
     isRooted = t.isRooted;
     isBinary = t.isBinary;
 
     // need to perform a deep copy of the tree nodes
-    root = t.getRoot().clone();
+    if (t.root != NULL) {
+        root = t.getRoot().clone();
+        
+        // fill the nodes vector
+        //    fillNodesByPreorderTraversal(root);
+        fillNodesByPhylogeneticTraversal(root);
+    }
     
-    // fill the nodes vector
-//    fillNodesByPreorderTraversal(root);
-    fillNodesByPhylogeneticTraversal(root);
 }
 
 
@@ -90,15 +93,17 @@ Topology* Topology::clone(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Topology::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& Topology::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "ntips") {
     
-        return new Natural( (int)getNumberOfTips() );
+        numTips.setValue( getNumberOfTips() );
+        return numTips;
     }
     else if (name == "nnodes") {
     
-        return new Natural( (int)getNumberOfNodes() );
+        numNodes.setValue( getNumberOfNodes() );
+        return numNodes;
     }
 
     return MemberObject::executeOperationSimple( name, args );

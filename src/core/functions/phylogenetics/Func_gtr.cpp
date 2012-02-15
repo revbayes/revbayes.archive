@@ -42,7 +42,7 @@ Func_gtr* Func_gtr::clone(void) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_gtr::executeFunction(void) {
+const RbLanguageObject& Func_gtr::executeFunction(void) {
 
     // get the information from the arguments for reading the file
     Simplex& r = static_cast<Simplex&>( (*args)[0].getValue() );
@@ -70,22 +70,23 @@ RbLanguageObject* Func_gtr::executeFunction(void) {
         throw( RbException(o.str()) );
         }
 
+    
     // construct a rate matrix of the correct dimensions
-    RateMatrix* m = new RateMatrix(nStates);
+    m = RateMatrix(nStates);
 
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0, k=0; i<nStates; i++)
         {
         for (size_t j=i+1; j<nStates; j++)
             {
-            (*m)[i][j] = r[k] * f[j];
-            (*m)[j][i] = r[k] * f[i];
+            m[i][j] = r[k] * f[j];
+            m[j][i] = r[k] * f[i];
             k++;
             }
         }
 
     // set the diagonal elements of the rate matrix
-    m->setDiagonal();
+    m.setDiagonal();
 
     // Set the stationary frequencies for the rate matrix. Note that we
     // can do this in two ways. First, we can call calculateStationaryFrequencies
@@ -94,17 +95,17 @@ RbLanguageObject* Func_gtr::executeFunction(void) {
     // the stationary frequencies directly. This is what we do here, because the
     // stationary frequencies have been build directly into the rate matrix.
     std::vector<double> tempFreqs = f.getValue();
-    m->setStationaryFrequencies(tempFreqs);
+    m.setStationaryFrequencies(tempFreqs);
 
     // rescale the rate matrix such that the average rate is 1.0
-    m->rescaleToAverageRate(1.0);
+    m.rescaleToAverageRate(1.0);
 
     // we know that the GTR model is time reversible (just look at the name of the
     // model!), so we might as well set its reversibility flag directly
-    m->setIsTimeReversible(true);
+    m.setIsTimeReversible(true);
 
     // Now that we have set the rate matrix, we should update its eigen system
-    m->updateEigenSystem();
+    m.updateEigenSystem();
 
     // wrap up the rate matrix object and send it on its way to parser-ville
     return m;

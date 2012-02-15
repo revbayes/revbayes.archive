@@ -19,6 +19,7 @@
 #define Func__or_H
 
 #include "RbFunction.h"
+#include "RbBoolean.h"
 
 #include <map>
 #include <string>
@@ -40,11 +41,14 @@ class Func__or :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
  
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+    
+        // function return value
+        RbBoolean                   retValue;
 };
 
 #endif
@@ -79,12 +83,13 @@ Func__or<firstValType, secondValType>* Func__or<firstValType, secondValType>::cl
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-RbLanguageObject* Func__or<firstValType,secondValType>::executeFunction( void ) {
+const RbLanguageObject& Func__or<firstValType,secondValType>::executeFunction( void ) {
 
     const firstValType&  val1 = static_cast<firstValType&> ( (*args)[0].getValue() );
     const secondValType& val2 = static_cast<secondValType&>( (*args)[1].getValue() );
+    retValue.setValue( val1 || val2 );
     
-    return new RbBoolean( val1 || val2 );
+    return retValue;
 }
 
 

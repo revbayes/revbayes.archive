@@ -24,6 +24,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbNullObject.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "Simplex.h"
@@ -199,12 +200,14 @@ size_t Dist_topologyunif::getNumberOfStates( void ) const {
 
 
 /** Get the probability mass vector */
-Simplex* Dist_topologyunif::getProbabilityMassVector( void ) {
+const Simplex& Dist_topologyunif::getProbabilityMassVector( void ) {
 
     int numTaxa  = static_cast<Natural&>( getMemberValue( "numberTaxa"  ) ).getValue();
 
-    if ( numTaxa <= 6 )
-        return new Simplex( getNumberOfStates() );
+    if ( numTaxa <= 6 ) {
+        probMassVector = Simplex( getNumberOfStates() );
+        return probMassVector;
+    }
     else
         throw RbException( "Too many topologies to generate probability mass vector" );
 }
@@ -282,7 +285,7 @@ double Dist_topologyunif::pdf( const RbLanguageObject& value ) const {
  *
  * @return      Randomly drawn topology
  */
-RbLanguageObject* Dist_topologyunif::rv( void ) {
+const RbLanguageObject& Dist_topologyunif::rv( void ) {
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -295,9 +298,8 @@ RbLanguageObject* Dist_topologyunif::rv( void ) {
 
     // Draw a random topology
     if (isBinary) {
-        Topology* top = new Topology();
         // internally we treat unrooted topologies the same as rooted
-        top->setIsRooted(isRooted);
+        randomVariable.setIsRooted(isRooted);
         
         TopologyNode* root = new TopologyNode((int)pow(2.0,numTaxa)-1);
         std::vector<TopologyNode* > nodes;
@@ -321,12 +323,12 @@ RbLanguageObject* Dist_topologyunif::rv( void ) {
         }
         
         // initialize the topology by setting the root
-        top->setRoot(root);
+        randomVariable.setRoot(root);
         
-        return top;
+        return randomVariable;
     }
     // TODO: Draw a random multifurcating topology
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

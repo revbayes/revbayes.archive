@@ -43,17 +43,22 @@ class Dist_unif: public DistributionContinuous {
 
         // Real-valued distribution functions
         double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
-        const Real*                 getMax(void) const;                                                 //!< Get max value
-        const Real*                 getMin(void) const;                                                 //!< Get min value
+        const Real&                 getMax(void) const;                                                 //!< Get max value
+        const Real&                 getMin(void) const;                                                 //!< Get min value
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Real)
         double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
         double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
-        Real*                       quantile(const double p);                                           //!< Quantile
-        RbLanguageObject*           rv(void);                                                           //!< Generate random variable
+        const Real&                 quantile(const double p);                                           //!< Quantile
+        const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
+
+
+        // memberfunction return valus
+        Real                        randomVariable;
+
 };
 
 #endif

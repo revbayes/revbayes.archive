@@ -58,7 +58,7 @@ class UserFunction :  public RbFunction {
         const TypeSpec&                             getReturnType(void) const;          //!< Get return type
 
 	protected:
-        RbLanguageObject*                           executeFunction(void);              //!< Execute function
+        const RbLanguageObject&                     executeFunction(void);              //!< Execute function
 
     
         const ArgumentRules*                        argumentRules;                      //!< The argument rules

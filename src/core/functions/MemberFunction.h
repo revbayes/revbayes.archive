@@ -48,7 +48,7 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
 
     // Regular functions   
-    RbLanguageObject*           execute(void);                                                              //!< Execute function
+    const RbLanguageObject&     execute(void);                                                              //!< Execute function
     const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
     void                        setMemberObject(MemberObject& obj);                                         //!< Set the member object to which this function belongs

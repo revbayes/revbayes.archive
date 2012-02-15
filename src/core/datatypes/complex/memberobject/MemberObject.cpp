@@ -22,6 +22,7 @@
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbFunction.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "UserInterface.h"
 #include "VectorString.h"
@@ -84,7 +85,7 @@ MemberObject& MemberObject::operator=(const MemberObject &m) {
 
 
 /** Execute member method: delegate to method table. */
-RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument>& args) {
+const RbLanguageObject& MemberObject::executeMethod(const std::string& name, const std::vector<Argument>& args) {
     // TODO: We shouldn't allow const casts!!!
     MethodTable& mt = const_cast<MethodTable&>( getMethods() );
     return mt.executeFunction(name, args);
@@ -94,10 +95,10 @@ RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std
 /* Execute method. This method just delegate the call to executeOperationSimple and wraps the return value into
  * a constant node. If you don't want this, you have to overwrite this method.
  */
-RbLanguageObject* MemberObject::executeOperation(std::string const &name, Environment& args) {
+const RbLanguageObject& MemberObject::executeOperation(std::string const &name, Environment& args) {
     
     // get the return value
-    RbLanguageObject* value = executeOperationSimple(name, args);
+    const RbLanguageObject& value = executeOperationSimple(name, args);
   
     return value;
     
@@ -111,14 +112,14 @@ RbLanguageObject* MemberObject::executeOperation(std::string const &name, Enviro
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-RbLanguageObject* MemberObject::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& MemberObject::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "memberNames") {
         for (size_t i=0; i<members->size(); i++) {
             RBOUT(members->getName(i));
         }
         
-        return NULL;
+        return RbNullObject::getInstance();
     } 
     else if (name == "get") {
         // get the member with give name
@@ -126,11 +127,11 @@ RbLanguageObject* MemberObject::executeOperationSimple(const std::string& name, 
         
         // check if a member with that name exists
         if (members->existsVariable(varName)) {
-            return (*members)[varName].getDagNode()->getValue().clone();
+            return (*members)[varName].getDagNode()->getValue();
         }
         
         // there was no variable with the given name
-        return NULL;
+        return RbNullObject::getInstance();
         
     }
     else {

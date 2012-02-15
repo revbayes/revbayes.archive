@@ -149,11 +149,11 @@ double Dist_exp::pdf( const RbLanguageObject& value ) const {
  * @return      Quantile
  *
  */
-Real* Dist_exp::quantile(const double p) {
+const Real& Dist_exp::quantile(const double p) {
 
     double lambda = static_cast<RealPos&>( getMemberValue( "rate" ) ).getValue();
-
-    return new RealPos( -( 1.0 / lambda ) * std::log( 1.0 - p ) );
+    quant.setValue( -( 1.0 / lambda ) * std::log( 1.0 - p ) );
+    return quant;
 }
 
 
@@ -165,13 +165,14 @@ Real* Dist_exp::quantile(const double p) {
  *
  * @return      Random draw from exponential distribution
  */
-RbLanguageObject* Dist_exp::rv( void ) {
+const RbLanguageObject& Dist_exp::rv( void ) {
 
     double lambda = static_cast<RealPos&>( getMemberValue("rate") ).getValue();
     RandomNumberGenerator* rng    = GLOBAL_RNG;
 
     double u = rng->uniform01();
+    randomVariable.setValue( -( 1.0 / lambda ) * std::log( u ) );
 
-    return new RealPos( -( 1.0 / lambda ) * std::log( u ) );
+    return randomVariable;
 }
 

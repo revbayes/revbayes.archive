@@ -17,6 +17,7 @@
 #define DistanceMatrix_H
 
 #include "MatrixReal.h"
+#include "Natural.h"
 #include "ValueRule.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -78,7 +79,7 @@ class DistanceMatrix : public MatrixReal {
         void                                showData(void);                                                             //!< Show the data in the character matrix
 
     protected:
-        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
 
     private:
         // Utility functions
@@ -86,8 +87,15 @@ class DistanceMatrix : public MatrixReal {
 
         // Member variables
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
-        std::vector<std::string>            sequenceNames;                                                              //!< names of the sequences
+        VectorString                        sequenceNames;                                                              //!< names of the sequences
         TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
+
+        // memberfunction return values
+    Natural                             numTaxa;
+    Natural                             numIncludedTaxa;
+    Natural                             numExcludedTaxa;
+    VectorString                        excludedTaxa;
+    VectorString                        includedTaxa;
 };
 
 #endif

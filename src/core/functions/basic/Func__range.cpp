@@ -41,7 +41,7 @@ Func__range* Func__range::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func__range::executeFunction( void ) {
+const RbLanguageObject& Func__range::executeFunction( void ) {
 
     int first = static_cast<const Integer&>( (*args)[0].getValue() ).getValue();
     int last  = static_cast<const Integer&>( (*args)[1].getValue() ).getValue();
@@ -55,10 +55,13 @@ RbLanguageObject* Func__range::executeFunction( void ) {
         for ( int i = first; i >= last; i-- )
             temp.push_back(i);
     }
-    if (first >= 0 && last >= 0) 
-        return new VectorNatural(temp);
-    else
-        return new VectorInteger(temp);
+//    if (first >= 0 && last >= 0) 
+//        return new VectorNatural(temp);
+//    else
+//        return new VectorInteger(temp);
+    range.setValue( temp );
+    
+    return range;
 }
 
 

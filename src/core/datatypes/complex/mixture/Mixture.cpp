@@ -22,6 +22,7 @@
 #include "DistributionDirichlet.h"
 #include "DistributionMultinomial.h"
 #include "RandomNumberFactory.h"
+#include "RbNullObject.h"
 
 #include <sstream>
 
@@ -225,9 +226,10 @@ const TypeSpec& Mixture::getTypeSpec(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Mixture::executeOperation(const std::string& name, Environment& args) {
+const RbLanguageObject& Mixture::executeOperation(const std::string& name, Environment& args) {
     if (name == "getNumberOfClasses") {
-      return new Natural(getNumberOfClasses());
+        numClasses.setValue( getNumberOfClasses() );
+        return numClasses;
     }
     else if (name == "getParameter") {      
       // get the member with given index
@@ -237,7 +239,7 @@ RbLanguageObject* Mixture::executeOperation(const std::string& name, Environment
         throw RbException("Index out of bounds in Mixture::getParameter");
       }
      // (DagNodeContainer*) getParameter(index->getValue());
-      return static_cast<RbLanguageObject*>( getParameter(index.getValue()).clone() );
+      return  getParameter(index.getValue());
       
 //      
 //      const std::string& numString = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
@@ -252,25 +254,25 @@ RbLanguageObject* Mixture::executeOperation(const std::string& name, Environment
     }
     else if (name == "getParameters") {
        // return getParameters();
-        return NULL;
+        return RbNullObject::getInstance();
     }
     else if (name == "setParameters") {
         Environment& a = args;
         DagNodeContainer& params = static_cast<DagNodeContainer&>( a[0].getValue() );
         setParameters ( params.clone() ) ;
-        return NULL;
+        return RbNullObject::getInstance();
     }
     else if (name == "setParameter") {
       Environment& a = args;
       const Natural& index = static_cast<const Natural&>( args[0].getValue() );
       DagNodeContainer& params =  static_cast<DagNodeContainer&>( a[1].getValue() );
       setParameter ( (index.getValue()), params.clone() ) ;
-      return NULL;
+      return RbNullObject::getInstance();
     }
 
   
   
-    return NULL;
+    return RbNullObject::getInstance();
     /*
     // special handling for adding a variable
     if (name == "addVariable") {

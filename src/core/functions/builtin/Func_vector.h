@@ -40,10 +40,11 @@ class Func_vector :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
+        retType*                    theVector;
 };
 
 #endif
@@ -70,13 +71,16 @@ Func_vector<valType, retType>* Func_vector<valType, retType>::clone( void ) cons
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType, typename retType>
-RbLanguageObject* Func_vector<valType, retType>::executeFunction( void ) {
+const RbLanguageObject& Func_vector<valType, retType>::executeFunction( void ) {
 
-    retType* tempVec = new retType();
+    if (theVector != NULL)
+        delete theVector;
+    
+    theVector = new retType();
     for ( size_t i = 0; i < args->size(); i++ )
-        tempVec->push_back( (*args)[i].getValue().clone() );
+        theVector->push_back( (*args)[i].getValue().clone() );
 
-    return tempVec;
+    return *theVector;
 }
 
 

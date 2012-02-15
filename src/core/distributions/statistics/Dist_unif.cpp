@@ -84,9 +84,9 @@ const VectorString& Dist_unif::getClass(void) const {
 
 
 /** Get max value of distribution */
-const Real* Dist_unif::getMax( void ) const {
+const Real& Dist_unif::getMax( void ) const {
 
-    return static_cast<const Real&>( getMemberValue("max") ).clone();
+    return static_cast<const Real&>( getMemberValue("max") );
 }
 
 
@@ -109,9 +109,9 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 
 
 /** Get min value of distribution */
-const Real* Dist_unif::getMin( void ) const {
+const Real& Dist_unif::getMin( void ) const {
 
-    return static_cast<const Real&>( getMemberValue("min") ).clone();
+    return static_cast<const Real&>( getMemberValue("min") );
 }
 
 
@@ -182,12 +182,13 @@ double Dist_unif::pdf(const RbLanguageObject &value) const {
  * @return      Quantile
  *
  */
-Real* Dist_unif::quantile(const double p) {
+const Real& Dist_unif::quantile(const double p) {
     
     double min = static_cast<Real&>( getMemberValue("min") ).getValue();
     double max = static_cast<Real&>( getMemberValue("max") ).getValue();
 
-    return new Real( min + ( max - min ) * p );
+    quant.setValue( min + ( max - min ) * p );
+    return quant;
 }
 
 
@@ -199,15 +200,16 @@ Real* Dist_unif::quantile(const double p) {
  *
  * @return      Random draw from uniform distribution
  */
-RbLanguageObject* Dist_unif::rv(void) {
+const RbLanguageObject& Dist_unif::rv(void) {
     
     double min = static_cast<const Real&>( getMemberValue("min") ).getValue();
     double max = static_cast<const Real&>( getMemberValue("max") ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     double u = rng->uniform01();
+    randomVariable.setValue( min + ( max - min ) * u );
 
-    return new Real( min + ( max - min ) * u );
+    return randomVariable;
 }
 
 

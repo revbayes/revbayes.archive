@@ -57,7 +57,7 @@ class DistributionFunction :  public RbFunction {
                                                      VectorInteger*          matchScore=NULL);              //!< Process args, set member variables of distribution
 
 	protected:
-        RbLanguageObject*           executeFunction(void);                                                  //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
 
         ArgumentRules*              argumentRules;                                                          //!< Argument rules
         TypeSpec                    returnType;                                                             //!< Return type
@@ -66,6 +66,12 @@ class DistributionFunction :  public RbFunction {
     
     private:
         static const TypeSpec       typeSpec;
+
+
+        // memberfunction return values;
+    RealPos                     cd;
+    Real                        density;
+
 };
 
 #endif

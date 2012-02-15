@@ -157,13 +157,14 @@ double Dist_beta::pdf( const RbLanguageObject& value ) const {
  * @return      Quantile
  *
  */
-Real* Dist_beta::quantile(const double p) {
+const Real& Dist_beta::quantile(const double p) {
 
     double shape1 = static_cast<RealPos&>(getMemberValue("shape1")).getValue();
     double shape2 = static_cast<RealPos&>(getMemberValue("shape2")).getValue();
 
     double quantile = RbStatistics::Beta::quantile(shape1, shape2, p);
-    return new RealPos(quantile);
+    quant.setValue( quantile );
+    return quant;
 }
 
 
@@ -175,7 +176,7 @@ Real* Dist_beta::quantile(const double p) {
  *
  * @return      Random draw from beta distribution
  */
-RbLanguageObject* Dist_beta::rv( void ) {
+const RbLanguageObject& Dist_beta::rv( void ) {
 
     double shape1 = static_cast<RealPos&>(getMemberValue("shape1")).getValue();
     double shape2 = static_cast<RealPos&>(getMemberValue("shape2")).getValue();
@@ -183,7 +184,8 @@ RbLanguageObject* Dist_beta::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     double rv = RbStatistics::Beta::rv(shape1, shape2, *rng);
     //TODO implement RbMath::isFinite
-    return new RealPos(rv);
+    randomVariable.setValue( rv );
+    return randomVariable;
 }
 
 

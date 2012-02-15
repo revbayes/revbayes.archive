@@ -21,6 +21,7 @@
 #include "Func_unclamp.h"
 #include "Integer.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
@@ -43,7 +44,7 @@ Func_unclamp* Func_unclamp::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_unclamp::executeFunction( void ) {
+const RbLanguageObject& Func_unclamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference or lookup
     StochasticNode* theNode = dynamic_cast<StochasticNode*>( (*args)[0].getDagNode() );
@@ -53,7 +54,7 @@ RbLanguageObject* Func_unclamp::executeFunction( void ) {
     // Now unclamp the node
     theNode->unclamp();
 
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

@@ -40,7 +40,9 @@ MoveTree::MoveTree( const MemberRules& memberRules) : Move(memberRules) {
 void MoveTree::acceptMove(void) {
 
     // Increase number of accepted
-    numAccepted++;
+//    numAccepted++;
+    size_t tmp_accepted = numAccepted.getValue();
+    numAccepted.setValue( tmp_accepted++ );
 
     // Send derived move class an accept message
     accept();
@@ -112,7 +114,9 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
 //        lnProbabilityRatio += (*i)->getLnProbabilityRatio();
 
     // Increase number of attempts
-    numTried++;
+//    numTried++;
+    size_t tmp_tried = numTried.getValue();
+    numTried.setValue( tmp_tried++ );
     
 //    return lnHastingsRatio;
     

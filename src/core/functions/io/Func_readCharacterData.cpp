@@ -24,6 +24,7 @@
 #include "RbBoolean.h"
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "StringUtilities.h"
@@ -49,7 +50,7 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readCharacterData::executeFunction( void ) {
+const RbLanguageObject& Func_readCharacterData::executeFunction( void ) {
 
     // get the information from the arguments for reading the file
     RbString& fn = static_cast<RbString&>( (*args)[0].getValue() );
@@ -142,7 +143,7 @@ RbLanguageObject* Func_readCharacterData::executeFunction( void ) {
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<CharacterData* > m = reader.readMatrices( fileMap );
+    std::vector<CharacterData*> m = reader.readMatrices( fileMap );
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
@@ -197,12 +198,12 @@ RbLanguageObject* Func_readCharacterData::executeFunction( void ) {
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-        DagNodeContainer* retList = new DagNodeContainer( m.size() );
+        retList = DagNodeContainer( m.size() );
         size_t index = 0;
         for (std::vector<CharacterData*>::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, new Variable( new ConstantNode( *it ) ) );
+            retList.setElement( index, new Variable( new ConstantNode( *it ) ) );
             index++;
             }
         return retList;
@@ -210,12 +211,12 @@ RbLanguageObject* Func_readCharacterData::executeFunction( void ) {
         }
     else if ( m.size() == 1 ) 
         {
-        return m[0];
+        return *m[0];
         }
     else
         {
         // Return null object
-        return NULL;
+            return RbNullObject::getInstance();
         }
 }
 

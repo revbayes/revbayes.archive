@@ -40,10 +40,13 @@ class Func__sub :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
  
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
+    
+        // function return value
+        retType                     retValue;
 };
 
 #endif
@@ -75,13 +78,13 @@ Func__sub<firstValType, secondValType, retType>* Func__sub<firstValType, secondV
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename firstValType, typename secondValType, typename retType>
-RbLanguageObject* Func__sub<firstValType,secondValType,retType>::executeFunction( void ) {
+const RbLanguageObject& Func__sub<firstValType,secondValType,retType>::executeFunction( void ) {
 
     const firstValType&  val1 = static_cast<firstValType&> ( (*args)[0].getValue() );
     const secondValType& val2 = static_cast<secondValType&>( (*args)[1].getValue() );
-    retType              diff = val1 - val2;
+    retValue = val1 - val2;
     
-    return diff.clone();
+    return retValue;
 }
 
 

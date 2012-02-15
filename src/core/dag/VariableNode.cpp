@@ -29,13 +29,12 @@
 
 
 /** Constructor */
-VariableNode::VariableNode( const std::string& valType ) : DAGNode( valType ), touched( false ), storedValue( NULL ) {
+VariableNode::VariableNode( const std::string& valType ) : DAGNode( valType ), touched( false ) {
 }
 
 /** Copy Constructor */
 VariableNode::VariableNode(const VariableNode &v) : DAGNode(v) {
     touched = false;
-    storedValue = NULL;
 }
 
 
@@ -47,10 +46,6 @@ VariableNode::~VariableNode( void ) {
     for ( std::set<RbDagNodePtr >::iterator i = parents.begin(); i != parents.end(); i++ ) {
         const RbDagNodePtr& node = *i;
         node->removeChildNode( this );
-    }
-    
-    if (storedValue != NULL) {
-        delete storedValue;
     }
 }
 

@@ -22,6 +22,7 @@
 #include "Func_setval.h"
 #include "Integer.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
@@ -44,7 +45,7 @@ Func_setval* Func_setval::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_setval::executeFunction( void ) {
+const RbLanguageObject& Func_setval::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
     StochasticNode* theNode = dynamic_cast<StochasticNode*>( (*args)[0].getDagNode() );
@@ -74,10 +75,9 @@ RbLanguageObject* Func_setval::executeFunction( void ) {
     }
     theNode->setValue( newVal );
 
-    // todo: Do we want to update the affected nodes?
     theNode->keep();
 
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

@@ -22,6 +22,7 @@
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbFunction.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
@@ -86,10 +87,10 @@ std::string RbFunction::debugInfo(void) const {
  * (which is of type RbLanguageObject) into a ConstantNode.
  * If you do not wish to wrap the return value into a constant node, then you need to overwrite this function.
  */
-RbLanguageObject* RbFunction::execute(void) {
+const RbLanguageObject& RbFunction::execute(void) {
     
     // get the value by executing the internal function
-    RbLanguageObject* value = executeFunction();
+    const RbLanguageObject& value = executeFunction();
   
     return value;
     
@@ -104,11 +105,12 @@ RbLanguageObject* RbFunction::execute(void) {
  * that is wraped into a ConstantNode by the calling execute function.
  * If you write your own execute function, you do not need to overwrite this function, otherwise you should.
  */
-RbLanguageObject* RbFunction::executeFunction(void) {
+const RbLanguageObject& RbFunction::executeFunction(void) {
     
     // TODO: We might want to throw an error!
+    static RbNullObject nullReference;
     
-    return NULL;
+    return nullReference;
 }
 
 

@@ -37,15 +37,16 @@ DistributionDiscrete::DistributionDiscrete( const MemberRules& memberRules ) : D
 
 
 /** Map direct method calls to internal class methods. */
-RbLanguageObject* DistributionDiscrete::executeOperationSimple( const std::string& name, Environment& args ) {
+const RbLanguageObject& DistributionDiscrete::executeOperationSimple( const std::string& name, Environment& args ) {
 
     if ( name == "probMassVector" ) {
 
         return getProbabilityMassVector();
     }
     else if ( name == "numStates" ) {
-
-        return new Natural( int( getNumberOfStates() ) );
+        
+        numStates.setValue( getNumberOfStates() );
+        return numStates;
     }
 
     return Distribution::executeOperationSimple( name, args );

@@ -48,10 +48,11 @@ public:
     const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
     
 protected:
-    RbLanguageObject*                       executeFunction(void);                                                          //!< Execute function
+    const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function
 
     const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
     RbLanguageObject*                       templateObject;                                                                 //!< The template object
+    RbLanguageObject*                       copyObject;
     
 private:
     static const TypeSpec                   typeSpec;

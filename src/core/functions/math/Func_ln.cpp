@@ -44,11 +44,11 @@ Func_ln* Func_ln::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_ln::executeFunction( void ) {
+const RbLanguageObject& Func_ln::executeFunction( void ) {
     
     const double x = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
-    
-    return new Real( log(x) );
+    value.setValue( log(x) );
+    return value;
 }
 
 

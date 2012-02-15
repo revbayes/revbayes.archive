@@ -19,6 +19,7 @@
 
 #include "Func_clear.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
@@ -39,12 +40,12 @@ Func_clear* Func_clear::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_clear::executeFunction( void ) {
+const RbLanguageObject& Func_clear::executeFunction( void ) {
     
     // clear the user workspace
     Workspace::userWorkspace().clear();
     
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

@@ -163,14 +163,15 @@ double Dist_logis::cdf( const RbLanguageObject& value ) {
  * @return      Quantile
  *
  */
-Real* Dist_logis::quantile( const double p ) {
+const Real& Dist_logis::quantile( const double p ) {
 
     double location =   static_cast<Real&     >( getMemberValue("location")   ).getValue();
     double scale =      static_cast<RealPos&  >( getMemberValue("scale")      ).getValue();
 
 	double q = RbStatistics::Logistic::quantile(location, scale, p);
-	return new Real(q);
-
+	quant.setValue( q );
+    
+    return new Real(q);
 }
 
 
@@ -185,13 +186,14 @@ Real* Dist_logis::quantile( const double p ) {
 
 
 
-RbLanguageObject* Dist_logis::rv(void) {
+const RbLanguageObject& Dist_logis::rv(void) {
 
     double location =   static_cast<Real&     >( getMemberValue("location") ).getValue();
     double scale =      static_cast<RealPos&  >( getMemberValue("scale")    ).getValue();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
-	return new Real( RbStatistics::Logistic::rv(location, scale, *rng) );
+    randomVariable.setValue( RbStatistics::Logistic::rv(location, scale, *rng) );
 
+	return randomVariable;
 }
 

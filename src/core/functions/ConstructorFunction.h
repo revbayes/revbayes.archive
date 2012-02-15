@@ -36,6 +36,9 @@ class ConstructorFunction :  public RbFunction {
                                                 ConstructorFunction(MemberObject* obj);                                         //!< Object constructor
                                                 ConstructorFunction(const ConstructorFunction& obj);                            //!< Copy constructor
     virtual                                    ~ConstructorFunction();
+    
+        // overloaded operators
+        ConstructorFunction&                    operator=(const ConstructorFunction& c);
 
         // Basic utility functions
         ConstructorFunction*                    clone(void) const;                                                              //!< Clone the object
@@ -48,10 +51,11 @@ class ConstructorFunction :  public RbFunction {
         const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
 
 	protected:
-        RbLanguageObject*                       executeFunction(void);                                                          //!< Execute function
+        const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function
 
         const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
         MemberObject*                           templateObject;                                                                 //!< The template object
+        MemberObject*                           copyObject;
     
     private:
         static const TypeSpec                   typeSpec;

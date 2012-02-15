@@ -61,6 +61,7 @@ class Natural : public Integer {
         int                 getValue(void) const { return value; }                                  //!< Get value (int)
         void                setValue(int x);                                                        //!< Set value from int (after checking)
         void                setValue(unsigned int x);                                               //!< Set value from unsigned int
+        void                setValue(size_t x);                                                     //!< Set value from unsigned int
     
     
     private:

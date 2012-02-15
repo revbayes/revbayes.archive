@@ -167,12 +167,14 @@ double Dist_norm::pdf( const RbLanguageObject& value ) const {
  * @see Beasley, JD & S. G. Springer. 1977. Algorithm AS 111: The percentage
  *      points of the normal distribution. 26:118-121.
  */
-Real* Dist_norm::quantile( const double p) {
+const Real& Dist_norm::quantile( const double p) {
 
     double mu    = static_cast<Real&   >( getMemberValue( "mean" ) ).getValue();
     double sigma = static_cast<RealPos&>( getMemberValue( "sd"   ) ).getValue();
 	
-    return new Real( RbStatistics::Normal::quantile(mu, sigma, p) );
+    quant.setValue( RbStatistics::Normal::quantile(mu, sigma, p) );
+    
+    return quant;
 }
 
 
@@ -188,21 +190,24 @@ Real* Dist_norm::quantile( const double p) {
  *
  * @return      Random draw
  */
-RbLanguageObject* Dist_norm::rv(void) {
+const RbLanguageObject& Dist_norm::rv(void) {
 
     static bool   availableNormalRv = false;
     static double extraNormalRv;
 
     if ( availableNormalRv ) {
         availableNormalRv = false;
-        return new Real( extraNormalRv );
+        randomVariable.setValue( extraNormalRv );
+        return randomVariable;
     }
     
     double mu    = static_cast<const Real&   >( getMemberValue( "mean" ) ).getValue();
     double sigma = static_cast<const RealPos&>( getMemberValue( "sd"   ) ).getValue();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
-	return new Real( RbStatistics::Normal::rv(mu, sigma, *rng) );
+    randomVariable.setValue( RbStatistics::Normal::rv(mu, sigma, *rng) );
+    
+	return randomVariable;
 
 }
 

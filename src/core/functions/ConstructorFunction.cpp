@@ -30,7 +30,7 @@
 const TypeSpec ConstructorFunction::typeSpec(ConstructorFunction_name);
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), templateObject(obj) {
+ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), templateObject(obj), copyObject( NULL ) {
 
     // Hack: we know that we will not own the argRules.
     argRules = &templateObject->getMemberRules();
@@ -38,9 +38,12 @@ ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), temp
 
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : RbFunction(obj) {
+ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : RbFunction(obj), copyObject( NULL ) {
     
     templateObject = obj.templateObject->clone();
+    if (obj.copyObject != NULL) {
+        copyObject = obj.copyObject->clone();
+    }
     
     // Hack: we know that we will not own the argRules.
     argRules = &templateObject->getMemberRules();
@@ -48,7 +51,24 @@ ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : RbFun
 
 ConstructorFunction::~ConstructorFunction() {
     delete templateObject;
+    delete copyObject;
     // we do not delete the argRules because we know that we do not own them!
+}
+
+
+ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c) {
+    
+    if (this != &c) {
+        RbFunction::operator=(c);
+        
+        templateObject = c.templateObject->clone();
+        if (c.copyObject != NULL) {
+            copyObject = c.copyObject->clone();
+        }
+        
+        // Hack: we know that we will not own the argRules.
+        argRules = &templateObject->getMemberRules();
+    }
 }
 
 
@@ -60,15 +80,18 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbLanguageObject* ConstructorFunction::executeFunction(void) {
+const RbLanguageObject& ConstructorFunction::executeFunction(void) {
 
-   MemberObject* copy = templateObject->clone();
+    if (copyObject != NULL) {
+        delete copyObject;
+    }
+    copyObject = templateObject->clone();
 
     for ( size_t i = 0; i < args->size(); i++ ) {
-        copy->setMemberVariable( (*args)[i].getLabel(), (*args)[i].getVariable().clone() );
+        copyObject->setMemberVariable( (*args)[i].getLabel(), (*args)[i].getVariable().clone() );
     }
  
-    return copy;
+    return *copyObject;
 }
 
 

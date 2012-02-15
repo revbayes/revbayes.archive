@@ -18,6 +18,7 @@
 #define Func_nj_H
 
 #include "RbFunction.h"
+#include "TreePlate.h"
 
 class DAGNode;
 class DistanceMatrix;
@@ -42,13 +43,17 @@ class Func_nj :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                                   //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                                   //!< Execute function
 
     private:
         Topology*                   neighborJoining(const DistanceMatrix& d);
         void                        buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips);
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+
+        // function return value
+        TreePlate                   tree;
+
 };
 
 #endif

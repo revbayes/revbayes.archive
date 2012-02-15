@@ -21,6 +21,7 @@
 #include "MemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TopologyNode.h"
 #include "VectorString.h"
@@ -33,7 +34,7 @@
 const TypeSpec TopologyNode::typeSpec(TopologyNode_name);
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-TopologyNode::TopologyNode(int indx) : ConstantMemberObject( getMemberRules() ), name(""), index(indx) {
+TopologyNode::TopologyNode(int indx) : ConstantMemberObject( getMemberRules() ), name(""), index(indx), isRootNode( true ), isTipNode( true ), isInteriorNode( false ) {
     
     // initialize
     parent = NULL;
@@ -41,7 +42,7 @@ TopologyNode::TopologyNode(int indx) : ConstantMemberObject( getMemberRules() ),
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-TopologyNode::TopologyNode(const std::string& n, int indx) : ConstantMemberObject( getMemberRules() ), name(n), index(indx) {
+TopologyNode::TopologyNode(const std::string& n, int indx) : ConstantMemberObject( getMemberRules() ), name(n), index(indx), isRootNode( true ), isTipNode( true ), isInteriorNode( false ) {
     
     // initialize
     parent = NULL;
@@ -52,9 +53,12 @@ TopologyNode::TopologyNode(const std::string& n, int indx) : ConstantMemberObjec
 TopologyNode::TopologyNode(const TopologyNode &n) : ConstantMemberObject(n) {
     
     // copy the members
-    name = n.name;
-    index = n.index;
-    parent = n.parent;
+    name            = n.name;
+    index           = n.index;
+    parent          = n.parent;
+    isInteriorNode  = n.isInteriorNode;
+    isTipNode       = n.isTipNode;
+    isRootNode      = n.isRootNode;
     // copy the children
     for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
         TopologyNode* theNode = *it;
@@ -117,6 +121,9 @@ void TopologyNode::addChild(TopologyNode* c) {
     children.push_back(c);
     
     name = buildNewickString( *this );
+    
+    isTipNode.setValue(false);
+    isInteriorNode.setValue(true);
 }
 
 
@@ -191,24 +198,24 @@ bool TopologyNode::equals(const TopologyNode& node) const {
 }
 
 
-RbLanguageObject* TopologyNode::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& TopologyNode::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "isTip") {
-        return new RbBoolean( isTip() );
+        return isTipNode;
     }
     else if (name == "isRoot") {
-        return new RbBoolean( isRoot() );
+        return isRootNode;
     }
     else if (name == "isInterior") {
-        return new RbBoolean( !isTip() );
+        return isInteriorNode;
     }
     else if (name == "ancestor") {
-        return parent->clone();
+        return *parent;
     }
     else
         throw RbException("No member method called '" + name + "'");
     
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 
@@ -323,6 +330,9 @@ void TopologyNode::removeAllChildren(void) {
     children.clear();
     
     name = "";
+    
+    isTipNode.setValue(true);
+    isInteriorNode.setValue(false);
 }
 
 /** Remove a child from the vector of children */
@@ -337,6 +347,9 @@ void TopologyNode::removeChild(TopologyNode* p) {
 //        throw(RbException("Cannot find node in list of children nodes"));
     
     name = buildNewickString( *this );
+    
+    isTipNode.setValue(children.size() == 0);
+    isInteriorNode.setValue(children.size() > 0);
 }
 
 
@@ -359,6 +372,8 @@ void TopologyNode::setParent(TopologyNode* p) {
         
         parent->refreshNewickString();
     }
+    
+    isRootNode.setValue(false);
 }
 
 

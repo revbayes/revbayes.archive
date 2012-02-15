@@ -47,7 +47,7 @@ Func_nj* Func_nj::clone(void) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_nj::executeFunction(void) {
+const RbLanguageObject& Func_nj::executeFunction(void) {
 
     // get the information from the arguments for reading the file
     DistanceMatrix& d           = static_cast<DistanceMatrix&>( (*args)[0].getValue() );
@@ -56,10 +56,9 @@ RbLanguageObject* Func_nj::executeFunction(void) {
         
     Topology* top = neighborJoining(d);
     
-    TreePlate* t = new TreePlate();
-    t->setMemberVariable("topology", new Variable( new ConstantNode(top) ) );
+    tree.setMemberVariable("topology", new Variable( new ConstantNode(top) ) );
     
-    return t;
+    return tree;
 }
 
 

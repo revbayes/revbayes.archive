@@ -22,6 +22,7 @@
 #include "Model.h"
 #include "Parser.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
@@ -45,7 +46,7 @@ Func_source* Func_source::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_source::executeFunction( void ) {
+const RbLanguageObject& Func_source::executeFunction( void ) {
 
     /* Open file */
     std::string filename = static_cast<RbString&>( (*args)[0].getValue() ).getValue();
@@ -91,7 +92,7 @@ RbLanguageObject* Func_source::executeFunction( void ) {
     /* Return control */
     RBOUT("Processing of file \"" + filename + "\" completed");
 
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

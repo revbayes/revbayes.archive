@@ -19,6 +19,8 @@
 #define Move_H
 
 #include "ConstantMemberObject.h"
+#include "Natural.h"
+#include "RealPos.h"
 
 class RandomNumberGenerator;
 class StochasticNode;
@@ -61,13 +63,14 @@ class Move : public ConstantMemberObject {
         Move(const MemberRules& memberRules);                                                                           //!< Default constructor
         Move(const Move& m);                                                                                            //!< Copy constructor
 
-        RbLanguageObject*                       executeOperationSimple(const std::string& name, Environment& args);     //!< Map method call to internal functions
+        const RbLanguageObject&                 executeOperationSimple(const std::string& name, Environment& args);     //!< Map method call to internal functions
 
     
         // Hidden member variables
-        int                                     numAccepted;                                                            //!< Number of times accepted
-        int                                     numTried;                                                               //!< Number of times tried
-        std::vector<StochasticNode*>     nodes;                                                                         //!< The nodes on which the move works
+        Natural                                 numAccepted;                                                            //!< Number of times accepted
+        Natural                                 numTried;                                                               //!< Number of times tried
+        RealPos                                 acceptanceR;
+        std::vector<StochasticNode*>            nodes;                                                                         //!< The nodes on which the move works
 };
 
 #endif

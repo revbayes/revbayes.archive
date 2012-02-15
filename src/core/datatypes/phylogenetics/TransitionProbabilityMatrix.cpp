@@ -50,7 +50,7 @@ const TypeSpec TransitionProbabilityMatrix::typeSpec(TransitionProbabilityMatrix
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberObject(getMemberRules()) {
 
     numStates = 2;
-    theMatrix = new MatrixReal(numStates, numStates);
+    theMatrix = new MatrixReal(numStates.getValue(), numStates.getValue());
 }
 
 
@@ -58,7 +58,7 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberO
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : ConstantMemberObject(getMemberRules()) {
 
     numStates = n;
-    theMatrix = new MatrixReal(numStates, numStates);
+    theMatrix = new MatrixReal(numStates.getValue(), numStates.getValue());
 }
 
 
@@ -77,10 +77,25 @@ TransitionProbabilityMatrix::~TransitionProbabilityMatrix(void) {
 }
 
 
+TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator=(const TransitionProbabilityMatrix &m) {
+    
+    if (this != &m) {
+        ConstantMemberObject::operator=(m);
+        
+        delete theMatrix;
+        
+        numStates = m.numStates;
+        theMatrix = m.theMatrix->clone();
+    }
+    
+    return *this;
+}
+
+
 /** Index operator (const) */
 const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
-    if ( i >= numStates )
+    if ( i >= numStates.getValue() )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
     return (*theMatrix)[i];
 }
@@ -89,7 +104,7 @@ const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) cons
 /** Index operator */
 VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) {
 
-    if ( i >= numStates )
+    if ( i >= numStates.getValue() )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
     return (*theMatrix)[i];
 }
@@ -103,10 +118,10 @@ TransitionProbabilityMatrix* TransitionProbabilityMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* TransitionProbabilityMatrix::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& TransitionProbabilityMatrix::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "nstates") {
-        return new Natural( (int)numStates );
+        return numStates;
     }
 
     return MemberObject::executeOperationSimple( name, args );

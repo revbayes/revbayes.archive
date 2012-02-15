@@ -18,6 +18,7 @@
 #define Topology_H
 
 #include "ConstantMemberObject.h"
+#include "Natural.h"
 #include <set>
 #include <string>
 
@@ -66,7 +67,7 @@ class Topology: public ConstantMemberObject {
         void                                        setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the tree from it
 
     protected:
-        RbLanguageObject*                           executeOperationSimple(const std::string& name, Environment& args);     //!< Execute method
+        const RbLanguageObject&                     executeOperationSimple(const std::string& name, Environment& args);     //!< Execute method
     
     private:
         static const TypeSpec                       typeSpec;
@@ -77,6 +78,8 @@ class Topology: public ConstantMemberObject {
         TopologyNode*                               root;                                                                   //!< Pointer to the root node
         bool                                        isRooted;                                                               //!< Is the topology rooted?
         bool                                        isBinary;                                                               //!< Is the topology binary?
+        Natural                                     numTips;
+        Natural                                     numNodes;
 };
 
 #endif

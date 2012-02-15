@@ -38,7 +38,7 @@ class Func_source :  public RbFunction {
         bool                                    throws(void) const { return true; } //!< Function may throw exceptions
     
     protected:
-        RbLanguageObject*                       executeFunction(void);              //!< Execute function
+        const RbLanguageObject&                 executeFunction(void);              //!< Execute function
     
     
     private:

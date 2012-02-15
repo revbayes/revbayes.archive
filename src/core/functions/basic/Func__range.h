@@ -18,6 +18,7 @@
 #define Func__range_H
 
 #include "RbFunction.h"
+#include "VectorInteger.h"
 
 #include <map>
 #include <string>
@@ -41,11 +42,15 @@ class Func__range :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
  
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+
+
+        // memberfunction return values
+        VectorInteger               range;
 };
 
 #endif

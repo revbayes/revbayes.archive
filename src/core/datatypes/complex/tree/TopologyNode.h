@@ -37,6 +37,7 @@
 #define TopologyNode_H
 
 #include "ConstantMemberObject.h"
+#include "RbBoolean.h"
 
 #include <vector>
 
@@ -85,7 +86,7 @@ class TopologyNode : public ConstantMemberObject {
         void                                removeChild(TopologyNode* p);                                         //!< Removes a specific child
          
     protected:
-        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
         
     private:
         std::string                         buildNewickString(const TopologyNode& node) const;                          //!< compute the newick string for a tree rooting at this node
@@ -96,6 +97,9 @@ class TopologyNode : public ConstantMemberObject {
         TopologyNode*                       parent;                                                                     //!< Pointer to the parent of the node. It is a regular pointer instead of a RbDagNodePtr to avoid loops in the reference counting.
         std::string                         name;                                                                       //!< Name of the node, i.e. identifier/taxon name
         int                                 index;                                                                      //!< Node index
+        RbBoolean                           isInteriorNode;
+        RbBoolean                           isRootNode;
+        RbBoolean                           isTipNode;
 };
 
 #endif

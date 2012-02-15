@@ -18,6 +18,7 @@
 #define Func_readCharacterData_H
 
 #include "RbFunction.h"
+#include "DagNodeContainer.h"
 
 #include <map>
 #include <string>
@@ -79,13 +80,17 @@ class Func_readCharacterData :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
   
     protected:
-        RbLanguageObject*           executeFunction(void);                                                  //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
 
     private:
         void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
 
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+
+    // function return value
+    DagNodeContainer                retList;
+
 };
 
 #endif

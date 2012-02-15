@@ -18,6 +18,7 @@
 #define Func_normalize_H
 
 #include "RbFunction.h"
+#include "Simplex.h"
 
 #include <map>
 #include <string>
@@ -41,11 +42,14 @@ class Func_normalizeVector :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+
+        // memberfunction return values
+        Simplex                     normalizedVector;
 };
 
 #endif

@@ -151,7 +151,8 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        const RbLanguageObject& value = theVariable->getDagNode()->getValue();
+        const DAGNode* theConstNode = theVariable->getDagNode();
+        const RbLanguageObject& value = theConstNode->getValue();
         DAGNode* theNode;
         if (value.isTypeSpec(TypeSpec(DAGNode_name))) {
             theNode = static_cast<DAGNode*>( value.clone() );
@@ -196,12 +197,12 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
         theVariable = expression->evaluateContent(env);
         
         // Get distribution, which should be the return value of the rhs function
-        DAGNode* exprValue = theVariable->getDagNode();
+        const DAGNode* exprValue = theVariable->getDagNode();
         if ( exprValue == NULL ) {
             throw RbException( "Distribution function returns NULL" );
         }
         
-        DeterministicNode* detNode = dynamic_cast<DeterministicNode*>( exprValue );
+        const DeterministicNode* detNode = dynamic_cast<const DeterministicNode*>( exprValue );
         if ( detNode == NULL || !detNode->getFunction().isType( ConstructorFunction_name ) ) {
             
             throw RbException( "Function does not return a distribution" );

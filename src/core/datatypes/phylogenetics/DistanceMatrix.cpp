@@ -23,6 +23,7 @@
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "StochasticNode.h"
@@ -111,26 +112,29 @@ void DistanceMatrix::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbLanguageObject* DistanceMatrix::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "names") 
         {
-        return new VectorString(sequenceNames);
+        return sequenceNames;
         }
     else if (name == "ntaxa") 
         {
         int n = (int)getNumberOfTaxa();
-        return new Natural(n);
+        numTaxa.setValue( n );
+        return numTaxa;
         }
     else if (name == "nexcludedtaxa")
         {
         int n = (int)deletedTaxa.size();
-        return new Natural(n);
+        numExcludedTaxa.setValue( n );
+        return numExcludedTaxa;
         }
     else if (name == "nincludedtaxa")
         {
         int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
-        return new Natural(n);
+        numIncludedTaxa.setValue( n );
+        return numIncludedTaxa;
         }
     else if (name == "excludedtaxa")
         {
@@ -140,7 +144,8 @@ RbLanguageObject* DistanceMatrix::executeOperationSimple(const std::string& name
             std::string tn = getTaxonNameWithIndex(*it);
             et.push_back( tn );
             }
-        return new VectorString(et);
+        excludedTaxa.setValue( et );
+        return excludedTaxa;
         }
     else if (name == "includedtaxa")
         {
@@ -150,7 +155,8 @@ RbLanguageObject* DistanceMatrix::executeOperationSimple(const std::string& name
             if ( isTaxonExcluded(i) == false )
                 it.push_back( getTaxonNameWithIndex(i) );
             }
-        return new VectorString(it);
+            includedTaxa.setValue( it );
+        return includedTaxa;
         }
     else if (name == "show")
         {
@@ -179,7 +185,7 @@ RbLanguageObject* DistanceMatrix::executeOperationSimple(const std::string& name
                 std::cout << std::endl;
                 }
             }
-        return NULL;
+        return RbNullObject::getInstance();
         }
     else if (name == "excludetaxa")
         {
@@ -213,7 +219,7 @@ RbLanguageObject* DistanceMatrix::executeOperationSimple(const std::string& name
                 deletedTaxa.insert(idx);
                 }
             }
-        return NULL;
+        return RbNullObject::getInstance();
         }
 
     return ConstantMemberObject::executeOperationSimple( name, args );

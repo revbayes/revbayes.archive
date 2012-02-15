@@ -87,7 +87,7 @@ size_t Dist_dtmm::getNumberOfStates( void ) const {
 
 
 /** Get the probability mass vector */
-Simplex* Dist_dtmm::getProbabilityMassVector( void ) {
+const Simplex& Dist_dtmm::getProbabilityMassVector( void ) {
     
     // get the information from the arguments for reading the file
     TransitionProbabilityMatrix&  m = static_cast<TransitionProbabilityMatrix&>( (*members)[0].getValue() );
@@ -99,7 +99,8 @@ Simplex* Dist_dtmm::getProbabilityMassVector( void ) {
     VectorReal& probs = m[stateIndex];
     
     //
-    return new Simplex(probs);
+    probMassVector.setValue( probs );
+    return probMassVector;
 }
 
 
@@ -199,7 +200,7 @@ double Dist_dtmm::pdf( const RbLanguageObject& value ) const {
  *
  * @return      Randomly drawn character state
  */
-RbLanguageObject* Dist_dtmm::rv( void ) {
+const RbLanguageObject& Dist_dtmm::rv( void ) {
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -208,7 +209,10 @@ RbLanguageObject* Dist_dtmm::rv( void ) {
     const TransitionProbabilityMatrix&    m      = static_cast<const TransitionProbabilityMatrix&>( getMemberValue( "m" ) );
     const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( getMemberValue( "a" ) );
     
-    CharacterStateDiscrete* draw = start.clone();
+    if (randomValue != NULL) {
+        delete randomValue;
+    }
+    randomValue = start.clone();
     const std::vector<bool>& startState = start.getStateVector();
     size_t indexStart=0;
     for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
@@ -221,14 +225,14 @@ RbLanguageObject* Dist_dtmm::rv( void ) {
                 if (u <= 0) {
                     std::vector<bool> values = std::vector<bool>(start.getNumberOfStates());
                     values[i] = true;
-                    draw->setValue(values);
+                    randomValue->setValue(values);
                     break;
                 }
             }
         }
     }
     
-    return draw;
+    return *randomValue;
 }
 
 

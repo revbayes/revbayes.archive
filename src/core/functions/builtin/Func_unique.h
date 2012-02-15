@@ -42,7 +42,7 @@ public:
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 
 protected:
-	RbLanguageObject*           executeFunction(void);                              //!< Execute operation
+	const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
     
 private:
     static const TypeSpec       typeSpec;
@@ -71,14 +71,14 @@ Func_unique<valType>* Func_unique<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-RbLanguageObject* Func_unique<valType>::executeFunction( void ) {
+const RbLanguageObject& Func_unique<valType>::executeFunction( void ) {
     
-    valType* val = static_cast<valType*>( (*args)[0].getValue().clone() );
+    valType& val = static_cast<valType&>( (*args)[0].getValue() );
     
-    if(val->size() == 0) 
+    if(val.size() == 0) 
         return val;
-    val->sort();
-    val->unique();
+    val.sort();
+    val.unique();
     return val;
 
 }

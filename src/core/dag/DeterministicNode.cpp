@@ -64,9 +64,8 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->ge
     }
     
     /* Set value and stored value */
-    RbLanguageObject* retVal = function->execute();
-    
-    value           = retVal;
+    // TODO: We should not allow const casts
+    value           = const_cast<RbLanguageObject*>( &function->execute() );
     storedValue     = NULL;
     
     needsUpdate     = false;
@@ -235,6 +234,8 @@ const RbLanguageObject& DeterministicNode::getValue( void ) const {
 /** Get value */
 RbLanguageObject& DeterministicNode::getValue( void ) {
     
+    //throw RbException("We should never call non-const getValue in deterministic nodes because we don't own them.");
+    
     if ( touched && needsUpdate )
         update();
     
@@ -384,7 +385,8 @@ void DeterministicNode::update( void ) {
 //        storedValue     = value;
         
         // compute a new value
-        value = function->execute();
+        // TODO: We should not allow const casts
+        value = const_cast<RbLanguageObject*>( &function->execute() );
         
         // mark as changed
         needsUpdate = false;

@@ -21,6 +21,7 @@
 #include "Func_quit.h"
 #include "Model.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
@@ -43,7 +44,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute operation */
-RbLanguageObject* Func_quit::executeFunction( void ) {
+const RbLanguageObject& Func_quit::executeFunction( void ) {
 
     /* Ask if user really wants to quit */
     //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)
@@ -52,7 +53,7 @@ RbLanguageObject* Func_quit::executeFunction( void ) {
     if ( wantToQuit )
         throw RbException( RbException::QUIT );
 
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

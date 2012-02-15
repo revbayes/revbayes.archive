@@ -58,7 +58,7 @@ Func_dppServe* Func_dppServe::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_dppServe::executeFunction( void ) {
+const RbLanguageObject& Func_dppServe::executeFunction( void ) {
     
 	// Expecting the allocation vector to be like: [0,0,1,0,1,2,2,2,2,2,3,0,3,1]
 	std::vector<unsigned int> allocVec = static_cast<const VectorNatural&>( (*args)[0].getValue() ).getValue();
@@ -77,7 +77,8 @@ RbLanguageObject* Func_dppServe::executeFunction( void ) {
 		// paramValues[i] = ...
 	}
     
-	return new VectorReal( paramValues );
+    values.setValue( paramValues );
+	return values;
 }
 
 

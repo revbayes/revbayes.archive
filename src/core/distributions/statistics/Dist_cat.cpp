@@ -84,9 +84,9 @@ size_t Dist_cat::getNumberOfStates( void ) const {
 
 
 /** Get the probability mass vector */
-Simplex* Dist_cat::getProbabilityMassVector( void ) {
+const Simplex& Dist_cat::getProbabilityMassVector( void ) {
 
-    return static_cast<Simplex*>( getMemberValue("m").clone() );
+    return static_cast<Simplex&>( getMemberValue("m") );
 }
 
 
@@ -158,14 +158,17 @@ double Dist_cat::pdf( const RbLanguageObject& value ) const {
  *
  * @return      Random draw from categorical distribution
  */
-RbLanguageObject* Dist_cat::rv( void ) {
+const RbLanguageObject& Dist_cat::rv( void ) {
 
 	// Get the parameter of the categorical distribution and the rng
     std::vector<double>    m   = static_cast<Simplex&>( getMemberValue( "m" ) ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // Get copy of reference object
-    Categorical* draw = static_cast<Categorical*>( getMemberValue( "dummy" ).clone() );
+    if (randomVariable != NULL) {
+        delete randomVariable;
+    }
+    randomVariable = static_cast<Categorical*>( getMemberValue( "dummy" ).clone() );
 
     // Draw a random value
     double r   = rng->uniform01();
@@ -178,9 +181,9 @@ RbLanguageObject* Dist_cat::rv( void ) {
     }
 
     // Set draw to this value
-    draw->setValue( int( i ) );
+    randomVariable->setValue( int( i ) );
 
     // Return draw
-    return draw;
+    return *randomVariable;
 }
 

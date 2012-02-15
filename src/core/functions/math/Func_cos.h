@@ -18,6 +18,7 @@
 #define Func_cos_H
 
 #include "RbFunction.h"
+#include "Real.h"
 
 #include <map>
 #include <string>
@@ -41,9 +42,10 @@ class Func_cos :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
+        Real                        value;
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
 };

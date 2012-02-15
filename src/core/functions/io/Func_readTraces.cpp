@@ -18,6 +18,7 @@
 #include "Func_readTraces.h"
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 #include "Trace.h"
@@ -44,7 +45,7 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readTraces::executeFunction( void ) {
+const RbLanguageObject& Func_readTraces::executeFunction( void ) {
     // get the information from the arguments for reading the file
     RbString& fn = static_cast<RbString&>( (*args)[0].getValue() );
     
@@ -169,7 +170,7 @@ RbLanguageObject* Func_readTraces::executeFunction( void ) {
     }
     
     
-    return NULL;
+    return RbNullObject::getInstance();
     
 
 }

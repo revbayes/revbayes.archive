@@ -38,7 +38,7 @@ class Func__uplus :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
@@ -68,11 +68,11 @@ Func__uplus<valType, retType>* Func__uplus<valType, retType>::clone( void ) cons
 
 /** Execute function: We simply return a copy of the value */
 template <typename valType, typename retType>
-RbLanguageObject* Func__uplus<valType, retType>::executeFunction( void ) {
+const RbLanguageObject& Func__uplus<valType, retType>::executeFunction( void ) {
 
     const valType& val = static_cast<valType&> ( (*args)[0].getValue() );
 
-    return val.clone();
+    return val;
 }
 
 

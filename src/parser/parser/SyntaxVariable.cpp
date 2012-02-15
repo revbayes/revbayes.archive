@@ -316,7 +316,6 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             
             // test whether the element needs type conversion
             if (subElement.isTypeSpec( TypeSpec(VariableSlot_name) )) {
-                // TODO: We should not do 
                 theSlot = &dynamic_cast<VariableSlot&>(subElement);
                 theDagNode = theSlot->getDagNode();
                 theSlot->getVariable().setName(name);
@@ -393,17 +392,22 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
             Variable*              indexVar               = indexSyntaxElement->evaluateContent(env);
             
             if (theVar->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
-                RbLanguageObject&      theValue               = indexVar->getValue();
+                RbLanguageObject&   theValue               = indexVar->getValue();
+                size_t              indexValue             = 0;
                 if ( !theValue.isTypeSpec(Natural_name) ) {
-                    if (!theValue.isConvertibleTo(Natural_name)) {
-                        theValue = *static_cast<RbLanguageObject*>( theValue.convertTo(Natural_name) );
+                    if (theValue.isConvertibleTo(Natural_name)) {
+                        Natural* convertedValue = static_cast<Natural*>( theValue.convertTo(Natural_name) );
+                        indexValue = convertedValue->getValue() - 1;
+                        delete convertedValue;
                     }
                     else { 
                         throw RbException("Could not access index with type xxx because only natural indices are supported!");
                     }
                 }
-            
-                size_t      indexValue  = dynamic_cast<const Natural&>( theValue ).getValue() - 1;
+                else {
+                    indexValue = dynamic_cast<const Natural&>( theValue ).getValue() - 1;
+                }
+                
                 RbObject&   subElement  = theVar->getDagNode()->getElement(indexValue);
                             theVar      = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
             }

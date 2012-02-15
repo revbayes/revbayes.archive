@@ -71,7 +71,6 @@ protected:
     
     // Member variables
     bool                                        touched;                                                                        //!< Is touched by move?
-    RbLanguageObject*                           storedValue;                                                                    //!< Stored value
 };
 
 #endif

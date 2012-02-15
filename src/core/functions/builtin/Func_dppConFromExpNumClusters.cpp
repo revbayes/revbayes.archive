@@ -47,14 +47,14 @@ Func_dppConFromExpNumClusters* Func_dppConFromExpNumClusters::clone( void ) cons
 
 
 /** Execute function */
-RbLanguageObject* Func_dppConFromExpNumClusters::executeFunction( void ) {
+const RbLanguageObject& Func_dppConFromExpNumClusters::executeFunction( void ) {
     
 	const double clust  = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
 	const double num    = static_cast<const RealPos&>( (*args)[1].getValue() ).getValue();
 		
 	double p = RbStatistics::Helper::dppConcParamFromNumTables(clust, num);
-		
-	return new RealPos( p );
+	concentration.setValue( p );	
+	return concentration;
 }
 
 

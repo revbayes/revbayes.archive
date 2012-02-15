@@ -71,7 +71,7 @@ class RbFunction :  public RbInternal {
     	void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
 
         // RbFunction functions you have to override
-        virtual RbLanguageObject*                       execute(void);                                                                      //!< Execute function
+        virtual const RbLanguageObject&                 execute(void);                                                                      //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
@@ -89,7 +89,7 @@ class RbFunction :  public RbInternal {
 	protected:
                                                         RbFunction(void);                                                                   //!< Basic constructor
 
-        virtual RbLanguageObject*                       executeFunction(void);                                                              //!< Execute the function. This is the function one has to overwrite for simple return values.
+        virtual const RbLanguageObject&                 executeFunction(void);                                                              //!< Execute the function. This is the function one has to overwrite for simple return values.
         // Member variables
         Environment*                                    args;                                                                               //!< Environment for passed arguments
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?

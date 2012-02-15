@@ -41,9 +41,34 @@ const TypeSpec Dist_ctmm::typeSpec(Dist_ctmm_name);
 const TypeSpec Dist_ctmm::varTypeSpec(CharacterStateDiscrete_name);
 
 /** Default constructor for parser use */
-Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ) {
+Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ), randomVariable( NULL ) {
 }
 
+
+Dist_ctmm::Dist_ctmm(const Dist_ctmm& d) : DistributionDiscrete(d), randomVariable( NULL ) {
+    
+    if (d.randomVariable != NULL) {
+        randomVariable = d.randomVariable->clone();
+    }
+}
+
+
+/** Destructor. We need to free the random variable. */
+Dist_ctmm::~Dist_ctmm( void ) {
+    delete randomVariable;
+}
+
+
+Dist_ctmm& Dist_ctmm::operator=(const Dist_ctmm &d) {
+    
+    if (this != &d) {
+        DistributionDiscrete::operator=(d);
+        
+        randomVariable = d.randomVariable->clone();
+    }
+    
+    return *this;
+}
 
 /** Clone this object */
 Dist_ctmm* Dist_ctmm::clone( void ) const {
@@ -89,7 +114,7 @@ size_t Dist_ctmm::getNumberOfStates( void ) const {
 
 
 /** Get the probability mass vector */
-Simplex* Dist_ctmm::getProbabilityMassVector( void ) {
+const Simplex& Dist_ctmm::getProbabilityMassVector( void ) {
 
     // get the information from the arguments for reading the file
     RateMatrix&                q = static_cast<RateMatrix&>( (*members)[0].getValue() );
@@ -114,7 +139,7 @@ Simplex* Dist_ctmm::getProbabilityMassVector( void ) {
     q.calculateTransitionProbabilities( t.getValue(), m );
     
     //
-    return NULL; // TODO Return vector
+    return probMassVector; // TODO Return vector
 }
 
 
@@ -236,7 +261,7 @@ double Dist_ctmm::pdf( const RbLanguageObject& value ) const {
  *
  * @return      Randomly drawn character state
  */
-RbLanguageObject* Dist_ctmm::rv( void ) {
+const RbLanguageObject& Dist_ctmm::rv( void ) {
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -257,7 +282,7 @@ RbLanguageObject* Dist_ctmm::rv( void ) {
     // calculate the transition probabilities    
     Q.calculateTransitionProbabilities( t, m );
     
-    CharacterStateDiscrete* draw = start.clone();
+    randomVariable = start.clone();
     const std::vector<bool>& startState = start.getStateVector();
     size_t indexStart=0;
     for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
@@ -270,14 +295,14 @@ RbLanguageObject* Dist_ctmm::rv( void ) {
                 if (u <= 0) {
                     std::vector<bool> values = std::vector<bool>(start.getNumberOfStates());
                     values[i] = true;
-                    draw->setValue(values);
+                    randomVariable->setValue(values);
                     break;
                 }
             }
         }
     }
     
-    return draw;
+    return *randomVariable;
 }
 
 

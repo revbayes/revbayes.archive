@@ -18,6 +18,7 @@
 #define Func_size_H
 
 #include "RbFunction.h"
+#include "Natural.h"
 
 #include <map>
 #include <string>
@@ -42,11 +43,14 @@ public:
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 
 protected:
-    RbLanguageObject*           executeFunction(void);                              //!< Execute operation
+    const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
 
 private:
     static const TypeSpec       typeSpec;
     static const TypeSpec       returnTypeSpec;
+    
+    // function return value
+    Natural                     retValue;
 };
 
 #endif
@@ -74,12 +78,12 @@ Func_size<valType>* Func_size<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-RbLanguageObject* Func_size<valType>::executeFunction( void ) {
+const RbLanguageObject& Func_size<valType>::executeFunction( void ) {
     
     const valType& val = static_cast<valType&> ( (*args)[0].getValue() ) ;
-    RbLanguageObject* size = new Natural( val.size() ); 
+    retValue.setValue( val.size() ); 
     
-    return size;
+    return retValue;
 }
 
 

@@ -42,10 +42,13 @@ public:
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 
 protected:
-    RbLanguageObject*           executeFunction(void);                              //!< Execute operation
+    const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
 
 private:
     static const TypeSpec       typeSpec;	
+    
+    // function return value
+    valType                     retValue;
 };
 
 #endif
@@ -71,14 +74,14 @@ Func_sort<valType>* Func_sort<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-RbLanguageObject* Func_sort<valType>::executeFunction( void ) {
+const RbLanguageObject& Func_sort<valType>::executeFunction( void ) {
     
-    valType* val = static_cast<valType*>( (*args)[0].getValue().clone() );    
-    if(val->size() == 0) 
-        return val;
-    val->sort();
+    retValue = static_cast<valType&>( (*args)[0].getValue() );    
+    if(retValue.size() == 0) 
+        return retValue;
+    retValue.sort();
     
-    return val;
+    return retValue;
 }
 
 

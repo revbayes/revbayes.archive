@@ -46,7 +46,7 @@ Func_CtmmTransitionProbabilities* Func_CtmmTransitionProbabilities::clone(void) 
 
 
 /** Execute function */
-RbLanguageObject* Func_CtmmTransitionProbabilities::executeFunction(void) {
+const RbLanguageObject& Func_CtmmTransitionProbabilities::executeFunction(void) {
 
     // get the information from the arguments for reading the file
     RateMatrix& q = static_cast<RateMatrix&>( (*args)[0].getValue() );
@@ -68,14 +68,14 @@ RbLanguageObject* Func_CtmmTransitionProbabilities::executeFunction(void) {
         nStates = numStates;
         // construct a rate matrix of the correct dimensions
         // TODO: we might want to resize instead
-        transProbsMatrix = new TransitionProbabilityMatrix(nStates);
+        transProbsMatrix = TransitionProbabilityMatrix(nStates);
     }
 
     // calculate the transition probabilities
-    q.calculateTransitionProbabilities( t.getValue(), *transProbsMatrix );
+    q.calculateTransitionProbabilities( t.getValue(), transProbsMatrix );
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return transProbsMatrix->clone();
+    return transProbsMatrix;
 }
 
 

@@ -66,8 +66,8 @@ class MemberObject: public RbLanguageObject {
         virtual void                        setMemberVariable(const std::string& name, Variable* var);                          //!< Set member variable
 
         // Member method functions
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
-        virtual RbLanguageObject*           executeOperation(const std::string& name, Environment& args);                       //!< Override to map member methods to internal functions
+        const RbLanguageObject&             executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
+        virtual const RbLanguageObject&     executeOperation(const std::string& name, Environment& args);                       //!< Override to map member methods to internal functions
         virtual const MethodTable&          getMethods(void) const;                                                             //!< Get member methods (const)
 
         virtual bool                        supportsIndex(void) const { return false; }                                         //!< Does object support index operator?
@@ -79,7 +79,7 @@ class MemberObject: public RbLanguageObject {
     
         MemberObject&                       operator=(const MemberObject& m);
  
-        virtual RbLanguageObject*           executeOperationSimple(const std::string& name, Environment& args);                 //!< Override to map member methods to internal functions
+        virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, Environment& args);                 //!< Override to map member methods to internal functions
 
         // Members is the variable frame that stores member variables
         Environment*                        members;                                                                            //!< Member variables

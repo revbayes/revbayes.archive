@@ -23,6 +23,7 @@
 #include "Natural.h"
 #include "RealPos.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"
@@ -80,24 +81,25 @@ std::string Move::briefInfo(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* Move::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& Move::executeOperationSimple(const std::string& name, Environment& args) {
 
     if ( name == "accept" ) {
 
         acceptMove();
-        return NULL;
+        return RbNullObject::getInstance();
     }
     else if ( name == "acceptanceRatio" ) {
 
-        return new Real( getAcceptanceRatio() );
+        acceptanceR.setValue( getAcceptanceRatio() );
+        return acceptanceR;
     }
     else if ( name == "numAccepted" ) {
 
-        return new Natural( numAccepted );
+        return numAccepted;
     }
     else if ( name == "numTried" ) {
 
-        return new Natural( numTried );
+        return numTried;
     }
     else if ( name == "propose" ) {
 
@@ -105,17 +107,17 @@ RbLanguageObject* Move::executeOperationSimple(const std::string& name, Environm
         Real* tmp = new Real(performMove( (*temp)[0] ) );
         
         // return the Hastings ratio
-        return tmp;
+        return *tmp;
     }
     else if ( name == "reject" ) {
 
         rejectMove();
-        return NULL;
+        return RbNullObject::getInstance();
     }
     else if ( name == "resetCounters" ) {
 
         resetCounters();
-        return NULL;
+        return RbNullObject::getInstance();
     }
 
     // No hit yet; we hope there is a mapped function call in the base class
@@ -126,7 +128,7 @@ RbLanguageObject* Move::executeOperationSimple(const std::string& name, Environm
 /** Calculate acceptance probability */
 double Move::getAcceptanceRatio( void ) const {
 
-    return double( numAccepted ) / double( numTried );
+    return double( numAccepted.getValue() ) / double( numTried.getValue() );
 }
 
 

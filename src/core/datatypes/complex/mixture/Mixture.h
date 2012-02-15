@@ -50,7 +50,7 @@ public:
     void                            setMemberVariable(const std::string& name, Variable* var);              //!< Catch setting of the topology
     
     // Member method inits
-    RbLanguageObject*               executeOperation(const std::string& name, Environment& args);           //!< Execute method
+    const RbLanguageObject&         executeOperation(const std::string& name, Environment& args);           //!< Execute method
     const MethodTable&              getMethods(void) const;                                                 //!< Get methods
     
     // Mixture functions
@@ -82,6 +82,10 @@ private:
     /*RbDagNodePtr<DagNodeContainer>         observations_;                                                        //!< Vector containing the elements on which the mixture is operating*/
     VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
     VectorRealPos*                  classProbabilities_;                                                    //!< Vector giving class probabilities
+
+    // memberfunction return values
+    Natural                         numClasses;
+
 };
 
 #endif

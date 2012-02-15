@@ -86,6 +86,7 @@ protected:
 private:
     static const TypeSpec               typeSpec;
     RbLanguageObject*                   value;                                                              //!< Value
+    RbLanguageObject*                   storedValue;                                                                    //!< Stored value
 
 };
 

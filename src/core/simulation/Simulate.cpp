@@ -32,6 +32,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RangeRule.h"
 #include "RbUtil.h"
 #include "RbString.h"
@@ -69,19 +70,19 @@ Simulate* Simulate::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* Simulate::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "run") {
         RbLanguageObject& argument = args[0].getValue();
         int n = static_cast<Natural&>( argument ).getValue();
         run(n);
-        return NULL;
+        return RbNullObject::getInstance();
     }
     if (name == "getValues") {
         RbLanguageObject& argument = args[0].getValue();
         const RbString& n = static_cast<RbString&>( argument ).getValue();
         Vector* vec = getValues(n);
-        return vec;
+        return *vec;
     }
 
     return MemberObject::executeOperationSimple( name, args );
@@ -279,8 +280,6 @@ void Simulate::run(size_t ndata) {
     /* Get the chain settings */
     std::cerr << "Getting the random generator ..." << std::endl;
     
-    RandomNumberGenerator* rng        = GLOBAL_RNG;
-    
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;
     for (size_t i=0; i<fileMonitors.size(); i++) {
@@ -304,7 +303,7 @@ void Simulate::run(size_t ndata) {
         //Random draws from the ordered stochastic nodes
         for (size_t i = 0; i < orderedStochasticNodes.size() ; i++) {
             Distribution& dist = orderedStochasticNodes[i]->getDistribution();
-            orderedStochasticNodes[i]->setValue( dist.rv() );
+            orderedStochasticNodes[i]->setValue( dist.rv().clone() );
             // we need to call keep so that the values get recalculated properly
             orderedStochasticNodes[i]->keep();
         }

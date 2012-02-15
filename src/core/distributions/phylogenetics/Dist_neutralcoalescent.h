@@ -51,7 +51,7 @@ public:
     const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
     double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
     double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
-    RbLanguageObject*           rv(void);                                                           //!< Generate tree from the coalescent
+    const RbLanguageObject&     rv(void);                                                           //!< Generate tree from the coalescent
 
 private:
     double                      drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize);

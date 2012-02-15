@@ -50,12 +50,16 @@ class Dist_dirichlet: public DistributionContinuous {
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
         double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
         double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
-        Real*                       quantile(const double p);                                           //!< Quantile
-        RbLanguageObject*           rv(void);                                                           //!< Generate random variable
+        const Real&                 quantile(const double p);                                           //!< Quantile
+        const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
+
+        // memberfunction return variables
+        Simplex                     randomVariable;
+
 };
 
 #endif

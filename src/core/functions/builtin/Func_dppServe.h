@@ -22,6 +22,7 @@
 #define Func_dppServe_H
 
 #include "RbFunction.h"
+#include "VectorReal.h"
 
 #include <map>
 #include <string>
@@ -45,11 +46,14 @@ public:
 	const TypeSpec&                 getReturnType(void) const;                                  //!< Get type of return value
 
 protected:
-	RbLanguageObject*               executeFunction(void);                                              //!< Execute function
+	const RbLanguageObject&         executeFunction(void);                                              //!< Execute function
     
 private:
     static const TypeSpec           typeSpec;	
     static const TypeSpec           returnTypeSpec;
+
+    // function return value
+    VectorReal                      values;
 };
 
 #endif

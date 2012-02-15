@@ -35,12 +35,12 @@
 const TypeSpec StochasticNode::typeSpec(StochasticNode_name);
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.getType() ), clamped( false ), distribution( NULL ), instantiated( true ), needsRecalculation( true ) {
+StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.getType() ), clamped( false ), distribution( NULL ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
 }
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ) {
+StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
 
     // increment the reference count for myself
     RbDagNodePtr::incrementCountForAddress(this);
@@ -66,7 +66,7 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     }
 
     /* We use a random draw as the initial value */
-    value = distribution->rv();
+    value = distribution->rv().clone();
     if (value == NULL) {
         std::cerr << "Ooops, rv return NULL!\n";
     }
@@ -125,6 +125,10 @@ StochasticNode::~StochasticNode( void ) {
     delete distribution;
     
     delete value;
+    
+    if (storedValue != NULL) {
+        delete storedValue;
+    }
 }
 
 

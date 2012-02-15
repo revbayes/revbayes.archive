@@ -55,11 +55,11 @@ RateMatrix::RateMatrix(void) : MemberObject(getMemberRules()) {
     areEigensDirty       = true;
     reversibilityChecked = false;
     isReversible         = false;
-    theRateMatrix        = new MatrixReal(numStates, numStates, 0.0);
-    theStationaryFreqs   = new Simplex(numStates);
+    theRateMatrix        = new MatrixReal(numStates.getValue(), numStates.getValue(), 0.0);
+    theStationaryFreqs   = new Simplex(numStates.getValue());
     theEigenSystem       = new EigenSystem(theRateMatrix);
-    c_ijk.resize(numStates*numStates*numStates);
-    cc_ijk.resize(numStates*numStates*numStates);
+    c_ijk.resize(numStates.getValue() * numStates.getValue() * numStates.getValue());
+    cc_ijk.resize(numStates.getValue() * numStates.getValue() * numStates.getValue());
 }
 
 
@@ -70,11 +70,11 @@ RateMatrix::RateMatrix(size_t n) : MemberObject(getMemberRules()) {
     areEigensDirty       = true;
     reversibilityChecked = false;
     isReversible         = false;
-    theRateMatrix        = new MatrixReal(numStates, numStates, 0.0);
-    theStationaryFreqs   = new Simplex(numStates);
+    theRateMatrix        = new MatrixReal(numStates.getValue(), numStates.getValue(), 0.0);
+    theStationaryFreqs   = new Simplex(numStates.getValue());
     theEigenSystem       = new EigenSystem(theRateMatrix);
-    c_ijk.resize(numStates*numStates*numStates);
-    cc_ijk.resize(numStates*numStates*numStates);
+    c_ijk.resize(numStates.getValue() * numStates.getValue() * numStates.getValue());
+    cc_ijk.resize(numStates.getValue() * numStates.getValue() * numStates.getValue());
 }
 
 
@@ -90,6 +90,8 @@ RateMatrix::RateMatrix(const RateMatrix& m) {
     theEigenSystem       = m.theEigenSystem->clone();
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
+    avgRate              = m.avgRate;
+    
     theEigenSystem->setRateMatrixPtr(theRateMatrix);
 }
 
@@ -103,10 +105,33 @@ RateMatrix::~RateMatrix(void) {
 }
 
 
+RateMatrix& RateMatrix::operator=(const RateMatrix &r) {
+    
+    if (this != &r) {
+        MemberObject::operator=(r);
+        
+        
+        numStates            = r.numStates;
+        areEigensDirty       = r.areEigensDirty;
+        reversibilityChecked = r.reversibilityChecked;
+        isReversible         = r.isReversible;
+        theRateMatrix        = r.theRateMatrix->clone();
+        theStationaryFreqs   = r.theStationaryFreqs->clone();
+        theEigenSystem       = r.theEigenSystem->clone();
+        c_ijk                = r.c_ijk;
+        cc_ijk               = r.cc_ijk;
+        avgRate              = r.avgRate;
+        
+        theEigenSystem->setRateMatrixPtr(theRateMatrix);
+    }
+    
+    return *this;
+}
+
 /** Index operator (const) */
 const VectorReal& RateMatrix::operator[]( const size_t i ) const {
 
-    if ( i >= numStates )
+    if ( i >= numStates.getValue() )
         throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
     return (*theRateMatrix)[i];
 }
@@ -115,7 +140,7 @@ const VectorReal& RateMatrix::operator[]( const size_t i ) const {
 /** Index operator */
 VectorReal& RateMatrix::operator[]( const size_t i ) {
 
-    if ( i >= numStates )
+    if ( i >= numStates.getValue() )
         throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
     return (*theRateMatrix)[i];
 }
@@ -125,7 +150,7 @@ VectorReal& RateMatrix::operator[]( const size_t i ) {
 double RateMatrix::averageRate(void) const {
 
     double ave = 0.0;
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<numStates.getValue(); i++)
         ave += -(*theStationaryFreqs)[i] * (*theRateMatrix)[i][i];
     return ave;
 }
@@ -140,9 +165,9 @@ void RateMatrix::calculateCijk(void) {
         const MatrixReal& ev  = theEigenSystem->getEigenvectors();
         const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
         double* pc = &c_ijk[0];
-        for (size_t i=0; i<numStates; i++)
-            for (size_t j=0; j<numStates; j++)
-                for (size_t k=0; k<numStates; k++)
+        for (size_t i=0; i<numStates.getValue(); i++)
+            for (size_t j=0; j<numStates.getValue(); j++)
+                for (size_t k=0; k<numStates.getValue(); k++)
                     *(pc++) = ev[i][k] * iev[k][j];   
         }
     else
@@ -151,9 +176,9 @@ void RateMatrix::calculateCijk(void) {
         const MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
         const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
-        for (size_t i=0; i<numStates; i++)
-            for (size_t j=0; j<numStates; j++)
-                for (size_t k=0; k<numStates; k++)
+        for (size_t i=0; i<numStates.getValue(); i++)
+            for (size_t j=0; j<numStates.getValue(); j++)
+                for (size_t k=0; k<numStates.getValue(); k++)
                     *(pc++) = cev[i][k] * ciev[k][j];
         }
 }
@@ -198,32 +223,32 @@ void RateMatrix::calculateCijk(void) {
 void RateMatrix::calculateStationaryFrequencies(void) {
 
 	// transpose the rate matrix and put into QT
-    MatrixReal QT(numStates, numStates);
-    for (size_t i=0; i<numStates; i++)
-        for (size_t j=0; j<numStates; j++)
+    MatrixReal QT(numStates.getValue(), numStates.getValue());
+    for (size_t i=0; i<numStates.getValue(); i++)
+        for (size_t j=0; j<numStates.getValue(); j++)
             QT[i][j] = (*theRateMatrix)[j][i];
 
 	// compute the LU decomposition of the transposed rate matrix
-    MatrixReal L(numStates, numStates);
-    MatrixReal U(numStates, numStates);
+    MatrixReal L(numStates.getValue(), numStates.getValue());
+    MatrixReal U(numStates.getValue(), numStates.getValue());
 	RbMath::computeLandU(QT, L, U);
 	
 	// back substitute into z = 0 to find un-normalized stationary frequencies, starting with x_n = 1.0
-    VectorReal pi(numStates, 0.0);
-	pi[numStates-1] = 1.0;
+    VectorReal pi(numStates.getValue(), 0.0);
+	pi[numStates.getValue()-1] = 1.0;
 	for (int i=(int)numStates-2; i>=0; i--)
 		{
 		double dotProduct = 0.0;
-		for (size_t j=i+1; j<numStates; j++)
+		for (size_t j=i+1; j<numStates.getValue(); j++)
 			dotProduct += U[i][j] * pi[j];
 		pi[i] = (0.0 - dotProduct) / U[i][i];
 		}
 		
 	// normalize the solution vector
 	double sum = 0.0;
-	for (size_t i=0; i<numStates; i++)
+	for (size_t i=0; i<numStates.getValue(); i++)
 		sum += pi[i];
-	for (size_t i=0; i<numStates; i++)
+	for (size_t i=0; i<numStates.getValue(); i++)
 		pi[i] /= sum;
         
     // set the stationary frequencies
@@ -252,8 +277,8 @@ void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilit
 bool RateMatrix::checkTimeReversibity(double tolerance) {
 	
 	double diff = 0.0;
-	for (size_t i=0; i<numStates; i++)
-		for (size_t j=i+1; j<numStates; j++)
+	for (size_t i=0; i<numStates.getValue(); i++)
+		for (size_t j=i+1; j<numStates.getValue(); j++)
 			diff += fabs( (*theStationaryFreqs)[i] * (*theRateMatrix)[i][j] - (*theStationaryFreqs)[j] * (*theRateMatrix)[j][i] );
     reversibilityChecked = true;
 	if (diff < tolerance)
@@ -270,20 +295,21 @@ RateMatrix* RateMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* RateMatrix::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& RateMatrix::executeOperationSimple(const std::string& name, Environment& args) {
 
     if (name == "nstates") {
-        return new Natural((int)numStates);
+        return numStates;
     }
     else if (name == "stationaryfreqs") {
-        RbLanguageObject* s = theStationaryFreqs->clone();
-        return s;
+        RbLanguageObject* s = theStationaryFreqs;
+        return *s;
     }
     else if (name == "averate") {
-        return new RealPos(averageRate() );
+        avgRate.setValue( averageRate() );
+        return avgRate;
     }        
     else if (name == "reversible") {
-        return new RbBoolean(isReversible);
+        return isReversible;
     }        
 
     return MemberObject::executeOperationSimple( name, args );
@@ -372,8 +398,8 @@ void RateMatrix::rescaleToAverageRate(const double r) {
 
     double curAve = averageRate();
     double scaleFactor = r / curAve;
-    for (size_t i=0; i<numStates; i++)
-        for (size_t j=0; j<numStates; j++)
+    for (size_t i=0; i<numStates.getValue(); i++)
+        for (size_t j=0; j<numStates.getValue(); j++)
             (*theRateMatrix)[i][j] *= scaleFactor;
 }
 
@@ -390,10 +416,10 @@ std::string RateMatrix::richInfo(void) const {
 /** Set the diagonal of the rate matrix such that each row sums to zero */
 void RateMatrix::setDiagonal(void) {
 
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<numStates.getValue(); i++)
         {
         double sum = 0.0;
-        for (size_t j=0; j<numStates; j++)
+        for (size_t j=0; j<numStates.getValue(); j++)
             {
             if (i != j)
                 sum += (*theRateMatrix)[i][j];
@@ -427,18 +453,18 @@ void RateMatrix::tiProbsEigens(const double t, TransitionProbabilityMatrix& P) c
     const VectorReal& eigenValue = theEigenSystem->getRealEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<double> eigValExp(numStates);
-	for (size_t s=0; s<numStates; s++)
+    std::vector<double> eigValExp(numStates.getValue());
+	for (size_t s=0; s<numStates.getValue(); s++)
 		eigValExp[s] = exp(eigenValue[s] * t);
         
     // calculate the transition probabilities
 	const double* ptr = &c_ijk[0];
-	for (size_t i=0; i<numStates; i++) 
+	for (size_t i=0; i<numStates.getValue(); i++) 
 		{
-		for (size_t j=0; j<numStates; j++) 
+		for (size_t j=0; j<numStates.getValue(); j++) 
 			{
 			double sum = 0.0;
-			for(size_t s=0; s<numStates; s++)
+			for(size_t s=0; s<numStates.getValue(); s++)
 				sum += (*ptr++) * eigValExp[s];
 			P[i][j] = (sum < 0.0) ? 0.0 : sum;
 			}
@@ -454,8 +480,8 @@ void RateMatrix::tiProbsComplexEigens(const double t, TransitionProbabilityMatri
     const VectorReal& eigenValueComp = theEigenSystem->getImagEigenvalues();
 
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<std::complex<double> > ceigValExp(numStates);
-	for (size_t s=0; s<numStates; s++)
+    std::vector<std::complex<double> > ceigValExp(numStates.getValue());
+	for (size_t s=0; s<numStates.getValue(); s++)
         {
         std::complex<double> ev = std::complex<double>(eigenValueReal[s], eigenValueComp[s]);
 		ceigValExp[s] = exp(ev * t);
@@ -463,12 +489,12 @@ void RateMatrix::tiProbsComplexEigens(const double t, TransitionProbabilityMatri
 
     // calculate the transition probabilities
 	const std::complex<double>* ptr = &cc_ijk[0];
-	for (size_t i=0; i<numStates; i++) 
+	for (size_t i=0; i<numStates.getValue(); i++) 
 		{
-		for (size_t j=0; j<numStates; j++) 
+		for (size_t j=0; j<numStates.getValue(); j++) 
 			{
 			std::complex<double> sum = std::complex<double>(0.0, 0.0);
-			for(size_t s=0; s<numStates; s++)
+			for(size_t s=0; s<numStates.getValue(); s++)
 				sum += (*ptr++) * ceigValExp[s];
 			P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
 			}

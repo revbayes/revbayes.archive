@@ -18,9 +18,11 @@
 
 #include "Character.h"
 #include "Matrix.h"
+#include "Natural.h"
 #include "TaxonData.h"
 #include "ValueRule.h"
 #include "Vector.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 
 #include <set>
@@ -96,7 +98,7 @@ class CharacterData : public Matrix {
         void                                showData(void);                                                             //!< Show the data in the character matrix
 
     protected:
-        RbLanguageObject*                   executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
 
     private:
         // Utility functions
@@ -110,11 +112,27 @@ class CharacterData : public Matrix {
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
         std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
         std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
-        std::vector<std::string>            sequenceNames;                                                              //!< names of the sequences
+        VectorString                        sequenceNames;                                                              //!< names of the sequences
         size_t                              sequenceLength;                                                             //!< The length of each sequence
-        std::string                         characterType;                                                              //!< Rule describing sequence type
+        RbString                            characterType;                                                              //!< Rule describing sequence type
         TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
         bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
+
+        // memberfunction return values
+    Natural                             numTaxa;
+    VectorNatural                       numChar;
+    Natural                             numExcludedTaxa;
+    Natural                             numExcludedChars;
+    Natural                             numIncludedTaxa;
+    Natural                             numIncludedChars;
+    VectorString                        excludedTaxa;
+    VectorNatural                       excludedChars;
+    VectorString                        includedTaxa;
+    VectorNatural                       includedChars;
+    Natural                             numConstPatterns;
+    Natural                             numMissing;
+    RbBoolean                           isHomologous;
+    
 };
 
 #endif

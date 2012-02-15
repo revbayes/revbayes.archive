@@ -157,13 +157,15 @@ double Dist_gamma::pdf( const RbLanguageObject& value ) const {
  * @return      Quantile
  *
  */
-Real* Dist_gamma::quantile(const double p) {
+const Real& Dist_gamma::quantile(const double p) {
     
     double shape  = static_cast<      RealPos&>(getMemberValue("shape") ).getValue();
     double lambda = static_cast<      RealPos&>(getMemberValue("rate")  ).getValue();
     
     double quantile = RbStatistics::Gamma::quantile(shape, lambda, p);     
-    return new RealPos(quantile);
+    quant.setValue( quantile );
+    
+    return quant;
 }
 
 
@@ -175,14 +177,16 @@ Real* Dist_gamma::quantile(const double p) {
  *
  * @return      Random draw from gamma distribution
  */
-RbLanguageObject* Dist_gamma::rv( void ) {
+const RbLanguageObject& Dist_gamma::rv( void ) {
     
     double shape  = static_cast<      RealPos&>(getMemberValue("shape") ).getValue();
     double lambda = static_cast<      RealPos&>(getMemberValue("rate")  ).getValue();
     
     RandomNumberGenerator* rng = GLOBAL_RNG;        
     double rv = RbStatistics::Gamma::rv(shape, lambda, *rng);
-    return new RealPos(rv);
+    randomVariable.setValue( rv );
+    
+    return randomVariable;
 }
 
 

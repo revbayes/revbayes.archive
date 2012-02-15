@@ -127,7 +127,6 @@
 #include "Func_dppSeat.h"
 #include "Func_dppServe.h"
 #include "Func_ls.h"
-#include "Func_memoryAllocations.h"
 #include "Func_normalizeVector.h"
 #include "Func_quit.h"
 #include "Func_setval.h"
@@ -171,7 +170,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
 
         /* Add special abstract types that do not correspond directly to classes */
-        addType( new RbAbstract( VectorString(RbVoid_name) ) );
+        VectorString tmp = VectorString(RbVoid_name);
+        addType( new RbAbstract( tmp ) );
 
         /* Add abstract types */
         addType( new RbAbstract( VectorString(RbObject_name) ) );
@@ -344,7 +344,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "dppSeat",                  new Func_dppSeat()                  );
         addFunction( "dppServe",                 new Func_dppServe()                 );
         addFunction( "ls",                       new Func_ls()                       );
-        addFunction( "memory",                   new Func_memoryAllocations()        );
         addFunction( "normalize",                new Func_normalizeVector()          );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );

@@ -47,7 +47,7 @@ public:
 
     // Utility functions you have to override
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node
-    std::string                             debugInfo(void) const;                                               //!< Complete info about object
+    std::string                             debugInfo(void) const;                                              //!< Complete info about object
     const VectorString&                     getClass(void) const;                                               //!< Get class vector
     const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
@@ -56,12 +56,12 @@ public:
     void                                    swapParentNode(const RbDagNodePtr& oldP, const RbDagNodePtr& newP); //!< Swap a parent node
 
     // DAG function you have to override
-    virtual RbDagNodePtr                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;//!< Clone entire graph
+    virtual RbDagNodePtr                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;  //!< Clone entire graph
 
 protected:
 
     // Utility function you have to override
-    void                                    getAffected(std::set<StochasticNode* >& affected);            //!< Mark and get affected nodes
+    void                                    getAffected(std::set<StochasticNode* >& affected);                  //!< Mark and get affected nodes
     void                                    keepMe(void);                                                       //!< Keep value of this and affected nodes
     void                                    restoreMe(void);                                                    //!< Restore value of this nodes
     void                                    touchMe(void);                                                      //!< Tell affected nodes value is reset
@@ -74,6 +74,7 @@ protected:
 private:
     static const TypeSpec                   typeSpec;
     RbLanguageObject*                       value;                                                               //!< Value
+    RbLanguageObject*                       storedValue;                                                         //!< Stored value
 
 };
 

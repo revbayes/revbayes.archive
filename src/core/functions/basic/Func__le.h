@@ -20,6 +20,7 @@
 #define Func__le_H
 
 #include "RbFunction.h"
+#include "RbBoolean.h"
 
 #include <string>
 
@@ -36,13 +37,17 @@ class Func__le :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbLanguageObject*           executeFunction(void);                                      //!< Execute function
+    	const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+    
+        // function return value
+        RbBoolean                   retValue;
+    
 };
 
 #endif
@@ -77,12 +82,13 @@ Func__le<firstValType, secondValType>* Func__le<firstValType, secondValType>::cl
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-RbLanguageObject* Func__le<firstValType,secondValType>::executeFunction( void ) {
+const RbLanguageObject& Func__le<firstValType,secondValType>::executeFunction( void ) {
 
     const firstValType&  val1 = static_cast<firstValType&> ( (*args)[0].getValue() );
-    const secondValType& val2 = static_cast<secondValType&>( (*args)[1].getValue() ) ;
+    const secondValType& val2 = static_cast<secondValType&>( (*args)[1].getValue() );
+    retValue.setValue( val1 <= val2 );
     
-    return new RbBoolean( val1 <= val2 );
+    return retValue;
 }
 
 

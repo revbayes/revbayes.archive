@@ -72,7 +72,7 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function */
-RbLanguageObject* UserFunction::executeFunction( void ) {
+const RbLanguageObject& UserFunction::executeFunction( void ) {
 
     // Clear signals
     Signals::getSignals().clearFlags();
@@ -93,7 +93,7 @@ RbLanguageObject* UserFunction::executeFunction( void ) {
     }
 
     // Return the return value
-    return retValue->getDagNode()->getValue().clone();
+    return retValue->getDagNode()->getValue();
 }
 
 

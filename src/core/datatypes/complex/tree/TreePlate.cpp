@@ -22,6 +22,7 @@
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Real.h"
@@ -143,7 +144,7 @@ const TypeSpec& TreePlate::getTypeSpec(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environment& args) {
+const RbLanguageObject& TreePlate::executeOperation(const std::string& name, Environment& args) {
 
     if (name == "getVariable") {
         // get the name of the variable
@@ -169,7 +170,8 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
             // get the variable
             Variable& var = static_cast<VariableSlot&>( vars.getElement(nodeIndex) ).getVariable();
             
-            return static_cast<RbLanguageObject*>( var.getDagNode() );
+//            return static_cast<RbLanguageObject*>( var.getDagNode() );
+            return RbNullObject::getInstance();
         }
     }
 
@@ -178,7 +180,7 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
 }
 
 /* Map calls to member methods */
-RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& name, Environment& args) {
     
     // special handling for adding a variable
     if (name == "addVariable") 
@@ -215,29 +217,32 @@ RbLanguageObject* TreePlate::executeOperationSimple(const std::string& name, Env
         // set the variable
         vars.setElement(nodeIndex - 1, var.clone() );
         
-        return NULL;
+        return RbNullObject::getInstance();
         }
     else if (name == "nnodes") 
         {
-        return new Natural( static_cast<const Topology&>( getMemberValue("topology") ).getNumberOfNodes() );
+            numNodes.setValue( static_cast<const Topology&>( getMemberValue("topology") ).getNumberOfNodes() );
+        return numNodes;
         }
     else if (name == "node") 
         {
         // we assume that the node indices in the RevLanguage are from 1:nnodes()
         int index = dynamic_cast<const Natural &>( args.getValue("index") ).getValue() - 1;
         
-        return static_cast<const Topology&>( getMemberValue("topology") ).getNodes()[index]->clone();
+        return *static_cast<const Topology&>( getMemberValue("topology") ).getNodes()[index];
         }
     else if (name == "index") 
         {
         const TopologyNode& theNode = dynamic_cast<const TopologyNode&>( args[0].getValue() );
-        return new Natural(getNodeIndex(theNode) );
+        nodeIndex.setValue( getNodeIndex( theNode ) );
+        return nodeIndex;
         }
     else if (name == "tipIndex") 
         {
         const TopologyNode& theNode = dynamic_cast<const TopologyNode&>( args[0].getValue() );
         size_t tIndex = getTipIndex(theNode);
-        return new Natural(tIndex);
+        tipIndex.setValue( tIndex );
+        return tipIndex;
         }
     else 
         {

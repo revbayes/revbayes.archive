@@ -218,7 +218,7 @@ double Dist_birthdeath::ut(double t, double t_prime, double lambda, double mu, d
  *
  * @return      Randomly drawn vector of speciation times
  */
-RbLanguageObject* Dist_birthdeath::rv( void ) {
+const RbLanguageObject& Dist_birthdeath::rv( void ) {
     
     // TODO needs implementation!!!
     
@@ -229,8 +229,9 @@ RbLanguageObject* Dist_birthdeath::rv( void ) {
 //    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ).get() )->getValue();
 //    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
     
+    randomVariable.setValue( (T - o) / 2.0 + o );
     
-    return new RealPos( (T - o) / 2.0 + o);
+    return randomVariable;
 }
 
 

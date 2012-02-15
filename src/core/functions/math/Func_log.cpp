@@ -44,12 +44,12 @@ Func_log* Func_log::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_log::executeFunction( void ) {
+const RbLanguageObject& Func_log::executeFunction( void ) {
     
     const double a = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
     const double b = static_cast<const RealPos&>( (*args)[1].getValue() ).getValue();
-    
-    return new Real( log10(a)/log10(b) );
+    value.setValue( log10(a) / log10(b) );
+    return value;
 }
 
 

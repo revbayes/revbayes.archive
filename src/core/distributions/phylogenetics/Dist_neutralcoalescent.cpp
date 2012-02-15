@@ -26,6 +26,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbNullObject.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TreePlate.h"
@@ -197,7 +198,7 @@ double Dist_neutralcoalescent::pdf( const RbLanguageObject& value ) const {
  *
  * @return      Generate random coalescent tree
  */
-RbLanguageObject* Dist_neutralcoalescent::rv( void ) {
+const RbLanguageObject& Dist_neutralcoalescent::rv( void ) {
 
 //    // Get the parameters
 //    // double b                    = static_cast<const RealPos*     >( getMemberValue( "lambda"   ) )->getValue();
@@ -279,7 +280,7 @@ RbLanguageObject* Dist_neutralcoalescent::rv( void ) {
 //    }
 //    return plate;
     
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

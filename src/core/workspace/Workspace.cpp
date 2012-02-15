@@ -214,7 +214,7 @@ const VectorString& Workspace::getClass() const {
 
 
 /** Execute function to get its value (workspaces only evaluate functions once) */
-RbLanguageObject* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+const RbLanguageObject& Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
     /* Using this calling convention indicates that we are only interested in
        evaluating the function once */

@@ -183,29 +183,30 @@ DistributionFunction* DistributionFunction::clone( void ) const {
 
 
 /** Execute operation: switch based on type */
-RbLanguageObject* DistributionFunction::executeFunction( void ) {
+const RbLanguageObject& DistributionFunction::executeFunction( void ) {
 
     if ( functionType == DENSITY ) {
 
         if ( static_cast<const RbBoolean&>( (*args)["log"].getValue() ).getValue() == false )
-            return new RealPos( distribution->pdf  ( (*args)[0].getValue() ) );
+            density.setValue( distribution->pdf  ( (*args)[0].getValue() ) );
         else
-            return new Real( distribution->lnPdf( (*args)[0].getValue() ) );
+            density.setValue( distribution->lnPdf( (*args)[0].getValue() ) );
+        return density;
     }
     else if (functionType == RVALUE) {
 
-        RbLanguageObject* draw = distribution->rv();
+        const RbLanguageObject& draw = distribution->rv();
         
         return draw;
     }
     else if (functionType == PROB) {
-
-        return new RealPos( static_cast<DistributionContinuous*>( distribution )->cdf( (*args)[0].getValue() ) );
+        cd.setValue( static_cast<DistributionContinuous*>( distribution )->cdf( (*args)[0].getValue() ) );
+        return cd;
     }
     else if (functionType == QUANTILE) {
 
         double    prob  = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
-        RbLanguageObject* quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
+        const RbLanguageObject& quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
         
         return quant;
     }

@@ -41,11 +41,14 @@ public:
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
   
 protected:
-	RbLanguageObject*           executeFunction( void);                              //!< Execute operation
+	const RbLanguageObject&     executeFunction( void);                              //!< Execute operation
   
 private:
-  void                          resizeVector(Container &vec, Environment *args, unsigned int numArg);
-  static const TypeSpec         typeSpec;
+    void                        resizeVector(Container &vec, Environment *args, unsigned int numArg);
+    static const TypeSpec       typeSpec;
+    
+    // function return value
+    Container*                  retValue;
 };
 
 #endif
@@ -86,29 +89,29 @@ void Func_resize::resizeVector(Container &vec, Environment *args, unsigned int n
 }
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
-RbLanguageObject* Func_resize::executeFunction( void ) {
+const RbLanguageObject& Func_resize::executeFunction( void ) {
 
-  unsigned long nargs = args->size();
-  //The identity of the object to resize
-  Container* val = static_cast<Container*>( (*args)[0].getValue().clone() );
+    unsigned long nargs = args->size();
+    //The identity of the object to resize
+    retValue = static_cast<Container*>( (*args)[0].getValue().clone() );
 
     if (nargs == 2) {
       //Resizing a vector
       unsigned int nrows = ( static_cast<Natural&>( (*args)[1].getValue() ) ).getValue();
-      val->resize(nrows);
+      retValue->resize(nrows);
     }
     else {
       //Resizing a matrix of nargs-1 dimensions
         int nrows = ( static_cast<Natural&>( (*args)[1].getValue() ) ).getValue();
         
-        if (!val->isType(Vector_name)) {
-            val = static_cast<Container*>( val->convertTo(TypeSpec(Vector_name, new TypeSpec(RbLanguageObject_name) ) ) );
+        if (!retValue->isType(Vector_name)) {
+            retValue = static_cast<Container*>( retValue->convertTo(TypeSpec(Vector_name, new TypeSpec(RbLanguageObject_name) ) ) );
         }
         
-        val->resize(nrows);
-        resizeVector(*val, args, 2);
+        retValue->resize(nrows);
+        resizeVector(*retValue, args, 2);
     }
-  return val;
+  return *retValue;
   
 }
 

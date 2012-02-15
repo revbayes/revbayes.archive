@@ -42,7 +42,7 @@ public:
     const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
     
 protected:
-    RbLanguageObject*           executeFunction(void);                                                  //!< Execute function
+    const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
     
 private:
     void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files

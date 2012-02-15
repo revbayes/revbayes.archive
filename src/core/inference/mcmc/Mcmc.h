@@ -55,7 +55,7 @@ public:
     void                        run(size_t ngen);                                                               //!< Update the chain
 
 protected:
-    RbLanguageObject*           executeOperationSimple(const std::string& name, Environment& args);             //!< Execute method
+    const RbLanguageObject&     executeOperationSimple(const std::string& name, Environment& args);             //!< Execute method
 
     
 private:

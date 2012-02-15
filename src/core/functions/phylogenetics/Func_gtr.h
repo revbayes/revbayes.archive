@@ -18,6 +18,7 @@
 #define Func_gtr_H
 
 #include "RbFunction.h"
+#include "RateMatrix.h"
 
 class DAGNode;
 class VectorString;
@@ -39,12 +40,15 @@ class Func_gtr :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        RbLanguageObject*           executeFunction(void);                                                   //!< Execute function
+        const RbLanguageObject&     executeFunction(void);                                                   //!< Execute function
 
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
 
+    // function return value
+    RateMatrix                  m;
+    
 };
 
 #endif

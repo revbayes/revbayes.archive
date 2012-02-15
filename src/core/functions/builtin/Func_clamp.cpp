@@ -21,6 +21,7 @@
 #include "Func_clamp.h"
 #include "Integer.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
@@ -43,7 +44,7 @@ Func_clamp* Func_clamp::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_clamp::executeFunction( void ) {
+const RbLanguageObject& Func_clamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
     DAGNode* theDagNode = (*args)[0].getDagNode();
@@ -55,7 +56,7 @@ RbLanguageObject* Func_clamp::executeFunction( void ) {
     // The following call will throw an error if the value type is wrong
     theNode->clamp( (*args)[1].getValue().clone() );
 
-    return NULL;
+    return RbNullObject::getInstance();
 }
 
 

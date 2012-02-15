@@ -145,7 +145,7 @@ double Dist_multinomial::pdf( const RbLanguageObject& value ) const {
 
 
 /** Quantile function */
-Real* Dist_multinomial::quantile(const double p) {
+const Real& Dist_multinomial::quantile(const double p) {
 
     throw RbException( "Quantile function of multinomial not implemented yet" );
 }
@@ -159,13 +159,15 @@ Real* Dist_multinomial::quantile(const double p) {
  *
  * @return      Random draw from multinomial distribution
  */
-RbLanguageObject* Dist_multinomial::rv( void ) {
+const RbLanguageObject& Dist_multinomial::rv( void ) {
 
     std::vector<double> p            = static_cast<Simplex&>( getMemberValue( "p" ) ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<int> r( p.size() );
 
 	r = RbStatistics::Multinomial::rv( p, *rng );
-    return new VectorNatural( r );
+    randomVariable.setValue( r );
+    
+    return randomVariable;
 }
 

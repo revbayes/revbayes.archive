@@ -46,7 +46,8 @@ void MoveSimple::acceptMove(void) {
     
 //    std::cout << "Accept move\n";
     accept();
-    numAccepted++;
+    size_t tmp_accepted = numAccepted.getValue();
+    numAccepted.setValue( tmp_accepted++ );
     for (std::vector<StochasticNode*>::iterator it=nodes.begin(); it!=nodes.end(); it++) {
         (*it)->keep();
     }
@@ -101,7 +102,8 @@ double MoveSimple::performMove(double& lnProbabilityRatio) {
         lnProbabilityRatio += theNode->getLnProbabilityRatio();
     }
 
-    numTried++;
+    size_t tmp_tried = numTried.getValue();
+    numTried.setValue( tmp_tried++ );
     
     return lnHastingsRatio;
 }

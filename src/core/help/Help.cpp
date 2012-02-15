@@ -39,7 +39,7 @@ Help::Help(void) {
 
 /** Destructor */
 Help::~Help(void) {
-
+    delete helpRoot;
 }
 
 

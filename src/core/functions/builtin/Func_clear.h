@@ -37,7 +37,7 @@ public:
     const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
 
 protected:
-    RbLanguageObject*           executeFunction(void);                              //!< Execute function
+    const RbLanguageObject&     executeFunction(void);                              //!< Execute function
 
 private:
     static const TypeSpec       typeSpec;

@@ -40,6 +40,11 @@
 const TypeSpec Func_distance::typeSpec(Func_distance_name);
 const TypeSpec Func_distance::returnTypeSpec(DistanceMatrix_name);
 
+Func_distance::Func_distance(void) : RbFunction(), matrix(1) {
+    
+}
+
+
 /** Clone object */
 Func_distance* Func_distance::clone(void) const {
 
@@ -48,7 +53,7 @@ Func_distance* Func_distance::clone(void) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_distance::executeFunction(void) {
+const RbLanguageObject& Func_distance::executeFunction(void) {
 
     // get the information from the arguments for reading the file
     CharacterData& m      = static_cast<CharacterData&>( (*args)[0].getValue() );
@@ -96,7 +101,7 @@ RbLanguageObject* Func_distance::executeFunction(void) {
     int n = (int)m.getNumberOfTaxa();
 
     // allocate the distance matrix
-    DistanceMatrix* d = new DistanceMatrix(n);
+    matrix = DistanceMatrix(n);
 
     // fill in the distance matrix
     for (int i=0; i<n; i++)
@@ -125,8 +130,8 @@ RbLanguageObject* Func_distance::executeFunction(void) {
                 dist = distanceJC69(td_i, td_j);
             else if (myModel == logdet)
                 dist = distanceJC69(td_i, td_j);
-            d[i][j] = dist;
-            d[j][i] = dist;
+            matrix[i][j] = dist;
+            matrix[j][i] = dist;
             }
         }
         
@@ -134,10 +139,10 @@ RbLanguageObject* Func_distance::executeFunction(void) {
     for (int i=0; i<n; i++)
         {
         std::string tName = m.getTaxonNameWithIndex(i);
-        d->addTaxonWithName(tName);
+        matrix.addTaxonWithName(tName);
         }
 
-    return d;
+    return matrix;
 }
 
 

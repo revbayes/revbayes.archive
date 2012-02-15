@@ -19,6 +19,7 @@
 #define Func_dppSeat_H
 
 #include "RbFunction.h"
+#include "VectorNatural.h"
 
 #include <map>
 #include <string>
@@ -42,11 +43,14 @@ public:
 	const TypeSpec&                 getReturnType(void) const;                                  //!< Get type of return value
 
 protected:
-    RbLanguageObject*               executeFunction(void);                                              //!< Execute function
+    const RbLanguageObject&         executeFunction(void);                                              //!< Execute function
 
 private:
     static const TypeSpec           typeSpec;	
     static const TypeSpec           returnTypeSpec;
+
+    // function return value
+    VectorNatural                   allocation;
 };
 
 #endif

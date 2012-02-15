@@ -20,6 +20,7 @@
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "StringUtilities.h"
@@ -47,7 +48,7 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readTrees::executeFunction( void ) {
+const RbLanguageObject& Func_readTrees::executeFunction( void ) {
     
     // get the information from the arguments for reading the file
     RbString& fn = static_cast<RbString&>( (*args)[0].getValue() );
@@ -158,14 +159,14 @@ RbLanguageObject* Func_readTrees::executeFunction( void ) {
     
     // return either a list of trees or a single tree wrapped up in a DAG node
     if ( trees->size() > 1 ) {
-        return trees;
+        return *trees;
     }
     else if ( trees->size() == 1 ) {
-        return (*trees)[0].clone();
+        return (*trees)[0];
     }
     else {
         // Return null object
-        return NULL;
+        return RbNullObject::getInstance();
     }
 }
 
