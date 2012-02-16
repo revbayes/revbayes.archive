@@ -69,6 +69,11 @@ Workspace::Workspace(const Workspace& x) : Environment(x), functionTable(x.funct
 Workspace::~Workspace() {
 
     delete functionTable;
+    
+    for (TypeTable::iterator it = typeTable.begin(); it != typeTable.end(); it++) {
+        RbObject* type = it->second;
+        delete type;
+    }
 }
 
 
