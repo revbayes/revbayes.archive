@@ -39,18 +39,16 @@ public:
     DAGNode&                                    operator*(void) const;
     DAGNode*                                    operator->(void) const;
     operator                                    DAGNode*(void) const { return mPtr; }
-    static bool                                 decrementCountForAddress(const DAGNode* qPtr);
-    static std::map<const DAGNode*,size_t>&     getRefCountMap(void);                                           //!< Get the memory manager
-    static void                                 incrementCountForAddress(const DAGNode* qPtr);
+    static bool                                 decrementCountForAddress(DAGNode* qPtr);
+//    static std::map<const DAGNode*,size_t>&     getRefCountMap(void);                                           //!< Get the memory manager
+    static void                                 incrementCountForAddress(DAGNode* qPtr);
     
 private:
     size_t                                      countForAddress(const DAGNode* qPtr);
     void                                        finalizePointer(void);
+    void                                        initializePointer(DAGNode* inPtr);
 
-
-    
-    void                        initializePointer(DAGNode* inPtr);
-    DAGNode*                    mPtr;
+    DAGNode*                                    mPtr;
 };
 
 

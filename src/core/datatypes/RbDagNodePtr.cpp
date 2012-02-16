@@ -64,64 +64,69 @@ DAGNode& RbDagNodePtr::operator*(void) const {
 
 size_t RbDagNodePtr::countForAddress(const DAGNode* qPtr) {
     
-    std::map<const DAGNode*,size_t>& refCountMap = getRefCountMap();
+//    std::map<const DAGNode*,size_t>& refCountMap = getRefCountMap();
     
     // check if we got the NULL pointer
     if (qPtr == 0) return -1;
     
-    if ( refCountMap.find(qPtr) != refCountMap.end() ) {
-        return refCountMap[qPtr];
-    }
+//    if ( refCountMap.find(qPtr) != refCountMap.end() ) {
+//        return refCountMap[qPtr];
+//    }
     
-    return 0;
+    return qPtr->getReferenceCount();
 }
 
 
-std::map<const DAGNode*, size_t>& RbDagNodePtr::getRefCountMap()
-{
-    static std::map<const DAGNode*,size_t> refCountMap;
-    return refCountMap;
-}
+//std::map<const DAGNode*, size_t>& RbDagNodePtr::getRefCountMap()
+//{
+//    static std::map<const DAGNode*,size_t> refCountMap;
+//    return refCountMap;
+//}
 
 
-void RbDagNodePtr::incrementCountForAddress(const DAGNode* qPtr) {
+void RbDagNodePtr::incrementCountForAddress(DAGNode* qPtr) {
     
-    std::map<const DAGNode*,size_t>& refCountMap = getRefCountMap();
+    //std::map<const DAGNode*,size_t>& refCountMap = getRefCountMap();
     
     // check if we got the NULL pointer
     if (qPtr == 0) return;
     
-    if ( refCountMap.find(qPtr) == refCountMap.end() ) {
-        refCountMap[qPtr] = 1;
-    } 
-    else {
-        refCountMap[qPtr]++;
-    }
+    qPtr->incrementReferenceCount();
+//    if ( refCountMap.find(qPtr) == refCountMap.end() ) {
+//        refCountMap[qPtr] = 1;
+//    } 
+//    else {
+//        refCountMap[qPtr]++;
+//    }
 }
 
-bool RbDagNodePtr::decrementCountForAddress(const DAGNode* qPtr) {
+bool RbDagNodePtr::decrementCountForAddress(DAGNode* qPtr) {
     
-    std::map<const DAGNode*,size_t>& refCountMap = getRefCountMap();
+//    std::map<const DAGNode*,size_t>& refCountMap = getRefCountMap();
     
     // check if we got the NULL pointer
     if (qPtr == 0) return false;
     
-    if ( refCountMap.find(qPtr) == refCountMap.end() )
-    {
-        RbException("Missing entry in memory map");
-        return false;
-    }
+    size_t refCount = qPtr->decrementReferenceCount();
     
-    refCountMap[qPtr]--;
-    size_t currCount = refCountMap[qPtr];
+    return refCount == 0;
     
-    if ( currCount == 0 ) 
-    {
-        refCountMap.erase(qPtr);
-        return true;
-    }
-    
-    return false;
+//    if ( refCountMap.find(qPtr) == refCountMap.end() )
+//    {
+//        RbException("Missing entry in memory map");
+//        return false;
+//    }
+//    
+//    refCountMap[qPtr]--;
+//    size_t currCount = refCountMap[qPtr];
+//    
+//    if ( currCount == 0 ) 
+//    {
+//        refCountMap.erase(qPtr);
+//        return true;
+//    }
+//    
+//    return false;
 }
 
 

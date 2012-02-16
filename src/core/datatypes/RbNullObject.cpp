@@ -36,7 +36,12 @@ RbNullObject* RbNullObject::clone(void) const {
 
 
 bool RbNullObject::operator==(void *ptr) {
-    return ptr == NULL;
+    return ptr == NULL || ptr == this;
+}
+
+
+bool RbNullObject::operator==(const RbNullObject& obj) {
+    return true;
 }
 
 

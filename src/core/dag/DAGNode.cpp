@@ -40,6 +40,8 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeS
 
     // initialize the variable
     variable = NULL;
+    
+    refCount = 0;
 }
 
 
@@ -49,6 +51,7 @@ DAGNode::DAGNode(void) : children(), parents(), valueTypeSpec(RbObject_name) {
     // initialize the variable
     variable = NULL;
     
+    refCount = 0;
 }
 
 
@@ -68,6 +71,7 @@ DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.va
     // copy the name so that we still be able to identify the variable in a cloned DAG
     name = x.name;
     
+    refCount = 0;
 }
 
 
@@ -82,6 +86,14 @@ void DAGNode::addChildNode(VariableNode *c) {
     PRINTF("Adding child with name \"%s\" to parent with name \"%s\".\n",c->getName().c_str(),getName().c_str());
         
     children.insert(c);
+}
+
+
+/** Decrement the reference count. */
+size_t DAGNode::decrementReferenceCount( void ) {
+    refCount--;
+    
+    return refCount;
 }
 
 
@@ -148,10 +160,21 @@ const std::set<RbDagNodePtr >& DAGNode::getParents( void ) const {
     return parents;
 }
 
+
+/** Get the reference count for this instance. */
+size_t DAGNode::getReferenceCount(void) const {
+    return refCount;
+}
+
 const Variable& DAGNode::getVariable(void) const {
     return *variable;
 }
 
+
+/** Increment the reference count for this instance. */
+void DAGNode::incrementReferenceCount( void ) {
+    refCount++;
+}
 
 /** Is this a constant node */
 bool DAGNode::isConst( void ) const {
