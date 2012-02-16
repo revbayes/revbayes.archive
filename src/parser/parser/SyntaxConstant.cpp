@@ -50,6 +50,7 @@ SyntaxConstant& SyntaxConstant::operator=(const SyntaxConstant& x) {
 
         SyntaxElement::operator=(x);
         
+        delete value;
         value = x.value->clone();
         
     }

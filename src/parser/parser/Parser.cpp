@@ -17,6 +17,7 @@
 #include "Help.h"
 #include "Parser.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "RbString.h"
@@ -186,7 +187,7 @@ int Parser::execute(SyntaxElement* root) const {
     }
 
     // Print result if the root is not an assign expression
-    if (result != NULL && result->getDagNode() != NULL && !root->isType(SyntaxAssignExpr_name)) {
+    if (result != NULL && result->getDagNode() != NULL && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL && !root->isType(SyntaxAssignExpr_name)) {
         std::ostringstream msg;
         result->getDagNode()->printValue(msg);
         RBOUT( msg.str() );

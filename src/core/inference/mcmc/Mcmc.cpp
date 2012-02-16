@@ -173,6 +173,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         }
         
         setMemberDagNode(name, new ConstantNode( moves ) );
+        delete var;
     }
     else if ( name == "monitors" ) {
         // get the DAG nodes
@@ -207,6 +208,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         }
         
         setMemberDagNode(name, new ConstantNode( monitors ) );
+        delete var;
     }
     else {
         ConstantMemberObject::setMemberVariable(name, var);

@@ -18,6 +18,7 @@
 #include "DeterministicNode.h"
 #include "Environment.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "Signals.h"
 #include "VectorString.h"
@@ -300,7 +301,7 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
+                if (result != NULL && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );

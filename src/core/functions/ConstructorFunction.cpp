@@ -61,14 +61,21 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
     if (this != &c) {
         RbFunction::operator=(c);
         
+        delete templateObject;
+        delete copyObject;
         templateObject = c.templateObject->clone();
         if (c.copyObject != NULL) {
             copyObject = c.copyObject->clone();
+        }
+        else {
+            copyObject = NULL;
         }
         
         // Hack: we know that we will not own the argRules.
         argRules = &templateObject->getMemberRules();
     }
+    
+    return *this;
 }
 
 

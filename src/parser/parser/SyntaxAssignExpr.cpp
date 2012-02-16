@@ -158,7 +158,7 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
             theNode = static_cast<DAGNode*>( value.clone() );
         }
         else {
-            theNode = new ConstantNode(value.clone() );
+            theNode = new ConstantNode( value.clone() );
         }
         theSlot.getVariable().setDagNode( theNode );
     }

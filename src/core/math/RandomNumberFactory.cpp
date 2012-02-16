@@ -40,6 +40,7 @@ RandomNumberFactory::RandomNumberFactory(void) {
 /** Destructor */
 RandomNumberFactory::~RandomNumberFactory(void) {
 
+    delete seedGenerator;
 }
 
 
