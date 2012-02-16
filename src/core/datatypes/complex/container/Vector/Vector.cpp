@@ -95,6 +95,11 @@ const RbLanguageObject& Vector::operator[](size_t i) const {
 /** Clear contents of value container and make length 0 in all dimensions */
 void Vector::clear( void ) {
     
+    for (std::vector<RbLanguageObject*>::iterator it = elements.begin(); it != elements.end(); it++) {
+        RbLanguageObject* theElement = *it;
+        delete theElement;
+    }
+    
     elements.clear();
     
     // clear also the members if some might have been set
