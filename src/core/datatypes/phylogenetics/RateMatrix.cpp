@@ -110,6 +110,9 @@ RateMatrix& RateMatrix::operator=(const RateMatrix &r) {
     if (this != &r) {
         MemberObject::operator=(r);
         
+        delete theRateMatrix;
+        delete theStationaryFreqs;
+        delete theEigenSystem;
         
         numStates            = r.numStates;
         areEigensDirty       = r.areEigensDirty;
