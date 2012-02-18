@@ -55,6 +55,9 @@ class Dist_exp: public DistributionContinuous {
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
 
+        // parameters
+        Variable                    rate;
+        
         // memberfunction return value
         RealPos                     randomVariable;
 

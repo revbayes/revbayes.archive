@@ -91,8 +91,8 @@ DistanceMatrix* DistanceMatrix::clone(void) const {
 /** Exclude a taxon */
 void DistanceMatrix::excludeTaxon(size_t i) {
 
-    if (i >= members->size())
-        throw RbException( "Only " + RbString(int(members->size())) + " taxa in matrix" );
+    if (i >= sequenceNames.size())
+        throw RbException( "Only " + RbString(int(sequenceNames.size())) + " taxa in matrix" );
     deletedTaxa.insert( i );
 }
 
@@ -327,9 +327,9 @@ const TypeSpec& DistanceMatrix::getTypeSpec(void) const {
 size_t DistanceMatrix::indexOfTaxonWithName( std::string& s ) const {
     
     // search through all names
-    for (size_t i=0; i<members->size(); i++) 
+    for (size_t i=0; i<sequenceNames.size(); i++) 
         {
-        if (s == members->getName( i )) 
+        if (s == sequenceNames[ i ]) 
             {
             return i;
             }

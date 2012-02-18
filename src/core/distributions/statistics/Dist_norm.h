@@ -54,6 +54,10 @@ class Dist_norm: public DistributionContinuous {
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
 
+        // parameters
+        Variable                    mu;
+        Variable                    sigma;
+    
         // memberfunction return values
         Real                        randomVariable;
 

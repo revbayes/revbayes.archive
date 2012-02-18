@@ -39,7 +39,7 @@ public:
     virtual const VectorString&     getClass(void) const;                                            //!< Get class vector
     
     // Basic utility functions you may want to override
-    virtual void                    printValue(std::ostream& o) const;                               //!< Print value for user
+//    virtual void                    printValue(std::ostream& o) const;                               //!< Print value for user
     
     // Basic utility functions you do not have to override
     bool                            isConstant(void) const;                                          //!< Is the object, including all member variables and elements, constant?

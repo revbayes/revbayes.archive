@@ -55,6 +55,10 @@ class Dist_beta: public DistributionContinuous {
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
 
+        // parameters
+        Variable                    alpha; 
+        Variable                    beta;
+    
         // memberfunction return value
         RealPos                     randomVariable;
     

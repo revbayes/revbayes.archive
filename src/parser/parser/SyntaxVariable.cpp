@@ -236,7 +236,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
 
             if ( !env.existsVariable( *identifier ) ) {
                 // create a new slot
-                Variable* theVar = new Variable( *identifier );
+                Variable* theVar = new Variable( TypeSpec(RbObject_name) );
                 env.addVariable(*identifier,theVar);
             }
             
@@ -318,7 +318,8 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             if (subElement.isTypeSpec( TypeSpec(VariableSlot_name) )) {
                 theSlot = &dynamic_cast<VariableSlot&>(subElement);
                 theDagNode = theSlot->getDagNode();
-                theSlot->getVariable().setName(name);
+                // TODO: Set the name of the node here!
+//                theSlot->setLabel(name);
             }
 
         }
@@ -374,8 +375,8 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
                 throw RbException( "Member variable identifier missing" );
 
             MemberObject* theMemberObject = static_cast<const MemberObject&>( baseVar->getDagNode()->getValue() ).clone();
-            const Environment& members = theMemberObject->getMembers();
-            theVar = members[ (*identifier) ].getVariable().clone();
+//            const Environment& members = theMemberObject->getMembers();
+            theVar->setDagNode( theMemberObject->getMember( *identifier ) );
         }
         else {
             

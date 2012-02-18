@@ -35,6 +35,7 @@ public:
     
     bool                                operator==(void* ptr);                                                  //!< Compare to NULL pointer
     bool                                operator==(const RbNullObject& obj);                                                  //!< Compare to NULL pointer
+    bool                                operator==(const RbLanguageObject& obj);                                                  //!< Compare to NULL pointer
     
     static RbNullObject&     getInstance(void)                                           //!< Get the memory manager
     {

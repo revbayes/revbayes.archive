@@ -71,9 +71,13 @@ const MemberRules& ObjectMonitor::getMemberRules( void ) const {
     
     if (!rulesSet) 
     {
-        memberRules.push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
-        memberRules.push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
-        memberRules.push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
+//        memberRules.push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
+//        memberRules.push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
+//        memberRules.push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
+
+        const MemberRules& parentRules = Monitor::getMemberRules();
+        memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
+        
         rulesSet = true;
     }
     
@@ -104,7 +108,7 @@ void ObjectMonitor::monitor(void) {
 void ObjectMonitor::monitor(int gen) {
     
     // get the sampling frequency
-    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
+    int samplingFrequency = dynamic_cast<const Natural&>( printgen.getValue() ).getValue();
 
     if (gen % samplingFrequency == 0) {
         
@@ -123,55 +127,18 @@ void ObjectMonitor::monitor(int gen) {
 void ObjectMonitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
+    int samplingFrequency = dynamic_cast<const Natural&>( printgen.getValue() ).getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
 
 
-
-/** Complete info about object */
-std::string ObjectMonitor::richInfo(void) const {
-    
-    // get the sampling frequency
-    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
-    
-    std::ostringstream o;
-    o << "Monitor: interval = " << samplingFrequency;
-    
-    return o.str();
-}
-
-void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
+void ObjectMonitor::setMemberDagNode(std::string const &name, DAGNode* var) {
     
     // catch setting of the variables 
-    if (name == "variable" || name == "") {
-        DAGNode* theNode = var->getDagNode();
-        if (theNode->getValue().isType(DagNodeContainer_name)) {
-            DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( theNode->getValue() );
-            for (size_t i = 0; i < theContainer.size(); i++) {
-                theNode = static_cast<VariableSlot&>( theContainer.getElement(i) ).getDagNode();
-                if (theNode->isType(VariableNode_name)) {
-                    nodes.push_back( static_cast<VariableNode*>( theNode ) );
-                    values[static_cast<VariableNode*>( theNode )->getName()] = Vector();
-                    //                } else {
-                    //                    throw RbException("Cannot monitor a constant node!");
-                }
-            }
-        }
-        else {
-            if (theNode->isType(VariableNode_name)) {
-                nodes.push_back( static_cast<VariableNode*>( theNode ) );
-                values[static_cast<VariableNode*>( theNode )->getName()] = Vector();
-                //            } else {
-                //                throw RbException("Cannot monitor a constant node!");
-            }
-        }
-    } 
-    else {
-        // call parent class to set member variable
-        ConstantMemberObject::setMemberVariable( name, var );
-    }
+        
+    // call parent class to set member variable
+    Monitor::setMemberDagNode( name, var );
 }
 
 

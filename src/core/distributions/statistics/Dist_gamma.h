@@ -20,6 +20,7 @@
 
 #include "DistributionContinuous.h"
 #include "RealPos.h"
+#include "Variable.h"
 
 #include <ostream>
 #include <string>
@@ -55,6 +56,10 @@ class Dist_gamma: public DistributionContinuous {
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
 
+        // parameters
+        Variable                    shape;
+        Variable                    rate;
+    
         // memberfunction return variables
         RealPos                     randomVariable;
 

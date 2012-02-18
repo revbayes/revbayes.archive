@@ -105,8 +105,8 @@ void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
-    Variable* var = new Variable( new ConstantNode( obs ) );
-    members->addVariable(obs->getTaxonName(), var);
+    DAGNode* var = new ConstantNode( obs );
+    taxonMap.insert( std::pair<std::string,RbDagNodePtr>( obs->getTaxonName(), var ) );
 }
 
 void CharacterData::addTaxonData( TaxonData* obs ) {
@@ -152,8 +152,8 @@ void CharacterData::excludeCharacter(size_t i) {
 /** Exclude a taxon */
 void CharacterData::excludeTaxon(size_t i) {
 
-    if (i >= members->size())
-        throw RbException( "Only " + RbString(int(members->size())) + " taxa in matrix" );
+    if (i >= taxonMap.size())
+        throw RbException( "Only " + RbString(int(taxonMap.size())) + " taxa in matrix" );
 
     deletedTaxa.insert( i );
 }
@@ -521,8 +521,8 @@ const TypeSpec& CharacterData::getTypeSpec(void) const {
 size_t CharacterData::indexOfTaxonWithName( std::string& s ) const {
     
     // search through all names
-    for (size_t i=0; i<members->size(); i++) {
-        if (s == members->getName( i )) {
+    for (size_t i=0; i<sequenceNames.size(); i++) {
+        if (s == sequenceNames[i]) {
             return i;
         }
     }
@@ -609,7 +609,9 @@ Vector* CharacterData::makeSiteColumn( size_t cn ) const {
     if ( getNumberOfTaxa() == 0 )
         throw RbException( "Character matrix is empty" );
 
-    Vector* temp = static_cast<Vector*>( ( (*members)[0].getValue() ).clone() );
+    const std::string& name = sequenceNames[0];
+    std::map<std::string, RbDagNodePtr>::const_iterator it = taxonMap.find(name);
+    Vector* temp = static_cast<Vector*>( ( it->second->getValue() ).clone() );
     temp->clear();
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
         temp->push_back( getCharacter( i, cn ).clone() );
@@ -709,8 +711,8 @@ void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
         elements.insert( elements.begin() + index, var );
         
         // add the sequence also as a member so that we can access it by name
-        Variable* variable = new Variable( new ConstantNode(var ) );
-        members->addVariable(seq->getTaxonName(), variable );
+        DAGNode* variable = new ConstantNode(var );
+        taxonMap.insert( std::pair<std::string,RbDagNodePtr>( seq->getTaxonName(), variable ) );
     }
 }
 

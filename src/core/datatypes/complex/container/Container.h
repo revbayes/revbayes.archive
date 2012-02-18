@@ -19,11 +19,10 @@
 #define Container_H
 
 #include "ConstantMemberObject.h"
+#include "Natural.h"
 
 #include <iostream>
 #include <vector>
-
-class Natural;
 
 
 const std::string Container_name = "Container";
@@ -76,7 +75,8 @@ protected:
     const TypeSpec                      elementType;                                                            //!< Type of elements
 
 private:
-    Natural*                            returnValueSize;
+    // memberfunction return value
+    Natural                             returnValueSize;
 
 
 };

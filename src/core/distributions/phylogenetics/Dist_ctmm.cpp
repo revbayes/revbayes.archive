@@ -41,11 +41,19 @@ const TypeSpec Dist_ctmm::typeSpec(Dist_ctmm_name);
 const TypeSpec Dist_ctmm::varTypeSpec(CharacterStateDiscrete_name);
 
 /** Default constructor for parser use */
-Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ), randomVariable( NULL ) {
+Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ), 
+                               randomVariable( NULL ),     
+                               rateMatrix( TypeSpec( RateMatrix_name ) ),
+                               time( TypeSpec( RealPos_name ) ),
+                               initialState( TypeSpec( CharacterStateDiscrete_name ) ) {
 }
 
 
-Dist_ctmm::Dist_ctmm(const Dist_ctmm& d) : DistributionDiscrete(d), randomVariable( NULL ) {
+Dist_ctmm::Dist_ctmm(const Dist_ctmm& d) : DistributionDiscrete(d), 
+                                           randomVariable( NULL ),     
+                                           rateMatrix( d.rateMatrix ),
+                                           time( d.time ),
+                                           initialState( d.initialState ) {
     
     if (d.randomVariable != NULL) {
         randomVariable = d.randomVariable->clone();
@@ -107,7 +115,7 @@ const MemberRules& Dist_ctmm::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_ctmm::getNumberOfStates( void ) const {
 
-    size_t numStates  = static_cast<const CharacterStateDiscrete&>( getMemberValue( "a"  ) ).getNumberOfStates();
+    size_t numStates  = static_cast<const CharacterStateDiscrete&>( initialState.getValue() ).getNumberOfStates();
     
     return numStates;
 }
@@ -117,8 +125,8 @@ size_t Dist_ctmm::getNumberOfStates( void ) const {
 const Simplex& Dist_ctmm::getProbabilityMassVector( void ) {
 
     // get the information from the arguments for reading the file
-    RateMatrix&                q = static_cast<RateMatrix&>( (*members)[0].getValue() );
-    RealPos&                   t = static_cast<RealPos&>( (*members)[1].getValue() );
+    RateMatrix&                q = static_cast<RateMatrix&>( rateMatrix.getValue() );
+    RealPos&                   t = static_cast<RealPos&>( time.getValue() );
 //    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
     
     // initialize the number of states
@@ -168,9 +176,9 @@ const TypeSpec& Dist_ctmm::getVariableType( void ) const {
 double Dist_ctmm::lnPdf( const RbLanguageObject& value ) const {
 
     // Get the parameters
-    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( getMemberValue( "Q" ) );
-    double                        t      = static_cast<const RealPos&               >( getMemberValue( "v" ) ).getValue();
-    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( getMemberValue( "a" ) );
+    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( rateMatrix.getValue() );
+    double                        t      = static_cast<const RealPos&               >( time.getValue() ).getValue();
+    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( initialState.getValue() );
     const CharacterStateDiscrete& stop   = static_cast<const CharacterStateDiscrete&>( value );
     
     // calculate the transition probability matrix
@@ -217,9 +225,9 @@ double Dist_ctmm::lnPdf( const RbLanguageObject& value ) const {
 double Dist_ctmm::pdf( const RbLanguageObject& value ) const {
 
     // Get the parameters
-    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( getMemberValue( "Q" ) );
-    double                        t      = static_cast<const RealPos&               >( getMemberValue( "v" ) ).getValue();
-    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( getMemberValue( "a" ) );
+    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( rateMatrix.getValue() );
+    double                        t      = static_cast<const RealPos&               >( time.getValue() ).getValue();
+    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( initialState.getValue() );
     const CharacterStateDiscrete& stop   = static_cast<const CharacterStateDiscrete&>( value );
 
     // calculate the transition probability matrix
@@ -267,9 +275,9 @@ const RbLanguageObject& Dist_ctmm::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    RateMatrix&             Q      = static_cast<RateMatrix&            >( getMemberValue( "Q" ) );
-    double                  t      = static_cast<const RealPos&         >( getMemberValue( "v" ) ).getValue();
-    CharacterStateDiscrete& start  = static_cast<CharacterStateDiscrete&>( getMemberValue( "a" ) );
+    RateMatrix&             Q      = static_cast<RateMatrix&            >( rateMatrix.getValue() );
+    double                  t      = static_cast<const RealPos&         >( time.getValue() ).getValue();
+    CharacterStateDiscrete& start  = static_cast<CharacterStateDiscrete&>( initialState.getValue() );
     
     // calculate the transition probability matrix
     
@@ -307,10 +315,21 @@ const RbLanguageObject& Dist_ctmm::rv( void ) {
 
 
 /** We intercept a call to set a member variable to make sure that the number of states is consistent */
-void Dist_ctmm::setMemberVariable( const std::string& name, Variable* var ) {
+void Dist_ctmm::setMemberDagNode( const std::string& name, DAGNode* var ) {
 
-    DistributionDiscrete::setMemberVariable( name, var );
-
+    if ( name == "Q" ) {
+        rateMatrix.setDagNode( var );
+    }
+    else if ( name == "v" ) {
+        time.setDagNode( var );
+    }
+    else if ( name == "a" ) {
+        initialState.setDagNode( var );
+    }
+    else {
+        DistributionDiscrete::setMemberDagNode( name, var );
+    }
+    
     // we cannot do the following because first only one variable is set and hence the following code crashes
     // nevertheless a test like that might be useful
 //    if ( name == "Q" || name == "a" ) {

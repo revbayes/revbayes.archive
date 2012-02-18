@@ -54,6 +54,10 @@ private:
     static const TypeSpec       typeSpec;
     static const TypeSpec       varTypeSpec;
 
+    // parameters
+    Variable                    mu;
+    Variable                    sigma;
+    
     // memberfunction return variables
     Real                        randomVariable;
     

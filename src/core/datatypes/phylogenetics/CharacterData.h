@@ -133,6 +133,7 @@ class CharacterData : public Matrix {
     Natural                             numMissing;
     RbBoolean                           isHomologous;
     
+    std::map<std::string, RbDagNodePtr> taxonMap;
 };
 
 #endif

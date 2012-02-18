@@ -38,14 +38,14 @@
 
 
 /** Constructor */
-Move::Move( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ) {
+Move::Move( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ), weight( TypeSpec(RealPos_name) ) {
 
     numAccepted = 0;
     numTried    = 0;
 }
 
 /** Copy Constructor. We use a shallow copy of the nodes */
-Move::Move(const Move &m) : ConstantMemberObject(m) {
+Move::Move(const Move &m) : ConstantMemberObject(m), weight( m.weight ) {
     
     numTried    = m.numTried;
     numAccepted = m.numAccepted;
@@ -197,7 +197,7 @@ const MethodTable& Move::getMethods(void) const {
  *  from its member variable "weight". */
 double Move::getUpdateWeight( void ) const {
 
-    return static_cast<const RealPos&>( (*members)["weight"].getValue() ).getValue();
+    return static_cast<const RealPos&>( weight.getValue() ).getValue();
 }
 
 
@@ -214,7 +214,7 @@ void Move::resetCounters(void) {
 }
 
 /** Set member variable. We catch here setting of the stochastic nodes to add them to our internal vector */
-void Move::setMemberVariable(std::string const &name, Variable* var) {
+void Move::setMemberDagNode(std::string const &name, DAGNode* var) {
     
     // test whether we want to set the variable 
     if (name == "variable") {
@@ -242,9 +242,9 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
                 }
             }
         }
-        else if (var->getDagNode()->isType(StochasticNode_name)) {
+        else if (var->isType(StochasticNode_name)) {
             // cast to stochastic node
-            StochasticNode* theNode = dynamic_cast<StochasticNode*>( var->getDagNode() );
+            StochasticNode* theNode = dynamic_cast<StochasticNode*>( var );
             
             // add
             nodes.push_back(theNode);
@@ -254,7 +254,7 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
         }
     } // we do not want that the nodes are added as member objects
     else {
-        ConstantMemberObject::setMemberVariable(name, var);
+        ConstantMemberObject::setMemberDagNode(name, var);
     }
 }
 

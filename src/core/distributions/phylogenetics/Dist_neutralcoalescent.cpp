@@ -142,20 +142,20 @@ const TypeSpec& Dist_neutralcoalescent::getVariableType( void ) const {
  */
 double Dist_neutralcoalescent::lnPdf( const RbLanguageObject& value ) const {
 
-    const VectorRealPos& waitingTimes   = static_cast<const VectorRealPos&>( value );
-    size_t haploidPopSize               = static_cast<const Natural&      >( getMemberValue( "haploidPopSize" ) ).getValue();
-    size_t nWaitingTimes                = waitingTimes.size();
-    size_t k                            = nWaitingTimes + 1;
-
-    double log_p = 0.0;
-
-    for (size_t i = 0; i < nWaitingTimes; ++i) {
-        double k2N = (k*(k-1)/2) / haploidPopSize;
-        log_p = log_p + log(k2N) - (k2N * waitingTimes[i]);
-        k -= 1;
-    }
-
-    return log_p;
+//    const VectorRealPos& waitingTimes   = static_cast<const VectorRealPos&>( value );
+//    size_t haploidPopSize               = static_cast<const Natural&      >( getMemberValue( "haploidPopSize" ) ).getValue();
+//    size_t nWaitingTimes                = waitingTimes.size();
+//    size_t k                            = nWaitingTimes + 1;
+//
+//    double log_p = 0.0;
+//
+//    for (size_t i = 0; i < nWaitingTimes; ++i) {
+//        double k2N = (k*(k-1)/2) / haploidPopSize;
+//        log_p = log_p + log(k2N) - (k2N * waitingTimes[i]);
+//        k -= 1;
+//    }
+//
+//    return log_p;
 }
 
 

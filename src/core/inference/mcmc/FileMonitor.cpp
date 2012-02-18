@@ -32,15 +32,16 @@
 const TypeSpec FileMonitor::typeSpec(FileMonitor_name);
 
 /** Constructor */
-FileMonitor::FileMonitor(void) : Monitor(getMemberRules() ) {
+FileMonitor::FileMonitor(void) : Monitor(getMemberRules() ),
+    filename( TypeSpec( RbString_name ) ),
+    separator( TypeSpec( RbString_name ) ) {
     
 }
 
 /** Copy Constructor */
-FileMonitor::FileMonitor(const FileMonitor &x) : Monitor(x) {
-    
-    // shallow copy
-    separator = x.separator;
+FileMonitor::FileMonitor(const FileMonitor &x) : Monitor(x),
+filename( x.filename ),
+separator( x.separator ) {
     
 }
 
@@ -111,7 +112,7 @@ void FileMonitor::monitor(void) {
 void FileMonitor::monitor(int gen) {
 
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
+    int samplingFrequency = dynamic_cast<const Integer&>( printgen.getValue() ).getValue();
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first
@@ -134,10 +135,10 @@ void FileMonitor::monitor(int gen) {
 void FileMonitor::openStream(void) {
 
     // get the filename
-    std::string filename = dynamic_cast<const RbString&>( getMemberValue("filename") ).getValue();
+    std::string f = dynamic_cast<const RbString&>( filename.getValue() ).getValue();
     
     // open the stream to the file
-    outStream.open(filename.c_str());
+    outStream.open(f.c_str());
     
 }
 
@@ -168,45 +169,42 @@ void FileMonitor::printHeader() {
 void FileMonitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
+    int samplingFrequency = dynamic_cast<const Integer&>( printgen.getValue() ).getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
 
 
-void FileMonitor::setMemberVariable(std::string const &name, Variable* var) {
+void FileMonitor::setMemberDagNode(std::string const &name, DAGNode* var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
-        DAGNode* theNode = var->getDagNode();
-        if (theNode->getValue().isType(DagNodeContainer_name)) {
-            const DagNodeContainer& theContainer = static_cast<const DagNodeContainer&>( theNode->getValue() );
+        if (var->getValue().isType(DagNodeContainer_name)) {
+            const DagNodeContainer& theContainer = static_cast<const DagNodeContainer&>( var->getValue() );
             for (size_t i = 0; i < theContainer.size(); i++) {
-                theNode = static_cast<const VariableSlot&>( theContainer.getElement(i) ).getDagNode()->clone();
-                if (theNode->isType(VariableNode_name)) {
-                    nodes.push_back( static_cast<VariableNode*>( theNode ) );
+                var = static_cast<const VariableSlot&>( theContainer.getElement(i) ).getDagNode()->clone();
+                if (var->isType(VariableNode_name)) {
+                    nodes.push_back( static_cast<VariableNode*>( var ) );
 //                } else {
 //                    throw RbException("Cannot monitor a constant node!");
                 }
             }
         }
         else {
-            if (theNode->isType(VariableNode_name)) {
-                nodes.push_back( static_cast<VariableNode*>( theNode ) );
+            if (var->isType(VariableNode_name)) {
+                nodes.push_back( static_cast<VariableNode*>( var ) );
 //            } else {
 //                throw RbException("Cannot monitor a constant node!");
             }
         }
     } 
     else if (name == "separator") {
-        separator = static_cast<RbString&>( var->getValue() ).getValue();
+        separator.setDagNode( var );
         
-        // call parent class to set member variable
-        ConstantMemberObject::setMemberVariable( name, var );
     } 
     else {
         // call parent class to set member variable
-        ConstantMemberObject::setMemberVariable( name, var );
+        Monitor::setMemberDagNode( name, var );
     }
 }
 

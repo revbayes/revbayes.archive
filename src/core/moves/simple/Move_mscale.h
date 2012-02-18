@@ -34,7 +34,6 @@ class Move_mscale : public MoveSimple {
 
     public:
                                     Move_mscale(void);                                                      //!< Parser constructor
-                                    Move_mscale(StochasticNode* node, double lambda, double weight = 1.0);  //!< Internal constructor
 
         // Basic utility functions
         Move_mscale*                clone(void) const;                                                      //!< Clone object
@@ -52,6 +51,9 @@ class Move_mscale : public MoveSimple {
     
     private:
         static const TypeSpec       typeSpec;
+
+        // parameters
+        Variable                    lambda;
 };
 
 #endif

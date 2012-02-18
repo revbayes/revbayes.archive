@@ -52,6 +52,12 @@ class Move_mmultinomial : public MoveSimple {
     
     private:
         static const TypeSpec       typeSpec;
+
+        // parameters
+    Variable                    variable;
+    Variable                    alpha;
+    Variable                    numCategories;
+    
 };
 
 #endif

@@ -119,9 +119,14 @@ void ArgumentRules::insert(std::vector<ArgumentRule *>::iterator it, ArgumentRul
 
 void ArgumentRules::insert(std::vector<ArgumentRule *>::iterator it, std::vector<ArgumentRule *>::const_iterator first, std::vector<ArgumentRule *>::const_iterator last) {
     
+    std::vector<ArgumentRule*> tmp;
     for (std::vector<ArgumentRule *>::const_iterator org = first; org != last; org++) {
-        rules.insert(it, (*org)->clone());
+        ArgumentRule* theOriginalRule = *org;
+        ArgumentRule* theClone = theOriginalRule->clone();
+        tmp.push_back(theClone);
     }
+    
+    rules.insert(it, tmp.begin(), tmp.end());
 }
 
 

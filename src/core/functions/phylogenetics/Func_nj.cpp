@@ -56,7 +56,7 @@ const RbLanguageObject& Func_nj::executeFunction(void) {
         
     Topology* top = neighborJoining(d);
     
-    tree.setMemberVariable("topology", new Variable( new ConstantNode(top) ) );
+    tree.setMember("topology", new ConstantNode(top) );
     
     return tree;
 }
@@ -247,7 +247,7 @@ Topology* Func_nj::neighborJoining(const DistanceMatrix& d) {
     // after the neighbor joining the matrix should only contain 1 node, which is our new root
     topo->setRoot(activeNodes[0]);
     TreePlate* tp = new TreePlate();
-    tp->setMemberVariable("topology", new Variable( new ConstantNode(topo) ) );
+    tp->setMember("topology", new ConstantNode(topo) );
     
     tp->printValue(std::cout);
 //    std::string newickStr = tp->buildNewickString(topo->getRoot());

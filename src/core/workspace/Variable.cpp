@@ -17,6 +17,7 @@
 
 #include "DAGNode.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "RbOptions.h"
@@ -34,20 +35,12 @@
 const TypeSpec Variable::typeSpec(Variable_name);
 
 /** Constructor of filled variable. */
-Variable::Variable(const std::string &n, DAGNode* dn) : RbInternal() {
-    name = n;
+Variable::Variable(const TypeSpec& ts) : RbInternal(), valueTypeSpec( ts ), node( NULL ) {
     
-    // initialize the variable
-    setDagNode( dn );
-    
-    // notify the variable that this is the new variable
-    dn->setVariable( this );
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(DAGNode* n) {
-    // we do not have a name for the variable so we ask the dag node
-    name = n->getName();
+Variable::Variable(DAGNode* n): valueTypeSpec( RbLanguageObject_name ) {
     
     // initialize the variable
     node = NULL;
@@ -55,17 +48,12 @@ Variable::Variable(DAGNode* n) {
     setDagNode( n );
     
     // notify the variable that this is the new variable
-    n->setVariable( this );
-}
-
-/** Constructor of without variable. */
-Variable::Variable(const std::string &n) : node(NULL) {
-    name = n;
+//    n->setVariable( this );
 }
 
 
 /** Copy constructor. */
-Variable::Variable(const Variable& x) : node(NULL)  {
+Variable::Variable(const Variable& x) : node(NULL), valueTypeSpec( x.valueTypeSpec )  {
     
     if ( x.node != NULL ) {
         // We do not clone the DAG node because we just create a new variable
@@ -73,11 +61,9 @@ Variable::Variable(const Variable& x) : node(NULL)  {
         setDagNode( x.node );
         
         // notify the variable that this is the new variable
-        node->setVariable( this );
+//        node->setVariable( this );
     }
     
-    // copy the name too
-    name = x.name;
 }
 
 
@@ -94,7 +80,7 @@ Variable& Variable::operator=(const Variable& x) {
         
         // Copy the new variable
         node = x.node;
-        name = x.name;
+        valueTypeSpec = x.valueTypeSpec;
     }
     
     return (*this);
@@ -125,13 +111,6 @@ DAGNode* Variable::getDagNode(void) {
 }
 
 
-/** Get name of the variable from frame */
-const std::string& Variable::getName( void ) const {
-    
-    return name;
-}
-
-
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Variable::getTypeSpec(void) const {
     return typeSpec;
@@ -140,12 +119,42 @@ const TypeSpec& Variable::getTypeSpec(void) const {
 
 /** Get the value of the variable */
 const RbLanguageObject& Variable::getValue(void) const {
-    return node->getValue();
+
+    if (node == NULL) {
+        return RbNullObject::getInstance();
+    }
+    
+    RbLanguageObject& retVal = node->getValue();
+    
+    // check the type and if we need conversion
+    if (!retVal.isTypeSpec(valueTypeSpec)) {
+        
+        //  variable->getDagNode()->setValue(convRetVal);
+        
+        //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
+        
+        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(valueTypeSpec));
+    }
+    
+    return retVal;
 }
 
 /** Get the value of the variable */
 RbLanguageObject& Variable::getValue(void) {
-    return node->getValue();
+    
+    RbLanguageObject& retVal = node->getValue();
+    
+    // check the type and if we need conversion
+    if (!retVal.isTypeSpec(valueTypeSpec)) {
+        
+        //  variable->getDagNode()->setValue(convRetVal);
+        
+        //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
+        
+        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(valueTypeSpec));
+    }
+    
+    return retVal;
 }
 
 
@@ -166,7 +175,7 @@ void Variable::setDagNode( DAGNode *newVariable ) {
     replaceDagNode( newVariable );
     
     // set the variable for the new variable
-    node->setVariable( this );
+//    node->setVariable( this );
 }
 
 
@@ -189,31 +198,4 @@ void Variable::replaceDagNode( DAGNode *newVariable) {
     
 }
 
-
-/** Replace the name of the variable. Make sure that also the DAG node changes its name */
-void Variable::setName(std::string const &n) {
-    name = n;
-    
-    // call the DAG node to change its name
-    if (node != NULL) {
-        node->setName(n);
-    }
-}
-
-
-/** Make sure we can print to stream using << operator */
-std::ostream& operator<<(std::ostream& o, const Variable& x) {
-    
-    o << "<" << x.getTypeSpec() << ">";
-    if ( x.getName() != "" )
-        o << " " << x.getName();
-    o << " =";
-    if ( x.getDagNode() == NULL )
-        o << " NULL";
-    else {
-        o << " ";
-        x.getDagNode()->printValue(o);
-    }
-    return o;
-}
 

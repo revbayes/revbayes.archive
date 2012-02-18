@@ -21,6 +21,7 @@
 #define Mcmc_H
 
 #include "ConstantMemberObject.h"
+#include "Variable.h"
 
 #include <set>
 #include <string>
@@ -46,7 +47,7 @@ public:
 
     // Member variable rules
     const MemberRules&          getMemberRules(void) const;                                                     //!< Get member rules
-    void                        setMemberVariable(const std::string& name, Variable* var);                      //!< Only constants allowed
+    void                        setMemberDagNode(const std::string& name, DAGNode* var);                        //!< Only constants allowed
 
     // Member method inits
     const MethodTable&          getMethods(void) const;                                                         //!< Get methods
@@ -57,10 +58,14 @@ public:
 protected:
     const RbLanguageObject&     executeOperationSimple(const std::string& name, Environment& args);             //!< Execute method
 
-    
+ 
 private:
     static const TypeSpec       typeSpec;
     
+    // parameters
+    Variable                    model;
+    Variable                    moves;
+    Variable                    monitors;
 };
 
 #endif

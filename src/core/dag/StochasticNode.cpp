@@ -46,21 +46,19 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     RbDagNodePtr::incrementCountForAddress(this);
     
     /* Get distribution parameters */
-    Environment& params = dist->getMembers();
+    std::vector<RbDagNodePtr>& params = dist->getMembers();
 
     /* Check for cycles */
     std::list<DAGNode*> done;
     for ( size_t i = 0; i < params.size(); i++ ) {
         done.clear();
-        const std::string &name = params.getName(i);
-        if ( params[name].getDagNode()->isParentInDAG( RbDagNodePtr( this ), done ) )
+        if ( params[i]->isParentInDAG( RbDagNodePtr( this ), done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
 
     /* Set parent(s) and add myself as a child to these */
     for ( size_t i = 0; i < params.size(); i++ ) {
-        const std::string &name = params.getName(i);
-        DAGNode* theParam = params[name].getDagNode();
+        DAGNode* theParam = params[i];
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -87,12 +85,11 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     distribution = x.distribution->clone();
 
     /* Get distribution parameters */
-    Environment& params = distribution->getMembers();
+    std::vector<RbDagNodePtr>& params = distribution->getMembers();
 
     /* Set parent(s) and add myself as a child to these */
     for ( size_t i = 0; i < params.size(); i++ ) {
-        const std::string &name = params.getName(i);
-        const RbDagNodePtr& theParam = params[name].getDagNode();
+        const RbDagNodePtr& theParam = params[i];
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -151,11 +148,11 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         distribution = x.distribution->clone();
 
         /* Get distribution parameters */
-        Environment& params = distribution->getMembers();
+        std::vector<RbDagNodePtr>& params = distribution->getMembers();
 
         /* Set parent(s) and add myself as a child to these */
         for ( size_t i = 0; i < params.size(); i++ ) {
-            const RbDagNodePtr& theParam = params[params.getName(i)].getVariable().getDagNode();
+            const RbDagNodePtr& theParam = params[i];
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -181,12 +178,11 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 /** Are any distribution params touched? Get distribution params and check if any one is touched */
 bool StochasticNode::areDistributionParamsTouched( void ) const {
 
-    Environment& params = distribution->getMembers();
+    std::vector<RbDagNodePtr>& params = distribution->getMembers();
 
     for ( size_t i = 0; i < params.size(); i++ ) {
         
-        const std::string &name = params.getName(i);
-        const RbDagNodePtr& theNode  = params[name].getDagNode();
+        const RbDagNodePtr& theNode  = params[i];
 
         if ( !theNode->isType( VariableNode_name ) )
             continue;
@@ -293,21 +289,17 @@ RbDagNodePtr StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr >& 
     copy->needsRecalculation = needsRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
-    Environment& params     = distribution->getMembers();
-    Environment& copyParams = copy->distribution->getMembers();
+    std::vector<RbDagNodePtr>& params     = distribution->getMembers();
 
     for ( size_t i = 0; i < params.size(); i++ ) {
-
-        // get the name if the i-th member
-        const std::string &name = params.getName(i);
         
-        // clone the member and get the clone back
-        const RbDagNodePtr& theParam = params[name].getDagNode();
+        // clone the i-th member and get the clone back
+        const RbDagNodePtr& theParam = params[i];
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         RbDagNodePtr theParamClone = theParam->cloneDAG( newNodes );
         
         // set the clone of the member as the member of the clone
-        copyParams[name].setVariable( new Variable(theParamClone) );
+        copy->distribution->setMember(name, theParamClone);
 
         copy->addParentNode( theParamClone );
         theParamClone->addChildNode( copy );

@@ -49,7 +49,7 @@ public:
     
     // Member Object Functions
     virtual const MemberRules&          getMemberRules( void ) const;                                       //!< The member rules for a monitor
-    virtual void                        setMemberVariable(const std::string &name, Variable* var);          //!< Set a member variable. We catch here setting of variable nodes
+    virtual void                        setMemberDagNode(const std::string &name, DAGNode* var);            //!< Set a member variable. We catch here setting of variable nodes
     
     std::vector<RbDagNodePtr>&          getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
     virtual void                        monitor(void) = 0;                                                  //!< Monitor unconditionally
@@ -59,7 +59,11 @@ public:
     
 protected:
     std::vector<RbDagNodePtr>           nodes;                                                              //!< Vector of nodes that this monitor monitors    
-    
+
+    // parameters
+    Variable                            printgen;
+    Variable                            variables;
+   
 private:
     static const TypeSpec               typeSpec;
 };

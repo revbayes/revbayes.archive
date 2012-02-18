@@ -48,6 +48,8 @@ public:
     MutableMemberObject(const MemberRules& memberRules);                                                            //!< Standard constructor
     MutableMemberObject(void);                                                                                      //!< Default constructor; no members or methods
     MutableMemberObject(const MutableMemberObject& m);
+
+    Environment                     memberVariables;
 };
 
 #endif

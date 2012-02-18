@@ -75,7 +75,7 @@ class DAGNode : public RbLanguageObject {
         const std::string&                                  getName(void) const;                                                    //!< get the name
         const std::set<RbDagNodePtr>&                       getParents(void) const;                                                 //!< Return parents
         size_t                                              getReferenceCount(void) const;
-        const Variable&                                     getVariable(void) const;                                                //!< Get the variable owning this node
+//        const Variable&                                     getVariable(void) const;                                                //!< Get the variable owning this node
         void                                                incrementReferenceCount(void);
         bool                                                isParentInDAG(const RbDagNodePtr& x, std::list<DAGNode*>& done) const;//!< Is node x a parent of the caller in the DAG?
         void                                                keep(void);                                                             //!< Keep current state of this node and all affected nodes
@@ -86,7 +86,7 @@ class DAGNode : public RbLanguageObject {
         void                                                removeChildNode(VariableNode *c);                                       //!< Remove a child node
         void                                                restore(void);                                                          //!< Restore value of this and affected nodes
         void                                                setName(const std::string &n) { name = n; }                             //!< Replace the name of the variable
-        void                                                setVariable(Variable* var);                                             //!< Set the variable owning this node
+//        void                                                setVariable(Variable* var);                                             //!< Set the variable owning this node
         void                                                touch(void);                                                            //!< Tell affected nodes value is reset
 
 
@@ -107,7 +107,7 @@ class DAGNode : public RbLanguageObject {
         // Member variables keeping track of references
         std::set<VariableNode* >                            children;                                                               //!< Set of children nodes
         std::set<RbDagNodePtr>                              parents;                                                                //!< Set of parent nodes
-        Variable*                                           variable;                                                               //!< The variable owning this dag node
+//        Variable*                                           variable;                                                               //!< The variable owning this dag node
         size_t                                              refCount;
 
         // Member value variables

@@ -1222,6 +1222,6 @@ TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
     myTreeFromNcl->setRoot(root);
     
     TreePlate* myTreePlateFromNcl = new TreePlate();
-    myTreeFromNcl->setMemberVariable("topology", new Variable( new ConstantNode(myTreeFromNcl) ) );
+    myTreeFromNcl->setMember("topology", new ConstantNode(myTreeFromNcl) );
 	return myTreePlateFromNcl;
 }

@@ -327,7 +327,7 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
 
 
 /** Catch setting of the mixture variable */
-void Mixture::setMemberVariable(const std::string& name, Variable* var) {
+void Mixture::setMemberDagNode(const std::string& name, DAGNode* var) {
     
     if ( name == "allocationVector" ) {
         allocationVector_ = static_cast<DagNodeContainer*>( var->getValue().clone() );
@@ -383,7 +383,7 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
       }
     }
 
-    MemberObject::setMemberVariable(name, var);
+    MemberObject::setMemberDagNode(name, var);
 }
 
 

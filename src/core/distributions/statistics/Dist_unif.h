@@ -55,7 +55,10 @@ class Dist_unif: public DistributionContinuous {
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
 
-
+        // parameters
+        Variable                    min;
+        Variable                    max;
+    
         // memberfunction return valus
         Real                        randomVariable;
 

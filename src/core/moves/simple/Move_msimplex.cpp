@@ -37,7 +37,7 @@
 const TypeSpec Move_msimplex::typeSpec(Move_msimplex_name);
 
 /** Constructor for parser */
-Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ) {
+Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ), variable( TypeSpec( VectorRealPos_name ) ), alpha( TypeSpec( RealPos_name ) ), numCategories( TypeSpec( Natural_name ) ) {
 }
 
 
@@ -102,8 +102,8 @@ double Move_msimplex::perform( void ) {
 
     // Get relevant values
     StochasticNode*        nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos&>( getMemberValue("tuning")   ).getValue();
-    int                    k       = static_cast<const Natural&>( getMemberValue("num_cats") ).getValue();
+    double                 alpha0  = static_cast<const RealPos&>( alpha.getValue()   ).getValue();
+    int                    k       = static_cast<const Natural&>( numCategories.getValue() ).getValue();
 
 	std::vector<double> curVal = static_cast<const Simplex&>( nodePtr->getValue() ).getValue();
 	std::vector<double> newVal = curVal;

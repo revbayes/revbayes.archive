@@ -32,17 +32,18 @@
 const TypeSpec Monitor::typeSpec(Monitor_name);
 
 /** Constructor */
-Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()) {
+Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()), printgen( TypeSpec( Natural_name) ), variables( TypeSpec(DagNodeContainer_name) )
+{
     
 }
 
 /** Constructor */
-Monitor::Monitor(const MemberRules& rules ) : ConstantMemberObject( rules ) {
+Monitor::Monitor(const MemberRules& rules ) : ConstantMemberObject( rules ), printgen( TypeSpec( Natural_name) ), variables( TypeSpec(DagNodeContainer_name) ) {
     
 }
 
 /** Copy Constructor */
-Monitor::Monitor(const Monitor &x) : ConstantMemberObject(x) {
+Monitor::Monitor(const Monitor &x) : ConstantMemberObject(x), printgen( x.printgen ), variables( x.variables ) {
     
     // shallow copy
     nodes = x.nodes;
@@ -89,7 +90,7 @@ const TypeSpec& Monitor::getTypeSpec(void) const {
 void Monitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer&>( getMemberValue("printgen") ).getValue();
+    int samplingFrequency = dynamic_cast<const Natural&>( printgen.getValue() ).getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
@@ -112,33 +113,35 @@ void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
 }
 
 
-void Monitor::setMemberVariable(std::string const &name, Variable* var) {
+void Monitor::setMemberDagNode(std::string const &name, DAGNode* var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
-        DAGNode* theNode = var->getDagNode();
-        if (theNode->getValue().isType(DagNodeContainer_name)) {
-            DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( theNode->getValue() );
-            for (size_t i = 0; i < theContainer.size(); i++) {
-                theNode = static_cast<VariableSlot&>( theContainer.getElement(i) ).getDagNode();
-                if (theNode->isType(VariableNode_name)) {
-                    nodes.push_back( static_cast<VariableNode*>( theNode ) );
-                    //                } else {
-                    //                    throw RbException("Cannot monitor a constant node!");
-                }
-            }
-        }
-        else {
-            if (theNode->isType(VariableNode_name)) {
-                nodes.push_back( static_cast<VariableNode*>( theNode ) );
-                //            } else {
-                //                throw RbException("Cannot monitor a constant node!");
-            }
-        }
+//        if (theNode->getValue().isType(DagNodeContainer_name)) {
+//            DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( theNode->getValue() );
+//            for (size_t i = 0; i < theContainer.size(); i++) {
+//                theNode = static_cast<VariableSlot&>( theContainer.getElement(i) ).getDagNode();
+//                if (theNode->isType(VariableNode_name)) {
+//                    nodes.push_back( static_cast<VariableNode*>( theNode ) );
+//                    //                } else {
+//                    //                    throw RbException("Cannot monitor a constant node!");
+//                }
+//            }
+//        }
+//        else {
+//            if (theNode->isType(VariableNode_name)) {
+//                nodes.push_back( static_cast<VariableNode*>( theNode ) );
+//                //            } else {
+//                //                throw RbException("Cannot monitor a constant node!");
+//            }
+//        }
     } 
+    else if ( name == "printgen" ) {
+        printgen.setDagNode( var );
+    }
     else {
         // call parent class to set member variable
-        ConstantMemberObject::setMemberVariable( name, var );
+        ConstantMemberObject::setMemberDagNode( name, var );
     }
 }
 

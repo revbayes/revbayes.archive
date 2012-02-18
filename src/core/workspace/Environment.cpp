@@ -216,7 +216,7 @@ void Environment::addVariable(const std::string& name, Variable* theVar) {
 /** Add variable to frame */
 void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, DAGNode* dagNode ) {
     // create a new variable object
-    Variable* var = new Variable(name, dagNode);
+    Variable* var = new Variable(dagNode);
     
     // add the object to the list
     addVariable(name, typeSp, var );

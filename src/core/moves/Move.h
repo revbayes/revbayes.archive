@@ -44,7 +44,7 @@ class Move : public ConstantMemberObject {
 
         // Member methods
         virtual const MethodTable&              getMethods(void) const;                                                 //!< Get methods
-        void                                    setMemberVariable(const std::string& name, Variable* var);              //!< set the member variables
+        void                                    setMemberDagNode(const std::string& name, DAGNode* var);              //!< set the member variables
 
         // Move functions you have to override
         virtual void                            acceptMove(void) = 0;                                                   //!< Accept the move
@@ -65,6 +65,8 @@ class Move : public ConstantMemberObject {
 
         const RbLanguageObject&                 executeOperationSimple(const std::string& name, Environment& args);     //!< Map method call to internal functions
 
+        // parameters
+        Variable                                weight;
     
         // Hidden member variables
         Natural                                 numAccepted;                                                            //!< Number of times accepted

@@ -59,6 +59,10 @@ class Dist_cat: public DistributionDiscrete {
         static const TypeSpec           typeSpec;
         static const TypeSpec           varTypeSpec;
 
+        // parameters
+        Variable                        probabilities;
+        Variable                        templateObject;
+        
         // memberfunction return values
         Categorical*                    randomVariable;
 

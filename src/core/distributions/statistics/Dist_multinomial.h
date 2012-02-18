@@ -18,7 +18,7 @@
 #ifndef Dist_multinomial_H
 #define Dist_multinomial_H
 
-#include "DistributionContinuous.h"
+#include "DistributionDiscrete.h"
 #include "VectorNatural.h"
 
 #include <ostream>
@@ -31,7 +31,7 @@ class VectorString;
 
 const std::string Dist_multinomial_name = "Dist_multinomial";
 
-class Dist_multinomial: public DistributionContinuous {
+class Dist_multinomial: public DistributionDiscrete {
 
     public:
                                     Dist_multinomial(void);                                             //!< constructor
@@ -45,17 +45,20 @@ class Dist_multinomial: public DistributionContinuous {
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Multinomial distribution functions
-        double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
+        size_t                      getNumberOfStates(void) const;                                      //!< Get number of states
+        const Simplex&              getProbabilityMassVector(void);                                     //!< Get probability mass vector
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (VectorNatural)
         double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
         double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
-        const Real&                 quantile(const double p);                                           //!< Quantile
         const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
 
+        // parameters
+        Variable                    probabilities;
+    
         // memberfunction return values
         VectorNatural               randomVariable;
 

@@ -64,6 +64,8 @@ class MoveTree : public Move {
         // Help functions
         const Topology&                 getTopology(void) const;                                                //!< Get topology
 
+        // parameters
+        Variable                            tree;
 };
 
 #endif

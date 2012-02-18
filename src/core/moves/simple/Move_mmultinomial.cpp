@@ -38,7 +38,7 @@
 const TypeSpec Move_mmultinomial::typeSpec(Move_mmultinomial_name);
 
 /** Constructor for parser */
-Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()) {
+Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()), variable( TypeSpec( VectorRealPos_name ) ), alpha( TypeSpec( RealPos_name ) ), numCategories( TypeSpec( Natural_name ) ) {
 
 }
 
@@ -73,7 +73,7 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
         memberRules.push_back(new ValueRule("tuning", RealPos_name) );
-        memberRules.push_back(new ValueRule("num_cats", Integer_name) );
+        memberRules.push_back(new ValueRule("num_cats", Natural_name) );
 
         rulesSet = true;
 		}
@@ -104,8 +104,8 @@ double Move_mmultinomial::perform( void ) {
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
     StochasticNode*        nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos&>( getMemberValue("tuning")   ).getValue();
-    int                    k       = static_cast<const Integer&>( getMemberValue("num_cats") ).getValue();
+    double                 alpha0  = static_cast<const RealPos&>( alpha.getValue()         ).getValue();
+    int                    k       = static_cast<const Integer&>( numCategories.getValue() ).getValue();
 
     const VectorReal& valPtr = static_cast<const VectorReal&>( nodePtr->getValue() );
 

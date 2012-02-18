@@ -95,7 +95,7 @@ const RbLanguageObject& ConstructorFunction::executeFunction(void) {
     copyObject = templateObject->clone();
 
     for ( size_t i = 0; i < args->size(); i++ ) {
-        copyObject->setMemberVariable( (*args)[i].getLabel(), (*args)[i].getVariable().clone() );
+        copyObject->setMember( (*args)[i].getLabel(), (*args)[i].getVariable().getDagNode() );
     }
  
     return *copyObject;

@@ -29,21 +29,18 @@
 #include <algorithm>
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType) : ConstantMemberObject(), elementType(elemType), returnValueSize( NULL ) {
+Container::Container(const TypeSpec& elemType) : ConstantMemberObject(), elementType(elemType) {
     
 }
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) : ConstantMemberObject(memberRules), elementType(elemType), returnValueSize( NULL ) {
+Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
     
 }
 
 
 /** Copy Constructor */
-Container::Container(const Container &v) : ConstantMemberObject(v), elementType(v.elementType), returnValueSize( NULL ) {
-    if (v.returnValueSize != NULL) {
-        returnValueSize = v.returnValueSize->clone();
-    }
+Container::Container(const Container &v) : ConstantMemberObject(v), elementType(v.elementType) {
     
 }
 
@@ -51,7 +48,6 @@ Container::Container(const Container &v) : ConstantMemberObject(v), elementType(
 /** Destructor. Free the memory of the elements. */
 Container::~Container(void) {
     
-    delete returnValueSize;
 }
 
 /** Assignment operator; make sure we get independent elements */
@@ -63,7 +59,7 @@ Container& Container::operator=( const Container& x ) {
             throw RbException("Cannot assign a vector to another vector of different type.");
         }
         
-        *returnValueSize = *x.returnValueSize;
+        returnValueSize = x.returnValueSize;
     }
     
     return ( *this );
@@ -110,12 +106,9 @@ const RbLanguageObject& Container::executeOperationSimple(const std::string& nam
     if (name == "size") {
         
         // we set our value
-        if (size != NULL) {
-            delete returnValueSize;
-        }
-        returnValueSize = new Natural(size());
+        returnValueSize.setValue(size());
         
-        return *returnValueSize;
+        return returnValueSize;
     } else if ( name == "[]") {
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getValue() );

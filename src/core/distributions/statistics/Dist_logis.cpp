@@ -42,7 +42,7 @@ const TypeSpec Dist_logis::typeSpec(Dist_logis_name);
 const TypeSpec Dist_logis::varTypeSpec(Real_name);
 
 /** Default constructor for parser use */
-Dist_logis::Dist_logis( void ) : DistributionContinuous( getMemberRules() ) {
+Dist_logis::Dist_logis( void ) : DistributionContinuous( getMemberRules() ), location( TypeSpec( Real_name ) ), scale( TypeSpec( RealPos_name ) ) {
 
 }
 
@@ -102,11 +102,11 @@ const TypeSpec& Dist_logis::getVariableType( void ) const {
  */
 double Dist_logis::pdf( const RbLanguageObject& value ) const {
     
-    double location =   static_cast<const Real&     >( getMemberValue("location")   ).getValue();
-    double scale =      static_cast<const RealPos&  >( getMemberValue("scale")      ).getValue();
-    double x =          static_cast<const Real&     >( value ).getValue();
+    double l = static_cast<const Real&     >( location.getValue() ).getValue();
+    double s = static_cast<const RealPos&  >( scale.getValue()    ).getValue();
+    double x = static_cast<const Real&     >( value               ).getValue();
 
-	return RbStatistics::Logistic::pdf( location, scale, x );
+	return RbStatistics::Logistic::pdf( l, s, x );
 
 }
 
@@ -124,11 +124,11 @@ double Dist_logis::pdf( const RbLanguageObject& value ) const {
 double Dist_logis::lnPdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Logistic
-    double location =   static_cast<const Real&     >( getMemberValue("location")   ).getValue();
-    double scale =      static_cast<const RealPos&  >( getMemberValue("scale")      ).getValue();
-    double x =          static_cast<const Real&     >( value ).getValue();
+    double l = static_cast<const Real&     >( location.getValue() ).getValue();
+    double s = static_cast<const RealPos&  >( scale.getValue()    ).getValue();
+    double x = static_cast<const Real&     >( value               ).getValue();
 
-	return RbStatistics::Logistic::lnPdf( location, scale, x );
+	return RbStatistics::Logistic::lnPdf( l, s, x );
 }
 
 
@@ -143,12 +143,12 @@ double Dist_logis::lnPdf( const RbLanguageObject& value ) const {
  *
  */
 double Dist_logis::cdf( const RbLanguageObject& value ) {
+    
+    double l = static_cast<const Real&     >( location.getValue() ).getValue();
+    double s = static_cast<const RealPos&  >( scale.getValue()    ).getValue();
+    double x = static_cast<const Real&     >( value               ).getValue();
 
-    double location =   static_cast<      Real&     >( getMemberValue("location")   ).getValue();
-    double scale =      static_cast<      RealPos&  >( getMemberValue("scale")      ).getValue();
-    double x =          static_cast<const Real&     >( value                        ).getValue();
-
-	return RbStatistics::Logistic::cdf( location, scale, x );
+	return RbStatistics::Logistic::cdf( l, s, x );
 }
 
 
@@ -164,11 +164,11 @@ double Dist_logis::cdf( const RbLanguageObject& value ) {
  *
  */
 const Real& Dist_logis::quantile( const double p ) {
+    
+    double l = static_cast<const Real&     >( location.getValue() ).getValue();
+    double s = static_cast<const RealPos&  >( scale.getValue()    ).getValue();
 
-    double location =   static_cast<Real&     >( getMemberValue("location")   ).getValue();
-    double scale =      static_cast<RealPos&  >( getMemberValue("scale")      ).getValue();
-
-	double q = RbStatistics::Logistic::quantile(location, scale, p);
+	double q = RbStatistics::Logistic::quantile(l, s, p);
 	quant.setValue( q );
     
     return new Real(q);
@@ -187,12 +187,12 @@ const Real& Dist_logis::quantile( const double p ) {
 
 
 const RbLanguageObject& Dist_logis::rv(void) {
-
-    double location =   static_cast<Real&     >( getMemberValue("location") ).getValue();
-    double scale =      static_cast<RealPos&  >( getMemberValue("scale")    ).getValue();
+    
+    double l = static_cast<const Real&     >( location.getValue() ).getValue();
+    double s = static_cast<const RealPos&  >( scale.getValue()    ).getValue();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    randomVariable.setValue( RbStatistics::Logistic::rv(location, scale, *rng) );
+    randomVariable.setValue( RbStatistics::Logistic::rv(l, s, *rng) );
 
 	return randomVariable;
 }

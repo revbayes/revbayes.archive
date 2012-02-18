@@ -33,7 +33,7 @@
 /** Constructor */
 MemberObject::MemberObject() : RbLanguageObject() {
     
-    members = new Environment();
+//    members = new Environment();
     
 }
 
@@ -42,13 +42,13 @@ MemberObject::MemberObject() : RbLanguageObject() {
 /** Constructor: we set member variables here from member rules */
 MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() {
 
-    members = new Environment();
-    
-    /* Fill member table (frame) based on member rules */
-    for ( std::vector<ArgumentRule*>::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
-        // creare variable slots with name and type
-        members->addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
-    }
+//    members = new Environment();
+//    
+//    /* Fill member table (frame) based on member rules */
+//    for ( std::vector<ArgumentRule*>::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
+//        // creare variable slots with name and type
+//        members->addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
+//    }
 }
 
 
@@ -58,13 +58,13 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() 
 MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
     
     // copy the members
-    members = m.members->clone();
+//    members = m.members->clone();
 }
 
 
 /** Destructor. Just frees the memory of the members. */
 MemberObject::~MemberObject(void) {
-    delete members;
+//    delete members;
 }
 
 
@@ -73,11 +73,11 @@ MemberObject& MemberObject::operator=(const MemberObject &m) {
     
     if (this != &m) {
         
-        if (members != NULL) {
-            delete members;
-        }
-        
-        members = m.members->clone();
+//        if (members != NULL) {
+//            delete members;
+//        }
+//        
+//        members = m.members->clone();
     }
     
     return (*this);
@@ -115,9 +115,9 @@ const RbLanguageObject& MemberObject::executeOperation(std::string const &name, 
 const RbLanguageObject& MemberObject::executeOperationSimple(const std::string& name, Environment& args) {
     
     if (name == "memberNames") {
-        for (size_t i=0; i<members->size(); i++) {
-            RBOUT(members->getName(i));
-        }
+//        for (size_t i=0; i<members->size(); i++) {
+//            RBOUT(members->getName(i));
+//        }
         
         return RbNullObject::getInstance();
     } 
@@ -126,8 +126,8 @@ const RbLanguageObject& MemberObject::executeOperationSimple(const std::string& 
         const RbString& varName = static_cast<const RbString&>( args[0].getValue() );
         
         // check if a member with that name exists
-        if (members->existsVariable(varName)) {
-            return (*members)[varName].getDagNode()->getValue();
+        if (hasMember(varName)) {
+            return getMember(varName)->getValue();
         }
         
         // there was no variable with the given name
@@ -156,9 +156,9 @@ const MemberRules& MemberObject::getMemberRules(void) const {
 
 
 /** Get type specification for a member variable */
-const TypeSpec& MemberObject::getMemberTypeSpec(const std::string& name) const {
-    return (*members)[name].getTypeSpec();
-}
+//const TypeSpec& MemberObject::getMemberTypeSpec(const std::string& name) const {
+//    return (*members)[name].getTypeSpec();
+//}
 
 
 /** Get method specifications (no methods) */
@@ -186,47 +186,47 @@ const MethodTable& MemberObject::getMethods(void) const {
 }
 
 
-const Environment& MemberObject::getMembers(void) const {
-    return *members;
+const std::vector<RbDagNodePtr>& MemberObject::getMembers(void) const {
+    return members;
 }
 
 
-Environment& MemberObject::getMembers(void) {
-    return *members;
+std::vector<RbDagNodePtr>& MemberObject::getMembers(void) {
+    return members;
 }
 
 
 
-/** Get const value of a member variable */
-const RbLanguageObject& MemberObject::getMemberValue(const std::string& name) const {
-
-    return members->getValue(name);
-}
-
-
-/** Get const value of a member variable */
-RbLanguageObject& MemberObject::getMemberValue(const std::string& name) {
-    
-    return members->getValue(name);
-}
+///** Get const value of a member variable */
+//const RbLanguageObject& MemberObject::getMemberValue(const std::string& name) const {
+//
+//    throw RbException("No Member named '" + name + "' available.");
+//}
+//
+//
+///** Get const value of a member variable */
+//RbLanguageObject& MemberObject::getMemberValue(const std::string& name) {
+//
+//    throw RbException("No Member named '" + name + "' available.");
+//}
 
 
 /** Get a member variable */
-const DAGNode* MemberObject::getMemberDagNode(const std::string& name) const {
-
-    return members->getDagNode(name);
+const DAGNode* MemberObject::getMember(const std::string& name) const {
+    
+    throw RbException("No Member named '" + name + "' available.");
 }
 
 
 /** Get a member variable (non-const, for derived classes) */
-DAGNode* MemberObject::getMemberDagNode(const std::string& name) {
-
-    return members->getDagNode(name);
+DAGNode* MemberObject::getMember(const std::string& name) {
+    
+    throw RbException("No Member named '" + name + "' available.");
 }
 
 /** Does this object have a member called "name" */
 bool MemberObject::hasMember(std::string const &name) const {
-    return members->existsVariable( name );
+    return false;
 }
 
 
@@ -242,26 +242,30 @@ void MemberObject::printValue(std::ostream& o) const {
     
     o << "Printing members of MemberObject ...." << std::endl;
 
-    for ( size_t i = 0; i < members->size(); i++ ) {
-
-        o << "." << members->getName(i) << std::endl;
-        (*members)[members->getName(i)].getValue().printValue(o);
-        o << std::endl << std::endl;
-    }
+//    for ( size_t i = 0; i < members->size(); i++ ) {
+//
+//        o << "." << members->getName(i) << std::endl;
+//        (*members)[members->getName(i)].getValue().printValue(o);
+//        o << std::endl << std::endl;
+//    }
 }
 
 
 /** Set a member DAG node */
 void MemberObject::setMemberDagNode(const std::string& name, DAGNode* var) {
-    
-    (*members)[name].getVariable().setDagNode(var);
+
+    throw RbException("No Member named '" + name + "' expected and therefore cannot set it.");
 }
 
 
 /** Set a member variable */
-void MemberObject::setMemberVariable(const std::string& name, Variable* var) {
-
-    (*members)[name].setVariable(var);
+void MemberObject::setMember(const std::string& name, DAGNode* var) {
+    // calling the internal mthod to set the DAG node
+    // the derived classes should know how to set their members
+    setMemberDagNode(name, var);
+    
+    // just add this node to the vector
+    members.push_back(var);
 }
 
 

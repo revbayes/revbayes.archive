@@ -38,7 +38,7 @@ const TypeSpec Dist_unif::typeSpec(Dist_unif_name);
 const TypeSpec Dist_unif::varTypeSpec(Real_name);
 
 /** Default constructor for parser use */
-Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()) {
+Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()), min( TypeSpec( Real_name ) ), max( TypeSpec( Real_name ) ) {
 
 }
 
@@ -55,16 +55,16 @@ Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()) {
  */
 double Dist_unif::cdf(const RbLanguageObject& value) {
 
-    double min = static_cast<      Real&>( getMemberValue("min") ).getValue();
-    double max = static_cast<      Real&>( getMemberValue("max") ).getValue();
-    double q   = static_cast<const Real&>( value                 ).getValue();
+    double l   = static_cast<      Real&>( min.getValue() ).getValue();
+    double u   = static_cast<      Real&>( max.getValue() ).getValue();
+    double q   = static_cast<const Real&>( value          ).getValue();
 
-    if ( q < min )
+    if ( q < l )
         return 0.0;
-    else if ( q > max )
+    else if ( q > u )
         return 1.0;
 
-    return ( q - min ) / ( max - min );
+    return ( q - l ) / ( u - l );
 }
 
 
@@ -86,7 +86,7 @@ const VectorString& Dist_unif::getClass(void) const {
 /** Get max value of distribution */
 const Real& Dist_unif::getMax( void ) const {
 
-    return static_cast<const Real&>( getMemberValue("max") );
+    return static_cast<const Real&>( max.getValue() );
 }
 
 
@@ -111,7 +111,7 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 /** Get min value of distribution */
 const Real& Dist_unif::getMin( void ) const {
 
-    return static_cast<const Real&>( getMemberValue("min") );
+    return static_cast<const Real&>( min.getValue() );
 }
 
 
@@ -138,15 +138,15 @@ const TypeSpec& Dist_unif::getVariableType( void ) const {
  * @return      Natural log of the probability density
  */
 double Dist_unif::lnPdf(const RbLanguageObject& value) const {
-
-    double min = static_cast<const Real&>( getMemberValue("min") ).getValue();
-    double max = static_cast<const Real&>( getMemberValue("max") ).getValue();
+    
+    double l   = static_cast<const Real&>( min.getValue() ).getValue();
+    double u   = static_cast<const Real&>( max.getValue() ).getValue();
     double x   = static_cast<const Real&>( value ).getValue();
 
-    if ( x < min || x > max )
+    if ( x < l || x > u )
         return RbConstants::Double::neginf;
 
-    return -std::log( max - min );
+    return -std::log( u - l );
 }
 
 
@@ -161,14 +161,14 @@ double Dist_unif::lnPdf(const RbLanguageObject& value) const {
  */
 double Dist_unif::pdf(const RbLanguageObject &value) const {
     
-    double min = static_cast<const Real&>( getMemberValue("min") ).getValue();
-    double max = static_cast<const Real&>( getMemberValue("max") ).getValue();
+    double l   = static_cast<const Real&>( min.getValue() ).getValue();
+    double u   = static_cast<const Real&>( max.getValue() ).getValue();
     double x   = static_cast<const Real&>( value ).getValue();
 
-    if ( x < min || x > max )
+    if ( x < l || x > u )
         return 0.0;
 
-    return 1.0 / ( max - min );
+    return 1.0 / ( u - l );
 }
 
 
@@ -184,10 +184,10 @@ double Dist_unif::pdf(const RbLanguageObject &value) const {
  */
 const Real& Dist_unif::quantile(const double p) {
     
-    double min = static_cast<Real&>( getMemberValue("min") ).getValue();
-    double max = static_cast<Real&>( getMemberValue("max") ).getValue();
+    double l = static_cast<Real&>( min.getValue() ).getValue();
+    double u = static_cast<Real&>( max.getValue() ).getValue();
 
-    quant.setValue( min + ( max - min ) * p );
+    quant.setValue( l + ( u - l ) * p );
     return quant;
 }
 
@@ -202,12 +202,12 @@ const Real& Dist_unif::quantile(const double p) {
  */
 const RbLanguageObject& Dist_unif::rv(void) {
     
-    double min = static_cast<const Real&>( getMemberValue("min") ).getValue();
-    double max = static_cast<const Real&>( getMemberValue("max") ).getValue();
+    double l = static_cast<const Real&>( min.getValue() ).getValue();
+    double u = static_cast<const Real&>( max.getValue() ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
-    double u = rng->uniform01();
-    randomVariable.setValue( min + ( max - min ) * u );
+    double d = rng->uniform01();
+    randomVariable.setValue( l + ( u - l ) * d );
 
     return randomVariable;
 }

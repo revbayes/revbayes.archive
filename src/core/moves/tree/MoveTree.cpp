@@ -31,7 +31,7 @@
 
 
 /** Constructor for parser use */
-MoveTree::MoveTree( const MemberRules& memberRules) : Move(memberRules) {
+MoveTree::MoveTree( const MemberRules& memberRules) : Move(memberRules), tree( TypeSpec( TreePlate_name ) ) {
 
 }
 
@@ -83,9 +83,9 @@ const MemberRules& MoveTree::getMemberRules( void ) const {
  */
 const Topology& MoveTree::getTopology( void ) const {
 
-    const TreePlate& tree = static_cast<const TreePlate&>( (*members)["tree"].getValue() );
+    const TreePlate& t = static_cast<const TreePlate&>( tree.getValue() );
     
-    return tree.getTopology();
+    return t.getTopology();
 }
 
 
@@ -130,7 +130,7 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
 void MoveTree::rejectMove(void) {
 
     // Get topology and tree variable info
-    RbDagNodePtr topNode( static_cast<StochasticNode*>( (*members)["topology"].getDagNode() ) );
+//    RbDagNodePtr topNode( static_cast<StochasticNode*>( tree.getDagNode() ) );
 
 
     // Send derived class a reject message

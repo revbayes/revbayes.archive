@@ -34,12 +34,12 @@
 const TypeSpec Move_mslide::typeSpec(Move_mslide_name);
 
 /** Constructor for parser */
-Move_mslide::Move_mslide( void ) : MoveSimple( getMemberRules() ) {
+Move_mslide::Move_mslide( void ) : MoveSimple( getMemberRules() ), delta( TypeSpec( RealPos_name ) ) {
 }
 
 
 /** Copy constructor */
-Move_mslide::Move_mslide(const Move_mslide &ms) : MoveSimple(ms) {
+Move_mslide::Move_mslide(const Move_mslide &ms) : MoveSimple(ms), delta( ms.delta ) {
     
 }
 
@@ -104,7 +104,7 @@ double Move_mslide::perform( void ) {
 
     // Get relevant values
     StochasticNode* nodePtr = static_cast<StochasticNode*>( nodes[0] );
-    const RealPos& delta = static_cast<const RealPos&>( getMemberValue("delta") );
+    const RealPos& d = static_cast<const RealPos&>( delta.getValue() );
 
     double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();
     const Real& min = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMin();
@@ -113,7 +113,7 @@ double Move_mslide::perform( void ) {
     double maxVal  = max.getValue();
 
     Real u      = rng->uniform01();
-    Real newVal = curVal + ( delta.getValue() * ( u - 0.5 ) );
+    Real newVal = curVal + ( d.getValue() * ( u - 0.5 ) );
 
     /* reflect the new value */
     do {

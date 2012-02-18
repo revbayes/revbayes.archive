@@ -53,11 +53,11 @@
 const TypeSpec Simulate::typeSpec(Simulate_name);
 
 /** Constructor passes member rules and method inits to base class */
-Simulate::Simulate(void) : ConstantMemberObject(getMemberRules()) {
+Simulate::Simulate(void) : ConstantMemberObject(getMemberRules()), model( TypeSpec(Model_name) ), monitors( TypeSpec( Vector_name ) ) {
 }
 
 /** Copy constructor */
-Simulate::Simulate(const Simulate &x) : ConstantMemberObject(x) {
+Simulate::Simulate(const Simulate &x) : ConstantMemberObject(x), model( x.model ), monitors( x.monitors ) {
     
 }
 
@@ -105,9 +105,9 @@ const MemberRules& Simulate::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule ( "model"         , Model_name    ) );
-        memberRules.push_back( new ValueRule ( "fileMonitors"  , TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
-        memberRules.push_back( new ValueRule ( "objectMonitors", TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
+        memberRules.push_back( new ValueRule ( "model"     , Model_name    ) );
+        memberRules.push_back( new ValueRule ( "monitors"  , TypeSpec(Vector_name, new TypeSpec(Monitor_name) ) ) );
+//        memberRules.push_back( new ValueRule ( "objectMonitors", TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
         
         rulesSet = true;
     }
@@ -146,11 +146,11 @@ const TypeSpec& Simulate::getTypeSpec(void) const {
 
 
 /** Allow only constant member variables */
-void Simulate::setMemberVariable(const std::string& name, Variable* var) {
+void Simulate::setMemberDagNode(const std::string& name, DAGNode* var) {
     
         if ( name == "fileMonitors" ) {
         // get the DAG nodes
-        const Model& theModel = static_cast<Model&>( getMemberValue("model") );
+        const Model& theModel = static_cast<Model&>( model.getValue() );
         
         Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
@@ -185,7 +185,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
     }
         else if ( name == "objectMonitors" ) {
             // get the DAG nodes
-            const Model& theModel = static_cast<Model&>( getMemberValue("model") );
+            const Model& theModel = static_cast<Model&>( model.getValue() );
             
             Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
@@ -219,7 +219,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
             setMemberDagNode(name, new ConstantNode( monitors ) );
         }
     else {
-        ConstantMemberObject::setMemberVariable(name, var);
+        ConstantMemberObject::setMemberDagNode(name, var);
     }
 }
 
@@ -264,7 +264,7 @@ void Simulate::run(size_t ndata) {
     std::cerr << "Initializing the simulation ..." << std::endl;
     
     /* Get the dag nodes from the model */
-    std::vector<RbDagNodePtr > dagNodes = static_cast<Model&>( getMemberValue("model") ).getDAGNodes();
+    std::vector<RbDagNodePtr > dagNodes = static_cast<Model&>( model.getValue() ).getDAGNodes();
     
     /* Get the stochastic nodes in an ordered manner */
     std::vector<StochasticNode*> orderedStochasticNodes; 
@@ -273,8 +273,8 @@ void Simulate::run(size_t ndata) {
     getOrderedStochasticNodes(dagNodes[0], orderedStochasticNodes, visitedNodes);
 
     /* Get the monitors */
-    Vector& fileMonitors    = static_cast<Vector&>( getMemberDagNode( "fileMonitors" )->getValue() );
-    Vector& objectMonitors  = static_cast<Vector&>( getMemberDagNode( "objectMonitors" )->getValue() );
+//    Vector& fileMonitors    = static_cast<Vector&>( getMemberDagNode( "fileMonitors" )->getValue() );
+    Vector& m  = static_cast<Vector&>( monitors.getValue() );
 
     
     /* Get the chain settings */
@@ -282,9 +282,9 @@ void Simulate::run(size_t ndata) {
     
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;
-    for (size_t i=0; i<fileMonitors.size(); i++) {
+    for (size_t i=0; i<m.size(); i++) {
         // get the monitor
-        FileMonitor& theMonitor = static_cast<FileMonitor&>( fileMonitors.getElement(i) );
+        FileMonitor& theMonitor = static_cast<FileMonitor&>( m.getElement(i) );
         
         // open the file stream for the monitor
         theMonitor.openStream();
@@ -309,12 +309,12 @@ void Simulate::run(size_t ndata) {
         }
         
         /* Monitor */
-        for (size_t i=0; i<fileMonitors.size(); i++) {
-            static_cast<FileMonitor&>( fileMonitors.getElement(i) ).monitor(data);
-        }
-        for (size_t i=0; i<objectMonitors.size(); i++) {
-            static_cast<ObjectMonitor&>( objectMonitors.getElement(i) ).monitor(data);
-        }
+//        for (size_t i=0; i<fileMonitors.size(); i++) {
+//            static_cast<FileMonitor&>( fileMonitors.getElement(i) ).monitor(data);
+//        }
+//        for (size_t i=0; i<objectMonitors.size(); i++) {
+//            static_cast<ObjectMonitor&>( objectMonitors.getElement(i) ).monitor(data);
+//        }
 
                 
     }
@@ -326,7 +326,7 @@ void Simulate::run(size_t ndata) {
 
 /** Get the values for variable with name varName */
 Vector* Simulate::getValues(RbString varName) {
-    Vector& objectMonitors = static_cast<Vector&>( getMemberDagNode( "objectMonitors" )->getValue() );
+    Vector& objectMonitors = static_cast<Vector&>( monitors.getValue() );
     if (objectMonitors.size() == 0) {
         std::cerr << "Error: No objectMonitor is included in the simulate object. We therefore cannot get the values of variable "<< varName <<std::endl;
         return NULL;

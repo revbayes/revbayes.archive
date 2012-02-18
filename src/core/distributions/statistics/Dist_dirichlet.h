@@ -57,6 +57,9 @@ class Dist_dirichlet: public DistributionContinuous {
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
 
+        // parameters
+        Variable                    alpha;
+
         // memberfunction return variables
         Simplex                     randomVariable;
 

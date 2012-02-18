@@ -34,7 +34,7 @@ const TypeSpec ArgumentRule::typeSpec(ArgumentRule_name);
 /** Construct rule based on default value; use "" for no label. */
 ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal) : RbInternal(), label(argName), argSlot(argName, defVal->getTypeSpec()), hasDefaultVal(true) {
 
-    Variable* tmpVar = new Variable( argName, new ConstantNode(defVal) );
+    Variable* tmpVar = new Variable( new ConstantNode(defVal) );
     argSlot.setVariable( tmpVar );
 }
 

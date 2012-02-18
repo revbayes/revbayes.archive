@@ -45,6 +45,11 @@ bool RbNullObject::operator==(const RbNullObject& obj) {
 }
 
 
+bool RbNullObject::operator==(const RbLanguageObject& obj) {
+    return obj.isType( RbNullObject_name );
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& RbNullObject::getClass(void) const { 
     

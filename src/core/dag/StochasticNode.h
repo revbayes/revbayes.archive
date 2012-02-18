@@ -14,7 +14,7 @@
  * @since 2009-08-16, version 1.0
  * @extends DAGNode
  *
- * $Id: StochasticNode.h 216 2009-12-29 23:19:25Z ronquist $
+ * $Id: $
  */
 
 #ifndef StochasticNode_H

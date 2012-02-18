@@ -21,6 +21,7 @@
 
 #include "DistributionDiscrete.h"
 #include "Topology.h"
+#include "Variable.h"
 
 #include <ostream>
 #include <string>
@@ -42,7 +43,7 @@ class Dist_topologyunif: public DistributionDiscrete {
     
         // Member variable setup
         const MemberRules&              getMemberRules(void) const;                                         //!< Get member variable rules
-        void                            setMemberVariable(const std::string& name, Variable* var);    //!< Set member variable (ensure topologyProb is updated)
+        void                            setMemberDagNode(const std::string& name, DAGNode* var);            //!< Set member variable (ensure topologyProb is updated)
 
         // Discrete distribution functions
         size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
@@ -64,6 +65,12 @@ class Dist_topologyunif: public DistributionDiscrete {
         static const TypeSpec           typeSpec;
         static const TypeSpec           varTypeSpec;
 
+        // parameters
+        Variable                        numTaxa;
+        Variable                        isRooted;
+        Variable                        isBinary;
+        Variable                        tipNames;
+    
         // memberfunction return values
         Topology                        randomVariable;
 };

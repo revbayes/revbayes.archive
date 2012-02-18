@@ -48,7 +48,7 @@ public:
     
     // Member variable rules
     const MemberRules&          getMemberRules(void) const;                                                     //!< Get member rules
-    void                        setMemberVariable(const std::string& name, Variable* var);                //!< Only constants allowed
+    void                        setMemberDagNode(const std::string& name, DAGNode* var);                //!< Only constants allowed
     
     // Member method inits
     const MethodTable&          getMethods(void) const;                                                         //!< Get methods
@@ -66,7 +66,9 @@ private:
     static const TypeSpec       typeSpec;
     void                        getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<StochasticNode*>& orderedStochasticNodes, std::set<DAGNode*>& visitedNodes);
 
-    
+    // parameters
+    Variable                    model;
+    Variable                    monitors;
 };
 
 #endif

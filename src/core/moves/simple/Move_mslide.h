@@ -52,6 +52,10 @@ class Move_mslide : public MoveSimple {
     
     private:
         static const TypeSpec       typeSpec;
+
+        // parameters
+        Variable                    delta;
+    
 };
 
 #endif

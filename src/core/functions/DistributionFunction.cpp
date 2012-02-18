@@ -264,7 +264,7 @@ bool DistributionFunction::processArguments( const std::vector<Argument>& args, 
            so a const cast is needed to deal with the mismatch */
         VariableSlot& arg = this->args->operator[](i);
         
-        distribution->setMemberVariable( name, arg.getVariable().clone() );
+        distribution->setMember( name, arg.getVariable().getDagNode() );
     }
 
     return true;

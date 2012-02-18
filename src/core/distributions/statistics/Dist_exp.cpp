@@ -35,7 +35,7 @@ const TypeSpec Dist_exp::typeSpec(Dist_exp_name);
 const TypeSpec Dist_exp::varTypeSpec(RealPos_name);
 
 /** Default constructor for parser use */
-Dist_exp::Dist_exp( void ) : DistributionContinuous( getMemberRules() ) {
+Dist_exp::Dist_exp( void ) : DistributionContinuous( getMemberRules() ), rate( TypeSpec(RealPos_name) ) {
 
 }
 
@@ -52,7 +52,7 @@ Dist_exp::Dist_exp( void ) : DistributionContinuous( getMemberRules() ) {
  */
 double Dist_exp::cdf( const RbLanguageObject& value ) {
 
-    const double lambda = static_cast<      RealPos&>( getMemberValue("rate") ).getValue();
+    const double lambda = static_cast<      RealPos&>( rate.getValue() ).getValue();
     const double q      = static_cast<const RealPos&>( value                  ).getValue();
 
     return 1.0 - std::exp( - lambda * q );
@@ -114,7 +114,7 @@ const TypeSpec& Dist_exp::getVariableType( void ) const {
  */
 double Dist_exp::lnPdf( const RbLanguageObject& value ) const {
     
-    double lambda = static_cast<const RealPos&>( getMemberValue( "rate" ) ).getValue();
+    double lambda = static_cast<const RealPos&>( rate.getValue() ).getValue();
     double x      = static_cast<const RealPos&>( value ).getValue();
 
     return std::log(lambda) -lambda * x;
@@ -132,7 +132,7 @@ double Dist_exp::lnPdf( const RbLanguageObject& value ) const {
  */
 double Dist_exp::pdf( const RbLanguageObject& value ) const {
 
-    double lambda = static_cast<const RealPos&>( getMemberValue( "rate" ) ).getValue();
+    double lambda = static_cast<const RealPos&>( rate.getValue() ).getValue();
     double x      = static_cast<const RealPos&>( value ).getValue();
 
     return lambda * std::exp( -lambda * x );
@@ -151,7 +151,7 @@ double Dist_exp::pdf( const RbLanguageObject& value ) const {
  */
 const Real& Dist_exp::quantile(const double p) {
 
-    double lambda = static_cast<RealPos&>( getMemberValue( "rate" ) ).getValue();
+    double lambda = static_cast<RealPos&>( rate.getValue() ).getValue();
     quant.setValue( -( 1.0 / lambda ) * std::log( 1.0 - p ) );
     return quant;
 }
@@ -167,7 +167,7 @@ const Real& Dist_exp::quantile(const double p) {
  */
 const RbLanguageObject& Dist_exp::rv( void ) {
 
-    double lambda = static_cast<RealPos&>( getMemberValue("rate") ).getValue();
+    double lambda = static_cast<RealPos&>( rate.getValue() ).getValue();
     RandomNumberGenerator* rng    = GLOBAL_RNG;
 
     double u = rng->uniform01();

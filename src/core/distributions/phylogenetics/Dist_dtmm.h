@@ -43,7 +43,7 @@ public:
     
     // Member variable setup
     const MemberRules&              getMemberRules(void) const;                                         //!< Get member variable rules
-    void                            setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure number of states is consistent)
+    void                            setMemberDagNode(const std::string& name, DAGNode* var);            //!< Set member variable (ensure number of states is consistent)
     
     // Discrete distribution functions
     size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
@@ -57,6 +57,9 @@ private:
     
     // member function return values
     CharacterStateDiscrete*         randomValue;
+    
+    Variable                        transProbabilityMatrix;
+    Variable                        initialState;
     
     static const TypeSpec           typeSpec;
     static const TypeSpec           varTypeSpec;

@@ -39,7 +39,7 @@
 DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeSpec(valType) {
 
     // initialize the variable
-    variable = NULL;
+//    variable = NULL;
     
     refCount = 0;
 }
@@ -49,7 +49,7 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeS
 DAGNode::DAGNode(void) : children(), parents(), valueTypeSpec(RbObject_name) {
     
     // initialize the variable
-    variable = NULL;
+//    variable = NULL;
     
     refCount = 0;
 }
@@ -66,7 +66,7 @@ DAGNode::DAGNode(void) : children(), parents(), valueTypeSpec(RbObject_name) {
 DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.valueTypeSpec) {
     
     // the variable is always set to NULL and needs to be set manually!
-    variable = NULL;
+//    variable = NULL;
     
     // copy the name so that we still be able to identify the variable in a cloned DAG
     name = x.name;
@@ -166,9 +166,9 @@ size_t DAGNode::getReferenceCount(void) const {
     return refCount;
 }
 
-const Variable& DAGNode::getVariable(void) const {
-    return *variable;
-}
+//const Variable& DAGNode::getVariable(void) const {
+//    return *variable;
+//}
 
 
 /** Increment the reference count for this instance. */
@@ -267,17 +267,15 @@ void DAGNode::printParents( std::ostream& o ) const {
 }
 
 
-void DAGNode::setVariable(Variable* var) {
-    // only do something if the old var is different to the new var
-    if (var != variable) {
-        // the DAG node does not own the Variable so we do not delete it
-    
-        // set the new variable
-        variable = var;
-        
-        name = var->getName();
-    }
-}
+//void DAGNode::setVariable(Variable* var) {
+//    // only do something if the old var is different to the new var
+//    if (var != variable) {
+//        // the DAG node does not own the Variable so we do not delete it
+//    
+//        // set the new variable
+//        variable = var;
+//    }
+//}
 
 /** Remove a child from this DAG node. Free the pointer to the child. */
 void DAGNode::removeChildNode(VariableNode *c) {

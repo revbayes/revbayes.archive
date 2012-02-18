@@ -22,6 +22,7 @@
 
 #include "CharacterStateDiscrete.h"
 #include "DistributionDiscrete.h"
+#include "Variable.h"
 
 #include <ostream>
 #include <string>
@@ -48,7 +49,7 @@ class Dist_ctmm: public DistributionDiscrete {
 
         // Member variable setup
         const MemberRules&              getMemberRules(void) const;                                         //!< Get member variable rules
-        void                            setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure number of states is consistent)
+        void                            setMemberDagNode(const std::string& name, DAGNode* var);            //!< Set member variable (ensure number of states is consistent)
 
         // Discrete distribution functions
         size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
@@ -62,6 +63,11 @@ class Dist_ctmm: public DistributionDiscrete {
         static const TypeSpec           typeSpec;
         static const TypeSpec           varTypeSpec;
 
+        // parameters
+        Variable                        rateMatrix;
+        Variable                        time;
+        Variable                        initialState;
+    
         // memberfunction return values
         CharacterStateDiscrete*         randomVariable;
 

@@ -55,7 +55,7 @@ public:
     virtual bool                                isConst(void) const { return false; }                                           //!< Is DAG node const value?
 
     // DAG functions you have to override
-    virtual RbDagNodePtr                      cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const = 0;        //!< Clone entire graph
+    virtual RbDagNodePtr                        cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const = 0;        //!< Clone entire graph
     virtual void                                swapParentNode(const RbDagNodePtr& oldP, const RbDagNodePtr& newP) = 0;     //!< Swap a parent node
 
 protected:

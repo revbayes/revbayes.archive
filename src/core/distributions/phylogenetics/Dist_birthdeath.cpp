@@ -45,7 +45,13 @@ const TypeSpec Dist_birthdeath::typeSpec(Dist_birthdeath_name);
 const TypeSpec Dist_birthdeath::varTypeSpec(RealPos_name);
 
 /** Default constructor for parser use */
-Dist_birthdeath::Dist_birthdeath( void ) : Distribution( getMemberRules() ) {
+Dist_birthdeath::Dist_birthdeath( void ) : Distribution( getMemberRules() ),
+                                            origin( TypeSpec(RealPos_name) ),
+                                            presentTime( TypeSpec(RealPos_name) ),
+                                            lambda( TypeSpec(RealPos_name) ),
+                                            mu( TypeSpec(RealPos_name) ),
+                                            rho( TypeSpec(Probability_name) ),
+                                            speciationEvent( TypeSpec(RbBoolean_name) ) {
     
 }
 
@@ -112,23 +118,23 @@ const TypeSpec& Dist_birthdeath::getVariableType( void ) const {
 double Dist_birthdeath::lnPdf( const RbLanguageObject& value ) const {
     
     // Get the parameters
-    double t = static_cast<const RealPos&    >( value ).getValue();
-    double o = static_cast<const RealPos&    >( getMemberValue( "origin" ) ).getValue();
-    double T = static_cast<const RealPos&    >( getMemberValue( "T"      ) ).getValue();
-    double b = static_cast<const RealPos&    >( getMemberValue( "lambda" ) ).getValue();
-    double d = static_cast<const RealPos&    >( getMemberValue( "mu"     ) ).getValue();
-    double p = static_cast<const Probability&>( getMemberValue( "rho"    ) ).getValue();
+    double t = static_cast<const RealPos&    >( value                   ).getValue();
+    double o = static_cast<const RealPos&    >( origin.getValue()       ).getValue();
+    double T = static_cast<const RealPos&    >( presentTime.getValue()  ).getValue();
+    double b = static_cast<const RealPos&    >( lambda.getValue()       ).getValue();
+    double d = static_cast<const RealPos&    >( mu.getValue()           ).getValue();
+    double p = static_cast<const Probability&>( rho.getValue()          ).getValue();
     
     // have we observed a speciation event at time t or did we just stop the process without oberving an event?
     // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
-    bool speciationEvent = static_cast<const RbBoolean&>( getMemberValue( "speciationEvent" ) ).getValue();
+    bool event = static_cast<const RbBoolean&>( speciationEvent.getValue() ).getValue();
     
     // the probability of the current time is the probability of having observed no event until now
     double log_p = log( pWaiting(o,t,T,b,d,p) );
     
     // if this is for an observed speciation event and not only that we haven't observed an event until now
     // then we multiply with the probability of a speciation event which results into a surviving and sampled species.
-    if (speciationEvent) {
+    if ( event ) {
         log_p += log( pBirth(t,T,b,d,p) );
     }
     
@@ -158,23 +164,23 @@ double Dist_birthdeath::pBirth(double t, double T, double lambda, double mu, dou
 double Dist_birthdeath::pdf( const RbLanguageObject& value ) const {
     
     // Get the parameters
-    double t = static_cast<const RealPos&    >( value ).getValue();
-    double o = static_cast<const RealPos&    >( getMemberValue( "origin" ) ).getValue();
-    double T = static_cast<const RealPos&    >( getMemberValue( "T"      ) ).getValue();
-    double b = static_cast<const RealPos&    >( getMemberValue( "lambda" ) ).getValue();
-    double d = static_cast<const RealPos&    >( getMemberValue( "mu"     ) ).getValue();
-    double p = static_cast<const Probability&>( getMemberValue( "rho"    ) ).getValue();
+    double t = static_cast<const RealPos&    >( value                   ).getValue();
+    double o = static_cast<const RealPos&    >( origin.getValue()       ).getValue();
+    double T = static_cast<const RealPos&    >( presentTime.getValue()  ).getValue();
+    double b = static_cast<const RealPos&    >( lambda.getValue()       ).getValue();
+    double d = static_cast<const RealPos&    >( mu.getValue()           ).getValue();
+    double p = static_cast<const Probability&>( rho.getValue()          ).getValue();
     
     // have we observed a speciation event at time t or did we just stop the process without oberving an event?
     // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
-    bool speciationEvent = static_cast<const RbBoolean&>( getMemberValue( "speciationEvent" ) ).getValue();
+    bool event = static_cast<const RbBoolean&>( speciationEvent.getValue() ).getValue();
     
     // the probability of the current time is the probability of having observed no event until now
     double prob = pWaiting(o,t,T,b,d,p);
     
     // if this is for an observed speciation event and not only that we haven't observed an event until now
     // then we multiply with the probability of a speciation event which results into a surviving and sampled species.
-    if (speciationEvent) {
+    if ( event ) {
         prob *= pBirth(t,T,b,d,p);
     }
     
@@ -223,11 +229,11 @@ const RbLanguageObject& Dist_birthdeath::rv( void ) {
     // TODO needs implementation!!!
     
     // Get the parameters
-    double o = static_cast<RealPos&    >( getMemberValue( "origin" ) ).getValue();
-    double T = static_cast<RealPos&    >( getMemberValue( "T"      ) ).getValue();
-//    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ).get() )->getValue();
-//    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ).get() )->getValue();
-//    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
+    double o = static_cast<const RealPos&    >( origin.getValue()       ).getValue();
+    double T = static_cast<const RealPos&    >( presentTime.getValue()  ).getValue();
+    double b = static_cast<const RealPos&    >( lambda.getValue()       ).getValue();
+    double d = static_cast<const RealPos&    >( mu.getValue()           ).getValue();
+    double p = static_cast<const Probability&>( rho.getValue()          ).getValue();
     
     randomVariable.setValue( (T - o) / 2.0 + o );
     

@@ -40,7 +40,7 @@ const TypeSpec Dist_dirichlet::typeSpec(Dist_dirichlet_name);
 const TypeSpec Dist_dirichlet::varTypeSpec(Simplex_name);
 
 /** Default constructor for parser use */
-Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules() ) {
+Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules() ), alpha( TypeSpec( VectorRealPos_name ) ) {
 
 }
 
@@ -129,8 +129,8 @@ const TypeSpec& Dist_dirichlet::getVariableType( void ) const {
 double Dist_dirichlet::lnPdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorRealPos&>( getMemberValue( "alpha" ) ).getValue();
-    std::vector<double> x = static_cast<const Simplex&      >( value                     ).getValue();
+    std::vector<double> a = static_cast<const VectorRealPos&>( alpha.getValue() ).getValue();
+    std::vector<double> x = static_cast<const Simplex&      >( value            ).getValue();
 
 	// Check that the vectors are both the same size
 	if ( a.size() != x.size() )
@@ -151,8 +151,8 @@ double Dist_dirichlet::lnPdf( const RbLanguageObject& value ) const {
 double Dist_dirichlet::pdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorRealPos&>( getMemberValue( "alpha" ) ).getValue();
-    std::vector<double> x = static_cast<const Simplex&      >( value ).getValue();
+    std::vector<double> a = static_cast<const VectorRealPos&>( alpha.getValue() ).getValue();
+    std::vector<double> x = static_cast<const Simplex&      >( value            ).getValue();
 
 	// Check that the vectors are both the same size
 	if ( a.size() != x.size() )
@@ -188,7 +188,7 @@ const Real& Dist_dirichlet::quantile( const double p ) {
  */
 const RbLanguageObject& Dist_dirichlet::rv( void ) {
 
-    std::vector<double> a = static_cast<VectorRealPos&>( getMemberValue("alpha") ).getValue();
+    std::vector<double> a = static_cast<VectorRealPos&>( alpha.getValue() ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<double> r(a.size());
 

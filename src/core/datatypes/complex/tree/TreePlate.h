@@ -45,7 +45,7 @@ public:
     // Member variable functions
     const RbLanguageObject&         executeOperation(const std::string& name, Environment& args);                   //!< Override to map member methods to internal functions
     const MemberRules&              getMemberRules(void) const;                                                     //!< Get member rules
-    void                            setMemberVariable(const std::string& name, Variable* var);                      //!< Catch setting of the topology
+    void                            setMemberDagNode(const std::string& name, DAGNode* var);                        //!< Catch setting of the topology
 
     // Member method inits
     const MethodTable&              getMethods(void) const;                                                         //!< Get methods
@@ -67,10 +67,13 @@ private:
     size_t                          getNodeIndex(const TopologyNode& theNode) const;                                //!< Get the index of the node
     size_t                          getTipIndex(const TopologyNode& theNode) const;                                 //!< Get the index of the node
 
+    // parameters
+    Variable                       orderingTopology;                                                               //!< The topology that orders the tree plate
+
+    // memberfunction return values
     Natural                         numNodes;
     Natural                         nodeIndex;
     Natural                         tipIndex;
-//    Topology*                       orderingTopology;                                                               //!< The topology that orders the tree plate
 };
 
 #endif

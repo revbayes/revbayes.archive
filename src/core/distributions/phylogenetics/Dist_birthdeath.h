@@ -58,6 +58,14 @@ private:
     static const TypeSpec       typeSpec;
     static const TypeSpec       varTypeSpec;
     
+    // parameters
+    Variable                    origin;
+    Variable                    presentTime;
+    Variable                    lambda;
+    Variable                    mu;
+    Variable                    rho;
+    Variable                    speciationEvent;
+    
     // memberfunction return value
     RealPos                     randomVariable;
 };

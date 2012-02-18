@@ -52,16 +52,5 @@ bool ConstantMemberObject::isConstant( void ) const {
 }
 
 
-/** Print value for user */
-void ConstantMemberObject::printValue(std::ostream& o) const {
-    
-    for ( size_t i = 0; i < members->size(); i++ ) {
-        
-        o << "." << (*members)[i].getLabel() << std::endl;
-        (*members)[i].getValue().printValue(o);
-        o << std::endl << std::endl;
-    }
-}
-
 
 

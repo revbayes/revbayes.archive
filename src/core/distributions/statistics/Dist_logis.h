@@ -54,6 +54,10 @@ class Dist_logis: public DistributionContinuous {
         static const TypeSpec       typeSpec;
         static const TypeSpec       varTypeSpec;
 
+        // parameters
+        Variable                    location;
+        Variable                    scale;
+    
         // memberfunction return variables
         Real                        randomVariable;
     
