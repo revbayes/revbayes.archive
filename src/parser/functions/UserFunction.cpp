@@ -59,6 +59,9 @@ UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules
 UserFunction& UserFunction::operator=(const UserFunction &f) {
     
     if ( this != &f ) {
+        // call the base class assignment operator
+        RbFunction::operator=(f);
+        
         delete defineEnvironment;
         // clone the environment
         defineEnvironment   = f.defineEnvironment->clone();

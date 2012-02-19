@@ -56,7 +56,7 @@ SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x) : SyntaxElem
     }
     
     arguments = new std::list<SyntaxLabeledExpr*>();
-    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
+    for (std::list<SyntaxLabeledExpr*>::iterator i=x.arguments->begin(); i!=x.arguments->end(); i++)
         arguments->push_back( (*i)->clone() );
 }
 
@@ -90,7 +90,12 @@ SyntaxFunctionCall& SyntaxFunctionCall::operator=(const SyntaxFunctionCall& x) {
         if (variable != NULL)
             delete variable;
         variable     = x.variable->clone();
-        for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
+        
+        for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++) {
+            delete *i;
+        }
+        arguments->clear();
+        for (std::list<SyntaxLabeledExpr*>::iterator i=x.arguments->begin(); i!=x.arguments->end(); i++)
             arguments->push_back( (*i)->clone() );
     }
 
