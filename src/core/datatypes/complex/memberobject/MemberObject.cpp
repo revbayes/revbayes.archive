@@ -196,21 +196,6 @@ std::vector<RbVariablePtr>& MemberObject::getMembers(void) {
 }
 
 
-
-///** Get const value of a member variable */
-//const RbLanguageObject& MemberObject::getMemberValue(const std::string& name) const {
-//
-//    throw RbException("No Member named '" + name + "' available.");
-//}
-//
-//
-///** Get const value of a member variable */
-//RbLanguageObject& MemberObject::getMemberValue(const std::string& name) {
-//
-//    throw RbException("No Member named '" + name + "' available.");
-//}
-
-
 /** Get a member variable */
 const Variable* MemberObject::getMember(const std::string& name) const {
     

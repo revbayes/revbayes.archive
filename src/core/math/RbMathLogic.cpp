@@ -96,7 +96,7 @@ bool RbMath::isFinite(double x) {
     
     // TODO: No isfinite function in Microsoft math; isFinite leads to infinite recursion
     // return isFinite(x);
-    return false;
+    return !std::isinf(x);
 }
 
 

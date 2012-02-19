@@ -42,6 +42,7 @@ class Dist_beta: public DistributionContinuous {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
 
         // Exponential distribution functions
         double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
@@ -56,8 +57,8 @@ class Dist_beta: public DistributionContinuous {
         static const TypeSpec       varTypeSpec;
 
         // parameters
-        Variable                    alpha; 
-        Variable                    beta;
+        RbVariablePtr               alpha; 
+        RbVariablePtr               beta;
     
         // memberfunction return value
         RealPos                     randomVariable;
