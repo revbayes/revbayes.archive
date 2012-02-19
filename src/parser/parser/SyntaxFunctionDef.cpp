@@ -147,7 +147,7 @@ Variable* SyntaxFunctionDef::evaluateContent(Environment& env) {
     // Create copy of the statements
     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
     for(std::list<SyntaxElement*>::const_iterator i=code->begin(); i!=code->end(); i++)
-        stmts->push_back((*i));
+        stmts->push_back((*i)->clone());
 
     // Create an environment with the parent environment being the one in which the function was defined
     Environment* defineEnvironment = new Environment(env);

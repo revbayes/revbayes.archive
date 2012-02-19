@@ -74,10 +74,10 @@ UserFunction& UserFunction::operator=(const UserFunction &f) {
             SyntaxElement* theSyntaxElement = *it;
             delete theSyntaxElement;
         }
+        code->clear();
         
-        delete code;
         // create a new list for the code
-        code = new std::list<SyntaxElement*>();
+//        code = new std::list<SyntaxElement*>();
         for (std::list<SyntaxElement*>::const_iterator i=f.code->begin(); i!=f.code->end(); i++) {
             //        SyntaxElement *element = (*i)->clone();
             SyntaxElement* element = (*i)->clone();
@@ -128,7 +128,8 @@ const RbLanguageObject& UserFunction::executeFunction( void ) {
     // Execute code
     for ( std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++ ) {
 
-        retValue = (*i)->evaluateContent( functionEnvironment );
+        SyntaxElement* theSyntaxElement = *i;
+        retValue = theSyntaxElement->evaluateContent( functionEnvironment );
 
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
             break;
