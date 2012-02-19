@@ -92,6 +92,7 @@
 #include "Dist_dtmm.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
+#include "Dist_gamma.h"
 #include "Dist_logis.h"
 #include "Dist_multinomial.h"
 #include "Dist_norm.h"
@@ -243,6 +244,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "dtmm",         new Dist_dtmm()        );
         addDistribution( "dirichlet",    new Dist_dirichlet()   );
         addDistribution( "exponential",  new Dist_exp()         );
+        addDistribution( "gamma",        new Dist_gamma()       );
         addDistribution( "logis",        new Dist_logis()       );
         addDistribution( "multinomial",  new Dist_multinomial() );
         addDistribution( "norm",         new Dist_norm()        );
