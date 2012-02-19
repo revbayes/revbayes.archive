@@ -39,7 +39,7 @@ const TypeSpec Dist_gamma::typeSpec(Dist_gamma_name);
 const TypeSpec Dist_gamma::varTypeSpec(RealPos_name);
 
 /** Default constructor for parser use */
-Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ), shape( TypeSpec( RealPos_name ) ), rate( TypeSpec( RealPos_name ) ) {
+Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ), shape( NULL ), rate( NULL ) {
     // Do nothing
 }
 
@@ -56,8 +56,8 @@ Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ), sha
  */
 double Dist_gamma::cdf( const RbLanguageObject& value ) {
     
-    double alpha  = static_cast<      RealPos&>( shape.getValue() ).getValue();
-    double lambda = static_cast<      RealPos&>( rate.getValue()  ).getValue();
+    double alpha  = static_cast<      RealPos&>( shape->getValue() ).getValue();
+    double lambda = static_cast<      RealPos&>( rate->getValue()  ).getValue();
     double x      = static_cast<const RealPos&>( value            ).getValue();    
 
     return RbStatistics::Gamma::cdf(alpha, lambda, x);
@@ -120,8 +120,8 @@ const TypeSpec& Dist_gamma::getVariableType( void ) const {
  */
 double Dist_gamma::lnPdf( const RbLanguageObject& value ) const {
     
-    double alpha  = static_cast<const RealPos&>( shape.getValue() ).getValue();
-    double lambda = static_cast<const RealPos&>( rate.getValue()  ).getValue();
+    double alpha  = static_cast<const RealPos&>( shape->getValue() ).getValue();
+    double lambda = static_cast<const RealPos&>( rate->getValue()  ).getValue();
     double x      = static_cast<const RealPos&>( value            ).getValue();  
   
     return RbStatistics::Gamma::lnPdf(alpha, lambda, x); 
@@ -139,8 +139,8 @@ double Dist_gamma::lnPdf( const RbLanguageObject& value ) const {
  */
 double Dist_gamma::pdf( const RbLanguageObject& value ) const {
     
-    double alpha  = static_cast<const RealPos&>( shape.getValue() ).getValue();
-    double lambda = static_cast<const RealPos&>( rate.getValue()  ).getValue();
+    double alpha  = static_cast<const RealPos&>( shape->getValue() ).getValue();
+    double lambda = static_cast<const RealPos&>( rate->getValue()  ).getValue();
     double x      = static_cast<const RealPos&>( value            ).getValue();   
     
     return RbStatistics::Gamma::pdf(alpha, lambda, x, false);    
@@ -159,8 +159,8 @@ double Dist_gamma::pdf( const RbLanguageObject& value ) const {
  */
 const Real& Dist_gamma::quantile(const double p) {
     
-    double alpha  = static_cast<      RealPos&>( shape.getValue() ).getValue();
-    double lambda = static_cast<      RealPos&>( rate.getValue()  ).getValue();
+    double alpha  = static_cast<      RealPos&>( shape->getValue() ).getValue();
+    double lambda = static_cast<      RealPos&>( rate->getValue()  ).getValue();
     
     double quantile = RbStatistics::Gamma::quantile(alpha, lambda, p);     
     quant.setValue( quantile );
@@ -179,14 +179,29 @@ const Real& Dist_gamma::quantile(const double p) {
  */
 const RbLanguageObject& Dist_gamma::rv( void ) {
     
-    double alpha  = static_cast<      RealPos&>( shape.getValue() ).getValue();
-    double lambda = static_cast<      RealPos&>( rate.getValue()  ).getValue();
+    double alpha  = static_cast<      RealPos&>( shape->getValue() ).getValue();
+    double lambda = static_cast<      RealPos&>( rate->getValue()  ).getValue();
     
     RandomNumberGenerator* rng = GLOBAL_RNG;        
     double rv = RbStatistics::Gamma::rv(alpha, lambda, *rng);
     randomVariable.setValue( rv );
     
     return randomVariable;
+}
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void Dist_gamma::setMemberVariable(std::string const &name, Variable *var) {
+    
+    if ( name == "rate" ) {
+        rate = var;
+    }
+    else if ( name == "shape" ){
+        shape = var;
+    }
+    else {
+        DistributionContinuous::setMemberVariable(name, var);
+    }
 }
 
 
