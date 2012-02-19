@@ -287,60 +287,60 @@
     [dataInspector window];
 }
 
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd {
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const CharacterData&)cd {
 
-    std::string fn = cd->getFileName();
+    std::string fn = cd.getFileName();
     
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
     RbData* m = [[RbData alloc] init];
-    [m setNumTaxa:(int)(cd->getNumberOfTaxa())];
-    if ( cd->getIsHomologyEstablished() == true )
+    [m setNumTaxa:(int)(cd.getNumberOfTaxa())];
+    if ( cd.getIsHomologyEstablished() == true )
         [m setIsHomologyEstablished:YES];
     else
         [m setIsHomologyEstablished:NO];
         
-    [m setNumCharacters:(int)(cd->getNumberOfCharacters())];
+    [m setNumCharacters:(int)(cd.getNumberOfCharacters())];
     [m setName:nsfn];
-    if ( cd->getDataType() == DnaState_name )
+    if ( cd.getDataType() == DnaState_name )
         [m setDataType:DNA];
-    else if ( cd->getDataType() == RnaState_name )
+    else if ( cd.getDataType() == RnaState_name )
         [m setDataType:RNA];
-    else if ( cd->getDataType() == AminoAcidState_name )
+    else if ( cd.getDataType() == AminoAcidState_name )
         [m setDataType:AA];
-    else if ( cd->getDataType() == StandardState_name )
+    else if ( cd.getDataType() == StandardState_name )
         [m setDataType:STANDARD];
-    else if ( cd->getDataType() == CharacterContinuous_name )
+    else if ( cd.getDataType() == CharacterContinuous_name )
         [m setDataType:CONTINUOUS];
 
-    for (int i=0; i<cd->getNumberOfTaxa(); i++)
+    for (int i=0; i<cd.getNumberOfTaxa(); i++)
         {        
-        RbPtr<const TaxonData> td = cd->getTaxonData(i);
-        NSString* taxonName = [NSString stringWithCString:td->getTaxonName().c_str() encoding:NSUTF8StringEncoding];
+        const TaxonData& td = cd.getTaxonData(i);
+        NSString* taxonName = [NSString stringWithCString:td.getTaxonName().c_str() encoding:NSUTF8StringEncoding];
         [m addTaxonName:taxonName];
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
-        for (int j=0; j<cd->getNumberOfCharacters(i); j++)
+        for (int j=0; j<cd.getNumberOfCharacters(i); j++)
             {
-            RbPtr<const Character> theChar = td->getCharacter(j);
+            const Character& theChar = td.getCharacter(j);
             RbDataCell* cell = [[RbDataCell alloc] init];
             [cell setDataType:[m dataType]];
             if ( [m dataType] != CONTINUOUS )
                 {
-                unsigned x = theChar->getUnsignedValue();
+                unsigned x = theChar.getUnsignedValue();
                 NSNumber* n = [NSNumber numberWithUnsignedInt:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:YES];
-                [cell setNumStates:((int)theChar->getNumberOfStates())];
-                if ( theChar->isMissingOrAmbiguous() == true )
+                [cell setNumStates:((int)theChar.getNumberOfStates())];
+                if ( theChar.isMissingOrAmbiguous() == true )
                     [cell setIsAmbig:YES];
-                if (theChar->getIsGapState() == true)
+                if (theChar.getIsGapState() == true)
                     [cell setIsGapState:YES];
                 else
                     [cell setIsGapState:NO];
                 }
             else 
                 {
-                double x = theChar->getRealValue();
+                double x = theChar.getRealValue();
                 NSNumber* n = [NSNumber numberWithDouble:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:NO];

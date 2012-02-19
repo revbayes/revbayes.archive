@@ -10,6 +10,7 @@
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
+#include "RbNullObject.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "VariableSlot.h"
@@ -255,8 +256,7 @@
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    RbPtr<RbLanguageObject> dv = NULL;
-    dv = Workspace::userWorkspace().getValue(variableName);
+    RbLanguageObject* dv = Workspace::userWorkspace().getValue(variableName).clone();
     if ( dv == NULL )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -266,18 +266,18 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( (RbObject*)dv );
-    CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
-    if ( dnc != NULL )
+    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
+    CharacterData* cd = dynamic_cast<CharacterData*>( dv );
+    if ( NULL != dnc )
         {
-        if (dnc != NULL)
+            if ( NULL != dnc)
             {
             [self removeAllDataMatrices];
             for (int i=0; i<dnc->size(); i++)
                 {
-                VariableSlot* vs = static_cast<VariableSlot*>( (RbObject*)(&dnc->getElement(i)) );
-                RbPtr<RbLanguageObject> theDagNode = &vs->getDagNode()->getValue();
-                CharacterData* cd = static_cast<CharacterData*>( (RbObject*)theDagNode );
+                const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
+                const RbLanguageObject& theDagNode = vs->getDagNode()->getValue();
+                const CharacterData& cd = static_cast<const CharacterData&>( theDagNode );
                 RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
                 [newMatrix setAlignmentMethod:@"Unknown"];
                 [self addMatrix:newMatrix];
@@ -292,10 +292,10 @@
         }
     else if ( cd != NULL )
         {
-        if (cd != NULL)
+        if ( cd != NULL)
             {
             [self removeAllDataMatrices];
-            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:*cd];
             [newMatrix setAlignmentMethod:@"Unknown"];
             [self addMatrix:newMatrix];
             }

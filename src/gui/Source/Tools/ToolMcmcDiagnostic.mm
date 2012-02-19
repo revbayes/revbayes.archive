@@ -174,7 +174,7 @@
 //		controlWindow = [[WindowControllerMcmcDiagnostic alloc] initWithTool:self];
         
         // initialize the data
-        data                        = new std::vector<RbPtr<Trace> >;
+        data                        = new std::vector<Trace* >;
         included                    = [[NSMutableArray alloc] init];
         // within chain convergence gui objects
         pStationarity               = 0.01;

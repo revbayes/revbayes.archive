@@ -9,6 +9,7 @@
 
 #include "DistanceMatrix.h"
 #include "Parser.h"
+#include "RbNullObject.h"
 #include "Workspace.h"
 #include <iomanip>
 #include <iostream>
@@ -153,9 +154,8 @@
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    RbPtr<RbLanguageObject> dv = NULL;
-    dv = Workspace::userWorkspace().getValue(distName);
-    if ( dv == NULL )
+    const RbLanguageObject& dv = Workspace::userWorkspace().getValue(distName);
+    if ( RbNullObject::getInstance() == dv )
         {
         //[self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not find matrix in work space", @"OK", nil, nil);
@@ -165,8 +165,8 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    DistanceMatrix* dm = dynamic_cast<DistanceMatrix*>( (RbObject*)dv );
-    if ( dm == NULL )
+    const DistanceMatrix& dm = dynamic_cast<const DistanceMatrix&>( dv );
+    if ( RbNullObject::getInstance() == dm )
         {
         NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not convert matrix in work space", @"OK", nil, nil);
         [self stopProgressIndicator];
@@ -177,8 +177,8 @@
     [distances removeAllObjects];
 
     // fill in the distance matrix in the tool
-    std::vector<std::vector<double> > dMat = dm->getValue();
-    numTaxa = (int)dm->getNumberOfTaxa();
+    std::vector<std::vector<double> > dMat = dm.getValue();
+    numTaxa = (int)dm.getNumberOfTaxa();
     for (int i=0; i<numTaxa; i++)
         {
         for (int j=0; j<numTaxa; j++)

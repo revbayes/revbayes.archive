@@ -11,7 +11,6 @@
 
 #import "InOutlet.h"
 #import "RevBayes.h"
-#import "RbPtr.h"
 #import "Trace.h"
 #import "WindowControllerNumberMatrix.h"
 #import "XmlParser.h"
@@ -89,7 +88,7 @@
     for (int i=0; i<(int)data->size(); i++) {
         XmlDocument* doc = new XmlDocument();
         NSString* traceName = [NSString stringWithFormat:@"Trace%lu",i];
-        const RbPtr<XmlElement> element = data->at(i)->encode(doc,[traceName cStringUsingEncoding:NSUTF8StringEncoding]);
+        XmlElement* element = data->at(i)->encode(doc,[traceName cStringUsingEncoding:NSUTF8StringEncoding]);
         doc->addXmlElement(element);
         NSString* tmp_str = [NSString stringWithUTF8String:doc->print().c_str()];
         NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
@@ -130,7 +129,7 @@
 		source = [[NSString alloc] initWithString:@"MCMC"];
         
         // initialize the data
-        data = new std::vector<RbPtr<Trace> >;
+        data = new std::vector<Trace* >;
         
         // note that the state of this tool is, by default, resolved
         [self setIsResolved:YES];
@@ -149,17 +148,17 @@
         // initialize the settings
         
         // initialize the data
-        data = new std::vector<RbPtr<Trace> >;
+        data = new std::vector<Trace* >;
         int traces = [aDecoder decodeIntForKey:@"nTraces"];
         for (int i=0; i<traces; i++) {
             NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
             NSString* xmlString = [aDecoder decodeObjectForKey:key];
             
-            RbPtr<XmlParser> parser( new XmlParser() );
-            RbPtr<const XmlDocument> doc( parser->parse([xmlString cStringUsingEncoding:NSUTF8StringEncoding]) );
+            XmlParser* parser = new XmlParser();
+            const XmlDocument* doc = parser->parse([xmlString cStringUsingEncoding:NSUTF8StringEncoding]);
             
-            RbPtr<const XmlElementAttributed> element( static_cast<const XmlElementAttributed*>( (const XmlElement*)doc->getFirstXmlElement() ) );
-            RbPtr<Trace> t(new Trace( doc, element ) );
+            const XmlElementAttributed* element = static_cast<const XmlElementAttributed*>( doc->getFirstXmlElement() );
+            Trace* t =new Trace( doc, element );
             data->push_back(t);
         }
     

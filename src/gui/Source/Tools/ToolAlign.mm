@@ -17,6 +17,7 @@
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
+#include "RbNullObject.h"
 #include "VariableSlot.h"
 #include "Workspace.h"
 
@@ -225,9 +226,8 @@
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    RbPtr<RbLanguageObject> dv = NULL;
-    dv = Workspace::userWorkspace().getValue(variableName);
-    if ( dv == NULL )
+    const RbLanguageObject& dv = Workspace::userWorkspace().getValue(variableName);
+    if ( RbNullObject::getInstance() == dv )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
@@ -236,18 +236,18 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( (RbObject*)dv );
-    CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
-    if ( dnc != NULL )
+    const DagNodeContainer& dnc = dynamic_cast<const DagNodeContainer&>( dv );
+    const CharacterData& cd = dynamic_cast<const CharacterData&>( dv );
+    if ( &dnc != NULL )
         {
-        if (dnc != NULL)
+        if ( &dnc != NULL)
             {
             [self removeAllDataMatrices];
-            for (int i=0; i<dnc->size(); i++)
+            for (int i=0; i<dnc.size(); i++)
                 {
-                VariableSlot* vs = static_cast<VariableSlot*>( (RbObject*)(&dnc->getElement(i)) );
-                RbPtr<RbLanguageObject> theDagNode = &vs->getDagNode()->getValue();
-                CharacterData* cd = static_cast<CharacterData*>( (RbObject*)theDagNode );
+                const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc.getElement(i)) );
+                const RbLanguageObject& theDagNode = vs->getDagNode()->getValue();
+                const CharacterData& cd = static_cast<const CharacterData&>( theDagNode );
                 RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
                 [self addMatrix:newMatrix];
                 }
@@ -258,9 +258,9 @@
             goto errorExit;
             }
         }
-    else if ( cd != NULL )
+    else if ( &cd != NULL )
         {
-        if (cd != NULL)
+        if ( &cd != NULL)
             {
             [self removeAllDataMatrices];
             RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];

@@ -30,11 +30,11 @@
     
     WindowControllerNumberMatrix*           dataInspector;	
     
-    std::vector<RbPtr<Trace> >*             data;
+    std::vector<Trace* >*                   data;
     
 }
 
-@property (readwrite,assign) std::vector<RbPtr<Trace> >* data;
+@property (readwrite,assign) std::vector<Trace* >* data;
 @property (readwrite,assign) NSString* source;
 
 - (IBAction)cancelAction:(id)sender;

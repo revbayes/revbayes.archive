@@ -29,7 +29,7 @@ class CharacterData;
 - (id)initWithScaleFactor:(float)sf;
 - (void)instantiateDataInCore;
 - (void)makeDataInspector;
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd;
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const CharacterData&)cd;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
 - (int)numDataMatrices;
 - (int)numAlignedMatrices;

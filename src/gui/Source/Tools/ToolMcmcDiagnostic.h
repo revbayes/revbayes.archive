@@ -55,7 +55,7 @@
     
     NSString*                           tab;
     
-    std::vector<RbPtr<Trace> >*         data;
+    std::vector<Trace* >*               data;
     NSMutableArray*                     included;
     
     
@@ -92,7 +92,7 @@
     
 }
 
-@property (readwrite,assign) std::vector<RbPtr<Trace> >* data;
+@property (readwrite,assign) std::vector<Trace* >* data;
 @property (readwrite,assign) NSMutableArray* included;
 
 @property (readwrite,assign) BOOL useGeweke;
