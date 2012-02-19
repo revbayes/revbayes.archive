@@ -43,9 +43,9 @@ const TypeSpec Dist_ctmm::varTypeSpec(CharacterStateDiscrete_name);
 /** Default constructor for parser use */
 Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ), 
                                randomVariable( NULL ),     
-                               rateMatrix( TypeSpec( RateMatrix_name ) ),
-                               time( TypeSpec( RealPos_name ) ),
-                               initialState( TypeSpec( CharacterStateDiscrete_name ) ) {
+                               rateMatrix( NULL ),
+                               time( NULL ),
+                               initialState( NULL ) {
 }
 
 
@@ -115,7 +115,7 @@ const MemberRules& Dist_ctmm::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_ctmm::getNumberOfStates( void ) const {
 
-    size_t numStates  = static_cast<const CharacterStateDiscrete&>( initialState.getValue() ).getNumberOfStates();
+    size_t numStates  = static_cast<const CharacterStateDiscrete&>( initialState->getValue() ).getNumberOfStates();
     
     return numStates;
 }
@@ -125,8 +125,8 @@ size_t Dist_ctmm::getNumberOfStates( void ) const {
 const Simplex& Dist_ctmm::getProbabilityMassVector( void ) {
 
     // get the information from the arguments for reading the file
-    RateMatrix&                q = static_cast<RateMatrix&>( rateMatrix.getValue() );
-    RealPos&                   t = static_cast<RealPos&>( time.getValue() );
+    RateMatrix&                q = static_cast<RateMatrix&>( rateMatrix->getValue() );
+    RealPos&                   t = static_cast<RealPos&>( time->getValue() );
 //    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
     
     // initialize the number of states
@@ -176,9 +176,9 @@ const TypeSpec& Dist_ctmm::getVariableType( void ) const {
 double Dist_ctmm::lnPdf( const RbLanguageObject& value ) const {
 
     // Get the parameters
-    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( rateMatrix.getValue() );
-    double                        t      = static_cast<const RealPos&               >( time.getValue() ).getValue();
-    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( initialState.getValue() );
+    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( rateMatrix->getValue() );
+    double                        t      = static_cast<const RealPos&               >( time->getValue() ).getValue();
+    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( initialState->getValue() );
     const CharacterStateDiscrete& stop   = static_cast<const CharacterStateDiscrete&>( value );
     
     // calculate the transition probability matrix
@@ -225,9 +225,9 @@ double Dist_ctmm::lnPdf( const RbLanguageObject& value ) const {
 double Dist_ctmm::pdf( const RbLanguageObject& value ) const {
 
     // Get the parameters
-    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( rateMatrix.getValue() );
-    double                        t      = static_cast<const RealPos&               >( time.getValue() ).getValue();
-    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( initialState.getValue() );
+    const RateMatrix&             Q      = static_cast<const RateMatrix&            >( rateMatrix->getValue() );
+    double                        t      = static_cast<const RealPos&               >( time->getValue() ).getValue();
+    const CharacterStateDiscrete& start  = static_cast<const CharacterStateDiscrete&>( initialState->getValue() );
     const CharacterStateDiscrete& stop   = static_cast<const CharacterStateDiscrete&>( value );
 
     // calculate the transition probability matrix
@@ -275,9 +275,9 @@ const RbLanguageObject& Dist_ctmm::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    RateMatrix&             Q      = static_cast<RateMatrix&            >( rateMatrix.getValue() );
-    double                  t      = static_cast<const RealPos&         >( time.getValue() ).getValue();
-    CharacterStateDiscrete& start  = static_cast<CharacterStateDiscrete&>( initialState.getValue() );
+    RateMatrix&             Q      = static_cast<RateMatrix&            >( rateMatrix->getValue() );
+    double                  t      = static_cast<const RealPos&         >( time->getValue() ).getValue();
+    CharacterStateDiscrete& start  = static_cast<CharacterStateDiscrete&>( initialState->getValue() );
     
     // calculate the transition probability matrix
     
@@ -315,19 +315,19 @@ const RbLanguageObject& Dist_ctmm::rv( void ) {
 
 
 /** We intercept a call to set a member variable to make sure that the number of states is consistent */
-void Dist_ctmm::setMemberDagNode( const std::string& name, DAGNode* var ) {
+void Dist_ctmm::setMemberVariable( const std::string& name, Variable* var ) {
 
     if ( name == "Q" ) {
-        rateMatrix.setDagNode( var );
+        rateMatrix = var;
     }
     else if ( name == "v" ) {
-        time.setDagNode( var );
+        time = var;
     }
     else if ( name == "a" ) {
-        initialState.setDagNode( var );
+        initialState = var;
     }
     else {
-        DistributionDiscrete::setMemberDagNode( name, var );
+        DistributionDiscrete::setMemberVariable( name, var );
     }
     
     // we cannot do the following because first only one variable is set and hence the following code crashes

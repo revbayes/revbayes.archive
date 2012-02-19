@@ -41,7 +41,7 @@ class TypeSpec {
 
     private:
                                     // Member variables
-        const std::string           baseType;                                                                                       //!< The base type of the object or objects
+        std::string                 baseType;                                                                                       //!< The base type of the object or objects
         std::string                 type;                                                                                           //!< The full type including base and element types
         TypeSpec*                   elementType;                                                                                    //!< The type of the elements if this is a container
 };

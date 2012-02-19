@@ -44,10 +44,10 @@ const TypeSpec Dist_topologyunif::varTypeSpec(Topology_name);
 
 /** Default constructor for parser use */
 Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRules() ),
-                                                numTaxa( TypeSpec( Natural_name ) ),
-                                                isRooted( TypeSpec( RbBoolean_name ) ),
-                                                isBinary( TypeSpec( RbBoolean_name ) ),
-                                                tipNames( TypeSpec( VectorString_name ) ) {
+                                                numTaxa( NULL ),
+                                                isRooted( NULL ),
+                                                isBinary( NULL ),
+                                                tipNames( NULL ) {
 
     // Precalculate probability of topology
     // TODO: this will crash because we haven't set the parameter of the distribution
@@ -93,9 +93,9 @@ void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode*> &tips, 
 void Dist_topologyunif::calculateTopologyProb( void ) {
     
     // Get the parameters
-    int  nTaxa  = static_cast<Natural&  >( numTaxa.getValue()  ).getValue();
-    bool rooted = static_cast<RbBoolean&>( isRooted.getValue() ).getValue();
-    bool binary = static_cast<RbBoolean&>( isBinary.getValue() ).getValue();
+    int  nTaxa  = static_cast<Natural&  >( numTaxa->getValue()  ).getValue();
+    bool rooted = static_cast<RbBoolean&>( isRooted->getValue() ).getValue();
+    bool binary = static_cast<RbBoolean&>( isBinary->getValue() ).getValue();
     
     // Calculate probabilities of a topology drawn from the distribution
     if (binary) {
@@ -127,9 +127,9 @@ void Dist_topologyunif::calculateTopologyProb( void ) {
 void Dist_topologyunif::calculateNumberOfStates( void ) {
     
     // Get the parameters
-    int  nTaxa  = static_cast<Natural&  >( numTaxa.getValue()  ).getValue();
-    bool rooted = static_cast<RbBoolean&>( isRooted.getValue() ).getValue();
-    bool binary = static_cast<RbBoolean&>( isBinary.getValue() ).getValue();
+    int  nTaxa  = static_cast<Natural&  >( numTaxa->getValue()  ).getValue();
+    bool rooted = static_cast<RbBoolean&>( isRooted->getValue() ).getValue();
+    bool binary = static_cast<RbBoolean&>( isBinary->getValue() ).getValue();
     
     // Calculate probabilities of a topology drawn from the distribution
     if (binary) {
@@ -206,7 +206,7 @@ size_t Dist_topologyunif::getNumberOfStates( void ) const {
 /** Get the probability mass vector */
 const Simplex& Dist_topologyunif::getProbabilityMassVector( void ) {
 
-    int nTaxa  = static_cast<Natural&>( numTaxa.getValue() ).getValue();
+    int nTaxa  = static_cast<Natural&>( numTaxa->getValue() ).getValue();
 
     if ( nTaxa <= 6 ) {
         probMassVector = Simplex( getNumberOfStates() );
@@ -243,9 +243,9 @@ double Dist_topologyunif::lnPdf( const RbLanguageObject& value ) const {
 
     // Get the parameters
     const Topology& top = static_cast<const Topology&>( value );
-    int  nTaxa  = static_cast<const Natural&  >( numTaxa.getValue()  ).getValue();
-    bool rooted = static_cast<const RbBoolean&>( isRooted.getValue() ).getValue();
-    bool binary = static_cast<const RbBoolean&>( isBinary.getValue() ).getValue();
+    int  nTaxa  = static_cast<const Natural&  >( numTaxa->getValue()  ).getValue();
+    bool rooted = static_cast<const RbBoolean&>( isRooted->getValue() ).getValue();
+    bool binary = static_cast<const RbBoolean&>( isBinary->getValue() ).getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return negative infinity
@@ -269,9 +269,9 @@ double Dist_topologyunif::pdf( const RbLanguageObject& value ) const {
 
     // Get the parameters
     const Topology& top = static_cast<const Topology&>( value );
-    int  nTaxa  = static_cast<const Natural&  >( numTaxa.getValue()  ).getValue();
-    bool rooted = static_cast<const RbBoolean&>( isRooted.getValue() ).getValue();
-    bool binary = static_cast<const RbBoolean&>( isBinary.getValue() ).getValue();
+    int  nTaxa  = static_cast<const Natural&  >( numTaxa->getValue()  ).getValue();
+    bool rooted = static_cast<const RbBoolean&>( isRooted->getValue() ).getValue();
+    bool binary = static_cast<const RbBoolean&>( isBinary->getValue() ).getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return 0.0
@@ -295,10 +295,10 @@ const RbLanguageObject& Dist_topologyunif::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    int  nTaxa          = static_cast<Natural&     >( numTaxa.getValue()  ).getValue();
-    bool rooted         = static_cast<RbBoolean&   >( isRooted.getValue() ).getValue();
-    bool binary         = static_cast<RbBoolean&   >( isBinary.getValue() ).getValue();
-    VectorString& names = static_cast<VectorString&>( tipNames.getValue() );
+    int  nTaxa          = static_cast<Natural&     >( numTaxa->getValue()  ).getValue();
+    bool rooted         = static_cast<RbBoolean&   >( isRooted->getValue() ).getValue();
+    bool binary         = static_cast<RbBoolean&   >( isBinary->getValue() ).getValue();
+    VectorString& names = static_cast<VectorString&>( tipNames->getValue() );
 
     // Draw a random topology
     if (binary) {
@@ -337,22 +337,22 @@ const RbLanguageObject& Dist_topologyunif::rv( void ) {
 
 
 /** We intercept a call to set a member variable to make sure that the topology prob gets recalculated */
-void Dist_topologyunif::setMemberDagNode( const std::string& name, DAGNode* var ) {
+void Dist_topologyunif::setMemberVariable( const std::string& name, Variable* var ) {
 
     if ( name == "numberTaxa" ) {
-        numTaxa.setDagNode( var );
+        numTaxa = var;
     } 
     else if ( name == "idRooted" ) {
-        isRooted.setDagNode( var );
+        isRooted = var;
     }
     else if ( name == "isBinary" ) {
-        isBinary.setDagNode( var );
+        isBinary = var;
     }
     else if ( name == "tipNames" ) {
-        tipNames.setDagNode( var );
+        tipNames = var;
     }
     else {
-        DistributionDiscrete::setMemberDagNode( name, var );
+        DistributionDiscrete::setMemberVariable( name, var );
     }
     
     // TODO: recaluclation of the probability crashes if not all variable are already set!!!

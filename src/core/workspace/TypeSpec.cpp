@@ -62,6 +62,8 @@ TypeSpec& TypeSpec::operator=( const TypeSpec& x ) {
     
     if ( this != &x ) {
         
+        baseType = x.baseType;
+        type = x.type;
         if (x.elementType != NULL) {
             elementType = new TypeSpec(*x.elementType);
         }

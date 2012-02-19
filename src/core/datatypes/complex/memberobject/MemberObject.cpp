@@ -186,12 +186,12 @@ const MethodTable& MemberObject::getMethods(void) const {
 }
 
 
-const std::vector<RbDagNodePtr>& MemberObject::getMembers(void) const {
+const std::vector<RbVariablePtr>& MemberObject::getMembers(void) const {
     return members;
 }
 
 
-std::vector<RbDagNodePtr>& MemberObject::getMembers(void) {
+std::vector<RbVariablePtr>& MemberObject::getMembers(void) {
     return members;
 }
 
@@ -212,14 +212,14 @@ std::vector<RbDagNodePtr>& MemberObject::getMembers(void) {
 
 
 /** Get a member variable */
-const DAGNode* MemberObject::getMember(const std::string& name) const {
+const Variable* MemberObject::getMember(const std::string& name) const {
     
     throw RbException("No Member named '" + name + "' available.");
 }
 
 
 /** Get a member variable (non-const, for derived classes) */
-DAGNode* MemberObject::getMember(const std::string& name) {
+Variable* MemberObject::getMember(const std::string& name) {
     
     throw RbException("No Member named '" + name + "' available.");
 }
@@ -252,17 +252,17 @@ void MemberObject::printValue(std::ostream& o) const {
 
 
 /** Set a member DAG node */
-void MemberObject::setMemberDagNode(const std::string& name, DAGNode* var) {
+void MemberObject::setMemberVariable(const std::string& name, Variable* var) {
 
     throw RbException("No Member named '" + name + "' expected and therefore cannot set it.");
 }
 
 
 /** Set a member variable */
-void MemberObject::setMember(const std::string& name, DAGNode* var) {
+void MemberObject::setMember(const std::string& name, Variable* var) {
     // calling the internal mthod to set the DAG node
     // the derived classes should know how to set their members
-    setMemberDagNode(name, var);
+    setMemberVariable(name, var);
     
     // just add this node to the vector
     members.push_back(var);

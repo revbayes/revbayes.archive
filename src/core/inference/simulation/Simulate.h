@@ -48,14 +48,14 @@ public:
     
     // Member variable rules
     const MemberRules&          getMemberRules(void) const;                                                     //!< Get member rules
-    void                        setMemberDagNode(const std::string& name, DAGNode* var);                //!< Only constants allowed
+    void                        setMemberVariable(const std::string& name, Variable* var);                      //!< Only constants allowed
     
     // Member method inits
     const MethodTable&          getMethods(void) const;                                                         //!< Get methods
     
     // Simulate functions
-    void                        run(size_t ndata);                                                               //!< Simulates ndata data elements
-    Vector*                     getValues(RbString varName);                                                  //!< Get the values for variable with name varName
+    void                        run(size_t ndata);                                                              //!< Simulates ndata data elements
+    Vector*                     getValues(RbString varName);                                                    //!< Get the values for variable with name varName
     
     
 protected:
@@ -67,8 +67,8 @@ private:
     void                        getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<StochasticNode*>& orderedStochasticNodes, std::set<DAGNode*>& visitedNodes);
 
     // parameters
-    Variable                    model;
-    Variable                    monitors;
+    RbVariablePtr               model;
+    RbVariablePtr               monitors;
 };
 
 #endif

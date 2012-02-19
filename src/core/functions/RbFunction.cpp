@@ -371,7 +371,12 @@ bool  RbFunction::processArguments( const std::vector<Argument>& passedArgs, Vec
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    (*args)[j].setVariable( passedArgs[i].getVariable().clone() );
+                    (*args)[j].setVariable( passedArgs[i].getVariablePtr() );
+                    
+                    // check if conversion is needed
+                    if (conversionNeeded) {
+                        passedArgs[i].getVariablePtr()->setValueTypeSpec(theRules[j].getArgumentTypeSpec());
+                    }
                     
                     break;
                 }
@@ -393,6 +398,7 @@ bool  RbFunction::processArguments( const std::vector<Argument>& passedArgs, Vec
             return false;
 
         const ArgumentRule& theRule = theRules[i];
+        // TODO: We should not allow dereferencing
         (*args)[i].setVariable( theRule.getDefaultVariable().clone() );
     }
 

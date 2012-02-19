@@ -12,7 +12,7 @@
  * b <- 2
  * c := ln(b)
  * a <- 5
- * b := expf(a)
+ * b := exp(a)
  * First 'b' is a constant DAG node and later replaced by a deterministic
  * node with the exponential function. Only if 'c' holds a pointer to a 
  * pointer to a DAG node (i.e. a Variable which holds a pointer to a
@@ -56,14 +56,18 @@ public:
     
     // Regular functions
     Variable*                           clone(void) const;                                  //!< Clone variable
+    size_t                              decrementReferenceCount(void);
     const VectorString&                 getClass() const;                                   //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
     const DAGNode*                      getDagNode(void) const;                             //!< Get the variable 
     DAGNode*                            getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
+    size_t                              getReferenceCount(void) const;
     const RbLanguageObject&             getValue(void) const;                               //!< Get the value of the variable
     RbLanguageObject&                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
+    size_t                              incrementReferenceCount(void);
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable
     void                                setDagNode(DAGNode* newVar);                        //!< Set a variable with a variable
+    void                                setValueTypeSpec(const TypeSpec& ts);               //!< set the required value type spec
     
 private:
     // Help functions
@@ -71,6 +75,7 @@ private:
     
     // Member variables
     RbDagNodePtr                        node;                                               //!< Pointer to the variable (reference or not)
+    size_t                              refCount;
     TypeSpec                            valueTypeSpec;
     
     static const TypeSpec               typeSpec;

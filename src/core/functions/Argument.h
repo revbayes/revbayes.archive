@@ -23,6 +23,7 @@
 #include "DAGNode.h"
 #include "RbInternal.h"
 #include "RbObject.h"
+#include "RbVariablePtr.h"
 #include "Variable.h"
 
 #include <ostream>
@@ -54,12 +55,13 @@ class Argument : public RbInternal {
         RbDagNodePtr                        getDagNode(void);                                                   //!< Get argument variable (non-const to return non-const node)
         const Variable&                     getVariable(void) const;                                            //!< Get the variable contained in this argument
         Variable&                           getVariable(void);                                                  //!< Get the variable contained in this argument (non-const to return non-const variable)
+        Variable*                           getVariablePtr(void) const;                                         //!< Get the variable contained in this argument (non-const to return non-const variable)
         void                                setDagNode(RbDagNodePtr newNode);                                 //!< set the DAG node of the argument; replaces the DAG node in the variable
         void                                setVariable(Variable* newVar);                                      //!< set the variable of the argument
 
     protected:
         std::string                         label;                                                              //!< Label of argument
-        Variable*                           var;                                                                //!< Pointer to the variable slot containing the variable (and value)
+        RbVariablePtr                       var;                                                                //!< Pointer to the variable slot containing the variable (and value)
     
     private:
         static const TypeSpec   typeSpec;

@@ -47,7 +47,7 @@ public:
 
     // Member variable rules
     const MemberRules&          getMemberRules(void) const;                                                     //!< Get member rules
-    void                        setMemberDagNode(const std::string& name, DAGNode* var);                        //!< Only constants allowed
+    void                        setMemberVariable(const std::string& name, Variable* var);                      //!< Only constants allowed
 
     // Member method inits
     const MethodTable&          getMethods(void) const;                                                         //!< Get methods
@@ -63,9 +63,9 @@ private:
     static const TypeSpec       typeSpec;
     
     // parameters
-    Variable                    model;
-    Variable                    moves;
-    Variable                    monitors;
+    RbVariablePtr               model;
+    RbVariablePtr               moves;
+    RbVariablePtr               monitors;
 };
 
 #endif

@@ -40,7 +40,7 @@ const TypeSpec Dist_dtmm::typeSpec(Dist_dtmm_name);
 const TypeSpec Dist_dtmm::varTypeSpec(CharacterStateDiscrete_name);
 
 /** Default constructor for parser use */
-Dist_dtmm::Dist_dtmm( void ) : DistributionDiscrete( getMemberRules() ), transProbabilityMatrix( TypeSpec(TransitionProbabilityMatrix_name) ), initialState( TypeSpec(CharacterStateDiscrete_name) ) {
+Dist_dtmm::Dist_dtmm( void ) : DistributionDiscrete( getMemberRules() ), transProbabilityMatrix( NULL ), initialState( NULL ) {
 }
 
 
@@ -80,7 +80,7 @@ const MemberRules& Dist_dtmm::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_dtmm::getNumberOfStates( void ) const {
     
-    size_t numStates  = static_cast<const CharacterStateDiscrete&>( initialState.getValue() ).getNumberOfStates();
+    size_t numStates  = static_cast<const CharacterStateDiscrete&>( initialState->getValue() ).getNumberOfStates();
     
     return numStates;
 }
@@ -90,8 +90,8 @@ size_t Dist_dtmm::getNumberOfStates( void ) const {
 const Simplex& Dist_dtmm::getProbabilityMassVector( void ) {
     
     // get the information from the arguments for reading the file
-    TransitionProbabilityMatrix&  m = static_cast<TransitionProbabilityMatrix&>( transProbabilityMatrix.getValue() );
-    const CharacterStateDiscrete& c = static_cast<const CharacterStateDiscrete&>( initialState.getValue() );
+    TransitionProbabilityMatrix&  m = static_cast<TransitionProbabilityMatrix&>( transProbabilityMatrix->getValue() );
+    const CharacterStateDiscrete& c = static_cast<const CharacterStateDiscrete&>( initialState->getValue() );
     
     // initialize the number of states
     const size_t stateIndex = c.getUnsignedValue();
@@ -129,8 +129,8 @@ const TypeSpec& Dist_dtmm::getVariableType( void ) const {
 double Dist_dtmm::lnPdf( const RbLanguageObject& value ) const {
     
     // Get the parameters
-    const TransitionProbabilityMatrix&    m      = static_cast<const TransitionProbabilityMatrix&>( transProbabilityMatrix.getValue() );
-    const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( initialState.getValue() );
+    const TransitionProbabilityMatrix&    m      = static_cast<const TransitionProbabilityMatrix&>( transProbabilityMatrix->getValue() );
+    const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( initialState->getValue() );
     const CharacterStateDiscrete&         stop   = static_cast<const CharacterStateDiscrete&     >( value );
     
     // calculate the transition probability matrix
@@ -168,8 +168,8 @@ double Dist_dtmm::lnPdf( const RbLanguageObject& value ) const {
 double Dist_dtmm::pdf( const RbLanguageObject& value ) const {
     
     // Get the parameters
-    const TransitionProbabilityMatrix&    m      = static_cast<const TransitionProbabilityMatrix&>( transProbabilityMatrix.getValue() );
-    const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( initialState.getValue() );
+    const TransitionProbabilityMatrix&    m      = static_cast<const TransitionProbabilityMatrix&>( transProbabilityMatrix->getValue() );
+    const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( initialState->getValue() );
     const CharacterStateDiscrete&         stop   = static_cast<const CharacterStateDiscrete&     >( value );
         
     double prob = 1.0;
@@ -206,8 +206,8 @@ const RbLanguageObject& Dist_dtmm::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    const TransitionProbabilityMatrix&    m      = static_cast<const TransitionProbabilityMatrix&>( transProbabilityMatrix.getValue() );
-    const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( initialState.getValue() );
+    const TransitionProbabilityMatrix&    m      = static_cast<const TransitionProbabilityMatrix&>( transProbabilityMatrix->getValue() );
+    const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( initialState->getValue() );
     
     if (randomValue != NULL) {
         delete randomValue;
@@ -237,7 +237,7 @@ const RbLanguageObject& Dist_dtmm::rv( void ) {
 
 
 /** We intercept a call to set a member variable to make sure that the number of states is consistent */
-void Dist_dtmm::setMemberDagNode( const std::string& name, DAGNode* var ) {
+void Dist_dtmm::setMemberVariable( const std::string& name, Variable* var ) {
     
     if ( name == "m" ) {
         transProbabilityMatrix = var;
@@ -246,7 +246,7 @@ void Dist_dtmm::setMemberDagNode( const std::string& name, DAGNode* var ) {
         initialState = var;
     }
     else {
-        DistributionDiscrete::setMemberDagNode( name, var );
+        DistributionDiscrete::setMemberVariable( name, var );
     }
 }
 

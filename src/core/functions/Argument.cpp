@@ -47,13 +47,13 @@ Argument::Argument(const Argument &x) : RbInternal(x) {
     
     label   = x.label;
     if (x.var != NULL)
-        var     = x.var->clone();
+        var     = x.var;
 }
 
 
 /** Destructor */
 Argument::~Argument() {
-    delete var;
+    
 }
 
 
@@ -69,7 +69,7 @@ Argument& Argument::operator=(const Argument &x) {
             var = NULL;
         }
         else {
-            var     = x.var->clone();
+            var     = x.var;
         }
         label   = x.label;
     }
@@ -114,6 +114,11 @@ const Variable& Argument::getVariable(void) const {
 
 Variable& Argument::getVariable(void) {
     return *var;
+}
+
+
+Variable* Argument::getVariablePtr(void) const {
+    return var;
 }
 
 

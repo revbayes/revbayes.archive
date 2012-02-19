@@ -52,7 +52,7 @@ class Model : public ConstantMemberObject {
         // Model functions
         std::vector<DAGNode*>                   getClonedDagNodes(std::vector<DAGNode*> &orgNodes) const;   //!< Get cloned nodes corresponding to originals
         std::vector<RbDagNodePtr >              getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
-        void                                    setMemberDagNode(const std::string& name, DAGNode* var);    //!< set a new member with name. catch setting of sinknode
+        void                                    setMemberVariable(const std::string& name, Variable* var);  //!< set a new member with name. catch setting of sinknode
 
 	private:
         int                                     findIndexInVector(const std::vector<RbDagNodePtr >& v, const RbDagNodePtr p) const;

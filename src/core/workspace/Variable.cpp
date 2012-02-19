@@ -37,6 +37,8 @@ const TypeSpec Variable::typeSpec(Variable_name);
 /** Constructor of filled variable. */
 Variable::Variable(const TypeSpec& ts) : RbInternal(), valueTypeSpec( ts ), node( NULL ) {
     
+    refCount = 0;
+    
 }
 
 /** Constructor of filled variable. */
@@ -49,6 +51,8 @@ Variable::Variable(DAGNode* n): valueTypeSpec( RbLanguageObject_name ) {
     
     // notify the variable that this is the new variable
 //    n->setVariable( this );
+    
+    refCount = 0;
 }
 
 
@@ -63,6 +67,8 @@ Variable::Variable(const Variable& x) : node(NULL), valueTypeSpec( x.valueTypeSp
         // notify the variable that this is the new variable
 //        node->setVariable( this );
     }
+    
+    refCount = 0;
     
 }
 
@@ -81,6 +87,7 @@ Variable& Variable::operator=(const Variable& x) {
         // Copy the new variable
         node = x.node;
         valueTypeSpec = x.valueTypeSpec;
+        refCount = x.refCount;
     }
     
     return (*this);
@@ -91,6 +98,14 @@ Variable& Variable::operator=(const Variable& x) {
 Variable* Variable::clone( void ) const {
     
     return new Variable( *this );
+}
+
+
+/** Decrement the reference count. */
+size_t Variable::decrementReferenceCount( void ) {
+    refCount--;
+    
+    return refCount;
 }
 
 /** Get class vector describing type of object */
@@ -108,6 +123,12 @@ const DAGNode* Variable::getDagNode(void) const {
 
 DAGNode* Variable::getDagNode(void) {
     return node;
+}
+
+
+/** Get the reference count for this instance. */
+size_t Variable::getReferenceCount(void) const {
+    return refCount;
 }
 
 
@@ -158,6 +179,12 @@ RbLanguageObject& Variable::getValue(void) {
 }
 
 
+/** Increment the reference count for this instance. */
+size_t Variable::incrementReferenceCount( void ) {
+    return refCount++;
+}
+
+
 /* Print value of the variable variable */
 void Variable::printValue(std::ostream& o) const {
     
@@ -196,6 +223,12 @@ void Variable::replaceDagNode( DAGNode *newVariable) {
     
     node = newVariable;
     
+}
+
+
+/** We set here the required value type spec. */
+void Variable::setValueTypeSpec(const TypeSpec &ts) {
+    valueTypeSpec = ts;
 }
 
 

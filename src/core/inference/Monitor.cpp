@@ -32,13 +32,13 @@
 const TypeSpec Monitor::typeSpec(Monitor_name);
 
 /** Constructor */
-Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()), printgen( TypeSpec( Natural_name) ), variables( TypeSpec(DagNodeContainer_name) )
+Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()), printgen( NULL ), variables( NULL )
 {
     
 }
 
 /** Constructor */
-Monitor::Monitor(const MemberRules& rules ) : ConstantMemberObject( rules ), printgen( TypeSpec( Natural_name) ), variables( TypeSpec(DagNodeContainer_name) ) {
+Monitor::Monitor(const MemberRules& rules ) : ConstantMemberObject( rules ), printgen( NULL ), variables( NULL ) {
     
 }
 
@@ -90,7 +90,7 @@ const TypeSpec& Monitor::getTypeSpec(void) const {
 void Monitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Natural&>( printgen.getValue() ).getValue();
+    int samplingFrequency = dynamic_cast<const Natural&>( printgen->getValue() ).getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
@@ -113,7 +113,7 @@ void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
 }
 
 
-void Monitor::setMemberDagNode(std::string const &name, DAGNode* var) {
+void Monitor::setMemberVariable(std::string const &name, Variable* var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
@@ -137,11 +137,11 @@ void Monitor::setMemberDagNode(std::string const &name, DAGNode* var) {
 //        }
     } 
     else if ( name == "printgen" ) {
-        printgen.setDagNode( var );
+        printgen = var;
     }
     else {
         // call parent class to set member variable
-        ConstantMemberObject::setMemberDagNode( name, var );
+        ConstantMemberObject::setMemberVariable( name, var );
     }
 }
 

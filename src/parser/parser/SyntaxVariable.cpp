@@ -356,7 +356,8 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
-            theVar = env[ (*identifier) ].getVariable().clone();
+            // TODO: perhaps we should allow dereferencing!!!
+            theVar = &env[ (*identifier) ].getVariable();
         } else {
             theVar = functionCall->evaluateContent( env );
         }
@@ -376,7 +377,7 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
 
             MemberObject* theMemberObject = static_cast<const MemberObject&>( baseVar->getDagNode()->getValue() ).clone();
 //            const Environment& members = theMemberObject->getMembers();
-            theVar->setDagNode( theMemberObject->getMember( *identifier ) );
+//            theVar->setDagNode( theMemberObject->getMember( *identifier ) );
         }
         else {
             

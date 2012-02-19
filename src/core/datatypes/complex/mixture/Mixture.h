@@ -47,7 +47,7 @@ public:
     
     // Member variable functions
     const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
-    void                            setMemberDagNode(const std::string& name, DAGNode* var);                //!< Catch setting of the topology
+    void                            setMemberVariable(const std::string& name, Variable* var);                //!< Catch setting of the topology
     
     // Member method inits
     const RbLanguageObject&         executeOperation(const std::string& name, Environment& args);           //!< Execute method

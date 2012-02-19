@@ -38,7 +38,7 @@ const TypeSpec Dist_norm::typeSpec(Dist_norm_name);
 const TypeSpec Dist_norm::varTypeSpec(Real_name);
 
 /** Constructor for parser use */
-Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ), mu( TypeSpec( Real_name ) ), sigma( TypeSpec( RealPos_name ) ) {
+Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ), mu( NULL ), sigma( NULL ) {
 
 }
 
@@ -56,8 +56,8 @@ Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ), mu( T
  */
 double Dist_norm::cdf( const RbLanguageObject& value ) {
 
-	double m = static_cast<const Real&   >( mu.getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma.getValue() ).getValue();
+	double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
+    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
     double q = static_cast<const Real&   >( value            ).getValue();
 	return RbStatistics::Normal::cdf(m, s, q);
 
@@ -121,8 +121,8 @@ const TypeSpec& Dist_norm::getVariableType( void ) const {
  */
 double Dist_norm::lnPdf(const RbLanguageObject& value) const {
     
-    double m = static_cast<const Real&   >( mu.getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma.getValue() ).getValue();
+    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
+    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
     double x = static_cast<const Real&   >( value            ).getValue();
 
 
@@ -142,8 +142,8 @@ double Dist_norm::lnPdf(const RbLanguageObject& value) const {
  */
 double Dist_norm::pdf( const RbLanguageObject& value ) const {
     
-    double m = static_cast<const Real&   >( mu.getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma.getValue() ).getValue();
+    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
+    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
     double x = static_cast<const Real&   >( value            ).getValue();
 
     return RbStatistics::Normal::pdf(m, s, x);
@@ -169,8 +169,8 @@ double Dist_norm::pdf( const RbLanguageObject& value ) const {
  */
 const Real& Dist_norm::quantile( const double p) {
     
-    double m = static_cast<const Real&   >( mu.getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma.getValue() ).getValue();
+    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
+    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
 	
     quant.setValue( RbStatistics::Normal::quantile(m, s, p) );
     
@@ -201,8 +201,8 @@ const RbLanguageObject& Dist_norm::rv(void) {
         return randomVariable;
     }
     
-    double m = static_cast<const Real&   >( mu.getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma.getValue() ).getValue();
+    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
+    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
     randomVariable.setValue( RbStatistics::Normal::rv(m, s, *rng) );
@@ -213,16 +213,16 @@ const RbLanguageObject& Dist_norm::rv(void) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_norm::setMemberDagNode(std::string const &name, DAGNode *var) {
+void Dist_norm::setMemberVariable(std::string const &name, Variable *var) {
     
     if ( name == "mean" ) {
-        mu.setDagNode( var );
+        mu = var;
     }
     else if ( name == "sd" ) {
-        sigma.setDagNode( var );
+        sigma = var;
     }
     else {
-        DistributionContinuous::setMemberDagNode(name, var);
+        DistributionContinuous::setMemberVariable(name, var);
     }
 }
 

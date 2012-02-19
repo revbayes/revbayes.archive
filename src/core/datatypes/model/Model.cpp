@@ -274,22 +274,23 @@ void Model::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Model::setMemberDagNode(const std::string& name, DAGNode* var) {
+void Model::setMemberVariable(const std::string& name, Variable* var) {
     
     if (name == "sinknode") {
+        
         // test whether var is a DagNodeContainer
         while (var->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
             const RbObject& objPtr = var->getValue();
             const DagNodeContainer& container = dynamic_cast<const DagNodeContainer&>( objPtr );
             const RbObject& elemPtr = container.getElement(0);
-            var = static_cast<const VariableSlot&>( elemPtr ).getDagNode();
+//            var = &static_cast<VariableSlot&>( elemPtr ).getVariable();
         }
         
         
         // if the var is not NULL we pull the DAG from it
         nodesMap.clear();
-        if (var != NULL)
-            var->cloneDAG(nodesMap);
+//        if (var != NULL)
+//            var->cloneDAG(nodesMap);
         
         /* RbDagNodePtr new nodes in dagNodes member frame and direct access vector */
         std::map<const DAGNode*, RbDagNodePtr >::iterator i = nodesMap.begin();
@@ -342,7 +343,7 @@ void Model::setMemberDagNode(const std::string& name, DAGNode* var) {
         }
     }
     
-    ConstantMemberObject::setMemberDagNode(name, var);
+    ConstantMemberObject::setMemberVariable(name, var);
 }
 
 

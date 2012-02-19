@@ -108,7 +108,7 @@ void ObjectMonitor::monitor(void) {
 void ObjectMonitor::monitor(int gen) {
     
     // get the sampling frequency
-    int samplingFrequency = dynamic_cast<const Natural&>( printgen.getValue() ).getValue();
+    int samplingFrequency = dynamic_cast<const Natural&>( printgen->getValue() ).getValue();
 
     if (gen % samplingFrequency == 0) {
         
@@ -127,18 +127,18 @@ void ObjectMonitor::monitor(int gen) {
 void ObjectMonitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Natural&>( printgen.getValue() ).getValue();
+    int samplingFrequency = dynamic_cast<const Natural&>( printgen->getValue() ).getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
 
 
-void ObjectMonitor::setMemberDagNode(std::string const &name, DAGNode* var) {
+void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
     
     // catch setting of the variables 
         
     // call parent class to set member variable
-    Monitor::setMemberDagNode( name, var );
+    Monitor::setMemberVariable( name, var );
 }
 
 

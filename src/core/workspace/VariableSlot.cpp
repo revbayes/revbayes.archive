@@ -62,7 +62,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbI
 VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x.varTypeSpec), label(x.label) {
     
     if ( x.variable != NULL ) {
-        variable = x.variable->clone();
+        variable = x.variable;
     } else {
         variable = NULL;
     }
@@ -71,8 +71,7 @@ VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x
 
 /** Call a help function to remove the variable intelligently */
 VariableSlot::~VariableSlot(void) {
-    if (variable != NULL)
-        delete variable;
+    
 }
 
 
@@ -92,7 +91,7 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         }
         // Copy the new variable
         if ( x.variable != NULL ) {
-            variable = x.variable->clone();
+            variable = x.variable;
         }
         else {
             variable = NULL;
@@ -187,6 +186,11 @@ const Variable& VariableSlot::getVariable(void) const {
 
 Variable& VariableSlot::getVariable(void) {
     return *variable;
+}
+
+
+Variable* VariableSlot::getVariablePtr(void) const {
+    return variable;
 }
 
 

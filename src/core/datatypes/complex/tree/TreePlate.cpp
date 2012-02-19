@@ -39,14 +39,14 @@
 const TypeSpec TreePlate::typeSpec(TreePlate_name);
 
 /* Default constructor */
-TreePlate::TreePlate(void) : MutableMemberObject( getMemberRules() ), orderingTopology( TypeSpec( Topology_name ) ) {
+TreePlate::TreePlate(void) : MutableMemberObject( getMemberRules() ), orderingTopology( NULL ) {
     
 //    orderingTopology = NULL;
 }
 
 
 /* Copy constructor */
-TreePlate::TreePlate(const TreePlate& t) : MutableMemberObject( t ), orderingTopology( TypeSpec( Topology_name ) ) {
+TreePlate::TreePlate(const TreePlate& t) : MutableMemberObject( t ), orderingTopology( NULL ) {
     
 //    if (t.orderingTopology != NULL)
 //        orderingTopology = t.orderingTopology->clone();
@@ -193,7 +193,7 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
             {
             // we don't have a container for this variable name yet
             // so we just create one
-            Variable* var = new Variable( new ConstantNode( new DagNodeContainer( static_cast<const Topology&>( orderingTopology.getValue() ).getNumberOfNodes() ) ) );
+            Variable* var = new Variable( new ConstantNode( new DagNodeContainer( static_cast<const Topology&>( orderingTopology->getValue() ).getNumberOfNodes() ) ) );
             
             memberVariables.addVariable(varName, var );
             
@@ -221,7 +221,7 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
         }
     else if (name == "nnodes") 
         {
-            numNodes.setValue( static_cast<const Topology&>( orderingTopology.getValue() ).getNumberOfNodes() );
+            numNodes.setValue( static_cast<const Topology&>( orderingTopology->getValue() ).getNumberOfNodes() );
         return numNodes;
         }
     else if (name == "node") 
@@ -229,7 +229,7 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
         // we assume that the node indices in the RevLanguage are from 1:nnodes()
         int index = dynamic_cast<const Natural &>( args.getValue("index") ).getValue() - 1;
         
-        return *static_cast<const Topology&>( orderingTopology.getValue() ).getNodes()[index];
+        return *static_cast<const Topology&>( orderingTopology->getValue() ).getNodes()[index];
         }
     else if (name == "index") 
         {
@@ -327,7 +327,7 @@ const MemberRules& TreePlate::getMemberRules(void) const {
 
 /** Find the index of the node */
 size_t TreePlate::getNodeIndex(const TopologyNode& theNode) const {
-    const std::vector<const TopologyNode*>& nodes = static_cast<const Topology&>( orderingTopology.getValue() ).getNodes();
+    const std::vector<const TopologyNode*>& nodes = static_cast<const Topology&>( orderingTopology->getValue() ).getNodes();
     
     size_t index = 0;
     for (; index<nodes.size(); index++) {
@@ -356,49 +356,49 @@ size_t TreePlate::getNodeIndex(const TopologyNode& theNode) const {
 size_t TreePlate::getTipIndex(const TopologyNode& theNode) const {
     
     size_t index = 0;
-    for (; index<static_cast<const Topology&>( orderingTopology.getValue() ).getNumberOfTips(); index++) {
-        const TopologyNode& theTip = static_cast<const Topology&>( orderingTopology.getValue() ).getTipNode(index);
+    for (; index<static_cast<const Topology&>( orderingTopology->getValue() ).getNumberOfTips(); index++) {
+        const TopologyNode& theTip = static_cast<const Topology&>( orderingTopology->getValue() ).getTipNode(index);
         if (theNode.equals( theTip ) ) {
             break;
         }
     }
-    if (index == static_cast<const Topology&>( orderingTopology.getValue() ).getNumberOfTips()) {
+    if (index == static_cast<const Topology&>( orderingTopology->getValue() ).getNumberOfTips()) {
         if (theNode.isTip()){
             std::cout << "Ooops ..." << std::endl;
         }
-        if (theNode.equals(static_cast<const Topology&>( orderingTopology.getValue() ).getTipNode(index))) {
+        if (theNode.equals(static_cast<const Topology&>( orderingTopology->getValue() ).getTipNode(index))) {
             std::cout << "Hm, wrong numbering scheme ... ?" << std::endl;
         }
     }
     
     // return -1 if the node does not exist in the tree
-    return (index < static_cast<const Topology&>( orderingTopology.getValue() ).getNumberOfTips() ? index + 1 : 0);
+    return (index < static_cast<const Topology&>( orderingTopology->getValue() ).getNumberOfTips() ? index + 1 : 0);
 }
 
 
 
 const Topology& TreePlate::getTopology(void) const {
-    return static_cast<const Topology&>( orderingTopology.getValue() );
+    return static_cast<const Topology&>( orderingTopology->getValue() );
 }
 
 
 /* Print the tree */
 void TreePlate::printValue(std::ostream& o) const {
     
-    o << buildNewickString(static_cast<const Topology&>( orderingTopology.getValue() ).getRoot());
+    o << buildNewickString(static_cast<const Topology&>( orderingTopology->getValue() ).getRoot());
     
 }
 
 
 
 /** Catch setting of the topology variable */
-void TreePlate::setMemberDagNode(const std::string& name, DAGNode* var) {
+void TreePlate::setMemberVariable(const std::string& name, Variable* var) {
     
     if ( name == "topology" ) {
-        orderingTopology.setDagNode( var );
+        orderingTopology = var;
     }
     
-    MemberObject::setMemberDagNode(name, var);
+    MemberObject::setMemberVariable(name, var);
 }
 
 

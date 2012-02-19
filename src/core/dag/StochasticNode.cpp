@@ -46,19 +46,19 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     RbDagNodePtr::incrementCountForAddress(this);
     
     /* Get distribution parameters */
-    std::vector<RbDagNodePtr>& params = dist->getMembers();
+    std::vector<RbVariablePtr>& params = dist->getMembers();
 
     /* Check for cycles */
     std::list<DAGNode*> done;
     for ( size_t i = 0; i < params.size(); i++ ) {
         done.clear();
-        if ( params[i]->isParentInDAG( RbDagNodePtr( this ), done ) )
+        if ( params[i]->getDagNode()->isParentInDAG( RbDagNodePtr( this ), done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
 
     /* Set parent(s) and add myself as a child to these */
     for ( size_t i = 0; i < params.size(); i++ ) {
-        DAGNode* theParam = params[i];
+        DAGNode* theParam = params[i]->getDagNode();
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -85,11 +85,11 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     distribution = x.distribution->clone();
 
     /* Get distribution parameters */
-    std::vector<RbDagNodePtr>& params = distribution->getMembers();
+    std::vector<RbVariablePtr>& params = distribution->getMembers();
 
     /* Set parent(s) and add myself as a child to these */
     for ( size_t i = 0; i < params.size(); i++ ) {
-        const RbDagNodePtr& theParam = params[i];
+        const RbDagNodePtr& theParam = params[i]->getDagNode();
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -148,11 +148,11 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         distribution = x.distribution->clone();
 
         /* Get distribution parameters */
-        std::vector<RbDagNodePtr>& params = distribution->getMembers();
+        std::vector<RbVariablePtr>& params = distribution->getMembers();
 
         /* Set parent(s) and add myself as a child to these */
         for ( size_t i = 0; i < params.size(); i++ ) {
-            const RbDagNodePtr& theParam = params[i];
+            const RbDagNodePtr& theParam = params[i]->getDagNode();
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -178,11 +178,11 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 /** Are any distribution params touched? Get distribution params and check if any one is touched */
 bool StochasticNode::areDistributionParamsTouched( void ) const {
 
-    std::vector<RbDagNodePtr>& params = distribution->getMembers();
+    std::vector<RbVariablePtr>& params = distribution->getMembers();
 
     for ( size_t i = 0; i < params.size(); i++ ) {
         
-        const RbDagNodePtr& theNode  = params[i];
+        const RbDagNodePtr& theNode  = params[i]->getDagNode();
 
         if ( !theNode->isType( VariableNode_name ) )
             continue;
@@ -289,17 +289,19 @@ RbDagNodePtr StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr >& 
     copy->needsRecalculation = needsRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
-    std::vector<RbDagNodePtr>& params     = distribution->getMembers();
+    std::vector<RbVariablePtr>& params     = distribution->getMembers();
 
     for ( size_t i = 0; i < params.size(); i++ ) {
         
         // clone the i-th member and get the clone back
-        const RbDagNodePtr& theParam = params[i];
+        const RbDagNodePtr& theParam = params[i]->getDagNode();
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         RbDagNodePtr theParamClone = theParam->cloneDAG( newNodes );
         
         // set the clone of the member as the member of the clone
-        copy->distribution->setMember(name, theParamClone);
+        // TODO: We should check that this does destroy the dependencies of the parameters.
+        // Instead of creating a new variable we might need to get the pointer to the variable from somewhere.
+        copy->distribution->setMember(name, new Variable( theParamClone) );
 
         copy->addParentNode( theParamClone );
         theParamClone->addChildNode( copy );

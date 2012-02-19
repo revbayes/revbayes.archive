@@ -49,7 +49,7 @@ public:
 
     // Member Object Functions
     const MemberRules&                  getMemberRules( void ) const;                                       //!< The member rules for a FileMonitor
-    void                                setMemberDagNode(const std::string &name, DAGNode* var);          //!< Set a member variable. We catch here setting of variable nodes
+    void                                setMemberVariable(const std::string &name, Variable* var);          //!< Set a member variable. We catch here setting of variable nodes
 
     // Monitor functions
     void                                monitor(void);                                                      //!< Monitor unconditionally
@@ -64,8 +64,8 @@ private:
     std::ofstream                       outStream;
 
     // parameters
-    Variable                            filename;
-    Variable                            separator;
+    RbVariablePtr                       filename;
+    RbVariablePtr                       separator;
     
     static const TypeSpec               typeSpec;
 };

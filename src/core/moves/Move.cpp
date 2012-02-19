@@ -38,7 +38,7 @@
 
 
 /** Constructor */
-Move::Move( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ), weight( TypeSpec(RealPos_name) ) {
+Move::Move( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ), weight( NULL ) {
 
     numAccepted = 0;
     numTried    = 0;
@@ -197,7 +197,7 @@ const MethodTable& Move::getMethods(void) const {
  *  from its member variable "weight". */
 double Move::getUpdateWeight( void ) const {
 
-    return static_cast<const RealPos&>( weight.getValue() ).getValue();
+    return static_cast<const RealPos&>( weight->getValue() ).getValue();
 }
 
 
@@ -214,7 +214,7 @@ void Move::resetCounters(void) {
 }
 
 /** Set member variable. We catch here setting of the stochastic nodes to add them to our internal vector */
-void Move::setMemberDagNode(std::string const &name, DAGNode* var) {
+void Move::setMemberVariable(std::string const &name, Variable* var) {
     
     // test whether we want to set the variable 
     if (name == "variable") {
@@ -254,7 +254,7 @@ void Move::setMemberDagNode(std::string const &name, DAGNode* var) {
         }
     } // we do not want that the nodes are added as member objects
     else {
-        ConstantMemberObject::setMemberDagNode(name, var);
+        ConstantMemberObject::setMemberVariable(name, var);
     }
 }
 

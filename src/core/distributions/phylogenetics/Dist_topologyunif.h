@@ -39,18 +39,18 @@ class Dist_topologyunif: public DistributionDiscrete {
         // Basic utility functions
         Dist_topologyunif*              clone(void) const;                                                  //!< Clone object
         const VectorString&             getClass(void) const;                                               //!< Get class vector
-        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+        const TypeSpec&                 getTypeSpec(void) const;                                            //!< Get language type of the object
     
         // Member variable setup
         const MemberRules&              getMemberRules(void) const;                                         //!< Get member variable rules
-        void                            setMemberDagNode(const std::string& name, DAGNode* var);            //!< Set member variable (ensure topologyProb is updated)
+        void                            setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure topologyProb is updated)
 
         // Discrete distribution functions
         size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
         virtual const Simplex&          getProbabilityMassVector(void);                                     //!< Get probability mass vector
         const TypeSpec&                 getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-        double                          lnPdf(const RbLanguageObject& value) const;                   //!< Ln probability density
-        double                          pdf(const RbLanguageObject& value) const;                     //!< Probability density
+        double                          lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
+        double                          pdf(const RbLanguageObject& value) const;                           //!< Probability density
         const RbLanguageObject&         rv(void);                                                           //!< Generate random variable
 
     private:
@@ -66,10 +66,10 @@ class Dist_topologyunif: public DistributionDiscrete {
         static const TypeSpec           varTypeSpec;
 
         // parameters
-        Variable                        numTaxa;
-        Variable                        isRooted;
-        Variable                        isBinary;
-        Variable                        tipNames;
+        RbVariablePtr                   numTaxa;
+        RbVariablePtr                   isRooted;
+        RbVariablePtr                   isBinary;
+        RbVariablePtr                   tipNames;
     
         // memberfunction return values
         Topology                        randomVariable;

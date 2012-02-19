@@ -20,6 +20,7 @@
 
 #include "DAGNode.h"
 #include "RbInternal.h"
+#include "RbVariablePtr.h"
 #include "TypeSpec.h"
 
 #include <string>
@@ -56,6 +57,7 @@ public:
     const TypeSpec&                         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
     const Variable&                         getVariable(void) const;                                                //!< Get the variable
     Variable&                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
+    Variable*                               getVariablePtr(void) const;                                             //!< Get the pointer to the variable
     virtual bool                            isValidVariable(const DAGNode& newVariable ) const;                     //!< Is newVariable valid for the slot?
     void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
     void                                    setVariable(Variable* var);                                             //!< Set a slot with a variable
@@ -64,7 +66,7 @@ private:
     
     // Member variables
     TypeSpec                                varTypeSpec;                                                            //!< The type specification for the slot
-    Variable*                               variable;                                                               //!< the argument living in the slot 
+    RbVariablePtr                           variable;                                                               //!< the argument living in the slot 
     std::string                             label;                                                                  //!< the label for this slot. The label should correspond to the name uner which this slot is stored in variable table. However, the label does not have to correspond to the variable name, e.g. a argument could have the label mean but the name of the variable is mu.
 
     static const TypeSpec                   typeSpec;

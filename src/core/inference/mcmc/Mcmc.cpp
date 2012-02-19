@@ -50,9 +50,9 @@ const TypeSpec Mcmc::typeSpec(Mcmc_name);
 
 /** Constructor passes member rules and method inits to base class */
 Mcmc::Mcmc(void) : ConstantMemberObject(getMemberRules()),
-    model( TypeSpec( Model_name ) ),
-    moves( TypeSpec( Vector_name ) ), 
-    monitors( TypeSpec( Vector_name ) ) {
+    model( NULL ),
+    moves( NULL ), 
+    monitors( NULL ) {
 }
 
 /** Copy constructor */
@@ -139,7 +139,7 @@ const TypeSpec& Mcmc::getTypeSpec(void) const {
 
 
 /** Allow only constant member variables */
-void Mcmc::setMemberDagNode(const std::string& name, DAGNode* var) {
+void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
 
     // we need to change the DAG nodes to which the moves are pointing to
     // when the moves where created they pointed to DAG nodes in the workspace
@@ -147,7 +147,7 @@ void Mcmc::setMemberDagNode(const std::string& name, DAGNode* var) {
     // Hence we need to set the DAG nodes of the moves to these clones.
     if ( name == "moves" ) {
         // get the DAG nodes
-        const Model& theModel = dynamic_cast<Model&>( model.getValue() );
+        const Model& theModel = dynamic_cast<Model&>( model->getValue() );
         
         Vector* moves = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(Move_name) ) ) );
         for (size_t i=0; i<moves->size(); i++) {
@@ -178,12 +178,12 @@ void Mcmc::setMemberDagNode(const std::string& name, DAGNode* var) {
             
         }
         
-        setMemberDagNode(name, new ConstantNode( moves ) );
+//        setMemberDagNode(name, new ConstantNode( moves ) );
         delete var;
     }
     else if ( name == "monitors" ) {
         // get the DAG nodes
-        const Model& theModel = static_cast<Model&>( model.getValue() );
+        const Model& theModel = static_cast<Model&>( model->getValue() );
         
         Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
         for (size_t i=0; i<monitors->size(); i++) {
@@ -213,11 +213,11 @@ void Mcmc::setMemberDagNode(const std::string& name, DAGNode* var) {
             
         }
         
-        setMemberDagNode(name, new ConstantNode( monitors ) );
+//        setMemberDagNode(name, new ConstantNode( monitors ) );
         delete var;
     }
     else {
-        ConstantMemberObject::setMemberDagNode(name, var);
+        ConstantMemberObject::setMemberVariable(name, var);
     }
 }
 
@@ -228,11 +228,11 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
     /* Get the dag nodes from the model */
-    std::vector<RbDagNodePtr > dagNodes = (static_cast<Model&>( model.getValue() ) ).getDAGNodes();
+    std::vector<RbDagNodePtr > dagNodes = (static_cast<Model&>( model->getValue() ) ).getDAGNodes();
 
     /* Get the moves and monitors */
-    Vector& theMonitors = static_cast<Vector&>( monitors.getValue() );
-    Vector& theMoves = static_cast<Vector&>( moves.getValue() );
+    Vector& theMonitors = static_cast<Vector&>( monitors->getValue() );
+    Vector& theMoves = static_cast<Vector&>( moves->getValue() );
 
     /* Get the chain settings */
     std::cerr << "Getting the chain settings ..." << std::endl;
