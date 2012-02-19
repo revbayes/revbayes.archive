@@ -1,6 +1,14 @@
 # testing math stuff
 source("math/test.Rev")
+clear()
 
+# testing the distributions
+source("distributions/test.Rev")
+clear()
+
+# testing the dag assignment structure
+source("dag/test.Rev")
+clear()
 
 # testing the function definition
 source("user functions/test.Rev")
