@@ -241,7 +241,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "ctmc",         new Dist_ctmm()        );
         addDistribution( "dtmm",         new Dist_dtmm()        );
         addDistribution( "dirichlet",    new Dist_dirichlet()   );
-        addDistribution( "exp",          new Dist_exp()         );
+        addDistribution( "exponential",  new Dist_exp()         );
         addDistribution( "logis",        new Dist_logis()       );
         addDistribution( "multinomial",  new Dist_multinomial() );
         addDistribution( "norm",         new Dist_norm()        );
@@ -379,7 +379,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add math functions (alphabetical order) */
         addFunction( "abs",       new Func_abs()   );
         addFunction( "cos",       new Func_cos()   );
-        addFunction( "expf",      new Func_exp()   );
+        addFunction( "exp",       new Func_exp()   );
         addFunction( "ln",        new Func_ln()    );
         addFunction( "log",       new Func_log()   );
         addFunction( "power",     new Func_power() );
