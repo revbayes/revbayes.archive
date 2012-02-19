@@ -6,3 +6,6 @@ diff "Expected results math-functions.txt" "Test results math-functions.txt" | w
 
 echo "Number of wrong results in user-function test:" >> "Test perfomance results.txt"
 diff "Expected results user-functions.txt" "Test results user-functions.txt" | wc -l >> "Test perfomance results.txt"
+
+echo "Number of wrong results in DAG assignments test:" >> "Test perfomance results.txt"
+diff "Expected results assignments.txt" "Test results assignments.txt" | wc -l >> "Test perfomance results.txt"
