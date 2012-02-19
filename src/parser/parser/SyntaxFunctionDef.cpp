@@ -142,7 +142,7 @@ Variable* SyntaxFunctionDef::evaluateContent(Environment& env) {
     ArgumentRules* argRules = new ArgumentRules();
 
     for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
-        argRules->push_back( (*i)->getArgumentRule() );
+        argRules->push_back( (*i)->getArgumentRule()->clone() );
 
     // Create copy of the statements
     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();

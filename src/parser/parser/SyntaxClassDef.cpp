@@ -16,7 +16,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "SyntaxClassDef.h"
-#include "UserFunction.h"
 #include "VectorString.h"
 #include "Workspace.h"
 

@@ -47,10 +47,15 @@ SyntaxFunctionCall::SyntaxFunctionCall(SyntaxVariable* var, RbString* id, std::l
 
 
 /** Deep copy constructor */
-SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x) : SyntaxElement(x) {
+SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x) : SyntaxElement(x), variable( NULL ) {
 
     functionName = x.functionName->clone();
-    variable     = x.variable->clone();
+    
+    if (x.variable != NULL) {
+        variable = x.variable->clone();
+    }
+    
+    arguments = new std::list<SyntaxLabeledExpr*>();
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
         arguments->push_back( (*i)->clone() );
 }

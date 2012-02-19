@@ -47,6 +47,9 @@ class UserFunction :  public RbFunction {
                 UserFunction(const UserFunction& x);                                    //!< Copy constructor
                 virtual ~UserFunction();                                                //!< Delete the code
 
+        // overloaded operators
+        UserFunction&                               operator=(const UserFunction& f);
+        
         // Basic utility functions
         UserFunction*                               clone() const;                      //!< Clone object
         const VectorString&                         getClass() const;                   //!< Get class vector

@@ -42,7 +42,7 @@ UserFunction::UserFunction( const ArgumentRules*  argRules,
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType), code(NULL), defineEnvironment(NULL) {
+UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules( x.argumentRules->clone() ), returnType( x.returnType ), code( NULL ), defineEnvironment( NULL ) {
 
     // clone the environment
     defineEnvironment   = x.defineEnvironment->clone();
@@ -50,10 +50,39 @@ UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules
     // create a new list for the code
     code = new std::list<SyntaxElement*>();
     for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
-//        SyntaxElement *element = (*i)->clone();
-        SyntaxElement* element = *i;
+        SyntaxElement* element = (*i)->clone();
         code->push_back(element);
     }
+}
+
+
+UserFunction& UserFunction::operator=(const UserFunction &f) {
+    
+    if ( this != &f ) {
+        delete defineEnvironment;
+        // clone the environment
+        defineEnvironment   = f.defineEnvironment->clone();
+        
+        
+        delete argumentRules;
+        argumentRules = f.argumentRules->clone();
+        
+        for (std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); it++) {
+            SyntaxElement* theSyntaxElement = *it;
+            delete theSyntaxElement;
+        }
+        
+        delete code;
+        // create a new list for the code
+        code = new std::list<SyntaxElement*>();
+        for (std::list<SyntaxElement*>::const_iterator i=f.code->begin(); i!=f.code->end(); i++) {
+            //        SyntaxElement *element = (*i)->clone();
+            SyntaxElement* element = (*i)->clone();
+            code->push_back(element);
+        }
+    }
+    
+    return *this;
 }
 
 
@@ -61,6 +90,16 @@ UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules
 UserFunction::~UserFunction() {
 
     // defineEnvironment->destroyEnclosure();   //TODO: or something like that
+
+    delete defineEnvironment;
+    delete argumentRules;
+    
+    for (std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); it++) {
+        SyntaxElement* theSyntaxElement = *it;
+        delete theSyntaxElement;
+    }
+    
+    delete code;
 }
 
 
