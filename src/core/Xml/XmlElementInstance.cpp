@@ -10,6 +10,9 @@
 
 #include <map>
 #include <string>
+#include <ostream>
+
+
 
 XmlElementInstance::XmlElementInstance(const std::string& name, uintptr_t identifier) : XmlElementAttributed(name, identifier) {
     

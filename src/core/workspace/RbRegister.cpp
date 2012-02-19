@@ -128,6 +128,7 @@
 #include "Func_dppServe.h"
 #include "Func_ls.h"
 #include "Func_normalizeVector.h"
+#include "Func_print.h"
 #include "Func_quit.h"
 #include "Func_setval.h"
 #include "Func_structure.h"
@@ -345,6 +346,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "dppServe",                 new Func_dppServe()                 );
         addFunction( "ls",                       new Func_ls()                       );
         addFunction( "normalize",                new Func_normalizeVector()          );
+        addFunction( "print",                    new Func_print()                    );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "setval",                   new Func_setval()                   );

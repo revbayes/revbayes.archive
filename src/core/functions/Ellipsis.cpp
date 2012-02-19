@@ -22,7 +22,6 @@
 #include "TypeSpec.h"
 #include "VectorString.h"
 
-#include <sstream>
 
 
 // Definition of the static type spec member
@@ -56,16 +55,5 @@ const TypeSpec& Ellipsis::getTypeSpec(void) const {
 void Ellipsis::printValue(std::ostream &o) const {
 
     o << argSlot.getTypeSpec() << " ...";
-}
-
-/** Provide complete information about object */
-std::string Ellipsis::richInfo(void) const {
-
-    std::ostringstream o;
-
-    o << "Ellipsis: ";
-    printValue( o );
-
-    return o.str();
 }
 

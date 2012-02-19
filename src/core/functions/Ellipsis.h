@@ -42,7 +42,6 @@ class Ellipsis : public ArgumentRule {
         const VectorString& getClass(void) const;                               //!< Get class vector
         const TypeSpec&     getTypeSpec(void) const;                            //!< Get language type of the object
         void                printValue(std::ostream& o) const;                  //!< Print value for user
-        std::string         richInfo(void) const;                               //!< Complete info 
     
     private:
         static const TypeSpec       typeSpec;

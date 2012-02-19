@@ -66,12 +66,6 @@ std::ostream& operator<<(std::ostream& stream, const RbString& s) {
 	return stream;
 }
 
-/** Brief info on object */
-std::string RbString::briefInfo() const {
-    
-	return value;
-}
-
 /** Clone function */
 RbString* RbString::clone() const {
 
@@ -96,14 +90,8 @@ const TypeSpec& RbString::getTypeSpec(void) const {
 /** Print value */
 void RbString::printValue(std::ostream& o) const {
 
-	o << "\"" << value << "\"";
-}
-
-
-/** Complete info on object */
-std::string RbString::richInfo() const {
-
-	return "RbString(\"" + value + "\")";
+//	o << "\"" << value << "\"";
+	o << value;
 }
 
 

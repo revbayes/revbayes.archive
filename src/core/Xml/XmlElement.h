@@ -17,7 +17,6 @@
 #ifndef XmlElement_H
 #define XmlElement_H
 
-#include <iostream>
 #include <string>
 #include <map>
 #include <stdint.h>

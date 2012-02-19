@@ -40,13 +40,11 @@ class RbString : public RbLanguageObject {
         friend std::ostream&        operator<< (std::ostream& o, RbString const& s);    //!< String output with << operator
 
     // Basic utility functions
-        std::string                 briefInfo(void) const;                              //!< Brief info about the object
 	    RbString*                   clone(void) const;                                  //!< Copy
         const VectorString&         getClass(void) const;                               //!< Get class
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
         std::string&                getValueReference(void) { return value; }           //!< Get value reference
         void                        printValue(std::ostream& o) const;                  //!< Print value (for user)
-        std::string                 richInfo(void) const;                               //!< General info on object
 
         // RbString functions
         void                        append(const RbString& s) { value += s.value; }     //!< Append string

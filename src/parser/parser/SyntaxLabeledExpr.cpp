@@ -95,7 +95,7 @@ const TypeSpec& SyntaxLabeledExpr::getTypeSpec(void) const {
 void SyntaxLabeledExpr::printValue(std::ostream& o) const {
 
     o << "[" << this << "] SyntaxLabeledExpr:" << std::endl;
-    o << "label      = " << label->richInfo() << std::endl;
+    o << "label      = " << label->getValue() << std::endl;
     o << "expression = [" << expression << "]";
     expression->printValue(o);
     o << std::endl;
