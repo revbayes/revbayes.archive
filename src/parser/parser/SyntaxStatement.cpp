@@ -69,17 +69,22 @@ SyntaxStatement::SyntaxStatement(statementT                   type,
 
 
 /** Deep copy constructor */
-SyntaxStatement::SyntaxStatement(const SyntaxStatement& x)
-    : SyntaxElement(x) {
+SyntaxStatement::SyntaxStatement(const SyntaxStatement& x) : SyntaxElement(x) {
 
     statementType   = x.statementType;
     expression      = x.expression->clone();
 
-    for (std::list<SyntaxElement*>::const_iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
-        statements1->push_back( (*i)->clone() );
-
-    for (std::list<SyntaxElement*>::const_iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
-        statements2->push_back( (*i)->clone() );
+    statements1 = new std::list<SyntaxElement*>();
+    if ( x.statements1 != NULL ) {
+        for (std::list<SyntaxElement*>::const_iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
+            statements1->push_back( (*i)->clone() );
+    }
+    
+    statements2 = new std::list<SyntaxElement*>();
+    if ( x.statements2 != NULL ) {
+        for (std::list<SyntaxElement*>::const_iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
+            statements2->push_back( (*i)->clone() );
+    }
 }
 
 
@@ -114,10 +119,18 @@ SyntaxStatement& SyntaxStatement::operator= (const SyntaxStatement& x) {
         statementType   = x.statementType;
         expression      = x.expression->clone();
         
+        for (std::list<SyntaxElement*>::iterator i = statements1->begin(); i != statements1->end(); i++) {
+            SyntaxElement* theSyntaxElement = *i;
+            delete theSyntaxElement;
+        }
         statements1->clear();
         for (std::list<SyntaxElement*>::const_iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
             statements1->push_back( (*i)->clone() );
         
+        for (std::list<SyntaxElement*>::iterator i = statements2->begin(); i != statements2->end(); i++) {
+            SyntaxElement* theSyntaxElement = *i;
+            delete theSyntaxElement;
+        }
         statements2->clear();
         for (std::list<SyntaxElement*>::const_iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
             statements2->push_back( (*i)->clone() );
