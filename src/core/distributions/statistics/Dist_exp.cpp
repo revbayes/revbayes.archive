@@ -176,3 +176,16 @@ const RbLanguageObject& Dist_exp::rv( void ) {
     return randomVariable;
 }
 
+
+/** We catch here the setting of the member variables to store our parameters. */
+void Dist_exp::setMemberDagNode(std::string const &name, DAGNode *var) {
+    
+    if ( name == "rate" ) {
+        rate.setDagNode( var );
+    }
+    else {
+        DistributionContinuous::setMemberDagNode(name, var);
+    }
+}
+
+

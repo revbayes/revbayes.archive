@@ -212,3 +212,17 @@ const RbLanguageObject& Dist_norm::rv(void) {
 }
 
 
+/** We catch here the setting of the member variables to store our parameters. */
+void Dist_norm::setMemberDagNode(std::string const &name, DAGNode *var) {
+    
+    if ( name == "mean" ) {
+        mu.setDagNode( var );
+    }
+    else if ( name == "sd" ) {
+        sigma.setDagNode( var );
+    }
+    else {
+        DistributionContinuous::setMemberDagNode(name, var);
+    }
+}
+

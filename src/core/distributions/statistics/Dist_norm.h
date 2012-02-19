@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-08-27, version 1.0
  *
- * $Id: MemberObject.h 194 2009-12-14 11:43:32Z ronquist $
+ * $Id: $
  */
 
 #ifndef Dist_norm_H
@@ -41,6 +41,7 @@ class Dist_norm: public DistributionContinuous {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+        void                        setMemberDagNode(const std::string& name, DAGNode* var);            //!< Catching the setting of the member variables.
 
         // Normal distribution functions
         double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density

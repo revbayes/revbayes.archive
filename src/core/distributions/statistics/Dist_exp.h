@@ -42,6 +42,7 @@ class Dist_exp: public DistributionContinuous {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+        void                        setMemberDagNode(const std::string& name, DAGNode* var);            //!< Catching the setting of the member variables.
 
         // Exponential distribution functions
         double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density

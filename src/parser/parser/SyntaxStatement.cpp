@@ -192,13 +192,12 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                 // Execute statement
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 
-                // TODO: We should not print the result if it didn't return anything
-//                // Print result if it is not an assign expression (==NULL)
-//                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
-//                    std::ostringstream msg;
-//                    result->getDagNode()->printValue(msg);
-//                    RBOUT( msg.str() );
-//                }
+                // Print result if it is not an assign expression (==NULL)
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
+                    std::ostringstream msg;
+                    result->getDagNode()->printValue(msg);
+                    RBOUT( msg.str() );
+                }
 
                 // Free memory
 				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL) {
@@ -244,7 +243,7 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
 	            result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -288,7 +287,7 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent(env);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -334,7 +333,7 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
