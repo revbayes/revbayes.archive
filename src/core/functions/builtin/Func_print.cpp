@@ -50,11 +50,20 @@ const RbLanguageObject& Func_print::executeFunction( void ) {
     const std::string& f = static_cast<RbString&>( (*args)[0].getValue() ).getValue();
     if ( f != "" ) {
         std::ofstream outStream;
-        // open the stream to the file
-        outStream.open(f.c_str(), std::fstream::out | std::fstream::app);
+        
+        if (static_cast<RbBoolean&>( (*args)[1].getValue() ).getValue()) {
+            
+            // open the stream to the file
+            outStream.open(f.c_str(), std::fstream::out | std::fstream::app);
+        }
+        else {
+            
+            // open the stream to the file
+            outStream.open(f.c_str(), std::fstream::out);
+        }
         
         // print the arguments
-        for (size_t i = 1; i < args->size(); i++) {
+        for (size_t i = 2; i < args->size(); i++) {
             (*args)[i].getValue().printValue(outStream);
         }
         outStream << std::endl;
@@ -64,7 +73,7 @@ const RbLanguageObject& Func_print::executeFunction( void ) {
         
         std::ostream& o = std::cout;
         // print the arguments
-        for (size_t i = 1; i < args->size(); i++) {
+        for (size_t i = 2; i < args->size(); i++) {
             (*args)[i].getValue().printValue(o);
         }
         o << std::endl;
@@ -84,6 +93,7 @@ const ArgumentRules& Func_print::getArgumentRules( void ) const {
     if ( !rulesSet ) {
         
         argumentRules.push_back( new ValueRule( "filename", new RbString("") ) );
+        argumentRules.push_back( new ValueRule( "append", new RbBoolean(false) ) );
         argumentRules.push_back( new Ellipsis( TypeSpec(RbLanguageObject_name) ) );
         rulesSet = true;
     }
