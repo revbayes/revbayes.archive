@@ -1,0 +1,17 @@
+# testing math stuff
+source("math/test.Rev")
+
+
+# testing the function definition
+source("user functions/test.Rev")
+clear()
+
+# an MCMC on the normal model
+#source("normaltest.Rev")
+#clear()
+
+# a testfile for the normalmodel with known expectations
+#source("normalcheck.Rev")
+
+# A simple phylogenetic model test
+#source("phylotest.Rev")
