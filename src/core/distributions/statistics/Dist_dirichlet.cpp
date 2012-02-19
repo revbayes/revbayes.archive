@@ -40,7 +40,7 @@ const TypeSpec Dist_dirichlet::typeSpec(Dist_dirichlet_name);
 const TypeSpec Dist_dirichlet::varTypeSpec(Simplex_name);
 
 /** Default constructor for parser use */
-Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules() ), alpha( TypeSpec( VectorRealPos_name ) ) {
+Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules() ), alpha( NULL ) {
 
 }
 
@@ -129,7 +129,7 @@ const TypeSpec& Dist_dirichlet::getVariableType( void ) const {
 double Dist_dirichlet::lnPdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorRealPos&>( alpha.getValue() ).getValue();
+    std::vector<double> a = static_cast<const VectorRealPos&>( alpha->getValue() ).getValue();
     std::vector<double> x = static_cast<const Simplex&      >( value            ).getValue();
 
 	// Check that the vectors are both the same size
@@ -151,7 +151,7 @@ double Dist_dirichlet::lnPdf( const RbLanguageObject& value ) const {
 double Dist_dirichlet::pdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorRealPos&>( alpha.getValue() ).getValue();
+    std::vector<double> a = static_cast<const VectorRealPos&>( alpha->getValue() ).getValue();
     std::vector<double> x = static_cast<const Simplex&      >( value            ).getValue();
 
 	// Check that the vectors are both the same size
@@ -188,7 +188,7 @@ const Real& Dist_dirichlet::quantile( const double p ) {
  */
 const RbLanguageObject& Dist_dirichlet::rv( void ) {
 
-    std::vector<double> a = static_cast<VectorRealPos&>( alpha.getValue() ).getValue();
+    std::vector<double> a = static_cast<VectorRealPos&>( alpha->getValue() ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<double> r(a.size());
 
@@ -197,4 +197,17 @@ const RbLanguageObject& Dist_dirichlet::rv( void ) {
     
     return randomVariable;
 }
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void Dist_dirichlet::setMemberVariable(std::string const &name, Variable *var) {
+    
+    if ( name == "alpha" ) {
+        alpha = var;
+    }
+    else {
+        DistributionContinuous::setMemberVariable(name, var);
+    }
+}
+
 
