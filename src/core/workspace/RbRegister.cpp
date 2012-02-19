@@ -131,6 +131,7 @@
 #include "Func_print.h"
 #include "Func_quit.h"
 #include "Func_setval.h"
+#include "Func_simplex.h"
 #include "Func_structure.h"
 #include "Func_unclamp.h"
 #include "Func_unique.h"
@@ -350,6 +351,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "setval",                   new Func_setval()                   );
+        addFunction( "simplex",                  new Func_simplex<Integer>()         );
+        addFunction( "simplex",                  new Func_simplex<RealPos>()         );
+        addFunction( "simplex",                  new Func_simplex<VectorRealPos>()   );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "unclamp",                  new Func_unclamp()                  );
         addFunction( "unique",                   new Func_unique<VectorBoolean>()    );
