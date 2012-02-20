@@ -41,6 +41,7 @@ public:
 	
 	// Member variable setup
     const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+    void                        setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
 	
 	// Lognormal distribution functions
 	double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
@@ -55,8 +56,8 @@ private:
     static const TypeSpec       varTypeSpec;
 
     // parameters
-    Variable                    mu;
-    Variable                    sigma;
+    RbVariablePtr               mu;
+    RbVariablePtr               sigma;
     
     // memberfunction return variables
     Real                        randomVariable;
