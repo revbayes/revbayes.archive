@@ -39,9 +39,13 @@ class Func__uminus :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         static const TypeSpec       typeSpec;
+    
+        // Arguments
+        RbVariablePtr               value;
     
         // function return value
         retType                     retValue;
@@ -73,7 +77,7 @@ Func__uminus<valType, retType>* Func__uminus<valType, retType>::clone( void ) co
 template <typename valType, typename retType>
 const RbLanguageObject& Func__uminus<valType, retType>::executeFunction( void ) {
 
-    const valType& val = static_cast<valType&> ( (*args)[0].getValue() );
+    const valType& val = static_cast<valType&> ( value->getValue() );
              retValue = -( val );
 
     return retValue;
@@ -89,7 +93,7 @@ const ArgumentRules& Func__uminus<valType, retType>::getArgumentRules( void ) co
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "value", valType().getTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -121,5 +125,18 @@ template <typename firstValType, typename retType>
 const TypeSpec& Func__uminus<firstValType, retType>::getTypeSpec( void ) const {
     
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+template <typename firstValType, typename retType>
+void Func__uminus<firstValType, retType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "value" ) {
+        value = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

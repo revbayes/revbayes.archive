@@ -36,27 +36,27 @@ const std::string Mcmc_name = "MCMC";
 class Mcmc: public ConstantMemberObject {
 
 public:
-    Mcmc(void);                                                                                                 //!< Default constructor
-    Mcmc(const Mcmc &x);                                                                                        //!< Copy Constructor
-    virtual                    ~Mcmc(void) {}                                                                   //!< Destructor
+    Mcmc(void);                                                                                                         //!< Default constructor
+    Mcmc(const Mcmc &x);                                                                                                //!< Copy Constructor
+    virtual                    ~Mcmc(void) {}                                                                           //!< Destructor
 
     // Basic utility functions
-    Mcmc*                       clone(void) const;                                                              //!< Clone object
-    const VectorString&         getClass(void) const;                                                           //!< Get class vector  
-    const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object 
+    Mcmc*                       clone(void) const;                                                                      //!< Clone object
+    const VectorString&         getClass(void) const;                                                                   //!< Get class vector  
+    const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object 
 
     // Member variable rules
-    const MemberRules&          getMemberRules(void) const;                                                     //!< Get member rules
-    void                        setMemberVariable(const std::string& name, Variable* var);                      //!< Only constants allowed
+    const MemberRules&          getMemberRules(void) const;                                                             //!< Get member rules
+    void                        setMemberVariable(const std::string& name, Variable* var);                              //!< Only constants allowed
 
     // Member method inits
-    const MethodTable&          getMethods(void) const;                                                         //!< Get methods
+    const MethodTable&          getMethods(void) const;                                                                 //!< Get methods
         
     // Mcmc functions
-    void                        run(size_t ngen);                                                               //!< Update the chain
+    void                        run(size_t ngen);                                                                       //!< Update the chain
 
 protected:
-    const RbLanguageObject&     executeOperationSimple(const std::string& name, Environment& args);             //!< Execute method
+    const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
 
  
 private:

@@ -43,7 +43,7 @@ Func_reference* Func_reference::clone( void ) const {
 const RbLanguageObject& Func_reference::executeFunction( void ) {
     
     // reference to the original variable
-    const RbLanguageObject& val = (*args)[0].getValue(); 
+    const RbLanguageObject& val = variable->getValue(); 
     
     return val;
 }
@@ -84,5 +84,17 @@ const TypeSpec& Func_reference::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_reference::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_reference::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "variable" ) {
+        variable = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

@@ -72,10 +72,10 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
 
     if (name == "run") {
-        const RbLanguageObject& argument = args[0].getValue();
+        const RbLanguageObject& argument = args[0].getVariable().getValue();
         int n = static_cast<const Natural&>( argument ).getValue();
         run(n);
         return RbNullObject::getInstance();
@@ -191,11 +191,11 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
             FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
             
             // get the DAG node for this monitor
-            std::vector<RbDagNodePtr> &theOldNodes = theMonitor.getDagNodes();
+            std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
             
             // convert the old nodes from Stochastic nodes to DAGNode
             std::vector<DAGNode*> oldNodes;
-            for (std::vector<RbDagNodePtr>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+            for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
                 oldNodes.push_back( *it );
             }
             // get the DAG node which corresponds in the model to the cloned original node
@@ -228,7 +228,7 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
     /* Get the dag nodes from the model */
-    std::vector<RbDagNodePtr > dagNodes = (static_cast<Model&>( model->getValue() ) ).getDAGNodes();
+    std::vector<DAGNode*> dagNodes = (static_cast<Model&>( model->getValue() ) ).getDAGNodes();
 
     /* Get the moves and monitors */
     Vector& theMonitors = static_cast<Vector&>( monitors->getValue() );
@@ -256,7 +256,7 @@ void Mcmc::run(size_t ngen) {
     /* Get initial lnProbability of model */
     double lnProbability = 0.0;
     std::vector<double> initProb;
-    for (std::vector<RbDagNodePtr >::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+    for (std::vector<DAGNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
         DAGNode* node = (*i);
         if (node->isType(StochasticNode_name)) {
             StochasticNode* stochNode = dynamic_cast<StochasticNode*>( node );

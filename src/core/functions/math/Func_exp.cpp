@@ -40,11 +40,6 @@ Func_exp::Func_exp(void) : RbFunction() {
     
 }
 
-/** Copy constructor */
-Func_exp::Func_exp(const Func_exp &x) : RbFunction(x) {
-    
-}
-
 
 /** Clone object */
 Func_exp* Func_exp::clone( void ) const {
@@ -56,8 +51,9 @@ Func_exp* Func_exp::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_exp::executeFunction( void ) {
     
-    const double x = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
-    value.setValue( exp(x) );
+    const double d = static_cast<const Real&>( x->getValue() ).getValue();
+    
+    value.setValue( exp(d) );
     return value;
 }
 
@@ -96,5 +92,17 @@ const TypeSpec& Func_exp::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_exp::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_exp::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "x" ) {
+        x = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

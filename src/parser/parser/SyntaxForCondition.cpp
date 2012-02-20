@@ -121,9 +121,9 @@ const VectorString& SyntaxForCondition::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-Variable* SyntaxForCondition::evaluateContent(void) {
+RbVariablePtr SyntaxForCondition::evaluateContent( Environment& env ) {
 
-    return NULL;
+    return RbVariablePtr( NULL );
 }
 
 

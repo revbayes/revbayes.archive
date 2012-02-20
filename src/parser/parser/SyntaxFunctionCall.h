@@ -54,8 +54,7 @@ class SyntaxFunctionCall : public SyntaxElement {
 
         // Regular functions
         const RbString&                     getFunctionName(void) const { return *functionName; }                                       //!< Get function name
-        Variable*                           evaluateContent(void);                                                                      //!< Get semantic value
-        Variable*                           evaluateContent(Environment& env);                                                          //!< Get semantic value
+        RbVariablePtr                       evaluateContent(Environment& env);                                                          //!< Get semantic value
         void                                setBaseVariable(SyntaxVariable* var) { variable = var; }                                    //!< Set base variable
 
     protected:

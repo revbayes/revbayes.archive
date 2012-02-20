@@ -75,13 +75,13 @@ const VectorString& SyntaxConstant::getClass(void) const {
 
 
 /** Get semantic value of element */
-Variable* SyntaxConstant::evaluateContent(void) {
+RbVariablePtr SyntaxConstant::evaluateContent( Environment& env ) {
 
     // We return a clone in case this function is called repeatedly.
     if (value == NULL)
-        return new Variable(new ConstantNode( NULL ) );
+        return RbVariablePtr( new Variable(new ConstantNode( NULL ) ) );
     else
-        return new Variable(new ConstantNode( value->clone() ) );
+        return RbVariablePtr( new Variable(new ConstantNode( value->clone() ) ) );
 }
 
 

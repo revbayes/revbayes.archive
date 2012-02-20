@@ -58,7 +58,7 @@ class NxsLabelToIndicesMapper
 		/* Confusingly named function.
 			This function looks for the index set than is named `label` in the NxsLabelToIndicesMapper
 			It adds the indices from this set into `toFill` (if toFill is not NULL).
-			\returns the size of the set which was named label (the number of indices that were RbDagNodePtred).
+			\returns the size of the set which was named label (the number of indices that were inserted).
 		*/
 		virtual unsigned GetIndexSet(const std::string &label, NxsUnsignedSet * toFill) const = 0;
 		/* Adds set `inds` to the collection of sets and gives it the name `label`

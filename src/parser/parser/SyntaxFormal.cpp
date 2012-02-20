@@ -34,9 +34,10 @@ SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElem
     // Make argument rule from element
     if (defaultExpr == NULL)
         argRule = new ValueRule(*label, *argType);
-    else
-        argRule = new ValueRule(*label, *argType, defaultExpr->evaluateContent()->getDagNode() );
-
+    else {
+        Environment env = Environment();
+        argRule = new ValueRule(*label, *argType, defaultExpr->evaluateContent( env )->getDagNode() );
+    }
 }
 
 
@@ -62,9 +63,10 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
     // Make argument rule from element
     if (defaultExpr == NULL)
         argRule = new ValueRule(*label, *argType);
-    else
-        argRule = new ValueRule(*label, *argType, defaultExpr->evaluateContent()->getDagNode());
-
+    else {
+        Environment env = Environment();
+        argRule = new ValueRule(*label, *argType, defaultExpr->evaluateContent(env)->getDagNode());
+    }
 }
 
 
@@ -144,9 +146,9 @@ const VectorString& SyntaxFormal::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-Variable* SyntaxFormal::evaluateContent(void) {
+RbVariablePtr SyntaxFormal::evaluateContent( Environment& env ) {
 
-    return NULL;
+    return RbVariablePtr( NULL );
 }
 
 

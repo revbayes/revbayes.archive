@@ -41,9 +41,6 @@ StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.
 
 /** Constructor from distribution */
 StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
-
-    // increment the reference count for myself
-    RbDagNodePtr::incrementCountForAddress(this);
     
     /* Get distribution parameters */
     std::vector<RbVariablePtr>& params = dist->getMembers();
@@ -52,7 +49,7 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     std::list<DAGNode*> done;
     for ( size_t i = 0; i < params.size(); i++ ) {
         done.clear();
-        if ( params[i]->getDagNode()->isParentInDAG( RbDagNodePtr( this ), done ) )
+        if ( params[i]->getDagNode()->isParentInDAG( this, done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
 
@@ -72,9 +69,6 @@ StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVa
     /* Get initial probability */
     lnProb = calculateLnProbability();
     
-    
-    // decrement the reference count for myself
-    RbDagNodePtr::decrementCountForAddress(this);
 }
 
 
@@ -89,7 +83,7 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
 
     /* Set parent(s) and add myself as a child to these */
     for ( size_t i = 0; i < params.size(); i++ ) {
-        const RbDagNodePtr& theParam = params[i]->getDagNode();
+        DAGNode* theParam = params[i]->getDagNode();
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -113,8 +107,8 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
 StochasticNode::~StochasticNode( void ) {
 
     /* Remove parents first */
-    for ( std::set<RbDagNodePtr >::iterator i = parents.begin(); i != parents.end(); i++ ) {
-        const RbDagNodePtr& node = *i;
+    for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
+        DAGNode* node = *i;
         node->removeChildNode( this );
     }
     parents.clear();
@@ -138,8 +132,8 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
             throw RbException( "Type mismatch in StochasticNode assignment" );
         
         /* Remove parents first */
-        for ( std::set<RbDagNodePtr >::iterator i = parents.begin(); i != parents.end(); i++ ) {
-            RbDagNodePtr node = *i;
+        for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
+            DAGNode* node = *i;
             node->removeChildNode( this );
         }
         parents.clear();
@@ -152,7 +146,7 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 
         /* Set parent(s) and add myself as a child to these */
         for ( size_t i = 0; i < params.size(); i++ ) {
-            const RbDagNodePtr& theParam = params[i]->getDagNode();
+            DAGNode* theParam = params[i]->getDagNode();
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -182,7 +176,7 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
 
     for ( size_t i = 0; i < params.size(); i++ ) {
         
-        const RbDagNodePtr& theNode  = params[i]->getDagNode();
+        DAGNode* theNode  = params[i]->getDagNode();
 
         if ( !theNode->isType( VariableNode_name ) )
             continue;
@@ -260,7 +254,7 @@ StochasticNode* StochasticNode::clone( void ) const {
 
 
 /** Clone the entire graph: clone children, swap parents */
-RbDagNodePtr StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr >& newNodes ) const {
+DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
 
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
@@ -294,9 +288,9 @@ RbDagNodePtr StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr >& 
     for ( size_t i = 0; i < params.size(); i++ ) {
         
         // clone the i-th member and get the clone back
-        const RbDagNodePtr& theParam = params[i]->getDagNode();
+        DAGNode* theParam = params[i]->getDagNode();
         // if we already have cloned this parent (parameter), then we will get the previously created clone
-        RbDagNodePtr theParamClone = theParam->cloneDAG( newNodes );
+        DAGNode* theParamClone = theParam->cloneDAG( newNodes );
         
         // set the clone of the member as the member of the clone
         // TODO: We should check that this does destroy the dependencies of the parameters.
@@ -353,7 +347,7 @@ const TypeSpec& StochasticNode::getTypeSpec(void) const {
 }
 
 
-/** Get affected nodes: RbDagNodePtr this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
+/** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
 void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
     
     /* If we have already touched this node, we are done; otherwise, get the affected children */
@@ -567,7 +561,7 @@ void StochasticNode::setValue( RbLanguageObject* val ) {
  * This function should be called from the mutateTo function, otherwise it
  * is dangerous because the distribution parameters will not be accommodated.
  */
-void StochasticNode::swapParentNode(const RbDagNodePtr& oldNode, const RbDagNodePtr& newNode ) {
+void StochasticNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode ) {
 
     if ( parents.find( oldNode ) == parents.end() )
         throw RbException( "Node is not a parent" );

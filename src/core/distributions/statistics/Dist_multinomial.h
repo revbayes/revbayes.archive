@@ -43,6 +43,7 @@ class Dist_multinomial: public DistributionDiscrete {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
 
         // Multinomial distribution functions
         size_t                      getNumberOfStates(void) const;                                      //!< Get number of states
@@ -57,7 +58,7 @@ class Dist_multinomial: public DistributionDiscrete {
         static const TypeSpec       varTypeSpec;
 
         // parameters
-        Variable                    probabilities;
+        RbVariablePtr               probabilities;
     
         // memberfunction return values
         VectorNatural               randomVariable;

@@ -183,7 +183,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
     }
     retVal = table.equal_range(name);
     if (count == 1) {
-        if (retVal.first->second->processArguments(args) == false) {
+        if (retVal.first->second->checkArguments(args,NULL) == false) {
             
             std::ostringstream msg;
             msg << "Argument mismatch for call to function '" << name << "'. Correct usage is:" << std::endl;
@@ -191,6 +191,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
             msg << std::endl;
             throw RbException( msg );
         }
+        retVal.first->second->processArguments(args);
         return *retVal.first->second;
     }
     else {
@@ -201,7 +202,8 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
         bool ambiguous = false;
         std::multimap<std::string, RbFunction* >::iterator it;
         for (it=retVal.first; it!=retVal.second; it++) {
-            if ( (*it).second->processArguments(args, matchScore) == true ) {
+            matchScore->clear();
+            if ( (*it).second->checkArguments(args, matchScore) == true ) {
                 if ( bestMatch == NULL ) {
                     bestScore = *matchScore;
                     bestMatch = it->second;
@@ -244,6 +246,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
             throw RbException( msg );
         }
         else {
+            bestMatch->processArguments(args);
             return *bestMatch;
         }
     }
@@ -285,7 +288,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
 
     /* Check that all labels are unique in both sets of argument rules */
     for (size_t i=0; i<x.size(); i++) {
-        for (size_t j=i+1; j < y.size(); j++) {
+        for (size_t j=i+1; j < x.size(); j++) {
             if (x[i].getArgumentLabel().size() != 0 && x[j].getArgumentLabel().size() != 0)
             if (x[i].getArgumentLabel() == x[j].getArgumentLabel())
                 return false;
@@ -308,7 +311,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
 
         for (size_t j=0; j<y.size(); j++) {
 
-            const std::string& yLabel = y[i].getArgumentLabel();
+            const std::string& yLabel = y[j].getArgumentLabel();
             if (yLabel.size() == 0)
                 continue;
 

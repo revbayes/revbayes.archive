@@ -44,6 +44,7 @@ class Func_nj :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                                   //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         Topology*                   neighborJoining(const DistanceMatrix& d);
@@ -51,6 +52,11 @@ class Func_nj :  public RbFunction {
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
 
+        // Arguments
+        RbVariablePtr               d;
+        RbVariablePtr               bioNj;
+        RbVariablePtr               ties;
+    
         // function return value
         TreePlate                   tree;
 

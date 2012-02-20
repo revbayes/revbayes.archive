@@ -65,21 +65,21 @@ Model::Model( const std::vector<DAGNode*>& sinkNodes ) : ConstantMemberObject(ge
 Model::Model( const Model& x ) : ConstantMemberObject( x ) {
 
     /* Make copy of DAG by pulling from first node in x */
-    std::map<const DAGNode*, RbDagNodePtr > newNodes;
+    std::map<const DAGNode*, DAGNode*> newNodes;
     if ( x.dagNodes.size() > 0 )
         x.dagNodes[0]->cloneDAG( newNodes );
    
 
-    /* RbDagNodePtr new nodes in dagNodes member frame and direct access vector */
-    for ( std::map<const DAGNode*, RbDagNodePtr >::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
+    /* insert new nodes in dagNodes member frame and direct access vector */
+    for ( std::map<const DAGNode*, DAGNode*>::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
 
-        const DAGNode *theOrgNode = (*i).first;
-        const RbDagNodePtr& theOldNode = (*i).second;
+        const DAGNode* theOrgNode = (*i).first;
+        const DAGNode* theOldNode = (*i).second;
         
         // find the new node in our temporary map
-        const RbDagNodePtr& theNewNode = newNodes.find(theOldNode)->second;
+        DAGNode* theNewNode = newNodes.find(theOldNode)->second;
 
-        // RbDagNodePtr in direct access vector
+        // insert in direct access vector
         dagNodes.push_back( theNewNode );
         
         // add the pair into the map of original nodes
@@ -98,12 +98,12 @@ Model& Model::operator=( const Model& x ) {
         nodesMap.clear();
         
         /* Make copy of DAG by pulling from first node in x */
-        std::map<const DAGNode*, RbDagNodePtr > newNodes;
+        std::map<const DAGNode*, DAGNode*> newNodes;
         if ( x.dagNodes.size() > 0 )
             x.dagNodes[0]->cloneDAG( newNodes );
 
-        /* RbDagNodePtr new nodes in dagNodes member frame and direct access vector */
-        for ( std::map<const DAGNode*, RbDagNodePtr >::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
+        /* insert new nodes in dagNodes member frame and direct access vector */
+        for ( std::map<const DAGNode*, DAGNode*>::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
             
             const DAGNode *theOrgNode = (*i).first;
             DAGNode       *theOldNode = (*i).second;
@@ -111,8 +111,8 @@ Model& Model::operator=( const Model& x ) {
             // find the new node in our temporary map
             DAGNode       *theNewNode = newNodes.find(theOldNode)->second;
             
-            // RbDagNodePtr in direct access vector
-            dagNodes.push_back( RbDagNodePtr( theNewNode ) );
+            // insert in direct access vector
+            dagNodes.push_back( theNewNode );
             
             // add the pair into the map of original nodes
             nodesMap[theOrgNode] = theNewNode;
@@ -131,10 +131,10 @@ Model* Model::clone(void) const {
 
 
 /** Find the offset of the node p in the vector v. */
-int Model::findIndexInVector(const std::vector<RbDagNodePtr >& v, const RbDagNodePtr p) const {
+int Model::findIndexInVector(const std::vector<DAGNode*>& v, const DAGNode* p) const {
     
 	int cnt = 0;
-    for (std::vector<RbDagNodePtr >::const_iterator i=v.begin(); i!=v.end(); i++) 
+    for (std::vector<DAGNode*>::const_iterator i=v.begin(); i!=v.end(); i++) 
     {
 		cnt++;
 		if ( (*i) == p )
@@ -160,7 +160,7 @@ std::vector<DAGNode*> Model::getClonedDagNodes(std::vector<DAGNode*> &orgNodes) 
     
     // find each original node and add it to the map
     for (std::vector<DAGNode*>::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
-        std::map<const DAGNode*, RbDagNodePtr >::const_iterator orgClonePair = nodesMap.find((*it));
+        std::map<const DAGNode*, DAGNode*>::const_iterator orgClonePair = nodesMap.find((*it));
         if (orgClonePair != nodesMap.end()) {
             clones.push_back( orgClonePair->second );
         }
@@ -207,7 +207,7 @@ void Model::printValue(std::ostream& o) const {
 	msg.str("");
 	RBOUT("-------------------------------------");
 	int cnt = 0;
-    for (std::vector<RbDagNodePtr >::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {   	
+    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {   	
 		msg << "Vertex " << ++cnt;
 		std::string nameStr = msg.str();
 		size_t nameStrSize = nameStr.size();
@@ -247,8 +247,8 @@ void Model::printValue(std::ostream& o) const {
 		msg.str("");
 		
 		msg << "   Parents      = ";
-		const std::set<RbDagNodePtr > &parents = (*i)->getParents();
-		for (std::set<RbDagNodePtr >::const_iterator j=parents.begin(); j != parents.end(); j++) {   	
+		const std::set<DAGNode*> &parents = (*i)->getParents();
+		for (std::set<DAGNode*>::const_iterator j=parents.begin(); j != parents.end(); j++) {   	
 			int idx = findIndexInVector( dagNodes, (*j) );
 			msg << idx << " ";
         }
@@ -260,7 +260,7 @@ void Model::printValue(std::ostream& o) const {
 		msg << "   Children     = ";
         const std::set<VariableNode*> &children = (*i)->getChildren();
 		for (std::set<VariableNode*>::const_iterator j=children.begin(); j != children.end(); j++) {   	
-			int idx = findIndexInVector( dagNodes, RbDagNodePtr(*j) );
+			int idx = findIndexInVector( dagNodes, *j );
 			msg << idx << " ";
         }
 		if (children.size() == 0)
@@ -292,11 +292,11 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
 //        if (var != NULL)
 //            var->cloneDAG(nodesMap);
         
-        /* RbDagNodePtr new nodes in dagNodes member frame and direct access vector */
-        std::map<const DAGNode*, RbDagNodePtr >::iterator i = nodesMap.begin();
+        /* insert new nodes in dagNodes member frame and direct access vector */
+        std::map<const DAGNode*, DAGNode*>::iterator i = nodesMap.begin();
         while ( i != nodesMap.end() ) {
             
-            RbDagNodePtr theNewNode( (*i).second );
+            DAGNode* theNewNode = (*i).second;
             
             // do not add myself into the list of nodes
             if (theNewNode->isType(DeterministicNode_name)) {
@@ -306,9 +306,9 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
                     const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
                     if (theConstructorFunction.getTemplateObjectType() == Model_name) {
                         // remove the dag node holding the model constructor function from the dag
-                        std::set<RbDagNodePtr > parents = theDetNode->getParents();
-                        for (std::set<RbDagNodePtr >::iterator it=parents.begin(); it!=parents.end(); it++) {
-                            RbDagNodePtr node = *it;
+                        const std::set<DAGNode*>& parents = theDetNode->getParents();
+                        for (std::set<DAGNode*>::const_iterator it=parents.begin(); it!=parents.end(); it++) {
+                            DAGNode* node = *it;
                             theDetNode->removeParentNode(node);
                             node->removeChildNode( theDetNode );
                         }
@@ -321,7 +321,7 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
                         // increment the iterator;
                         ++i;
                         
-                        // RbDagNodePtr in direct access vector
+                        // insert in direct access vector
                         dagNodes.push_back( theNewNode );
                     }
                 }
@@ -329,7 +329,7 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
                     // increment the iterator;
                     ++i;
                     
-                    // RbDagNodePtr in direct access vector
+                    // insert in direct access vector
                     dagNodes.push_back( theNewNode );
                 }
             }
@@ -337,7 +337,7 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
                 // increment the iterator;
                 ++i;
                 
-                // RbDagNodePtr in direct access vector
+                // insert in direct access vector
                 dagNodes.push_back( theNewNode );
             }
         }

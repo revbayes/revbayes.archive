@@ -42,10 +42,16 @@ class Func_clamp :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute operation
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+
+        // arguments
+        RbVariablePtr               variable;
+        RbVariablePtr               value;
+
 };
 
 #endif

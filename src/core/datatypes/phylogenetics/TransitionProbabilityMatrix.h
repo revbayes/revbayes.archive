@@ -56,7 +56,7 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
         const MethodTable&                  getMethods(void) const;                                            //!< Get methods
 
     protected:
-        const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);//!< Map method call to internal functions
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Map method call to internal functions
 
     private:
         Natural                             numStates;                                                         //!< The number of character states

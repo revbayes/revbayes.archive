@@ -47,11 +47,11 @@ Func_print* Func_print::clone( void ) const {
 const RbLanguageObject& Func_print::executeFunction( void ) {
     
 
-    const std::string& f = static_cast<RbString&>( (*args)[0].getValue() ).getValue();
+    const std::string& f = static_cast<RbString&>( filename->getValue() ).getValue();
     if ( f != "" ) {
         std::ofstream outStream;
         
-        if (static_cast<RbBoolean&>( (*args)[1].getValue() ).getValue()) {
+        if (static_cast<RbBoolean&>( append->getValue() ).getValue()) {
             
             // open the stream to the file
             outStream.open(f.c_str(), std::fstream::out | std::fstream::app);
@@ -63,8 +63,8 @@ const RbLanguageObject& Func_print::executeFunction( void ) {
         }
         
         // print the arguments
-        for (size_t i = 2; i < args->size(); i++) {
-            (*args)[i].getValue().printValue(outStream);
+        for (size_t i = 0; i < elements.size(); i++) {
+            elements[i]->getValue().printValue(outStream);
         }
         outStream << std::endl;
         outStream.close();
@@ -73,8 +73,8 @@ const RbLanguageObject& Func_print::executeFunction( void ) {
         
         std::ostream& o = std::cout;
         // print the arguments
-        for (size_t i = 2; i < args->size(); i++) {
-            (*args)[i].getValue().printValue(o);
+        for (size_t i = 0; i < elements.size(); i++) {
+            elements[i]->getValue().printValue(o);
         }
         o << std::endl;
     }
@@ -120,5 +120,23 @@ const TypeSpec& Func_print::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_print::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_print::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "filename" ) {
+        filename = var;
+    }
+    else if ( name == "append" ) {
+        append = var;
+    }
+    else if ( name == "" ) {
+        elements.push_back(var);
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

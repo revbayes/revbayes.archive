@@ -43,7 +43,7 @@ public:
     void                            printValue(std::ostream& o) const;                                              //!< Print value for user
 
     // Member variable functions
-    const RbLanguageObject&         executeOperation(const std::string& name, Environment& args);                   //!< Override to map member methods to internal functions
+    const RbLanguageObject&         executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
     const MemberRules&              getMemberRules(void) const;                                                     //!< Get member rules
     void                            setMemberVariable(const std::string& name, Variable* var);                      //!< Catch setting of the topology
 
@@ -54,7 +54,7 @@ public:
     const Topology&                 getTopology(void) const;                                                        //!< Get the topology for this tree
     
 protected:
-    const RbLanguageObject&         executeOperationSimple(const std::string& name, Environment& args);             //!< Execute method
+    const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);    //!< Execute method
 
 private:
     static const TypeSpec           typeSpec;

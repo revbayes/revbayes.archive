@@ -35,9 +35,9 @@ const std::string VariableSlot_name = "Variable Slot";
 class VariableSlot : public RbInternal {
     
 public:
-    VariableSlot(const std::string &label, const TypeSpec& typeSp, Variable* var);                          //!< Constructor of filled slot
+    VariableSlot(const std::string &label, const TypeSpec& typeSp, const RbVariablePtr& var);                          //!< Constructor of filled slot
     VariableSlot(const std::string &label, const TypeSpec& typeSp);                                         //!< Constructor of empty slot
-    VariableSlot(const std::string &label, Variable* var);                                                  //!< Constructor with filled slot
+    VariableSlot(const std::string &label, const RbVariablePtr& var);                                                  //!< Constructor with filled slot
     VariableSlot(const VariableSlot& x);                                                                    //!< Copy value or reference correctly
     virtual                ~VariableSlot(void);                                                             //!< Manage variable (DAGNode) destruction
     
@@ -57,10 +57,10 @@ public:
     const TypeSpec&                         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
     const Variable&                         getVariable(void) const;                                                //!< Get the variable
     Variable&                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
-    Variable*                               getVariablePtr(void) const;                                             //!< Get the pointer to the variable
+    const RbVariablePtr&                    getVariablePtr(void) const;                                             //!< Get the pointer to the variable
     virtual bool                            isValidVariable(const DAGNode& newVariable ) const;                     //!< Is newVariable valid for the slot?
     void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
-    void                                    setVariable(Variable* var);                                             //!< Set a slot with a variable
+    void                                    setVariable(const RbVariablePtr& var);                                  //!< Set a slot with a variable
     
 private:
     

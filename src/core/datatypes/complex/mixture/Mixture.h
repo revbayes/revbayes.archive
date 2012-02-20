@@ -66,8 +66,6 @@ public:
     void                            allocateElementToNewClass (int elementId);                              //!< Change the class of a particular element
     VectorRealPos                   getClassProbabilities();                                                //!< Get the vector containing class probabilities
     void                            setClassProbabilities();                                                //!< Set the vector containing class probabilities
-    /*RbDagNodePtr<DagNodeContainer>         getObservations();                                                      //!< Get the vector containing elements on which the mixture operates
-    void                            setObservations(RbDagNodePtr<DagNodeContainer>& observations);                 //!< Set the vector containing elements on which the mixture operates*/
 
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
@@ -79,7 +77,6 @@ private:
     static const TypeSpec           typeSpec_;                                                              
     DagNodeContainer*               allocationVector_;                                                      //!< Vector allocating elements to cluster indices
     DagNodeContainer*               parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
-    /*RbDagNodePtr<DagNodeContainer>         observations_;                                                        //!< Vector containing the elements on which the mixture is operating*/
     VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
     VectorRealPos*                  classProbabilities_;                                                    //!< Vector giving class probabilities
 

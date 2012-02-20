@@ -46,8 +46,8 @@ Func_log* Func_log::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_log::executeFunction( void ) {
     
-    const double a = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
-    const double b = static_cast<const RealPos&>( (*args)[1].getValue() ).getValue();
+    const double a = static_cast<const RealPos&>( x->getValue() ).getValue();
+    const double b = static_cast<const RealPos&>( base->getValue() ).getValue();
     value.setValue( log10(a) / log10(b) );
     return value;
 }
@@ -88,5 +88,20 @@ const TypeSpec& Func_log::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_log::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_log::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "x" ) {
+        x = var;
+    }
+    else if ( name == "base" ) {
+        base = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

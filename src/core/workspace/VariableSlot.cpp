@@ -22,6 +22,7 @@
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "RbOptions.h"
+#include "RbVariablePtr.h"
 #include "TypeSpec.h"
 #include "Variable.h"
 #include "VariableNode.h"
@@ -36,14 +37,14 @@
 const TypeSpec VariableSlot::typeSpec(VariableSlot_name);
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, Variable* var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, const RbVariablePtr& var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
     variable = var;
     
 }
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, Variable* var) : RbInternal() , varTypeSpec( TypeSpec(RbObject_name) ), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const RbVariablePtr& var) : RbInternal() , varTypeSpec( TypeSpec(RbObject_name) ), label(lbl) {
     
     variable = var;
     
@@ -189,7 +190,7 @@ Variable& VariableSlot::getVariable(void) {
 }
 
 
-Variable* VariableSlot::getVariablePtr(void) const {
+const RbVariablePtr& VariableSlot::getVariablePtr(void) const {
     return variable;
 }
 
@@ -213,7 +214,7 @@ void VariableSlot::printValue(std::ostream& o) const {
 
 
 /** Set variable */
-void VariableSlot::setVariable(Variable* var) {
+void VariableSlot::setVariable(const RbVariablePtr& var) {
     
     // set the new variable
     variable = var;

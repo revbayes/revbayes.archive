@@ -49,7 +49,7 @@ class SyntaxConstant : public SyntaxElement {
         void                                    printValue(std::ostream& o) const;                                  //!< Print info about object
 
         // Regular functions
-        Variable*                               evaluateContent(void);                                              //!< Get semantic value
+        RbVariablePtr                           evaluateContent( Environment& env );                                //!< Get semantic value
         bool                                    isConstExpression(void) const { return true; }                      //!< Is subtree constant expr?
 
     protected:

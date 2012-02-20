@@ -46,8 +46,8 @@ Func_power* Func_power::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_power::executeFunction( void ) {
     
-    const double a = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
-    const double b = static_cast<const Real&>( (*args)[1].getValue() ).getValue();
+    const double a = static_cast<const Real&>( base->getValue() ).getValue();
+    const double b = static_cast<const Real&>( exponent->getValue() ).getValue();
     
     value.setValue( pow(a,b) );
 
@@ -63,8 +63,8 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "a", Real_name ) );
-        argumentRules.push_back( new ValueRule( "b", Real_name ) );
+        argumentRules.push_back( new ValueRule( "base", Real_name ) );
+        argumentRules.push_back( new ValueRule( "exponent", Real_name ) );
         rulesSet = true;
     }
     
@@ -90,5 +90,20 @@ const TypeSpec& Func_power::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_power::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_power::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "base" ) {
+        base = var;
+    }
+    else if ( name == "exponent" ) {
+        exponent = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

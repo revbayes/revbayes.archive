@@ -89,25 +89,19 @@ const VectorString& SyntaxBinaryExpr::getClass(void) const {
 }
 
 
-/** We cannot perform this function and throw and error */
-Variable* SyntaxBinaryExpr::evaluateContent( ) {
-    throw RbException("Cannot evaluate the content in SyntaxBinaryExpr without environment!");
-}
-
-
 /**
  * @brief Get semantic value
  *
  * We simply look up the function and calculate the value.
  *
  */
-Variable* SyntaxBinaryExpr::evaluateContent( Environment& env) {
+RbVariablePtr SyntaxBinaryExpr::evaluateContent( Environment& env) {
 
     // Package the arguments
     std::vector<Argument> args;
-    Variable* left = leftOperand->evaluateContent(env);
+    RbVariablePtr left = leftOperand->evaluateContent(env);
     args.push_back( Argument("", left ) );
-    Variable* right = rightOperand->evaluateContent(env);
+    RbVariablePtr right = rightOperand->evaluateContent(env);
     args.push_back( Argument("", right ) );
 
     // Get function and create deterministic DAG node
@@ -115,7 +109,7 @@ Variable* SyntaxBinaryExpr::evaluateContent( Environment& env) {
     
     RbFunction* theFunction = Workspace::globalWorkspace().getFunction(funcName, args);
     
-    return new Variable(new DeterministicNode( theFunction ) );
+    return RbVariablePtr( new Variable(new DeterministicNode( theFunction ) ) );
 }
 
 

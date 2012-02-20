@@ -124,13 +124,8 @@ const VectorString& SyntaxAssignExpr::getClass(void) const {
 }
 
 
-/** We cannot perform this function and throw and error */
-Variable* SyntaxAssignExpr::evaluateContent( ) {
-    throw RbException("Cannot evaluate the content in SyntaxAssignExpr without environment!");
-}
-
-/** Get semantic value: RbDagNodePtr symbol and return the rhs value of the assignment */
-Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
+/** Get semantic value: insert symbol and return the rhs value of the assignment */
+RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
     
     PRINTF( "Evaluating assign expression\n" );
     
@@ -138,7 +133,7 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
     VariableSlot& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
-    Variable* theVariable = NULL;
+    RbVariablePtr theVariable = NULL;
     
     // Deal with arrow assignments
     if ( opType == ArrowAssign ) {
@@ -181,7 +176,7 @@ Variable* SyntaxAssignExpr::evaluateContent( Environment& env ) {
             std::vector<Argument> args;
             args.push_back( Argument( theVariable ) );
             func->processArguments(args);
-            theVariable = new Variable( new DeterministicNode( func ) );
+            theVariable = RbVariablePtr( new Variable( new DeterministicNode( func ) ) );
         }
         
         // fill the slot with the new variable

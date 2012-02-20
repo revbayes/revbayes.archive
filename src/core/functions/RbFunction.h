@@ -76,23 +76,29 @@ class RbFunction :  public RbInternal {
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                                    processArguments(const std::vector<Argument>& passedArgs,
-                                                                         VectorInteger*          matchScore = NULL);                        //!< Process args, return a match score if pointer is not null
+        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, VectorInteger* matchScore); //!< Process args, return a match score if pointer is not null
+        virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
     
 
         // RbFunction functions you should not override
         void                                            clearArguments(void);                                                               //!< Clear argument Environment "args"
-        const Environment&                              getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
-        Environment&                                    getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
-
+        const std::vector<Argument>&                    getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
+        std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
+        void                                            setArgument(const std::string& name, const Argument& arg);                          //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+    
 	protected:
                                                         RbFunction(void);                                                                   //!< Basic constructor
 
         virtual const RbLanguageObject&                 executeFunction(void);                                                              //!< Execute the function. This is the function one has to overwrite for simple return values.
+        virtual void                                    setArgumentVariable(const std::string& name, const RbVariablePtr& var);             //!< Set the private member variable here (for derived classes)!
+    
         // Member variables
-        Environment*                                    args;                                                                               //!< Environment for passed arguments
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
+        std::vector<Argument>                           args;
+
+    private:   
+        int                                             computeMatchScore(const DAGNode* arg, const ArgumentRule& rule);
 };
 
 #endif

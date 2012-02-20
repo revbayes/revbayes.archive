@@ -49,11 +49,11 @@ Func_dppConFromExpNumClusters* Func_dppConFromExpNumClusters::clone( void ) cons
 /** Execute function */
 const RbLanguageObject& Func_dppConFromExpNumClusters::executeFunction( void ) {
     
-	const double clust  = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
-	const double num    = static_cast<const RealPos&>( (*args)[1].getValue() ).getValue();
+//	const double clust  = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
+//	const double num    = static_cast<const RealPos&>( (*args)[1].getValue() ).getValue();
 		
-	double p = RbStatistics::Helper::dppConcParamFromNumTables(clust, num);
-	concentration.setValue( p );	
+//	double p = RbStatistics::Helper::dppConcParamFromNumTables(clust, num);
+//	concentration.setValue( p );	
 	return concentration;
 }
 

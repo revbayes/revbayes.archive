@@ -43,9 +43,14 @@ class Func_sqrt :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         RealPos                     value;
+    
+        // Arguments
+        RbVariablePtr               x;
+    
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
 };

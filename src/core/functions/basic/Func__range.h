@@ -43,11 +43,15 @@ class Func__range :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
  
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
 
+        // Arguments
+        RbVariablePtr               first;
+        RbVariablePtr               last;
 
         // memberfunction return values
         VectorInteger               range;

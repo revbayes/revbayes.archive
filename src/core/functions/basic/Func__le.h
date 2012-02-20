@@ -41,9 +41,16 @@ class Func__le :  public RbFunction {
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
+    protected:       
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
+    
+        // Arguments
+        RbVariablePtr               first;
+        RbVariablePtr               second;
     
         // function return value
         RbBoolean                   retValue;
@@ -84,8 +91,8 @@ Func__le<firstValType, secondValType>* Func__le<firstValType, secondValType>::cl
 template <typename firstValType, typename secondValType>
 const RbLanguageObject& Func__le<firstValType,secondValType>::executeFunction( void ) {
 
-    const firstValType&  val1 = static_cast<firstValType&> ( (*args)[0].getValue() );
-    const secondValType& val2 = static_cast<secondValType&>( (*args)[1].getValue() );
+    const firstValType&  val1 = static_cast<firstValType&> ( first->getValue()  );
+    const secondValType& val2 = static_cast<secondValType&>( second->getValue() );
     retValue.setValue( val1 <= val2 );
     
     return retValue;
@@ -100,8 +107,8 @@ const ArgumentRules& Func__le<firstValType, secondValType>::getArgumentRules(voi
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
-        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "first", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "second", secondValType().getTypeSpec() ) );
         rulesSet = true;
     }
 
@@ -133,5 +140,21 @@ template <typename firstValType, typename secondValType>
 const TypeSpec& Func__le<firstValType, secondValType>::getTypeSpec( void ) const {
     
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+template <typename firstValType, typename secondValType>
+void Func__le<firstValType, secondValType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "first" ) {
+        first = var;
+    }
+    else if ( name == "second" ) {
+        second = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

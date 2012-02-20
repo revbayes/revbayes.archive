@@ -43,9 +43,13 @@ public:
 
 protected:
 	const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
+    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
     
 private:
     static const TypeSpec       typeSpec;
+    
+    // Arguments
+    RbVariablePtr               value;
 };
 
 #endif
@@ -73,7 +77,7 @@ Func_unique<valType>* Func_unique<valType>::clone( void ) const {
 template <typename valType> 
 const RbLanguageObject& Func_unique<valType>::executeFunction( void ) {
     
-    valType& val = static_cast<valType&>( (*args)[0].getValue() );
+    valType& val = static_cast<valType&>( value->getValue() );
     
     if(val.size() == 0) 
         return val;
@@ -93,7 +97,7 @@ const ArgumentRules& Func_unique<valType>::getArgumentRules( void ) const {
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "value", valType() .getTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -125,6 +129,19 @@ template <typename valType>
 const TypeSpec& Func_unique<valType>::getTypeSpec( void ) const {
     
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+template <typename firstValType>
+void Func_unique<firstValType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "value" ) {
+        value = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 
 

@@ -69,7 +69,7 @@ protected:
     
     Container&                          operator=(const Container& x);                                          //!< Assignment operator
 
-    virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, Environment& args);//!< Execute method
+    virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Execute method
 
     // Member variables
     const TypeSpec                      elementType;                                                            //!< Type of elements

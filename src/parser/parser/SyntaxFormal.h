@@ -48,17 +48,17 @@ class SyntaxFormal : public SyntaxElement {
         void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        const ArgumentRule*         getArgumentRule(void) const;                                                //!< Get the argument rule
-        ArgumentRule*               getArgumentRule(void);                                                      //!< Get the argument rule (non-const to return non-const rule)
-        const RbString*             getLabel(void) const;                                                       //!< Get label
-        const TypeSpec*             getArgumentTypeSpec(void) const;                                            //!< Get type spec
-        Variable*                   evaluateContent(void);                                                      //!< Get semantic value
+        const ArgumentRule*         getArgumentRule(void) const;                                                    //!< Get the argument rule
+        ArgumentRule*               getArgumentRule(void);                                                          //!< Get the argument rule (non-const to return non-const rule)
+        const RbString*             getLabel(void) const;                                                           //!< Get label
+        const TypeSpec*             getArgumentTypeSpec(void) const;                                                //!< Get type spec
+        RbVariablePtr               evaluateContent( Environment& env );                                            //!< Get semantic value
     
     protected:
         ArgumentRule*               argRule;
-        TypeSpec*                   argType;                                                                    //!< The type of the argument
-        RbString*                   label;                                                                      //!< The label of the argument
-        SyntaxElement*              defaultExpr;                                                                //!< Default value expression of argument
+        TypeSpec*                   argType;                                                                        //!< The type of the argument
+        RbString*                   label;                                                                          //!< The label of the argument
+        SyntaxElement*              defaultExpr;                                                                    //!< Default value expression of argument
     
     private:
         static const TypeSpec       typeSpec;

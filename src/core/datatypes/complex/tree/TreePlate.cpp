@@ -144,11 +144,11 @@ const TypeSpec& TreePlate::getTypeSpec(void) const {
 
 
 /* Map calls to member methods */
-const RbLanguageObject& TreePlate::executeOperation(const std::string& name, Environment& args) {
+const RbLanguageObject& TreePlate::executeOperation(const std::string& name, const std::vector<Argument>& args) {
 
     if (name == "getVariable") {
         // get the name of the variable
-        const std::string& varName = static_cast<const RbString&>( args[0].getValue() ).getValue();
+        const std::string& varName = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
         
         // check if a container already exists with that name
         if (!memberVariables.existsVariable(varName)) {
@@ -162,7 +162,7 @@ const RbLanguageObject& TreePlate::executeOperation(const std::string& name, Env
             DagNodeContainer& vars = static_cast<DagNodeContainer&>( memberVariables[varName].getValue() );
             
             // get the node we want to associate it too
-            const TopologyNode& theNode = static_cast<const TopologyNode&>( args[1].getValue() );
+            const TopologyNode& theNode = static_cast<const TopologyNode&>( args[1].getVariable().getValue() );
             
             // get the index of the node
             size_t nodeIndex = getNodeIndex(theNode) - 1;
@@ -180,13 +180,13 @@ const RbLanguageObject& TreePlate::executeOperation(const std::string& name, Env
 }
 
 /* Map calls to member methods */
-const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     // special handling for adding a variable
     if (name == "addVariable") 
         {
         // get the name of the variable
-        const std::string& varName = static_cast<const RbString&>( args[0].getValue() ).getValue();
+        const std::string& varName = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
         
         // check if a container already exists with that name
         if (!memberVariables.existsVariable(varName)) 
@@ -205,11 +205,10 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
         DagNodeContainer& vars = static_cast<DagNodeContainer&>( memberVariables[varName].getValue() );
         
         // get the variable
-        Environment& args2 = args;
-        Variable& var = args2[1].getVariable();
+        const Variable& var = args[1].getVariable();
         
         // get the node we want to associate it too
-        const TopologyNode& theNode = static_cast<const TopologyNode&>( args[2].getValue() );
+        const TopologyNode& theNode = static_cast<const TopologyNode&>( args[2].getVariable().getValue() );
         
         // get the index of the node
         size_t nodeIndex = getNodeIndex(theNode);
@@ -227,19 +226,19 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
     else if (name == "node") 
         {
         // we assume that the node indices in the RevLanguage are from 1:nnodes()
-        int index = dynamic_cast<const Natural &>( args.getValue("index") ).getValue() - 1;
+        int index = dynamic_cast<const Natural &>( args[0].getVariable().getValue() ).getValue() - 1;
         
         return *static_cast<const Topology&>( orderingTopology->getValue() ).getNodes()[index];
         }
     else if (name == "index") 
         {
-        const TopologyNode& theNode = dynamic_cast<const TopologyNode&>( args[0].getValue() );
+        const TopologyNode& theNode = dynamic_cast<const TopologyNode&>( args[0].getVariable().getValue() );
         nodeIndex.setValue( getNodeIndex( theNode ) );
         return nodeIndex;
         }
     else if (name == "tipIndex") 
         {
-        const TopologyNode& theNode = dynamic_cast<const TopologyNode&>( args[0].getValue() );
+        const TopologyNode& theNode = dynamic_cast<const TopologyNode&>( args[0].getVariable().getValue() );
         size_t tIndex = getTipIndex(theNode);
         tipIndex.setValue( tIndex );
         return tipIndex;

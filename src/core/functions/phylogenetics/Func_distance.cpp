@@ -56,12 +56,12 @@ Func_distance* Func_distance::clone(void) const {
 const RbLanguageObject& Func_distance::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    CharacterData& m      = static_cast<CharacterData&>( (*args)[0].getValue() );
-    RbString&      dName  = static_cast<RbString&>     ( (*args)[1].getValue() );
-    RbString&      freqs  = static_cast<RbString&>     ( (*args)[2].getValue() );
-    RbString&      asrv   = static_cast<RbString&>     ( (*args)[3].getValue() );
-    Real&          shape  = static_cast<Real&>         ( (*args)[4].getValue() );
-    Real&          pinvar = static_cast<Real&>         ( (*args)[5].getValue() );
+    CharacterData& m      = static_cast<CharacterData&>( data->getValue() );
+    RbString&      dName  = static_cast<RbString&>     ( model->getValue() );
+    RbString&      f      = static_cast<RbString&>     ( freqs->getValue() );
+    RbString&      a      = static_cast<RbString&>     ( asrv->getValue() );
+    Real&          s      = static_cast<Real&>         ( shape->getValue() );
+    Real&          pi     = static_cast<Real&>         ( pinvar->getValue() );
         
     // check that the data matrix is aligned
     if ( m.getIsHomologyEstablished() == false )
@@ -221,5 +221,27 @@ const TypeSpec& Func_distance::getReturnType(void) const {
 const TypeSpec& Func_distance::getTypeSpec(void) const {
 
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_distance::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "data" ) {
+        data = var;
+    } else if ( name == "model" ) {
+        model = var;
+    } else if ( name == "freqs" ) {
+        freqs = var;
+    } else if ( name == "asrv" ) {
+        asrv = var;
+    } else if ( name == "shape" ) {
+        shape = var;
+    } else if ( name == "pinvar" ) {
+        pinvar = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

@@ -46,7 +46,7 @@ class DagNodeContainer : public Container {
         DagNodeContainer&                   operator=(const DagNodeContainer& c);
         
         // Basic utility functions
-        bool                                allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be RbDagNodePtred
+        bool                                allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be inserted
         DagNodeContainer*                   clone(void) const;                                                          //!< Clone object
         RbObject*                           convertTo(const TypeSpec& type) const;                                      //!< Convert to type
         const VectorString&                 getClass(void) const;                                                       //!< Get class vector
@@ -57,7 +57,7 @@ class DagNodeContainer : public Container {
 
         // Container functions
         void                                clear(void);                                                                //!< Clear
-        const RbLanguageObject&             executeOperation(const std::string& name, Environment& args);               //!< Execute a member method
+    const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);               //!< Execute a member method
         const RbObject&                     getElement(size_t index) const;                                             //!< Get element
         RbObject&                           getElement(size_t index);                                                   //!< Get element (non-const to return non-const element)
         void                                pop_back(void);                                                             //!< Drop element at back

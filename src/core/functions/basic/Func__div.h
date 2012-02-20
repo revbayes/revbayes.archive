@@ -41,9 +41,14 @@ class Func__div :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         static const TypeSpec       typeSpec;
+    
+        // Arguments
+        RbVariablePtr               first;
+        RbVariablePtr               second;
 
         // function return value
         retType                     retValue;
@@ -79,8 +84,8 @@ Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondV
 template <typename firstValType, typename secondValType, typename retType>
 const RbLanguageObject& Func__div<firstValType,secondValType,retType>::executeFunction( void ) {
 
-    const firstValType&  val1 = static_cast<firstValType&> ( (*args)[0].getValue() );
-    const secondValType& val2 = static_cast<secondValType&>( (*args)[1].getValue() );
+    const firstValType&  val1 = static_cast<firstValType&> ( first->getValue() );
+    const secondValType& val2 = static_cast<secondValType&>( second->getValue() );
                     retValue = val1 / val2;
     
     return retValue;
@@ -91,8 +96,8 @@ const RbLanguageObject& Func__div<firstValType,secondValType,retType>::executeFu
 template <>
 const RbLanguageObject& Func__div<Integer,Integer,Real>::executeFunction( void ) {
 
-    double val1 = static_cast<const Integer&>( (*args)[0].getValue() ).getValue();
-    double val2 = static_cast<const Integer&>( (*args)[1].getValue() ).getValue();
+    double val1 = static_cast<const Integer&>( first->getValue()  ).getValue();
+    double val2 = static_cast<const Integer&>( second->getValue() ).getValue();
     retValue.setValue( val1 / val2 );
     
     return retValue;
@@ -108,8 +113,8 @@ const ArgumentRules& Func__div<firstValType, secondValType, retType>::getArgumen
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "first", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "second", secondValType().getTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -140,5 +145,21 @@ template <typename firstValType, typename secondValType, typename retType>
 const TypeSpec& Func__div<firstValType, secondValType, retType>::getTypeSpec( void ) const {
     
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+template <typename firstValType, typename secondValType, typename retType>
+void Func__div<firstValType, secondValType, retType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "first" ) {
+        first = var;
+    }
+    else if ( name == "second" ) {
+        second = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

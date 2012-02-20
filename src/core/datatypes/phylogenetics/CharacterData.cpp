@@ -106,7 +106,7 @@ void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
     
     // add the sequence also as a member so that we can access it by name
     DAGNode* var = new ConstantNode( obs );
-    taxonMap.insert( std::pair<std::string,RbDagNodePtr>( obs->getTaxonName(), var ) );
+    taxonMap.insert( std::pair<std::string,DAGNode*>( obs->getTaxonName(), var ) );
 }
 
 void CharacterData::addTaxonData( TaxonData* obs ) {
@@ -174,7 +174,7 @@ void CharacterData::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& CharacterData::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& CharacterData::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
 
     if (name == "names") 
         {
@@ -286,7 +286,7 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
         }
     else if (name == "excludechar")
         {
-        RbLanguageObject& argument = args[1].getValue();
+        const RbLanguageObject& argument = args[1].getVariable().getValue();
         if ( argument.isTypeSpec( TypeSpec(Natural_name) ) ) 
             {
             int n = static_cast<const Natural&>( argument ).getValue();
@@ -610,7 +610,7 @@ Vector* CharacterData::makeSiteColumn( size_t cn ) const {
         throw RbException( "Character matrix is empty" );
 
     const std::string& name = sequenceNames[0];
-    std::map<std::string, RbDagNodePtr>::const_iterator it = taxonMap.find(name);
+    std::map<std::string, DAGNode*>::const_iterator it = taxonMap.find(name);
     Vector* temp = static_cast<Vector*>( ( it->second->getValue() ).clone() );
     temp->clear();
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
@@ -712,7 +712,7 @@ void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
         
         // add the sequence also as a member so that we can access it by name
         DAGNode* variable = new ConstantNode(var );
-        taxonMap.insert( std::pair<std::string,RbDagNodePtr>( seq->getTaxonName(), variable ) );
+        taxonMap.insert( std::pair<std::string,DAGNode*>( seq->getTaxonName(), variable ) );
     }
 }
 

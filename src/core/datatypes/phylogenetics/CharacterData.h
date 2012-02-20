@@ -98,7 +98,7 @@ class CharacterData : public Matrix {
         void                                showData(void);                                                             //!< Show the data in the character matrix
 
     protected:
-        const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
 
     private:
         // Utility functions
@@ -133,7 +133,7 @@ class CharacterData : public Matrix {
     Natural                             numMissing;
     RbBoolean                           isHomologous;
     
-    std::map<std::string, RbDagNodePtr> taxonMap;
+    std::map<std::string, DAGNode*>     taxonMap;
 };
 
 #endif

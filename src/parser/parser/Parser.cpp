@@ -135,7 +135,7 @@ int Parser::execute(SyntaxElement* root) const {
 #	endif
 
     // Declare a variable for the result
-    Variable* result = NULL;
+    RbVariablePtr result = NULL;
     
     //! Execute syntax tree
     try {
@@ -148,7 +148,6 @@ int Parser::execute(SyntaxElement* root) const {
 
         // Catch a quit request
         if (rbException.getExceptionType() == RbException::QUIT) {
-            delete result;
             delete root;
             exit(0);
         }
@@ -168,7 +167,6 @@ int Parser::execute(SyntaxElement* root) const {
                     RbFunction* theFunction = *i;
                     delete theFunction;
                 }
-                delete result;
                 delete root;
                 return 0;
             }
@@ -181,7 +179,6 @@ int Parser::execute(SyntaxElement* root) const {
         RBOUT( msg.str() );
 
         // Return signal indicating problem
-        delete result;
         delete root;
         return 2;
     }
@@ -194,7 +191,6 @@ int Parser::execute(SyntaxElement* root) const {
     }
     
     // free the memory
-    delete result;
     delete root;
 
     // Return success

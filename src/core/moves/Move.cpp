@@ -81,7 +81,7 @@ std::string Move::briefInfo(void) const {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& Move::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& Move::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
 
     if ( name == "accept" ) {
 

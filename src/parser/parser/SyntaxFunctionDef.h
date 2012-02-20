@@ -49,8 +49,7 @@ class SyntaxFunctionDef : public SyntaxElement {
         void                            printValue(std::ostream& o) const;                          //!< Print info about object
 
         // Regular functions
-        Variable*                       evaluateContent(void);                                      //!< Get semantic value
-        Variable*                       evaluateContent(Environment& env);                          //!< Get semantic value
+        RbVariablePtr                   evaluateContent(Environment& env);                          //!< Get semantic value
 
     protected:
         TypeSpec*                       returnType;                                                 //!< The return type specification of the function

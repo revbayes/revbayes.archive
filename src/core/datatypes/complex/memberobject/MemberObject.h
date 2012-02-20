@@ -20,7 +20,6 @@
 #ifndef MemberObject_H
 #define MemberObject_H
 
-#include "RbDagNodePtr.h"
 #include "Environment.h"
 #include "MethodTable.h"
 #include "RbLanguageObject.h"
@@ -52,10 +51,6 @@ class MemberObject: public RbLanguageObject {
         bool                                        isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
 
         // Member variable functions you have to override
-//        virtual const RbLanguageObject&             getMemberValue(const std::string& name) const;                                      //!< Get member value (const)
-//        virtual RbLanguageObject&                   getMemberValue(const std::string& name);                                            //!< Get member value (non-const to return non-const value)
-//        virtual const DAGNode*                      getMemberDagNode(const std::string& name) const;                                    //!< Get member variable 
-//        virtual DAGNode*                            getMemberDagNode(const std::string& name);                                          //!< Get member variable (non-const node)
         virtual const Variable*                     getMember(const std::string& name) const;                                           //!< Get member variable 
         virtual Variable*                           getMember(const std::string& name);                                                 //!< Get member variable (non-const node)
         virtual const MemberRules&                  getMemberRules(void) const;                                                         //!< Get member rules (const)
@@ -67,12 +62,9 @@ class MemberObject: public RbLanguageObject {
         void                                        setMember(const std::string& name, Variable* var);                                   //!< Set member variable
 //        const TypeSpec&                     getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
 
-        // Member variable functions you may wish to override
-//        virtual void                                setMemberVariable(const std::string& name, Variable* var);                          //!< Set member variable
-
         // Member method functions
         const RbLanguageObject&                     executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
-        virtual const RbLanguageObject&             executeOperation(const std::string& name, Environment& args);                       //!< Override to map member methods to internal functions
+        virtual const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
         virtual const MethodTable&                  getMethods(void) const;                                                             //!< Get member methods (const)
 
         virtual bool                                supportsIndex(void) const { return false; }                                         //!< Does object support index operator?
@@ -85,7 +77,7 @@ class MemberObject: public RbLanguageObject {
         MemberObject&                               operator=(const MemberObject& m);
  
         virtual void                                setMemberVariable(const std::string& name, Variable* var);                          //!< Set member variable
-        virtual const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);                 //!< Override to map member methods to internal functions
+        virtual const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Override to map member methods to internal functions
 
         // Members is the variable frame that stores member variables
         std::vector<RbVariablePtr>                  members;                                                                            //!< Member variables

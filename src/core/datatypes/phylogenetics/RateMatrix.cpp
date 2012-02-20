@@ -298,7 +298,7 @@ RateMatrix* RateMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& RateMatrix::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& RateMatrix::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
 
     if (name == "nstates") {
         return numStates;

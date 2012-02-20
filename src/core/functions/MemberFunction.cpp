@@ -60,7 +60,7 @@ MemberFunction* MemberFunction::clone(void) const {
 /** Execute function: call the object's internal implementation through executeOperation */
 const RbLanguageObject& MemberFunction::execute( void ) {
 
-    return object->executeOperation( funcName, *args );
+    return object->executeOperation( funcName, args );
 
 }
 

@@ -109,6 +109,12 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
         
         argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos_name                    ) );
     }
+    
+    // copy the arguments
+    this->x = x.x;
+    log     = x.log;
+    p       = x.p;
+    q       = x.q;
 }
 
 
@@ -169,6 +175,12 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
             
             argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos_name                    ) );
         }
+        
+        // Copy the arguments
+        this->x = x.x;
+        log     = x.log;
+        p       = x.p;
+        q       = x.q;
     }
 
     return (*this);
@@ -187,10 +199,10 @@ const RbLanguageObject& DistributionFunction::executeFunction( void ) {
 
     if ( functionType == DENSITY ) {
 
-        if ( static_cast<const RbBoolean&>( (*args)["log"].getValue() ).getValue() == false )
-            density.setValue( distribution->pdf  ( (*args)[0].getValue() ) );
+        if ( static_cast<const RbBoolean&>( log->getValue() ).getValue() == false )
+            density.setValue( distribution->pdf  ( x->getValue() ) );
         else
-            density.setValue( distribution->lnPdf( (*args)[0].getValue() ) );
+            density.setValue( distribution->lnPdf( x->getValue() ) );
         return density;
     }
     else if (functionType == RVALUE) {
@@ -200,12 +212,12 @@ const RbLanguageObject& DistributionFunction::executeFunction( void ) {
         return draw;
     }
     else if (functionType == PROB) {
-        cd.setValue( static_cast<DistributionContinuous*>( distribution )->cdf( (*args)[0].getValue() ) );
+        cd.setValue( static_cast<DistributionContinuous*>( distribution )->cdf( q->getValue() ) );
         return cd;
     }
     else if (functionType == QUANTILE) {
 
-        double    prob  = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
+        double    prob  = static_cast<const RealPos&>( p->getValue() ).getValue();
         const RbLanguageObject& quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
         
         return quant;
@@ -243,10 +255,10 @@ const TypeSpec& DistributionFunction::getTypeSpec(void) const {
 }
 
 /** Process arguments */
-bool DistributionFunction::processArguments( const std::vector<Argument>& args, VectorInteger* matchScore ) {
+void DistributionFunction::processArguments( const std::vector<Argument>& args ) {
 
-    if ( !RbFunction::processArguments( args, matchScore ) )
-        return false;
+    // delegate first to the base class
+    RbFunction::processArguments( args );
 
     /* Set member variables of the distribution */
     size_t i = 0;
@@ -260,13 +272,32 @@ bool DistributionFunction::processArguments( const std::vector<Argument>& args, 
 
         std::string name = (*argumentRules)[i].getArgumentLabel();
 
-        /* All distribution variables are references but we have value arguments here
-           so a const cast is needed to deal with the mismatch */
-        VariableSlot& arg = this->args->operator[](i);
+        const RbVariablePtr& arg = args[i].getVariablePtr();
         
-        distribution->setMember( name, arg.getVariable().clone() );
+        distribution->setMember( name, arg );
     }
+}
 
-    return true;
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void DistributionFunction::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "x" ) {
+        x = var;
+    }
+    else if ( name == "log") {
+        log = var;
+    }
+    else if ( name == "p") {
+        p = var;
+    }
+    else if ( name == "q") {
+        q = var;
+    }
+    
+    // We expect a couple of parameters which we need to add to the distribution. Therefore we do not call the base class.
+//    else {
+//        RbFunction::setArgumentVariable(name, var);
+//    }
 }
 

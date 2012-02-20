@@ -53,11 +53,11 @@ class DistributionFunction :  public RbFunction {
         // DistributionFunction functions
         const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type spec of return value
-        bool                        processArguments(const std::vector<Argument>& passedArgs,
-                                                     VectorInteger*          matchScore=NULL);              //!< Process args, set member variables of distribution
+        void                        processArguments(const std::vector<Argument>& passedArgs);              //!< Process args, set member variables of distribution
 
 	protected:
         const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
         ArgumentRules*              argumentRules;                                                          //!< Argument rules
         TypeSpec                    returnType;                                                             //!< Return type
@@ -67,10 +67,16 @@ class DistributionFunction :  public RbFunction {
     private:
         static const TypeSpec       typeSpec;
 
-
+    
+        // Arguments
+        RbVariablePtr               x;
+        RbVariablePtr               log;
+        RbVariablePtr               p;
+        RbVariablePtr               q;
+    
         // memberfunction return values;
-    RealPos                     cd;
-    Real                        density;
+        RealPos                     cd;
+        Real                        density;
 
 };
 

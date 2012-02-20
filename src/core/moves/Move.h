@@ -31,48 +31,48 @@ const std::string Move_name = "Move";
 class Move : public ConstantMemberObject {
 
     public:
-    virtual                                    ~Move(void);                                                                 //!< Destructor
+    virtual                                    ~Move(void);                                                                             //!< Destructor
 
         // Basic utility functions
-        virtual std::string                     briefInfo(void) const;                                                  //!< Get a brief info about the move
-        virtual Move*                           clone(void) const = 0;                                                  //!< Clone the object
-        virtual const VectorString&             getClass(void) const;                                                   //!< Get class vector
+        virtual std::string                     briefInfo(void) const;                                                                  //!< Get a brief info about the move
+        virtual Move*                           clone(void) const = 0;                                                                  //!< Clone the object
+        virtual const VectorString&             getClass(void) const;                                                                   //!< Get class vector
         virtual void                            printValue(std::ostream& o) const;
     
         // Member variable rules
-        virtual const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
+        virtual const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
 
         // Member methods
-        virtual const MethodTable&              getMethods(void) const;                                                 //!< Get methods
-        void                                    setMemberVariable(const std::string& name, Variable* var);              //!< set the member variables
+        virtual const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
+        void                                    setMemberVariable(const std::string& name, Variable* var);                              //!< set the member variables
 
         // Move functions you have to override
-        virtual void                            acceptMove(void) = 0;                                                   //!< Accept the move
-        virtual double                          performMove(double& lnProbabilityRatio) = 0;                            //!< Perform the move
-        virtual void                            rejectMove(void) = 0;                                                   //!< Reject the move
+        virtual void                            acceptMove(void) = 0;                                                                   //!< Accept the move
+        virtual double                          performMove(double& lnProbabilityRatio) = 0;                                            //!< Perform the move
+        virtual void                            rejectMove(void) = 0;                                                                   //!< Reject the move
 
         // Move functions you should not override
-        double                                  getAcceptanceRatio(void) const;                                         //!< Get acceptance ratio
-        std::vector<StochasticNode*>&           getDagNodes(void) { return nodes;}                                      //!< Get the nodes vector
-        double                                  getUpdateWeight(void) const;                                            //!< Get update weight of move
-//        void                            setDagNodes(std::vector<StochasticNode*> n);                                  //!< Set the nodes vector
-        void                                    replaceDagNodes(std::vector<StochasticNode*> &n);                       //!< Set the nodes vector
-        void                                    resetCounters(void);                                                    //!< Reset numTried/numAccepted
+        double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
+        std::vector<StochasticNode*>&           getDagNodes(void) { return nodes;}                                                      //!< Get the nodes vector
+        double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
+//        void                            setDagNodes(std::vector<StochasticNode*> n);                                                  //!< Set the nodes vector
+        void                                    replaceDagNodes(std::vector<StochasticNode*> &n);                                       //!< Set the nodes vector
+        void                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
 
 	protected:
-        Move(const MemberRules& memberRules);                                                                           //!< Default constructor
-        Move(const Move& m);                                                                                            //!< Copy constructor
+        Move(const MemberRules& memberRules);                                                                                           //!< Default constructor
+        Move(const Move& m);                                                                                                            //!< Copy constructor
 
-        const RbLanguageObject&                 executeOperationSimple(const std::string& name, Environment& args);     //!< Map method call to internal functions
+        const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
 
         // parameters
         RbVariablePtr                           weight;
     
         // Hidden member variables
-        Natural                                 numAccepted;                                                            //!< Number of times accepted
-        Natural                                 numTried;                                                               //!< Number of times tried
+        Natural                                 numAccepted;                                                                            //!< Number of times accepted
+        Natural                                 numTried;                                                                               //!< Number of times tried
         RealPos                                 acceptanceR;
-        std::vector<StochasticNode*>            nodes;                                                                         //!< The nodes on which the move works
+        std::vector<StochasticNode*>            nodes;                                                                                  //!< The nodes on which the move works
 };
 
 #endif

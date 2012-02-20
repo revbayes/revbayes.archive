@@ -37,7 +37,7 @@ DistributionDiscrete::DistributionDiscrete( const MemberRules& memberRules ) : D
 
 
 /** Map direct method calls to internal class methods. */
-const RbLanguageObject& DistributionDiscrete::executeOperationSimple( const std::string& name, Environment& args ) {
+const RbLanguageObject& DistributionDiscrete::executeOperationSimple( const std::string& name, const std::vector<Argument>& args ) {
 
     if ( name == "probMassVector" ) {
 

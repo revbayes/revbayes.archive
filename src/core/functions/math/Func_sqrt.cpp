@@ -47,9 +47,9 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_sqrt::executeFunction( void ) {
     
-    const double x = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
+    const double d = static_cast<const RealPos&>( x->getValue() ).getValue();
 
-    value.setValue( sqrt( x ) );
+    value.setValue( sqrt( d ) );
     
     return value;
 }
@@ -89,5 +89,17 @@ const TypeSpec& Func_sqrt::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_sqrt::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_sqrt::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "x" ) {
+        x = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

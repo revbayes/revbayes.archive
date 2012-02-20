@@ -43,6 +43,7 @@ class Func_normalizeVector :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         static const TypeSpec       typeSpec;
@@ -50,6 +51,10 @@ class Func_normalizeVector :  public RbFunction {
 
         // memberfunction return values
         Simplex                     normalizedVector;
+
+        // arguments
+        RbVariablePtr               vector;
+        RbVariablePtr               total;
 };
 
 #endif

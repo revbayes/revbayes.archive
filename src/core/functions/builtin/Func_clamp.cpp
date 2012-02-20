@@ -47,14 +47,14 @@ Func_clamp* Func_clamp::clone( void ) const {
 const RbLanguageObject& Func_clamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
-    DAGNode* theDagNode = (*args)[0].getDagNode();
+    DAGNode* theDagNode = variable->getDagNode();
     
     StochasticNode* theNode = dynamic_cast<StochasticNode*>( theDagNode );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
     // The following call will throw an error if the value type is wrong
-    theNode->clamp( (*args)[1].getValue().clone() );
+    theNode->clamp( value->getValue().clone() );
 
     return RbNullObject::getInstance();
 }
@@ -95,5 +95,20 @@ const TypeSpec& Func_clamp::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_clamp::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_clamp::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "variable" ) {
+        variable = var;
+    }
+    else if ( name == "value" ) {
+        value = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

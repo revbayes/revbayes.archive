@@ -46,8 +46,8 @@ Func_cos* Func_cos::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_cos::executeFunction( void ) {
     
-    const double x = static_cast<const Real&>( (*args)[0].getValue() ).getValue();
-    value.setValue( cos( x ) );
+    const double d = static_cast<const Real&>( x->getValue() ).getValue();
+    value.setValue( cos( d ) );
     return value;
 }
 
@@ -86,5 +86,17 @@ const TypeSpec& Func_cos::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_cos::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_cos::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "x" ) {
+        x = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

@@ -76,7 +76,7 @@ class RateMatrix : public MemberObject {
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
 
     protected:
-        const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);                       //!< Map method call to internal functions
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map method call to internal functions
 
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse

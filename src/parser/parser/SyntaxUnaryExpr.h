@@ -54,8 +54,7 @@ class SyntaxUnaryExpr : public SyntaxElement {
         void                    printValue(std::ostream& o) const;                                      //!< Print info about object
 
         // Regular functions
-        Variable*               evaluateContent(void);                                                  //!< Get semantic value
-        Variable*               evaluateContent(Environment& env);                                      //!< Get semantic value
+        RbVariablePtr           evaluateContent(Environment& env);                                      //!< Get semantic value
 
     protected:
         SyntaxElement*          expression;                                                             //!< The expression

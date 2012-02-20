@@ -53,10 +53,10 @@ public:
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
 
     // DAG functions implemented here
-    void                                    swapParentNode(const RbDagNodePtr& oldP, const RbDagNodePtr& newP); //!< Swap a parent node
+    void                                    swapParentNode( DAGNode* oldP, DAGNode* newP);           //!< Swap a parent node
 
     // DAG function you have to override
-    virtual RbDagNodePtr                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr >& newNodes) const;  //!< Clone entire graph
+    virtual DAGNode*                        cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;       //!< Clone entire graph
 
 protected:
 

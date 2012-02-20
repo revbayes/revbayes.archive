@@ -169,7 +169,7 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
     
     std::string name = n;
     // we check if the name equals the empty string
-    // if so we replace it with the memory address of the slot we want to RbDagNodePtr
+    // if so we replace it with the memory address of the slot we want to insert
     // because we cannot add variable slot with an empty string as the identifier
     // caller will not be able to retrieve this slot via it's name
     // but it is their own fault if they tried to add it without a name to identify with
@@ -186,7 +186,7 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
     if ( variableTable.find( name ) != variableTable.end() )
         throw RbException( "Variable " + name + " already exists in frame" );
     
-    /* RbDagNodePtr new slot in variable table */
+    /* insert new slot in variable table */
     variableTable.insert( std::pair<std::string, VariableSlot* >( name, theSlot ) );
     
     // add the name to the variable name list
@@ -197,7 +197,7 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, Variable* theVar) {
+void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, const RbVariablePtr& theVar) {
     
     // create a new slot
     VariableSlot* theSlot = new VariableSlot(name,typeSp,theVar);
@@ -208,7 +208,7 @@ void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, V
 
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, Variable* theVar) {
+void Environment::addVariable(const std::string& name, const RbVariablePtr& theVar) {
     
     addVariable( name, TypeSpec(RbObject_name), theVar );
 }
@@ -216,7 +216,7 @@ void Environment::addVariable(const std::string& name, Variable* theVar) {
 /** Add variable to frame */
 void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, DAGNode* dagNode ) {
     // create a new variable object
-    Variable* var = new Variable(dagNode);
+    RbVariablePtr var = RbVariablePtr( new Variable(dagNode) );
     
     // add the object to the list
     addVariable(name, typeSp, var );
@@ -225,7 +225,7 @@ void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, 
 /** Add variable to frame */
 void Environment::addVariable( const std::string& name, const TypeSpec& typeSp ) {
     // create a new variable object
-    Variable* var = new Variable( name );
+    RbVariablePtr var = RbVariablePtr( new Variable( name ) );
     
     // add the object to the list
     addVariable(name, typeSp, var );
@@ -425,9 +425,9 @@ void Environment::setName(size_t i, const std::string &name) {
     // remove the entry with the old name
     eraseVariable(oldName);
     
-    // RbDagNodePtr the slot with its new name
+    // insert the slot with its new name
     variableTable.insert( std::pair<std::string, VariableSlot* >( name, &theSlot ) );
     
-    // RbDagNodePtr the name at it's old position
+    // insert the name at it's old position
     varNames.insert(varNames.begin() + i, name);
 }

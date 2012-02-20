@@ -42,6 +42,7 @@ class Func_simplex :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         static const TypeSpec       typeSpec;
@@ -50,6 +51,8 @@ class Func_simplex :  public RbFunction {
         // memberfunction return value
         Simplex                     s;
     
+        // arguments
+        std::vector<RbVariablePtr>  values;
 };
 
 #endif
@@ -84,7 +87,7 @@ Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
 template <>
 const RbLanguageObject& Func_simplex<Integer>::executeFunction( void ) {
 
-    int size = static_cast<const Integer&>( (*args)[0].getValue() ).getValue();
+    int size = static_cast<const Integer&>( values[0]->getValue() ).getValue();
 
     if ( size < 2 )
         throw RbException( "Simplex size must be at least 2" );
@@ -99,7 +102,7 @@ const RbLanguageObject& Func_simplex<Integer>::executeFunction( void ) {
 template <>
 const RbLanguageObject& Func_simplex<VectorRealPos>::executeFunction( void ) {
 
-    const VectorRealPos& tempVec = static_cast<VectorRealPos&>( (*args)[0].getValue() );
+    const VectorRealPos& tempVec = static_cast<VectorRealPos&>( values[0]->getValue() );
 
     s.setValue( tempVec );
 
@@ -112,8 +115,8 @@ template <>
 const RbLanguageObject& Func_simplex<RealPos>::executeFunction( void ) {
 
     VectorReal  tempVec;
-    for ( size_t i = 0; i < args->size(); i++ )
-        tempVec.push_back( static_cast<const RealPos&>( (*args)[i].getValue() ) );
+    for ( size_t i = 0; i < values.size(); i++ )
+        tempVec.push_back( static_cast<const RealPos&>( values[i]->getValue() ) );
 
     // Normalization is done by the Simplex constructor
     s.setValue( tempVec );
@@ -197,5 +200,18 @@ template <>
 bool Func_simplex<Integer>::throws( void ) const {
 
     return true;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+template <typename valType>
+void Func_simplex<valType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "" ) {
+        values.push_back( var );
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

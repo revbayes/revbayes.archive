@@ -86,8 +86,8 @@ public:
     
     // Regular functions
     void                                    addVariable(const std::string& name, VariableSlot* slot);                               //!< Add variable
-    void                                    addVariable(const std::string& name, Variable* var);                                    //!< Add variable
-    void                                    addVariable(const std::string& name, const TypeSpec &ts, Variable* var);                //!< Add variable
+    void                                    addVariable(const std::string& name, const RbVariablePtr& var);                         //!< Add variable
+    void                                    addVariable(const std::string& name, const TypeSpec &ts, const RbVariablePtr& var);     //!< Add variable
     void                                    addVariable(const std::string& name, const TypeSpec& typeSp, DAGNode* variable);        //!< Add variable
     void                                    addVariable(const std::string& name, const TypeSpec& typeSp);                           //!< Add variable
     void                                    clear(void);                                                                            //!< clears the variable table

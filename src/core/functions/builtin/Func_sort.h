@@ -43,9 +43,13 @@ public:
 
 protected:
     const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
+    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
 private:
     static const TypeSpec       typeSpec;	
+    
+    // Arguments
+    RbVariablePtr               value;
     
     // function return value
     valType                     retValue;
@@ -76,7 +80,7 @@ Func_sort<valType>* Func_sort<valType>::clone( void ) const {
 template <typename valType> 
 const RbLanguageObject& Func_sort<valType>::executeFunction( void ) {
     
-    retValue = static_cast<valType&>( (*args)[0].getValue() );    
+    retValue = static_cast<valType&>( value->getValue() );    
     if(retValue.size() == 0) 
         return retValue;
     retValue.sort();
@@ -94,7 +98,7 @@ const ArgumentRules& Func_sort<valType>::getArgumentRules( void ) const {
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "value", valType() .getTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -127,6 +131,19 @@ template <typename valType>
 const TypeSpec& Func_sort<valType>::getTypeSpec( void ) const {
     
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+template <typename firstValType>
+void Func_sort<firstValType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "value" ) {
+        value = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 
 

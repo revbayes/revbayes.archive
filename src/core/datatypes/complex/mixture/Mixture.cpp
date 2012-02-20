@@ -80,7 +80,6 @@ Mixture::Mixture(const size_t numObservations, DagNodeContainer* parameters) : M
   std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)numObservations, *rng);
   allocationVector_ = new DagNodeContainer(numObservations);
   for (size_t i = 0 ; i < numObservations ; i ++ ) {
-  //  allocationVector_->push_back(RbDagNodePtr<RbObject> (new Integer(allocationVec[i])));
     allocationVector_->setElement(i, new Integer(allocationVec[i]) );
   }
   indexAllocationVector();
@@ -177,9 +176,7 @@ const MemberRules& Mixture::getMemberRules(void) const {
     if (!rulesSet) 
     {
         memberRules.push_back( new ValueRule( "numObservations", Integer_name ) );
-       // memberRules->push_back( RbDagNodePtr<ArgumentRule> ( new ValueRule( "allocationVector", DagNodeContainer_name ) ) );
         memberRules.push_back( new ValueRule( "parameters", DagNodeContainer_name ) );
-       // memberRules->push_back( RbDagNodePtr<ArgumentRule> ( new ValueRule( "classProbabilities", VectorRealPos_name ) ) );
       
         rulesSet = true;
     }
@@ -190,21 +187,17 @@ const MemberRules& Mixture::getMemberRules(void) const {
 
 /** Print value for user */
 void Mixture::printValue(std::ostream& o) const {
-  std::cout <<"printValue"<<std::endl;
-  o << "Parameter vector:\n";
-  for ( size_t i = 0; i < parameters_->size(); i++ ) {
-     RbDagNodePtr theNode = static_cast<const VariableSlot&>( parameters_->getElement(i) ).getDagNode();
-     theNode->printValue(o) ;
-     o << "\t";
-  }
-  o << std::endl << std::endl;
-
-  o << "Allocation vector:\n";
-/*    for ( size_t i = 0; i < allocationVector_->size(); i++ ) {
-        RbDagNodePtr theNode = static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getDagNode();
+    std::cout <<"printValue"<<std::endl;
+    o << "Parameter vector:\n";
+    for ( size_t i = 0; i < parameters_->size(); i++ ) {
+        DAGNode* theNode = static_cast<const VariableSlot&>( parameters_->getElement(i) ).getDagNode();
         theNode->printValue(o) ;
-       o << "\t";
-  }*/
+        o << "\t";
+    }
+    o << std::endl << std::endl;
+
+    o << "Allocation vector:\n";
+
     o << std::endl << std::endl;
 
 }
@@ -241,15 +234,6 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
      // (DagNodeContainer*) getParameter(index->getValue());
       return  getParameter(index.getValue());
       
-//      
-//      const std::string& numString = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
-//      std::stringstream ss(numString);
-//      int num;
-//      ss >> num;
-      
-   //     unsigned int num = static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
-   //     return getParameter(num);
-        //return RbDagNodePtr<RbLanguageObject>::getNullPtr();
 
     }
     else if (name == "getParameters") {
@@ -478,30 +462,13 @@ DagNodeContainer& Mixture::getParameter(unsigned int classId) {
   return static_cast<DagNodeContainer&>( parameters_->getElement(classId) );
 }
 
-
-/** Get the vector containing elements on which the mixture operates*/
-/*RbDagNodePtr<DagNodeContainer> Mixture::getObservations() {
-    
-    return observations_;
-}*/
-
-/** Set the vector containing elements on which the mixture operates*/
-/*void Mixture::setObservations(RbDagNodePtr<DagNodeContainer>& observations) {
-    observations_ = observations;
-}*/
-
 /** Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1*/
 void Mixture::indexAllocationVector() {
   std::map<int, int> rvToNumber;
   unsigned int maxIntSeen = 0;
   //Renumber the allocation vector
   for (unsigned int i = 0 ; i < allocationVector_->size() ; i++ ) { 
- //   allocationVector_->setElement(i, RbDagNodePtr<Variable> ( (static_cast< VariableSlot*>( ( RbObject*) (new Integer(allocationVec[i] ) ) )  )->getVariable() ) );
-   /* const RbObject* variab = (const  RbObject*) (allocationVector_->getElement(i) );
-   const  RbLanguageObject* lango = (const RbLanguageObject*)static_cast<const VariableSlot*>( variab);
-    const Natural* nat = static_cast<const Natural*>(lango);
-    int formerlyAssignedValue = nat->getValue();*/
-    
+   
     //TEST
     const VariableSlot& slot = static_cast<const VariableSlot&>( allocationVector_->getElement(i) );
     std::cout <<"indexAllocationVector"<<std::endl;

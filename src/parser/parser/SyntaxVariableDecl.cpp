@@ -101,14 +101,8 @@ const VectorString& SyntaxVariableDecl::getClass( void ) const {
 }
 
 
-/** We cannot perform this function and throw and error */
-Variable* SyntaxVariableDecl::evaluateContent( void ) {
-    throw RbException("Cannot evaluate the content in SyntaxVariableDecl without environment!");
-}
-
-
-/** Get semantic value: RbDagNodePtr symbol and return the rhs value of the assignment */
-Variable* SyntaxVariableDecl::evaluateContent( Environment& env ) {
+/** Get semantic value: insert symbol and return the rhs value of the assignment */
+RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
     
     PRINTF( "Evaluating variable declaration\n" );
     
@@ -169,7 +163,7 @@ Variable* SyntaxVariableDecl::evaluateContent( Environment& env ) {
         env.addVariable( *variableName, typeSpec );
     }
     
-    return NULL;
+    return RbVariablePtr( NULL );
 }
 
 

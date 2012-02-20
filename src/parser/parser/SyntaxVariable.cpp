@@ -236,7 +236,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
 
             if ( !env.existsVariable( *identifier ) ) {
                 // create a new slot
-                Variable* theVar = new Variable( TypeSpec(RbObject_name) );
+                RbVariablePtr theVar = RbVariablePtr( new Variable( TypeSpec(RbObject_name) ) );
                 env.addVariable(*identifier,theVar);
             }
             
@@ -281,9 +281,9 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             // test whether the value of the DAG node allows assignment of variable to its elemens
             // e.g.: A simplex might not allow assignment of its elements whereas a DagNodeContainer does
             if (theDagNode != NULL && !theDagNode->getValue().allowsVariableInsertion()) {
-                // throw expection because we don't allow RbDagNodePtrion of variable
+                // throw expection because we don't allow insertion of variable
                 std::ostringstream msg;
-                msg << "Object of type " << theDagNode->getValue().getType() << " does not allow RbDagNodePtrion of variables.";
+                msg << "Object of type " << theDagNode->getValue().getType() << " does not allow insertion of variables.";
                 throw RbException(msg);
             }
             
@@ -329,12 +329,6 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
 }
 
 
-/** We cannot perform this function and throw and error */
-Variable* SyntaxVariable::evaluateContent( void ) {
-    throw RbException("Cannot evaluate the content in SyntaxVariable without environment!");
-}
-
-
 /**
  * @brief Get semantic value (r-value)
  *
@@ -347,17 +341,16 @@ Variable* SyntaxVariable::evaluateContent( void ) {
  * The function call is NULL unless we have a base variable, in which case
  * the function call can replace the identifier.
  */
-Variable* SyntaxVariable::evaluateContent( Environment& env) {
+RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
 
     /* Get variable */
-    Variable* theVar = NULL;
+    RbVariablePtr theVar = NULL;
     
     // if the base variable is not set we have a simple object, otherwise a member object 
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
-            // TODO: perhaps we should allow dereferencing!!!
-            theVar = &env[ (*identifier) ].getVariable();
+            theVar = env[ (*identifier) ].getVariablePtr();
         } else {
             theVar = functionCall->evaluateContent( env );
         }
@@ -368,7 +361,7 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
 
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
-            Variable* baseVar = baseVariable->evaluateContent( env );
+            const RbVariablePtr& baseVar = baseVariable->evaluateContent( env );
             if ( !baseVar->getValue().isTypeSpec( TypeSpec(MemberObject_name) ) )
                 throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members" );       
         
@@ -391,7 +384,7 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
         // iterate over the each index
         for (std::list<SyntaxElement*>::const_iterator it=index->begin(); it!=index->end(); it++) {
             SyntaxElement*         indexSyntaxElement     = *it;
-            Variable*              indexVar               = indexSyntaxElement->evaluateContent(env);
+            RbVariablePtr          indexVar               = indexSyntaxElement->evaluateContent(env);
             
             if (theVar->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
                 RbLanguageObject&   theValue               = indexVar->getValue();
@@ -435,7 +428,7 @@ Variable* SyntaxVariable::evaluateContent( Environment& env) {
                 theMemberFunction->setMemberObject(mObject);
 //            RbPtr<RbFunction> func( theMemberFunction );
             
-                theVar = new Variable( new DeterministicNode( theMemberFunction ) );
+                theVar = RbVariablePtr( new Variable( new DeterministicNode( theMemberFunction ) ) );
             }
         }
     }

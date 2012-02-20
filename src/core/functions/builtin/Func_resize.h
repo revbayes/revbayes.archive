@@ -42,10 +42,15 @@ public:
   
 protected:
 	const RbLanguageObject&     executeFunction( void);                              //!< Execute operation
+    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
   
 private:
     void                        resizeVector(Container &vec, Environment *args, unsigned int numArg);
     static const TypeSpec       typeSpec;
+  
+    // arguments
+    RbVariablePtr               container;
+    std::vector<RbVariablePtr>  sizes;
     
     // function return value
     Container*                  retValue;
@@ -91,25 +96,26 @@ void Func_resize::resizeVector(Container &vec, Environment *args, unsigned int n
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 const RbLanguageObject& Func_resize::executeFunction( void ) {
 
-    unsigned long nargs = args->size();
+    unsigned long nargs = args.size();
     //The identity of the object to resize
-    retValue = static_cast<Container*>( (*args)[0].getValue().clone() );
+    retValue = static_cast<Container*>( container->getValue().clone() );
 
     if (nargs == 2) {
       //Resizing a vector
-      unsigned int nrows = ( static_cast<Natural&>( (*args)[1].getValue() ) ).getValue();
+      unsigned int nrows = ( static_cast<Natural&>( sizes[0]->getValue() ) ).getValue();
       retValue->resize(nrows);
     }
     else {
       //Resizing a matrix of nargs-1 dimensions
-        int nrows = ( static_cast<Natural&>( (*args)[1].getValue() ) ).getValue();
+        int nrows = ( static_cast<Natural&>( sizes[0]->getValue() ) ).getValue();
         
         if (!retValue->isType(Vector_name)) {
             retValue = static_cast<Container*>( retValue->convertTo(TypeSpec(Vector_name, new TypeSpec(RbLanguageObject_name) ) ) );
         }
         
         retValue->resize(nrows);
-        resizeVector(*retValue, args, 2);
+        // TODO: We need to fix this!
+//        resizeVector(*retValue, args, 2);
     }
   return *retValue;
   
@@ -124,8 +130,8 @@ const ArgumentRules& Func_resize::getArgumentRules( void ) const {
   
   if ( !rulesSet ) 
   {
-    argumentRules.push_back( new ValueRule( "", TypeSpec(Container_name) ) );
-    argumentRules.push_back( new ValueRule( "", Natural_name ) );
+    argumentRules.push_back( new ValueRule( "x", TypeSpec(Container_name) ) );
+    argumentRules.push_back( new ValueRule( "size", Natural_name ) );
     argumentRules.push_back( new Ellipsis( Natural_name ) );
     rulesSet = true;
   }
@@ -155,6 +161,21 @@ const TypeSpec& Func_resize::getReturnType( void ) const {
 const TypeSpec& Func_resize::getTypeSpec( void ) const {
   
   return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_resize::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "x" ) {
+        container = var;
+    }
+    else if ( name == "size" || name == "") {
+        sizes.push_back(var);
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 
 

@@ -155,17 +155,10 @@ const VectorString& SyntaxStatement::getClass(void) const {
 }
 
 
-/** We cannot perform this function and throw and error */
-Variable* SyntaxStatement::evaluateContent( void ) {
-    throw RbException("Cannot evaluate the content in SyntaxStatement without environment!");
-}
-
-
-
 /** Get semantic value: it is here that we execute the statement */
-Variable* SyntaxStatement::evaluateContent(Environment& env) {
+RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
 
-    Variable* result = NULL;
+    RbVariablePtr result = NULL;
     
     if (statementType == For) {
 
@@ -201,7 +194,6 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
 
                 // Free memory
 				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL) {
-                    delete result;
                     result = NULL;  // discard result
                 }
 
@@ -251,7 +243,6 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
 	 
 	            // Free memory
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ){
-                    delete result;
                     result = NULL;  // discard result
                 }
 	 
@@ -295,7 +286,6 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
 
                 // Free memory
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL){
-                    delete result;
                     result = NULL;  // discard result
                 }
             }
@@ -321,7 +311,6 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                 
                 // Free memory
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ){
-                    delete result;
                     result = NULL;  // discard result
                 }
             }
@@ -341,7 +330,6 @@ Variable* SyntaxStatement::evaluateContent(Environment& env) {
                     
                 // Free memory
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
-                    delete result;
                     result = NULL;  // discard result
                 }
             }
@@ -365,7 +353,7 @@ const TypeSpec& SyntaxStatement::getTypeSpec(void) const {
  */
 bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment& env ) const {
     
-    Variable* temp = expression->evaluateContent( env );
+    RbVariablePtr temp = expression->evaluateContent( env );
     
     if ( temp == NULL )
         return false;

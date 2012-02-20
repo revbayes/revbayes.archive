@@ -45,8 +45,8 @@ Func_gtr* Func_gtr::clone(void) const {
 const RbLanguageObject& Func_gtr::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    Simplex& r = static_cast<Simplex&>( (*args)[0].getValue() );
-    Simplex& f = static_cast<Simplex&>( (*args)[1].getValue() );
+    Simplex& r = static_cast<Simplex&>( rates->getValue() );
+    Simplex& f = static_cast<Simplex&>( freqs->getValue() );
 
     // initialize the number of states
     const size_t nStates = 4;
@@ -72,7 +72,9 @@ const RbLanguageObject& Func_gtr::executeFunction(void) {
 
     
     // construct a rate matrix of the correct dimensions
-    m = RateMatrix(nStates);
+    if (m.getNumberOfStates() != nStates) {
+        m = RateMatrix(nStates);
+    }
 
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0, k=0; i<nStates; i++)
@@ -147,5 +149,19 @@ const TypeSpec& Func_gtr::getReturnType(void) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_gtr::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_gtr::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "rates" ) {
+        rates = var;
+    } else if ( name == "freqs" ) {
+        freqs = var;
+    } 
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

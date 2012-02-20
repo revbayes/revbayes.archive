@@ -33,7 +33,6 @@ class Func_abs :  public RbFunction {
     
 public:
     Func_abs(void);                                                                         //!< default constructor
-    Func_abs(const Func_abs &x);                                                            //!< copy constructor
     
     // Basic utility functions
     Func_abs*                   clone(void) const;                                          //!< Clone the object
@@ -46,9 +45,14 @@ public:
 
 protected:
     const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
     
 private:
     RealPos                     value;
+    
+    // Arguments
+    RbVariablePtr               x;
+    
     static const TypeSpec       typeSpec;  
     static const TypeSpec       returnTypeSpec;
 };

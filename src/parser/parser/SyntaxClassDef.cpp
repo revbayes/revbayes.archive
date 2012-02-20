@@ -81,8 +81,8 @@ const VectorString& SyntaxClassDef::getClass(void) const {
 }
 
 
-/** Get semantic value: RbDagNodePtr a user-defined class in the user workspace */
-Variable* SyntaxClassDef::evaluateContent(void) {
+/** Get semantic value: insert a user-defined class in the user workspace */
+RbVariablePtr SyntaxClassDef::evaluateContent( Environment& env ) {
 
     std::cerr << "Sorry, user-defined classes are not implemented yet" << std::endl;
 

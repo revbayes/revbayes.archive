@@ -128,15 +128,9 @@ const VectorString& SyntaxFunctionDef::getClass(void) const {
 }
 
 
-/** We cannot perform this function and throw and error */
-Variable* SyntaxFunctionDef::evaluateContent( void ) {
-    throw RbException("Cannot evaluate the content in SyntaxFunctionDev without environment!");
-}
 
-
-
-/** Get semantic value: RbDagNodePtr a user-defined function in the user workspace */
-Variable* SyntaxFunctionDef::evaluateContent(Environment& env) {
+/** Get semantic value: insert a user-defined function in the user workspace */
+RbVariablePtr SyntaxFunctionDef::evaluateContent(Environment& env) {
 
     // Get argument rules from the formals
     ArgumentRules* argRules = new ArgumentRules();
@@ -155,11 +149,11 @@ Variable* SyntaxFunctionDef::evaluateContent(Environment& env) {
     // Create the function
     RbFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
 
-    // RbDagNodePtr in the user workspace
+    // insert in the user workspace
     Workspace::userWorkspace().addFunction(*functionName, theFunction);
 
     // No return value 
-    return NULL;
+    return RbVariablePtr( NULL );
 }
 
 

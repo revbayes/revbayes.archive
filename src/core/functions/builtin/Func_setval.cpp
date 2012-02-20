@@ -48,7 +48,7 @@ Func_setval* Func_setval::clone( void ) const {
 const RbLanguageObject& Func_setval::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>( (*args)[0].getDagNode() );
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>( variable->getDagNode() );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
@@ -65,7 +65,7 @@ const RbLanguageObject& Func_setval::executeFunction( void ) {
     }
     
     // The following call will throw an error if the value type is wrong
-    RbLanguageObject* newVal = (*args)[1].getValue().clone();
+    RbLanguageObject* newVal = value->getValue().clone();
     if (!newVal->isTypeSpec(theNode->getDistribution().getVariableType() ) ) {
         if (newVal->isConvertibleTo(theNode->getDistribution().getVariableType())) {
             newVal = static_cast<RbLanguageObject*>( newVal->convertTo(theNode->getDistribution().getVariableType() ) );
@@ -116,5 +116,20 @@ const TypeSpec& Func_setval::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_setval::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_setval::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "variable" ) {
+        variable = var;
+    }
+    else if ( name == "value" ) {
+        value = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

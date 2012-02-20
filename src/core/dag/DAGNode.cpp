@@ -77,7 +77,15 @@ DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.va
 
 /** Destructor deletes value if not NULL */
 DAGNode::~DAGNode( void ) {
+    
+    if (refCount != 0) {
+        std::cerr << "Uh oh, deleting DAG node which still is referenced to!!!";
+    }
 
+    for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
+        VariableNode* theNode = *i;
+        theNode->removeParentNode( this );
+    }
 }
 
 
@@ -156,7 +164,7 @@ const std::string& DAGNode::getName( void ) const {
 }
 
 
-const std::set<RbDagNodePtr >& DAGNode::getParents( void ) const {
+const std::set<DAGNode*>& DAGNode::getParents( void ) const {
     return parents;
 }
 
@@ -184,9 +192,9 @@ bool DAGNode::isConst( void ) const {
 
 
 /** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
-bool DAGNode::isParentInDAG( const RbDagNodePtr& x, std::list<DAGNode*>& done ) const {
+bool DAGNode::isParentInDAG( const DAGNode* x, std::list<DAGNode*>& done ) const {
 
-    for( std::set<RbDagNodePtr >::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
+    for( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
 
         if ( std::find( done.begin(), done.end(), (*i) ) == done.end() ) {
             if ( (*i)->isParentInDAG( x, done ) )
@@ -252,7 +260,7 @@ void DAGNode::printParents( std::ostream& o ) const {
 
     o << "[ ";
 
-    for ( std::set<RbDagNodePtr >::const_iterator i = parents.begin(); i != parents.end(); i++) {
+    for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( i != parents.begin() )
             o << ", ";
         if ( getName() == "" ) {
@@ -266,17 +274,6 @@ void DAGNode::printParents( std::ostream& o ) const {
     o << " ]";
 }
 
-
-//void DAGNode::setVariable(Variable* var) {
-//    // only do something if the old var is different to the new var
-//    if (var != variable) {
-//        // the DAG node does not own the Variable so we do not delete it
-//    
-//        // set the new variable
-//        variable = var;
-//    }
-//}
-
 /** Remove a child from this DAG node. Free the pointer to the child. */
 void DAGNode::removeChildNode(VariableNode *c) {
     
@@ -287,6 +284,7 @@ void DAGNode::removeChildNode(VariableNode *c) {
         // remove the child from our list
         children.erase(c);
     }
+    
 }
 
 

@@ -57,38 +57,38 @@ Func_dppSeat* Func_dppSeat::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_dppSeat::executeFunction( void ) {
     
-	double          concentration   = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
-	unsigned int    num             = static_cast<const Natural&>( (*args)[1].getValue() ).getValue();
-	std::vector<int> tables;
-	std::vector<int> clusters( num, 0 );
-	
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-	for(size_t i=0; i<(size_t)num; i++){
-		if(i==0){
-			tables.push_back( 1 );
-			clusters[i] = 0;
-		}
-		else{
-			double prNewTable = concentration / (i + concentration);
-			double w = rng->uniform01();
-			if(w < prNewTable){
-				tables.push_back( 1 );
-				clusters[i] = (int)tables.size()-1;
-			}
-			else{
-				double u = rng->uniform01();
-				double sum = 0.0;
-				size_t j = 0;
-				while(u > sum && j <= tables.size()){
-					sum += (double)tables[j] / ((double)i);
-					j++;
-				}
-				tables[j] += 1;
-				clusters[i] = (int)(j - 1);
-			}
-		}
-	}
-    allocation.setValue( clusters );
+//	double          concentration   = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
+//	unsigned int    num             = static_cast<const Natural&>( (*args)[1].getValue() ).getValue();
+//	std::vector<int> tables;
+//	std::vector<int> clusters( num, 0 );
+//	
+//    RandomNumberGenerator* rng = GLOBAL_RNG;
+//	for(size_t i=0; i<(size_t)num; i++){
+//		if(i==0){
+//			tables.push_back( 1 );
+//			clusters[i] = 0;
+//		}
+//		else{
+//			double prNewTable = concentration / (i + concentration);
+//			double w = rng->uniform01();
+//			if(w < prNewTable){
+//				tables.push_back( 1 );
+//				clusters[i] = (int)tables.size()-1;
+//			}
+//			else{
+//				double u = rng->uniform01();
+//				double sum = 0.0;
+//				size_t j = 0;
+//				while(u > sum && j <= tables.size()){
+//					sum += (double)tables[j] / ((double)i);
+//					j++;
+//				}
+//				tables[j] += 1;
+//				clusters[i] = (int)(j - 1);
+//			}
+//		}
+//	}
+//    allocation.setValue( clusters );
 	return allocation;
 }
 

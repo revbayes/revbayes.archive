@@ -43,22 +43,19 @@ Func__range* Func__range::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func__range::executeFunction( void ) {
 
-    int first = static_cast<const Integer&>( (*args)[0].getValue() ).getValue();
-    int last  = static_cast<const Integer&>( (*args)[1].getValue() ).getValue();
+    int f = static_cast<const Integer&>( first->getValue() ).getValue();
+    int l = static_cast<const Integer&>( last->getValue() ).getValue();
 
     std::vector<int> temp;
     if (first < last) {
-        for ( int i = first; i <= last; i++ )
+        for ( int i = f; i <= l; i++ )
             temp.push_back(i);
     }
     else {
-        for ( int i = first; i >= last; i-- )
+        for ( int i = f; i >= l; i-- )
             temp.push_back(i);
     }
-//    if (first >= 0 && last >= 0) 
-//        return new VectorNatural(temp);
-//    else
-//        return new VectorInteger(temp);
+    
     range.setValue( temp );
     
     return range;
@@ -73,8 +70,8 @@ const ArgumentRules& Func__range::getArgumentRules( void ) const {
 
     if (!rulesSet) {
 
-        argumentRules.push_back( new ValueRule( "", Integer_name ) );
-        argumentRules.push_back( new ValueRule( "", Integer_name ) );
+        argumentRules.push_back( new ValueRule( "first", Integer_name ) );
+        argumentRules.push_back( new ValueRule( "last", Integer_name ) );
         rulesSet = true;
     }
 
@@ -100,5 +97,20 @@ const TypeSpec& Func__range::getTypeSpec(void) const {
 const TypeSpec& Func__range::getReturnType( void ) const {
 
     return returnTypeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func__range::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "first" ) {
+        first = var;
+    }
+    else if ( name == "last" ) {
+        last = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

@@ -70,17 +70,17 @@ Simulate* Simulate::clone(void) const {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     if (name == "run") {
-        RbLanguageObject& argument = args[0].getValue();
-        int n = static_cast<Natural&>( argument ).getValue();
+        const RbLanguageObject& argument = args[0].getVariable().getValue();
+        int n = static_cast<const Natural&>( argument ).getValue();
         run(n);
         return RbNullObject::getInstance();
     }
     if (name == "getValues") {
-        RbLanguageObject& argument = args[0].getValue();
-        const RbString& n = static_cast<RbString&>( argument ).getValue();
+        const RbLanguageObject& argument = args[0].getVariable().getValue();
+        const RbString& n = static_cast<const RbString&>( argument ).getValue();
         Vector* vec = getValues(n);
         return *vec;
     }
@@ -158,11 +158,11 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                 FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
                 
                 // get the DAG node for this monitor
-                std::vector<RbDagNodePtr> &theOldNodes = theMonitor.getDagNodes();
+                std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
                 
                 // convert the old nodes from Stochastic nodes to DAGNode
                 std::vector<DAGNode*> oldNodes;
-                for (std::vector<RbDagNodePtr>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+                for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
                     oldNodes.push_back( *it );
                 }
                 // get the DAG node which corresponds in the model to the cloned original node
@@ -193,11 +193,11 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                 ObjectMonitor& theMonitor = static_cast<ObjectMonitor&>( monitors->getElement(i) );
                 
                 // get the DAG node for this monitor
-                std::vector<RbDagNodePtr> &theOldNodes = theMonitor.getDagNodes();
+                std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
                 
                 // convert the old nodes from Stochastic nodes to DAGNode
                 std::vector<DAGNode*> oldNodes;
-                for (std::vector<RbDagNodePtr>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+                for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
                     oldNodes.push_back( *it );
                 }
                 // get the DAG node which corresponds in the model to the cloned original node
@@ -238,8 +238,8 @@ void Simulate::getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<Stochast
     }
     else if (dagNode->getTypeSpec() ==  StochasticNode_name || dagNode->getTypeSpec() ==  DeterministicNode_name) { //if the node is stochastic or deterministic
         //First I have to visit my parents
-        const std::set<RbDagNodePtr >& parents = dagNode->getParents() ;
-        std::set<RbDagNodePtr >::iterator it;
+        const std::set<DAGNode*>& parents = dagNode->getParents() ;
+        std::set<DAGNode*>::iterator it;
         for ( it=parents.begin() ; it != parents.end(); it++ ) 
             getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
         
@@ -264,7 +264,7 @@ void Simulate::run(size_t ndata) {
     std::cerr << "Initializing the simulation ..." << std::endl;
     
     /* Get the dag nodes from the model */
-    std::vector<RbDagNodePtr > dagNodes = static_cast<Model&>( model->getValue() ).getDAGNodes();
+    std::vector<DAGNode*> dagNodes = static_cast<Model&>( model->getValue() ).getDAGNodes();
     
     /* Get the stochastic nodes in an ordered manner */
     std::vector<StochasticNode*> orderedStochasticNodes; 

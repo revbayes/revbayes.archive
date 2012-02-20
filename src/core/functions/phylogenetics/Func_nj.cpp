@@ -50,11 +50,11 @@ Func_nj* Func_nj::clone(void) const {
 const RbLanguageObject& Func_nj::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    DistanceMatrix& d           = static_cast<DistanceMatrix&>( (*args)[0].getValue() );
-    RbString&       useBioNj    = static_cast<RbString&>      ( (*args)[1].getValue() );
-    RbString&       tieBreaking = static_cast<RbString&>      ( (*args)[2].getValue() );
+    DistanceMatrix& dm          = static_cast<DistanceMatrix&>( d->getValue() );
+    RbString&       useBioNj    = static_cast<RbString&>      ( bioNj->getValue() );
+    RbString&       tieBreaking = static_cast<RbString&>      ( ties->getValue() );
         
-    Topology* top = neighborJoining(d);
+    Topology* top = neighborJoining(dm);
     
     tree.setMember("topology", new Variable( new ConstantNode(top) ) );
     
@@ -254,4 +254,20 @@ Topology* Func_nj::neighborJoining(const DistanceMatrix& d) {
 //    std::cout << newickStr << std::endl;
     
     return topo;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_nj::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "d" ) {
+        d = var;
+    } else if ( name == "bionj" ) {
+        bioNj = var;
+    } else if ( name == "ties" ) {
+        ties = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }

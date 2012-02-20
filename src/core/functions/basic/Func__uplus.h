@@ -39,9 +39,13 @@ class Func__uplus :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         static const TypeSpec       typeSpec;
+    
+        // Arguments
+        RbVariablePtr               value;
 };
 
 #endif
@@ -70,7 +74,7 @@ Func__uplus<valType, retType>* Func__uplus<valType, retType>::clone( void ) cons
 template <typename valType, typename retType>
 const RbLanguageObject& Func__uplus<valType, retType>::executeFunction( void ) {
 
-    const valType& val = static_cast<valType&> ( (*args)[0].getValue() );
+    const valType& val = static_cast<valType&> ( value->getValue() );
 
     return val;
 }
@@ -85,7 +89,7 @@ const ArgumentRules& Func__uplus<valType, retType>::getArgumentRules( void ) con
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "value", valType().getTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -117,5 +121,18 @@ template <typename firstValType, typename retType>
 const TypeSpec& Func__uplus<firstValType, retType>::getTypeSpec( void ) const {
     
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+template <typename firstValType, typename retType>
+void Func__uplus<firstValType, retType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "value" ) {
+        value = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

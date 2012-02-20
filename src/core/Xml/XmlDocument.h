@@ -6,7 +6,7 @@
  * to a tree. 
  * Using the XmlDocument to add xml elements enables the usage of reference, where the 
  * xml element is created on first occurrence with a unique id, and for every later occurrence
- * only a reference is RbDagNodePtred in the tree.
+ * only a reference is inserted in the tree.
  *
  * @brief Declaration of XmlDocument
  *

@@ -56,8 +56,7 @@ class SyntaxBinaryExpr : public SyntaxElement {
         void                    printValue(std::ostream& o) const;                      //!< Print info about object
 
         // Regular functions
-        Variable*               evaluateContent(Environment& env);                      //!< Get semantic value
-        Variable*               evaluateContent(void);                                  //!< Get semantic value
+        RbVariablePtr           evaluateContent(Environment& env);                      //!< Get semantic value
 
     protected:
         SyntaxElement*          leftOperand;                                            //!< The left operand

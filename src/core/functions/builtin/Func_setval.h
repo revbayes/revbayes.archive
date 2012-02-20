@@ -42,8 +42,14 @@ class Func_setval :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
+    
+        // arguments
+        RbVariablePtr               variable;
+        RbVariablePtr               value;
+        
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
 };

@@ -120,10 +120,12 @@ const RbLanguageObject& UserFunction::executeFunction( void ) {
     Signals::getSignals().clearFlags();
 
     // Set initial return value
-    Variable* retValue = NULL;
+    RbVariablePtr retValue = NULL;
 
     // Create new variable frame
-    Environment functionEnvironment = Environment( args );
+    Environment functionEnvironment = Environment( NULL );
+    // TODO: Check that the arguments can still be accessed
+//    Environment functionEnvironment = Environment( args );
 
     // Execute code
     for ( std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++ ) {

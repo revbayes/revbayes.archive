@@ -63,8 +63,8 @@ const RbLanguageObject& ConstructorFunctionForSimpleObjects::executeFunction(voi
     copyObject = templateObject->clone();
     
     Vector params = Vector(RbObject_name);
-    for ( size_t i = 0; i < args->size(); i++ ) {
-        params.push_back( (*args)[i].getValue().clone() );
+    for ( size_t i = 0; i < args.size(); i++ ) {
+        params.push_back( args[i].getVariable().getValue().clone() );
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
     
@@ -99,5 +99,14 @@ const TypeSpec& ConstructorFunctionForSimpleObjects::getReturnType(void) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& ConstructorFunctionForSimpleObjects::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void ConstructorFunctionForSimpleObjects::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    // We do nothing here because the only thing we need is to collect the arguments in a vector.
+    // This is done by the base class alreay.
+    
 }
 

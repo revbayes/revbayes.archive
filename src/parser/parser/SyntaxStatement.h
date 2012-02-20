@@ -55,8 +55,7 @@ class SyntaxStatement : public SyntaxElement {
         void                                        printValue(std::ostream& o) const;                                  //!< Print info about object
 
         // Regular functions
-        Variable*                                   evaluateContent(void);                                              //!< Get semantic value
-        Variable*                                   evaluateContent(Environment& env);                                  //!< Get semantic value
+        RbVariablePtr                               evaluateContent(Environment& env);                                  //!< Get semantic value
 
     protected:
         bool                                        isTrue(SyntaxElement* expression, Environment& env) const;          //!< Does expression evaluate to true?

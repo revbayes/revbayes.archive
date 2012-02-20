@@ -116,7 +116,7 @@ bool ArgumentRule::isArgumentValid(const DAGNode* var, bool& needsConversion) co
     
     needsConversion = false;
     if ( var == NULL )
-        return true;
+        return false;
 
     
    /* We need safe argument matching for repeated evaluation in a function node */

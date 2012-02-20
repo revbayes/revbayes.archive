@@ -60,24 +60,24 @@ Func_dppServe* Func_dppServe::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_dppServe::executeFunction( void ) {
     
-	// Expecting the allocation vector to be like: [0,0,1,0,1,2,2,2,2,2,3,0,3,1]
-	std::vector<unsigned int> allocVec = static_cast<const VectorNatural&>( (*args)[0].getValue() ).getValue();
-
-	std::sort(allocVec.begin(), allocVec.end()); // this makes [0,0,0,0,1,1,1,2,2,2,2,2,3,3]
-
-	int numClusters = *allocVec.end() + 1; 
-	std::vector<double> paramValues( numClusters, 0.0 );
-	
-	StochasticNode* paramVar( dynamic_cast<StochasticNode*>( (*args)[1].getDagNode() ) );
-    const DistributionContinuous& baseDistribution = static_cast<const DistributionContinuous&>( paramVar->getDistribution() );
-	
-	// Question: should this function take a stochastic node as an argument, or a distribution? I think maybe it should be a distribution...
-	
-	for(int i=0; i<numClusters; i++){
-		// paramValues[i] = ...
-	}
-    
-    values.setValue( paramValues );
+//	// Expecting the allocation vector to be like: [0,0,1,0,1,2,2,2,2,2,3,0,3,1]
+//	std::vector<unsigned int> allocVec = static_cast<const VectorNatural&>( (*args)[0].getValue() ).getValue();
+//
+//	std::sort(allocVec.begin(), allocVec.end()); // this makes [0,0,0,0,1,1,1,2,2,2,2,2,3,3]
+//
+//	int numClusters = *allocVec.end() + 1; 
+//	std::vector<double> paramValues( numClusters, 0.0 );
+//	
+//	StochasticNode* paramVar( dynamic_cast<StochasticNode*>( (*args)[1].getDagNode() ) );
+//    const DistributionContinuous& baseDistribution = static_cast<const DistributionContinuous&>( paramVar->getDistribution() );
+//	
+//	// Question: should this function take a stochastic node as an argument, or a distribution? I think maybe it should be a distribution...
+//	
+//	for(int i=0; i<numClusters; i++){
+//		// paramValues[i] = ...
+//	}
+//    
+//    values.setValue( paramValues );
 	return values;
 }
 

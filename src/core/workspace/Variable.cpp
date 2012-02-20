@@ -76,6 +76,9 @@ Variable::Variable(const Variable& x) : node(NULL), valueTypeSpec( x.valueTypeSp
 /** Call a help function to remove the variable intelligently */
 Variable::~Variable(void) {
     
+    if (refCount > 0) {
+        std::cerr << "Uh oh, deleting variable which still is referenced to!!!\n";
+    }
 }
 
 

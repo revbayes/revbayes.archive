@@ -49,8 +49,8 @@ Func_CtmmTransitionProbabilities* Func_CtmmTransitionProbabilities::clone(void) 
 const RbLanguageObject& Func_CtmmTransitionProbabilities::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    RateMatrix& q = static_cast<RateMatrix&>( (*args)[0].getValue() );
-    RealPos&    t = static_cast<RealPos&>(    (*args)[1].getValue() );
+    RateMatrix& q = static_cast<RateMatrix&>( rateMatrix->getValue() );
+    RealPos&    t = static_cast<RealPos&>(    time->getValue() );
 
     // initialize the number of states
     const size_t numStates = q.getNumberOfStates();
@@ -114,5 +114,20 @@ const TypeSpec& Func_CtmmTransitionProbabilities::getReturnType(void) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_CtmmTransitionProbabilities::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_CtmmTransitionProbabilities::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "q" ) {
+        rateMatrix = var;
+    }
+    else if ( name == "t" ) {
+        time = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

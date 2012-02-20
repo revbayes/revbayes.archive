@@ -112,7 +112,7 @@ void DistanceMatrix::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
 
     if (name == "names") 
         {
@@ -189,7 +189,7 @@ const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string
         }
     else if (name == "excludetaxa")
         {
-        RbLanguageObject& argument = args[1].getValue();
+        const RbLanguageObject& argument = args[1].getVariable().getValue();
         if ( argument.isTypeSpec( TypeSpec(Natural_name) ) ) 
             {
             std::cout << "excluded b" << std::endl;

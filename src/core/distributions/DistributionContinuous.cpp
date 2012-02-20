@@ -37,16 +37,16 @@ DistributionContinuous::DistributionContinuous( const MemberRules& memberRules )
 
 
 /** Map direct method calls to internal class methods. */
-const RbLanguageObject& DistributionContinuous::executeOperationSimple( const std::string& name, Environment& args ) {
+const RbLanguageObject& DistributionContinuous::executeOperationSimple( const std::string& name, const std::vector<Argument>& args ) {
 
     if ( name == "cdf" ) {
 
-        cd.setValue( cdf( args[1].getValue() ) );
+        cd.setValue( cdf( args[1].getVariable().getValue() ) );
         return cd;
     }
     else if ( name == "quantile" ) {
 
-        return quantile( static_cast<const Real&>( args[1].getValue() ).getValue() );
+        return quantile( static_cast<const Real&>( args[1].getVariable().getValue() ).getValue() );
     }
 
     return Distribution::executeOperationSimple( name, args );

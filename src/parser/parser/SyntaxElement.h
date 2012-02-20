@@ -18,7 +18,8 @@
 #ifndef SyntaxElement_H
 #define SyntaxElement_H
 
-#include "Variable.h"
+#include "RbInternal.h"
+#include "RbVariablePtr.h"
 
 #include <iostream>
 #include <string>
@@ -66,20 +67,19 @@ const std::string SyntaxElement_name = "Syntax element";
 class SyntaxElement : public RbInternal {
 
     public:
-        virtual                    ~SyntaxElement(void) {}                                      //!< Destructor; delete syntax subtree
+        virtual                        ~SyntaxElement(void) {}                                      //!< Destructor; delete syntax subtree
 
         // Basic utility functions you have to override
-        virtual SyntaxElement*      clone(void) const = 0;                                      //!< Clone object
-        virtual const VectorString& getClass(void) const;                                       //!< Get class vector 
-        virtual void                printValue(std::ostream& o) const = 0;                      //!< Print info about object
+        virtual SyntaxElement*          clone(void) const = 0;                                      //!< Clone object
+        virtual const VectorString&     getClass(void) const;                                       //!< Get class vector 
+        virtual void                    printValue(std::ostream& o) const = 0;                      //!< Print info about object
 
         // Regular functions
-        virtual Variable*           evaluateContent(Environment& env);                          //!< Get semantic value
-        virtual Variable*           evaluateContent(void) = 0;                                  //!< Get semantic value
-        virtual bool                isConstExpression(void) const { return false; }             //!< Is subtree constant expr?
+        virtual RbVariablePtr           evaluateContent(Environment& env) = 0;                      //!< Get semantic value
+        virtual bool                    isConstExpression(void) const { return false; }             //!< Is subtree constant expr?
 
     protected:
-                                    SyntaxElement(void) : RbInternal() {}                       //!< Protected constructor, just in case
+                                        SyntaxElement(void) : RbInternal() {}                       //!< Protected constructor, just in case
 };
 
 #endif

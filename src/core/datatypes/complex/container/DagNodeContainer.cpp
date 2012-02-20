@@ -94,7 +94,7 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
         // test whether each object in the container is actually a constant node holding a value
         Vector* valueVector = new Vector(type.getElementType());
         for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            const RbDagNodePtr& theNode = (*it)->getDagNode();
+            DAGNode* theNode = (*it)->getDagNode();
             if (theNode->isType(ConstantNode_name) && theNode->getValue().isTypeSpec(type.getElementType())) {
                 const RbObject& element = theNode->getValue();
                 valueVector->push_back(element.clone());
@@ -114,7 +114,7 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
 
 
 /** Execute a member method. We overwrite the executeOperation function here because we return DAG nodes directly. */
-const RbLanguageObject& DagNodeContainer::executeOperation(std::string const &name, Environment& args) {
+const RbLanguageObject& DagNodeContainer::executeOperation(std::string const &name, const std::vector<Argument>& args) {
     
     return ConstantMemberObject::executeOperation( name, args );
 }
@@ -164,7 +164,7 @@ bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     if (type.getBaseType() == Vector_name) {
         // test whether each object in the container is actually a constant node holding a value
         for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            const RbDagNodePtr& theNode = (*it)->getDagNode();
+            DAGNode* theNode = (*it)->getDagNode();
             if (!theNode->isType(ConstantNode_name) || !theNode->getValue().isTypeSpec(type.getElementType())) {
                 return false;
             }

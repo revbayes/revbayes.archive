@@ -47,7 +47,7 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_readTraces::executeFunction( void ) {
     // get the information from the arguments for reading the file
-    RbString& fn = static_cast<RbString&>( (*args)[0].getValue() );
+    RbString& fn = static_cast<RbString&>( filename->getValue() );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn.getValue() );
@@ -96,15 +96,14 @@ const RbLanguageObject& Func_readTraces::executeFunction( void ) {
         bool hasHeaderBeenRead = false;
         
         /* Open file */
-        std::string filename = static_cast<const RbString&>( (*args)[0].getValue() ).getValue();
-        std::ifstream inFile( filename.c_str() );
+        std::ifstream inFile( fn.c_str() );
         
         if ( !inFile )
-            throw RbException( "Could not open file \"" + filename + "\"" );
+            throw RbException( "Could not open file \"" + fn + "\"" );
         
         /* Initialize */
         std::string commandLine;
-        RBOUT("Processing file \"" + filename + "\"");
+        RBOUT("Processing file \"" + fn + "\"");
         
         /* Command-processing loop */
         while ( inFile.good() ) {
@@ -149,7 +148,7 @@ const RbLanguageObject& Func_readTraces::executeFunction( void ) {
                     
                     std::string parmName = columns[j];
                     t->setParameterName(parmName);
-                    t->setFileName(filename);
+                    t->setFileName(fn);
                     
                     data->push_back( t );
                 }
@@ -206,7 +205,7 @@ const ArgumentRules& Func_readTraces::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "file", RbString_name ) );
+        argumentRules.push_back( new ValueRule( "filename", RbString_name ) );
         rulesSet = true;
     }
     
@@ -232,6 +231,18 @@ const TypeSpec& Func_readTraces::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_readTraces::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_readTraces::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "filename" ) {
+        filename = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 
 

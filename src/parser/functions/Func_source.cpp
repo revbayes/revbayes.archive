@@ -49,20 +49,20 @@ Func_source* Func_source::clone( void ) const {
 const RbLanguageObject& Func_source::executeFunction( void ) {
 
     /* Open file */
-    std::string filename = static_cast<RbString&>( (*args)[0].getValue() ).getValue();
-    std::ifstream inFile( filename.c_str() );
+    std::string fname = static_cast<RbString&>( filename->getValue() ).getValue();
+    std::ifstream inFile( fname.c_str() );
     
     
-    bool echo = static_cast<RbBoolean&>( (*args)[1].getValue() ).getValue();
+    bool echo_on = static_cast<RbBoolean&>( echo->getValue() ).getValue();
     
     if ( !inFile )
-        throw RbException( "Could not open file \"" + filename + "\"" );
+        throw RbException( "Could not open file \"" + fname + "\"" );
 
     /* Initialize */
     std::string commandLine;
     int lineNumber = 0;
     int result = 0;     // result from processing of last command
-    RBOUT("Processing file \"" + filename + "\"");
+    RBOUT("Processing file \"" + fname + "\"");
 
     /* Command-processing loop */
     while ( inFile.good() ) {
@@ -72,7 +72,7 @@ const RbLanguageObject& Func_source::executeFunction( void ) {
         getline( inFile, line );
         lineNumber++;
 
-        if (echo) RBOUT(line);
+        if (echo_on) RBOUT(line);
 
         // If previous result was 1 (append to command), we do this
         if ( result == 1 )
@@ -84,13 +84,13 @@ const RbLanguageObject& Func_source::executeFunction( void ) {
         result = Parser::getParser().processCommand( commandLine );
         if ( result == 2 ) {
             std::ostringstream msg;
-            msg << "Problem processing line " << lineNumber << " in file \"" << filename << "\"";
+            msg << "Problem processing line " << lineNumber << " in file \"" << fname << "\"";
             throw RbException( msg.str() );
         }
     }
 
     /* Return control */
-    RBOUT("Processing of file \"" + filename + "\" completed");
+    RBOUT("Processing of file \"" + fname + "\" completed");
 
     return RbNullObject::getInstance();
 }
@@ -131,5 +131,20 @@ const TypeSpec& Func_source::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_source::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_source::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "file" ) {
+        filename = var;
+    }
+    else if ( name == "echo.on" ) {
+        echo = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 

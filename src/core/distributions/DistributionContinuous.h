@@ -61,7 +61,7 @@ class DistributionContinuous: public Distribution {
 
     protected:
                                                 DistributionContinuous( const MemberRules& memberRules);                     //!< Constructor
-        const RbLanguageObject&                 executeOperationSimple(const std::string& name, Environment& args);         //!< Direct call of member method
+    const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Direct call of member method
 
     // memberfunction return values
     Real                                    min;

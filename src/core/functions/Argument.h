@@ -34,8 +34,8 @@ const std::string Argument_name = "argument";
 class Argument : public RbInternal {
 
     public:
-                                            Argument(Variable* arg);                                            //!< Constructor 
-                                            Argument(const std::string& argLabel, Variable* arg);               //!< Constructor 
+                                            Argument(const RbVariablePtr& arg);                                            //!< Constructor 
+                                            Argument(const std::string& argLabel, const RbVariablePtr& arg);               //!< Constructor 
                                             Argument(const Argument &x);                                        //!< Copy constructor 
     virtual                                ~Argument(void);                                                     //!< Destructor
    
@@ -51,13 +51,10 @@ class Argument : public RbInternal {
 
         // Regular functions
         const std::string&                  getLabel(void) const;                                               //!< Get label of argument
-        RbDagNodePtr                        getDagNode(void) const;                                             //!< Get argument variable
-        RbDagNodePtr                        getDagNode(void);                                                   //!< Get argument variable (non-const to return non-const node)
         const Variable&                     getVariable(void) const;                                            //!< Get the variable contained in this argument
         Variable&                           getVariable(void);                                                  //!< Get the variable contained in this argument (non-const to return non-const variable)
-        Variable*                           getVariablePtr(void) const;                                         //!< Get the variable contained in this argument (non-const to return non-const variable)
-        void                                setDagNode(RbDagNodePtr newNode);                                 //!< set the DAG node of the argument; replaces the DAG node in the variable
-        void                                setVariable(Variable* newVar);                                      //!< set the variable of the argument
+        const RbVariablePtr&                getVariablePtr(void) const;                                         //!< Get the variable contained in this argument (non-const to return non-const variable)
+        void                                setVariable(const RbVariablePtr& newVar);                           //!< set the variable of the argument
 
     protected:
         std::string                         label;                                                              //!< Label of argument

@@ -38,10 +38,17 @@ public:
     
 protected:
     const RbLanguageObject&     executeFunction(void);                              //!< Execute function
+    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
     
 private:
     static const TypeSpec       typeSpec;
     static const TypeSpec       returnTypeSpec;
+
+    // Arguments
+    RbVariablePtr               filename;
+    RbVariablePtr               append;
+    std::vector<RbVariablePtr>  elements;
+
 };
 
 #endif

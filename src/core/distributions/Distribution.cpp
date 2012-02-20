@@ -35,16 +35,16 @@ Distribution::Distribution( const MemberRules& memberRules ) : ConstantMemberObj
 
 
 /** Map direct method calls to internal class methods. */
-const RbLanguageObject& Distribution::executeOperationSimple( const std::string& name, Environment& args ) {
+const RbLanguageObject& Distribution::executeOperationSimple( const std::string& name, const std::vector<Argument>& args ) {
 
     if ( name == "lnPdf" ) {
         
-        functionValueLnPdf = Real( lnPdf( args[1].getValue() ) );
+        functionValueLnPdf = Real( lnPdf( args[1].getVariable().getValue() ) );
         return functionValueLnPdf;
     }
     else if ( name == "pdf" ) {
 
-        functionValuePdf = RealPos( pdf( args[1].getValue() ) );
+        functionValuePdf = RealPos( pdf( args[1].getVariable().getValue() ) );
         return functionValuePdf;
     }
     else if ( name == "rv" ) {

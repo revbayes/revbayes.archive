@@ -43,9 +43,13 @@ public:
     
 protected:
     const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
+    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
     
 private:
     void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
+
+    // Arguments
+    RbVariablePtr               filename;
     
     static const TypeSpec       typeSpec;
     static const TypeSpec       returnTypeSpec;

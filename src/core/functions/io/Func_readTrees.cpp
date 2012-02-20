@@ -51,7 +51,7 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 const RbLanguageObject& Func_readTrees::executeFunction( void ) {
     
     // get the information from the arguments for reading the file
-    RbString& fn = static_cast<RbString&>( (*args)[0].getValue() );
+    RbString& fn = static_cast<RbString&>( filename->getValue() );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn.getValue() );
@@ -227,6 +227,18 @@ const TypeSpec& Func_readTrees::getReturnType( void ) const {
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Func_readTrees::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_readTrees::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "file" ) {
+        filename = var;
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 
 

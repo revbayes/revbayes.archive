@@ -109,7 +109,7 @@ template<> struct CompileTimeChecker<false>{};
 ///		Note that while the  CompileTimeChecker exists in ncl::hidden:: namespace.  The macro is visible
 ///		by any file that includes compile_assert.h and the class such as ERROR_msg will be added to the global
 ///		namespace.
-///		The resultign code is not affected by the RbDagNodePtrion of COMPILE_TIME_ASSERT because the entire construction
+///		The resultign code is not affected by the insertion of COMPILE_TIME_ASSERT because the entire construction
 ///		is inside a sizeof() so no objects are really instantiated.
 ///
 ///	\author	Andrei Alexandrescu "Modern C++ Design"

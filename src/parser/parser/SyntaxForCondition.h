@@ -48,7 +48,7 @@ class SyntaxForCondition : public SyntaxElement {
         // Regular functions
         void                        finalizeLoop(void);                                                     //!< Finalize loop
         bool                        getNextLoopState(Environment& env);                                     //!< Get next state of loop
-        Variable*                   evaluateContent(void);                                                  //!< Get semantic value
+        RbVariablePtr               evaluateContent( Environment& env );                                    //!< Get semantic value
         void                        initializeLoop(Environment& env);                                       //!< Initialize loop
 
     protected:

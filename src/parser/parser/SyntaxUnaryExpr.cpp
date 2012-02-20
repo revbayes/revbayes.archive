@@ -87,14 +87,9 @@ const VectorString& SyntaxUnaryExpr::getClass(void) const {
 }
 
 
-/** We cannot perform this function and throw and error */
-Variable* SyntaxUnaryExpr::evaluateContent( void ) {
-    throw RbException("Cannot evaluate the content in SyntaxUnaryExpr without environment!");
-}
-
 
 /** Convert element to DAG node expression */
-Variable* SyntaxUnaryExpr::evaluateContent(Environment& env) {
+RbVariablePtr SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Package the argument
     std::vector<Argument> arg;
@@ -105,7 +100,7 @@ Variable* SyntaxUnaryExpr::evaluateContent(Environment& env) {
     RbFunction* func = Workspace::globalWorkspace().getFunction(funcName, arg);
 
     // Return new function node
-    return new Variable( new DeterministicNode(func) );
+    return RbVariablePtr( new Variable( new DeterministicNode(func) ) );
 }
 
 

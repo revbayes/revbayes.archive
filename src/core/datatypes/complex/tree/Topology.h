@@ -67,7 +67,7 @@ class Topology: public ConstantMemberObject {
         void                                        setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the tree from it
 
     protected:
-        const RbLanguageObject&                     executeOperationSimple(const std::string& name, Environment& args);     //!< Execute method
+        const RbLanguageObject&                     executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
     
     private:
         static const TypeSpec                       typeSpec;

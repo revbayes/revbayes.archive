@@ -118,21 +118,15 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 }
 
 
-/** We cannot perform this function and throw and error */
-Variable* SyntaxFunctionCall::evaluateContent( void ) {
-    throw RbException("Cannot evaluate the content in SyntaxFunctionCall without environment!");
-}
-
-
 /** Convert element to a deterministic function node. */
-Variable* SyntaxFunctionCall::evaluateContent(Environment& env) {
+RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     // Package arguments
     std::vector<Argument> args;
     for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++) {
         PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel().getValue().c_str() );
         const RbString& theLabel = (*i)->getLabel();
-        Variable* theVar = (*i)->getExpression().evaluateContent(env);
+        RbVariablePtr theVar = (*i)->getExpression().evaluateContent(env);
         Argument theArg = Argument( theLabel, theVar );
         args.push_back( theArg );
     }
@@ -160,7 +154,7 @@ Variable* SyntaxFunctionCall::evaluateContent(Environment& env) {
         func = theMemberFunction;
     }
 
-    return new Variable( new DeterministicNode( func ) );
+    return RbVariablePtr( new Variable( new DeterministicNode( func ) ) );
 }
 
 

@@ -41,10 +41,14 @@ class Func_vector :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
         static const TypeSpec       typeSpec;
         retType*                    theVector;
+    
+        // Arguments
+        std::vector<RbVariablePtr>  values;
 };
 
 #endif
@@ -77,8 +81,8 @@ const RbLanguageObject& Func_vector<valType, retType>::executeFunction( void ) {
         delete theVector;
     
     theVector = new retType();
-    for ( size_t i = 0; i < args->size(); i++ )
-        theVector->push_back( (*args)[i].getValue().clone() );
+    for ( size_t i = 0; i < values.size(); i++ )
+        theVector->push_back( values[i]->getValue().clone() );
 
     return *theVector;
 }
@@ -126,5 +130,18 @@ template <typename valType, typename retType>
 const TypeSpec& Func_vector<valType, retType>::getTypeSpec( void ) const {
     
     return typeSpec;
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+template <typename firstValType, typename retType>
+void Func_vector<firstValType, retType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    if ( name == "" ) {
+        values.push_back( var );
+    }
+    else {
+        RbFunction::setArgumentVariable(name, var);
+    }
 }
 
