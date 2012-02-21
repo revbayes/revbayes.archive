@@ -37,6 +37,7 @@ public:
     const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
     
 protected:
+    void                        clearArguments(void);                               //!< Clear the arguments of this class
     const RbLanguageObject&     executeFunction(void);                              //!< Execute function
     void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
     

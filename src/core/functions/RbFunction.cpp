@@ -290,11 +290,21 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, Vecto
 
 
 /* Delete processed args */
-void RbFunction::clearArguments(void) {
+void RbFunction::clear(void) {
 
     args.clear();
     
     argsProcessed = false;
+    
+    clearArguments();
+}
+
+
+/* Delete processed args */
+void RbFunction::clearArguments(void) {
+    
+    // We have already done everything, but derived classes might want to overwrite this function.
+    
 }
 
 

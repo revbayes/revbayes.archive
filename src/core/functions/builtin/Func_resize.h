@@ -41,6 +41,7 @@ public:
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
   
 protected:
+    void                        clearArguments(void);                               //!< Clear the arguments of this class
 	const RbLanguageObject&     executeFunction( void);                              //!< Execute operation
     void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
   
@@ -67,6 +68,15 @@ private:
 // Definition of the static type spec member
 const TypeSpec Func_resize::typeSpec(Func_resize_name);
 
+
+/** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
+void Func_resize::clearArguments(void) {
+    // just empty the elements list, the super smart pointers will take care of the rest
+    sizes.clear();
+    
+    // we can also set the other elements to NULL
+    container = NULL;
+}
 
 /** Clone object */
 Func_resize* Func_resize::clone( void ) const {

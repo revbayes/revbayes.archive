@@ -129,7 +129,7 @@ const RbLanguageObject& FunctionTable::executeFunction(const std::string& name, 
     RbFunction&             theFunction = findFunction(name, args);
     const RbLanguageObject& theValue    = theFunction.execute();
 
-    theFunction.clearArguments();
+    theFunction.clear();
 
     return theValue;
 }
@@ -230,7 +230,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
         /* Delete all processed arguments except those of the best matching function, if it is ambiguous */
         for ( it = retVal.first; it != retVal.second; it++ ) {
             if ( !( (*it).second == bestMatch && ambiguous == false ) )
-                (*it).second->clearArguments();
+                (*it).second->clear();
         }
         if ( bestMatch == NULL || ambiguous == true ) {
             std::ostringstream msg;
@@ -271,7 +271,7 @@ RbFunction* FunctionTable::getFunction(const std::string& name, const std::vecto
     RbFunction* copy = theFunction.clone();
 
     // clear the arguments of the template function
-    theFunction.clearArguments();
+    theFunction.clear();
 
     return copy;
 }

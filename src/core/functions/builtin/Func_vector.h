@@ -40,6 +40,7 @@ class Func_vector :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
+        void                        clearArguments(void);                               //!< Clear the arguments of this class
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
@@ -63,6 +64,16 @@ class Func_vector :  public RbFunction {
 // Definition of the static type spec member
 template <typename valType, typename retType>
 const TypeSpec Func_vector<valType, retType>::typeSpec("Func_vector", new TypeSpec(valType().getType() + "," + retType().getType()));
+
+
+
+/** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
+template <typename valType, typename retType>
+void Func_vector<valType, retType>::clearArguments(void) {
+    // just empty the elements list, the super smart pointers will take care of the rest
+    values.clear();
+    
+}
 
 
 /** Clone object */

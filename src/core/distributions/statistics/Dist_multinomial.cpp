@@ -122,7 +122,7 @@ double Dist_multinomial::lnPdf( const RbLanguageObject& value ) const {
 
 	// Check that the vectors are both the same size
 	if ( p.size() != x.size() )
-		throw RbException( "Inconsistent size of vectors when calculating Dirichlet log probability density" );
+		throw RbException( "Inconsistent size of vectors when calculating Multinomial log probability density" );
 
 	return RbStatistics::Multinomial::lnPdf( p, x );
 }
@@ -145,7 +145,7 @@ double Dist_multinomial::pdf( const RbLanguageObject& value ) const {
 
 	// check that the vectors are both the same size
 	if ( p.size() != x.size() )
-		throw RbException( "Inconsistent size of vectors when calculating Dirichlet log probability density" );
+		throw RbException( "Inconsistent size of vectors when calculating Multinomial log probability density" );
 
 	return RbStatistics::Multinomial::pdf( p, x );
 }

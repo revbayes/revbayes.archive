@@ -31,7 +31,7 @@ class Func_simplex :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func_simplex*               clone(void) const;                                          //!< Clone the object
+        Func_simplex<valType>*      clone(void) const;                                          //!< Clone the object
         const VectorString&         getClass(void) const;                                       //!< Get class vector
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
@@ -41,6 +41,7 @@ class Func_simplex :  public RbFunction {
         bool                        throws(void) const;                                         //!< One variant needs to throw
 
     protected:
+        void                        clearArguments(void);                               //!< Clear the arguments of this class
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
@@ -75,11 +76,20 @@ template <typename valType>
 const TypeSpec Func_simplex<valType>::returnTypeSpec(Simplex_name);
 
 
-/** Clone object */
+
+/** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
+template <typename valType>
+void Func_simplex<valType>::clearArguments(void) {
+    // just empty the elements list, the super smart pointers will take care of the rest
+    values.clear();
+    
+}
+
+
+/** Clone the object */
 template <typename valType>
 Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
-
-    return new Func_simplex( *this );
+    return new Func_simplex<valType>( *this );
 }
 
 

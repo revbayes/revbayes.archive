@@ -36,6 +36,18 @@
 const TypeSpec Func_print::typeSpec(Func_print_name);
 const TypeSpec Func_print::returnTypeSpec(RbVoid_name);
 
+
+/** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
+void Func_print::clearArguments(void) {
+    // just empty the elements list, the super smart pointers will take care of the rest
+    elements.clear();
+    
+    // we can also set the other elements to NULL
+    filename = NULL;
+    append   = NULL;
+}
+
+
 /** Clone object */
 Func_print* Func_print::clone( void ) const {
     

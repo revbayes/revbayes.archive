@@ -82,7 +82,7 @@ class RbFunction :  public RbInternal {
     
 
         // RbFunction functions you should not override
-        void                                            clearArguments(void);                                                               //!< Clear argument Environment "args"
+        void                                            clear(void);                                                                        //!< Clear argument Environment "args"
         const std::vector<Argument>&                    getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
         std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
         void                                            setArgument(const std::string& name, const Argument& arg);                          //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
@@ -90,6 +90,7 @@ class RbFunction :  public RbInternal {
 	protected:
                                                         RbFunction(void);                                                                   //!< Basic constructor
 
+        virtual void                                    clearArguments(void);                                                               //!< Clear argument Environment "args"
         virtual const RbLanguageObject&                 executeFunction(void);                                                              //!< Execute the function. This is the function one has to overwrite for simple return values.
         virtual void                                    setArgumentVariable(const std::string& name, const RbVariablePtr& var);             //!< Set the private member variable here (for derived classes)!
     
