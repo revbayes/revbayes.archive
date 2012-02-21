@@ -274,6 +274,9 @@ void DistributionFunction::processArguments( const std::vector<Argument>& args )
 
         const RbVariablePtr& arg = args[i].getVariablePtr();
         
+        // TODO: Work on proper type checking
+//        arg->setValueTypeSpec( (*argumentRules)[i].getArgumentTypeSpec());
+        
         distribution->setMember( name, arg );
     }
 }

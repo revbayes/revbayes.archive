@@ -59,11 +59,7 @@ public:
     void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
 
     // Vector functions, including STL-like functions
-    void                        push_back(double x);                                        //!< Append element to end
-    void                        push_front(double x);                                       //!< Add element in front
     void                        setValue(const std::vector<double>& x);                     //!< Set the value using STL vector of int
-    void                        setValue(const VectorInteger& x);                           //!< Set the value using VectorInteger
-    void                        setValue(const VectorNatural& x);                           //!< Set the value using VectorNatural
     void                        setValue(const VectorReal& x);                              //!< Set the value using VectorReal
     void                        setValue(const VectorRealPos& x);                           //!< Set the value using VectorRealPos
 

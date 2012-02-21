@@ -521,6 +521,8 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
                 throw RbException("Arguments do not macth.");
             
             // add this variable to the argument list
+            // TODO: Work on proper type checking
+            theArgument.getVariablePtr()->setValueTypeSpec( theRules[nRules-1].getArgumentTypeSpec());
             setArgument(theArgument.getLabel(), theArgument);
 
             taken[i]          = true;
@@ -554,6 +556,8 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
+                    // TODO: Work on proper type checking
+                    passedArgs[i].getVariablePtr()->setValueTypeSpec( theRules[j].getArgumentTypeSpec());
                     setArgument(passedArgs[i].getLabel(), passedArgs[i]);
                 }
                 else
@@ -601,6 +605,8 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
             passedArgIndex[matchRule] = static_cast<int>( i );
             
             // add this variable to the argument list
+            // TODO: Work on proper type checking
+            passedArgs[i].getVariablePtr()->setValueTypeSpec( theRules[matchRule].getArgumentTypeSpec());
             setArgument(theRules[matchRule].getArgumentLabel(), passedArgs[i]);
         }
         else
@@ -628,12 +634,9 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
+                    // TODO: Work on proper type checking
+                    passedArgs[i].getVariablePtr()->setValueTypeSpec( theRules[j].getArgumentTypeSpec());
                     setArgument(theRules[j].getArgumentLabel(), passedArgs[i]);
-                    
-                    // check if conversion is needed
-//                    if (conversionNeeded) {
-                        passedArgs[i].getVariablePtr()->setValueTypeSpec(theRules[j].getArgumentTypeSpec());
-//                    }
                     
                     break;
                 }
@@ -655,7 +658,10 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
             throw RbException("No argument found for parameter.");
 
         const ArgumentRule& theRule = theRules[i];
-        setArgument(theRule.getArgumentLabel(), Argument("", theRule.getDefaultVariable().clone() ) );
+        RbVariablePtr theVar = theRule.getDefaultVariable().clone();
+        // TODO: Work on proper type checking
+        theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
+        setArgument(theRule.getArgumentLabel(), Argument("", theVar ) );
     }
 
     argsProcessed = true;

@@ -39,7 +39,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_multinomial::typeSpec(Dist_multinomial_name);
-const TypeSpec Dist_multinomial::varTypeSpec(Natural_name);
+const TypeSpec Dist_multinomial::varTypeSpec(VectorNatural_name);
 
 /** Default constructor for parser use */
 Dist_multinomial::Dist_multinomial( void ) : DistributionDiscrete( getMemberRules() ), probabilities( NULL ) {
