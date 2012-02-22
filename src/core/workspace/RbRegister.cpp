@@ -134,6 +134,7 @@
 #include "Func_setval.h"
 #include "Func_simplex.h"
 #include "Func_structure.h"
+#include "Func_type.h"
 #include "Func_unclamp.h"
 #include "Func_unique.h"
 #include "Func_size.h"
@@ -271,18 +272,24 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_unot",     new Func__unot  <            Real                 >() );
 
         /* Add basic arithmetic templated functions */
+        addFunction( "_add",      new Func__add<            Natural,        Natural,    Natural >() );
         addFunction( "_add",      new Func__add<            Integer,        Integer,    Integer >() );
+        addFunction( "_add",      new Func__add<            RealPos,        RealPos,    RealPos >() );
         addFunction( "_add",      new Func__add<               Real,           Real,       Real >() );
         addFunction( "_add",      new Func__add<            Integer,           Real,       Real >() );
         addFunction( "_add",      new Func__add<               Real,        Integer,       Real >() );
         addFunction( "_add",      new Func__add<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_div",      new Func__div<            Natural,        Natural,    RealPos >() );
         addFunction( "_div",      new Func__div<            Integer,        Integer,       Real >() );
+        addFunction( "_div",      new Func__div<            RealPos,        RealPos,    RealPos >() );
         addFunction( "_div",      new Func__div<               Real,           Real,       Real >() );
         addFunction( "_div",      new Func__div<            Integer,           Real,       Real >() );
         addFunction( "_div",      new Func__div<               Real,        Integer,       Real >() );
         addFunction( "_div",      new Func__div<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_exp",      new Func_power()                                                  );
+        addFunction( "_mul",      new Func__mul<            Natural,        Natural,    Natural >() );
         addFunction( "_mul",      new Func__mul<            Integer,        Integer,    Integer >() );
+        addFunction( "_mul",      new Func__mul<            RealPos,        RealPos,    RealPos >() );
         addFunction( "_mul",      new Func__mul<               Real,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<            Integer,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<               Real,        Integer,       Real >() );
@@ -357,6 +364,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
         addFunction( "simplex",                  new Func_simplex<VectorRealPos>()   );
         addFunction( "structure",                new Func_structure()                );
+        addFunction( "type",                     new Func_type()                     );
         addFunction( "unclamp",                  new Func_unclamp()                  );
         addFunction( "unique",                   new Func_unique<VectorBoolean>()    );
         addFunction( "unique",                   new Func_unique<VectorInteger>()    );

@@ -26,8 +26,6 @@
 class DAGNode;
 class VectorString;
 
-const std::string Func_structure_name = "Struct function";
-
 class Func_structure :  public RbFunction {
 
     public:
