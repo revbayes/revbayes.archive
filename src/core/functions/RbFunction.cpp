@@ -505,8 +505,9 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
     /*********************  1. Deal with ellipsis  **********************/
 
     /* Process ellipsis arguments. If we have an ellipsis, all preceding arguments must be passed in;
-       no default values are allowed. Note that the argument labels are discarded here, which is not
-       correct. */
+       no default values are allowed. */
+    // We need to store all the ellipsis argument in a vector and add the at the end.
+    std::vector<Argument> ellipsisArgs;
     if ( nRules > 0 && theRules[nRules-1].isTypeSpec(Ellipsis::getClassTypeSpec()) && passedArgs.size() >= nRules ) {
 
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
@@ -518,8 +519,8 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
             if ( !theRules[nRules-1].isArgumentValid( theVar, true ) )
                 throw RbException("Arguments do not macth.");
             
-            // add this variable to the argument list
-            setArgument(theArgument.getLabel(), theArgument);
+            // add this variable to the ellipsis argument list
+            ellipsisArgs.push_back(theArgument);
 
             taken[i]          = true;
             filled[i]         = true;
@@ -653,6 +654,11 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
     }
 
     argsProcessed = true;
+    
+    /*********************  6. Insert ellipsis arguments  **********************/
+    for (std::vector<Argument>::iterator i = ellipsisArgs.begin(); i != ellipsisArgs.end(); i++) {
+        setArgument(i->getLabel(), *i);
+    }
 
 }
 
