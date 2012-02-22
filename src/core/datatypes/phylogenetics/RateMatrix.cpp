@@ -236,7 +236,7 @@ void RateMatrix::calculateStationaryFrequencies(void) {
 	// back substitute into z = 0 to find un-normalized stationary frequencies, starting with x_n = 1.0
     VectorReal pi(numStates.getValue(), 0.0);
 	pi[numStates.getValue()-1] = 1.0;
-	for (int i=(int)numStates-2; i>=0; i--)
+	for (int i=numStates.getValue()-2; i>=0; i--)
 		{
 		double dotProduct = 0.0;
 		for (size_t j=i+1; j<numStates.getValue(); j++)

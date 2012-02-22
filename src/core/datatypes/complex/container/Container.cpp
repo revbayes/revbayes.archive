@@ -21,6 +21,7 @@
 #include "Natural.h"
 #include "RbException.h"
 #include "RbObject.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
@@ -88,17 +89,25 @@ const TypeSpec& Container::getClassTypeSpec(void) {
 const MethodTable& Container::getMethods(void) const {
     
     static MethodTable methods = MethodTable();
-    static ArgumentRules* sizeArgRules = new ArgumentRules();
-    static ArgumentRules* squareBracketArgRules = new ArgumentRules();
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) 
     {
+        ArgumentRules* sizeArgRules = new ArgumentRules();
         methods.addFunction("size", new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // sort function
+        ArgumentRules* sortArgRules = new ArgumentRules();
+        methods.addFunction("sort", new MemberFunction( RbVoid_name, sortArgRules) );
+        
+        // unique function
+        ArgumentRules* uniqueArgRules = new ArgumentRules();
+        methods.addFunction("unique", new MemberFunction( RbVoid_name, uniqueArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ConstantMemberObject::getMethods() );
@@ -129,6 +138,18 @@ const RbLanguageObject& Container::executeOperationSimple(const std::string& nam
         // TODO: Check what happens with DAGNodeContainers
         RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index.getValue() - 1) );
         return element;
+    } else if (name == "sort") {
+            
+            // we set our value
+        sort();
+            
+        return RbNullObject::getInstance();
+    } else if (name == "unique") {
+        
+        // we set our value
+        unique();
+        
+        return RbNullObject::getInstance();
     }
     
     return ConstantMemberObject::executeOperationSimple( name, args );

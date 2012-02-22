@@ -17,6 +17,7 @@
 #define Natural_H
 
 #include "Integer.h"
+#include "RealPos.h"
 
 #include <ostream>
 #include <string>
@@ -43,7 +44,7 @@ class Natural : public Integer {
 
         // Overloaded operators
                                     operator int(void) const { return value; }                              //!< Type conversion to int
-                                    operator unsigned int(void) const { return value; }                     //!< Type conversion to unsigned int
+//                                    operator unsigned int(void) const { return value; }                     //!< Type conversion to unsigned int
 
         // Basic utility functions
         Natural*                    clone(void) const;                                                      //!< Clone object
@@ -63,6 +64,13 @@ class Natural : public Integer {
     
 
 };
+
+// Operators defined outside of the class
+//        Natural                     operator+ (const Natural& A);                                           //!< Unary operator + 
+//        Natural                     operator+ (const Natural& A, const Natural& B);                         //!< operator + 
+//        Integer                     operator- (const Integer& A, const Natural& B);                         //!< operator - 
+//        Natural                     operator* (const Natural& A, const Natural& B);                         //!< operator *
+//        RealPos                     operator/ (const Natural& A, const Natural& B);                         //!< operator / 
 
 
 

@@ -78,10 +78,6 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
     
     if ( &x != this ) {
 
-        // TODO: Commented this out because I don't know if it is even necessary and
-//        // Check if assignment is possible
-//        if ( varTypeSpec != x.varTypeSpec )
-//            throw RbException ( "Invalid slot assignment: type difference" );
         varTypeSpec = x.varTypeSpec;
         
         if (variable != NULL) {
@@ -228,6 +224,10 @@ void VariableSlot::setVariable(const RbVariablePtr& var) {
     // set the new variable
     variable = var;
     
+    // if our name is not empty we set the name of the DAG node
+    if ( label != "" ) {
+        var->getDagNode()->setName( label );
+    }
 }
 
 

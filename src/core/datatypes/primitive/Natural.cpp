@@ -238,3 +238,54 @@ void Natural::setValue( size_t x ) {
 }
 
 
+////////////////////////////////// Global Natural operators ///////////////////////////////////
+
+
+///**
+// * This function performs plus on two naturals,
+// * which returns another natural.
+// *
+// * @brief binary operator+
+// *
+// * @param  A The first operand
+// * @param  B The second operand
+// * @return The sum of both as a natural number
+// */
+//Natural operator+(const Natural& A, const Natural& B) {
+//    
+//	Natural C = Natural( A.getValue() + B.getValue() );
+//	return C;
+//}
+//
+///**
+// * This function performs multiplication on two naturals,
+// * which returns another natural.
+// *
+// * @brief binary operator*
+// *
+// * @param  A The first operand
+// * @param  B The second operand
+// * @return The product of both as a natural number
+// */
+//Natural operator*(const Natural& A, const Natural& B) {
+//    
+//	Natural C = Natural( A.getValue() * B.getValue() );
+//	return C;
+//}
+//
+///**
+// * This function performs division on two naturals,
+// * which returns another natural.
+// *
+// * @brief binary operator/
+// *
+// * @param  A The first operand
+// * @param  B The second operand
+// * @return The quotient of both as a positive real number
+// */
+//RealPos operator/(const Natural& A, const Natural& B) {
+//    
+//	RealPos C = RealPos( A.getValue() / double( B.getValue() ) );
+//	return C;
+//}
+//
