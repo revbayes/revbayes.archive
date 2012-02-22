@@ -180,7 +180,7 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
         
         else {
             
-            DAGNode* indexVar = (*i)->evaluateContent( env )->getDagNode();
+            RbDagNodePtr indexVar = (*i)->evaluateContent( env )->getDagNode();
             
             if ( indexVar->getValue().isTypeSpec( Integer::getClassTypeSpec() ) ) {
                 
@@ -307,7 +307,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             }
             
             // take the first index and remove it
-            size_t                      indexValue              = indices[0];
+            size_t indexValue = indices[0];
             indices.pop_front();
             
             // add the index to the name

@@ -53,8 +53,8 @@ public:
     DAGNode*                                getDagNode(void) const;                                                 //!< Get the DAG node
     DAGNode*                                getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
     const std::string&                      getLabel(void) const { return label; }                                  //!< Get the label of the slot
-    const std::string&                      getSlotType(void) const { return varTypeSpec.getType(); }               //!< Type of slot
-    const TypeSpec&                         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
+//    const std::string&                      getSlotType(void) const { return varTypeSpec.getType(); }               //!< Type of slot
+//    const TypeSpec&                         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
     const Variable&                         getVariable(void) const;                                                //!< Get the variable
     Variable&                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
     const RbVariablePtr&                    getVariablePtr(void) const;                                             //!< Get the pointer to the variable
@@ -65,7 +65,6 @@ public:
 private:
     
     // Member variables
-    TypeSpec                                varTypeSpec;                                                            //!< The type specification for the slot
     RbVariablePtr                           variable;                                                               //!< the argument living in the slot 
     std::string                             label;                                                                  //!< the label for this slot. The label should correspond to the name uner which this slot is stored in variable table. However, the label does not have to correspond to the variable name, e.g. a argument could have the label mean but the name of the variable is mu.
 

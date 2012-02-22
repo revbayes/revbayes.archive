@@ -42,7 +42,7 @@ class ArgumentRule : public RbInternal {
 
         // ArgumentRule functions
         const std::string&          getArgumentLabel(void) const;                                                                       //!< Get label of argument
-        const std::string&          getArgumentType(void) const;                                                                        //!< Get argument type
+//        const std::string&          getArgumentType(void) const;                                                                        //!< Get argument type
         const TypeSpec&             getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
         const Variable&             getDefaultVariable(void) const;                                                                     //!< Get default argument
         Variable&                   getDefaultVariable(void);                                                                           //!< Get default argument (non-const to return non-const variable)
@@ -55,9 +55,10 @@ class ArgumentRule : public RbInternal {
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue);    //!< Constructor of rule with default value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode *defVariable);          //!< Constructor of rule with default reference or default wrapped value
 
+        TypeSpec                    argTypeSpec;
         std::string                 label;                                                                                              //!< Label of argument
-        VariableSlot                argSlot;                                                                                            //!< Slot with typespec and possibly default value
-        bool                        hasDefaultVal;                                                                                      //!< Has default (which can be NULL) ?
+        RbVariablePtr               defaultVariable;                                                                                    //!< default value
+        bool                        hasDefaultVal;                                                                                      //!< Has default
 
 };
 

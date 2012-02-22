@@ -63,6 +63,6 @@ const TypeSpec& Ellipsis::getTypeSpec( void ) const {
 /** Print value for user (in descriptions of functions, for instance */
 void Ellipsis::printValue(std::ostream &o) const {
 
-    o << argSlot.getTypeSpec() << " ...";
+    o << argTypeSpec << " ...";
 }
 

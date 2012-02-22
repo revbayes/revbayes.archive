@@ -34,14 +34,14 @@
 
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, const RbVariablePtr& var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, const RbVariablePtr& var) : RbInternal(), label(lbl) {
     
     variable = var;
     
 }
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const RbVariablePtr& var) : RbInternal() , varTypeSpec( RbObject::getClassTypeSpec() ), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const RbVariablePtr& var) : RbInternal() , label(lbl) {
     
     variable = var;
     
@@ -49,7 +49,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const RbVariablePtr& var) : R
 
 
 /** Constructor of empty slot based on type specification */
-VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbInternal(), label(lbl) {
     
     variable = NULL;
     
@@ -57,7 +57,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbI
 
 
 /** Copy constructor (shallow copy). */
-VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x.varTypeSpec), label(x.label) {
+VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), label(x.label) {
     
     if ( x.variable != NULL ) {
         variable = x.variable;
@@ -77,8 +77,6 @@ VariableSlot::~VariableSlot(void) {
 VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
     
     if ( &x != this ) {
-
-        varTypeSpec = x.varTypeSpec;
         
         if (variable != NULL) {
             delete variable;
@@ -155,12 +153,12 @@ const RbLanguageObject& VariableSlot::getValue( void ) const {
     
     const RbLanguageObject& retVal = variable->getDagNode()->getValue();
     
-    // check the type and if we need conversion
-    if (!retVal.isTypeSpec(varTypeSpec)) {
-        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
-        
-//        return convRetVal;
-    }
+//    // check the type and if we need conversion
+//    if (!retVal.isTypeSpec(varTypeSpec)) {
+//        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
+//        
+////        return convRetVal;
+//    }
     
     return retVal;
 }
@@ -171,15 +169,15 @@ RbLanguageObject& VariableSlot::getValue( void ) {
     
     RbLanguageObject& retVal = variable->getDagNode()->getValue();
     
-    // check the type and if we need conversion
-    if (!retVal.isTypeSpec(varTypeSpec)) {
-        
-      //  variable->getDagNode()->setValue(convRetVal);
-        
-        //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
-        
-        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
-    }
+//    // check the type and if we need conversion
+//    if (!retVal.isTypeSpec(varTypeSpec)) {
+//        
+//      //  variable->getDagNode()->setValue(convRetVal);
+//        
+//        //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
+//        
+//        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
+//    }
     
     return retVal;
 }

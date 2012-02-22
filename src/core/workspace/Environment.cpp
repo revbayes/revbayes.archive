@@ -194,38 +194,31 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, const RbVariablePtr& theVar) {
+void Environment::addVariable(const std::string& name, const RbVariablePtr& theVar) {
     
     // create a new slot
-    VariableSlot* theSlot = new VariableSlot(name,typeSp,theVar);
+    VariableSlot* theSlot = new VariableSlot(name,RbObject::getClassTypeSpec(),theVar);
     
     // call function to add the slot
     addVariable(name, theSlot);
 }
 
-
-/** Add variable */
-void Environment::addVariable(const std::string& name, const RbVariablePtr& theVar) {
-    
-    addVariable( name, RbObject::getClassTypeSpec(), theVar );
-}
-
 /** Add variable to frame */
-void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, DAGNode* dagNode ) {
+void Environment::addVariable( const std::string& name, DAGNode* dagNode ) {
     // create a new variable object
     RbVariablePtr var = RbVariablePtr( new Variable(dagNode) );
     
     // add the object to the list
-    addVariable(name, typeSp, var );
+    addVariable(name, var );
 }
 
 /** Add variable to frame */
-void Environment::addVariable( const std::string& name, const TypeSpec& typeSp ) {
+void Environment::addVariable( const std::string& name ) {
     // create a new variable object
-    RbVariablePtr var = RbVariablePtr( new Variable( name ) );
+    RbVariablePtr var = RbVariablePtr( new Variable( NULL ) );
     
     // add the object to the list
-    addVariable(name, typeSp, var );
+    addVariable(name, var );
 }
 
 /** clone */

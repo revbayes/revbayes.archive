@@ -352,7 +352,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
             y[i].hasDefault() == false &&
             !x[i].isTypeSpec(Ellipsis::getClassTypeSpec()) &&
             !y[i].isTypeSpec(Ellipsis::getClassTypeSpec()) &&
-            x[i].getArgumentType() != y[i].getArgumentType())
+            x[i].getArgumentTypeSpec() != y[i].getArgumentTypeSpec())
             return true;
     }
     for (size_t j=i; j<x.size(); j++) {

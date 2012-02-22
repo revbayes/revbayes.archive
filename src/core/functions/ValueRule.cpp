@@ -75,8 +75,15 @@ std::string ValueRule::debugInfo(void) const {
 
     o << "ValueRule:" << std::endl;
     o << "label         = " << label << std::endl;
-    o << "argSlot       = " << argSlot << std::endl;
     o << "hasDefaultVal = " << hasDefaultVal << std::endl;
+    o << "defaultVaribale   = ";
+    if ( defaultVariable != NULL && defaultVariable->getDagNode() != NULL ) {
+        defaultVariable->getValue().printValue(o);
+    } 
+    else {
+        o << "NULL";
+    }
+    o << std::endl;
 
     return o.str();
 }

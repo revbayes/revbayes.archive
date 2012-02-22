@@ -36,7 +36,7 @@ class RangeRule : public ArgumentRule {
         static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
-        std::string                 richInfo(void) const;                                                               //!< General info on object
+        std::string                 debugInfo(void) const;                                                              //!< General info on object
 
         // MinmaxRule functions
         bool                        isArgumentValid(const RbVariablePtr& var, bool convert = false) const;              //!< Is var valid argument?
@@ -129,14 +129,21 @@ void RangeRule<valType>::printValue(std::ostream& o) const {
 
 /** Provide complete information about object */
 template <typename valType>
-std::string RangeRule<valType>::richInfo(void) const {
+std::string RangeRule<valType>::debugInfo(void) const {
 
     std::ostringstream o;
 
     o << "RangeRule:" << std::endl;
     o << "label         = " << label << std::endl;
-    o << "argSlot       = " << argSlot << std::endl;
     o << "hasDefaultVal = " << hasDefaultVal << std::endl;
+    o << "defaultVaribale   = ";
+    if ( defaultVariable != NULL && defaultVariable->getDagNode() != NULL ) {
+        defaultVariable->getValue().printValue(o);
+    } 
+    else {
+        o << "NULL";
+    }
+    o << std::endl;
     o << "min           = " << minVal << std::endl;
     o << "max           = " << maxVal << std::endl;
 

@@ -147,7 +147,7 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    DAGNode*  theNode  = inExpression->evaluateContent(env)->getDagNode();
+    RbDagNodePtr  theNode  = inExpression->evaluateContent(env)->getDagNode();
     const RbObject& theValue = theNode->getValue();
 
     // Check that it is a vector
@@ -161,7 +161,7 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
 
     // Add loop variable to frame if it is not there already
     if (!env.existsVariable(*varName)) {
-        env.addVariable( *varName, TypeSpec( vector->getElementType() ) );
+        env.addVariable( *varName );
     }
     
 }

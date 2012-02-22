@@ -174,7 +174,7 @@ RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
     else {
 
         // Create new slot in frame with null variable
-        env.addVariable( *variableName, typeSpec );
+        env.addVariable( *variableName );
     }
     
     return RbVariablePtr( NULL );

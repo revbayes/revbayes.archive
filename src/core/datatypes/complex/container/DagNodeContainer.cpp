@@ -258,7 +258,7 @@ void DagNodeContainer::resize( size_t n ) {
     
     // add NULL elements for each new element
     for ( size_t i = elements.size(); i <= n; i++ ) {
-        Variable* emptyVar = new Variable(EmptyString);
+        Variable* emptyVar = new Variable( RbObject::getClassTypeSpec() );
         VariableSlot* emptySlot = new VariableSlot( EmptyString, emptyVar );
         elements.push_back( emptySlot );
     }

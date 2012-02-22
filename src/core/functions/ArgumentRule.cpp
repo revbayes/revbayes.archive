@@ -33,10 +33,8 @@
 
 
 /** Construct rule based on default value; use "" for no label. */
-ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal) : RbInternal(), label(argName), argSlot(argName, defVal->getTypeSpec()), hasDefaultVal(true) {
+ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal) : RbInternal(), label(argName), argTypeSpec( defVal->getTypeSpec() ), hasDefaultVal(true), defaultVariable( new Variable( new ConstantNode( defVal ) ) ) {
 
-    Variable* tmpVar = new Variable( new ConstantNode(defVal) );
-    argSlot.setVariable( tmpVar );
 }
 
 
@@ -48,24 +46,20 @@ ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal)
  * rules that had a container type instead of the language type of the container, which
  * would make the rule worthless.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(false) {
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(false), defaultVariable( NULL ) {
 
 }
 
 
 /** Construct rule with default value. We rely on workspace to check the provided type specification. */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(true) {
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(true), defaultVariable( new Variable( new ConstantNode( defValue ) ) ) {
     
-    Variable* tmpVar = new Variable( new ConstantNode(defValue) );
-    argSlot.setVariable( tmpVar );
 }
 
 
 /** Construct rule with default reference or value variable. */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(true) {
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(true), defaultVariable( new Variable( defVariable ) ) {
         
-    Variable* tmpVar = new Variable( defVariable );
-    argSlot.setVariable( tmpVar );
 }
 
 
@@ -74,13 +68,8 @@ const std::string& ArgumentRule::getArgumentLabel(void) const {
 }
 
 
-const std::string& ArgumentRule::getArgumentType(void) const {
-    return argSlot.getSlotType();
-}
-
-
 const TypeSpec& ArgumentRule::getArgumentTypeSpec(void) const {
-    return argSlot.getSlotTypeSpec();
+    return argTypeSpec;
 }
 
 
@@ -110,12 +99,12 @@ const TypeSpec& ArgumentRule::getTypeSpec( void ) const {
 
 
 const Variable& ArgumentRule::getDefaultVariable(void) const {
-    return argSlot.getVariable(); 
+    return *defaultVariable; 
 }
 
 
 Variable& ArgumentRule::getDefaultVariable(void) {
-    return argSlot.getVariable(); 
+    return *defaultVariable; 
 }
 
 
@@ -131,12 +120,12 @@ bool ArgumentRule::isArgumentValid(const RbVariablePtr& var, bool convert) const
         return false;
     
     // first we check if the type we want is already guaranteed by the variable
-    if ( var->getValueTypeSpec().isDerivedOf( argSlot.getSlotTypeSpec() ) ) {
+    if ( var->getValueTypeSpec().isDerivedOf( argTypeSpec ) ) {
         return true;
     }
 
     // we can only change the required value type of the variable if we want a derived type of the current value type
-    if ( argSlot.getSlotTypeSpec().isDerivedOf( var->getValueTypeSpec() ) ) {
+    if ( argTypeSpec.isDerivedOf( var->getValueTypeSpec() ) ) {
         
         // We check first if the variable is constant
         if ( var->getDagNode()->isTypeSpec( ConstantNode::getClassTypeSpec() ) ) {
@@ -144,27 +133,27 @@ bool ArgumentRule::isArgumentValid(const RbVariablePtr& var, bool convert) const
             
             
             // first we check if the argument needs to be converted
-            if ( var->getValue().isTypeSpec( argSlot.getSlotTypeSpec() ) ) {
+            if ( var->getValue().isTypeSpec( argTypeSpec ) ) {
                 // No, we don't.
                 
                 // do the conversion if we are actually asked to
                 if ( convert ) {
-                    var->setValueTypeSpec( argSlot.getSlotTypeSpec() );
+                    var->setValueTypeSpec( argTypeSpec );
                 }
                 
                 return true;
-            } else if ( var->getValue().isConvertibleTo( argSlot.getSlotTypeSpec() ) ) {
+            } else if ( var->getValue().isConvertibleTo( argTypeSpec ) ) {
                 // Yes, we can and have to convert
                 
                 // should we do the type conversion?
                 if ( convert ) {
                     ConstantNode* theConstNode = static_cast<ConstantNode*>( var->getDagNode() );
                     // Do the type conversion
-                    RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( argSlot.getSlotTypeSpec() ) );
+                    RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( argTypeSpec ) );
                     theConstNode->setValue( convertedObj );
                     
                     // set the new type spec of the variable
-                    var->setValueTypeSpec( argSlot.getSlotTypeSpec() );
+                    var->setValueTypeSpec( argTypeSpec );
                 }
                 return true;
             }
@@ -181,12 +170,12 @@ bool ArgumentRule::isArgumentValid(const RbVariablePtr& var, bool convert) const
                 const RbFunction& theFunction = theDetNode->getFunction();
                 
                 // first we check if the argument needs to be converted
-                if ( theFunction.getReturnType().isDerivedOf( argSlot.getSlotTypeSpec() ) ) {
+                if ( theFunction.getReturnType().isDerivedOf( argTypeSpec ) ) {
                     // Yes, the function guarantees to return a value of the required type (or any derived type)
                     
                     // do the conversion if we are actually asked to
                     if ( convert ) {
-                        var->setValueTypeSpec( argSlot.getSlotTypeSpec() );
+                        var->setValueTypeSpec( argTypeSpec );
                     }
                     
                     return true;
@@ -198,12 +187,12 @@ bool ArgumentRule::isArgumentValid(const RbVariablePtr& var, bool convert) const
                 const Distribution& theDistribution = theStocNode->getDistribution();
                 
                 // first we check if the argument needs to be converted
-                if ( theDistribution.getVariableType().isDerivedOf( argSlot.getSlotTypeSpec() ) ) {
+                if ( theDistribution.getVariableType().isDerivedOf( argTypeSpec ) ) {
                     // Yes, the function guarantees to return a value of the required type (or any derived type)
                     
                     // do the conversion if we are actually asked to
                     if ( convert ) {
-                        var->setValueTypeSpec( argSlot.getSlotTypeSpec() );
+                        var->setValueTypeSpec( argTypeSpec );
                     }
                     
                     return true;
@@ -224,11 +213,11 @@ bool ArgumentRule::isArgumentValid(const RbVariablePtr& var, bool convert) const
 /** Print value for user (in descriptions of functions, for instance) */
 void ArgumentRule::printValue(std::ostream &o) const {
 
-    o << argSlot.getSlotType();
+    o << argTypeSpec;
     o << " \"" << label << "\"";
     if ( hasDefaultVal ) {
         o << " = ";
-        argSlot.printValue( o );
+        defaultVariable->printValue( o );
     }
 }
 
@@ -239,9 +228,16 @@ std::string ArgumentRule::debugInfo(void) const {
     std::ostringstream o;
 
     o << "ArgumentRule:" << std::endl;
-    o << "label         = " << label << std::endl;
-    o << "argSlot       = " << argSlot << std::endl;
-    o << "hasDefaultVal = " << hasDefaultVal << std::endl;
+    o << "label             = " << label << std::endl;
+    o << "hasDefaultVal     = " << hasDefaultVal << std::endl;
+    o << "defaultVaribale   = ";
+    if ( defaultVariable != NULL && defaultVariable->getDagNode() != NULL ) {
+        defaultVariable->getValue().printValue(o);
+    } 
+    else {
+        o << "NULL";
+    }
+    o << std::endl;
 
     return o.str();
 }
