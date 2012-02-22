@@ -39,6 +39,7 @@ class Dist_unif: public DistributionContinuous {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
 
         // Real-valued distribution functions
         double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density

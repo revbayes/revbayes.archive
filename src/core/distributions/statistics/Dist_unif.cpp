@@ -222,3 +222,18 @@ const RbLanguageObject& Dist_unif::rv(void) {
 }
 
 
+/** We catch here the setting of the member variables to store our parameters. */
+void Dist_unif::setMemberVariable(std::string const &name, Variable *var) {
+    
+    if ( name == "min" ) {
+        min = var;
+    }
+    else if ( name == "max" ) {
+        max = var;
+    }
+    else {
+        DistributionContinuous::setMemberVariable(name, var);
+    }
+}
+
+
