@@ -301,15 +301,15 @@
         
     [m setNumCharacters:(int)(cd.getNumberOfCharacters())];
     [m setName:nsfn];
-    if ( cd.getDataType() == DnaState_name )
+    if ( cd.getDataType() == DnaState::getClassName() )
         [m setDataType:DNA];
-    else if ( cd.getDataType() == RnaState_name )
+    else if ( cd.getDataType() == RnaState::getClassName() )
         [m setDataType:RNA];
-    else if ( cd.getDataType() == AminoAcidState_name )
+    else if ( cd.getDataType() == AminoAcidState::getClassName() )
         [m setDataType:AA];
-    else if ( cd.getDataType() == StandardState_name )
+    else if ( cd.getDataType() == StandardState::getClassName() )
         [m setDataType:STANDARD];
-    else if ( cd.getDataType() == CharacterContinuous_name )
+    else if ( cd.getDataType() == CharacterContinuous::getClassName() )
         [m setDataType:CONTINUOUS];
 
     for (int i=0; i<cd.getNumberOfTaxa(); i++)

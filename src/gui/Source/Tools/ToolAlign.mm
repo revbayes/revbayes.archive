@@ -76,7 +76,8 @@
 
 - (void)decrementTaskCount {
 
-    OSAtomicDecrement32(&taskCount);
+
+//    OSAtomicDecrement32(&taskCount);
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
