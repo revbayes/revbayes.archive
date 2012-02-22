@@ -183,7 +183,15 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
         if (retVal.first->second->checkArguments(args,NULL) == false) {
             
             std::ostringstream msg;
-            msg << "Argument mismatch for call to function '" << name << "'. Correct usage is:" << std::endl;
+            msg << "Argument mismatch for call to function '" << name << "'(";
+            // print the passed arguments
+            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) {
+                if (it != args.begin()) {
+                    msg << ",";
+                }
+                msg << " " << it->getVariable().getDagNode()->getValue().getType();
+            }
+            msg << "). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
             msg << std::endl;
             throw RbException( msg );

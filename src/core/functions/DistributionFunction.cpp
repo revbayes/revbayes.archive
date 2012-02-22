@@ -269,24 +269,33 @@ void DistributionFunction::processArguments( const std::vector<Argument>& args )
     // delegate first to the base class
     RbFunction::processArguments( args );
 
-    /* Set member variables of the distribution */
-    size_t i = 0;
-    if ( functionType != RVALUE )
-        i++;    // Add one because first argument is not a distribution parameter
-    size_t k = argumentRules->size();
-    if ( functionType == DENSITY )
-        k--;    // Subtract one because last argumet is log
-
-    for ( ; i < k; i++ ) {
-
-        std::string name = (*argumentRules)[i].getArgumentLabel();
-
-        const RbVariablePtr& arg = args[i].getVariablePtr();
-        
-        // TODO: Work on proper type checking
-//        arg->setValueTypeSpec( (*argumentRules)[i].getArgumentTypeSpec());
-        
-        distribution->setMember( name, arg );
+//    /* Set member variables of the distribution */
+//    size_t i = 0;
+//    if ( functionType != RVALUE )
+//        i++;    // Add one because first argument is not a distribution parameter
+//    size_t k = argumentRules->size();
+//    if ( functionType == DENSITY )
+//        k--;    // Subtract one because last argumet is log
+//
+//    for ( ; i < k; i++ ) {
+//
+//        std::string name = (*argumentRules)[i].getArgumentLabel();
+//
+//        const RbVariablePtr& arg = this->args[i].getVariablePtr();
+//        
+//        // TODO: Work on proper type checking
+////        arg->setValueTypeSpec( (*argumentRules)[i].getArgumentTypeSpec());
+//        
+//        distribution->setMember( name, arg );
+//    }
+    
+    // Set member variables of the distribution
+    for (std::vector<Argument>::iterator i = this->args.begin(); i != this->args.end(); i++) {
+        Argument& theArg = *i;
+        std::string label = theArg.getLabel();
+        if ( label != "x" && label != "p" && label != "q" && label != "log" ) {
+            distribution->setMember( label, theArg.getVariablePtr() );
+        }
     }
 }
 
