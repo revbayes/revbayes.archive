@@ -57,6 +57,7 @@ class SyntaxBinaryExpr : public SyntaxElement {
 
         // Regular functions
         RbVariablePtr               evaluateContent(Environment& env);                      //!< Get semantic value
+        bool                        isConstExpression(void) const;                          //!< Is the expression constant?
 
     protected:
         SyntaxElement*              leftOperand;                                            //!< The left operand

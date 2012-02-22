@@ -128,6 +128,14 @@ RbVariablePtr SyntaxBinaryExpr::evaluateContent( Environment& env) {
 }
 
 
+/** Is the expression constant?
+ *  Only if the arguments are constant.
+ */
+bool SyntaxBinaryExpr::isConstExpression(void) const {
+    return leftOperand->isConstExpression() && rightOperand->isConstExpression();
+}
+
+
 /** Print info about the syntax element */
 void SyntaxBinaryExpr::printValue(std::ostream& o) const {
 

@@ -100,6 +100,14 @@ RbVariablePtr SyntaxLabeledExpr::evaluateContent( Environment& env ) {
 }
 
 
+/** Is the expression constant?
+ *  Only if the argument is constant.
+ */
+bool SyntaxLabeledExpr::isConstExpression(void) const {
+    return expression->isConstExpression();
+}
+
+
 /** Print info about the syntax element */
 void SyntaxLabeledExpr::printValue(std::ostream& o) const {
 

@@ -55,6 +55,7 @@ class SyntaxUnaryExpr : public SyntaxElement {
 
         // Regular functions
         RbVariablePtr               evaluateContent(Environment& env);                                      //!< Get semantic value
+        bool                        isConstExpression(void) const;                                          //!< Is the expression constant?
 
     protected:
         SyntaxElement*              expression;                                                             //!< The expression

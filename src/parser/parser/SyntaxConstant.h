@@ -50,7 +50,7 @@ class SyntaxConstant : public SyntaxElement {
 
         // Regular functions
         RbVariablePtr                           evaluateContent( Environment& env );                                //!< Get semantic value
-        bool                                    isConstExpression(void) const { return true; }                      //!< Is subtree constant expr?
+        bool                                    isConstExpression(void) const;                                      //!< Is the expression constant?
 
     protected:
         RbLanguageObject*                       value;                                                              //!< The constant value

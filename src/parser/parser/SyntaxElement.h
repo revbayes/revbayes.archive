@@ -76,7 +76,7 @@ class SyntaxElement : public RbInternal {
 
         // Regular functions
         virtual RbVariablePtr           evaluateContent(Environment& env) = 0;                      //!< Get semantic value
-        virtual bool                    isConstExpression(void) const { return false; }             //!< Is subtree constant expr?
+        virtual bool                    isConstExpression(void) const;                              //!< Is subtree constant expr?
 
     protected:
                                         SyntaxElement(void) : RbInternal() {}                       //!< Protected constructor, just in case

@@ -99,6 +99,14 @@ RbVariablePtr SyntaxConstant::evaluateContent( Environment& env ) {
 }
 
 
+/** Is the expression constant?
+ *  Of course we are!!!
+ */
+bool SyntaxConstant::isConstExpression(void) const {
+    return true;
+}
+
+
 /** Print info about the syntax element */
 void SyntaxConstant::printValue(std::ostream& o) const {
 

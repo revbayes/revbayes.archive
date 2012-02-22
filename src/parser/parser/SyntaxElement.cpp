@@ -40,5 +40,14 @@ const TypeSpec& SyntaxElement::getClassTypeSpec(void) {
 }
 
 
+/** Is the syntax expression constant? 
+ *  This is used for replacing the expression than by a constant.
+ *  By default a syntax element is not constant.
+ */
+bool SyntaxElement::isConstExpression( void ) const {
+    return false;
+}
+
+
 
 

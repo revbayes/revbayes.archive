@@ -118,6 +118,13 @@ RbVariablePtr SyntaxUnaryExpr::evaluateContent(Environment& env) {
 }
 
 
+/** Is the expression constant?
+ *  Only if the argument is constant.
+ */
+bool SyntaxUnaryExpr::isConstExpression(void) const {
+    return expression->isConstExpression();
+}
+
 
 /** Print info about the syntax element */
 void SyntaxUnaryExpr::printValue(std::ostream& o) const {

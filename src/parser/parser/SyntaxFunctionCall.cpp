@@ -141,6 +141,13 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
         PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel().getValue().c_str() );
         const RbString& theLabel = (*i)->getLabel();
         RbVariablePtr theVar = (*i)->getExpression().evaluateContent(env);
+        
+        // We need here to replace the constant expression by constant variables
+        // Constant variables are faster and can be converted safely!
+        if ( (*i)->isConstExpression() ) {
+            theVar->setDagNode( new ConstantNode( theVar->getValue().clone() ) );
+        }
+        
         Argument theArg = Argument( theLabel, theVar );
         args.push_back( theArg );
     }
@@ -169,6 +176,25 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
     }
 
     return RbVariablePtr( new Variable( new DeterministicNode( func ) ) );
+}
+
+
+/** Is the expression constant?
+ *  Only if all arguments are constant.
+ */
+bool SyntaxFunctionCall::isConstExpression(void) const {
+    
+    // we need to iterate over all arguments
+    for (std::list<SyntaxLabeledExpr*>::const_iterator i = arguments->begin(); i != arguments->end(); i++) {
+        // we return false is this argument is not constant
+        SyntaxLabeledExpr* expr = *i;
+        if ( !expr->isConstExpression() ) {
+            return false;
+        }
+    }
+    
+    // all arguments are constant
+    return true;
 }
 
 
