@@ -162,14 +162,37 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         // fill the slot with the new variable
         const DAGNode* theConstNode = theVariable->getDagNode();
         const RbLanguageObject& value = theConstNode->getValue();
+        
         DAGNode* theNode;
-        if (value.isTypeSpec( DAGNode::getClassTypeSpec() )) {
-            theNode = static_cast<DAGNode*>( value.clone() );
+        // check if the type is valid. This is necessary for reassignments
+        if ( !value.getTypeSpec().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
+            // We are not of a derived type (or the same type)
+            // since this will create a constant node we are allowed to type cast
+            if (value.isConvertibleTo( theSlot.getVariable().getValueTypeSpec() ) ) {
+                theNode = new ConstantNode( static_cast<RbLanguageObject*>( value.convertTo( theSlot.getVariable().getValueTypeSpec() ) ) );
+            }
+            else {
+                std::ostringstream msg;
+                msg << "Cannot reassign variable '" << theSlot.getLabel() << "' with type " << value.getTypeSpec() << " with value ";
+                value.printValue(msg);
+                msg << " because the variable requires type " << theSlot.getVariable().getValueTypeSpec() << "." << std::endl;
+                throw RbException( msg );
+            }
         }
         else {
-            theNode = new ConstantNode( value.clone() );
+            if (value.isTypeSpec( DAGNode::getClassTypeSpec() )) {
+                theNode = static_cast<DAGNode*>( value.clone() );
+            }
+            else {
+                theNode = new ConstantNode( value.clone() );
+            }
         }
+        
+        // set the DAG node of the variable
         theSlot.getVariable().setDagNode( theNode );
+        
+        // set the name of the DAG node. This will ensure nicer outputs about the DAG.
+        theNode->setName( theSlot.getLabel() );
     }
     
     // Deal with equation assignments
@@ -193,8 +216,20 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
             theVariable = RbVariablePtr( new Variable( new DeterministicNode( func ) ) );
         }
         
+        const DeterministicNode* detNode = static_cast<const DeterministicNode*>( theVariable->getDagNode() );
+        const RbFunction& theFunction = detNode->getFunction();
+        // check if the type is valid. This is necessary for reassignments
+        if ( !theFunction.getReturnType().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
+            std::ostringstream msg;
+            msg << "Cannot reassign variable '" << theSlot.getLabel() << "' with a function with return type " << theFunction.getReturnType() << " because the variable requires type " << theSlot.getVariable().getValueTypeSpec() << "." << std::endl;
+            throw RbException( msg );
+        }
+        
         // fill the slot with the new variable
         theSlot.getVariable().setDagNode( theVariable->getDagNode() );
+        
+        // set the name of the DAG node. This will ensure nicer outputs about the DAG.
+        theVariable->getDagNode()->setName( theSlot.getLabel() );
     }
     
     // Deal with tilde assignments
@@ -223,11 +258,21 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         if ( distribution == NULL )
             throw RbException( "Function returns a NULL distribution" );
         
+        // check if the type is valid. This is necessary for reassignments
+        if ( !distribution->getVariableType().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
+            std::ostringstream msg;
+            msg << "Cannot reassign variable '" << theSlot.getLabel() << "' with a distribution of variable type " << distribution->getVariableType() << " because the variable requires type " << theSlot.getVariable().getValueTypeSpec() << "." << std::endl;
+            throw RbException( msg );
+        }
+        
         // Create new stochastic node
         DAGNode* node = new StochasticNode( distribution );
         
         // fill the slot with the new variable
         theSlot.getVariable().setDagNode( node );
+        
+        // set the name of the DAG node. This will ensure nicer outputs about the DAG.
+        node->setName( theSlot.getLabel() );
         
     }
 //    
