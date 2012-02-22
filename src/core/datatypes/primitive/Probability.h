@@ -23,30 +23,24 @@
 
 class VectorString;
 
-const std::string Probability_name = "Probability";
-
 class Probability : public RealPos {
     
 public:
-    Probability(void);                                              //!< Default constructor
-    Probability(double x);                                          //!< Construct from double
-    Probability(int x);                                             //!< Construct from int 
-    Probability(unsigned int x);                                    //!< Construct from unsigned int 
-    Probability(bool x);                                            //!< Construct from bool
+    Probability(void);                                                      //!< Default constructor
+    Probability(double x);                                                  //!< Construct from double
+    Probability(int x);                                                     //!< Construct from int 
+    Probability(unsigned int x);                                            //!< Construct from unsigned int 
+    Probability(bool x);                                                    //!< Construct from bool
     
     // Basic utility functions
-    virtual std::string     briefInfo(void) const;                  //!< Brief info about the object
-    Probability*            clone(void) const;                      //!< Clone object
-    const VectorString&     getClass(void) const;                   //!< Get class vector
-    const TypeSpec&         getTypeSpec(void) const;                //!< Get language type of the object
-    std::string             richInfo(void) const;                   //!< Complete info about object
+    Probability*                    clone(void) const;                      //!< Clone object
+    static const std::string&       getClassName(void);                     //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                 //!< Get class type spec
+    const TypeSpec&                 getTypeSpec(void) const;                //!< Get language type of the object
     
     // Setter disallowing nonpositive values
-    void                    setValue(double x);                     //!< Set value
+    void                            setValue(double x);                     //!< Set value
     
-    
-private:
-    static const TypeSpec   typeSpec;
 };
 
 #endif

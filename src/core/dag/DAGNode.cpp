@@ -35,21 +35,9 @@
 #include <sstream>
 
 
-/** Constructor of empty node */
-DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeSpec(valType) {
-
-    // initialize the variable
-//    variable = NULL;
-    
-    refCount = 0;
-}
-
 
 /** Constructor of filled node */
-DAGNode::DAGNode(void) : children(), parents(), valueTypeSpec(RbObject_name) {
-    
-    // initialize the variable
-//    variable = NULL;
+DAGNode::DAGNode(void) : children(), parents() {
     
     refCount = 0;
 }
@@ -63,10 +51,7 @@ DAGNode::DAGNode(void) : children(), parents(), valueTypeSpec(RbObject_name) {
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.valueTypeSpec) {
-    
-    // the variable is always set to NULL and needs to be set manually!
-//    variable = NULL;
+DAGNode::DAGNode( const DAGNode& x ) : children(), parents() {
     
     // copy the name so that we still be able to identify the variable in a cloned DAG
     name = x.name;
@@ -105,11 +90,20 @@ size_t DAGNode::decrementReferenceCount( void ) {
 }
 
 
-/** Get class vector describing type of DAG node */
-const VectorString& DAGNode::getClass() const {
+/** Get class name of object */
+const std::string& DAGNode::getClassName(void) { 
+    
+    static std::string rbClassName = "DAG node";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( DAGNode_name ) + RbLanguageObject::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& DAGNode::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -203,13 +197,6 @@ bool DAGNode::isParentInDAG( const DAGNode* x, std::list<DAGNode*>& done ) const
     }
 
     return false;
-}
-
-
-/** Is the node of language type typeSpec? */
-bool DAGNode::isValueOfTypeSpec( const TypeSpec& typeSp ) const {
-
-    return getValue().isTypeSpec( typeSp );
 }
 
 

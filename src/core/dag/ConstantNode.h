@@ -26,19 +26,18 @@
 class RbObject;
 class VectorString;
 
-const std::string ConstantNode_name = "Constant Node";
-
 class ConstantNode : public DAGNode {
 
 public:
+    ConstantNode( void );                                                                                           //!< Constructor
     ConstantNode(RbLanguageObject* val);                                                                            //!< Constructor from value
-    ConstantNode(const std::string& typeSpec);                                                                      //!< Constructor from language object type
     ConstantNode(const ConstantNode &x);                                                                            //!< Copy constructor
     virtual                             ~ConstantNode(void);                                                        //!< Destructor
 
     // Basic utility functions
     ConstantNode*                       clone(void) const;                                                          //!< Clone this object
-    const VectorString&                 getClass(void) const;                                                       //!< Get DAG node class vector
+    static const std::string&           getClassName(void);                                                         //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
     void                                printStruct(std::ostream& o) const;                                         //!< Print struct for user
     void                                printValue(std::ostream& o) const;                                          //!< Print value for user
@@ -47,6 +46,7 @@ public:
     const RbLanguageObject&             getStoredValue(void) const;                                                 //!< Get stored value
     const RbLanguageObject&             getValue(void) const;                                                       //!< Get value 
     RbLanguageObject&                   getValue(void);                                                             //!< Get value 
+    void                                setValue(RbLanguageObject* val);                                            //!< Set the value of the constant node
 //    const RbLanguageObject*             getValuePtr(void) const;                                                    //!< Get value 
 
     // DAG functions

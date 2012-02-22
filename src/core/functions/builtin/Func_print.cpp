@@ -32,11 +32,6 @@
 #include <fstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_print::typeSpec(Func_print_name);
-const TypeSpec Func_print::returnTypeSpec(RbVoid_name);
-
-
 /** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
 void Func_print::clearArguments(void) {
     // just empty the elements list, the super smart pointers will take care of the rest
@@ -106,7 +101,7 @@ const ArgumentRules& Func_print::getArgumentRules( void ) const {
         
         argumentRules.push_back( new ValueRule( "filename", new RbString("") ) );
         argumentRules.push_back( new ValueRule( "append", new RbBoolean(false) ) );
-        argumentRules.push_back( new Ellipsis( TypeSpec(RbLanguageObject_name) ) );
+        argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -114,24 +109,36 @@ const ArgumentRules& Func_print::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_print::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_print::getClassName(void) { 
     
-    static VectorString rbClass = VectorString( Func_print_name ) + RbFunction::getClass();
-    return rbClass;
+    static std::string rbClassName = "Print function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_print::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_print::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_print::getReturnType( void ) const {
     
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_print::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

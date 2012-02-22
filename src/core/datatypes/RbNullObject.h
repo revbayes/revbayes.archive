@@ -24,8 +24,6 @@
 
 class VectorString;
 
-const std::string RbNullObject_name = "NULL object";
-
 class RbNullObject : public RbLanguageObject {
     
 public:
@@ -44,10 +42,12 @@ public:
     }
 
     
-    // Basic utility functions you have to override (also getClass()!)
+    // Basic utility functions you have to override (also getClassTypeSpec()!)
     RbNullObject*                       clone(void) const;                                                      //!< Clone object
 //    virtual XmlElement*                 encode(XmlDocument* doc, const std::string& name);                      //!< Function to encode this object into an XML string
-    const VectorString&                 getClass(void) const;                                                   //!< Get class vector
+    static const std::string&           getClassName(void);                                                     //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
+    const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get the type spec for this instance
     void                                printValue(std::ostream& o) const;                                      //!< Print value for user
         
     

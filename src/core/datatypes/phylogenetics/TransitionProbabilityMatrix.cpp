@@ -43,9 +43,6 @@
 #include <string>
 
 
-// Definition of the static type spec member
-const TypeSpec TransitionProbabilityMatrix::typeSpec(TransitionProbabilityMatrix_name);
-
 /** Constructor passes member rules and method inits to base class */
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberObject(getMemberRules()) {
 
@@ -96,7 +93,7 @@ TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator=(const Transi
 const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates.getValue() )
-        throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
+        throw RbException( "Index to " + getClassName() + "[][] out of bounds" );
     return (*theMatrix)[i];
 }
 
@@ -105,7 +102,7 @@ const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) cons
 VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) {
 
     if ( i >= numStates.getValue() )
-        throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
+        throw RbException( "Index to " + getClassName() + "[][] out of bounds" );
     return (*theMatrix)[i];
 }
 
@@ -128,11 +125,28 @@ const RbLanguageObject& TransitionProbabilityMatrix::executeOperationSimple(cons
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& TransitionProbabilityMatrix::getClass(void) const {
+/** Get class name of object */
+const std::string& TransitionProbabilityMatrix::getClassName(void) { 
+    
+    static std::string rbClassName = "Transition probability matrix";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(TransitionProbabilityMatrix_name) + MemberObject::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& TransitionProbabilityMatrix::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& TransitionProbabilityMatrix::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -161,7 +175,7 @@ const MethodTable& TransitionProbabilityMatrix::getMethods(void) const {
     if ( methodsSet == false ) 
         {
         
-        methods.addFunction("nstates", new MemberFunction(Natural_name, nstatesArgRules) );
+        methods.addFunction("nstates", new MemberFunction(Natural::getClassTypeSpec(), nstatesArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
@@ -172,26 +186,11 @@ const MethodTable& TransitionProbabilityMatrix::getMethods(void) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& TransitionProbabilityMatrix::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Print value for user */
 void TransitionProbabilityMatrix::printValue(std::ostream& o) const {
 
     o << "Transition probability matrix:" << std::endl;
     theMatrix->printValue( o );
     o << std::endl;
-}
-
-
-/** Complete info */
-std::string TransitionProbabilityMatrix::richInfo(void) const {
-
-	std::ostringstream o;
-    printValue( o );
-    return o.str();
 }
 

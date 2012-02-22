@@ -33,9 +33,6 @@ class VectorReal;
 class VectorString;
 
 
-
-const std::string RateMatrix_name = "Rate Matrix";
-
 class RateMatrix : public MemberObject {
 
     public:
@@ -51,10 +48,10 @@ class RateMatrix : public MemberObject {
         
         // Basic utility functions
         RateMatrix*                         clone(void) const;                                                                  //!< Clone object
-        const VectorString&                 getClass(void) const;                                                               //!< Get class vector
+        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                            //!< Get language type of the object   
         void                                printValue(std::ostream& o) const;                                                  //!< Print value for user
-        std::string                         richInfo(void) const;                                                               //!< Complete info
 
         // Member variable rules
         const MemberRules&                  getMemberRules(void) const;                                                         //!< Get member rules
@@ -94,7 +91,6 @@ class RateMatrix : public MemberObject {
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
     
-        static const TypeSpec               typeSpec;
 
         // memberfunction return values
         RealPos                             avgRate;

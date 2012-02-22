@@ -26,9 +26,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec ConstructorFunction::typeSpec(ConstructorFunction_name);
-
 /** Constructor */
 ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), templateObject(obj), copyObject( NULL ) {
 
@@ -109,11 +106,28 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& ConstructorFunction::getClass(void) const { 
+/** Get class name of object */
+const std::string& ConstructorFunction::getClassName(void) { 
+    
+    static std::string rbClassName = "Constructor function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(ConstructorFunction_name) + RbFunction::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& ConstructorFunction::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& ConstructorFunction::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -121,12 +135,6 @@ const VectorString& ConstructorFunction::getClass(void) const {
 const TypeSpec& ConstructorFunction::getReturnType(void) const {
 
     return templateObject->getTypeSpec();
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& ConstructorFunction::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

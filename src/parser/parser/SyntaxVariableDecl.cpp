@@ -29,9 +29,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxVariableDecl::typeSpec(SyntaxVariableDecl_name);
-
 /** Construct from operator type, variable and expression */
 SyntaxVariableDecl::SyntaxVariableDecl( RbString* typeName, std::list<SyntaxElement*>* lengths, RbString* referenceChar, RbString* varName) 
     : SyntaxElement(), elementTypeName(typeName), lengthExpr(lengths), referenceSymbol(referenceChar), variableName(varName) {
@@ -93,11 +90,28 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxVariableDecl::getClass( void ) const { 
+/** Get class name of object */
+const std::string& SyntaxVariableDecl::getClassName(void) { 
     
-    static VectorString rbClass = VectorString( SyntaxVariableDecl_name ) + SyntaxElement::getClass();
+    static std::string rbClassName = "Variable declaration";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxVariableDecl::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxVariableDecl::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -127,7 +141,7 @@ RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
             DAGNode*            temp    = (*i)->evaluateContent( env )->getDagNode();
             const RbLanguageObject&   value   = temp->getValue();
             
-            if ( value.isTypeSpec( TypeSpec(Integer_name) ) )
+            if ( value.isTypeSpec( Integer::getClassTypeSpec() ) )
                 length.push_back( static_cast<const Integer&>( value ).getValue() );
             else
                 throw RbException( "Expression in length specification of variable declaration does not evaluate to an integer" );
@@ -164,12 +178,6 @@ RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
     }
     
     return RbVariablePtr( NULL );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxVariableDecl::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

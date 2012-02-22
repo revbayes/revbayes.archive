@@ -41,9 +41,6 @@
 #include <cmath>
 
 
-// Definition of the static type spec member
-const TypeSpec Move_mlocal::typeSpec(Move_mlocal_name);
-
 /** Constructor for parser */
 Move_mlocal::Move_mlocal( void ) : MoveTree( getMemberRules() ) {
 }
@@ -56,11 +53,28 @@ Move_mlocal* Move_mlocal::clone( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Move_mlocal::getClass() const {
+/** Get class name of object */
+const std::string& Move_mlocal::getClassName(void) { 
+    
+    static std::string rbClassName = "Local move";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Move_mlocal_name ) + MoveTree::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Move_mlocal::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MoveTree::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Move_mlocal::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -76,19 +90,13 @@ const MemberRules& Move_mlocal::getMemberRules( void ) const {
         const MemberRules& inheritedRules = MoveTree::getMemberRules();
         memberRules.insert( memberRules.begin(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules.push_back( new ValueRule ( "branchlengths", RbString_name ) );   // Identifier of branch length tree variable
-        memberRules.push_back( new ValueRule ( "lambda",        RealPos_name  ) );
+        memberRules.push_back( new ValueRule ( "branchlengths", RbString::getClassTypeSpec() ) );   // Identifier of branch length tree variable
+        memberRules.push_back( new ValueRule ( "lambda",        RealPos::getClassTypeSpec()  ) );
 
         rulesSet = true;
 		}
 
     return memberRules;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Move_mlocal::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

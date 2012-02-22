@@ -30,8 +30,6 @@
 class RateMatrix;
 class VectorString;
 
-const std::string Dist_ctmm_name = "Dist_ctmm";
-
 class Dist_ctmm: public DistributionDiscrete {
 
     public:
@@ -44,7 +42,8 @@ class Dist_ctmm: public DistributionDiscrete {
     
         // Basic utility functions
         Dist_ctmm*                      clone(void) const;                                                  //!< Clone object
-        const VectorString&             getClass(void) const;                                               //!< Get class vector
+        static const std::string&       getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
@@ -60,8 +59,6 @@ class Dist_ctmm: public DistributionDiscrete {
         const RbLanguageObject&         rv(void);                                                           //!< Generate random variable
     
     private:
-        static const TypeSpec           typeSpec;
-        static const TypeSpec           varTypeSpec;
 
         // parameters
         RbVariablePtr                   rateMatrix;

@@ -19,8 +19,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec StandardState::typeSpec(StandardState_name);
 
 /** Default constructor */
 StandardState::StandardState(void) : CharacterStateDiscrete(1) {
@@ -94,11 +92,28 @@ void StandardState::addState(const char s) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& StandardState::getClass(void) const {
+/** Get class name of object */
+const std::string& StandardState::getClassName(void) { 
+    
+    static std::string rbClassName = "Standard state";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( StandardState_name ) + CharacterStateDiscrete::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& StandardState::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( CharacterStateDiscrete::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& StandardState::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -127,12 +142,6 @@ std::string StandardState::getStringValue(void) const  {
     std::string s = "";
     s += c;
     return s;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& StandardState::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

@@ -22,8 +22,6 @@
 #include <string>
 
 
-const std::string Character_name = "Character";
-
 class Character : public Categorical {
 
     public:
@@ -35,7 +33,8 @@ class Character : public Categorical {
 
         // Basic utility functions you have to override
         virtual Character*              clone(void) const = 0;                     //!< Clone object
-        virtual const VectorString&     getClass(void) const;                      //!< Get class vector
+        static const std::string&       getClassName(void);                        //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                    //!< Get class type spec
         
         virtual bool                    getIsGapState(void) const = 0;             //!< Get whether this is a gapped character state
         virtual size_t                  getNumberOfStates(void) const { return 0; }//!< Get the number states for a character (return 0 in base class)

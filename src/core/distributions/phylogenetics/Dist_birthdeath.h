@@ -26,16 +26,15 @@
 
 class VectorString;
 
-const std::string Dist_birthdeath_name = "Dist_birthdeath";
-
-class Dist_birthdeath: public Distribution{
+class Dist_birthdeath: public Distribution {
     
 public:
     Dist_birthdeath(void);                                                                          //!< Default constructor
     
     // Basic utility functions
     Dist_birthdeath*            clone(void) const;                                                  //!< Clone object
-    const VectorString&         getClass(void) const;                                               //!< Get class vector
+    static const std::string&   getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
     
     // Member variable setup
@@ -54,17 +53,14 @@ private:
     double                      pWaiting(double start, double observed, double end, double lambda, double mu, double rho) const;
     double                      rate(double start, double end, double lambda, double mu, double rho) const;
     double                      ut(double t, double t_prime, double lambda, double mu, double rho) const;
-    
-    static const TypeSpec       typeSpec;
-    static const TypeSpec       varTypeSpec;
-    
+        
     // parameters
-    Variable                    origin;
-    Variable                    presentTime;
-    Variable                    lambda;
-    Variable                    mu;
-    Variable                    rho;
-    Variable                    speciationEvent;
+    RbVariablePtr               origin;
+    RbVariablePtr               presentTime;
+    RbVariablePtr               lambda;
+    RbVariablePtr               mu;
+    RbVariablePtr               rho;
+    RbVariablePtr               speciationEvent;
     
     // memberfunction return value
     RealPos                     randomVariable;

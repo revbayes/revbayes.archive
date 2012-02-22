@@ -60,26 +60,6 @@ Move::~Move() {
 }
 
 
-/** Brief info about the move */
-std::string Move::briefInfo(void) const {
-    std::string tmp = getClass()[0] + "(";
-    
-    for (size_t i = 0; i < nodes.size(); i++) {
-        
-        if (i > 0) {
-            tmp += ", ";
-        }
-        
-        StochasticNode* n = nodes[i];
-        tmp += n->getName();
-    }
-    
-    tmp += ")";
-    
-    return  tmp;
-}
-
-
 /** Map calls to member methods */
 const RbLanguageObject& Move::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
 
@@ -132,11 +112,20 @@ double Move::getAcceptanceRatio( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Move::getClass( void ) const { 
+/** Get class name of object */
+const std::string& Move::getClassName(void) { 
+    
+    static std::string rbClassName = "Move";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Move_name ) + MemberObject::getClass();
-	return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Move::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -176,11 +165,11 @@ const MethodTable& Move::getMethods(void) const {
         
         // Add functions
         methods.addFunction( "accept",          new MemberFunction( RbVoid_name,     acceptArgRules            ) );
-        methods.addFunction( "acceptanceRatio", new MemberFunction( Real_name,       acceptanceRatioArgRules   ) );
-        methods.addFunction( "numAccepted",     new MemberFunction( Natural_name,    numAcceptedArgRules       ) );
-        methods.addFunction( "numRejected",     new MemberFunction( Natural_name,    numRejectedArgRules       ) );
-        methods.addFunction( "numTried",        new MemberFunction( Natural_name,    numTriedArgRules          ) );
-        methods.addFunction( "propose",         new MemberFunction( VectorReal_name, proposeArgRules           ) );
+        methods.addFunction( "acceptanceRatio", new MemberFunction( Real::getClassTypeSpec(),       acceptanceRatioArgRules   ) );
+        methods.addFunction( "numAccepted",     new MemberFunction( Natural::getClassTypeSpec(),    numAcceptedArgRules       ) );
+        methods.addFunction( "numRejected",     new MemberFunction( Natural::getClassTypeSpec(),    numRejectedArgRules       ) );
+        methods.addFunction( "numTried",        new MemberFunction( Natural::getClassTypeSpec(),    numTriedArgRules          ) );
+        methods.addFunction( "propose",         new MemberFunction( VectorReal::getClassTypeSpec(), proposeArgRules           ) );
         methods.addFunction( "reject",          new MemberFunction( RbVoid_name,     rejectArgRules            ) );
         methods.addFunction( "resetCounters",   new MemberFunction( RbVoid_name,     resetCountersArgRules     ) );
         
@@ -202,7 +191,8 @@ double Move::getUpdateWeight( void ) const {
 
 
 void Move::printValue(std::ostream &o) const {
-    o << briefInfo();
+   // TODO: Need some more meaningful output
+    o << "Move";
 }
 
 
@@ -222,7 +212,7 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
         nodes.clear();
         
         // test whether we want to set multiple variable
-        if (var->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
+        if (var->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
             DagNodeContainer& container = dynamic_cast<DagNodeContainer&>( var->getValue() );
             
             // add all nodes
@@ -230,7 +220,7 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
                 RbObject& theElement = container.getElement(i);
                 
                 // check if it is a stochastic node
-                if (theElement.isTypeSpec( TypeSpec(StochasticNode_name) )) {
+                if (theElement.isTypeSpec( StochasticNode::getClassTypeSpec() )) {
                     // cast to stochastic node
                     StochasticNode& theNode = dynamic_cast<StochasticNode&>( theElement );
                     
@@ -242,7 +232,7 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
                 }
             }
         }
-        else if (var->isType(StochasticNode_name)) {
+        else if (var->isTypeSpec(StochasticNode::getClassTypeSpec())) {
             // cast to stochastic node
             StochasticNode* theNode = dynamic_cast<StochasticNode*>( var );
             

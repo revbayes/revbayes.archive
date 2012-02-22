@@ -54,11 +54,20 @@ void MoveSimple::acceptMove(void) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MoveSimple::getClass(void) const { 
+/** Get class name of object */
+const std::string& MoveSimple::getClassName(void) { 
+    
+    static std::string rbClassName = "Simple move";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(MoveSimple_name) + Move::getClass();
-	return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& MoveSimple::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -86,7 +95,7 @@ double MoveSimple::performMove(double& lnProbabilityRatio) {
 
     StochasticNode* nodePtr = nodes[0];
     
-//    std::cout << "Perform simple move (" << getClass()[0] << ") on node \"" << nodePtr->getName() << "\"\n";
+//    std::cout << "Perform simple move (" << getClassTypeSpec()[0] << ") on node \"" << nodePtr->getName() << "\"\n";
 
     double lnHastingsRatio    = perform();
     

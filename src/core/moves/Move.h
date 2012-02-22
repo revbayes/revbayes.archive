@@ -23,10 +23,7 @@
 #include "RealPos.h"
 
 class RandomNumberGenerator;
-class StochasticNode;
-class VectorString;
 
-const std::string Move_name = "Move";
 
 class Move : public ConstantMemberObject {
 
@@ -34,9 +31,9 @@ class Move : public ConstantMemberObject {
     virtual                                    ~Move(void);                                                                             //!< Destructor
 
         // Basic utility functions
-        virtual std::string                     briefInfo(void) const;                                                                  //!< Get a brief info about the move
         virtual Move*                           clone(void) const = 0;                                                                  //!< Clone the object
-        virtual const VectorString&             getClass(void) const;                                                                   //!< Get class vector
+        static const std::string&               getClassName(void);                                                                     //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
         virtual void                            printValue(std::ostream& o) const;
     
         // Member variable rules

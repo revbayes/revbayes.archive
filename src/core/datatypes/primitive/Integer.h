@@ -25,9 +25,6 @@
 #include <ostream>
 #include <string>
 
-class VectorString;
-
-const std::string Integer_name = "Integer";
 
 class Integer : public RbLanguageObject {
 
@@ -42,15 +39,14 @@ public:
     operator int(void) const { return value; }                                                          //!< Type conversion to int
 
     // Basic utility functions
-    std::string                 briefInfo(void) const;                                                  //!< Brief info about the object
     virtual Integer*            clone(void) const;                                                      //!< Clone object
     virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type
-    virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
+    static const std::string&   getClassName(void);                                                     //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
     virtual const TypeSpec&     getTypeSpec(void) const;                                                //!< Get language type of the object
     int&                        getValueReference(void) { return value; }                               //!< Get value reference for VectorInteger
     virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
     virtual void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
-    virtual std::string         richInfo(void) const;                                                   //!< Complete info about object
 
     // Getters and setters
     virtual void                setValue(int x) { value = x; }                                          //!< Set value
@@ -59,8 +55,6 @@ public:
 protected:
     int                         value;                                                                  //!< Value member
     
-private:
-    static const TypeSpec       typeSpec;
 };
 
         // Operators defined outside of the class

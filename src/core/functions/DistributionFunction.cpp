@@ -32,11 +32,8 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec DistributionFunction::typeSpec(DistributionFunction_name);
-
 /** Constructor */
-DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcType ) : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real_name : RealPos_name ) : dist->getVariableType() ) {
+DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcType ) : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real::getClassTypeSpec() : RealPos::getClassTypeSpec() ) : dist->getVariableType() ) {
 
     /* Ininitalize the argument rules */
     argumentRules = new ArgumentRules();
@@ -74,7 +71,7 @@ DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcTyp
     }
     else if (functionType == QUANTILE) {
 
-        argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos_name                    ) );
+        argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos::getClassTypeSpec()     ) );
     }
 }
 
@@ -107,7 +104,7 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
     }
     else if (functionType == QUANTILE) {
         
-        argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos_name                    ) );
+        argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos::getClassTypeSpec()     ) );
     }
     
     // copy the arguments
@@ -173,7 +170,7 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
         }
         else if (functionType == QUANTILE) {
             
-            argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos_name                    ) );
+            argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos::getClassTypeSpec()     ) );
         }
         
         // Copy the arguments
@@ -234,11 +231,28 @@ const ArgumentRules& DistributionFunction::getArgumentRules(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& DistributionFunction::getClass(void) const { 
+/** Get class name of object */
+const std::string& DistributionFunction::getClassName(void) { 
+    
+    static std::string rbClassName = "Distribution function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(DistributionFunction_name) + RbFunction::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& DistributionFunction::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& DistributionFunction::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -248,11 +262,6 @@ const TypeSpec& DistributionFunction::getReturnType(void) const {
     return returnType;
 }
 
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& DistributionFunction::getTypeSpec(void) const {
-    return typeSpec;
-}
 
 /** Process arguments */
 void DistributionFunction::processArguments( const std::vector<Argument>& args ) {

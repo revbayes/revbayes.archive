@@ -28,9 +28,7 @@
 
 class VectorString;
 
-const std::string Dist_neutralcoalescent_name = "Dist_neutralcoalescent";
-
-class Dist_neutralcoalescent: public Distribution{
+class Dist_neutralcoalescent: public Distribution {
 
 public:
     Dist_neutralcoalescent(void);                                                                   //!< Default constructor
@@ -41,7 +39,8 @@ public:
 
     // Basic utility functions
     Dist_neutralcoalescent*     clone(void) const;                                                  //!< Clone object
-    const VectorString&         getClass(void) const;                                               //!< Get class vector
+    static const std::string&   getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
     // Member variable setup
@@ -60,8 +59,6 @@ private:
     TopologyNodeToRealMapType   nodeEdgeLengths;
     IntegerToRealMapType        numNodesToWaitingTimeMap;
 
-    static const TypeSpec       typeSpec;
-    static const TypeSpec       varTypeSpec;
 
 };
 

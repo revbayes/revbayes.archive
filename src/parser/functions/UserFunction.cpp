@@ -28,8 +28,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec UserFunction::typeSpec(UserFunction_name);
 
 /** Basic constructor */
 UserFunction::UserFunction( const ArgumentRules*  argRules,
@@ -77,9 +75,7 @@ UserFunction& UserFunction::operator=(const UserFunction &f) {
         code->clear();
         
         // create a new list for the code
-//        code = new std::list<SyntaxElement*>();
         for (std::list<SyntaxElement*>::const_iterator i=f.code->begin(); i!=f.code->end(); i++) {
-            //        SyntaxElement *element = (*i)->clone();
             SyntaxElement* element = (*i)->clone();
             code->push_back(element);
         }
@@ -149,11 +145,28 @@ const ArgumentRules& UserFunction::getArgumentRules() const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& UserFunction::getClass() const {
+/** Get class name of object */
+const std::string& UserFunction::getClassName(void) { 
+    
+    static std::string rbClassName = "User function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(UserFunction_name) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& UserFunction::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& UserFunction::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -161,12 +174,6 @@ const VectorString& UserFunction::getClass() const {
 const TypeSpec& UserFunction::getReturnType() const {
 
     return returnType;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& UserFunction::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

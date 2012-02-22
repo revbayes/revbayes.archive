@@ -28,14 +28,14 @@
 class DAGNode;
 class VectorString;
 
-const std::string Func_dppSeat_name = "DPP function that returns allocation vector";
 
 class Func_dppSeat :  public RbFunction {
 	
 public:
 	// Basic utility functions
 	Func_dppSeat*	                clone(void) const;                                          //!< Clone the object
-	const VectorString&             getClass(void) const;                                       //!< Get class vector
+    static const std::string&       getClassName(void);                                         //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                                     //!< Get class type spec
     const TypeSpec&                 getTypeSpec(void) const;                                    //!< Get language type of the object
 	
 	// Regular functions
@@ -46,8 +46,6 @@ protected:
     const RbLanguageObject&         executeFunction(void);                                              //!< Execute function
 
 private:
-    static const TypeSpec           typeSpec;	
-    static const TypeSpec           returnTypeSpec;
 
     // function return value
     VectorNatural                   allocation;

@@ -36,10 +36,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_distance::typeSpec(Func_distance_name);
-const TypeSpec Func_distance::returnTypeSpec(DistanceMatrix_name);
-
 Func_distance::Func_distance(void) : RbFunction(), matrix(1) {
     
 }
@@ -68,7 +64,7 @@ const RbLanguageObject& Func_distance::executeFunction(void) {
         throw( RbException("Data is not aligned") );
 
     // check that we have DNA or RNA sequences
-    if  ( !(m.getDataType() == DnaState_name || m.getDataType() == RnaState_name) )
+    if  ( !(m.getDataType() == DnaState::getClassName() || m.getDataType() == RnaState::getClassName() ) )
         throw( RbException("Data must be DNA or RNA") );
         
     // determine the distance model
@@ -189,12 +185,12 @@ const ArgumentRules& Func_distance::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "data",   CharacterData_name ) );
-        argumentRules.push_back( new ValueRule( "model",  RbString_name      ) );
-        argumentRules.push_back( new ValueRule( "freqs",  RbString_name      ) );
-        argumentRules.push_back( new ValueRule( "asrv",   RbString_name      ) );
-        argumentRules.push_back( new ValueRule( "shape",  Real_name          ) );
-        argumentRules.push_back( new ValueRule( "pinvar", Real_name          ) );
+        argumentRules.push_back( new ValueRule( "data",   CharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "model",  RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ValueRule( "freqs",  RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ValueRule( "asrv",   RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ValueRule( "shape",  Real::getClassTypeSpec()          ) );
+        argumentRules.push_back( new ValueRule( "pinvar", Real::getClassTypeSpec()          ) );
         rulesSet = true;
         }
 
@@ -202,25 +198,36 @@ const ArgumentRules& Func_distance::getArgumentRules(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_distance::getClass(void) const {
+/** Get class name of object */
+const std::string& Func_distance::getClassName(void) { 
+    
+    static std::string rbClassName = "Distance matrix function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Func_distance_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Func_distance::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_distance::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
-const TypeSpec& Func_distance::getReturnType(void) const {
-
+const TypeSpec& Func_distance::getReturnType( void ) const {
+    
+    static TypeSpec returnTypeSpec = DistanceMatrix::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_distance::getTypeSpec(void) const {
-
-    return typeSpec;
 }
 
 

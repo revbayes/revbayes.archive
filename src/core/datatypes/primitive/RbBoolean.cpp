@@ -27,9 +27,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec RbBoolean::typeSpec(RbBoolean_name);
-
 /** Default constructor */
 RbBoolean::RbBoolean(void) : RbLanguageObject(), value(false) {
 
@@ -41,31 +38,23 @@ RbBoolean::RbBoolean(const bool v) : RbLanguageObject(), value(v) {
 }
 
 
-/** Get brief info about object */
-std::string RbBoolean::briefInfo(void) const {
-    
-	std::ostringstream o;
-    printValue(o);
-    return o.str();
-}
-
 /** Clone object */
 RbBoolean* RbBoolean::clone(void) const {
 
-	return  new RbBoolean(*this);
+	return new RbBoolean(*this);
 }
 
 
 /** Convert to type. The caller manages the returned object. */
 RbObject* RbBoolean::convertTo(const TypeSpec& type) const {
 
-    if (type == Integer_name) {
+    if (type == Integer::getClassTypeSpec()) {
         if (value)
             return new Integer(1);
         else 
             return new Integer(0);
     }
-    else if (type == Real_name) {
+    else if (type == Real::getClassTypeSpec()) {
         if (value)
             return new Real(1.0);
         else 
@@ -76,16 +65,27 @@ RbObject* RbBoolean::convertTo(const TypeSpec& type) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& RbBoolean::getClass() const {
-
-    static VectorString rbClass = VectorString(RbBoolean_name) + RbLanguageObject::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& RbBoolean::getClassName(void) { 
+    
+    static std::string rbClassName = "Boolean";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& RbBoolean::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& RbBoolean::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& RbBoolean::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -93,9 +93,9 @@ const TypeSpec& RbBoolean::getTypeSpec(void) const {
 /** Is convertible to type? */
 bool RbBoolean::isConvertibleTo(const TypeSpec& type) const {
 
-    if (type == Integer_name)
+    if ( type == Integer::getClassTypeSpec() )
         return true;
-    else if (type == Real_name)
+    else if ( type == Real::getClassTypeSpec() )
         return true;
 
     return RbLanguageObject::isConvertibleTo(type);
@@ -106,15 +106,5 @@ bool RbBoolean::isConvertibleTo(const TypeSpec& type) const {
 void RbBoolean::printValue(std::ostream &o) const {
 
     o << (value ? "true" : "false");
-}
-
-/** Get complete info about object */
-std::string RbBoolean::richInfo(void) const {
-
-	std::ostringstream o;
-    o << "RbBoolean(";
-    printValue(o);
-    o << ")";
-    return o.str();
 }
 

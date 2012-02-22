@@ -23,8 +23,6 @@
 
 
 
-const std::string NucleotideState_name = "Nucleotide State";
-
 class NucleotideState : public CharacterStateDiscrete {
 
     public:
@@ -36,7 +34,8 @@ class NucleotideState : public CharacterStateDiscrete {
 
         // Basic utility functions you have to override
         virtual NucleotideState*        clone(void) const = 0;                               //!< Clone object
-        virtual const VectorString&     getClass(void) const;                                //!< Get class vector
+        static const std::string&       getClassName(void);                                  //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                              //!< Get class type spec
 
         // Discrete character observation functions
         void                            addState(const char s);                              //!< Add a character state to the set of character states

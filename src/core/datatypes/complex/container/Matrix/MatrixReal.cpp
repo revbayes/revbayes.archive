@@ -33,20 +33,16 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec MatrixReal::typeSpec(MatrixReal_name);
-
-
 /** Default constructor resulting in an empty real matrix */
-MatrixReal::MatrixReal(void) : Matrix(VectorReal_name) {
+MatrixReal::MatrixReal(void) : Matrix(VectorReal::getClassTypeSpec()) {
 }
 
 
 /** Construct matrix of specified dimensions (length), initialize it with double x (default 0.0) */
-MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matrix(VectorReal_name) {
+MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matrix(VectorReal::getClassTypeSpec()) {
 
     if ( nRows < 1 || nCols < 1 )
-        throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
+        throw RbException( "Nonpositive length(s) for " + Real::getClassName() + "[][]" );
 
     for ( size_t i = 0; i < nRows; i++ )
         elements.push_back( new VectorReal( nCols, x ) );
@@ -54,7 +50,7 @@ MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matri
 
 
 /** Construct matrix from a two-dimensional set of STL vectors */
-MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real_name) {
+MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real::getClassTypeSpec()) {
 
     size_t numCols = x[0].size();
     for ( size_t i = 1; i < x.size(); i++ ) {
@@ -71,7 +67,7 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
 const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 
     if ( i >= size() )
-        throw RbException( "Index to " + Real_name + "[][] out of bounds" );
+        throw RbException( "Index to " + Real::getClassName() + "[][] out of bounds" );
 
     return static_cast<const VectorReal&>( *elements[i] );
 }
@@ -81,7 +77,7 @@ const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 VectorReal& MatrixReal::operator[]( const size_t i ) {
 
     if ( i >= size() )
-        throw RbException( "Index to " + Real_name + "[][] out of bounds" );
+        throw RbException( "Index to " + Real::getClassName() + "[][] out of bounds" );
     
     return static_cast<VectorReal&>( *elements[i] );
 }
@@ -94,11 +90,28 @@ MatrixReal* MatrixReal::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MatrixReal::getClass(void) const {
+/** Get class name of object */
+const std::string& MatrixReal::getClassName(void) { 
+    
+    static std::string rbClassName = "Real Matrix";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(MatrixReal_name) + Matrix::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& MatrixReal::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& MatrixReal::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -128,13 +141,6 @@ RbObject& MatrixReal::getElement( size_t row, size_t col ) {
     
     VectorReal& tmp = static_cast<VectorReal&>( Vector::getElement(row) );
     return tmp.getElement(col);
-}
-
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& MatrixReal::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -228,7 +234,7 @@ void MatrixReal::resize( size_t rows, size_t cols ) {
     size_t numRows = getNumberOfRows();
     size_t numCols = getNumberOfColumns();
     if ( numRows > rows || numCols > cols )
-        throw RbException( "Invalid attempt to shrink " + Real_name + "[][]" );
+        throw RbException( "Invalid attempt to shrink " + Real::getClassName() + "[][]" );
 
     // First add the new rows with the right number of columns
     for ( size_t i = numRows; i < rows; i++ )
@@ -243,17 +249,6 @@ void MatrixReal::resize( size_t rows, size_t cols ) {
   //  length = len;
     
    // throw RbException("Cannot resize MatrixReal");
-}
-
-
-/** Complete info about object */
-std::string MatrixReal::richInfo(void) const {
-
-    // TODO: Replace with something that makes sense
-    std::ostringstream o;
-    printValue(o);
-
-    return o.str();
 }
 
 
@@ -280,11 +275,11 @@ std::string MatrixReal::richInfo(void) const {
 void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
 
     if ( x.size() != size() )
-        throw RbException( "Wrong number of rows in setting value of " + Real_name + "[][]" );
+        throw RbException( "Wrong number of rows in setting value of " + Real::getClassName() + "[][]" );
 
     for ( size_t i = 0; i < x.size(); i++ ) {
         if ( x[i].size() != getNumberOfColumns() )
-            throw RbException( "Wrong number of columns in at least one row in setting value of " + Real_name + "[][]" );
+            throw RbException( "Wrong number of columns in at least one row in setting value of " + Real::getClassName() + "[][]" );
     }
 
     elements.clear();
@@ -297,10 +292,10 @@ void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
 void MatrixReal::setElement( size_t row, size_t col, RbLanguageObject* value ) {
     
     if ( row >= getNumberOfRows() || col >= getNumberOfColumns() )
-        throw RbException( "Index out of bounds for " + Real_name + "[][]" );
+        throw RbException( "Index out of bounds for " + Real::getClassName() + "[][]" );
 
     if ( value == NULL )
-        throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
+        throw RbException( "Cannot set " + Real::getClassName() + "[][] element to NULL" );
     
     // We rely on the setElement of VectorReal for type cast and to throw an error with a meaningful message
     static_cast<VectorReal*>( elements[row] )->setElement(col,value);

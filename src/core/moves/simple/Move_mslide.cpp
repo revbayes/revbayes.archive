@@ -30,11 +30,8 @@
 #include <cassert>
 
 
-// Definition of the static type spec member
-const TypeSpec Move_mslide::typeSpec(Move_mslide_name);
-
 /** Constructor for parser */
-Move_mslide::Move_mslide( void ) : MoveSimple( getMemberRules() ), delta( TypeSpec( RealPos_name ) ) {
+Move_mslide::Move_mslide( void ) : MoveSimple( getMemberRules() ), delta( NULL ) {
 }
 
 
@@ -51,11 +48,28 @@ Move_mslide* Move_mslide::clone( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Move_mslide::getClass() const {
+/** Get class name of object */
+const std::string& Move_mslide::getClassName(void) { 
+    
+    static std::string rbClassName = "Sliding move";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Move_mslide_name ) + MoveSimple::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Move_mslide::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MoveSimple::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Move_mslide::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -67,14 +81,13 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
         
-        TypeSpec varType( Real_name );
-        memberRules.push_back( new ValueRule( "variable", varType ) );
+        memberRules.push_back( new ValueRule( "variable", Real::getClassTypeSpec() ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules.push_back( new ValueRule( "delta", RealPos_name ) );
+        memberRules.push_back( new ValueRule( "delta", RealPos::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -83,16 +96,10 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Move_mslide::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Return the random variable type appropriate for the move */
 const TypeSpec Move_mslide::getVariableType( void ) const {
 
-    return TypeSpec( Real_name );
+    return Real::getClassTypeSpec();
 }
 
 
@@ -104,7 +111,7 @@ double Move_mslide::perform( void ) {
 
     // Get relevant values
     StochasticNode* nodePtr = static_cast<StochasticNode*>( nodes[0] );
-    const RealPos& d = static_cast<const RealPos&>( delta.getValue() );
+    const RealPos& d = static_cast<const RealPos&>( delta->getValue() );
 
     double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();
     const Real& min = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMin();

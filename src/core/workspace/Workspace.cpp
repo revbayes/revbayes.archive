@@ -39,9 +39,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Workspace::typeSpec(Workspace_name);
-
 /** Constructor of global workspace */
 Workspace::Workspace() : Environment(), functionTable(new FunctionTable()), typesInitialized(false) {
 
@@ -210,11 +207,29 @@ Workspace* Workspace::clone() const {
     return new Workspace(*this);
 }
 
-/** Get class vector describing type of object */
-const VectorString& Workspace::getClass() const {
+
+/** Get class name of object */
+const std::string& Workspace::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(Workspace_name) + Environment::getClass();
-    return rbClass;
+    static std::string rbClassName = "Workspace";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Workspace::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Environment::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Workspace::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -264,12 +279,6 @@ RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Ar
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Workspace::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 
 /** Print workspace */
 void Workspace::printValue(std::ostream& o) const {
@@ -297,15 +306,5 @@ void Workspace::printValue(std::ostream& o) const {
     }
 }
 
-
-/** Complete info about object to string */
-std::string Workspace::richInfo( void ) const {
-    
-    std::ostringstream o;
-    o << "Workspace:" << std::endl;
-    printValue( o );
-    
-    return o.str();
-}
 
 

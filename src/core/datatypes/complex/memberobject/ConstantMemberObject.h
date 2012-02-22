@@ -27,8 +27,6 @@
 class VectorString;
 
 
-const std::string ConstantMemberObject_name = "const MemberObject";
-
 class ConstantMemberObject : public MemberObject {
     
 public:
@@ -36,11 +34,9 @@ public:
     
     // Basic utility functions you have to override
     virtual ConstantMemberObject*   clone(void) const = 0;                                           //!< Clone object
-    virtual const VectorString&     getClass(void) const;                                            //!< Get class vector
-    
-    // Basic utility functions you may want to override
-//    virtual void                    printValue(std::ostream& o) const;                               //!< Print value for user
-    
+    static const std::string&       getClassName(void);                                              //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                                          //!< Get class type spec
+        
     // Basic utility functions you do not have to override
     bool                            isConstant(void) const;                                          //!< Is the object, including all member variables and elements, constant?
     

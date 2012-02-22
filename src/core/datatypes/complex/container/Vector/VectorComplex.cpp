@@ -28,17 +28,15 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec VectorComplex::typeSpec(VectorComplex_name);
 
 /** Default constructor */
-VectorComplex::VectorComplex(void) : AbstractVector(Complex_name) {
+VectorComplex::VectorComplex(void) : AbstractVector(Complex::getClassTypeSpec()) {
 
 }
 
 
 /** Construct vector with one double x */
-VectorComplex::VectorComplex(const double x) : AbstractVector(Complex_name) {
+VectorComplex::VectorComplex(const double x) : AbstractVector(Complex::getClassTypeSpec()) {
     
     elements.push_back( std::complex<double>( x, 0.0 ) );
 
@@ -46,7 +44,7 @@ VectorComplex::VectorComplex(const double x) : AbstractVector(Complex_name) {
 
 
 /** Construct vector with n doubles x */
-VectorComplex::VectorComplex(const size_t n, const double x) : AbstractVector(Complex_name) {
+VectorComplex::VectorComplex(const size_t n, const double x) : AbstractVector(Complex::getClassTypeSpec()) {
 
     for (size_t i = 0; i < n; i++) {
         elements.push_back( std::complex<double>( x, 0.0 ) );
@@ -55,7 +53,7 @@ VectorComplex::VectorComplex(const size_t n, const double x) : AbstractVector(Co
 
 
 /** Constructor from double vector */
-VectorComplex::VectorComplex(const std::vector<double>& x) : AbstractVector(Complex_name) {
+VectorComplex::VectorComplex(const std::vector<double>& x) : AbstractVector(Complex::getClassTypeSpec()) {
 
     for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++) {
         elements.push_back( std::complex<double>( *i, 0.0 ) );
@@ -65,7 +63,7 @@ VectorComplex::VectorComplex(const std::vector<double>& x) : AbstractVector(Comp
 
 
 /** Constructor from complex vector */
-VectorComplex::VectorComplex(const std::vector<std::complex<double> >& x) : AbstractVector(Complex_name) {
+VectorComplex::VectorComplex(const std::vector<std::complex<double> >& x) : AbstractVector(Complex::getClassTypeSpec()) {
 
     elements = x;
 }
@@ -78,7 +76,7 @@ VectorComplex::VectorComplex( const VectorComplex& x ) : AbstractVector(x) {
 }
 
 
-VectorComplex::VectorComplex(size_t n, std::complex<double> x) : AbstractVector(Complex_name) {
+VectorComplex::VectorComplex(size_t n, std::complex<double> x) : AbstractVector(Complex::getClassTypeSpec()) {
 
     for (size_t i = 0; i < n; i++) {
         elements.push_back( x );
@@ -139,11 +137,28 @@ void VectorComplex::clear(void) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& VectorComplex::getClass(void) const {
+/** Get class name of object */
+const std::string& VectorComplex::getClassName(void) { 
+    
+    static std::string rbClassName = "Complex Vector";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(VectorComplex_name) + AbstractVector::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& VectorComplex::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractVector::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& VectorComplex::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -164,12 +179,6 @@ RbObject& VectorComplex::getElement(size_t index) {
     
     RbObject* c = new Complex(elements[index]);
     return *c;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& VectorComplex::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -220,15 +229,15 @@ void VectorComplex::printValue(std::ostream& o) const {
 /** Push an int onto the back of the vector after checking */
 void VectorComplex::push_back( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
+    if ( x->isTypeSpec( Complex::getClassTypeSpec() ) ) {
         elements.push_back(static_cast<Complex*>( x )->getValue());
-    } else if ( x->isConvertibleTo(Complex_name) ) {
-        elements.push_back(static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+    } else if ( x->isConvertibleTo(Complex::getClassTypeSpec()) ) {
+        elements.push_back(static_cast<Complex*>(x->convertTo(Complex::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Complex::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -243,15 +252,15 @@ void VectorComplex::push_back(std::complex<double> x) {
 /** Push an int onto the front of the vector after checking */
 void VectorComplex::push_front( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
+    if ( x->isTypeSpec( Complex::getClassTypeSpec() ) ) {
         elements.insert( elements.begin(), static_cast<Complex*>( x )->getValue());
-    } else if ( x->isConvertibleTo(Complex_name) ) {
-        elements.insert( elements.begin(), static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+    } else if ( x->isConvertibleTo(Complex::getClassTypeSpec()) ) {
+        elements.insert( elements.begin(), static_cast<Complex*>(x->convertTo(Complex::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Complex::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -271,13 +280,13 @@ void VectorComplex::resize(size_t n) {
 void VectorComplex::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
-    if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
+    if ( x->isTypeSpec( Complex::getClassTypeSpec() ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<Complex*>( x )->getValue());
-    } else if ( x->isConvertibleTo(Complex_name) ) {
+    } else if ( x->isConvertibleTo(Complex::getClassTypeSpec()) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
@@ -286,12 +295,12 @@ void VectorComplex::setElement(const size_t index, RbLanguageObject* x) {
         // remove first the old element at the index
         elements.erase(elements.begin()+index);
         
-        elements.insert( elements.begin() + index, static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+        elements.insert( elements.begin() + index, static_cast<Complex*>(x->convertTo(Complex::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Complex::getClassName() + "[] with invalid value" );
     }
 }
 

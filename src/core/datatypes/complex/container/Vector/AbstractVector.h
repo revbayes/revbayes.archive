@@ -24,8 +24,6 @@
 #include <vector>
 
 
-const std::string AbstractVector_name = "AbstractVector";
-
 class AbstractVector : public Container {
     
     public:
@@ -34,7 +32,8 @@ class AbstractVector : public Container {
         // Basic utility functions you have to override
         virtual RbObject*               convertTo(const TypeSpec &type) const;
         virtual AbstractVector*         clone(void) const = 0;                                              //!< Clone object
-        virtual const VectorString&     getClass(void) const;                                               //!< Get class
+        static const std::string&       getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                             //!< Get class type spec
         virtual void                    printValue(std::ostream& o) const;                                  //!< Print value for user
             
         // Container functions you have to override

@@ -29,18 +29,17 @@ class DAGNode;
 class VectorInteger;
 class VectorString;
 
-const std::string RbObject_name = "Object";
-
 class RbObject {
 
     public:
         virtual                            ~RbObject(void);                                                         //!< Virtual destructor
 
-        // Basic utility functions you have to override (also getClass()!)
+        // Basic utility functions you have to override (also getClassTypeSpec() and getClassName()!)
         virtual RbObject*                   clone(void) const = 0;                                                  //!< Clone object
         virtual XmlElement*                 encode(XmlDocument* doc, const std::string& name);                      //!< Function to encode this object into an XML string
-        virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
-        virtual const TypeSpec&             getTypeSpec(void) const ;                                               //!< Get language type of the object
+        static const std::string&           getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
+        virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get language type of the object
         virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
 
         // Basic utility functions you may want to override
@@ -60,9 +59,6 @@ class RbObject {
 
 protected:
     RbObject(void);                                                                                     //!< No objects of this class
-    
-private:
-    static const TypeSpec       typeSpec;  
 
 };
 

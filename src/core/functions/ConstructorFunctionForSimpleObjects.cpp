@@ -25,10 +25,6 @@
 
 #include <sstream>
 
-
-// Definition of the static type spec member
-const TypeSpec ConstructorFunctionForSimpleObjects::typeSpec(ConstructorFunctionForSimpleObjects_name);
-
 /** Constructor */
 ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(RbLanguageObject* obj) : RbFunction(), templateObject(obj) {
     // Hack: We know that we do not own the member rules.
@@ -62,7 +58,7 @@ const RbLanguageObject& ConstructorFunctionForSimpleObjects::executeFunction(voi
     
     copyObject = templateObject->clone();
     
-    Vector params = Vector(RbObject_name);
+    Vector params = Vector( RbObject::getClassTypeSpec() );
     for ( size_t i = 0; i < args.size(); i++ ) {
         params.push_back( args[i].getVariable().getValue().clone() );
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
@@ -81,11 +77,28 @@ const ArgumentRules& ConstructorFunctionForSimpleObjects::getArgumentRules(void)
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& ConstructorFunctionForSimpleObjects::getClass(void) const { 
+/** Get class name of object */
+const std::string& ConstructorFunctionForSimpleObjects::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(ConstructorFunctionForSimpleObjects_name) + RbFunction::getClass();
+    static std::string rbClassName = "Constructor function for simple objects";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& ConstructorFunctionForSimpleObjects::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& ConstructorFunctionForSimpleObjects::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -95,11 +108,6 @@ const TypeSpec& ConstructorFunctionForSimpleObjects::getReturnType(void) const {
     return templateObject->getTypeSpec();
 }
 
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& ConstructorFunctionForSimpleObjects::getTypeSpec(void) const {
-    return typeSpec;
-}
 
 
 /** We catch here the setting of the argument variables to store our parameters. */

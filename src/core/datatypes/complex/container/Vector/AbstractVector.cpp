@@ -64,7 +64,7 @@ AbstractVector& AbstractVector::operator=( const AbstractVector& x ) {
 
 RbObject* AbstractVector::convertTo(const TypeSpec &type) const {
     
-    if (type.getBaseType() == Vector_name) {
+    if ( type.getBaseType() == Vector::getClassName() ) {
         Vector* newVector = new Vector(type.getElementType());
         for (size_t i = 0; i < size(); i++) {
             newVector->push_back(getElement(i).clone());
@@ -76,11 +76,20 @@ RbObject* AbstractVector::convertTo(const TypeSpec &type) const {
 }
 
 
-/** Get class AbstractVector describing type of object */
-const VectorString& AbstractVector::getClass(void) const { 
+/** Get class name of object */
+const std::string& AbstractVector::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(AbstractVector_name) + Container::getClass();
-	return rbClass;
+    static std::string rbClassName = "Abstract Vector";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& AbstractVector::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 

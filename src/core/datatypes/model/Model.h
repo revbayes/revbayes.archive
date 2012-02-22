@@ -27,9 +27,7 @@
 class ArgumentRule;
 class DAGNode;
 class StochasticNode;
-class VectorString;
 
-const std::string Model_name = "Model";
 
 class Model : public ConstantMemberObject {
 
@@ -43,7 +41,8 @@ class Model : public ConstantMemberObject {
 
         // Basic utility functions
         Model*                                  clone(void) const;                                          //!< Make a copy (clone) of the Model.
-        const VectorString&                     getClass(void) const;                                       //!< Initialize the inheritance hierarchy for a Model object.
+        static const std::string&               getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                    //!< Get language type of the object
         void                                    printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
     
@@ -58,7 +57,6 @@ class Model : public ConstantMemberObject {
         int                                     findIndexInVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;
 
     // Member variables
-    static const TypeSpec                       typeSpec;
     std::vector<DAGNode*>                       dagNodes;                
     std::map<const DAGNode*, DAGNode*>          nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
 };

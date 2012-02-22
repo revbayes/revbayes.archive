@@ -30,23 +30,20 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec VectorReal::typeSpec(VectorReal_name);
-
 /** Default constructor */
-VectorReal::VectorReal(void) : AbstractVector(Real_name) {
+VectorReal::VectorReal(void) : AbstractVector(Real::getClassTypeSpec()) {
 }
 
 
 /** Construct vector with one double x */
-VectorReal::VectorReal(const double x) : AbstractVector(Real_name) {
+VectorReal::VectorReal(const double x) : AbstractVector(Real::getClassTypeSpec()) {
     
     elements.push_back( x );
 }
 
 
 /** Construct vector with n doubles x */
-VectorReal::VectorReal(const size_t n, const double x) : AbstractVector(Real_name) {
+VectorReal::VectorReal(const size_t n, const double x) : AbstractVector(Real::getClassTypeSpec()) {
 
     for (size_t i = 0; i < n; i++) {
         elements.push_back( x );
@@ -55,7 +52,7 @@ VectorReal::VectorReal(const size_t n, const double x) : AbstractVector(Real_nam
 
 
 /** Constructor from double vector */
-VectorReal::VectorReal(const std::vector<double>& x) : AbstractVector(Real_name) {
+VectorReal::VectorReal(const std::vector<double>& x) : AbstractVector(Real::getClassTypeSpec()) {
 
     elements = x;
 }
@@ -125,7 +122,7 @@ VectorReal* VectorReal::clone(void) const {
 RbObject* VectorReal::convertTo(TypeSpec const &type) const {
     
     // test for type conversion
-    if (type == VectorRealPos_name) {
+    if (type == VectorRealPos::getClassTypeSpec()) {
         
         return new VectorRealPos( getValue() );
     }
@@ -134,11 +131,28 @@ RbObject* VectorReal::convertTo(TypeSpec const &type) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& VectorReal::getClass(void) const {
+/** Get class name of object */
+const std::string& VectorReal::getClassName(void) { 
+    
+    static std::string rbClassName = "Real Vector";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(VectorReal_name) + AbstractVector::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& VectorReal::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractVector::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& VectorReal::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -170,17 +184,11 @@ std::vector<double> VectorReal::getValue(void) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& VectorReal::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Can we convert this vector into another object? */
 bool VectorReal::isConvertibleTo(TypeSpec const &type) const {
     
     // test for type conversion
-    if (type == VectorRealPos_name) {
+    if (type == VectorRealPos::getClassTypeSpec()) {
         
         for (std::vector<double>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             
@@ -233,15 +241,15 @@ void VectorReal::printValue(std::ostream& o) const {
 /** Push an int onto the back of the vector after checking */
 void VectorReal::push_back( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
+    if ( x->isTypeSpec( Real::getClassTypeSpec() ) ) {
         elements.push_back(static_cast<Real*>( x )->getValue());
-    } else if ( x->isConvertibleTo(Real_name) ) {
-        elements.push_back(static_cast<Real*>(x->convertTo(Real_name))->getValue());
+    } else if ( x->isConvertibleTo(Real::getClassTypeSpec()) ) {
+        elements.push_back(static_cast<Real*>(x->convertTo(Real::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Real_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Real::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -255,15 +263,15 @@ void VectorReal::push_back(double x) {
 /** Push an int onto the front of the vector after checking */
 void VectorReal::push_front( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
+    if ( x->isTypeSpec( Real::getClassTypeSpec() ) ) {
         elements.insert( elements.begin(), static_cast<Real*>( x )->getValue());
-    } else if ( x->isConvertibleTo(Real_name) ) {
-        elements.insert( elements.begin(), static_cast<Real*>(x->convertTo(Real_name))->getValue());
+    } else if ( x->isConvertibleTo(Real::getClassTypeSpec()) ) {
+        elements.insert( elements.begin(), static_cast<Real*>(x->convertTo(Real::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Real_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Real::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -283,13 +291,13 @@ void VectorReal::resize(size_t n) {
 void VectorReal::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
-    if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
+    if ( x->isTypeSpec( Real::getClassTypeSpec() ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Real*>( (RbLanguageObject*)x )->getValue());
-    } else if ( x->isConvertibleTo(Real_name) ) {
+        elements.insert( elements.begin() + index, static_cast<Real*>( x )->getValue());
+    } else if ( x->isConvertibleTo(Real::getClassTypeSpec()) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
@@ -298,12 +306,12 @@ void VectorReal::setElement(const size_t index, RbLanguageObject* x) {
         // remove first the old element at the index
         elements.erase(elements.begin()+index);
         
-        elements.insert( elements.begin() + index, static_cast<Real*>(x->convertTo(Real_name))->getValue());
+        elements.insert( elements.begin() + index, static_cast<Real*>(x->convertTo(Real::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Real_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Real::getClassName() + "[] with invalid value" );
     }
 }
 

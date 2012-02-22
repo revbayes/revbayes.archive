@@ -43,9 +43,7 @@
 #include <vector>
 #include <set>
 
-// Definition of the static type spec member
-const TypeSpec Func_dppSeat::typeSpec(Func_dppSeat_name);
-const TypeSpec Func_dppSeat::returnTypeSpec(RbVoid_name);
+
 
 /** Clone object */
 Func_dppSeat* Func_dppSeat::clone( void ) const {
@@ -101,8 +99,8 @@ const ArgumentRules& Func_dppSeat::getArgumentRules( void ) const {
 	
     if ( !rulesSet ) {
 		
-        argumentRules.push_back( new ValueRule( "concentration", RbObject_name ) );
-        argumentRules.push_back( new ValueRule( "number", Natural_name ) );
+        argumentRules.push_back( new ValueRule( "concentration", RbObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "number",        Natural::getClassTypeSpec()  ) );
         rulesSet = true;
     }
 	
@@ -110,23 +108,35 @@ const ArgumentRules& Func_dppSeat::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_dppSeat::getClass( void ) const {
-	
-    static VectorString rbClass = VectorString( Func_dppSeat_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Func_dppSeat::getClassName(void) { 
+    
+    static std::string rbClassName = "DPP allocation vector function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_dppSeat::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_dppSeat::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_dppSeat::getReturnType( void ) const {
-	
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_dppSeat::getTypeSpec(void) const {
-    return typeSpec;
 }
 

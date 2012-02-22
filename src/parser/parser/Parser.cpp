@@ -184,7 +184,7 @@ int Parser::execute(SyntaxElement* root) const {
     }
 
     // Print result if the root is not an assign expression
-    if (result != NULL && result->getDagNode() != NULL && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL && !root->isType(SyntaxAssignExpr_name)) {
+    if (result != NULL && result->getDagNode() != NULL && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL && !root->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec())) {
         std::ostringstream msg;
         result->getDagNode()->printValue(msg);
         RBOUT( msg.str() );
@@ -288,7 +288,7 @@ int Parser::help(const SyntaxFunctionCall& root) const {
 
     RbString symbol;
 
-    if ( root.isType(SyntaxFunctionCall_name) ) {
+    if ( root.isTypeSpec(SyntaxFunctionCall::getClassTypeSpec()) ) {
         symbol = root.getFunctionName();
     }
     else {

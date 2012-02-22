@@ -30,7 +30,8 @@ class Func__uminus :  public RbFunction {
     public:
         // Basic utility functions
         Func__uminus*               clone(void) const;                                          //!< Clone the object
-        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
@@ -42,7 +43,6 @@ class Func__uminus :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
     
         // Arguments
         RbVariablePtr               value;
@@ -59,10 +59,6 @@ class Func__uminus :  public RbFunction {
 #include "ValueRule.h"
 #include "VectorString.h"
 
-
-// Definition of the static type spec member
-template <typename firstValType, typename retType>
-const TypeSpec Func__uminus<firstValType, retType>::typeSpec("Func__uminus", new TypeSpec(firstValType().getType() + "," + retType().getType()));
 
 
 /** Clone object */
@@ -101,14 +97,33 @@ const ArgumentRules& Func__uminus<valType, retType>::getArgumentRules( void ) co
 }
 
 
-/** Get class vector describing type of object */
-template <typename valType, typename retType>
-const VectorString& Func__uminus<valType, retType>::getClass( void ) const {
-
-    static std::string  rbName  = "Func__uminus<" + valType().getType() + "," + retType().getType() + ">"; 
-    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+/** Get class name of object */
+template <typename firstValType, typename secondValType>
+const std::string& Func__uminus<firstValType, secondValType>::getClassName(void) { 
     
-    return rbClass;
+    static std::string rbClassName = "Func__uminus<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    
+	return rbClassName; 
+}
+
+
+/** Get class type spec describing type of object */
+template <typename firstValType, typename secondValType>
+const TypeSpec& Func__uminus<firstValType, secondValType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+
+/** Get type spec */
+template <typename firstValType, typename secondValType>
+const TypeSpec& Func__uminus<firstValType, secondValType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -117,14 +132,6 @@ template <typename valType, typename retType>
 const TypeSpec& Func__uminus<valType, retType>::getReturnType( void ) const {
 
     return retType().getTypeSpec();
-}
-
-
-/** Get return spec */
-template <typename firstValType, typename retType>
-const TypeSpec& Func__uminus<firstValType, retType>::getTypeSpec( void ) const {
-    
-    return typeSpec;
 }
 
 

@@ -140,11 +140,20 @@ const RbLanguageObject& MemberObject::executeOperationSimple(const std::string& 
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MemberObject::getClass(void) const {
+/** Get class name of object */
+const std::string& MemberObject::getClassName(void) { 
+    
+    static std::string rbClassName = "Member object";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(MemberObject_name) + RbLanguageObject::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& MemberObject::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -176,8 +185,8 @@ const MethodTable& MemberObject::getMethods(void) const {
         methods.addFunction("memberNames", new MemberFunction(RbVoid_name, getMemberNamesArgRules) );
         
         // add the 'memberNames()' method
-        getArgRules->push_back( new ValueRule( "name" , RbString_name ) );
-        methods.addFunction("get", new MemberFunction(RbLanguageObject_name, getArgRules) );
+        getArgRules->push_back( new ValueRule( "name" , RbString::getClassTypeSpec() ) );
+        methods.addFunction("get", new MemberFunction(RbLanguageObject::getClassTypeSpec(), getArgRules) );
         
         methodsSet = true;
     }   

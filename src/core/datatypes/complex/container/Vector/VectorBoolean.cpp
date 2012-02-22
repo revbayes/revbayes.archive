@@ -27,24 +27,22 @@
 #include <sstream>
 #include <algorithm>
 
-// Definition of the static type spec member
-const TypeSpec VectorBoolean::typeSpec(VectorBoolean_name);
 
 /** Default constructor */
-VectorBoolean::VectorBoolean(void) : AbstractVector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(void) : AbstractVector(RbBoolean::getClassTypeSpec()) {
 
 }
 
 
 /** Construct vector with one bool x */
-VectorBoolean::VectorBoolean(bool x) : AbstractVector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(bool x) : AbstractVector(RbBoolean::getClassTypeSpec()) {
 
     elements.push_back( x );
 }
 
 
 /** Construct vector with n bools x */
-VectorBoolean::VectorBoolean(size_t n, bool x) : AbstractVector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(size_t n, bool x) : AbstractVector(RbBoolean::getClassTypeSpec()) {
 
     for (size_t i = 0; i < n; i++) {
         elements.push_back( x );
@@ -53,14 +51,14 @@ VectorBoolean::VectorBoolean(size_t n, bool x) : AbstractVector(RbBoolean_name) 
 
 
 /** Constructor from bool vector */
-VectorBoolean::VectorBoolean(const std::vector<bool>& x) : AbstractVector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(const std::vector<bool>& x) : AbstractVector(RbBoolean::getClassTypeSpec()) {
 
     elements = x;
 }
 
 
 /** Constructor from int vector */
-VectorBoolean::VectorBoolean(const std::vector<int>& x) : AbstractVector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(const std::vector<int>& x) : AbstractVector(RbBoolean::getClassTypeSpec()) {
 
     for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) {
         elements.push_back( (*i) == 0 );
@@ -120,16 +118,27 @@ VectorBoolean* VectorBoolean::clone() const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& VectorBoolean::getClass() const {
-
-    static VectorString rbClass = VectorString(VectorBoolean_name) + AbstractVector::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& VectorBoolean::getClassName(void) { 
+    
+    static std::string rbClassName = "Boolean Vector";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& VectorBoolean::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractVector::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& VectorBoolean::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& VectorBoolean::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -174,15 +183,15 @@ void VectorBoolean::pop_front() {
 /** Append element to end of vector, updating length in process */
 void VectorBoolean::push_back(RbObject* x) {
  
-    if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
+    if ( x->isTypeSpec( RbBoolean::getClassTypeSpec() ) ) {
         elements.push_back(static_cast<RbBoolean*>( x )->getValue());
-    } else if ( x->isConvertibleTo(RbBoolean_name) ) {
-        elements.push_back(static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+    } else if ( x->isConvertibleTo(RbBoolean::getClassTypeSpec()) ) {
+        elements.push_back(static_cast<RbBoolean*>(x->convertTo(RbBoolean::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RbBoolean::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -196,15 +205,15 @@ void VectorBoolean::push_back(bool x) {
 /** Append element to front of vector, updating length in process */
 void VectorBoolean::push_front(RbObject* x) {
     
-    if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
+    if ( x->isTypeSpec( RbBoolean::getClassTypeSpec() ) ) {
         elements.insert( elements.begin() , static_cast<RbBoolean*>( x )->getValue());
-    } else if ( x->isConvertibleTo(RbBoolean_name) ) {
-        elements.insert( elements.begin() , static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+    } else if ( x->isConvertibleTo(RbBoolean::getClassTypeSpec()) ) {
+        elements.insert( elements.begin() , static_cast<RbBoolean*>(x->convertTo(RbBoolean::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RbBoolean::getClassTypeSpec() + "[] with invalid value" );
     }
 }
 
@@ -223,13 +232,13 @@ void VectorBoolean::resize(size_t n) {
 void VectorBoolean::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
-    if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
+    if ( x->isTypeSpec( RbBoolean::getClassTypeSpec() ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<RbBoolean*>( x )->getValue());
-    } else if ( x->isConvertibleTo(RbBoolean_name) ) {
+    } else if ( x->isConvertibleTo(RbBoolean::getClassTypeSpec()) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
@@ -238,12 +247,12 @@ void VectorBoolean::setElement(const size_t index, RbLanguageObject* x) {
         // remove first the old element at the index
         elements.erase(elements.begin()+index);
         
-        elements.insert( elements.begin() + index, static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+        elements.insert( elements.begin() + index, static_cast<RbBoolean*>(x->convertTo(RbBoolean::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RbBoolean::getClassName() + "[] with invalid value" );
     }
 }
 

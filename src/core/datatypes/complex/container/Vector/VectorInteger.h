@@ -26,8 +26,6 @@
 #include <vector>
 
 
-const std::string VectorInteger_name = "Integer vector";
-
 class VectorInteger : public AbstractVector {
 
     public:
@@ -48,7 +46,8 @@ class VectorInteger : public AbstractVector {
     // Basic utility functions
     VectorInteger*              clone(void) const;                                              //!< Clone object
     RbObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-    const VectorString&         getClass(void) const;                                           //!< Get class
+    static const std::string&   getClassName(void);                                             //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
     bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
 
@@ -74,7 +73,6 @@ class VectorInteger : public AbstractVector {
 
     private:
     std::vector<int>            elements;
-    static const TypeSpec       typeSpec;
     
     
 };

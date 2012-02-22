@@ -34,10 +34,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_gamma::typeSpec(Dist_gamma_name);
-const TypeSpec Dist_gamma::varTypeSpec(RealPos_name);
-
 /** Default constructor for parser use */
 Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ), shape( NULL ), rate( NULL ) {
     // Do nothing
@@ -71,11 +67,28 @@ Dist_gamma* Dist_gamma::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_gamma::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_gamma::getClassName(void) { 
+    
+    static std::string rbClassName = "Gamma distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Dist_gamma_name ) + DistributionContinuous::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_gamma::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_gamma::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 /** Get member variable rules */
@@ -86,8 +99,8 @@ const MemberRules& Dist_gamma::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ValueRule( "shape", RealPos_name) );
-        memberRules.push_back( new ValueRule( "rate", RealPos_name ) );
+        memberRules.push_back( new ValueRule( "shape", RealPos::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "rate",  RealPos::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -96,15 +109,11 @@ const MemberRules& Dist_gamma::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_gamma::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_gamma::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = RealPos::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 

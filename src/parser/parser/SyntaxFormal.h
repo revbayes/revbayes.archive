@@ -28,8 +28,6 @@ class RbString;
 class TypeSpec;
 
 
-const std::string SyntaxFormal_name = "Argument specification";
-
 class SyntaxFormal : public SyntaxElement {
 
     public:
@@ -43,7 +41,8 @@ class SyntaxFormal : public SyntaxElement {
 
         // Basic utility functions
         SyntaxFormal*               clone() const;                                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                                           //!< Get class vector 
+        static const std::string&   getClassName(void);                                                             //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
@@ -60,8 +59,6 @@ class SyntaxFormal : public SyntaxElement {
         RbString*                   label;                                                                          //!< The label of the argument
         SyntaxElement*              defaultExpr;                                                                    //!< Default value expression of argument
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

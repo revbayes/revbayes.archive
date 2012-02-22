@@ -32,7 +32,8 @@ class Func__div :  public RbFunction {
     public:
         // Basic utility functions
         Func__div*                  clone(void) const;                                          //!< Clone the object
-        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
@@ -44,7 +45,6 @@ class Func__div :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
     
         // Arguments
         RbVariablePtr               first;
@@ -65,11 +65,6 @@ class Func__div :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
-
-
-// Definition of the static type spec member
-template <typename firstValType, typename secondValType, typename retType>
-const TypeSpec Func__div<firstValType, secondValType, retType>::typeSpec("Func__div", new TypeSpec(firstValType().getType() + "," + secondValType().getType() + "," + retType().getType()));
 
 
 /** Clone object */
@@ -122,14 +117,33 @@ const ArgumentRules& Func__div<firstValType, secondValType, retType>::getArgumen
 }
 
 
-/** Get class vector describing type of object */
+/** Get class name of object */
 template <typename firstValType, typename secondValType, typename retType>
-const VectorString& Func__div<firstValType, secondValType, retType>::getClass(void) const {
-
-    static std::string  rbName  = "Func__div<" + firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() + ">"; 
-    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+const std::string& Func__div<firstValType, secondValType, retType>::getClassName(void) { 
     
-    return rbClass;
+    static std::string rbClassName = "Func__div<" + firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() + ">";
+    
+	return rbClassName; 
+}
+
+
+/** Get class type spec describing type of object */
+template <typename firstValType, typename secondValType, typename retType>
+const TypeSpec& Func__div<firstValType, secondValType, retType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+
+/** Get type spec */
+template <typename firstValType, typename secondValType, typename retType>
+const TypeSpec& Func__div<firstValType, secondValType, retType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -138,13 +152,6 @@ template <typename firstValType, typename secondValType, typename retType>
 const TypeSpec& Func__div<firstValType, secondValType, retType>::getReturnType(void) const {
 
     return retType().getTypeSpec();
-}
-
-/** Get return spec */
-template <typename firstValType, typename secondValType, typename retType>
-const TypeSpec& Func__div<firstValType, secondValType, retType>::getTypeSpec( void ) const {
-    
-    return typeSpec;
 }
 
 

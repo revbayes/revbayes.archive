@@ -22,11 +22,6 @@
 
 #include <string>
 
-class DAGNode;
-class RbObject;
-class VectorString;
-
-const std::string RangeRule_name = "RangeRule";
 
 template <typename valType>
 class RangeRule : public ArgumentRule {
@@ -37,26 +32,25 @@ class RangeRule : public ArgumentRule {
 
         // Basic utility functions
         RangeRule*                  clone(void) const { return new RangeRule(*this); }                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                                               //!< Get class vector
+        static const std::string&   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
         std::string                 richInfo(void) const;                                                               //!< General info on object
 
         // MinmaxRule functions
-        bool                        isArgumentValid(DAGNode* var, bool& needsConversion, bool once) const;        //!< Is var valid argument?
+        bool                        isArgumentValid(const RbVariablePtr& var, bool convert = false) const;              //!< Is var valid argument?
 
     protected:
         valType                     minVal;                                                                             //!< Min value
         valType                     maxVal;                                                                             //!< Max value
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif
 
 
-#include "VectorString.h"
+#include "ConstantNode.h"
 
 
 /** Construct rule without default value; use "" for no label. */
@@ -76,24 +70,42 @@ RangeRule<valType>::RangeRule( const std::string& argName, valType* defVal, valT
 
     if ( min > max )
         throw RbException( "Min larger than max in range rule" );
+    }
+
+
+/** Get class name of object */
+template<typename valType>
+const std::string& RangeRule<valType>::getClassName(void) { 
+    
+    static std::string rbClassName = "Range rule<" + valType::getClassName() + ">";
+    
+	return rbClassName; 
 }
 
-
-/** Get class vector describing type of object */
-template <typename valType>
-const VectorString& RangeRule<valType>::getClass( void ) const {
-
-    static VectorString rbClass = VectorString( RangeRule_name ) + RbString( "<" ) + minVal.getType() + RbString( ">" ) + ArgumentRule::getClass();
+/** Get class type spec describing type of object */
+template<typename valType>
+const TypeSpec& RangeRule<valType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+template<typename valType>
+const TypeSpec& RangeRule<valType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Check whether argument is constant and within the permissible range */
 template <typename valType>
-bool RangeRule<valType>::isArgumentValid( DAGNode* var, bool& needsConversion, bool once ) const {
+bool RangeRule<valType>::isArgumentValid( const RbVariablePtr& var, bool convert ) const {
 
-    needsConversion = false;
-    if ( !var->isType( ConstantNode_name ) )
+    if ( !var->isTypeSpec( ConstantNode::getClassTypeSpec() ) )
         return false;
 
     const valType* val = static_cast<valType*> ( var->getValue() );

@@ -25,8 +25,6 @@
 #include <vector>
 
 
-const std::string VectorBoolean_name = "RbBoolean vector";
-
 class VectorBoolean : public AbstractVector {
 
     public:
@@ -45,7 +43,8 @@ class VectorBoolean : public AbstractVector {
         
     // Basic utility functions
     VectorBoolean*                      clone(void) const;                                              //!< Clone object
-    const VectorString&                 getClass(void) const;                                           //!< Get class
+    static const std::string&           getClassName(void);                                             //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                        //!< Get language type of the object
 
     // Vector functions, including STL-like functions
@@ -69,7 +68,6 @@ class VectorBoolean : public AbstractVector {
 
     private:
     std::vector<bool>                   elements;
-    static const TypeSpec               typeSpec;
     
 };
 

@@ -27,10 +27,7 @@
 class DAGNode;
 class Real;
 class Simplex;
-class StochasticNode;
-class VectorString;
 
-const std::string Dist_dirichlet_name = "Dist_dirichlet";
 
 class Dist_dirichlet: public DistributionContinuous {
 
@@ -39,7 +36,8 @@ class Dist_dirichlet: public DistributionContinuous {
 
         // Basic utility functions
         Dist_dirichlet*             clone(void) const;                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                               //!< Get class vector
+        static const std::string&   getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
@@ -55,8 +53,6 @@ class Dist_dirichlet: public DistributionContinuous {
         const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
     
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       varTypeSpec;
 
         // parameters
         RbVariablePtr               alpha;

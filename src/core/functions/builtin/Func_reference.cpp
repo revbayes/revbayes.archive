@@ -28,10 +28,6 @@
 #include <fstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_reference::typeSpec(Func_reference_name);
-const TypeSpec Func_reference::returnTypeSpec(RbLanguageObject_name);
-
 /** Clone object */
 Func_reference* Func_reference::clone( void ) const {
     
@@ -57,7 +53,7 @@ const ArgumentRules& Func_reference::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ValueRule( "variable", TypeSpec(RbLanguageObject_name) ) );
+        argumentRules.push_back( new ValueRule( "variable", RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
 
@@ -66,24 +62,36 @@ const ArgumentRules& Func_reference::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_reference::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_reference::getClassName(void) { 
     
-    static VectorString rbClass = VectorString( Func_reference_name ) + RbFunction::getClass();
-    return rbClass;
+    static std::string rbClassName = "Reference function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_reference::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_reference::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_reference::getReturnType( void ) const {
     
+    static TypeSpec returnTypeSpec = RbLanguageObject::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_reference::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

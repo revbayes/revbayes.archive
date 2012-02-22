@@ -31,8 +31,6 @@ class StochasticNode;
 class VectorString;
 
 
-const std::string Dist_cat_name = "Dist_cat";
-
 class Dist_cat: public DistributionDiscrete {
 
     public:
@@ -41,7 +39,8 @@ class Dist_cat: public DistributionDiscrete {
 
         // Basic utility functions
         Dist_cat*                       clone(void) const;                                                      //!< Clone object
-        const VectorString&             getClass(void) const;                                                   //!< Get class vector
+        static const std::string&       getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable setup
@@ -56,12 +55,10 @@ class Dist_cat: public DistributionDiscrete {
         const RbLanguageObject&         rv(void);                                                               //!< Generate random variable
     
     private:
-        static const TypeSpec           typeSpec;
-        static const TypeSpec           varTypeSpec;
 
         // parameters
-        Variable                        probabilities;
-        Variable                        templateObject;
+        RbVariablePtr                   probabilities;
+        RbVariablePtr                   templateObject;
         
         // memberfunction return values
         Categorical*                    randomVariable;

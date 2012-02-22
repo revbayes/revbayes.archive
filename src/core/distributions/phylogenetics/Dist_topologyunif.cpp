@@ -38,10 +38,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_topologyunif::typeSpec(Dist_topologyunif_name);
-const TypeSpec Dist_topologyunif::varTypeSpec(Topology_name);
-
 /** Default constructor for parser use */
 Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRules() ),
                                                 numTaxa( NULL ),
@@ -168,11 +164,28 @@ Dist_topologyunif* Dist_topologyunif::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_topologyunif::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_topologyunif::getClassName(void) { 
+    
+    static std::string rbClassName = "Uniform topology distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Dist_topologyunif_name ) + DistributionDiscrete::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_topologyunif::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionDiscrete::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_topologyunif::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -184,9 +197,9 @@ const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "numberTaxa" , Natural_name      ) );
-        memberRules.push_back( new ValueRule( "tipNames"   , VectorString_name ) );
-        memberRules.push_back( new ValueRule( "isRooted"   , RbBoolean_name    ) );
+        memberRules.push_back( new ValueRule( "numberTaxa" , Natural::getClassTypeSpec()      ) );
+        memberRules.push_back( new ValueRule( "tipNames"   , VectorString::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "isRooted"   , RbBoolean::getClassTypeSpec()    ) );
         memberRules.push_back( new ValueRule( "isBinary"   , new RbBoolean(true) ) );
 
         rulesSet = true;
@@ -217,15 +230,11 @@ const Simplex& Dist_topologyunif::getProbabilityMassVector( void ) {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_topologyunif::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_topologyunif::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = Topology::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 

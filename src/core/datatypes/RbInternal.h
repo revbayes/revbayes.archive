@@ -24,8 +24,6 @@
 
 class VectorString;
 
-const std::string RbInternal_name = "internal";
-
 class RbInternal : public RbObject { 
 
     public:
@@ -33,7 +31,8 @@ class RbInternal : public RbObject {
 
         // Basic utility functions you have to override
         virtual RbInternal*             clone(void) const = 0;                  //!< Clone object
-        virtual const VectorString&     getClass(void) const;                   //!< Get class vector
+        static const std::string&       getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
 
     
         // Basic utility functions you can overwrite

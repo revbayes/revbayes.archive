@@ -26,10 +26,6 @@
 
 #include <sstream>
 
-
-// Definition of the static type spec member
-const TypeSpec Mixture::typeSpec_(Mixture_name);
-
 /* Default constructor */
 Mixture::Mixture(void) : MutableMemberObject( getMemberRules() ) {
 
@@ -112,11 +108,28 @@ Mixture* Mixture::clone(void) const {
 }
 
 
-/* Get class information */
-const VectorString& Mixture::getClass(void) const {
+/** Get class name of object */
+const std::string& Mixture::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(Mixture_name) + MemberObject::getClass();
-    return rbClass;
+    static std::string rbClassName = "Mixture";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Mixture::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MutableMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Mixture::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -175,8 +188,8 @@ const MemberRules& Mixture::getMemberRules(void) const {
     static bool        rulesSet = false;
     if (!rulesSet) 
     {
-        memberRules.push_back( new ValueRule( "numObservations", Integer_name ) );
-        memberRules.push_back( new ValueRule( "parameters", DagNodeContainer_name ) );
+        memberRules.push_back( new ValueRule( "numObservations", Integer::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "parameters", DagNodeContainer::getClassTypeSpec() ) );
       
         rulesSet = true;
     }
@@ -200,21 +213,6 @@ void Mixture::printValue(std::ostream& o) const {
 
     o << std::endl << std::endl;
 
-}
-
-/* Get a lot of information about the Mixture */
-std::string Mixture::richInfo(void) const {
-    
-    std::ostringstream o;
-    o <<  "Mixture: ";
-    printValue(o);
-    return o.str();
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Mixture::getTypeSpec(void) const {
-    return typeSpec_;
 }
 
 

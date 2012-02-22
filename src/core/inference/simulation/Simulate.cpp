@@ -49,9 +49,6 @@
 #include <string>
 
 
-// Definition of the static type spec member
-const TypeSpec Simulate::typeSpec(Simulate_name);
-
 /** Constructor passes member rules and method inits to base class */
 Simulate::Simulate(void) : ConstantMemberObject(getMemberRules()), model( NULL ), monitors( NULL ) {
 }
@@ -89,11 +86,28 @@ const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Simulate::getClass(void) const {
+/** Get class name of object */
+const std::string& Simulate::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(Simulate_name) + ConstantMemberObject::getClass();
-    return rbClass;
+    static std::string rbClassName = "Simulate";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Simulate::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Simulate::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -105,8 +119,8 @@ const MemberRules& Simulate::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule ( "model"     , Model_name    ) );
-        memberRules.push_back( new ValueRule ( "monitors"  , TypeSpec(Vector_name, new TypeSpec(Monitor_name) ) ) );
+        memberRules.push_back( new ValueRule ( "model"     , Model::getClassTypeSpec()    ) );
+        memberRules.push_back( new ValueRule ( "monitors"  , TypeSpec(Vector::getClassName(), NULL, new TypeSpec(Monitor::getClassTypeSpec()) ) ) );
 //        memberRules.push_back( new ValueRule ( "objectMonitors", TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
         
         rulesSet = true;
@@ -127,21 +141,15 @@ const MethodTable& Simulate::getMethods(void) const {
     
     if (!methodsSet) {
         
-        updateArgRules->push_back( new ValueRule( "dataElements", Natural_name     ) );
+        updateArgRules->push_back( new ValueRule( "dataElements", Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules ) );
-        getValuesArgRules->push_back( new ValueRule( "varName", RbString_name     ) );
-        methods.addFunction("getValues", new MemberFunction( RbVoid_name, getValuesArgRules ) );
+        getValuesArgRules->push_back( new ValueRule( "varName", RbString::getClassTypeSpec()     ) );
+        methods.addFunction("getValues", new MemberFunction( Vector::getClassTypeSpec(), getValuesArgRules ) );
         methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
     
     return methods;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Simulate::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -152,7 +160,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
         // get the DAG nodes
         const Model& theModel = static_cast<Model&>( model->getValue() );
         
-        Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
+            Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(FileMonitor::getClassTypeSpec()) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
                 // get the monitor #i
                 FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
@@ -187,7 +195,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
             // get the DAG nodes
             const Model& theModel = static_cast<Model&>( model->getValue() );
             
-            Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
+            Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(ObjectMonitor::getClassTypeSpec()) ) ) );
             for (size_t i=0; i<monitors->size(); i++) {
                 // get the monitor #i
                 ObjectMonitor& theMonitor = static_cast<ObjectMonitor&>( monitors->getElement(i) );
@@ -229,14 +237,14 @@ void Simulate::getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<Stochast
         //we do nothing
         return;
     }
-    if (dagNode->getTypeSpec() ==  ConstantNode_name) { //if the node is constant: no parents to visit
+    if (dagNode->getTypeSpec() ==  ConstantNode::getClassTypeSpec()) { //if the node is constant: no parents to visit
         std::set<VariableNode*> children = dagNode->getChildren() ;
         visitedNodes.insert(dagNode);
         std::set<VariableNode*>::iterator it;
         for ( it = children.begin() ; it != children.end(); it++ )
             getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
     }
-    else if (dagNode->getTypeSpec() ==  StochasticNode_name || dagNode->getTypeSpec() ==  DeterministicNode_name) { //if the node is stochastic or deterministic
+    else if (dagNode->getTypeSpec() ==  StochasticNode::getClassTypeSpec() || dagNode->getTypeSpec() ==  DeterministicNode::getClassTypeSpec()) { //if the node is stochastic or deterministic
         //First I have to visit my parents
         const std::set<DAGNode*>& parents = dagNode->getParents() ;
         std::set<DAGNode*>::iterator it;
@@ -245,7 +253,7 @@ void Simulate::getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<Stochast
         
         //Then I can add myself to the nodes visited, and to the ordered vector of stochastic nodes
         visitedNodes.insert(dagNode);
-        if (dagNode->getTypeSpec() ==  StochasticNode_name) //if the node is stochastic
+        if (dagNode->getTypeSpec() ==  StochasticNode::getClassTypeSpec()) //if the node is stochastic
             orderedStochasticNodes.push_back(static_cast<StochasticNode*>( dagNode ) );
         
         //Finally I will visit my children

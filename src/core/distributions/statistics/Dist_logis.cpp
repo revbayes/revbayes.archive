@@ -37,10 +37,6 @@
 #include "RbMathMatrix.h"
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_logis::typeSpec(Dist_logis_name);
-const TypeSpec Dist_logis::varTypeSpec(Real_name);
-
 /** Default constructor for parser use */
 Dist_logis::Dist_logis( void ) : DistributionContinuous( getMemberRules() ), location( NULL), scale( NULL ) {
 
@@ -55,11 +51,28 @@ Dist_logis* Dist_logis::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_logis::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_logis::getClassName(void) { 
+    
+    static std::string rbClassName = "Logistic distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Dist_logis_name ) + DistributionContinuous::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_logis::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_logis::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -70,8 +83,8 @@ const MemberRules& Dist_logis::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if ( !rulesSet ){
-        memberRules.push_back( new ValueRule( "location",  Real_name    ) );
-        memberRules.push_back( new ValueRule( "scale",     RealPos_name ) );
+        memberRules.push_back( new ValueRule( "location",  Real::getClassTypeSpec()    ) );
+        memberRules.push_back( new ValueRule( "scale",     RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
 
@@ -79,15 +92,11 @@ const MemberRules& Dist_logis::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_logis::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_logis::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = Real::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 

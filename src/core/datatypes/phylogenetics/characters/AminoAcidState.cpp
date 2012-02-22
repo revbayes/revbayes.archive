@@ -21,10 +21,6 @@
 const std::string AminoAcidState::stateLabels = "ARNDCQEGHILKMFPSTWYV";
 
 
-// Definition of the static type spec member
-const TypeSpec AminoAcidState::typeSpec(AminoAcidState_name);
-
-
 /** Default constructor */
 AminoAcidState::AminoAcidState(void) : CharacterStateDiscrete(20) {
 
@@ -100,11 +96,28 @@ AminoAcidState* AminoAcidState::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& AminoAcidState::getClass(void) const {
+/** Get class name of object */
+const std::string& AminoAcidState::getClassName(void) { 
+    
+    static std::string rbClassName = "Amino Acid";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( AminoAcidState_name ) + CharacterStateDiscrete::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& AminoAcidState::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( CharacterStateDiscrete::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& AminoAcidState::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -132,11 +145,6 @@ std::string AminoAcidState::getStringValue(void) const  {
     std::string s = "";
     s += c;
     return s;
-}
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& AminoAcidState::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

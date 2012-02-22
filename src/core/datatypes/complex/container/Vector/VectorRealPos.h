@@ -32,7 +32,6 @@
  * This class holds a vector of real positive numbers in a convenient
  * way for use in the RevBayes source code.
  */
-const std::string VectorRealPos_name = "+Real vector";
 
 class VectorRealPos : public AbstractVector {
 
@@ -51,7 +50,8 @@ class VectorRealPos : public AbstractVector {
     // Basic utility functions, pure virtual in MemberObject and implemented here
     VectorRealPos*              clone(void) const;                                              //!< Clone object
     RbObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-    const VectorString&         getClass(void) const;                                           //!< Get class vector
+    static const std::string&   getClassName(void);                                             //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
     bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
     void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
@@ -81,8 +81,6 @@ class VectorRealPos : public AbstractVector {
 protected:
     std::vector<double>         elements;
     
-private:
-    static const TypeSpec       typeSpec;
 };
 
 #endif

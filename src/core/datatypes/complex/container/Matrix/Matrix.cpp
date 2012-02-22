@@ -26,13 +26,12 @@
 #include <sstream>
 
 
-
 /** Default constructor for matrix */
-Matrix::Matrix(const std::string& elemType) : Vector(TypeSpec(elemType)) {
+Matrix::Matrix(const TypeSpec& elemType) : Vector( elemType ) {
 }
 
 /** Default constructor for matrix */
-Matrix::Matrix(const std::string& elemType, const MemberRules& memberRules) : Vector(TypeSpec(elemType)) {
+Matrix::Matrix(const TypeSpec& elemType, const MemberRules& memberRules) : Vector( elemType ) {
 }
 
 
@@ -42,11 +41,20 @@ Matrix::Matrix(const Matrix &m) : Vector(m) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Matrix::getClass(void) const {
+/** Get class name of object */
+const std::string& Matrix::getClassName(void) { 
+    
+    static std::string rbClassName = "Matrix";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(Matrix_name) + AbstractVector::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Matrix::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Vector::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 

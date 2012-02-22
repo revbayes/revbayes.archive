@@ -23,9 +23,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec RealPos::typeSpec(RealPos_name);
-
 /** Default constructor */
 RealPos::RealPos( void ) : Real( 1.0 ) {
 }
@@ -35,7 +32,7 @@ RealPos::RealPos( void ) : Real( 1.0 ) {
 RealPos::RealPos( double x ) : Real( x ) {
 
     if ( x < 0.0 )
-        throw RbException( "Nonpositive value for " + RealPos_name );
+        throw RbException( "Nonpositive value for " + getClassName() );
 }
 
 
@@ -43,7 +40,7 @@ RealPos::RealPos( double x ) : Real( x ) {
 RealPos::RealPos( int x ) : Real( x ) {
 
     if ( x < 0 )
-        throw RbException( "Nonpositive value for " + RealPos_name );
+        throw RbException( "Nonpositive value for " + getClassName() );
 }
 
 
@@ -52,15 +49,6 @@ RealPos::RealPos( unsigned int x ) : Real( x ) {
 }
 
 
-/** Get brief info about object */
-std::string RealPos::briefInfo( void ) const {
-    
-	std::ostringstream o;
-    printValue( o );
-    
-    return o.str();
-}
-
 /** Clone object */
 RealPos* RealPos::clone( void ) const {
 
@@ -68,29 +56,28 @@ RealPos* RealPos::clone( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& RealPos::getClass() const {
-
-    static VectorString rbClass = VectorString( RealPos_name ) + Real::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& RealPos::getClassName(void) { 
+    
+    static std::string rbClassName = "+Real";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& RealPos::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Real::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& RealPos::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& RealPos::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
-}
-
-
-/** Get complete info about object */
-std::string RealPos::richInfo( void ) const {
-
-	std::ostringstream o;
-    o << "+Real(";
-    printValue( o );
-	o << ")";
-
-    return o.str();
 }
 
 
@@ -98,7 +85,7 @@ std::string RealPos::richInfo( void ) const {
 void RealPos::setValue( double x ) {
 
     if ( x <= 0.0 )
-        throw RbException( "Nonpositive value for " + RealPos_name );
+        throw RbException( "Nonpositive value for " + getClassName() );
 
     Real::setValue( x );
 }

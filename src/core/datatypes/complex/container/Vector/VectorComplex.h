@@ -25,9 +25,6 @@
 #include <vector>
 
 
-
-const std::string VectorComplex_name = "Complex vector";
-
 class VectorComplex : public AbstractVector {
 
     public:
@@ -48,7 +45,8 @@ class VectorComplex : public AbstractVector {
         
     // Basic utility functions
     VectorComplex*                      clone(void) const;                                              //!< Clone object
-    const VectorString&                 getClass(void) const;                                           //!< Get class
+    static const std::string&           getClassName(void);                                             //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                        //!< Get language type of the object
     void                                printValue(std::ostream& o) const;                              //!< Print value (for user)
 
@@ -76,7 +74,6 @@ class VectorComplex : public AbstractVector {
     private:
     
     std::vector<std::complex<double> >  elements;
-    static const TypeSpec               typeSpec;                                           
 
 };
 

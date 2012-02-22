@@ -31,9 +31,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Variable::typeSpec(Variable_name);
-
 /** Constructor of filled variable. */
 Variable::Variable(const TypeSpec& ts) : RbInternal(), valueTypeSpec( ts ), node( NULL ) {
     
@@ -42,7 +39,7 @@ Variable::Variable(const TypeSpec& ts) : RbInternal(), valueTypeSpec( ts ), node
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(DAGNode* n): valueTypeSpec( RbLanguageObject_name ) {
+Variable::Variable(DAGNode* n): valueTypeSpec( RbLanguageObject::getClassTypeSpec() ) {
     
     // initialize the variable
     node = NULL;
@@ -111,11 +108,29 @@ size_t Variable::decrementReferenceCount( void ) {
     return refCount;
 }
 
-/** Get class vector describing type of object */
-const VectorString& Variable::getClass() const {
+
+/** Get class name of object */
+const std::string& Variable::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(Variable_name) + RbInternal::getClass();
-    return rbClass;
+    static std::string rbClassName = "Variable";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Variable::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Variable::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -132,12 +147,6 @@ DAGNode* Variable::getDagNode(void) {
 /** Get the reference count for this instance. */
 size_t Variable::getReferenceCount(void) const {
     return refCount;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Variable::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -179,6 +188,12 @@ RbLanguageObject& Variable::getValue(void) {
     }
     
     return retVal;
+}
+
+
+/** Get the required type specs for values stored inside this variable */
+const TypeSpec& Variable::getValueTypeSpec(void) const {
+    return valueTypeSpec;
 }
 
 

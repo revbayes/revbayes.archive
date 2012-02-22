@@ -31,9 +31,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxFunctionCall::typeSpec(SyntaxFunctionCall_name);
-
 /** Construct global function call from function name and arguments */
 SyntaxFunctionCall::SyntaxFunctionCall(RbString* id, std::list<SyntaxLabeledExpr*>* args)
     : SyntaxElement(), arguments(args), functionName(id), variable(NULL) {
@@ -110,11 +107,28 @@ SyntaxFunctionCall* SyntaxFunctionCall::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxFunctionCall::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxFunctionCall::getClassName(void) { 
+    
+    static std::string rbClassName = "Function call";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(SyntaxFunctionCall_name) + SyntaxElement::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxFunctionCall::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxFunctionCall::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -142,7 +156,7 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
     else {
 
         DAGNode* theNode = variable->evaluateContent( env )->getDagNode();
-        if ( theNode == NULL || !theNode->getValue().isTypeSpec( TypeSpec(MemberObject_name) ) )
+        if ( theNode == NULL || !theNode->getValue().isTypeSpec( MemberObject::getClassTypeSpec() ) )
             throw RbException( "Variable does not have member functions" );
 
         MemberObject& theMemberObject = dynamic_cast<MemberObject&>( theNode->getValue() );
@@ -155,12 +169,6 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
     }
 
     return RbVariablePtr( new Variable( new DeterministicNode( func ) ) );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxFunctionCall::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

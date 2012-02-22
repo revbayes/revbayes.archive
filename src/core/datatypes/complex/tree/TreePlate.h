@@ -26,9 +26,6 @@ class TopologyNode;
 class ValueRule;
 
 
-
-const std::string TreePlate_name = "Tree Plate";
-
 class TreePlate: public MutableMemberObject {
 
 public:
@@ -38,7 +35,8 @@ public:
 
     // Basic utility functions
     TreePlate*                      clone(void) const;                                                              //!< Clone object
-    const VectorString&             getClass(void) const;                                                           //!< Get class vector
+    static const std::string&       getClassName(void);                                                             //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                                                         //!< Get class type spec
     const TypeSpec&                 getTypeSpec(void) const;                                                        //!< Get language type of the object
     void                            printValue(std::ostream& o) const;                                              //!< Print value for user
 
@@ -57,7 +55,6 @@ protected:
     const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);    //!< Execute method
 
 private:
-    static const TypeSpec           typeSpec;
     
     std::vector<std::string>        nodeVariableNames;                                                              //!< The vector of variables names for each node
     

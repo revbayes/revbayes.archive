@@ -23,7 +23,8 @@
 class TypeSpec {
     
     public:
-                                    TypeSpec(const std::string& objType, TypeSpec* elemType = NULL);                                //!< Complete constructor
+                                    TypeSpec(const std::string& objType);                                                           //!< Complete constructor
+                                    TypeSpec(const std::string& objType, TypeSpec* p, TypeSpec* elemType = NULL);                   //!< Complete constructor
                                     TypeSpec(const TypeSpec& ts);                                                                   //!< Copy Constructor
         virtual                    ~TypeSpec(void);                                                                                 //!< Destructor
                 
@@ -36,7 +37,9 @@ class TypeSpec {
                                     // Regular functions
         const std::string&          getBaseType(void) const { return baseType; }                                                    //!< Get the element type
         const TypeSpec&             getElementType(void) const { return *elementType; }                                             //!< Get the element type
+        const TypeSpec*             getParentType(void) const { return parent; }
         const std::string&          getType(void) const { return type; }                                                            //!< Get object type
+        bool                        isDerivedOf(const TypeSpec& x) const;                                                           //!< Test whether the type represented by this object is of the same or derived type of the argument
         const std::string&          toString(void) const;                                                                           //!< Express as a string
 
     private:
@@ -44,6 +47,8 @@ class TypeSpec {
         std::string                 baseType;                                                                                       //!< The base type of the object or objects
         std::string                 type;                                                                                           //!< The full type including base and element types
         TypeSpec*                   elementType;                                                                                    //!< The type of the elements if this is a container
+        TypeSpec*                   parent;
+
 };
 
                                     // Global functions using the class

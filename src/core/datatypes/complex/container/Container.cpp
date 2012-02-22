@@ -66,11 +66,20 @@ Container& Container::operator=( const Container& x ) {
 }
 
 
-/** Get class Container describing type of object */
-const VectorString& Container::getClass(void) const { 
+/** Get class name of object */
+const std::string& Container::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(Container_name) + ConstantMemberObject::getClass();
-	return rbClass;
+    static std::string rbClassName = "Container";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Container::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -85,11 +94,11 @@ const MethodTable& Container::getMethods(void) const {
     
     if ( methodsSet == false ) 
     {
-        methods.addFunction("size", new MemberFunction(TypeSpec(Natural_name), sizeArgRules) );
+        methods.addFunction("size", new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // add method for call "x[]" as a function
-        squareBracketArgRules->push_back( new ValueRule( "index" , Natural_name ) );
-        methods.addFunction("[]",  new MemberFunction(TypeSpec(RbObject_name), squareBracketArgRules) );
+        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ConstantMemberObject::getMethods() );

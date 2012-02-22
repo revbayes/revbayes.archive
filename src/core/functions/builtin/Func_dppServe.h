@@ -31,14 +31,14 @@
 class DAGNode;
 class VectorString;
 
-const std::string Func_dppServe_name = "DPP function that returns a vector of parameters for each unique category";
 
 class Func_dppServe :  public RbFunction {
 	
 public:
 	// Basic utility functions
 	Func_dppServe*	                clone(void) const;                                          //!< Clone the object
-	const VectorString&             getClass(void) const;                                       //!< Get class vector
+    static const std::string&       getClassName(void);                                         //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                                     //!< Get class type spec
     const TypeSpec&                 getTypeSpec(void) const;                                    //!< Get language type of the object
 	
 	// Regular functions
@@ -49,8 +49,6 @@ protected:
 	const RbLanguageObject&         executeFunction(void);                                              //!< Execute function
     
 private:
-    static const TypeSpec           typeSpec;	
-    static const TypeSpec           returnTypeSpec;
 
     // function return value
     VectorReal                      values;

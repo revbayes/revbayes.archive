@@ -42,9 +42,6 @@
 #include <vector>
 
 
-
-const std::string TopologyNode_name = "Topology Node";
-
 class TopologyNode : public ConstantMemberObject {
     
     public:
@@ -58,7 +55,8 @@ class TopologyNode : public ConstantMemberObject {
         // Basic utility functions
         TopologyNode*                       clone(void) const;                                                          //!< Clone object
         bool                                equals(const TopologyNode& node) const;                                     //!< Test whether this is the same node
-        const VectorString&                 getClass(void) const;                                                       //!< Get class vector
+        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
 
@@ -92,7 +90,6 @@ class TopologyNode : public ConstantMemberObject {
         std::string                         buildNewickString(const TopologyNode& node) const;                          //!< compute the newick string for a tree rooting at this node
         void                                refreshNewickString(void);                                                  //!< recompute the newick string
         
-        static const TypeSpec               typeSpec;
         std::vector<TopologyNode*>          children;                                                                   //!< Vector holding the node's children. Note that the parent owns the children but not the other way around. 
         TopologyNode*                       parent;                                                                     //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         std::string                         name;                                                                       //!< Name of the node, i.e. identifier/taxon name

@@ -29,7 +29,6 @@ class StochasticNode;
 class VariableNode;
 class VectorString;
 
-const std::string MoveSimple_name = "MoveSimple";
 
 class MoveSimple : public Move {
 
@@ -38,7 +37,8 @@ public:
 
     // Basic utility functions
     virtual MoveSimple*                 clone(void) const = 0;                                          //!< Clone the object
-    virtual const VectorString&         getClass(void) const;                                           //!< Get class vector
+    static const std::string&           getClassName(void);                                             //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                         //!< Get class type spec
 
     // Member variable rules
     virtual const MemberRules&          getMemberRules(void) const;                                     //!< Get member rules

@@ -34,7 +34,8 @@ class Func_sort :  public RbFunction {
 public:
 	// Basic utility functions
 	Func_sort*                  clone(void) const;                                  //!< Clone the object
-	const VectorString&         getClass(void) const;                               //!< Get class vector
+    static const std::string&   getClassName(void);                                 //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
@@ -46,7 +47,6 @@ protected:
     void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
 private:
-    static const TypeSpec       typeSpec;	
     
     // Arguments
     RbVariablePtr               value;
@@ -62,10 +62,6 @@ private:
 #include "TypeSpec.h"
 #include "ValueRule.h"
 
-
-// Definition of the static type spec member
-template <typename valType>
-const TypeSpec Func_sort<valType>::typeSpec("Func_sort", new TypeSpec(valType().getType()));
 
 
 /** Clone object */
@@ -106,14 +102,33 @@ const ArgumentRules& Func_sort<valType>::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-template <typename valType>
-const VectorString& Func_sort<valType>::getClass( void ) const {
+/** Get class name of object */
+template <typename firstValType>
+const std::string& Func_sort<firstValType>::getClassName(void) { 
     
-    static std::string  rbName  = "Func_sort<" + valType().getType() + ">"; 
-    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+    static std::string rbClassName = "Func_sort<" + firstValType().getType() + ">";
     
-    return rbClass;
+	return rbClassName; 
+}
+
+
+/** Get class type spec describing type of object */
+template <typename firstValType>
+const TypeSpec& Func_sort<firstValType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+
+/** Get type spec */
+template <typename firstValType>
+const TypeSpec& Func_sort<firstValType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -123,14 +138,6 @@ const TypeSpec& Func_sort<valType>::getReturnType( void ) const {
 	
     static TypeSpec retType = valType().getTypeSpec();
     return retType;
-}
-
-
-/** Get return type */
-template <typename valType>
-const TypeSpec& Func_sort<valType>::getTypeSpec( void ) const {
-    
-    return typeSpec;
 }
 
 

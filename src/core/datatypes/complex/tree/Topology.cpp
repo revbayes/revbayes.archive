@@ -28,9 +28,6 @@
 #include "ValueRule.h"
 
 
-// Definition of the static type spec member
-const TypeSpec Topology::typeSpec(Topology_name);
-
 /* Default constructor */
 Topology::Topology(void) : ConstantMemberObject( getMemberRules() ), root( NULL ) {
 
@@ -92,6 +89,31 @@ Topology* Topology::clone(void) const {
 }
 
 
+/** Get class name of object */
+const std::string& Topology::getClassName(void) { 
+    
+    static std::string rbClassName = "Tree Topology";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Topology::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Topology::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}
+
+
 /* Map calls to member methods */
 const RbLanguageObject& Topology::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
@@ -144,14 +166,6 @@ void Topology::fillNodesByPhylogeneticTraversal(const TopologyNode* node) {
 
 
 
-/* Get class information */
-const VectorString& Topology::getClass(void) const {
-    
-    static VectorString rbClass = VectorString(Topology_name) + ConstantMemberObject::getClass();
-    return rbClass;
-}
-
-
 /* Get member rules */
 const MemberRules& Topology::getMemberRules(void) const {
     
@@ -177,8 +191,8 @@ const MethodTable& Topology::getMethods(void) const {
     
     if ( methodsSet == false ) 
     {
-        methods.addFunction("ntips",  new MemberFunction(TypeSpec(Natural_name), ntipsArgRules) );
-        methods.addFunction("nnodes", new MemberFunction(TypeSpec(Natural_name), nnodesArgRules) );
+        methods.addFunction("ntips",  new MemberFunction(Natural::getClassTypeSpec(), ntipsArgRules) );
+        methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(), nnodesArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
@@ -237,13 +251,6 @@ const TopologyNode& Topology::getTipNode( size_t indx ) const {
     
     // TODO: Bound checking
     return *nodes[ indx ];
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Topology::getTypeSpec(void) const {
-
-    return typeSpec;
 }
 
 

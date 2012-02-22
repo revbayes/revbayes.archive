@@ -25,11 +25,20 @@ Character::Character(void) : Categorical() {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Character::getClass() const {
+/** Get class name of object */
+const std::string& Character::getClassName(void) { 
+    
+    static std::string rbClassName = "Character";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Character_name ) + Categorical::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Character::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Categorical::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 

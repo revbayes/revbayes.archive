@@ -25,12 +25,6 @@
 #include "VectorString.h"
 #include "Workspace.h"
 
-#include <fstream>
-
-
-// Definition of the static type spec member
-const TypeSpec Func_clear::typeSpec(Func_clear_name);
-const TypeSpec Func_clear::returnTypeSpec(RbVoid_name);
 
 /** Clone object */
 Func_clear* Func_clear::clone( void ) const {
@@ -58,23 +52,35 @@ const ArgumentRules& Func_clear::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_clear::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_clear::getClassName(void) { 
     
-    static VectorString rbClass = VectorString( Func_clear_name ) + RbFunction::getClass();
-    return rbClass;
+    static std::string rbClassName = "Clear function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_clear::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_clear::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_clear::getReturnType( void ) const {
     
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_clear::getTypeSpec(void) const {
-    return typeSpec;
 }
 

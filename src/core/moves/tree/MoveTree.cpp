@@ -31,7 +31,7 @@
 
 
 /** Constructor for parser use */
-MoveTree::MoveTree( const MemberRules& memberRules) : Move(memberRules), tree( TypeSpec( TreePlate_name ) ) {
+MoveTree::MoveTree( const MemberRules& memberRules) : Move(memberRules), tree( NULL ) {
 
 }
 
@@ -49,11 +49,20 @@ void MoveTree::acceptMove(void) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MoveTree::getClass(void) const { 
+/** Get class name of object */
+const std::string& MoveTree::getClassName(void) { 
+    
+    static std::string rbClassName = "Tree proposal";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( MoveTree_name ) + Move::getClass();
-	return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& MoveTree::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -65,7 +74,7 @@ const MemberRules& MoveTree::getMemberRules( void ) const {
 
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule ( "tree", TypeSpec(TreePlate_name) ) );
+        memberRules.push_back( new ValueRule ( "tree", TreePlate::getClassTypeSpec() ) );
 
         /* Inherit weight from Move, put it after topology and tree variables */
         const MemberRules& inheritedRules = MoveTree::getMemberRules();
@@ -83,7 +92,7 @@ const MemberRules& MoveTree::getMemberRules( void ) const {
  */
 const Topology& MoveTree::getTopology( void ) const {
 
-    const TreePlate& t = static_cast<const TreePlate&>( tree.getValue() );
+    const TreePlate& t = static_cast<const TreePlate&>( tree->getValue() );
     
     return t.getTopology();
 }

@@ -33,11 +33,8 @@
 #include <cmath>
 
 
-// Definition of the static type spec member
-const TypeSpec Move_msimplex::typeSpec(Move_msimplex_name);
-
 /** Constructor for parser */
-Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ), variable( TypeSpec( VectorRealPos_name ) ), alpha( TypeSpec( RealPos_name ) ), numCategories( TypeSpec( Natural_name ) ) {
+Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ), variable( NULL ), alpha( NULL ), numCategories( NULL ) {
 }
 
 
@@ -48,11 +45,28 @@ Move_msimplex* Move_msimplex::clone( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Move_msimplex::getClass() const {
+/** Get class name of object */
+const std::string& Move_msimplex::getClassName(void) { 
+    
+    static std::string rbClassName = "Simplex move";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Move_msimplex_name ) + MoveSimple::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Move_msimplex::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MoveSimple::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Move_msimplex::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -64,15 +78,14 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
 
     if (!rulesSet) 
     {
-        TypeSpec varType( Simplex_name );
-        memberRules.push_back( new ValueRule( "variable", varType ) );
+        memberRules.push_back( new ValueRule( "variable", Simplex::getClassTypeSpec() ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules.push_back( new ValueRule( "tuning"  , RealPos_name ) );
-        memberRules.push_back( new ValueRule( "num_cats", Natural_name ) );
+        memberRules.push_back( new ValueRule( "tuning"  , RealPos::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "num_cats", Natural::getClassTypeSpec() ) );
 
         rulesSet = true;
 		}
@@ -81,16 +94,11 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Move_msimplex::getTypeSpec(void) const {
-    return typeSpec;
-}
-
 
 /** Return the random variable type appropriate for the move */
 const TypeSpec Move_msimplex::getVariableType( void ) const {
 
-    return TypeSpec( Simplex_name );
+    return Simplex::getClassTypeSpec();
 }
 
 
@@ -102,8 +110,8 @@ double Move_msimplex::perform( void ) {
 
     // Get relevant values
     StochasticNode*        nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos&>( alpha.getValue()   ).getValue();
-    int                    k       = static_cast<const Natural&>( numCategories.getValue() ).getValue();
+    double                 alpha0  = static_cast<const RealPos&>( alpha->getValue()   ).getValue();
+    int                    k       = static_cast<const Natural&>( numCategories->getValue() ).getValue();
 
 	std::vector<double> curVal = static_cast<const Simplex&>( nodePtr->getValue() ).getValue();
 	std::vector<double> newVal = curVal;

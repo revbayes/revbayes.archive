@@ -22,14 +22,13 @@
 
 #include "RbFunction.h"
 
-const std::string Func_clear_name = "Clear function";
-
 class Func_clear :  public RbFunction {
     
 public:
     // Basic utility functions
     Func_clear*                 clone(void) const;                                  //!< Clone object
-    const VectorString&         getClass(void) const;                               //!< Get class vector
+    static const std::string&   getClassName(void);                                 //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
     
     // Func_clear functions
@@ -39,9 +38,6 @@ public:
 protected:
     const RbLanguageObject&     executeFunction(void);                              //!< Execute function
 
-private:
-    static const TypeSpec       typeSpec;
-    static const TypeSpec       returnTypeSpec;
 };
 
 #endif

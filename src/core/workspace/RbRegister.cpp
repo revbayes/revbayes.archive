@@ -177,13 +177,13 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( tmp ) );
 
         /* Add abstract types */
-        addType( new RbAbstract( VectorString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(RbLanguageObject_name) + VectorString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(RbInternal_name) + VectorString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(Move_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(Distribution_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(CharacterStateDiscrete_name) + RbString(Character_name) + RbString(Categorical_name) + RbString(RbLanguageObject_name) + RbString(RbObject_name)));
+        addType( new RbAbstract( VectorString(RbObject::getClassTypeSpec()) ) );
+        addType( new RbAbstract( VectorString(RbLanguageObject::getClassTypeSpec()) + VectorString(RbObject::getClassTypeSpec()) ) );
+        addType( new RbAbstract( VectorString(RbInternal::getClassTypeSpec()) + VectorString(RbObject::getClassTypeSpec()) ) );
+        addType( new RbAbstract( VectorString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
+        addType( new RbAbstract( VectorString(Move::getClassTypeSpec()) + RbString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
+        addType( new RbAbstract( VectorString(Distribution::getClassTypeSpec()) + RbString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
+        addType( new RbAbstract( VectorString(CharacterStateDiscrete::getClassTypeSpec()) + RbString(Character::getClassTypeSpec()) + RbString(Categorical::getClassTypeSpec()) + RbString(RbLanguageObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec())));
 
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
@@ -217,7 +217,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new VectorString()                 );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-        addType( new CharacterData(DnaState_name)   );
+        addType( new CharacterData(DnaState::getClassName())   );
         addType( new Simplex()                      );
         addType( new Topology()                     );
         addType( new TopologyNode()                 );

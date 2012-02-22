@@ -36,12 +36,8 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_cat::typeSpec(Dist_cat_name);
-const TypeSpec Dist_cat::varTypeSpec(Categorical_name);
-
 /** Default constructor for parser use */
-Dist_cat::Dist_cat( void ) : DistributionDiscrete( getMemberRules() ), probabilities( TypeSpec( Simplex_name ) ), templateObject( TypeSpec( Categorical_name ) ) {
+Dist_cat::Dist_cat( void ) : DistributionDiscrete( getMemberRules() ), probabilities( NULL ), templateObject( NULL ) {
 }
 
 
@@ -52,11 +48,28 @@ Dist_cat* Dist_cat::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_cat::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_cat::getClassName(void) { 
+    
+    static std::string rbClassName = "Categorical distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Dist_cat_name ) + DistributionDiscrete::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_cat::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionDiscrete::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_cat::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 /** Get member variable rules */
@@ -67,8 +80,8 @@ const MemberRules& Dist_cat::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "m"    , Simplex_name ) );
-        memberRules.push_back( new ValueRule( "dummy", Categorical_name) );
+            memberRules.push_back( new ValueRule( "m"    , Simplex::getClassTypeSpec() ) );
+            memberRules.push_back( new ValueRule( "dummy", Categorical::getClassTypeSpec() ) );
 
         rulesSet = true;
 		}
@@ -80,30 +93,24 @@ const MemberRules& Dist_cat::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_cat::getNumberOfStates( void ) const {
 
-    return static_cast<const Simplex&>( probabilities.getValue() ).size();
+    return static_cast<const Simplex&>( probabilities->getValue() ).size();
 }
 
 
 /** Get the probability mass vector */
 const Simplex& Dist_cat::getProbabilityMassVector( void ) {
 
-    return static_cast<Simplex&>( probabilities.getValue() );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_cat::getTypeSpec(void) const {
-    return typeSpec;
+    return static_cast<Simplex&>( probabilities->getValue() );
 }
 
 
 /** Get random variable type */
 const TypeSpec& Dist_cat::getVariableType( void ) const {
     
-    if (RbNullObject::getInstance() == templateObject.getValue() ) 
-        return varTypeSpec;
+    if (templateObject == NULL || RbNullObject::getInstance() == templateObject->getValue() ) 
+        return Categorical::getClassTypeSpec();
 
-    return templateObject.getValue().getTypeSpec();
+    return templateObject->getValue().getTypeSpec();
 }
 
 
@@ -119,8 +126,8 @@ const TypeSpec& Dist_cat::getVariableType( void ) const {
 double Dist_cat::lnPdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex&    >( probabilities.getValue() ).getValue();
-    int                 x = static_cast<const Categorical&>( value                    ).getValue();
+    std::vector<double> m = static_cast<const Simplex&    >( probabilities->getValue() ).getValue();
+    int                 x = static_cast<const Categorical&>( value                     ).getValue();
 
     if ( x < 0 )
         return 0.0;
@@ -141,8 +148,8 @@ double Dist_cat::lnPdf( const RbLanguageObject& value ) const {
 double Dist_cat::pdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameter of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex&    >( probabilities.getValue() ).getValue();
-    int                 x = static_cast<const Categorical&>( value                    ).getValue();
+    std::vector<double> m = static_cast<const Simplex&    >( probabilities->getValue() ).getValue();
+    int                 x = static_cast<const Categorical&>( value                     ).getValue();
 
 	if ( x < 0 )
         return 1.0;
@@ -162,14 +169,14 @@ double Dist_cat::pdf( const RbLanguageObject& value ) const {
 const RbLanguageObject& Dist_cat::rv( void ) {
 
 	// Get the parameter of the categorical distribution and the rng
-    std::vector<double>    m   = static_cast<Simplex&>( probabilities.getValue() ).getValue();
+    std::vector<double>    m   = static_cast<Simplex&>( probabilities->getValue() ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // Get copy of reference object
     if (randomVariable != NULL) {
         delete randomVariable;
     }
-    randomVariable = static_cast<Categorical*>( templateObject.getValue().clone() );
+    randomVariable = static_cast<Categorical*>( templateObject->getValue().clone() );
 
     // Draw a random value
     double r   = rng->uniform01();

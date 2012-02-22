@@ -41,7 +41,6 @@
 
 #include <string>
 
-const std::string Variable_name = "Variable";
 
 class Variable : public RbInternal {
     
@@ -57,13 +56,15 @@ public:
     // Regular functions
     Variable*                           clone(void) const;                                  //!< Clone variable
     size_t                              decrementReferenceCount(void);
-    const VectorString&                 getClass() const;                                   //!< Get class vector
+    static const std::string&           getClassName(void);                                 //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
     const DAGNode*                      getDagNode(void) const;                             //!< Get the variable 
     DAGNode*                            getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
     size_t                              getReferenceCount(void) const;
     const RbLanguageObject&             getValue(void) const;                               //!< Get the value of the variable
     RbLanguageObject&                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
+    const TypeSpec&                     getValueTypeSpec(void) const;                       //!< Get the required value type spec
     size_t                              incrementReferenceCount(void);
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable
     void                                setDagNode(DAGNode* newVar);                        //!< Set a variable with a variable
@@ -78,7 +79,6 @@ private:
     size_t                              refCount;
     TypeSpec                            valueTypeSpec;
     
-    static const TypeSpec               typeSpec;
 };
 
 

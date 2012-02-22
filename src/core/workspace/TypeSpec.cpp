@@ -20,8 +20,14 @@
 #include "TypeSpec.h"
 
 
+/** Simple constructor */
+TypeSpec::TypeSpec(const std::string &objType) : parent( NULL ), baseType( objType ), elementType( NULL ) {
+    
+    type = baseType;
+}
+
 /** Complete constructor */
-TypeSpec::TypeSpec(const std::string &objType, TypeSpec* elemType) : baseType(objType) {
+TypeSpec::TypeSpec(const std::string &objType, TypeSpec* p, TypeSpec* elemType) : parent( p ), baseType( objType ) {
     elementType = elemType;
     
     type = baseType;
@@ -43,6 +49,14 @@ TypeSpec::TypeSpec(const TypeSpec& ts) : baseType(ts.baseType) {
         elementType = NULL;
     }
     
+    // make a independent copy of the parent type
+    if (ts.parent != NULL) {
+        parent = new TypeSpec(*ts.parent);
+    }
+    else {
+        parent = NULL;
+    }
+    
     type = baseType;
     
     // add the element type
@@ -52,8 +66,12 @@ TypeSpec::TypeSpec(const TypeSpec& ts) : baseType(ts.baseType) {
 }
 
 TypeSpec::~TypeSpec(void) {
+    
     if (elementType != NULL)
         delete elementType;
+    
+    if (parent != NULL)
+        delete parent;
 }
 
 
@@ -90,6 +108,23 @@ bool TypeSpec::operator==(const TypeSpec& x) const {
 TypeSpec::operator std::string( void ) const {
 
     return toString();
+}
+
+
+/** Test whether the represent type is either the same or a derived type of the parameter. */
+bool TypeSpec::isDerivedOf(const TypeSpec &x) const {
+    
+    // first we test if this type is the same as the argument type
+    if ( operator==( x ) ) {
+        return true;
+    }
+    
+    // now we climb up our derivation tree
+    if ( parent != NULL ) {
+        return parent->isDerivedOf(x);
+    }
+    
+    return false;
 }
 
 

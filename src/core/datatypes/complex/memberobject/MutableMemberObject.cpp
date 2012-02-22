@@ -42,12 +42,22 @@ MutableMemberObject::MutableMemberObject(const MutableMemberObject& m) : MemberO
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MutableMemberObject::getClass(void) const {
+/** Get class name of object */
+const std::string& MutableMemberObject::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(MutableMemberObject_name) + MemberObject::getClass();
-    return rbClass;
+    static std::string rbClassName = "Mutable member object";
+    
+	return rbClassName; 
 }
+
+/** Get class type spec describing type of object */
+const TypeSpec& MutableMemberObject::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
 
 /** Is the object Mutable? */
 bool MutableMemberObject::isConstant( void ) const {

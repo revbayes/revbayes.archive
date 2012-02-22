@@ -32,7 +32,6 @@ class DAGNode;
 class Model;
 class VectorString;
 
-const std::string Simulate_name = "Simulate";
 
 class Simulate: public ConstantMemberObject {
     
@@ -43,7 +42,8 @@ public:
     
     // Basic utility functions
     Simulate*                   clone(void) const;                                                                      //!< Clone object
-    const VectorString&         getClass(void) const;                                                                   //!< Get class vector  
+    static const std::string&   getClassName(void);                                                                     //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                                                 //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object 
     
     // Member variable rules
@@ -63,7 +63,6 @@ protected:
     
     
 private:
-    static const TypeSpec       typeSpec;
     void                        getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<StochasticNode*>& orderedStochasticNodes, std::set<DAGNode*>& visitedNodes);
 
     // parameters

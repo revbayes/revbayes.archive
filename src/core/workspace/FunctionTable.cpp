@@ -26,9 +26,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec FunctionTable::typeSpec(FunctionTable_name);
-
 /** Basic constructor, empty table with or without parent */
 FunctionTable::FunctionTable(FunctionTable* parent) : RbInternal(), table(), parentTable(parent) {
 
@@ -235,9 +232,18 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
         if ( bestMatch == NULL || ambiguous == true ) {
             std::ostringstream msg;
             if ( bestMatch == NULL )
-                msg << "No overloaded function '" << name << "' matches arguments" << std::endl;
+                msg << "No overloaded function '" << name << "' matches for arguments (";
             else
-                msg << "Ambiguous call to function '" << name << "'" << std::endl;
+                msg << "Ambiguous call to function '" << name << "' with arguments (";
+            // print the passed arguments
+            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) {
+                if (it != args.begin()) {
+                    msg << ",";
+                }
+                msg << " " << it->getVariable().getDagNode()->getValue().getType();
+            }
+            msg << " )" << std::endl;
+            
             msg << "Potentially matching functions are:" << std::endl;
             for ( it = retVal.first; it != retVal.second; it++ ) {
                 (*it).second->printValue( msg );
@@ -253,11 +259,28 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& FunctionTable::getClass() const {
+/** Get class name of object */
+const std::string& FunctionTable::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(FunctionTable_name) + RbInternal::getClass();
-    return rbClass;
+    static std::string rbClassName = "Function table";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& FunctionTable::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& FunctionTable::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -274,12 +297,6 @@ RbFunction* FunctionTable::getFunction(const std::string& name, const std::vecto
     theFunction.clear();
 
     return copy;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& FunctionTable::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -325,19 +342,19 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     for (i=0; i<x.size() && i<y.size(); i++) {
         if (x[i].hasDefault() == false &&
             y[i].hasDefault() == false &&
-            !x[i].isType(Ellipsis_name) &&
-            !y[i].isType(Ellipsis_name) &&
+            !x[i].isTypeSpec(Ellipsis::getClassTypeSpec()) &&
+            !y[i].isTypeSpec(Ellipsis::getClassTypeSpec()) &&
             x[i].getArgumentType() != y[i].getArgumentType())
             return true;
     }
     for (size_t j=i; j<x.size(); j++) {
         if (x[j].hasDefault() == false &&
-            !x[j].isType(Ellipsis_name))
+            !x[j].isTypeSpec(Ellipsis::getClassTypeSpec()))
             return true;
     }
     for (size_t j=i; j<y.size(); j++) {
         if (y[j].hasDefault() == false &&
-            !y[j].isType(Ellipsis_name))
+            !y[j].isTypeSpec(Ellipsis::getClassTypeSpec()))
             return true;
     }
 

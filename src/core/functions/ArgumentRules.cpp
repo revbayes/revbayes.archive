@@ -21,9 +21,6 @@
 #include "VectorString.h"
 
 
-// Definition of the static type spec member
-const TypeSpec ArgumentRules::typeSpec(ArgumentRules_name);
-
 ArgumentRules::ArgumentRules(void) {
     
 }
@@ -97,17 +94,27 @@ std::vector<ArgumentRule*>::const_iterator ArgumentRules::end(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& ArgumentRules::getClass(void) const { 
+/** Get class name of object */
+const std::string& ArgumentRules::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(ArgumentRules_name) + RbInternal::getClass();
+    static std::string rbClassName = "Argument rules";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& ArgumentRules::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
 	return rbClass; 
 }
 
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& ArgumentRules::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& ArgumentRules::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 

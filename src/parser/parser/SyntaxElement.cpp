@@ -20,12 +20,25 @@
 #include "VectorString.h"
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxElement::getClass(void) const { 
 
-    static VectorString rbClass = VectorString(SyntaxElement_name) + RbInternal::getClass();
+
+
+/** Get class name of object */
+const std::string& SyntaxElement::getClassName(void) { 
+    
+    static std::string rbClassName = "Syntax element";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxElement::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
 	return rbClass; 
 }
+
 
 
 

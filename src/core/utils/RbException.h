@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-const std::string RbException_name = "exception";
 
 class RbException : public RbInternal {
 
@@ -39,7 +38,8 @@ class RbException : public RbInternal {
 
         // Implemented abstract/virtual functions from base classes
         RbException*                clone(void) const;                                      //!< Clone this object
-        const VectorString&         getClass() const;                                       //!< Get class vector
+        static const std::string&   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                      //!< Print value (for user)
         std::string                 richInfo(void) const;                                   //!< General info on object
@@ -53,7 +53,6 @@ class RbException : public RbInternal {
 	    exceptionT                  exceptionType;                                          //!< Exception type
 	    std::string                 message;                                                //!< Error message
     
-        static const TypeSpec       typeSpec;
 };
 
 #endif

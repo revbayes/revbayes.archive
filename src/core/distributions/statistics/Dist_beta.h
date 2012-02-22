@@ -19,7 +19,7 @@
 #define Dist_beta_H
 
 #include "DistributionContinuous.h"
-#include "RealPos.h"
+#include "Probability.h"
 
 #include <ostream>
 #include <string>
@@ -28,8 +28,6 @@ class DAGNode;
 class StochasticNode;
 class VectorString;
 
-const std::string Dist_beta_name = "Dist_beta";
-
 class Dist_beta: public DistributionContinuous {
 
     public:
@@ -37,7 +35,8 @@ class Dist_beta: public DistributionContinuous {
 
         // Basic utility functions
         Dist_beta*                  clone(void) const;                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                               //!< Get class vector
+        static const std::string&   getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
@@ -53,15 +52,13 @@ class Dist_beta: public DistributionContinuous {
         const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
     
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       varTypeSpec;
 
         // parameters
         RbVariablePtr               alpha; 
         RbVariablePtr               beta;
     
         // memberfunction return value
-        RealPos                     randomVariable;
+        Probability                 randomVariable;
     
 };
 

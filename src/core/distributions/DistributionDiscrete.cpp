@@ -53,11 +53,20 @@ const RbLanguageObject& DistributionDiscrete::executeOperationSimple( const std:
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& DistributionDiscrete::getClass( void ) const {
+/** Get class name of object */
+const std::string& DistributionDiscrete::getClassName(void) { 
+    
+    static std::string rbClassName = "Distribution on discrete random variable";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( DistributionDiscrete_name ) + Distribution::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& DistributionDiscrete::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -71,8 +80,8 @@ const MethodTable& DistributionDiscrete::getMethods( void ) const {
         static ArgumentRules* probMassVectorArgRules = new ArgumentRules();
         static ArgumentRules* numStatesArgRules = new ArgumentRules();
 
-        methods.addFunction( "probMassVector", new MemberFunction( Simplex_name, probMassVectorArgRules ) );
-        methods.addFunction( "numStates",      new MemberFunction( Natural_name, numStatesArgRules ) );
+        methods.addFunction( "probMassVector", new MemberFunction( Simplex::getClassTypeSpec(), probMassVectorArgRules ) );
+        methods.addFunction( "numStates",      new MemberFunction( Natural::getClassTypeSpec(), numStatesArgRules ) );
 
         methods.setParentTable( &Distribution::getMethods() );
 

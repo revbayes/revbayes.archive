@@ -29,22 +29,19 @@
 class DAGNode;
 class VectorString;
 
-const std::string Ellipsis_name = "ellipsis";
-
 class Ellipsis : public ArgumentRule {
 
     public:
-                            Ellipsis( void );                                   //! No labels or types required, value arguments by default
-                            Ellipsis(const TypeSpec& typeSp);                   //! Some type specification needs to be met, value arguments by default
+                                        Ellipsis( void );                                   //! No labels or types required, value arguments by default
+                                        Ellipsis(const TypeSpec& typeSp);                   //! Some type specification needs to be met, value arguments by default
 
         // Basic utility functions
-        Ellipsis*           clone(void) const { return new Ellipsis(*this); }   //!< Clone object
-        const VectorString& getClass(void) const;                               //!< Get class vector
-        const TypeSpec&     getTypeSpec(void) const;                            //!< Get language type of the object
-        void                printValue(std::ostream& o) const;                  //!< Print value for user
+        Ellipsis*                       clone(void) const { return new Ellipsis(*this); }   //!< Clone object
+        static const std::string&       getClassName(void);                                 //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                            //!< Get language type of the object
+        void                            printValue(std::ostream& o) const;                  //!< Print value for user
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

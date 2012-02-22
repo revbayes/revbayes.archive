@@ -29,8 +29,6 @@
 #include <ostream>
 #include <string>
 
-const std::string Argument_name = "argument";
-
 class Argument : public RbInternal {
 
     public:
@@ -45,7 +43,8 @@ class Argument : public RbInternal {
 
         // Basic utility functions
         Argument*                           clone(void) const { return new Argument (*this); }                  //!< Clone object
-        const VectorString&                 getClass(void) const;                                               //!< Get class vector
+        static const std::string&           getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                  //!< Complete info about object
 
@@ -60,8 +59,6 @@ class Argument : public RbInternal {
         std::string                         label;                                                              //!< Label of argument
         RbVariablePtr                       var;                                                                //!< Pointer to the variable slot containing the variable (and value)
     
-    private:
-        static const TypeSpec   typeSpec;
 };
 
 #endif

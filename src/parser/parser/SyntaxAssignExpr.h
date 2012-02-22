@@ -25,7 +25,6 @@
 #include <string>
 
 
-const std::string SyntaxAssignExpr_name = "Assignment";
 
 class SyntaxAssignExpr : public SyntaxElement {
 
@@ -54,7 +53,8 @@ class SyntaxAssignExpr : public SyntaxElement {
 
         // Basic utility functions
         SyntaxAssignExpr*           clone() const;                                                      //!< Clone object
-        const VectorString&         getClass(void) const;                                               //!< Get class vector 
+        static const std::string&   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                  //!< Print info about object
 
@@ -67,8 +67,6 @@ class SyntaxAssignExpr : public SyntaxElement {
         SyntaxElement*              expression;                                                         //!< The rhs expression
         SyntaxAssignExpr::operatorT opType;                                                             //!< The type of assignment
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

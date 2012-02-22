@@ -60,7 +60,6 @@ typedef std::map<std::string, VariableSlot* > VariableTable;         //!< Typede
  * also contains a function table, and a class (type) table.
  *
  */
-const std::string Environment_name = "Environment";
 
 class Environment : public RbInternal {
     
@@ -80,7 +79,8 @@ public:
    
     // Basic utility functions
     virtual Environment*                    clone(void) const;                                                                      //!< Clone Environment
-    virtual const VectorString&             getClass() const;                                                                       //!< Get class vector
+    static const std::string&               getClassName(void);                                                                     //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
     virtual const TypeSpec&                 getTypeSpec(void) const;                                                                //!< Get language type of the object
     virtual void                            printValue(std::ostream& o) const;                                                      //!< Print table for user
     
@@ -111,8 +111,6 @@ protected:
     Environment*                            parentEnvironment;                                                                      //!< Pointer to enclosing Environment
     std::vector<std::string>                varNames;
     
-private:
-    static const TypeSpec                   typeSpec;
 };
 
 #endif

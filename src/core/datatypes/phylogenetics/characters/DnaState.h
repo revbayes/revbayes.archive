@@ -23,8 +23,6 @@
 
 
 
-const std::string DnaState_name = "DNA";
-
 class DnaState : public NucleotideState {
 
     public:
@@ -40,7 +38,8 @@ class DnaState : public NucleotideState {
 
         // Basic utility functions you have to override
         DnaState*                       clone(void) const;                                  //!< Clone object
-        const VectorString&             getClass(void) const;                               //!< Get class vector
+        static const std::string&       getClassName(void);                                 //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                            //!< Get language type of the object
 
         // Discrete character observation functions
@@ -55,7 +54,6 @@ class DnaState : public NucleotideState {
         const char                      getNucleotideCode(const std::set<char>& s) const;
         const char                      getNucleotideCode(const std::vector<bool>& sSet) const;
     
-        static const TypeSpec           typeSpec;
 };
 
 #endif

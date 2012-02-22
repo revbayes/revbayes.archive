@@ -29,9 +29,6 @@
 class VectorString;
 
 
-
-const std::string Complex_name = "Complex";
-
 class Complex : public RbLanguageObject {
 
     public:
@@ -48,11 +45,11 @@ class Complex : public RbLanguageObject {
         
         // Basic utility functions
         Complex*                    clone(void) const;                                                      //!< Clone object
-        const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        static const std::string&   getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         std::complex<double>&       getValueReference(void) { return value; }                               //!< Get value reference
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
-        std::string                 richInfo(void) const;                                                   //!< Complete info about object
 
         // Getters and setters
         void                        setValue(std::complex<double> x) { value = x; }                         //!< Set value
@@ -61,8 +58,6 @@ class Complex : public RbLanguageObject {
 	protected:
         std::complex<double>        value;                                                                  //!< Value member
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 // Operators defined outside of the class

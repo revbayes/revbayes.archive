@@ -32,10 +32,6 @@
 #include <cassert>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_clamp::typeSpec(Func_clamp_name);
-const TypeSpec Func_clamp::returnTypeSpec(RbVoid_name);
-
 /** Clone object */
 Func_clamp* Func_clamp::clone( void ) const {
 
@@ -68,8 +64,8 @@ const ArgumentRules& Func_clamp::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule ( "variable", RbObject_name ) );
-        argumentRules.push_back( new ValueRule ( "value",    RbObject_name ) );
+        argumentRules.push_back( new ValueRule ( "variable", RbObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule ( "value",    RbObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
 
@@ -77,24 +73,37 @@ const ArgumentRules& Func_clamp::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_clamp::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_clamp::getClassName(void) { 
+    
+    static std::string rbClassName = "Clamp function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Func_clamp_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Func_clamp::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_clamp::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_clamp::getReturnType( void ) const {
-
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
+    
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_clamp::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

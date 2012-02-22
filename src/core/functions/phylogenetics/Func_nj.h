@@ -28,14 +28,13 @@ class VectorString;
 
 
 
-const std::string Func_nj_name = "Neighbor joining function";
-
 class Func_nj :  public RbFunction {
     
     public:
         // Basic utility functions
         Func_nj*                    clone(void) const;                                                       //!< Clone the object
-        const VectorString&         getClass(void) const;                                                    //!< Get class vector
+        static const std::string&   getClassName(void);                                                      //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                  //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                 //!< Get language type of the object
         
         // Regular functions
@@ -49,8 +48,6 @@ class Func_nj :  public RbFunction {
     private:
         Topology*                   neighborJoining(const DistanceMatrix& d);
         void                        buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips);
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
 
         // Arguments
         RbVariablePtr               d;

@@ -22,9 +22,6 @@
 #include <vector>
 
 
-
-const std::string AminoAcidState_name = "Amino Acid";
-
 class AminoAcidState : public CharacterStateDiscrete {
 
     public:
@@ -39,7 +36,8 @@ class AminoAcidState : public CharacterStateDiscrete {
 
         // Basic utility functions you have to override
         AminoAcidState*                 clone(void) const;                                  //!< Clone object
-        const VectorString&             getClass(void) const;                               //!< Get class vector
+        static const std::string&       getClassName(void);                                 //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                            //!< Get language type of the object
 
         // Discrete character observation functions
@@ -52,8 +50,6 @@ class AminoAcidState : public CharacterStateDiscrete {
     protected:
         const static std::string        stateLabels;                                        //!< The labels for the possible states
     
-    private:
-        static const TypeSpec           typeSpec;
 };
 
 #endif

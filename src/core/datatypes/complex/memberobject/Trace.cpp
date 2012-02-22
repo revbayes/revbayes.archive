@@ -19,10 +19,7 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Trace::typeSpec(Trace_name);
-
-Trace::Trace()
+Trace::Trace() : MemberObject( getMemberRules() )
 {
     invalidate();
 }
@@ -31,7 +28,7 @@ Trace::Trace()
  * Copy constructor
  *
  */
-Trace::Trace(const Trace& t) {
+Trace::Trace(const Trace& t) : MemberObject( t ) {
     burnin                          = t.burnin;
     ess                             = t.ess;
     mean                            = t.mean;
@@ -86,22 +83,33 @@ void Trace::addObject(double d)
 }
 
 /** Clone function */
-MemberObject* Trace::clone() const {
+Trace* Trace::clone() const {
     
     return new Trace(*this);
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Trace::getClass() const {
+/** Get class name of object */
+const std::string& Trace::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(Trace_name) + MemberObject::getClass();
-    return rbClass;
+    static std::string rbClassName = "Trace";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& Trace::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Trace::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& Trace::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 

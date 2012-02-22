@@ -21,11 +21,6 @@
 #include <ostream>
 #include <vector>
 
-class CondLike;
-
-
-
-const std::string CharacterStateDiscrete_name = "Discrete Character";
 
 class CharacterStateDiscrete : public Character {
 
@@ -39,7 +34,8 @@ class CharacterStateDiscrete : public Character {
 
         // Basic utility functions you have to override
         virtual CharacterStateDiscrete*         clone(void) const = 0;                              //!< Clone object
-        virtual const VectorString&             getClass(void) const;                               //!< Get class vector
+        static const std::string&               getClassName(void);                                 //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                             //!< Get class type spec
         virtual void                            printValue(std::ostream& o) const = 0;              //!< Print value (for user)
 
         // Discrete character observation functions

@@ -36,10 +36,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_ctmm::typeSpec(Dist_ctmm_name);
-const TypeSpec Dist_ctmm::varTypeSpec(CharacterStateDiscrete_name);
-
 /** Default constructor for parser use */
 Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ), 
                                randomVariable( NULL ),     
@@ -85,11 +81,28 @@ Dist_ctmm* Dist_ctmm::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_ctmm::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_ctmm::getClassName(void) { 
+    
+    static std::string rbClassName = "Continuous time Markov model";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Dist_ctmm_name ) + DistributionDiscrete::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_ctmm::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionDiscrete::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_ctmm::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -101,9 +114,9 @@ const MemberRules& Dist_ctmm::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
-        memberRules.push_back( new ValueRule( "Q", RateMatrix_name             ) );
-        memberRules.push_back( new ValueRule( "v", RealPos_name                ) );
-        memberRules.push_back( new ValueRule( "a", CharacterStateDiscrete_name ) );
+        memberRules.push_back( new ValueRule( "Q", RateMatrix::getClassTypeSpec()             ) );
+        memberRules.push_back( new ValueRule( "v", RealPos::getClassTypeSpec()                ) );
+        memberRules.push_back( new ValueRule( "a", CharacterStateDiscrete::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -151,15 +164,11 @@ const Simplex& Dist_ctmm::getProbabilityMassVector( void ) {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_ctmm::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_ctmm::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = CharacterStateDiscrete::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 

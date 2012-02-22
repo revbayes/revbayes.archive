@@ -33,7 +33,8 @@ class Func_resize :  public RbFunction {
 public:
 	// Basic utility functions
 	Func_resize*                clone(void) const;                                  //!< Clone the object
-	const VectorString&         getClass(void) const;                               //!< Get class vector
+    static const std::string&   getClassName(void);                                 //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
@@ -47,7 +48,6 @@ protected:
   
 private:
     void                        resizeVector(Container &vec, Environment *args, unsigned int numArg);
-    static const TypeSpec       typeSpec;
   
     // arguments
     RbVariablePtr               container;
@@ -63,10 +63,6 @@ private:
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-
-
-// Definition of the static type spec member
-const TypeSpec Func_resize::typeSpec(Func_resize_name);
 
 
 /** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
@@ -87,7 +83,7 @@ Func_resize* Func_resize::clone( void ) const {
 void Func_resize::resizeVector(Container &vec, Environment *args, unsigned int numArg) { 
     unsigned int nrows = ( static_cast<Natural&>( (*args)[numArg].getValue() ) ).getValue();
     for (unsigned int j = 0 ; j < vec.size() ; j ++) {
-        if (vec.getElement(j).isTypeSpec(Vector_name )) { //if element j already a vector
+        if (vec.getElement(j).isTypeSpec(Vector::getClassTypeSpec() )) { //if element j already a vector
             static_cast<Vector&>( vec.getElement(j)).resize(nrows);
         }
         else {
@@ -119,8 +115,8 @@ const RbLanguageObject& Func_resize::executeFunction( void ) {
       //Resizing a matrix of nargs-1 dimensions
         int nrows = ( static_cast<Natural&>( sizes[0]->getValue() ) ).getValue();
         
-        if (!retValue->isType(Vector_name)) {
-            retValue = static_cast<Container*>( retValue->convertTo(TypeSpec(Vector_name, new TypeSpec(RbLanguageObject_name) ) ) );
+        if (!retValue->isTypeSpec(Vector::getClassTypeSpec())) {
+            retValue = static_cast<Container*>( retValue->convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(RbLanguageObject::getClassTypeSpec()) ) ) );
         }
         
         retValue->resize(nrows);
@@ -140,9 +136,9 @@ const ArgumentRules& Func_resize::getArgumentRules( void ) const {
   
   if ( !rulesSet ) 
   {
-    argumentRules.push_back( new ValueRule( "x", TypeSpec(Container_name) ) );
-    argumentRules.push_back( new ValueRule( "size", Natural_name ) );
-    argumentRules.push_back( new Ellipsis( Natural_name ) );
+      argumentRules.push_back( new ValueRule( "x", Container::getClassTypeSpec() ) );
+      argumentRules.push_back( new ValueRule( "size", Natural::getClassTypeSpec() ) );
+      argumentRules.push_back( new Ellipsis( Natural::getClassTypeSpec() ) );
     rulesSet = true;
   }
   
@@ -150,29 +146,37 @@ const ArgumentRules& Func_resize::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_resize::getClass( void ) const {
-  
-  static std::string  rbName  = "Func_resize"; 
-  static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
-  
-  return rbClass;
+/** Get class name of object */
+const std::string& Func_resize::getClassName(void) { 
+    
+    static std::string rbClassName = "Resize function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_resize::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_resize::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_resize::getReturnType( void ) const {
-	static TypeSpec rt = TypeSpec(Vector_name, new TypeSpec(RbLanguageObject_name) );
-  return rt;
+    
+    static TypeSpec returnTypeSpec = Container::getClassTypeSpec();
+    return returnTypeSpec;
 }
-
-
-/** Get type spec */
-const TypeSpec& Func_resize::getTypeSpec( void ) const {
-  
-  return typeSpec;
-}
-
 
 /** We catch here the setting of the argument variables to store our parameters. */
 void Func_resize::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {

@@ -33,11 +33,20 @@ CharacterStateDiscrete::CharacterStateDiscrete(size_t n) : Character(), numState
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& CharacterStateDiscrete::getClass() const {
+/** Get class name of object */
+const std::string& CharacterStateDiscrete::getClassName(void) { 
+    
+    static std::string rbClassName = "Discrete character";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( CharacterStateDiscrete_name ) + Character::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& CharacterStateDiscrete::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Character::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -48,7 +57,7 @@ const MemberRules& CharacterStateDiscrete::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule( "state"  , RbString_name ) );
+        memberRules.push_back( new ValueRule( "state"  , RbString::getClassTypeSpec() ) );
        
         rulesSet = true;
     }

@@ -32,10 +32,6 @@
 #include <fstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_quit::typeSpec(Func_quit_name);
-const TypeSpec Func_quit::returnTypeSpec(RbVoid_name);
-
 /** Clone object */
 Func_quit* Func_quit::clone( void ) const {
 
@@ -66,23 +62,35 @@ const ArgumentRules& Func_quit::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_quit::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_quit::getClassName(void) { 
+    
+    static std::string rbClassName = "Quit function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Func_quit_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Func_quit::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_quit::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_quit::getReturnType( void ) const {
-
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_quit::getTypeSpec(void) const {
-    return typeSpec;
 }
 

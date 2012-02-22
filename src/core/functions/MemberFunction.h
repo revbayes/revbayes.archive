@@ -34,8 +34,6 @@ class MemberObject;
 class VectorInteger;
 class VectorString;
 
-const std::string MemberFunction_name = "Member function";
-
 class MemberFunction :  public RbFunction {
 
 public:
@@ -44,7 +42,8 @@ public:
 
     // Basic utility functions
     MemberFunction*             clone(void) const;                                                          //!< Clone the object
-    const VectorString&         getClass(void) const;                                                       //!< Get class vector
+    static const std::string&   getClassName(void);                                                         //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                                     //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
 
     // Regular functions   
@@ -61,7 +60,6 @@ private:
     MemberObject*               object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
     const TypeSpec              returnType;                                                                 //!< Return type (different for different member functions)
     
-    static const TypeSpec       typeSpec;  
 };
 
 #endif

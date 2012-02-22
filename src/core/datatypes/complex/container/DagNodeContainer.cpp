@@ -29,16 +29,16 @@
 #include <algorithm>
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(void) : Container(RbLanguageObject_name), typeSpec(DagNodeContainer_name) {
+DagNodeContainer::DagNodeContainer(void) : Container( RbLanguageObject::getClassTypeSpec() ) {
     
 }
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(size_t l) : Container(RbLanguageObject_name), typeSpec(DagNodeContainer_name) {
+DagNodeContainer::DagNodeContainer(size_t l) : Container( RbLanguageObject::getClassTypeSpec() ) {
     resize(l-1);
 }
 
-DagNodeContainer::DagNodeContainer(const DagNodeContainer& c) : Container(c), typeSpec(DagNodeContainer_name) {
+DagNodeContainer::DagNodeContainer(const DagNodeContainer& c) : Container(c) {
     
     for (std::vector<VariableSlot*>::const_iterator it = c.elements.begin(); it != c.elements.end(); it++) {
         elements.push_back((*it)->clone());
@@ -90,12 +90,12 @@ DagNodeContainer* DagNodeContainer::clone(void) const {
 
 RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
     
-    if (type.getBaseType() == Vector_name) {
+    if ( type.getBaseType() == Vector::getClassName() ) {
         // test whether each object in the container is actually a constant node holding a value
         Vector* valueVector = new Vector(type.getElementType());
         for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             DAGNode* theNode = (*it)->getDagNode();
-            if (theNode->isType(ConstantNode_name) && theNode->getValue().isTypeSpec(type.getElementType())) {
+            if (theNode->isTypeSpec( ConstantNode::getClassTypeSpec() ) && theNode->getValue().isTypeSpec(type.getElementType())) {
                 const RbObject& element = theNode->getValue();
                 valueVector->push_back(element.clone());
             }
@@ -119,11 +119,29 @@ const RbLanguageObject& DagNodeContainer::executeOperation(std::string const &na
     return ConstantMemberObject::executeOperation( name, args );
 }
 
-/** Get class DagNodeContainer describing type of object */
-const VectorString& DagNodeContainer::getClass(void) const { 
+
+/** Get class name of object */
+const std::string& DagNodeContainer::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(DagNodeContainer_name) + ConstantMemberObject::getClass();
-	return rbClass;
+    static std::string rbClassName = "DAG node container";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& DagNodeContainer::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& DagNodeContainer::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 /** Get element */
@@ -152,20 +170,14 @@ RbObject& DagNodeContainer::getElement(const size_t index) {
 }
 
 
-/** Get the type spec of this class. We return a member variable because instance might have different types of elements. */
-const TypeSpec& DagNodeContainer::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Can we convert this DAG node container into another object? */
 bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     
-    if (type.getBaseType() == Vector_name) {
+    if ( type.getBaseType() == Vector::getClassName() ) {
         // test whether each object in the container is actually a constant node holding a value
         for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             DAGNode* theNode = (*it)->getDagNode();
-            if (!theNode->isType(ConstantNode_name) || !theNode->getValue().isTypeSpec(type.getElementType())) {
+            if (!theNode->isTypeSpec( ConstantNode::getClassTypeSpec() ) || !theNode->getValue().isTypeSpec(type.getElementType())) {
                 return false;
             }
         }

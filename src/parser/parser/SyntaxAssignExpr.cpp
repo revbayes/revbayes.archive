@@ -36,9 +36,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxAssignExpr::typeSpec(SyntaxAssignExpr_name);
-
 /** Static vector of strings giving names of operator types */
 std::string SyntaxAssignExpr::opCode[] = { "ARROW_ASSIGN", "TILDE_ASSIGN", "TILDIID_ASSIGN", "EQUATION_ASSIGN" };
 
@@ -116,11 +113,28 @@ SyntaxAssignExpr* SyntaxAssignExpr::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxAssignExpr::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxAssignExpr::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(SyntaxAssignExpr_name) + SyntaxElement::getClass();
+    static std::string rbClassName = "Assignment";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxAssignExpr::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxAssignExpr::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -149,7 +163,7 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         const DAGNode* theConstNode = theVariable->getDagNode();
         const RbLanguageObject& value = theConstNode->getValue();
         DAGNode* theNode;
-        if (value.isTypeSpec(TypeSpec(DAGNode_name))) {
+        if (value.isTypeSpec( DAGNode::getClassTypeSpec() )) {
             theNode = static_cast<DAGNode*>( value.clone() );
         }
         else {
@@ -171,7 +185,7 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         
         // if the right-hand-side was not a function then we interpret it as the user wanted a reference to the original object (e.g. b := a)
         // we therefore create a new reference function which will lookup the value of the original node each time. Hence, the new node (left-hand-side) is just a reference of the original node (right-hand-side).
-        if ( !theVariable->getDagNode()->isType(DeterministicNode_name) ) {
+        if ( !theVariable->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
             RbFunction* func = new Func_reference();
             std::vector<Argument> args;
             args.push_back( Argument( theVariable ) );
@@ -198,7 +212,7 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         }
         
         const DeterministicNode* detNode = dynamic_cast<const DeterministicNode*>( exprValue );
-        if ( detNode == NULL || !detNode->getFunction().isType( ConstructorFunction_name ) ) {
+        if ( detNode == NULL || !detNode->getFunction().isTypeSpec( ConstructorFunction::getClassTypeSpec() ) ) {
             
             throw RbException( "Function does not return a distribution" );
         }
@@ -257,11 +271,6 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
     return theVariable;
 }
 
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxAssignExpr::getTypeSpec(void) const {
-    return typeSpec;
-}
 
 
 /** Print info about the syntax element */

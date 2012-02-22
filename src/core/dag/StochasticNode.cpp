@@ -31,16 +31,13 @@
 #include <cassert>
 
 
-// Definition of the static type spec member
-const TypeSpec StochasticNode::typeSpec(StochasticNode_name);
-
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.getType() ), clamped( false ), distribution( NULL ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), distribution( NULL ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
 }
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
     
     /* Get distribution parameters */
     std::vector<RbVariablePtr>& params = dist->getMembers();
@@ -127,9 +124,6 @@ StochasticNode::~StochasticNode( void ) {
 StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 
     if ( this != &x ) {
-
-        if ( valueTypeSpec != x.valueTypeSpec )
-            throw RbException( "Type mismatch in StochasticNode assignment" );
         
         /* Remove parents first */
         for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
@@ -178,7 +172,7 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
         
         DAGNode* theNode  = params[i]->getDagNode();
 
-        if ( !theNode->isType( VariableNode_name ) )
+        if ( !theNode->isTypeSpec( VariableNode::getClassTypeSpec() ) )
             continue;
 
         if ( static_cast<const VariableNode*>( (DAGNode*)theNode )->isTouched() )
@@ -260,7 +254,7 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes 
         return ( newNodes[ this ] );
 
     /* Get pristine copy */
-    StochasticNode* copy = new StochasticNode( valueTypeSpec );
+    StochasticNode* copy = new StochasticNode( );
     newNodes[ this ] = copy;
     
     /* Set the name so that the new node remains identifiable */
@@ -333,16 +327,27 @@ std::string StochasticNode::debugInfo(void) const {
 }
 
 
-/** Get class vector describing type of DAG node */
-const VectorString& StochasticNode::getClass() const {
-
-    static VectorString rbClass = VectorString( StochasticNode_name ) + VariableNode::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& StochasticNode::getClassName(void) { 
+    
+    static std::string rbClassName = "Stochastic DAG node";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& StochasticNode::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( VariableNode::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& StochasticNode::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& StochasticNode::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -448,9 +453,9 @@ void StochasticNode::keepMe() {
 /** Print struct for user */
 void StochasticNode::printStruct( std::ostream& o ) const {
 
-    o << "_Class        = " << getClass() << std::endl;
+    o << "_Class        = " << getClassTypeSpec() << std::endl;
     o << "_Adress       = " << this << std::endl;
-    o << "_valueType    = " << getValueType() << std::endl;
+    o << "_valueType    = " << value->getType() << std::endl;
     o << "_distribution = ";
     distribution->printValue(o);
     o << std::endl;

@@ -46,15 +46,32 @@ bool RbNullObject::operator==(const RbNullObject& obj) {
 
 
 bool RbNullObject::operator==(const RbLanguageObject& obj) {
-    return obj.isType( RbNullObject_name );
+    return obj.isTypeSpec( getClassTypeSpec() );
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& RbNullObject::getClass(void) const { 
+/** Get class name of object */
+const std::string& RbNullObject::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(RbNullObject_name) + RbLanguageObject::getClass();
+    static std::string rbClassName = "NULL";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& RbNullObject::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& RbNullObject::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 

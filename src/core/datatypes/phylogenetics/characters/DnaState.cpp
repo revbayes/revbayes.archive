@@ -21,9 +21,6 @@
 const std::string DnaState::stateLabels = "ACGT";
 
 
-// Definition of the static type spec member
-const TypeSpec DnaState::typeSpec(DnaState_name);
-
 /** Default constructor */
 DnaState::DnaState(void) : NucleotideState() {
 
@@ -80,11 +77,28 @@ DnaState* DnaState::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& DnaState::getClass(void) const {
+/** Get class name of object */
+const std::string& DnaState::getClassName(void) { 
+    
+    static std::string rbClassName = "DNA";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( DnaState_name ) + NucleotideState::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& DnaState::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( NucleotideState::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& DnaState::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -157,11 +171,6 @@ std::string DnaState::getStringValue(void) const  {
     std::string s = "";
     s += c;
     return s;
-}
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& DnaState::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

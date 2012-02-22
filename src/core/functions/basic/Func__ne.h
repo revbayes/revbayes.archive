@@ -33,7 +33,8 @@ class Func__ne :  public RbFunction {
     public:
         // Basic utility functions
         Func__ne*                   clone(void) const;                                          //!< Clone the object
-        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
@@ -45,8 +46,6 @@ class Func__ne :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
     
         // Arguments
         RbVariablePtr               first;
@@ -68,13 +67,6 @@ class Func__ne :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
-
-
-// Definition of the static type spec member
-template <typename firstValType, typename secondValType>
-const TypeSpec Func__ne<firstValType, secondValType>::typeSpec("Func__ne", new TypeSpec(firstValType().getType() + "," + secondValType().getType()));
-template <typename firstValType, typename secondValType>
-const TypeSpec Func__ne<firstValType, secondValType>::returnTypeSpec(RbBoolean_name);
 
 
 /** Clone object */
@@ -114,30 +106,43 @@ const ArgumentRules& Func__ne<firstValType, secondValType>::getArgumentRules(voi
 }
 
 
-/** Get class vector describing type of object */
+/** Get class name of object */
 template <typename firstValType, typename secondValType>
-const VectorString& Func__ne<firstValType, secondValType>::getClass( void ) const {
-
-    static std::string  rbName  = "Func__ne<" + firstValType().getType() + "," + secondValType().getType() + ">"; 
-    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+const std::string& Func__ne<firstValType, secondValType>::getClassName(void) { 
     
-    return rbClass;
+    static std::string rbClassName = "Func__ne<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    
+	return rbClassName; 
+}
+
+
+/** Get class type spec describing type of object */
+template <typename firstValType, typename secondValType>
+const TypeSpec& Func__ne<firstValType, secondValType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+
+/** Get type spec */
+template <typename firstValType, typename secondValType>
+const TypeSpec& Func__ne<firstValType, secondValType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 template <typename firstValType, typename secondValType>
 const TypeSpec& Func__ne<firstValType, secondValType>::getReturnType( void ) const {
-
-    return returnTypeSpec;
-}
-
-
-/** Get return spec */
-template <typename firstValType, typename secondValType>
-const TypeSpec& Func__ne<firstValType, secondValType>::getTypeSpec( void ) const {
     
-    return typeSpec;
+    static TypeSpec returnTypeSpec = RbBoolean::getClassTypeSpec();
+    
+    return returnTypeSpec;
 }
 
 

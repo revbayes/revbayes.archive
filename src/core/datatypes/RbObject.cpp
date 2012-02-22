@@ -29,10 +29,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec RbObject::typeSpec(RbObject_name);
-
-
 RbObject::RbObject(void) {
     
 }
@@ -47,7 +43,7 @@ RbObject::~RbObject() {
     Here we just convert from scalar types to vectors and overwritten function do more fancy stuff. */
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
-    if (typeSpec.getBaseType() == Vector_name) {
+    if (typeSpec.getBaseType() == Vector::getClassName()) {
         Vector *v = new Vector(typeSpec.getElementType().getBaseType());
         v->push_back( this->clone() );
         
@@ -68,7 +64,7 @@ std::string RbObject::debugInfo(void) const {
     
     std::ostringstream o;
     o << "Object of type: ";
-    getClass().printValue(o);
+    o << getClassTypeSpec();
     o << std::endl;
     o << "Value: ";
     printValue(o);
@@ -86,15 +82,26 @@ XmlElement* RbObject::encode(XmlDocument* doc, const std::string& name) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& RbObject::getClass(void) const { 
+/** Get class name of object */
+const std::string& RbObject::getClassName(void) { 
+    
+    static std::string rbClassName = "Object";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(RbObject_name);
+/** Get class type spec describing type of object */
+const TypeSpec& RbObject::getClassTypeSpec(void) { 
+
+    static TypeSpec rbClass = TypeSpec( getClassName() );
+    
 	return rbClass; 
 }
 
 /** Get type spec */
 const TypeSpec& RbObject::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
 }
@@ -131,7 +138,7 @@ const std::string& RbObject::getType(void) const {
 /** Is convertible to type and dim? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
     
-    if (typeSpec.getBaseType() == Vector_name && isTypeSpec(typeSpec.getElementType())) {
+    if (typeSpec.getBaseType() == Vector::getClassName() && isTypeSpec(typeSpec.getElementType())) {
         return true;
     }
 
@@ -142,29 +149,14 @@ bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
 /** Are we of specified type? We need to check entire class vector in case we are derived from type. */
 bool RbObject::isType(const std::string& type) const {
     
-    const VectorString& classVec = getClass();
-    
-    for (size_t i=0; i<classVec.size(); i++) {
-        if (type == classVec[i])
-            return true;
-    }
-    
-	return false;
+    return getTypeSpec().isDerivedOf( type );
 }
 
 
 /** Are we of specified language type? */
 bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
     
-    const VectorString& classVec = getClass();
-    const std::string&  type     = typeSpec.getType();
-    
-    for (size_t i=0; i<classVec.size(); i++) {
-        if (type == classVec[i])
-            return true;
-    }
-
-    return false;
+    return getTypeSpec().isDerivedOf( typeSpec );
 }
 
 

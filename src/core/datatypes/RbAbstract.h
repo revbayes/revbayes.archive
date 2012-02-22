@@ -30,15 +30,16 @@ public:
                                        TypeSpec* elemType = NULL);                           //!< Constructor
 
     // Basic utility functions
-    RbAbstract*             clone(void) const;                                                      //!< Clone object
-    const VectorString&     getClass(void) const { return classVector; }                            //!< Get class vector
-    const TypeSpec&         getTypeSpec() const;                                                    //!< Get type spec
-    void                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
+    RbAbstract*                 clone(void) const;                                                      //!< Clone object
+//    static const std::string&   getClassName(void);                                                     //!< Get class name
+//    static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
+    const TypeSpec&             getTypeSpec() const;                                                    //!< Get type spec
+    void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
 protected:
-    VectorString            classVector;                                                            //!< Class vector describing type
-    TypeSpec*               elementType;                                                            //!< Element type, if any
-    TypeSpec                typeSpec;
+    VectorString                classVector;                                                            //!< Class vector describing type
+    TypeSpec*                   elementType;                                                            //!< Element type, if any
+    TypeSpec                    typeSpec;
 };
 
 #endif

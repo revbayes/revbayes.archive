@@ -24,7 +24,6 @@
 #include "VectorRealPos.h"
 #include "DagNodeContainer.h"
 
-const std::string Mixture_name = "Mixture";
 
 class Mixture: public MutableMemberObject {
     
@@ -40,10 +39,10 @@ public:
     
     // Basic utility functions
     Mixture*                        clone(void) const;                                                      //!< Clone object
-    const VectorString&             getClass(void) const;                                                   //!< Get class vector
+    static const std::string&       getClassName(void);                                                     //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
     const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
     void                            printValue(std::ostream& o) const;                                      //!< Print value for user
-    std::string                     richInfo(void) const;                                                   //!< Complete info
     
     // Member variable functions
     const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
@@ -64,7 +63,7 @@ public:
     void                            setAllocationVector(Vector allocationVector);                           //!< Set the allocation vector associating class indices to elements
     void                            allocateElement (int elementId, int classId);                           //!< Change the class of a particular element
     void                            allocateElementToNewClass (int elementId);                              //!< Change the class of a particular element
-    VectorRealPos                   getClassProbabilities();                                                //!< Get the vector containing class probabilities
+    VectorRealPos                   getClassTypeSpecProbabilities();                                                //!< Get the vector containing class probabilities
     void                            setClassProbabilities();                                                //!< Set the vector containing class probabilities
 
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
@@ -74,7 +73,6 @@ public:
 
     
 private:
-    static const TypeSpec           typeSpec_;                                                              
     DagNodeContainer*               allocationVector_;                                                      //!< Vector allocating elements to cluster indices
     DagNodeContainer*               parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
     VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class

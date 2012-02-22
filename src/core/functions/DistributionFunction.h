@@ -31,7 +31,6 @@ class Distribution;
 class VectorInteger;
 class VectorString;
 
-const std::string DistributionFunction_name = "Distribution Function";
 
 class DistributionFunction :  public RbFunction {
 
@@ -47,7 +46,8 @@ class DistributionFunction :  public RbFunction {
 
         // Basic utility functions
         DistributionFunction*       clone(void) const;                                                      //!< Clone object
-        const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        static const std::string&   getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // DistributionFunction functions
@@ -65,7 +65,6 @@ class DistributionFunction :  public RbFunction {
         FuncType                    functionType;                                                           //!< Function type
     
     private:
-        static const TypeSpec       typeSpec;
 
     
         // Arguments

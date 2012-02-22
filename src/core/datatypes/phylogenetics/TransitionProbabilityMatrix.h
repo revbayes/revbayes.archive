@@ -26,9 +26,6 @@ class VectorReal;
 class VectorString;
 
 
-
-const std::string TransitionProbabilityMatrix_name = "Transition probability matrix";
-
 class TransitionProbabilityMatrix : public ConstantMemberObject {
 
     public:
@@ -44,10 +41,10 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
     
         // Basic utility functions
         TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object
-        const VectorString&                 getClass(void) const;                                              //!< Get class vector   
+        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                           //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                 //!< Print value for user
-        std::string                         richInfo(void) const;                                              //!< Complete info
 
         // Member variable rules
         const MemberRules&                  getMemberRules(void) const;                                        //!< Get member rules
@@ -62,7 +59,6 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
         Natural                             numStates;                                                         //!< The number of character states
         MatrixReal*                         theMatrix;                                                         //!< Holds the transition probability matrix
     
-        static const TypeSpec               typeSpec;
 };
 
 #endif

@@ -32,8 +32,6 @@ class VectorString;
 class XmlDocument;
 class XmlElement;
 
-const std::string RbLanguageObject_name = "language object";
-
 typedef ArgumentRules MemberRules;                                                                       //!< Member rules type def, for convenience
 
 class RbLanguageObject : public RbObject {
@@ -41,10 +39,12 @@ class RbLanguageObject : public RbObject {
 public:
     virtual                            ~RbLanguageObject(void) {}                                               //!< Virtual destructor
     
-    // Basic utility functions you have to override (also getClass()!)
+    // Basic utility functions you have to override (also getClassTypeSpec()!)
     virtual RbLanguageObject*           clone(void) const = 0;                                                  //!< Clone object
     virtual XmlElement*                 encode(XmlDocument* doc, const std::string& name);                      //!< Function to encode this object into an XML string
-    virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
+    static const std::string&           getClassName(void);                                                     //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
+    virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get the type spec of the instance
     virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
     
     // Basic utility functions you may want to override

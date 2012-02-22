@@ -34,11 +34,8 @@
 #include <cmath>
 
 
-// Definition of the static type spec member
-const TypeSpec Move_mmultinomial::typeSpec(Move_mmultinomial_name);
-
 /** Constructor for parser */
-Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()), variable( TypeSpec( VectorRealPos_name ) ), alpha( TypeSpec( RealPos_name ) ), numCategories( TypeSpec( Natural_name ) ) {
+Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()), variable( NULL ), alpha( NULL ), numCategories( NULL ) {
 
 }
 
@@ -50,11 +47,28 @@ Move_mmultinomial* Move_mmultinomial::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Move_mmultinomial::getClass() const {
+/** Get class name of object */
+const std::string& Move_mmultinomial::getClassName(void) { 
+    
+    static std::string rbClassName = "Multinomial move";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(Move_mmultinomial_name) + MoveSimple::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Move_mmultinomial::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MoveSimple::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Move_mmultinomial::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -66,14 +80,14 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) );
+            memberRules.push_back( new ValueRule( "variable", VectorRealPos::getClassTypeSpec() ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules.push_back(new ValueRule("tuning", RealPos_name) );
-        memberRules.push_back(new ValueRule("num_cats", Natural_name) );
+        memberRules.push_back(new ValueRule("tuning", RealPos::getClassTypeSpec()) );
+        memberRules.push_back(new ValueRule("num_cats", Natural::getClassTypeSpec()) );
 
         rulesSet = true;
 		}
@@ -82,16 +96,10 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Move_mmultinomial::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Return the random variable type appropriate for the move */
 const TypeSpec Move_mmultinomial::getVariableType( void ) const {
 
-    return TypeSpec( RealPos_name );
+    return RealPos::getClassTypeSpec();
 }
 
 
@@ -104,8 +112,8 @@ double Move_mmultinomial::perform( void ) {
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
     StochasticNode*        nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos&>( alpha.getValue()         ).getValue();
-    int                    k       = static_cast<const Integer&>( numCategories.getValue() ).getValue();
+    double                 alpha0  = static_cast<const RealPos&>( alpha->getValue()         ).getValue();
+    int                    k       = static_cast<const Integer&>( numCategories->getValue() ).getValue();
 
     const VectorReal& valPtr = static_cast<const VectorReal&>( nodePtr->getValue() );
 

@@ -22,8 +22,6 @@
 
 
 
-const std::string CharacterContinuous_name = "Continuous Character";
-
 class CharacterContinuous : public Character {
 
     public:
@@ -39,7 +37,8 @@ class CharacterContinuous : public Character {
 
         // Basic utility functions you have to override
         CharacterContinuous*            clone(void) const;                                   //!< Clone object
-        const VectorString&             getClass(void) const;                                //!< Get class vector
+        static const std::string&       getClassName(void);                                  //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                              //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                             //!< Get language type of the object
 
         // Discrete character observation functions
@@ -57,7 +56,6 @@ class CharacterContinuous : public Character {
         double                          mean;                                                //!< Mean value (or just the value)
         double                          variance;                                            //!< Variance (most likely 0)
     
-        static const TypeSpec           typeSpec;
 };
 
 #endif

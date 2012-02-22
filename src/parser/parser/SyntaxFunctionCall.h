@@ -31,7 +31,6 @@
  * function is a member, if any.
  *
  */
-const std::string SyntaxFunctionCall_name = "Function call";
 
 class SyntaxFunctionCall : public SyntaxElement {
 
@@ -48,7 +47,8 @@ class SyntaxFunctionCall : public SyntaxElement {
 
         // Basic utility functions
         SyntaxFunctionCall*                 clone() const;                                                                              //!< Clone object
-        const VectorString&                 getClass(void) const;                                                                       //!< Get class vector
+        static const std::string&           getClassName(void);                                                                         //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                    //!< Get language type of the object 
         void                                printValue(std::ostream& o) const;                                                          //!< Print info about object
 
@@ -62,8 +62,6 @@ class SyntaxFunctionCall : public SyntaxElement {
         RbString*                           functionName;                                                                               //!< The name of the function
         SyntaxVariable*                     variable;                                                                                   //!< Variable holding member function
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

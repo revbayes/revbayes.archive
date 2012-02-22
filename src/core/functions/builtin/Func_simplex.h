@@ -32,7 +32,8 @@ class Func_simplex :  public RbFunction {
     public:
         // Basic utility functions
         Func_simplex<valType>*      clone(void) const;                                          //!< Clone the object
-        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
@@ -46,8 +47,6 @@ class Func_simplex :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
     
         // memberfunction return value
         Simplex                     s;
@@ -67,13 +66,6 @@ class Func_simplex :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
-
-
-// Definition of the static type spec member
-template <typename valType>
-const TypeSpec Func_simplex<valType>::typeSpec("Func_simplex", new TypeSpec(valType().getType()));
-template <typename valType>
-const TypeSpec Func_simplex<valType>::returnTypeSpec(Simplex_name);
 
 
 
@@ -160,9 +152,9 @@ const ArgumentRules& Func_simplex<RealPos>::getArgumentRules( void ) const {
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", RealPos_name ) );
-        argumentRules.push_back( new ValueRule( "", RealPos_name ) );
-        argumentRules.push_back( new Ellipsis (     RealPos_name ) );
+        argumentRules.push_back( new ValueRule( "", RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis (     RealPos::getClassTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -170,30 +162,43 @@ const ArgumentRules& Func_simplex<RealPos>::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-template <typename valType>
-const VectorString& Func_simplex<valType>::getClass( void ) const {
-
-    static std::string  rbName  = "Func_simplex<" + valType().getType() + ">"; 
-    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+/** Get class name of object */
+template <typename firstValType>
+const std::string& Func_simplex<firstValType>::getClassName(void) { 
     
-    return rbClass;
+    static std::string rbClassName = "Func_simplex<" + firstValType().getType() + ">";
+    
+	return rbClassName; 
 }
 
 
-/** Get return type */
-template <typename valType>
-const TypeSpec& Func_simplex<valType>::getReturnType( void ) const {
-
-    return returnTypeSpec;
+/** Get class type spec describing type of object */
+template <typename firstValType>
+const TypeSpec& Func_simplex<firstValType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
-/** Get return type */
-template <typename valType>
-const TypeSpec& Func_simplex<valType>::getTypeSpec( void ) const {
+/** Get type spec */
+template <typename firstValType>
+const TypeSpec& Func_simplex<firstValType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+
+/** Get return type */
+template <typename firstValType>
+const TypeSpec& Func_simplex<firstValType>::getReturnType( void ) const {
+    
+    static TypeSpec returnTypeSpec = Simplex::getClassTypeSpec();
+    
+    return returnTypeSpec;
 }
 
 

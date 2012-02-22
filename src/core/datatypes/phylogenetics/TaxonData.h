@@ -27,8 +27,6 @@
 class Character;
 
 
-const std::string TaxonData_name = "TaxonData";
-
 class TaxonData : public Vector {
     
     public:
@@ -39,7 +37,8 @@ class TaxonData : public Vector {
         
         // Basic utility functions you have to override
         TaxonData*                              clone(void) const;                                                  //!< Clone object
-        const VectorString&                     getClass(void) const;                                               //!< Get class
+        static const std::string&               getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
         void                                    printValue(std::ostream& o) const;                                  //!< Print value for user
         
@@ -55,7 +54,6 @@ class TaxonData : public Vector {
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
-        static const TypeSpec                   typeSpec;
 };
 
 #endif

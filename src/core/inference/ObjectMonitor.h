@@ -29,11 +29,6 @@
 #include <string>
 #include <vector>
 
-class RbObject;
-class VectorString;
-class VariableNode;
-
-const std::string ObjectMonitor_name = "ObjectMonitor";
 
 class ObjectMonitor : public Monitor {
     
@@ -45,7 +40,8 @@ public:
     
     // Basic utility functions
     ObjectMonitor*                      clone(void) const;                                                  //!< Clone object
-    const VectorString&                 getClass(void) const;                                               //!< Get class
+    static const std::string&           getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
     void                                printValue(std::ostream& o) const;                                  //!< Print value (for user)
     
@@ -63,7 +59,6 @@ public:
 private:
     std::map<RbString, Vector >         values;                                                             //!< Vector of values from the monitored node
     
-    static const TypeSpec               typeSpec;
 };
 
 #endif

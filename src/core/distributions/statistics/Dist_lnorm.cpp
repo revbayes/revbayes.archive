@@ -32,10 +32,6 @@
 #include <cmath>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_lnorm::typeSpec(Dist_lnorm_name);
-const TypeSpec Dist_lnorm::varTypeSpec(Real_name);
-
 /** Constructor for parser use */
 Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ), mu( NULL ), sigma( NULL ) {
 	
@@ -56,7 +52,7 @@ double Dist_lnorm::cdf( const RbLanguageObject& value ) {
 	
     double m    = static_cast<      Real&   >( mu->getValue()    ).getValue();
 	double s    = static_cast<      RealPos&>( sigma->getValue() ).getValue();
-    double q    = static_cast<const Real&   >( value            ).getValue();
+    double q    = static_cast<const RealPos&>( value             ).getValue();
 	
 	return RbStatistics::Lognormal::cdf(m, s, q);
 }
@@ -69,11 +65,28 @@ Dist_lnorm* Dist_lnorm::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_lnorm::getClass( void ) const {
-	
-    static VectorString rbClass = VectorString( Dist_lnorm_name ) + DistributionContinuous::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Dist_lnorm::getClassName(void) { 
+    
+    static std::string rbClassName = "Lognormal distribution";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_lnorm::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_lnorm::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -85,8 +98,8 @@ const MemberRules& Dist_lnorm::getMemberRules( void ) const {
 	
     if ( !rulesSet ) {
 		
-        memberRules.push_back( new ValueRule( "mu", Real_name    ) );
-        memberRules.push_back( new ValueRule( "sigma", RealPos_name ) );
+        memberRules.push_back( new ValueRule( "mu",    Real::getClassTypeSpec()    ) );
+        memberRules.push_back( new ValueRule( "sigma", RealPos::getClassTypeSpec() ) );
 		
         rulesSet = true;
     }
@@ -95,15 +108,11 @@ const MemberRules& Dist_lnorm::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_lnorm::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_lnorm::getVariableType( void ) const {
 	
+    static TypeSpec varTypeSpec = RealPos::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 
@@ -121,7 +130,7 @@ double Dist_lnorm::lnPdf(const RbLanguageObject& value) const {
 	
     double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
     double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-    double x = static_cast<const Real&   >( value            ).getValue();
+    double x = static_cast<const RealPos&>( value             ).getValue();
 	
     return RbStatistics::Lognormal::lnPdf(m, s, x);
 }
@@ -140,7 +149,7 @@ double Dist_lnorm::pdf( const RbLanguageObject& value ) const {
 	
     double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
     double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-    double x = static_cast<const Real&   >( value            ).getValue();
+    double x = static_cast<const RealPos&>( value             ).getValue();
 	
     return RbStatistics::Lognormal::pdf(m, s, x);
 }

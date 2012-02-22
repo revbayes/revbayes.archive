@@ -26,8 +26,6 @@
 
 class VectorString;
 
-const std::string Dist_unif_name = "Dist_unif";
-
 class Dist_unif: public DistributionContinuous {
 
     public:
@@ -35,7 +33,8 @@ class Dist_unif: public DistributionContinuous {
 
         // Basic utility functions
         Dist_unif*                  clone(void) const;                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                               //!< Get class vector
+        static const std::string&   getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
@@ -56,8 +55,8 @@ class Dist_unif: public DistributionContinuous {
         static const TypeSpec       varTypeSpec;
 
         // parameters
-        Variable                    min;
-        Variable                    max;
+        RbVariablePtr               min;
+        RbVariablePtr               max;
     
         // memberfunction return valus
         Real                        randomVariable;

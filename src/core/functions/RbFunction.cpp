@@ -107,8 +107,6 @@ RbFunction::~RbFunction(void) {
  */
 bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, VectorInteger* matchScore) {
     
-    bool    conversionNeeded;
-    
     /*********************  0. Initialization  **********************/
     
     /* Get the argument rules */
@@ -121,7 +119,7 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, Vecto
      we expect and the number of non-ellipsis rules we have */
     size_t numFinalArgs;
     size_t numRegularRules;
-    if (nRules > 0 && theRules[nRules-1].isType(Ellipsis_name)) {
+    if (nRules > 0 && theRules[nRules-1].isTypeSpec(Ellipsis::getClassTypeSpec())) {
         numRegularRules = nRules - 1;
         // TODO: This does not work if some rules have default values and can be ommitted!!!
         if ( passedArgs.size() < nRules )
@@ -148,15 +146,15 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, Vecto
     /* Process ellipsis arguments. If we have an ellipsis, all preceding arguments must be passed in;
      no default values are allowed. Note that the argument labels are discarded here, which is not
      correct. */
-    if ( nRules > 0 && theRules[nRules-1].isType(Ellipsis_name) && passedArgs.size() >= nRules ) {
+    if ( nRules > 0 && theRules[nRules-1].isTypeSpec(Ellipsis::getClassTypeSpec()) && passedArgs.size() >= nRules ) {
         
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
             
             const Argument& theArgument = passedArgs[i];
-            const DAGNode* theDAGNode = theArgument.getVariable().getDagNode();
-            if ( theDAGNode == NULL )
+            const RbVariablePtr& theVar = theArgument.getVariablePtr();
+            if ( theVar == NULL )
                 return false;   // This should never happen
-            if ( !theRules[nRules-1].isArgumentValid( theDAGNode, conversionNeeded ) )
+            if ( !theRules[nRules-1].isArgumentValid( theVar ) )
                 return false;
                         
             taken[i]          = true;
@@ -189,7 +187,7 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, Vecto
             
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
                 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable().getDagNode(), conversionNeeded) && !filled[j] ) {
+                if ( theRules[j].isArgumentValid(passedArgs[i].getVariablePtr() ) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
@@ -238,7 +236,7 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, Vecto
         if (nMatches != 1)
             return false;
         
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable().getDagNode(), conversionNeeded) ) {
+        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariablePtr() ) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
@@ -266,14 +264,14 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, Vecto
         for (size_t j=0; j<numRegularRules; j++) {
             
             if ( filled[j] == false ) {
-                const DAGNode* argVar = passedArgs[i].getVariable().getDagNode();
-                if ( theRules[j].isArgumentValid( argVar, conversionNeeded ) ) {
+                const RbVariablePtr& argVar = passedArgs[i].getVariablePtr();
+                if ( theRules[j].isArgumentValid( argVar ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     if ( matchScore != NULL) {
-                        int score = computeMatchScore(argVar, theRules[j]);
+                        int score = computeMatchScore(argVar->getDagNode(), theRules[j]);
                         matchScore->push_back(score);
                     }
                     
@@ -313,16 +311,18 @@ int RbFunction::computeMatchScore(const DAGNode *arg, const ArgumentRule &rule) 
    
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
 
-    const VectorString& argClass = arg->getValue().getClass();
-    size_t j;
-    for (j=0; j<argClass.size(); j++)
-        if ( argClass[j] == rule.getArgumentType() )
-            break;
+    const TypeSpec& argClass = arg->getValue().getTypeSpec();
+    size_t j = 0;
+    const TypeSpec* parent = &argClass;
+    do {
+        if (*parent == rule.getArgumentTypeSpec() ) {
+            return int(j);
+        }
+        parent = parent->getParentType();
+        j++;
+    } while (parent != NULL);
     
-    if ( j == argClass.size() )
-        return aLargeNumber;    // We needed type conversion for this argument
-    else
-        return int(j);          // No type conversion, score is distance in class vector
+    return aLargeNumber;    // We needed type conversion for this argument
 }
 
 
@@ -385,11 +385,20 @@ std::vector<Argument>& RbFunction::getArguments(void) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& RbFunction::getClass(void) const { 
+/** Get class name of object */
+const std::string& RbFunction::getClassName(void) { 
+    
+    static std::string rbClassName = "Function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(RbFunction_name) + RbObject::getClass();
-    return rbClass; 
+/** Get class type spec describing type of object */
+const TypeSpec& RbFunction::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -455,8 +464,6 @@ void RbFunction::printValue(std::ostream& o) const {
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
 void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
-    
-    bool    conversionNeeded;
 
     /*********************  0. Initialization  **********************/
 
@@ -473,7 +480,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
        we expect and the number of non-ellipsis rules we have */
     size_t numFinalArgs;
     size_t numRegularRules;
-    if (nRules > 0 && theRules[nRules-1].isType(Ellipsis_name)) {
+    if (nRules > 0 && theRules[nRules-1].isTypeSpec(Ellipsis::getClassTypeSpec())) {
         numRegularRules = nRules - 1;
         // TODO: This does not work if some rules have default values and can be ommitted!!!
         if ( passedArgs.size() < nRules )
@@ -489,15 +496,6 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
     /* Check if we have too many arguments */
     if ( passedArgs.size() > numFinalArgs )
         throw RbException("Too many arguments.");
-
-    /* Fill processedArguments with empty variable slots */
-//    for (size_t i=0; i<numRegularRules; i++) {
-//        args->addVariable( theRules[i].getArgumentLabel(), new VariableSlot( theRules[i].getArgumentLabel(), theRules[i].getArgumentTypeSpec() ) );
-//    }
-//    for (size_t i=numRegularRules; i<numFinalArgs; i++) {
-//        VariableSlot* theEllipsisSlot = new VariableSlot( EmptyString, theRules[nRules-1].getArgumentTypeSpec() );
-//        args->addVariable( theEllipsisSlot->getLabel(), theEllipsisSlot );
-//    }
     
     /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
     std::vector<bool>   taken           = std::vector<bool>( passedArgs.size(), false );
@@ -509,20 +507,18 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
     /* Process ellipsis arguments. If we have an ellipsis, all preceding arguments must be passed in;
        no default values are allowed. Note that the argument labels are discarded here, which is not
        correct. */
-    if ( nRules > 0 && theRules[nRules-1].isType(Ellipsis_name) && passedArgs.size() >= nRules ) {
+    if ( nRules > 0 && theRules[nRules-1].isTypeSpec(Ellipsis::getClassTypeSpec()) && passedArgs.size() >= nRules ) {
 
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 
             const Argument& theArgument = passedArgs[i];
-            const DAGNode* theDAGNode = theArgument.getVariable().getDagNode();
-            if ( theDAGNode == NULL )
+            const RbVariablePtr& theVar = theArgument.getVariablePtr();
+            if ( theVar == NULL )
                 throw RbException("Null argument not valid.");
-            if ( !theRules[nRules-1].isArgumentValid( theDAGNode, conversionNeeded ) )
+            if ( !theRules[nRules-1].isArgumentValid( theVar, true ) )
                 throw RbException("Arguments do not macth.");
             
             // add this variable to the argument list
-            // TODO: Work on proper type checking
-            theArgument.getVariablePtr()->setValueTypeSpec( theRules[nRules-1].getArgumentTypeSpec());
             setArgument(theArgument.getLabel(), theArgument);
 
             taken[i]          = true;
@@ -550,14 +546,12 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
 
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable().getDagNode(), conversionNeeded) && !filled[j] ) {
+                if ( theRules[j].isArgumentValid(passedArgs[i].getVariablePtr(), true) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    // TODO: Work on proper type checking
-                    passedArgs[i].getVariablePtr()->setValueTypeSpec( theRules[j].getArgumentTypeSpec());
                     setArgument(passedArgs[i].getLabel(), passedArgs[i]);
                 }
                 else
@@ -599,14 +593,12 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
         if (nMatches != 1)
             throw RbException("Argument matches mutliple parameters.");
  
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable().getDagNode(), conversionNeeded) ) {
+        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariablePtr(), true ) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
             
             // add this variable to the argument list
-            // TODO: Work on proper type checking
-            passedArgs[i].getVariablePtr()->setValueTypeSpec( theRules[matchRule].getArgumentTypeSpec());
             setArgument(theRules[matchRule].getArgumentLabel(), passedArgs[i]);
         }
         else
@@ -627,15 +619,12 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
         for (size_t j=0; j<numRegularRules; j++) {
 
             if ( filled[j] == false ) {
-                const DAGNode* argVar = passedArgs[i].getVariable().getDagNode();
-                if ( theRules[j].isArgumentValid( (const DAGNode*)argVar, conversionNeeded ) ) {
+                if ( theRules[j].isArgumentValid( passedArgs[i].getVariablePtr(), true ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    // TODO: Work on proper type checking
-                    passedArgs[i].getVariablePtr()->setValueTypeSpec( theRules[j].getArgumentTypeSpec());
                     setArgument(theRules[j].getArgumentLabel(), passedArgs[i]);
                     
                     break;
@@ -659,7 +648,6 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
 
         const ArgumentRule& theRule = theRules[i];
         RbVariablePtr theVar = theRule.getDefaultVariable().clone();
-        // TODO: Work on proper type checking
         theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
         setArgument(theRule.getArgumentLabel(), Argument("", theVar ) );
     }

@@ -21,9 +21,6 @@
 #include "VectorString.h"
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxConstant::typeSpec(SyntaxConstant_name);
-
 /** Construct from value */
 SyntaxConstant::SyntaxConstant(RbLanguageObject* val) : SyntaxElement(), value(val) {
 }
@@ -66,11 +63,28 @@ SyntaxConstant* SyntaxConstant::clone (void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxConstant::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxConstant::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(SyntaxConstant_name) + SyntaxElement::getClass();
+    static std::string rbClassName = "Constant";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxConstant::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxConstant::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -82,12 +96,6 @@ RbVariablePtr SyntaxConstant::evaluateContent( Environment& env ) {
         return RbVariablePtr( new Variable(new ConstantNode( NULL ) ) );
     else
         return RbVariablePtr( new Variable(new ConstantNode( value->clone() ) ) );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxConstant::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

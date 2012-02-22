@@ -43,10 +43,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_neutralcoalescent::typeSpec(Dist_neutralcoalescent_name);
-const TypeSpec Dist_neutralcoalescent::varTypeSpec(TreePlate_name);
-
 /** Default constructor for parser use */
 Dist_neutralcoalescent::Dist_neutralcoalescent( void ) : Distribution( getMemberRules() ) {
 
@@ -78,11 +74,28 @@ Dist_neutralcoalescent* Dist_neutralcoalescent::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_neutralcoalescent::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_neutralcoalescent::getClassName(void) { 
+    
+    static std::string rbClassName = "Neutral coalescent distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Dist_neutralcoalescent_name ) + Distribution::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_neutralcoalescent::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_neutralcoalescent::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -98,9 +111,9 @@ const MemberRules& Dist_neutralcoalescent::getMemberRules( void ) const {
         // memberRules.push_back( new ValueRule( "lambda"   , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "mu"       , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "rho"      , Probability_name ) );
-        memberRules.push_back( new ValueRule( "tipNames", VectorString_name) );
-        memberRules.push_back( new ValueRule( "haploidPopSize" , Natural_name, new Natural(1) ) );
-        memberRules.push_back( new ValueRule( "noTaxa" , RealPos_name ) );
+        memberRules.push_back( new ValueRule( "tipNames", VectorString::getClassTypeSpec()) );
+        memberRules.push_back( new ValueRule( "haploidPopSize" , Natural::getClassTypeSpec(), new Natural(1) ) );
+        memberRules.push_back( new ValueRule( "noTaxa" , RealPos::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -109,15 +122,11 @@ const MemberRules& Dist_neutralcoalescent::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_neutralcoalescent::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_neutralcoalescent::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = VectorRealPos::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 

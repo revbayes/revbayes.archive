@@ -30,7 +30,6 @@
  * including the fact that doing so would make it impossible to
  * protect the subscript operator return.
  */
-const std::string VectorNatural_name = "Natural vector";
 
 class VectorNatural : public AbstractVector {
 
@@ -45,14 +44,15 @@ class VectorNatural : public AbstractVector {
                                 VectorNatural(const VectorInteger& x);                          //!< Constructor from vector of Integer
 
     // Overloaded operators
-    unsigned int               operator[](size_t i) const;                                     //!< Index op (value, no reference - no modification)
+    unsigned int                operator[](size_t i) const;                                     //!< Index op (value, no reference - no modification)
     bool                        operator==(const VectorNatural& x) const;                       //!< Equals comparison
     bool                        operator!=(const VectorNatural& x) const;                       //!< Not equals comparison
     
     // Basic utility functions
     VectorNatural*              clone(void) const;                                              //!< Clone object
     RbObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-    const VectorString&         getClass(void) const;                                           //!< Get class
+    static const std::string&   getClassName(void);                                             //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
     bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
 
@@ -81,7 +81,6 @@ class VectorNatural : public AbstractVector {
     
     private:
     std::vector<unsigned int>   elements;
-    static const TypeSpec       typeSpec;
     
 };
 

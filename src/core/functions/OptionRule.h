@@ -26,7 +26,6 @@ class DAGNode;
 class RbObject;
 class RbString;
 
-const std::string OptionRule_name = "OptionRule";
 
 class OptionRule : public ValueRule {
 
@@ -36,21 +35,17 @@ class OptionRule : public ValueRule {
 
         // Basic utility functions
         OptionRule*                 clone(void) const { return new OptionRule(*this); }                                 //!< Clone object
-        virtual const VectorString& getClass(void) const;                                                               //!< Get class vector
+        std::string                 debugInfo(void) const;                                                              //!< General info on object
+        static const std::string&   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
-        std::string                 richInfo(void) const;                                                               //!< General info on object
-
-        // OptionRule functions
-        virtual bool                isArgValid(DAGNode* var, bool& needsConversion) const;                              //!< Is var valid argument?
 
     protected:
         bool                        areOptionsUnique(const VectorString& optVals) const;                                //!< Test if options are unique
 
         VectorString                options;                                                                            //!< Permissible values
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

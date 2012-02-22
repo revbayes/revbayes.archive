@@ -41,7 +41,6 @@ class VectorNatural;
  * If necessary, one could also add C-style pointer
  * arrays to the interface.
  */
-const std::string MatrixReal_name = "Real Matrix";
 
 class MatrixReal : public Matrix {
 
@@ -57,10 +56,10 @@ public:
 
     // Basic utility functions
     MatrixReal*                         clone(void) const;                                                          //!< Clone object
-    const VectorString&                 getClass(void) const;                                                       //!< Get class vector
+    static const std::string&           getClassName(void);                                                         //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
     void                                printValue(std::ostream& o) const;                                          //!< Print value for user
-    std::string                         richInfo(void) const;                                                       //!< Complete info about object
 
     
     // Matrix functions
@@ -78,7 +77,6 @@ public:
 private:
     bool                                numFmt(int& numToLft, int& numToRht, std::string s) const;                  //!< Calculates the number of digits to the left and right of the decimal
     
-    static const TypeSpec               typeSpec;
 };
 
         // operators defined outside of the class

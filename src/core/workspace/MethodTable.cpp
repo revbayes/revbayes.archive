@@ -24,9 +24,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec MethodTable::typeSpec(MethodTable_name);
-
 /** Basic constructor, empty table with or without parent */
 MethodTable::MethodTable(MethodTable* parent) : FunctionTable( parent ) {
 
@@ -50,21 +47,32 @@ void MethodTable::addFunction( const std::string name, RbFunction* func ) {
 
     FunctionTable::addFunction( name, func );
 
-    if ( func->isType( MemberFunction_name ) )
+    if ( func->isTypeSpec( MemberFunction::getClassTypeSpec() ) )
         static_cast<MemberFunction*>( func )->setMethodName( name );
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MethodTable::getClass(void) const { 
+/** Get class name of object */
+const std::string& MethodTable::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(MethodTable_name) + FunctionTable::getClass();
+    static std::string rbClassName = "Method table";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& MethodTable::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( FunctionTable::getClassTypeSpec() ) );
+    
 	return rbClass; 
 }
 
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& MethodTable::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& MethodTable::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 

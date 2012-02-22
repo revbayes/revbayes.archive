@@ -72,7 +72,6 @@ typedef std::map<std::string, RbObject*> TypeTable;
  * to the function table.
  *
  */
-const std::string Workspace_name = "Workspace";
 
 class Workspace : public Environment {
 
@@ -81,10 +80,10 @@ class Workspace : public Environment {
     
         // Frame functions you have to override
         Workspace*                  clone(void) const;                                                                  //!< Clone frame
-        const VectorString&         getClass() const;                                                                   //!< Get class vector
+        static const std::string&   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                  //!< Print table for user
-        std::string                 richInfo(void) const;                                                               //!< Complete info to string
 
 
         bool                        addDistribution(const std::string& name, Distribution* dist);                       //!< Add distribution
@@ -99,7 +98,7 @@ class Workspace : public Environment {
                                                         const std::vector<Argument>&   args);                           //!< Execute function
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
 //        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
-        const VectorString&         getClassOfType(const TypeSpec& type) const;                                         //!< Get reference to class vector of type
+        const VectorString&         getClassTypeSpecOfType(const TypeSpec& type) const;                                         //!< Get reference to class vector of type
         const FunctionTable&        getFunctionTable(void) const { return *functionTable; }                             //!< Get function table (const)
         FunctionTable&              getFunctionTable(void) { return *functionTable; }                                   //!< Get function table (non-const)
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy

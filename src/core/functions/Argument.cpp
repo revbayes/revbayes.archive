@@ -24,9 +24,6 @@
 #include "VectorString.h"
 
 
-// Definition of the static type spec member
-const TypeSpec Argument::typeSpec(Argument_name);
-
 /** Construct from argument label and DAG node */
 Argument::Argument(const RbVariablePtr& v) : RbInternal() {
     
@@ -78,21 +75,32 @@ Argument& Argument::operator=(const Argument &x) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Argument::getClass(void) const { 
+/** Get class name of object */
+const std::string& Argument::getClassName(void) { 
+    
+    static std::string rbClassName = "Argument";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(Argument_name) + RbInternal::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& Argument::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Argument::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 const std::string& Argument::getLabel(void) const {
     return label;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Argument::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

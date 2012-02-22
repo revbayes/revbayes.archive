@@ -62,7 +62,6 @@ class VectorString;
  *  The base class does not reference any other syntax elements and therefore has an empty
  *  destructor.
  */
-const std::string SyntaxElement_name = "Syntax element";
 
 class SyntaxElement : public RbInternal {
 
@@ -71,7 +70,8 @@ class SyntaxElement : public RbInternal {
 
         // Basic utility functions you have to override
         virtual SyntaxElement*          clone(void) const = 0;                                      //!< Clone object
-        virtual const VectorString&     getClass(void) const;                                       //!< Get class vector 
+        static const std::string&       getClassName(void);                                         //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                     //!< Get class type spec
         virtual void                    printValue(std::ostream& o) const = 0;                      //!< Print info about object
 
         // Regular functions

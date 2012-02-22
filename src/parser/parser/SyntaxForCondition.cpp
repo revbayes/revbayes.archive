@@ -27,9 +27,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxForCondition::typeSpec(SyntaxForCondition_name);
-
 /** Standard constructor */
 SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr) : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL), nextElement(-1) {
 
@@ -112,11 +109,28 @@ bool SyntaxForCondition::getNextLoopState(Environment& env) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxForCondition::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxForCondition::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(SyntaxForCondition_name) + SyntaxElement::getClass();
+    static std::string rbClassName = "For loop";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxForCondition::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxForCondition::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -124,12 +138,6 @@ const VectorString& SyntaxForCondition::getClass(void) const {
 RbVariablePtr SyntaxForCondition::evaluateContent( Environment& env ) {
 
     return RbVariablePtr( NULL );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxForCondition::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -143,7 +151,7 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
     const RbObject& theValue = theNode->getValue();
 
     // Check that it is a vector
-    if ( theValue.isTypeSpec( TypeSpec(AbstractVector_name) ) == false ) {
+    if ( theValue.isTypeSpec( AbstractVector::getClassTypeSpec() ) == false ) {
        throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
     vector = dynamic_cast<AbstractVector*>(theValue.clone());

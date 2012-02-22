@@ -34,9 +34,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxStatement::typeSpec(SyntaxStatement_name);
-
 /** Static vector of strings giving names of statement types */
 std::string SyntaxStatement::stmtName[] = { "IF", "IF_ELSE", "FOR", "WHILE", "NEXT", "BREAK", "RETURN" }; 
 
@@ -147,11 +144,28 @@ SyntaxStatement* SyntaxStatement::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxStatement::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxStatement::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(SyntaxStatement_name) + SyntaxElement::getClass();
+    static std::string rbClassName = "Statement";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxStatement::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxStatement::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -186,7 +200,7 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -235,7 +249,7 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
 	            result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -278,7 +292,7 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent(env);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -303,7 +317,7 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -322,7 +336,7 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isType(SyntaxAssignExpr_name) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -340,12 +354,6 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxStatement::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /**
  * This is a help function that evaluates the expression and then checks
  * whether the result is true or false, or can be interpreted as a RbBoolean
@@ -358,7 +366,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment& env ) cons
     if ( temp == NULL )
         return false;
     
-    if ( temp->getValue().isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
+    if ( temp->getValue().isTypeSpec( RbBoolean::getClassTypeSpec() ) ) {
         
         bool retValue = static_cast<const RbBoolean&>( temp->getValue() ).getValue();
         
@@ -366,7 +374,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment& env ) cons
     }
     else {
         
-        RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue().convertTo( RbBoolean_name ) );
+        RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue().convertTo( RbBoolean::getClassTypeSpec() ) );
         bool     retValue = tempBool->getValue();
         delete tempBool;
         

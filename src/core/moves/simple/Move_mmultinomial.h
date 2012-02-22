@@ -28,7 +28,6 @@
 class Real;
 class RbObject;
 
-const std::string Move_mmultinomial_name = "mmultinomial move";
 
 class Move_mmultinomial : public MoveSimple {
 
@@ -38,7 +37,8 @@ class Move_mmultinomial : public MoveSimple {
 
         // Basic utility functions
         Move_mmultinomial*          clone(void) const;                                                                      //!< Clone object
-        const VectorString&         getClass(void) const;                                                                   //!< Get class vector
+        static const std::string&   getClassName(void);                                                                     //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object
 
         // Member variable inits
@@ -51,12 +51,11 @@ class Move_mmultinomial : public MoveSimple {
         double                      perform(void);                                                                          //!< Perform move
     
     private:
-        static const TypeSpec       typeSpec;
 
         // parameters
-    Variable                    variable;
-    Variable                    alpha;
-    Variable                    numCategories;
+        RbVariablePtr               variable;
+        RbVariablePtr               alpha;
+        RbVariablePtr               numCategories;
     
 };
 

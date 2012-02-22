@@ -27,8 +27,6 @@
 #include <string>
 
 
-const std::string SyntaxFunctionDef_name = "Function definition";
-
 class SyntaxFunctionDef : public SyntaxElement {
 
     public:
@@ -44,7 +42,8 @@ class SyntaxFunctionDef : public SyntaxElement {
 
         // Basic utility functions
         SyntaxFunctionDef*              clone() const;                                              //!< Clone object
-        const VectorString&             getClass(void) const;                                       //!< Get class vector 
+        static const std::string&       getClassName(void);                                         //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                    //!< Get language type of the object
         void                            printValue(std::ostream& o) const;                          //!< Print info about object
 
@@ -57,8 +56,6 @@ class SyntaxFunctionDef : public SyntaxElement {
         std::list<SyntaxFormal*>*       formalArgs;                                                 //!< The formal arguments
         std::list<SyntaxElement*>*      code;                                                       //!< The list of statements
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

@@ -24,8 +24,6 @@
 #include <string>
 
 
-const std::string Categorical_name = "Categorical";
-
 class Categorical : public RbLanguageObject {
 
     public:
@@ -37,7 +35,8 @@ class Categorical : public RbLanguageObject {
 
         // Basic utility functions you have to override
         virtual Categorical*                clone(void) const = 0;                                              //!< Clone object
-        virtual const VectorString&         getClass(void) const;                                               //!< Get class vector
+        static const std::string&           getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const MemberRules&          getMemberRules(void) const;                                         //!< Get member rules
         virtual void                        initialize(const Vector& attributes);                               //!< Initialize this object with the values inside the vector
 

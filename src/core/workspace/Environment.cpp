@@ -24,9 +24,6 @@
 #include "VectorString.h"
 
 
-// Definition of the static type spec member
-const TypeSpec Environment::typeSpec(Environment_name);
-
 /** Destructor */
 Environment::~Environment() {
     
@@ -210,7 +207,7 @@ void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, c
 /** Add variable */
 void Environment::addVariable(const std::string& name, const RbVariablePtr& theVar) {
     
-    addVariable( name, TypeSpec(RbObject_name), theVar );
+    addVariable( name, RbObject::getClassTypeSpec(), theVar );
 }
 
 /** Add variable to frame */
@@ -250,13 +247,6 @@ void Environment::clear(void) {
     // empty the two vectors
     variableTable.clear();
     varNames.clear();
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Environment::getTypeSpec(void) const {
-
-    return typeSpec;
 }
 
 
@@ -318,11 +308,28 @@ std::string Environment::generateUniqueVariableName(void) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Environment::getClass() const {
+/** Get class name of object */
+const std::string& Environment::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(Environment_name) + RbInternal::getClass();
-    return rbClass;
+    static std::string rbClassName = "Environment";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Environment::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Environment::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 

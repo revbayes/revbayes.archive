@@ -25,8 +25,6 @@
 #include <vector>
 
 
-const std::string Container_name = "Container";
-
 class Container : public ConstantMemberObject {
     
 public:
@@ -34,7 +32,8 @@ public:
     
     // Basic utility functions you have to override
     virtual Container*                  clone(void) const = 0;                                              //!< Clone object
-    virtual const VectorString&         getClass(void) const;                                               //!< Get class
+    static const std::string&           getClassName(void);                                                         //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
     virtual void                        printValue(std::ostream& o) const = 0;                              //!< Print value for user
     
     // Container functions you have to override

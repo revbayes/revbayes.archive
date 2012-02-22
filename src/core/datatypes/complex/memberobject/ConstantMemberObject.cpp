@@ -38,12 +38,22 @@ ConstantMemberObject::ConstantMemberObject(const MemberRules& memberRules) : Mem
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& ConstantMemberObject::getClass(void) const {
+/** Get class name of object */
+const std::string& ConstantMemberObject::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(ConstantMemberObject_name) + MemberObject::getClass();
-    return rbClass;
+    static std::string rbClassName = "Constant member object";
+    
+	return rbClassName; 
 }
+
+/** Get class type spec describing type of object */
+const TypeSpec& ConstantMemberObject::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
 
 /** Is the object constant? */
 bool ConstantMemberObject::isConstant( void ) const {

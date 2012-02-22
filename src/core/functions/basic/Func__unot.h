@@ -31,7 +31,8 @@ class Func__unot :  public RbFunction {
     public:
         // Basic utility functions
         Func__unot*                 clone(void) const;                                          //!< Clone the object
-        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
@@ -43,8 +44,6 @@ class Func__unot :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
     
         // Arguments
         RbVariablePtr               value;
@@ -61,13 +60,6 @@ class Func__unot :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
-
-
-// Definition of the static type spec member
-template <typename valType>
-const TypeSpec Func__unot<valType>::typeSpec("Func__unot", new TypeSpec(valType().getType()));
-template <typename valType>
-const TypeSpec Func__unot<valType>::returnTypeSpec(RbBoolean_name);
 
 
 /** Clone object */
@@ -106,30 +98,43 @@ const ArgumentRules& Func__unot<valType>::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-template <typename valType>
-const VectorString& Func__unot<valType>::getClass( void ) const {
-
-    static std::string  rbName  = "Func__unot<" + valType().getType() + ">"; 
-    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+/** Get class name of object */
+template <typename firstValType>
+const std::string& Func__unot<firstValType>::getClassName(void) { 
     
-    return rbClass;
+    static std::string rbClassName = "Func__unot<" + firstValType().getType() + ">";
+    
+	return rbClassName; 
+}
+
+
+/** Get class type spec describing type of object */
+template <typename firstValType>
+const TypeSpec& Func__unot<firstValType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+
+/** Get type spec */
+template <typename firstValType>
+const TypeSpec& Func__unot<firstValType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
-template <typename valType>
-const TypeSpec& Func__unot<valType>::getReturnType( void ) const {
-
-    return returnTypeSpec;
-}
-
-
-/** Get return spec */
-template <typename valType>
-const TypeSpec& Func__unot<valType>::getTypeSpec( void ) const {
+template <typename firstValType>
+const TypeSpec& Func__unot<firstValType>::getReturnType( void ) const {
     
-    return typeSpec;
+    static TypeSpec returnTypeSpec = RbBoolean::getClassTypeSpec();
+    
+    return returnTypeSpec;
 }
 
 

@@ -29,7 +29,7 @@
 
 
 /** Constructor */
-VariableNode::VariableNode( const std::string& valType ) : DAGNode( valType ), touched( false ) {
+VariableNode::VariableNode( void ) : DAGNode( ), touched( false ) {
 }
 
 /** Copy Constructor */
@@ -58,10 +58,20 @@ void VariableNode::addParentNode( DAGNode* p) {
 }
 
 
-/** Get class vector describing type of variable DAG node */
-const VectorString& VariableNode::getClass() const {
+/** Get class name of object */
+const std::string& VariableNode::getClassName(void) { 
     
-    static VectorString rbClass = VectorString( VariableNode_name ) + DAGNode::getClass();
-    return rbClass;
+    static std::string rbClassName = "Variable DAG node";
+    
+	return rbClassName; 
 }
+
+/** Get class type spec describing type of object */
+const TypeSpec& VariableNode::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DAGNode::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
 

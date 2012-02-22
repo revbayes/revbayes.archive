@@ -28,13 +28,6 @@
 #include <vector>
 
 
-/**
- * This class is used for all complex data types seen by the parser
- * as being multidimensional. 
- *
- */
-const std::string DagNodeContainer_name = "DAG Node Container";
-
 class DagNodeContainer : public Container {
     
     public: 
@@ -49,7 +42,8 @@ class DagNodeContainer : public Container {
         bool                                allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be inserted
         DagNodeContainer*                   clone(void) const;                                                          //!< Clone object
         RbObject*                           convertTo(const TypeSpec& type) const;                                      //!< Convert to type
-        const VectorString&                 getClass(void) const;                                                       //!< Get class vector
+        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         bool                                isConvertibleTo(const TypeSpec& type) const;                                //!< Is convertible to type?
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
@@ -57,7 +51,7 @@ class DagNodeContainer : public Container {
 
         // Container functions
         void                                clear(void);                                                                //!< Clear
-    const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);               //!< Execute a member method
+        const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Execute a member method
         const RbObject&                     getElement(size_t index) const;                                             //!< Get element
         RbObject&                           getElement(size_t index);                                                   //!< Get element (non-const to return non-const element)
         void                                pop_back(void);                                                             //!< Drop element at back
@@ -73,7 +67,6 @@ class DagNodeContainer : public Container {
 
     private:
         std::vector<VariableSlot* >         elements;                                                                   //!< The elements
-        TypeSpec                            typeSpec;                                                                   //!< The type of this instance
 };  
 
 #endif

@@ -30,8 +30,6 @@ class StochasticNode;
 class VectorString;
 
 
-const std::string MoveTree_name = "MoveTree";
-
 class MoveTree : public Move {
 
     public:
@@ -39,7 +37,8 @@ class MoveTree : public Move {
 
         // Basic utility functions
         virtual MoveTree*                   clone(void) const = 0;                                                  //!< Clone the object
-        virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        static const std::string&           getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                             //!< Get class type spec
 
         // Member variable rules
         virtual const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
@@ -58,14 +57,14 @@ class MoveTree : public Move {
 //                                                std::vector<TopologyChange>&    topologyChanges) = 0;           //!< Perform the move
 
         // Functions you may want to override for additional statistics purposes, e.g.
-        virtual void                    accept(void) {}                                                         //!< Accept the move
-        virtual void                    reject(void) {}                                                         //!< Reject the move
+        virtual void                        accept(void) {}                                                         //!< Accept the move
+        virtual void                        reject(void) {}                                                         //!< Reject the move
 
         // Help functions
-        const Topology&                 getTopology(void) const;                                                //!< Get topology
+        const Topology&                     getTopology(void) const;                                                //!< Get topology
 
         // parameters
-        Variable                            tree;
+        RbVariablePtr                       tree;
 };
 
 #endif

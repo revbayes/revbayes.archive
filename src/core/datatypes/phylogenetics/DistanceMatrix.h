@@ -30,8 +30,6 @@ class ArgumentRule;
 class DAGNode;
 
 
-const std::string DistanceMatrix_name = "Distance Matrix";
-
 class DistanceMatrix : public MatrixReal {
 
     public:
@@ -44,10 +42,10 @@ class DistanceMatrix : public MatrixReal {
 
         // Basic utility functions
         DistanceMatrix*                     clone(void) const;                                                          //!< Clone object
-        const VectorString&                 getClass(void) const;                                                       //!< Get class vector   
+        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
-        std::string                         richInfo(void) const;                                                       //!< Complete info
 
         // Member variable rules
         const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules

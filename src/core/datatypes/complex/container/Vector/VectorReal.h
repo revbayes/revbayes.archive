@@ -25,8 +25,6 @@
 #include <iostream>
 #include <vector>
 
-const std::string VectorReal_name = "Real vector";
-
 class VectorRealPos;
 
 
@@ -57,7 +55,8 @@ class VectorReal : public AbstractVector {
     // Basic utility functions
     VectorReal*                 clone(void) const;                                              //!< Clone object
     RbObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-    const VectorString&         getClass(void) const;                                           //!< Get class
+    static const std::string&   getClassName(void);                                             //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
     bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
     void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
@@ -83,7 +82,7 @@ class VectorReal : public AbstractVector {
     
     private:
     std::vector<double>         elements;
-    static const TypeSpec       typeSpec;
+
 };
 
 #endif

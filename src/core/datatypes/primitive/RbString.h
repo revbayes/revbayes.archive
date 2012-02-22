@@ -23,8 +23,6 @@
 #include <string>
 
 
-const std::string RbString_name = "String";
-
 class RbString : public RbLanguageObject {
 
     public:
@@ -41,7 +39,8 @@ class RbString : public RbLanguageObject {
 
     // Basic utility functions
 	    RbString*                   clone(void) const;                                  //!< Copy
-        const VectorString&         getClass(void) const;                               //!< Get class
+        static const std::string&   getClassName(void);                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
         std::string&                getValueReference(void) { return value; }           //!< Get value reference
         void                        printValue(std::ostream& o) const;                  //!< Print value (for user)
@@ -57,7 +56,6 @@ class RbString : public RbLanguageObject {
 
         std::string                 value;                                              //!< Value member
     
-        static const TypeSpec       typeSpec;
 };
 
 std::string                         operator+(const std::string& A, const RbString& B);                     //!< Append to std::string

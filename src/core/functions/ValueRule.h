@@ -23,13 +23,6 @@
 
 #include <string>
 
-class DAGNode;
-class RbObject;
-class VectorString;
-
-
-
-const std::string ValueRule_name = "ValueRule";
 
 class ValueRule : public ArgumentRule {
 
@@ -41,12 +34,11 @@ class ValueRule : public ArgumentRule {
 
         // Basic utility functions
         virtual ValueRule*          clone(void) const { return new ValueRule(*this); }                                                      //!< Clone object
-        virtual const VectorString& getClass(void) const;                                                                                   //!< Get class vector
+        virtual std::string         debugInfo(void) const;
+        static const std::string&   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         virtual const TypeSpec&     getTypeSpec(void) const;                                                                                //!< Get language type of the object
-        virtual std::string         richInfo(void) const;                                                                                   //!< General info on object
-    
-    private:
-        static const TypeSpec       typeSpec;
+   
 };
 
 #endif

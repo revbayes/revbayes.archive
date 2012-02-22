@@ -44,14 +44,14 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(CharacterData_name, new TypeSpec(charType) ) {
+CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec( getClassName(), new TypeSpec(charType) ) {
 
     characterType = charType;
 }
 
 
 /** Copy constructor */
-CharacterData::CharacterData(const CharacterData& x) : Matrix( x ), typeSpec(CharacterData_name, new TypeSpec(characterType) ) {
+CharacterData::CharacterData(const CharacterData& x) : Matrix( x ), typeSpec( getClassName(), new TypeSpec(characterType) ) {
 
     characterType         = x.characterType;
     deletedTaxa           = x.deletedTaxa;
@@ -287,12 +287,12 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
     else if (name == "excludechar")
         {
         const RbLanguageObject& argument = args[1].getVariable().getValue();
-        if ( argument.isTypeSpec( TypeSpec(Natural_name) ) ) 
+            if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
             {
             int n = static_cast<const Natural&>( argument ).getValue();
             deletedCharacters.insert( n );
             }
-        else if ( argument.isTypeSpec( TypeSpec(VectorNatural_name) ) ) 
+            else if ( argument.isTypeSpec( VectorNatural::getClassTypeSpec() ) ) 
             {
             std::vector<unsigned int> x = static_cast<const VectorNatural&>( argument ).getValue();
             for ( size_t i=0; i<x.size(); i++ )
@@ -347,11 +347,20 @@ const Character& CharacterData::getCharacter( size_t tn, size_t cn ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& CharacterData::getClass(void) const {
+/** Get class name of object */
+const std::string& CharacterData::getClassName(void) { 
+    
+    static std::string rbClassName = "Character data";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(CharacterData_name) + AbstractVector::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& CharacterData::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -363,7 +372,7 @@ const std::string& CharacterData::getDataType(void) const {
 
 const RbObject& CharacterData::getElement(size_t row, size_t col) const {
 
-    const TaxonData* sequence = dynamic_cast<const TaxonData*>( (RbLanguageObject*)elements[row] );
+    const TaxonData* sequence = dynamic_cast<const TaxonData*>( elements[row] );
     return sequence->getElement(col);
 }
 
@@ -417,27 +426,27 @@ const MethodTable& CharacterData::getMethods(void) const {
     if ( methodsSet == false ) 
         {
 
-        excludecharArgRules->push_back(        new ValueRule(     "", Natural_name       ) );
-        excludecharArgRules2->push_back(       new ValueRule(     "", VectorNatural_name ) );
+            excludecharArgRules->push_back(        new ValueRule(     "", Natural::getClassTypeSpec()       ) );
+            excludecharArgRules2->push_back(       new ValueRule(     "", VectorNatural::getClassTypeSpec() ) );
             
-        methods.addFunction("names",               new MemberFunction(VectorString_name,  namesArgRules              ) );
-        methods.addFunction("nchar",               new MemberFunction(VectorNatural_name, ncharArgRules              ) );
-        methods.addFunction("ntaxa",               new MemberFunction(Natural_name,       ntaxaArgRules              ) );
-        methods.addFunction("chartype",            new MemberFunction(RbString_name,      chartypeArgRules           ) );
-        methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural_name,       nexcludedtaxaArgRules      ) );
-        methods.addFunction("nexcludedchars",      new MemberFunction(Natural_name,       nexcludedcharsArgRules     ) );
-        methods.addFunction("nincludedtaxa",       new MemberFunction(Natural_name,       nincludedtaxaArgRules      ) );
-        methods.addFunction("nincludedchars",      new MemberFunction(Natural_name,       nincludedcharsArgRules     ) );
-        methods.addFunction("excludedtaxa",        new MemberFunction(VectorNatural_name, excludedtaxaArgRules       ) );
-        methods.addFunction("excludedchars",       new MemberFunction(VectorNatural_name, excludedcharsArgRules      ) );
-        methods.addFunction("includedtaxa",        new MemberFunction(VectorNatural_name, includedtaxaArgRules       ) );
-        methods.addFunction("includedchars",       new MemberFunction(VectorNatural_name, includedcharsArgRules      ) );
-        methods.addFunction("nconstantpatterns",   new MemberFunction(Natural_name,       nconstantpatternsArgRules  ) );
-        methods.addFunction("ncharswithambiguity", new MemberFunction(Natural_name,       ncharswithambiguityArgRules) );
+            methods.addFunction("names",               new MemberFunction(VectorString::getClassTypeSpec(),  namesArgRules              ) );
+            methods.addFunction("nchar",               new MemberFunction(VectorNatural::getClassTypeSpec(), ncharArgRules              ) );
+            methods.addFunction("ntaxa",               new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
+            methods.addFunction("chartype",            new MemberFunction(RbString::getClassTypeSpec(),      chartypeArgRules           ) );
+            methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
+            methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
+            methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
+            methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
+            methods.addFunction("excludedtaxa",        new MemberFunction(VectorNatural::getClassTypeSpec(), excludedtaxaArgRules       ) );
+            methods.addFunction("excludedchars",       new MemberFunction(VectorNatural::getClassTypeSpec(), excludedcharsArgRules      ) );
+            methods.addFunction("includedtaxa",        new MemberFunction(VectorNatural::getClassTypeSpec(), includedtaxaArgRules       ) );
+            methods.addFunction("includedchars",       new MemberFunction(VectorNatural::getClassTypeSpec(), includedcharsArgRules      ) );
+            methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
+            methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
         methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules        ) );
         methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules2       ) );
         methods.addFunction("show",                new MemberFunction(RbVoid_name,        showdataArgRules           ) );
-        methods.addFunction("ishomologous",        new MemberFunction(RbBoolean_name,     ishomologousArgRules       ) );
+            methods.addFunction("ishomologous",        new MemberFunction(RbBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &Matrix::getMethods() );
@@ -691,18 +700,10 @@ void CharacterData::restoreTaxon(std::string& s) {
 }
 
 
-/** Complete info */
-std::string CharacterData::richInfo(void) const {
-
-	std::ostringstream o;
-    printValue( o );
-    return o.str();
-}
-
 /** Overloaded container setElement method */
 void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
     
-    if (var->isTypeSpec(TypeSpec(TaxonData_name))) {
+    if (var->isTypeSpec( TaxonData::getClassTypeSpec() )) {
         TaxonData* seq = static_cast<TaxonData*>( var );
         
 //        sequenceNames.erase(sequenceNames.begin() + index);

@@ -35,10 +35,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_dirichlet::typeSpec(Dist_dirichlet_name);
-const TypeSpec Dist_dirichlet::varTypeSpec(Simplex_name);
-
 /** Default constructor for parser use */
 Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules() ), alpha( NULL ) {
 
@@ -80,11 +76,28 @@ Dist_dirichlet* Dist_dirichlet::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_dirichlet::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_dirichlet::getClassName(void) { 
+    
+    static std::string rbClassName = "Dirichlet distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Dist_dirichlet_name ) + DistributionContinuous::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_dirichlet::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -96,7 +109,7 @@ const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "alpha", VectorRealPos_name ) );
+        memberRules.push_back( new ValueRule( "alpha", VectorRealPos::getClassTypeSpec() ) );
 
         rulesSet = true;
 		}
@@ -105,15 +118,11 @@ const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_dirichlet::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_dirichlet::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = Simplex::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 

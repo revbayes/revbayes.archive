@@ -33,12 +33,8 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_unif::typeSpec(Dist_unif_name);
-const TypeSpec Dist_unif::varTypeSpec(Real_name);
-
 /** Default constructor for parser use */
-Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()), min( TypeSpec( Real_name ) ), max( TypeSpec( Real_name ) ) {
+Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()), min( NULL ), max( NULL ) {
 
 }
 
@@ -55,9 +51,9 @@ Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()), min( Type
  */
 double Dist_unif::cdf(const RbLanguageObject& value) {
 
-    double l   = static_cast<      Real&>( min.getValue() ).getValue();
-    double u   = static_cast<      Real&>( max.getValue() ).getValue();
-    double q   = static_cast<const Real&>( value          ).getValue();
+    double l   = static_cast<      Real&>( min->getValue() ).getValue();
+    double u   = static_cast<      Real&>( max->getValue() ).getValue();
+    double q   = static_cast<const Real&>( value           ).getValue();
 
     if ( q < l )
         return 0.0;
@@ -75,18 +71,35 @@ Dist_unif* Dist_unif::clone(void) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_unif::getClass(void) const {
+/** Get class name of object */
+const std::string& Dist_unif::getClassName(void) { 
+    
+    static std::string rbClassName = "Uniform distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(Dist_unif_name) + DistributionContinuous::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_unif::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_unif::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get max value of distribution */
 const Real& Dist_unif::getMax( void ) const {
 
-    return static_cast<const Real&>( max.getValue() );
+    return static_cast<const Real&>( max->getValue() );
 }
 
 
@@ -98,8 +111,8 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back( new ValueRule( "min", Real_name ) );
-        memberRules.push_back( new ValueRule( "max", Real_name ) );
+        memberRules.push_back( new ValueRule( "min", Real::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "max", Real::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -111,19 +124,15 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 /** Get min value of distribution */
 const Real& Dist_unif::getMin( void ) const {
 
-    return static_cast<const Real&>( min.getValue() );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_unif::getTypeSpec(void) const {
-    return typeSpec;
+    return static_cast<const Real&>( min->getValue() );
 }
 
 
 /** Get random variable type */
 const TypeSpec& Dist_unif::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = Real::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 
@@ -139,9 +148,9 @@ const TypeSpec& Dist_unif::getVariableType( void ) const {
  */
 double Dist_unif::lnPdf(const RbLanguageObject& value) const {
     
-    double l   = static_cast<const Real&>( min.getValue() ).getValue();
-    double u   = static_cast<const Real&>( max.getValue() ).getValue();
-    double x   = static_cast<const Real&>( value ).getValue();
+    double l   = static_cast<const Real&>( min->getValue() ).getValue();
+    double u   = static_cast<const Real&>( max->getValue() ).getValue();
+    double x   = static_cast<const Real&>( value           ).getValue();
 
     if ( x < l || x > u )
         return RbConstants::Double::neginf;
@@ -161,9 +170,9 @@ double Dist_unif::lnPdf(const RbLanguageObject& value) const {
  */
 double Dist_unif::pdf(const RbLanguageObject &value) const {
     
-    double l   = static_cast<const Real&>( min.getValue() ).getValue();
-    double u   = static_cast<const Real&>( max.getValue() ).getValue();
-    double x   = static_cast<const Real&>( value ).getValue();
+    double l   = static_cast<const Real&>( min->getValue() ).getValue();
+    double u   = static_cast<const Real&>( max->getValue() ).getValue();
+    double x   = static_cast<const Real&>( value           ).getValue();
 
     if ( x < l || x > u )
         return 0.0;
@@ -184,8 +193,8 @@ double Dist_unif::pdf(const RbLanguageObject &value) const {
  */
 const Real& Dist_unif::quantile(const double p) {
     
-    double l = static_cast<Real&>( min.getValue() ).getValue();
-    double u = static_cast<Real&>( max.getValue() ).getValue();
+    double l = static_cast<Real&>( min->getValue() ).getValue();
+    double u = static_cast<Real&>( max->getValue() ).getValue();
 
     quant.setValue( l + ( u - l ) * p );
     return quant;
@@ -202,8 +211,8 @@ const Real& Dist_unif::quantile(const double p) {
  */
 const RbLanguageObject& Dist_unif::rv(void) {
     
-    double l = static_cast<const Real&>( min.getValue() ).getValue();
-    double u = static_cast<const Real&>( max.getValue() ).getValue();
+    double l = static_cast<const Real&>( min->getValue() ).getValue();
+    double u = static_cast<const Real&>( max->getValue() ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     double d = rng->uniform01();

@@ -29,29 +29,26 @@
 #include <iomanip>
 
 
-// Definition of the static type spec member
-const TypeSpec VectorRealPos::typeSpec(VectorRealPos_name);
-
 /** Construct empty vector */
-VectorRealPos::VectorRealPos( void ) : AbstractVector( RealPos_name ) {
+VectorRealPos::VectorRealPos( void ) : AbstractVector( RealPos::getClassTypeSpec() ) {
 }
 
 
 /** Construct vector with one positive real x from a double */
-VectorRealPos::VectorRealPos( double x ) : AbstractVector( RealPos_name ) {
+VectorRealPos::VectorRealPos( double x ) : AbstractVector( RealPos::getClassTypeSpec() ) {
 
     if ( x <= 0.0 )
-        throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value" );
+        throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value" );
     
     elements.push_back( x );
 }
 
 
 /** Construct vector with n copies of positive real x from a double */
-VectorRealPos::VectorRealPos( size_t n, double x ) : AbstractVector( RealPos_name ) {
+VectorRealPos::VectorRealPos( size_t n, double x ) : AbstractVector( RealPos::getClassTypeSpec() ) {
 
     if ( x <= 0.0 )
-        throw RbException( "Nonpositive value for " + VectorRealPos_name );
+        throw RbException( "Nonpositive value for " + VectorRealPos::getClassName() );
 
     for ( size_t i = 0; i < n; i++ ) {
         elements.push_back( x );
@@ -60,11 +57,11 @@ VectorRealPos::VectorRealPos( size_t n, double x ) : AbstractVector( RealPos_nam
 
 
 /** Constructor from double vector */
-VectorRealPos::VectorRealPos( const std::vector<double>& x ) : AbstractVector( RealPos_name ) {
+VectorRealPos::VectorRealPos( const std::vector<double>& x ) : AbstractVector( RealPos::getClassTypeSpec() ) {
 
     for ( size_t i = 0; i < x.size(); i++ ) {
         if ( x[i] <= 0.0 )
-            throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+            throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value(s)" );
     }
 
     for ( size_t i = 0; i < x.size(); i++ ){
@@ -74,11 +71,11 @@ VectorRealPos::VectorRealPos( const std::vector<double>& x ) : AbstractVector( R
 
 
 /** Constructor from VectorReal */
-VectorRealPos::VectorRealPos( const VectorReal& x ) : AbstractVector( RealPos_name ) {
+VectorRealPos::VectorRealPos( const VectorReal& x ) : AbstractVector( RealPos::getClassTypeSpec() ) {
 
     for ( size_t i = 0; i < x.size(); i++ ) {
         if ( x[i] <= 0.0 )
-            throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+            throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value(s)" );
     }
 
     for ( size_t i = 0; i < x.size(); i++ ) {
@@ -139,7 +136,7 @@ VectorRealPos* VectorRealPos::clone( void ) const {
 RbObject* VectorRealPos::convertTo(TypeSpec const &type) const {
     
     // test for type conversion
-    if (type == VectorReal_name) {
+    if (type == VectorReal::getClassTypeSpec()) {
         
         return new VectorReal( getValue() );
     }
@@ -148,11 +145,28 @@ RbObject* VectorRealPos::convertTo(TypeSpec const &type) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& VectorRealPos::getClass( void ) const {
+/** Get class name of object */
+const std::string& VectorRealPos::getClassName(void) { 
+    
+    static std::string rbClassName = "Real+ Vector";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( VectorRealPos_name ) + AbstractVector::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& VectorRealPos::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractVector::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& VectorRealPos::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -178,12 +192,6 @@ RbObject& VectorRealPos::getElement(size_t index) {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& VectorRealPos::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get value as an STL vector of double */
 std::vector<double> VectorRealPos::getValue( void ) const {
 
@@ -194,7 +202,7 @@ std::vector<double> VectorRealPos::getValue( void ) const {
 bool VectorRealPos::isConvertibleTo(TypeSpec const &type) const {
     
     // test for type conversion
-    if (type == VectorReal_name) {
+    if ( type == VectorReal::getClassTypeSpec() ) {
 
         return true;
     }
@@ -238,15 +246,15 @@ void VectorRealPos::printValue(std::ostream& o) const {
 /** Push an int onto the back of the vector after checking */
 void VectorRealPos::push_back( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
+    if ( x->isTypeSpec( RealPos::getClassTypeSpec() ) ) {
         elements.push_back(static_cast<RealPos*>( x )->getValue());
-    } else if ( x->isConvertibleTo(RealPos_name) ) {
-        elements.push_back(static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
+    } else if ( x->isConvertibleTo(RealPos::getClassTypeSpec()) ) {
+        elements.push_back(static_cast<RealPos*>(x->convertTo(RealPos::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RealPos_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RealPos::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -255,7 +263,7 @@ void VectorRealPos::push_back( RbObject* x ) {
 void VectorRealPos::push_back( double x ) {
 
     if ( x <= 0.0 )
-        throw RbException( "Trying to set " + RealPos_name + "[] element with nonpositive value" );
+        throw RbException( "Trying to set " + RealPos::getClassName() + "[] element with nonpositive value" );
     
     elements.push_back( x );
 }
@@ -264,15 +272,15 @@ void VectorRealPos::push_back( double x ) {
 /** Push an int onto the front of the vector after checking */
 void VectorRealPos::push_front( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
+    if ( x->isTypeSpec( RealPos::getClassTypeSpec() ) ) {
         elements.insert( elements.begin(), static_cast<RealPos*>( x )->getValue());
-    } else if ( x->isConvertibleTo(RealPos_name) ) {
-        elements.insert( elements.begin(), static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
+    } else if ( x->isConvertibleTo(RealPos::getClassTypeSpec()) ) {
+        elements.insert( elements.begin(), static_cast<RealPos*>(x->convertTo(RealPos::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RealPos_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RealPos::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -281,7 +289,7 @@ void VectorRealPos::push_front( RbObject* x ) {
 void VectorRealPos::push_front( double x ) {
 
     if ( x <= 0.0 )
-        throw RbException( "Trying to set " + RealPos_name + "[] element with nonpositive value" );
+        throw RbException( "Trying to set " + RealPos::getClassName() + "[] element with nonpositive value" );
     
     elements.insert( elements.begin(), x );
 }
@@ -295,13 +303,13 @@ void VectorRealPos::resize(size_t n) {
 void VectorRealPos::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
-    if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
+    if ( x->isTypeSpec( RealPos::getClassTypeSpec() ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<RealPos*>( x )->getValue());
-    } else if ( x->isConvertibleTo(RealPos_name) ) {
+    } else if ( x->isConvertibleTo(RealPos::getClassTypeSpec()) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
@@ -310,12 +318,12 @@ void VectorRealPos::setElement(const size_t index, RbLanguageObject* x) {
         // remove first the old element at the index
         elements.erase(elements.begin()+index);
         
-        elements.insert( elements.begin() + index, static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
+        elements.insert( elements.begin() + index, static_cast<RealPos*>(x->convertTo(RealPos::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RealPos_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RealPos::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -328,7 +336,7 @@ void VectorRealPos::setValue( const std::vector<double>& x ) {
         clear();
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] <= 0.0 )
-                throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+                throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value(s)" );
             elements.push_back( x[i] );
         }
     }
@@ -336,7 +344,7 @@ void VectorRealPos::setValue( const std::vector<double>& x ) {
 
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] <= 0.0 )
-                throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+                throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value(s)" );
             elements[i] = x[i];
         }
     }
@@ -351,7 +359,7 @@ void VectorRealPos::setValue( const VectorInteger& x ) {
         clear();
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] <= 0.0 )
-                throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+                throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value(s)" );
             elements.push_back( x[i] );
         }
     }
@@ -359,7 +367,7 @@ void VectorRealPos::setValue( const VectorInteger& x ) {
 
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] <= 0.0 )
-                throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+                throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value(s)" );
             elements[i] = x[i] ;
         }
     }
@@ -391,7 +399,7 @@ void VectorRealPos::setValue( const VectorReal& x ) {
         clear();
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] <= 0.0 )
-                throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+                throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value(s)" );
             elements.push_back( x[i] );
         }
     }
@@ -399,7 +407,7 @@ void VectorRealPos::setValue( const VectorReal& x ) {
 
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] <= 0.0 )
-                throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+                throw RbException( "Trying to set " + RealPos::getClassName() + "[] with nonpositive value(s)" );
             elements[i] = x[i];
         }
     }

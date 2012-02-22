@@ -25,8 +25,6 @@ class VectorString;
 
 
 
-const std::string Func_distance_name = "Distance matrix function";
-
 class Func_distance :  public RbFunction {
     
     public:
@@ -34,7 +32,8 @@ class Func_distance :  public RbFunction {
     
         // Basic utility functions
         Func_distance*              clone(void) const;                                                       //!< Clone the object
-        const VectorString&         getClass(void) const;                                                    //!< Get class vector
+        static const std::string&   getClassName(void);                                                      //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                  //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                 //!< Get language type of the object
         
         // Regular functions
@@ -46,8 +45,6 @@ class Func_distance :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
         double                      distanceP(const TaxonData& td1, const TaxonData& td2);
         double                      distanceJC69(const TaxonData& td1, const TaxonData& td2);
 

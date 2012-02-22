@@ -44,10 +44,19 @@ XmlElement* RbLanguageObject::encode(XmlDocument* doc, const std::string& name) 
 
 
 /** Get class vector describing type of object */
-const VectorString& RbLanguageObject::getClass(void) const { 
+const std::string& RbLanguageObject::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(RbLanguageObject_name) + RbObject::getClass();
-	return rbClass; 
+    static std::string rbClassName = "language object";
+	return rbClassName; 
+}
+
+
+/** Get class vector describing type of object */
+const TypeSpec& RbLanguageObject::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec(getClassName(), new TypeSpec( RbObject::getClassTypeSpec() ) );
+	
+    return rbClass; 
 }
 
 

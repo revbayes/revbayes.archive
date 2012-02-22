@@ -30,9 +30,6 @@
 #include <algorithm>
 
 
-// Definition of the static type spec member
-const TypeSpec TopologyNode::typeSpec(TopologyNode_name);
-
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(int indx) : ConstantMemberObject( getMemberRules() ), name(""), index(indx), isRootNode( true ), isTipNode( true ), isInteriorNode( false ) {
     
@@ -156,8 +153,27 @@ TopologyNode* TopologyNode::clone(void) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& TopologyNode::getTypeSpec(void) const {
+/** Get class name of object */
+const std::string& TopologyNode::getClassName(void) { 
+    
+    static std::string rbClassName = "Topology Node";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& TopologyNode::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& TopologyNode::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -245,14 +261,6 @@ std::vector<int> TopologyNode::getChildrenIndices() const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& TopologyNode::getClass() const {
-    
-    static VectorString rbClass = VectorString(TopologyNode_name) + MemberObject::getClass();
-    return rbClass;
-}
-
-
 /** Get method specifications */
 const MethodTable& TopologyNode::getMethods(void) const {
     
@@ -265,10 +273,10 @@ const MethodTable& TopologyNode::getMethods(void) const {
 
     if ( methodsSet == false ) {
         
-        methods.addFunction("ancestor",   new MemberFunction(TopologyNode_name, ancestorRules) );
-        methods.addFunction("isTip",      new MemberFunction(RbBoolean_name,      isTipArgRules) );
-        methods.addFunction("isRoot",     new MemberFunction(RbBoolean_name,      isRootArgRules) );
-        methods.addFunction("isInterior", new MemberFunction(RbBoolean_name,      isInteriorArgRules) );
+        methods.addFunction("ancestor",   new MemberFunction(TopologyNode::getClassTypeSpec(), ancestorRules) );
+        methods.addFunction("isTip",      new MemberFunction(RbBoolean::getClassTypeSpec(),    isTipArgRules) );
+        methods.addFunction("isRoot",     new MemberFunction(RbBoolean::getClassTypeSpec(),    isRootArgRules) );
+        methods.addFunction("isInterior", new MemberFunction(RbBoolean::getClassTypeSpec(),    isInteriorArgRules) );
         
         // Necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );

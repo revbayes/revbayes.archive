@@ -31,9 +31,6 @@
 
 #include <sstream>
 
-// Definition of the static type spec member
-const TypeSpec Integer::typeSpec(Integer_name);
-
 /* Default constructor */
 Integer::Integer(void) : RbLanguageObject(), value(0) {
     
@@ -66,15 +63,6 @@ Integer::Integer(const unsigned long v) : RbLanguageObject(), value( int(v) ) {
 }
 
 
-/** Get brief info about object */
-std::string Integer::briefInfo(void) const {
-    
-	std::ostringstream o;
-    printValue(o);
-    
-    return o.str();
-}
-
 /** Clone object */
 Integer* Integer::clone(void) const {
 
@@ -85,41 +73,52 @@ Integer* Integer::clone(void) const {
 /** Convert to type. The caller manages the returned object. */
 RbObject* Integer::convertTo( const TypeSpec& type ) const {
 
-    if ( type == RbBoolean_name ) 
+    if ( type == RbBoolean::getClassTypeSpec() ) 
         return new RbBoolean( value == 0 );
 
-    if ( type == Real_name )
+    if ( type == Real::getClassTypeSpec() )
         return new Real( value );
 
-    if ( type == RbString_name ) {
+    if ( type == RbString::getClassTypeSpec() ) {
         std::ostringstream o;
         printValue( o );
         return new RbString( o.str() );
     }
 
-    if ( type == VectorInteger_name )
+    if ( type == VectorInteger::getClassTypeSpec() )
         return new VectorInteger( value );
 
-    if ( type == RealPos_name && value > 0 )
+    if ( type == RealPos::getClassTypeSpec() && value > 0 )
         return new RealPos( value );
 
-    if ( type == Natural_name && value >= 0)
+    if ( type == Natural::getClassTypeSpec() && value >= 0)
         return new Natural( value );
 
     return RbLanguageObject::convertTo( type );
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Integer::getClass() const {
-
-    static VectorString rbClass = VectorString(Integer_name) + RbLanguageObject::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Integer::getClassName(void) { 
+    
+    static std::string rbClassName = "Integer";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& Integer::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Integer::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& Integer::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -127,22 +126,22 @@ const TypeSpec& Integer::getTypeSpec(void) const {
 /** Is convertible to language object of type? */
 bool Integer::isConvertibleTo( const TypeSpec& type ) const {
 
-    if ( type == RbBoolean_name)
+    if ( type == RbBoolean::getClassTypeSpec())
         return true;
 
-    if ( type == Real_name )
+    if ( type == Real::getClassTypeSpec() )
         return true;
 
-    if ( type == RbString_name )
+    if ( type == RbString::getClassTypeSpec() )
         return true;
     
-    if ( type == VectorInteger_name )
+    if ( type == VectorInteger::getClassTypeSpec() )
         return true;
 
-    if ( type == RealPos_name && value > 0 )
+    if ( type == RealPos::getClassTypeSpec() && value > 0 )
         return true;
 
-    if ( type == Natural_name && value >= 0 )
+    if ( type == Natural::getClassTypeSpec() && value >= 0 )
         return true;
 
     return RbLanguageObject::isConvertibleTo( type );
@@ -155,17 +154,6 @@ void Integer::printValue(std::ostream &o) const {
     o << value;
 }
 
-
-/** Get complete info about object */
-std::string Integer::richInfo(void) const {
-
-	std::ostringstream o;
-    o << "Integer(";
-    printValue(o);
-	o<< ")";
-
-    return o.str();
-}
 
 
 ////////////////////////////////// Global Integer operators ///////////////////////////////////

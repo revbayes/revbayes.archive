@@ -29,7 +29,6 @@
 class VectorString;
 class TopologyNode;
 
-const std::string Dist_topologyunif_name = "Dist_topologyunif";
 
 class Dist_topologyunif: public DistributionDiscrete {
 
@@ -38,7 +37,8 @@ class Dist_topologyunif: public DistributionDiscrete {
 
         // Basic utility functions
         Dist_topologyunif*              clone(void) const;                                                  //!< Clone object
-        const VectorString&             getClass(void) const;                                               //!< Get class vector
+        static const std::string&       getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                            //!< Get language type of the object
     
         // Member variable setup
@@ -62,9 +62,6 @@ class Dist_topologyunif: public DistributionDiscrete {
         double                          lnTopologyProb;                                                     //!< The log probability of a topology
         size_t                          numberOfStates;                                                     //!< The number of states for this topology distribution
     
-        static const TypeSpec           typeSpec;
-        static const TypeSpec           varTypeSpec;
-
         // parameters
         RbVariablePtr                   numTaxa;
         RbVariablePtr                   isRooted;

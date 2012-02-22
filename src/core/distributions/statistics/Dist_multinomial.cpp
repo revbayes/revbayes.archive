@@ -37,10 +37,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_multinomial::typeSpec(Dist_multinomial_name);
-const TypeSpec Dist_multinomial::varTypeSpec(VectorNatural_name);
-
 /** Default constructor for parser use */
 Dist_multinomial::Dist_multinomial( void ) : DistributionDiscrete( getMemberRules() ), probabilities( NULL ) {
 }
@@ -53,11 +49,28 @@ Dist_multinomial* Dist_multinomial::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_multinomial::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_multinomial::getClassName(void) { 
+    
+    static std::string rbClassName = "Multinomial distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(Dist_multinomial_name) + DistributionDiscrete::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_multinomial::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionDiscrete::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_multinomial::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -69,7 +82,7 @@ const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "probabilities", Simplex_name ) );
+            memberRules.push_back( new ValueRule( "probabilities", Simplex::getClassTypeSpec() ) );
 
         rulesSet = true;
 		}
@@ -92,15 +105,11 @@ const Simplex& Dist_multinomial::getProbabilityMassVector( void ) {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_multinomial::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_multinomial::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = VectorNatural::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 

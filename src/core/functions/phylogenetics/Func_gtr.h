@@ -25,15 +25,14 @@ class VectorString;
 
 
 
-const std::string Func_gtr_name = "GTR function";
-
 class Func_gtr :  public RbFunction {
     
     public:
         // Basic utility functions
         Func_gtr*                   clone(void) const;                                                       //!< Clone the object
-        const VectorString&         getClass(void) const;                                                    //!< Get class vector
-        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
+        static const std::string&   getClassName(void);                                                      //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                  //!< Get class type spec
+        const TypeSpec&             getTypeSpec(void) const;                                                 //!< Get language type of the object
         
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;                                            //!< Get argument rules

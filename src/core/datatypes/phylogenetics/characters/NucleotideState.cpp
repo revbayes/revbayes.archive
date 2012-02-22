@@ -114,11 +114,20 @@ void NucleotideState::addState(const char s) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& NucleotideState::getClass() const {
+/** Get class name of object */
+const std::string& NucleotideState::getClassName(void) { 
+    
+    static std::string rbClassName = "Nucleotide";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( NucleotideState_name ) + CharacterStateDiscrete::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& NucleotideState::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( CharacterStateDiscrete::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 

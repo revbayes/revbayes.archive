@@ -33,10 +33,6 @@
 
 
 
-// Definition of the static type spec member
-const TypeSpec Func_readTraces::typeSpec(Func_readTraces_name);
-const TypeSpec Func_readTraces::returnTypeSpec(Vector_name, new TypeSpec(Trace_name) );
-
 /** Clone object */
 Func_readTraces* Func_readTraces::clone( void ) const {
     
@@ -85,7 +81,7 @@ const RbLanguageObject& Func_readTraces::executeFunction( void ) {
         RBOUT(o1.str());
     }
     
-    Vector* data = new Vector(Trace_name);
+    Vector* data = new Vector( Trace::getClassTypeSpec() );
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -205,7 +201,7 @@ const ArgumentRules& Func_readTraces::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "filename", RbString_name ) );
+        argumentRules.push_back( new ValueRule( "filename", RbString::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -213,24 +209,37 @@ const ArgumentRules& Func_readTraces::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_readTraces::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_readTraces::getClassName(void) { 
     
-    static VectorString rbClass = VectorString( Func_readTraces_name ) + RbFunction::getClass();
-    return rbClass;
+    static std::string rbClassName = "Read traces function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_readTraces::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_readTraces::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_readTraces::getReturnType( void ) const {
     
+    static TypeSpec returnTypeSpec = TypeSpec(Vector::getClassName(), NULL, new TypeSpec( Trace::getClassTypeSpec() ) );
+
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_readTraces::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

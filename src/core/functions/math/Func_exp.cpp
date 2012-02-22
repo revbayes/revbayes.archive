@@ -32,10 +32,6 @@
 #include <cmath>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_exp::typeSpec(Func_exp_name);
-const TypeSpec Func_exp::returnTypeSpec(RealPos_name);
-
 Func_exp::Func_exp(void) : RbFunction() {
     
 }
@@ -66,7 +62,7 @@ const ArgumentRules& Func_exp::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "x", Real_name ) );
+        argumentRules.push_back( new ValueRule( "x", Real::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -74,24 +70,36 @@ const ArgumentRules& Func_exp::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_exp::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_exp::getClassName(void) { 
     
-    static VectorString rbClass = VectorString( Func_exp_name ) + RbFunction::getClass();
-    return rbClass;
+    static std::string rbClassName = "Exponential function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_exp::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_exp::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_exp::getReturnType( void ) const {
     
+    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_exp::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

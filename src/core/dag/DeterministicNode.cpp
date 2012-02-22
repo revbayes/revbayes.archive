@@ -33,15 +33,12 @@
 #include <cassert>
 
 
-// Definition of the static type spec member
-const TypeSpec DeterministicNode::typeSpec(DeterministicNode_name);
-
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( const std::string& valType ) : VariableNode( valType ), needsUpdate( true ) {
+DeterministicNode::DeterministicNode( void ) : VariableNode( ), needsUpdate( true ) {
 }
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode(func->getReturnType()), needsUpdate( true ), function( func ) {
+DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode( ), needsUpdate( true ), function( func ) {
     
     /* Check for cycles */
     const std::vector<Argument>& arguments = func->getArguments();
@@ -106,7 +103,7 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
         return newNodes[ this ];
     
     /* Get pristine copy */
-    DeterministicNode* copy = new DeterministicNode( getValueType() );
+    DeterministicNode* copy = new DeterministicNode(  );
     newNodes[ this ] = copy;
     
     /* Set the name so that the new node remains identifiable */
@@ -181,16 +178,27 @@ void DeterministicNode::getAffected( std::set<StochasticNode* >& affected ) {
 }
 
 
-/** Get class vector describing type of DAG node */
-const VectorString& DeterministicNode::getClass() const {
-
-    static VectorString rbClass = VectorString( DeterministicNode_name ) + VariableNode::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& DeterministicNode::getClassName(void) { 
+    
+    static std::string rbClassName = "Deterministic DAG node";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& DeterministicNode::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( VariableNode::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& DeterministicNode::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& DeterministicNode::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -275,7 +283,7 @@ void DeterministicNode::printValue( std::ostream& o ) const {
 /** Print struct for user */
 void DeterministicNode::printStruct( std::ostream& o ) const {
     
-    o << "_DAGClass    = " << getClass() << std::endl;
+    o << "_DAGClass    = " << getClassTypeSpec() << std::endl;
     o << "_value       = ";
     value->printValue(o);
     o << std::endl;
@@ -285,7 +293,7 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
         o << std::endl;
     }
     
-    o << "_valueType   = " << getValueType() << std::endl;
+    o << "_valueType   = " << value->getType() << std::endl;
     o << "_function    = " << function->getType() << std::endl;
     o << "_touched     = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
     o << "_needsUpdate = " << ( needsUpdate ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;

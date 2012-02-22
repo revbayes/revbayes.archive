@@ -33,9 +33,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec MemberFunction::typeSpec(MemberFunction_name);
-
 /** Constructor */
 MemberFunction::MemberFunction(const TypeSpec retType, ArgumentRules* argRules) : 
     RbFunction(), argumentRules(argRules), object(NULL), returnType(retType) {
@@ -65,11 +62,28 @@ const RbLanguageObject& MemberFunction::execute( void ) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MemberFunction::getClass(void) const { 
+/** Get class name of object */
+const std::string& MemberFunction::getClassName(void) { 
+    
+    static std::string rbClassName = "Member function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(MemberFunction_name) + RbFunction::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& MemberFunction::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& MemberFunction::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -84,12 +98,6 @@ const ArgumentRules& MemberFunction::getArgumentRules(void) const {
 const TypeSpec& MemberFunction::getReturnType(void) const {
 
     return returnType;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& MemberFunction::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

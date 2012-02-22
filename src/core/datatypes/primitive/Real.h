@@ -24,15 +24,13 @@
 #include <string>
 
 class RbBoolean;
-class VectorString;
 
 /**
  * Real is the class used to hold a real value. Internally, the real is represented by
  * a double.
  *
- * @note Some functions are virtual because RealPos is derived from double
+ * @note Some functions are virtual because RealPos is derived from Real
  */
-const std::string Real_name = "Real";
 
 class Real : public RbLanguageObject {
 
@@ -51,12 +49,12 @@ class Real : public RbLanguageObject {
         // Basic utility functions
         virtual Real*               clone(void) const;                                                      //!< Clone object
         virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type
-        virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
+        static const std::string&   getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&     getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual double&             getValueReference(void) { return value; }                               //!< Get value reference
         virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         virtual void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
-        virtual std::string         richInfo(void) const;                                                   //!< Complete info about object
 
         // Getters and setters
         virtual void                setValue(double x) { value = x; }                                       //!< Set value
@@ -65,7 +63,6 @@ class Real : public RbLanguageObject {
 	protected:
         double                      value;                                                                  //!< Value member
     
-        static const TypeSpec       typeSpec;
 };
 
         // Operators defined outside of the class

@@ -30,10 +30,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_gtr::typeSpec(Func_gtr_name);
-const TypeSpec Func_gtr::returnTypeSpec(RateMatrix_name);
-
 /** Clone object */
 Func_gtr* Func_gtr::clone(void) const {
 
@@ -122,8 +118,8 @@ const ArgumentRules& Func_gtr::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "rates", Simplex_name ) );
-        argumentRules.push_back( new ValueRule( "freqs", Simplex_name ) );
+        argumentRules.push_back( new ValueRule( "rates", Simplex::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "freqs", Simplex::getClassTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -131,24 +127,36 @@ const ArgumentRules& Func_gtr::getArgumentRules(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_gtr::getClass(void) const {
+/** Get class name of object */
+const std::string& Func_gtr::getClassName(void) { 
+    
+    static std::string rbClassName = "General time reversible (GTR) model rate matrix function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Func_gtr_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Func_gtr::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_gtr::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
-const TypeSpec& Func_gtr::getReturnType(void) const {
-
+const TypeSpec& Func_gtr::getReturnType( void ) const {
+    
+    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_gtr::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

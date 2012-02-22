@@ -30,18 +30,14 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec MatrixComplex::typeSpec(MatrixComplex_name);
-
-
 /** Default constructor resulting in an empty Complex matrix */
-MatrixComplex::MatrixComplex(void) : Matrix(Complex_name) {
+MatrixComplex::MatrixComplex(void) : Matrix(Complex::getClassTypeSpec()) {
 
 }
 
 
 /** Construct matrix of specified dimensions (length), initialize it with double x (default 0.0) */
-MatrixComplex::MatrixComplex(const size_t nRows, const size_t nCols, std::complex<double> x) : Matrix(Complex_name) {
+MatrixComplex::MatrixComplex(const size_t nRows, const size_t nCols, std::complex<double> x) : Matrix(Complex::getClassTypeSpec()) {
 
     for ( size_t i = 0; i < nRows; i++ )
         elements.push_back( new VectorComplex( nCols, x ) );
@@ -49,7 +45,7 @@ MatrixComplex::MatrixComplex(const size_t nRows, const size_t nCols, std::comple
 
 
 /** Construct matrix from a two-dimensional set of STL vectors */
-MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> > >& x) : Matrix(Complex_name) {
+MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> > >& x) : Matrix(Complex::getClassTypeSpec()) {
 
     size_t numRows = x.size();
     size_t numCols = x[0].size();
@@ -68,7 +64,7 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
 const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
 
     if ( i >= size() )
-        throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
+        throw RbException( "Index to " + Complex::getClassName() + "[][] out of bounds" );
 
     return static_cast<const VectorComplex&>( *elements[i] );
 }
@@ -78,7 +74,7 @@ const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
 VectorComplex& MatrixComplex::operator[]( const size_t i ) {
 
     if ( i >= size() )
-        throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
+        throw RbException( "Index to " + Complex::getClassName() + "[][] out of bounds" );
     
     return static_cast<VectorComplex&>( *elements[i] );
 }
@@ -90,11 +86,28 @@ MatrixComplex* MatrixComplex::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MatrixComplex::getClass(void) const {
+/** Get class name of object */
+const std::string& MatrixComplex::getClassName(void) { 
+    
+    static std::string rbClassName = "Complex Matrix";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(MatrixComplex_name) + Matrix::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& MatrixComplex::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& MatrixComplex::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -111,12 +124,6 @@ RbObject& MatrixComplex::getElement( size_t row , size_t col) {
     
     VectorComplex& tmp = operator[](row);
     return tmp.getElement(col);
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& MatrixComplex::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -228,27 +235,15 @@ void MatrixComplex::resize( size_t rows, size_t cols ) {
 }
 
 
-
-/** Complete info about object */
-std::string MatrixComplex::richInfo(void) const {
-
-    // TODO: Replace with something that makes sense
-    std::ostringstream o;
-    printValue(o);
-
-    return o.str();
-}
-
-
 /** Set matrix value from an STL vector<vector> of complex values */
 void MatrixComplex::setValue( const std::vector<std::vector<std::complex<double> > >& x ) {
 
     if ( x.size() != size() )
-        throw RbException( "Wrong number of rows in setting value of " + Real_name + "[][]" );
+        throw RbException( "Wrong number of rows in setting value of " + Real::getClassName() + "[][]" );
     
     for ( size_t i = 0; i < x.size(); i++ ) {
         if ( x[i].size() != getNumberOfColumns() )
-            throw RbException( "Wrong number of columns in at least one row in setting value of " + Real_name + "[][]" );
+            throw RbException( "Wrong number of columns in at least one row in setting value of " + Real::getClassName() + "[][]" );
     }
     
     elements.clear();
@@ -261,10 +256,10 @@ void MatrixComplex::setValue( const std::vector<std::vector<std::complex<double>
 void MatrixComplex::setElement( size_t row, size_t col, RbLanguageObject* value ) {
     
     if ( row >= getNumberOfRows() || col >= getNumberOfColumns() )
-        throw RbException( "Index out of bounds for " + Real_name + "[][]" );
+        throw RbException( "Index out of bounds for " + Real::getClassName() + "[][]" );
     
     if ( value == NULL )
-        throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
+        throw RbException( "Cannot set " + Real::getClassName() + "[][] element to NULL" );
     
     // We rely on the setElement of VectorReal for type cast and to throw an error with a meaningful message
     operator[](row).setElement(col,value);

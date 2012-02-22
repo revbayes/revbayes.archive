@@ -28,11 +28,9 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec OptionRule::typeSpec(OptionRule_name);
 
 /** Construct rule without default value; use "" for no label. */
-OptionRule::OptionRule( const std::string& argName, VectorString optVals ) : ValueRule( argName, TypeSpec( RbString_name ) ), options( optVals ) {
+OptionRule::OptionRule( const std::string& argName, VectorString optVals ) : ValueRule( argName, RbString::getClassTypeSpec() ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -59,51 +57,43 @@ bool OptionRule::areOptionsUnique( const VectorString& optVals ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& OptionRule::getClass( void ) const { 
+/** Provide complete information about object */
+std::string OptionRule::debugInfo(void) const {
+    
+    std::ostringstream o;
+    
+    o << "OptionRule:" << std::endl;
+    o << "label         = " << label << std::endl;
+    o << "argSlot       = " << argSlot << std::endl;
+    o << "hasDefaultVal = " << hasDefaultVal << std::endl;
+    o << "options       = " << options << std::endl;
+    
+    return o.str();
+}
 
-    static VectorString rbClass = VectorString( OptionRule_name ) + ArgumentRule::getClass();
+
+/** Get class name of object */
+const std::string& OptionRule::getClassName(void) { 
+    
+    static std::string rbClassName = "Option rule";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& OptionRule::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ValueRule::getClassTypeSpec() ) );
+    
 	return rbClass; 
 }
 
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& OptionRule::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
-/** Test if argument is valid */
-bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion ) const {
-
-    // Initialize
-    needsConversion = false;
-
-    // Make sure we have a constant
-    if ( !var->isType( ConstantNode_name ) )
-        return false;
-
-    // This will make sure we have a string variable
-    if ( !ArgumentRule::isArgumentValid( var, needsConversion ) )
-        return false;
-
-    // Make sure we have a valid option
-    bool        valid = false;
-    RbString* value = NULL;
-    if ( needsConversion )
-        value = static_cast<RbString*>( var->getValue().convertTo( RbString_name ) );
-    else
-        value = static_cast<RbString*>( var->getValue().clone() );
-
-    std::string valString = value->getValue();
-    for ( size_t i = 0; i < options.size(); i++ ) {
-        if ( options[i] == valString ) {
-            valid = true;
-            break;
-        }
-    }
+/** Get type spec */
+const TypeSpec& OptionRule::getTypeSpec( void ) const {
     
-    return valid;
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -115,18 +105,4 @@ void OptionRule::printValue(std::ostream& o) const {
     o << "options = " << options << std::endl;
 }
 
-
-/** Provide complete information about object */
-std::string OptionRule::richInfo(void) const {
-
-    std::ostringstream o;
-
-    o << "OptionRule:" << std::endl;
-    o << "label         = " << label << std::endl;
-    o << "argSlot       = " << argSlot << std::endl;
-    o << "hasDefaultVal = " << hasDefaultVal << std::endl;
-    o << "options       = " << options << std::endl;
-
-    return o.str();
-}
 

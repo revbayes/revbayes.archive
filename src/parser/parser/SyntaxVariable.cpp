@@ -37,9 +37,6 @@
 #include "SyntaxVariable.h"
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxVariable::typeSpec(SyntaxVariable_name);
-
 /** Construct from identifier and index */
 SyntaxVariable::SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx) :
     SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(NULL) {
@@ -131,11 +128,28 @@ SyntaxVariable* SyntaxVariable::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxVariable::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxVariable::getClassName(void) { 
+    
+    static std::string rbClassName = "Syntax variable";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(SyntaxVariable_name) + SyntaxElement::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxVariable::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxVariable::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -168,7 +182,7 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
             
             DAGNode* indexVar = (*i)->evaluateContent( env )->getDagNode();
             
-            if ( indexVar->getValue().isTypeSpec( TypeSpec(Integer_name) ) ) {
+            if ( indexVar->getValue().isTypeSpec( Integer::getClassTypeSpec() ) ) {
                 
                 // Calculate (or get) an integer index
                 int intIndex = static_cast<const Integer&>( indexVar->getValue() ).getValue(); 
@@ -188,7 +202,7 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
                 theIndex.push_back(intIndex-1);
             }
             
-            else if ( indexVar->getValue().isTypeSpec( TypeSpec(RbString_name) ) ) {
+            else if ( indexVar->getValue().isTypeSpec( RbString::getClassTypeSpec() ) ) {
                 
                 // Push string index onto index vector
 //                theIndex.push_back( indexVar->getValue()->clone() );
@@ -201,7 +215,7 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
                 if ( baseVariable != NULL )
                     msg << baseVariable->getFullName( env ) << ".";
                 msg << *identifier;
-                msg << " of wrong type (neither " << Integer_name << " nor " << RbString_name << ")";
+                msg << " of wrong type (neither " << Integer::getClassName() << " nor " << RbString::getClassName() << ")";
                 throw RbException( msg );
             }
         }
@@ -236,7 +250,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
 
             if ( !env.existsVariable( *identifier ) ) {
                 // create a new slot
-                RbVariablePtr theVar = RbVariablePtr( new Variable( TypeSpec(RbObject_name) ) );
+                RbVariablePtr theVar = RbVariablePtr( new Variable( RbObject::getClassTypeSpec() ) );
                 env.addVariable(*identifier,theVar);
             }
             
@@ -315,7 +329,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             RbObject& subElement = con.getElement(indexValue);
             
             // test whether the element needs type conversion
-            if (subElement.isTypeSpec( TypeSpec(VariableSlot_name) )) {
+            if (subElement.isTypeSpec( VariableSlot::getClassTypeSpec() )) {
                 theSlot = &dynamic_cast<VariableSlot&>(subElement);
                 theDagNode = theSlot->getDagNode();
                 // TODO: Set the name of the node here!
@@ -362,7 +376,7 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
             const RbVariablePtr& baseVar = baseVariable->evaluateContent( env );
-            if ( !baseVar->getValue().isTypeSpec( TypeSpec(MemberObject_name) ) )
+            if ( !baseVar->getValue().isTypeSpec( MemberObject::getClassTypeSpec() ) )
                 throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members" );       
         
             if ( identifier == NULL )
@@ -386,12 +400,12 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
             SyntaxElement*         indexSyntaxElement     = *it;
             RbVariablePtr          indexVar               = indexSyntaxElement->evaluateContent(env);
             
-            if (theVar->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
+            if (theVar->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
                 RbLanguageObject&   theValue               = indexVar->getValue();
                 size_t              indexValue             = 0;
-                if ( !theValue.isTypeSpec(Natural_name) ) {
-                    if (theValue.isConvertibleTo(Natural_name)) {
-                        Natural* convertedValue = static_cast<Natural*>( theValue.convertTo(Natural_name) );
+                if ( !theValue.isTypeSpec( Natural::getClassTypeSpec() ) ) {
+                    if (theValue.isConvertibleTo( Natural::getClassTypeSpec() )) {
+                        Natural* convertedValue = static_cast<Natural*>( theValue.convertTo( Natural::getClassTypeSpec() ) );
                         indexValue = convertedValue->getValue() - 1;
                         delete convertedValue;
                     }
@@ -435,12 +449,6 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
         
     return theVar;
     
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxVariable::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

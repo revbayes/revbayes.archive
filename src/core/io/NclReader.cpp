@@ -217,7 +217,7 @@ CharacterData* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( AminoAcidState_name );
+	CharacterData* cMat = new CharacterData( AminoAcidState::getClassName() );
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
@@ -228,7 +228,7 @@ CharacterData* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        TaxonData* dataVec = new TaxonData(AminoAcidState_name, tName);
+            TaxonData* dataVec = new TaxonData(AminoAcidState::getClassName(), tName);
             
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	
@@ -272,7 +272,7 @@ CharacterData* NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* char
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
         
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( AminoAcidState_name );
+	CharacterData* cMat = new CharacterData( AminoAcidState::getClassName() );
     cMat->setIsHomologyEstablished(false);
     
 	// read in the data, including taxon names
@@ -283,7 +283,7 @@ CharacterData* NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* char
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of amino acid states
-        TaxonData* dataVec = new TaxonData(AminoAcidState_name, tName);
+            TaxonData* dataVec = new TaxonData(AminoAcidState::getClassName(), tName);
         dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
@@ -319,7 +319,7 @@ CharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) 
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( CharacterContinuous_name );
+	CharacterData* cMat = new CharacterData( CharacterContinuous::getClassName() );
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
@@ -330,7 +330,7 @@ CharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) 
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        TaxonData* dataVec = new TaxonData(CharacterContinuous_name, tName);
+            TaxonData* dataVec = new TaxonData(CharacterContinuous::getClassName(), tName);
 
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
@@ -368,7 +368,7 @@ CharacterData* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
 
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( DnaState_name );
+	CharacterData* cMat = new CharacterData( DnaState::getClassName() );
     cMat->setIsHomologyEstablished(true);
     std::cout << "setting isHomologyEstablished to true for CharacterData " << cMat << std::endl;
     
@@ -380,7 +380,7 @@ CharacterData* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of DNA states
-        TaxonData* dataVec = new TaxonData(DnaState_name,tName);
+            TaxonData* dataVec = new TaxonData(DnaState::getClassName(),tName);
         dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
@@ -427,7 +427,7 @@ CharacterData* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock)
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
         
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( DnaState_name );
+	CharacterData* cMat = new CharacterData( DnaState::getClassName() );
     cMat->setIsHomologyEstablished(false);
     
 	// read in the data, including taxon names
@@ -438,7 +438,7 @@ CharacterData* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock)
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of DNA states
-        TaxonData* dataVec = new TaxonData(DnaState_name, tName);
+        TaxonData* dataVec = new TaxonData(DnaState::getClassName(), tName);
         dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
@@ -474,7 +474,7 @@ CharacterData* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
 
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( RnaState_name );
+	CharacterData* cMat = new CharacterData( RnaState::getClassName() );
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
@@ -485,7 +485,7 @@ CharacterData* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of RNA states
-        TaxonData* dataVec = new TaxonData(RnaState_name,tName);
+        TaxonData* dataVec = new TaxonData(RnaState::getClassName(),tName);
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -531,7 +531,7 @@ CharacterData* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock)
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
         
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( RnaState_name );
+	CharacterData* cMat = new CharacterData( RnaState::getClassName() );
     cMat->setIsHomologyEstablished(false);
     
 	// read in the data, including taxon names
@@ -542,7 +542,7 @@ CharacterData* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock)
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of DNA states
-        TaxonData* dataVec = new TaxonData(RnaState_name, tName);
+        TaxonData* dataVec = new TaxonData(RnaState::getClassName(), tName);
         dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
@@ -585,7 +585,7 @@ CharacterData* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
         return NULL;
     
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( StandardState_name );
+	CharacterData* cMat = new CharacterData( StandardState::getClassName() );
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
@@ -596,7 +596,7 @@ CharacterData* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        TaxonData* dataVec = new TaxonData(StandardState_name,tName);
+            TaxonData* dataVec = new TaxonData(StandardState::getClassName(),tName);
         
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)

@@ -32,9 +32,6 @@
 #include <set>
 
 
-// Definition of the static type spec member
-const TypeSpec ConstantNode::typeSpec(ConstantNode_name);
-
 /** Constructor from value */
 ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( ) {
     value = val;
@@ -42,7 +39,7 @@ ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( ) {
 
 
 /** Constructor from value class */
-ConstantNode::ConstantNode( const std::string& valType ) : DAGNode( valType ) {
+ConstantNode::ConstantNode( void ) : DAGNode( ) {
 
 }
 
@@ -93,22 +90,34 @@ void ConstantNode::getAffected(std::set<StochasticNode* > &affected) {
 }
 
 
-/** Get class vector describing type of DAG node */
-const VectorString& ConstantNode::getClass() const {
 
-    static VectorString rbClass = VectorString( ConstantNode_name ) + DAGNode::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& ConstantNode::getClassName(void) { 
+    
+    static std::string rbClassName = "Constant DAG node";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& ConstantNode::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DAGNode::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& ConstantNode::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 const RbLanguageObject& ConstantNode::getStoredValue(void) const {
     return *value;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& ConstantNode::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -144,8 +153,8 @@ void ConstantNode::printValue( std::ostream& o ) const {
 /** Print struct for user */
 void ConstantNode::printStruct(std::ostream &o) const {
 
-    o << "_Class        = " << getClass() << std::endl;
-    o << "_valueType    = " << getValueType() << std::endl;
+    o << "_Class        = " << getClassTypeSpec() << std::endl;
+    o << "_valueType    = " << value->getType() << std::endl;
     o << "_value        = ";
     value->printValue(o);
     o << std::endl;
@@ -162,6 +171,26 @@ void ConstantNode::restoreMe( void ) {
     // do nothing
 }
 
+/**
+ * Set value: same as clamp, but do not clamp. This function will
+ * also be used by moves to propose a new value.
+ */
+void ConstantNode::setValue( RbLanguageObject* val ) {
+    
+    if (val == NULL) {
+        std::cerr << "Ooops ..." << std::endl;
+    }
+    
+    // touch the node (which will store the lnProb)
+    touch();
+    
+    // free the memory of the old value
+    if (value != NULL) {
+        delete value;
+    }
+    // set the value
+    value = val;
+}
 
 /** Touch value of node */
 void ConstantNode::touchMe( void ) {

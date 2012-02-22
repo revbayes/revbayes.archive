@@ -26,19 +26,16 @@
 #include <algorithm>
 
 
-// Definition of the static type spec member
-const TypeSpec VectorNatural::typeSpec(VectorNatural_name);
-
 /** Construct empty vector */
-VectorNatural::VectorNatural( void ) : AbstractVector( Natural_name ) {
+VectorNatural::VectorNatural( void ) : AbstractVector( Natural::getClassTypeSpec() ) {
 }
 
 
 /** Construct vector with one natural number x from an int */
-VectorNatural::VectorNatural( int x ) : AbstractVector( Natural_name ) {
+VectorNatural::VectorNatural( int x ) : AbstractVector( Natural::getClassTypeSpec() ) {
 
     if ( x < 0 )
-        throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
+        throw RbException( "Trying to set " + Natural::getClassName() + "[] with negative value" );
     
     elements.push_back( x );
     
@@ -46,17 +43,17 @@ VectorNatural::VectorNatural( int x ) : AbstractVector( Natural_name ) {
 
 
 /** Construct vector with one natural number x from an unsigned int */
-VectorNatural::VectorNatural( unsigned int x ) : AbstractVector( Natural_name ) {
+VectorNatural::VectorNatural( unsigned int x ) : AbstractVector( Natural::getClassTypeSpec() ) {
     
     elements.push_back( x );
 }
 
 
 /** Construct vector with n copies of natural number x (int) */
-VectorNatural::VectorNatural( size_t n, int x ) : AbstractVector( Natural_name ) {
+VectorNatural::VectorNatural( size_t n, int x ) : AbstractVector( Natural::getClassTypeSpec() ) {
 
     if ( x < 0 )
-        throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
+        throw RbException( "Trying to set " + Natural::getClassName() + "[] with negative value" );
 
     for ( size_t i = 0; i < n; i++ ) {
         elements.push_back( x );
@@ -65,7 +62,7 @@ VectorNatural::VectorNatural( size_t n, int x ) : AbstractVector( Natural_name )
 
 
 /** Construct vector with n copies of natural number x (unsigned int) */
-VectorNatural::VectorNatural( size_t n, unsigned int x ) : AbstractVector( Natural_name ) {
+VectorNatural::VectorNatural( size_t n, unsigned int x ) : AbstractVector( Natural::getClassTypeSpec() ) {
 
     // No test needed, since unsigned ints are always positive
     // Natural will throw an error if the value is out of range
@@ -76,11 +73,11 @@ VectorNatural::VectorNatural( size_t n, unsigned int x ) : AbstractVector( Natur
 
 
 /** Constructor from int vector */
-VectorNatural::VectorNatural( const std::vector<int>& x ) : AbstractVector( Natural_name ) {
+VectorNatural::VectorNatural( const std::vector<int>& x ) : AbstractVector( Natural::getClassTypeSpec() ) {
 
     for ( size_t i = 0; i < x.size(); i++ ) {
         if ( x[i] < 0 )
-            throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
+            throw RbException( "Trying to set " + Natural::getClassName() + "[] with negative value(s)" );
     }
 
     for ( size_t i = 0; i < x.size(); i++ ) {
@@ -90,7 +87,7 @@ VectorNatural::VectorNatural( const std::vector<int>& x ) : AbstractVector( Natu
 
 
 /** Constructor from unsigned int vector */
-VectorNatural::VectorNatural( const std::vector<unsigned int>& x ) : AbstractVector( Natural_name ) {
+VectorNatural::VectorNatural( const std::vector<unsigned int>& x ) : AbstractVector( Natural::getClassTypeSpec() ) {
 
     // No test needed, since unsigned ints are always positive
     // Natural will throw an error if the value is out of range
@@ -99,11 +96,11 @@ VectorNatural::VectorNatural( const std::vector<unsigned int>& x ) : AbstractVec
 
 
 /** Constructor from Integer vector (VectorInteger) */
-VectorNatural::VectorNatural( const VectorInteger& x ) : AbstractVector( Natural_name ) {
+VectorNatural::VectorNatural( const VectorInteger& x ) : AbstractVector( Natural::getClassTypeSpec() ) {
 
     for ( size_t i = 0; i < x.size(); i++ ) {
         if ( x[i] < 0 )
-            throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
+            throw RbException( "Trying to set " + Natural::getClassName() + "[] with negative value(s)" );
     }
 
     for ( size_t i = 0; i < x.size(); i++ ) {
@@ -166,7 +163,7 @@ VectorNatural* VectorNatural::clone( void ) const {
 RbObject* VectorNatural::convertTo(TypeSpec const &type) const {
     
     // test for type conversion
-    if (type == VectorRealPos_name) {
+    if (type == VectorRealPos::getClassTypeSpec()) {
         
         // create an stl vector and add each element
         std::vector<double> d;
@@ -176,11 +173,11 @@ RbObject* VectorNatural::convertTo(TypeSpec const &type) const {
         
         return new VectorRealPos(d);
     }
-    else if (type == VectorInteger_name) {
+    else if (type == VectorInteger::getClassTypeSpec()) {
         
         return new VectorInteger( getValue() );
     }
-    else if (type == VectorReal_name) {
+    else if (type == VectorReal::getClassTypeSpec()) {
         
         // create an stl vector and add each element
         std::vector<double> d;
@@ -195,16 +192,27 @@ RbObject* VectorNatural::convertTo(TypeSpec const &type) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& VectorNatural::getClass( void ) const {
-
-    static VectorString rbClass = VectorString( VectorNatural_name ) + AbstractVector::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& VectorNatural::getClassName(void) { 
+    
+    static std::string rbClassName = "Natural Vector";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& VectorNatural::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractVector::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& VectorNatural::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& VectorNatural::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -242,7 +250,7 @@ RbObject& VectorNatural::getElement(size_t index) {
 bool VectorNatural::isConvertibleTo(TypeSpec const &type) const {
     
     // test for type conversion
-    if (type == VectorRealPos_name || type == VectorInteger_name || type == VectorReal_name) {
+    if (type == VectorRealPos::getClassTypeSpec() || type == VectorInteger::getClassTypeSpec() || type == VectorReal::getClassTypeSpec() ) {
         
         return true;
     }
@@ -266,15 +274,15 @@ void VectorNatural::pop_front(void) {
 /** Push an int onto the back of the vector after checking */
 void VectorNatural::push_back( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
+    if ( x->isTypeSpec( Natural::getClassTypeSpec() ) ) {
         elements.push_back(static_cast<Natural*>( x )->getValue());
-    } else if ( x->isConvertibleTo(Natural_name) ) {
-        elements.push_back(static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
+    } else if ( x->isConvertibleTo(Natural::getClassTypeSpec()) ) {
+        elements.push_back(static_cast<Natural*>(x->convertTo(Natural::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Natural_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Natural::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -289,15 +297,15 @@ void VectorNatural::push_back( unsigned int x ) {
 /** Push an int onto the front of the vector after checking */
 void VectorNatural::push_front( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
+    if ( x->isTypeSpec( Natural::getClassTypeSpec() ) ) {
         elements.insert( elements.begin(), static_cast<Natural*>( x )->getValue());
-    } else if ( x->isConvertibleTo(Natural_name) ) {
-        elements.insert( elements.begin(), static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
+    } else if ( x->isConvertibleTo(Natural::getClassTypeSpec()) ) {
+        elements.insert( elements.begin(), static_cast<Natural*>(x->convertTo(Natural::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Natural_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Natural::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -317,13 +325,13 @@ void VectorNatural::resize(size_t n) {
 void VectorNatural::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
-    if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
+    if ( x->isTypeSpec( Natural::getClassTypeSpec() ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<Natural*>( x )->getValue());
-    } else if ( x->isConvertibleTo(Natural_name) ) {
+    } else if ( x->isConvertibleTo(Natural::getClassTypeSpec()) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
@@ -332,12 +340,12 @@ void VectorNatural::setElement(const size_t index, RbLanguageObject* x) {
         // remove first the old element at the index
         elements.erase(elements.begin()+index);
         
-        elements.insert( elements.begin() + index, static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
+        elements.insert( elements.begin() + index, static_cast<Natural*>(x->convertTo(Natural::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + Natural_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + Natural::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -350,7 +358,7 @@ void VectorNatural::setValue( const std::vector<int>& x ) {
         clear();
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] < 0 )
-                throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
+                throw RbException( "Trying to set " + Natural::getClassName() + "[] with negative value(s)" );
             
             elements.push_back( x[i] );
         }
@@ -359,7 +367,7 @@ void VectorNatural::setValue( const std::vector<int>& x ) {
 
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] < 0 )
-                throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
+                throw RbException( "Trying to set " + Natural::getClassName() + "[] with negative value(s)" );
             elements[i] = x[i];
         }
     }
@@ -388,7 +396,7 @@ void VectorNatural::setValue( const VectorInteger& x ) {
         clear();
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] < 0 )
-                throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
+                throw RbException( "Trying to set " + Natural::getClassName() + "[] with negative value(s)" );
             elements.push_back( x[i] );
         }
     }
@@ -396,7 +404,7 @@ void VectorNatural::setValue( const VectorInteger& x ) {
 
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] < 0 )
-                throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
+                throw RbException( "Trying to set " + Natural::getClassName() + "[] with negative value(s)" );
             elements[i] = x[i]; 
         }
     }

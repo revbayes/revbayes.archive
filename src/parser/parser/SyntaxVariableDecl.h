@@ -25,8 +25,6 @@
 #include <string>
 
 
-const std::string SyntaxVariableDecl_name = "Variable declaration";
-
 class SyntaxVariableDecl : public SyntaxElement {
     
     public:
@@ -42,7 +40,8 @@ class SyntaxVariableDecl : public SyntaxElement {
         
         // Basic utility functions
         SyntaxVariableDecl*         clone() const;                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                           //!< Get class vector 
+        static const std::string&   getClassName(void);                                             //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                         //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                              //!< Print info about object
         
@@ -55,8 +54,6 @@ class SyntaxVariableDecl : public SyntaxElement {
         RbString*                   referenceSymbol;                                                //!< Is reference? ("&" or "")
         RbString*                   variableName;                                                   //!< Variable name
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

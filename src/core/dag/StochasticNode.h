@@ -28,12 +28,10 @@ class RbObject;
 class VectorString;
 
 
-const std::string StochasticNode_name = "Stochastic node";
-
 class StochasticNode : public VariableNode {
 
 public:
-                                        StochasticNode(const TypeSpec& type);                               //!< Construct empty stochastic node
+                                        StochasticNode(void);                                               //!< Construct empty stochastic node
                                         StochasticNode(Distribution* dist);                                 //!< Construct from distribution (raw object)
                                         StochasticNode(const StochasticNode& x);                            //!< Copy constructor
     virtual                            ~StochasticNode(void);                                               //!< Destructor
@@ -43,8 +41,9 @@ public:
 
     // Basic utility functions
     StochasticNode*                     clone(void) const;                                                  //!< Clone the stochastic node
-    std::string                         debugInfo(void) const;                                               //!< Complete info about object
-    const VectorString&                 getClass(void) const;                                               //!< Get class vector
+    std::string                         debugInfo(void) const;                                              //!< Complete info about object
+    static const std::string&           getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
     const RbLanguageObject&             getStoredValue(void) const;                                         //!< Get stored value
     const RbLanguageObject&             getValue(void) const;                                               //!< Get value (const)

@@ -25,10 +25,6 @@
 #include "MoveSimple.h"
 #include "RandomNumberFactory.h"
 
-class Real;
-class RbObject;
-
-const std::string Move_msimplex_name = "msimplex move";
 
 class Move_msimplex : public MoveSimple {
 
@@ -38,7 +34,8 @@ class Move_msimplex : public MoveSimple {
 
         // Basic utility functions
         Move_msimplex*              clone(void) const;                                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                                               //!< Get class vector
+        static const std::string&   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
 
         // Member variable inits
@@ -51,12 +48,11 @@ class Move_msimplex : public MoveSimple {
         double                      perform(void);                                                                      //!< Perform move
     
     private:
-        static const TypeSpec       typeSpec;
 
         // parameters
-        Variable                    variable;
-        Variable                    alpha;
-        Variable                    numCategories;
+        RbVariablePtr               variable;
+        RbVariablePtr               alpha;
+        RbVariablePtr               numCategories;
 
 };
 

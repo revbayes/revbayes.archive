@@ -26,9 +26,6 @@
 #include <iomanip>
 
 
-// Definition of the static type spec member
-const TypeSpec Simplex::typeSpec(Simplex_name);
-
 /** Construct simplex of length (size) n */
 Simplex::Simplex(const size_t n) : VectorRealPos(n,1.0/n) {
 
@@ -68,16 +65,27 @@ Simplex* Simplex::clone() const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Simplex::getClass() const {
-
-    static VectorString rbClass = VectorString(Simplex_name) + MemberObject::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Simplex::getClassName(void) { 
+    
+    static std::string rbClassName = "Simplex";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& Simplex::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( VectorRealPos::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Simplex::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& Simplex::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 

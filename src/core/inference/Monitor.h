@@ -26,11 +26,6 @@
 #include <string>
 #include <vector>
 
-class RbObject;
-class VectorString;
-class VariableNode;
-
-const std::string Monitor_name = "Monitor";
 
 class Monitor : public ConstantMemberObject {
     
@@ -42,8 +37,9 @@ public:
     virtual ~Monitor(void);                                                                                 //!< Destructor
     
     // Basic utility functions
-    virtual Monitor*                    clone(void) const = 0;                                                  //!< Clone object
-    virtual const VectorString&         getClass(void) const;                                               //!< Get class
+    virtual Monitor*                    clone(void) const = 0;                                              //!< Clone object
+    static const std::string&           getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
     virtual const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
     virtual void                        printValue(std::ostream& o) const;                                  //!< Print value (for user)
     
@@ -64,8 +60,6 @@ protected:
     RbVariablePtr                       printgen;
     RbVariablePtr                       variables;
    
-private:
-    static const TypeSpec               typeSpec;
 };
 
 #endif

@@ -35,9 +35,6 @@
 #include "VectorString.h"
 
 
-// Definition of the static type spec member
-const TypeSpec TreePlate::typeSpec(TreePlate_name);
-
 /* Default constructor */
 TreePlate::TreePlate(void) : MutableMemberObject( getMemberRules() ), orderingTopology( NULL ) {
     
@@ -129,16 +126,27 @@ TreePlate* TreePlate::clone(void) const {
 }
 
 
-/* Get class information */
-const VectorString& TreePlate::getClass(void) const {
+/** Get class name of object */
+const std::string& TreePlate::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(TreePlate_name) + MemberObject::getClass();
-    return rbClass;
+    static std::string rbClassName = "Tree Plate";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& TreePlate::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MutableMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& TreePlate::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& TreePlate::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -264,35 +272,35 @@ const MethodTable& TreePlate::getMethods(void) const {
     if ( methodsSet == false ) {
         
         // add the 'addVariable()' method
-        addVariableArgRules->push_back( new ValueRule( "name"      , RbString_name )     );
-        addVariableArgRules->push_back( new ValueRule( "value"     , RbObject_name )     );
-        addVariableArgRules->push_back( new ValueRule( "node"      , TopologyNode_name ) );
+        addVariableArgRules->push_back( new ValueRule( "name"      , RbString::getClassTypeSpec() )     );
+        addVariableArgRules->push_back( new ValueRule( "value"     , RbObject::getClassTypeSpec() )     );
+        addVariableArgRules->push_back( new ValueRule( "node"      , TopologyNode::getClassTypeSpec() ) );
         
         methods.addFunction("addVariable", new MemberFunction(RbVoid_name, addVariableArgRules) );
         
         // add the 'getVariable()' method
-        getVariableArgRules->push_back( new ValueRule( "name"      , RbString_name )     );
-        getVariableArgRules->push_back( new ValueRule( "node"      , TopologyNode_name ) );
+        getVariableArgRules->push_back( new ValueRule( "name"      , RbString::getClassTypeSpec() )     );
+        getVariableArgRules->push_back( new ValueRule( "node"      , TopologyNode::getClassTypeSpec() ) );
         
-        methods.addFunction("getVariable", new MemberFunction(RbObject_name, getVariableArgRules) );
+        methods.addFunction("getVariable", new MemberFunction(RbObject::getClassTypeSpec() , getVariableArgRules) );
         
         // add the 'index(node)' method
-        getNodeIndexArgRules->push_back( new ValueRule( "node", TopologyNode_name ) );
+        getNodeIndexArgRules->push_back( new ValueRule( "node", TopologyNode::getClassTypeSpec() ) );
         
-        methods.addFunction("index", new MemberFunction(Natural_name, getNodeIndexArgRules) );
+        methods.addFunction("index", new MemberFunction(Natural::getClassTypeSpec(), getNodeIndexArgRules) );
         
         // add the 'tipIndex(node)' method
-        getTipIndexArgRules->push_back( new ValueRule( "node", TopologyNode_name ) );
+        getTipIndexArgRules->push_back( new ValueRule( "node", TopologyNode::getClassTypeSpec() ) );
         
-        methods.addFunction("tipIndex", new MemberFunction(Natural_name, getTipIndexArgRules) );
+        methods.addFunction("tipIndex", new MemberFunction(Natural::getClassTypeSpec(), getTipIndexArgRules) );
         
         // add the 'node(i)' method
-        nodeArgRules->push_back( new ValueRule( "index" , Natural_name  ) );
+        nodeArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec()  ) );
         
-        methods.addFunction("node", new MemberFunction(TopologyNode_name, nodeArgRules) );
+        methods.addFunction("node", new MemberFunction(TopologyNode::getClassTypeSpec(), nodeArgRules) );
         
         // add the 'nnodes()' method
-        methods.addFunction("nnodes", new MemberFunction(Natural_name, nnodesArgRules) );
+        methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(), nnodesArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
@@ -311,8 +319,7 @@ const MemberRules& TreePlate::getMemberRules(void) const {
     
     if (!rulesSet) 
     {
-        TypeSpec varType(Topology_name);
-        memberRules.push_back( new ValueRule( "topology" , varType ) );
+        memberRules.push_back( new ValueRule( "topology" , Topology::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

@@ -56,11 +56,20 @@ const RbLanguageObject& Distribution::executeOperationSimple( const std::string&
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Distribution::getClass( void ) const {
+/** Get class name of object */
+const std::string& Distribution::getClassName(void) { 
+    
+    static std::string rbClassName = "Distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Distribution_name ) + MemberObject::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Distribution::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -75,13 +84,13 @@ const MethodTable& Distribution::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        lnPdfArgRules->push_back( new ValueRule( "x", RbObject_name ) );
+        lnPdfArgRules->push_back( new ValueRule( "x", RbObject::getClassTypeSpec() ) );
 
-        pdfArgRules->push_back( new ValueRule( "x", RbObject_name ) );
+        pdfArgRules->push_back( new ValueRule( "x", RbObject::getClassTypeSpec() ) );
 
-        methods.addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules ) );
-        methods.addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules   ) );
-        methods.addFunction( "rv",    new MemberFunction( RbObject_name, rvArgRules    ) );
+        methods.addFunction( "lnPdf", new MemberFunction( Real::getClassTypeSpec()    , lnPdfArgRules ) );
+        methods.addFunction( "pdf",   new MemberFunction( Real::getClassTypeSpec()    , pdfArgRules   ) );
+        methods.addFunction( "rv",    new MemberFunction( RbObject::getClassTypeSpec(), rvArgRules    ) );
 
         methods.setParentTable( &MemberObject::getMethods() );
 

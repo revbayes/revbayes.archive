@@ -28,9 +28,7 @@
 class Variable;
 class DAGNode;
 class Frame;
-class RbObject;
 
-const std::string VariableSlot_name = "Variable Slot";
 
 class VariableSlot : public RbInternal {
     
@@ -46,8 +44,10 @@ public:
     
     // Regular functions
     VariableSlot*                           clone(void) const;                                                      //!< Clone slot
-    const VectorString&                     getClass() const;                                                       //!< Get class vector
+    static const std::string&               getClassName(void);                                                     //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                                 //!< Get class type spec
     const TypeSpec&                         getTypeSpec(void) const;                                                //!< Get language type of the object
+
     const RbLanguageObject&                 getValue(void) const;                                                   //!< Get the value of the variable
     RbLanguageObject&                       getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
     DAGNode*                                getDagNode(void) const;                                                 //!< Get the DAG node
@@ -69,7 +69,6 @@ private:
     RbVariablePtr                           variable;                                                               //!< the argument living in the slot 
     std::string                             label;                                                                  //!< the label for this slot. The label should correspond to the name uner which this slot is stored in variable table. However, the label does not have to correspond to the variable name, e.g. a argument could have the label mean but the name of the variable is mu.
 
-    static const TypeSpec                   typeSpec;
 };
 
 /* Global functions using the class */

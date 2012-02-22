@@ -33,16 +33,15 @@ class DAGNode;
 class MethodTable;
 class VectorString;
 
-const std::string MemberObject_name = "Member Object";
-
 class MemberObject: public RbLanguageObject {
 
     public:
-        virtual                                    ~MemberObject(void);                                                               //!< Destructor
+        virtual                                    ~MemberObject(void);                                                                 //!< Destructor
 
         // Basic utility functions you have to override
         virtual MemberObject*                       clone(void) const = 0;                                                              //!< Clone object
-        virtual const VectorString&                 getClass(void) const;                                                               //!< Get class vector
+        static const std::string&                   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&                      getClassTypeSpec(void);                                                             //!< Get class type spec
         
         // Basic utility functions you may want to override
         virtual void                                printValue(std::ostream& o) const;                                                  //!< Print value for user

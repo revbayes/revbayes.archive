@@ -20,16 +20,17 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
+#include "DeterministicNode.h"
+#include "Distribution.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbObject.h"
+#include "StochasticNode.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>
 
-// Definition of the static type spec member
-const TypeSpec ArgumentRule::typeSpec(ArgumentRule_name);
 
 /** Construct rule based on default value; use "" for no label. */
 ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal) : RbInternal(), label(argName), argSlot(argName, defVal->getTypeSpec()), hasDefaultVal(true) {
@@ -83,11 +84,28 @@ const TypeSpec& ArgumentRule::getArgumentTypeSpec(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& ArgumentRule::getClass(void) const { 
+/** Get class name of object */
+const std::string& ArgumentRule::getClassName(void) { 
+    
+    static std::string rbClassName = "Argument rule";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(ArgumentRule_name) + RbInternal::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& ArgumentRule::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& ArgumentRule::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -100,11 +118,6 @@ Variable& ArgumentRule::getDefaultVariable(void) {
     return argSlot.getVariable(); 
 }
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& ArgumentRule::getTypeSpec(void) const {
-    return typeSpec;
-}
-
 
 bool ArgumentRule::hasDefault(void) const {
     return hasDefaultVal;
@@ -112,23 +125,97 @@ bool ArgumentRule::hasDefault(void) const {
 
 
 /** Test if argument is valid */
-bool ArgumentRule::isArgumentValid(const DAGNode* var, bool& needsConversion) const {
+bool ArgumentRule::isArgumentValid(const RbVariablePtr& var, bool convert) const {
     
-    needsConversion = false;
     if ( var == NULL )
         return false;
+    
+    // first we check if the type we want is already guaranteed by the variable
+    if ( var->getValueTypeSpec().isDerivedOf( argSlot.getSlotTypeSpec() ) ) {
+        return true;
+    }
+
+    // we can only change the required value type of the variable if we want a derived type of the current value type
+    if ( argSlot.getSlotTypeSpec().isDerivedOf( var->getValueTypeSpec() ) ) {
+        
+        // We check first if the variable is constant
+        if ( var->getDagNode()->isTypeSpec( ConstantNode::getClassTypeSpec() ) ) {
+            // since the node is constant, we can actually change its value if we need to
+            
+            
+            // first we check if the argument needs to be converted
+            if ( var->getValue().isTypeSpec( argSlot.getSlotTypeSpec() ) ) {
+                // No, we don't.
+                
+                // do the conversion if we are actually asked to
+                if ( convert ) {
+                    var->setValueTypeSpec( argSlot.getSlotTypeSpec() );
+                }
+                
+                return true;
+            } else if ( var->getValue().isConvertibleTo( argSlot.getSlotTypeSpec() ) ) {
+                // Yes, we can and have to convert
+                
+                // should we do the type conversion?
+                if ( convert ) {
+                    ConstantNode* theConstNode = static_cast<ConstantNode*>( var->getDagNode() );
+                    // Do the type conversion
+                    RbLanguageObject* convertedObj = var->getValue().clone();
+                    theConstNode->setValue( convertedObj );
+                    
+                    // set the new type spec of the variable
+                    var->setValueTypeSpec( argSlot.getSlotTypeSpec() );
+                }
+                return true;
+            }
+        }
+        else {
+            // We have a variable node (either stochastic or deterministic).
+            // We cannot change the value of a variable node permanently.
+            // So just make sure that the return type of the function or distribution fit.
+            
+            // first handle deterministic nodes
+            if ( var->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
+                
+                const DeterministicNode* theDetNode = static_cast<const DeterministicNode*>( var->getDagNode() );
+                const RbFunction& theFunction = theDetNode->getFunction();
+                
+                // first we check if the argument needs to be converted
+                if ( theFunction.getReturnType().isDerivedOf( argSlot.getSlotTypeSpec() ) ) {
+                    // Yes, the function guarantees to return a value of the required type (or any derived type)
+                    
+                    // do the conversion if we are actually asked to
+                    if ( convert ) {
+                        var->setValueTypeSpec( argSlot.getSlotTypeSpec() );
+                    }
+                    
+                    return true;
+                }
+            }
+            else { // if ( var->getDagNode()->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
+                
+                const StochasticNode* theStocNode = static_cast<const StochasticNode*>( var->getDagNode() );
+                const Distribution& theDistribution = theStocNode->getDistribution();
+                
+                // first we check if the argument needs to be converted
+                if ( theDistribution.getVariableType().isDerivedOf( argSlot.getSlotTypeSpec() ) ) {
+                    // Yes, the function guarantees to return a value of the required type (or any derived type)
+                    
+                    // do the conversion if we are actually asked to
+                    if ( convert ) {
+                        var->setValueTypeSpec( argSlot.getSlotTypeSpec() );
+                    }
+                    
+                    return true;
+                }
+            }
+            
+        }
+        
+        
+    }
 
     
-   /* We need safe argument matching for repeated evaluation in a function node */
-   if ( var->getValue().isTypeSpec(argSlot.getSlotTypeSpec()) == true ) {
-       needsConversion = false;
-       return true;
-   }
-
-   if ( var->getValue().isConvertibleTo(argSlot.getSlotTypeSpec() ) == true) {
-       needsConversion = true;
-       return true;
-   }
     
     return false;
 }
@@ -147,7 +234,7 @@ void ArgumentRule::printValue(std::ostream &o) const {
 
 
 /** Provide complete information about object */
-std::string ArgumentRule::richInfo(void) const {
+std::string ArgumentRule::debugInfo(void) const {
 
     std::ostringstream o;
 

@@ -25,12 +25,6 @@
 #include <ostream>
 #include <string>
 
-class DAGNode;
-class StochasticNode;
-class VectorString;
-
-const std::string Dist_gamma_name = "Dist_gamma";
-
 class Dist_gamma: public DistributionContinuous {
 
     public:
@@ -38,7 +32,8 @@ class Dist_gamma: public DistributionContinuous {
 
         // Basic utility functions
         Dist_gamma*                 clone(void) const;                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                               //!< Get class vector
+        static const std::string&   getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
@@ -54,8 +49,6 @@ class Dist_gamma: public DistributionContinuous {
         const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
     
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       varTypeSpec;
 
         // parameters
         RbVariablePtr               shape;

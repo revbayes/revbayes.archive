@@ -30,10 +30,7 @@ class ArgumentRule;
 class DAGNode;
 class MemberObject;
 class RbFunction;
-class RbObject;
 
-
-const std::string MethodTable_name = "Method table";
 
 class MethodTable : public FunctionTable {
 
@@ -46,15 +43,14 @@ class MethodTable : public FunctionTable {
 
         // Basic utility functions
         MethodTable*                clone(void) const { return new MethodTable(*this); }                        //!< Clone object
-        const VectorString&         getClass() const;                                                           //!< Get class vector
+        static const std::string&   getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
-        std::string                 debugInfo(void) const;                                                       //!< Complete info to string
+        std::string                 debugInfo(void) const;                                                      //!< Complete info to string
 
         // MethodTable function (we just set the name of MemberFunction objects here)
         void                        addFunction(const std::string name, RbFunction* func);                      //!< Add function; set name if appropriate
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

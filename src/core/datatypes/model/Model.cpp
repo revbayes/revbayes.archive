@@ -33,11 +33,8 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Model::typeSpec(Model_name);
-
 /** Default constructor for a Model object. */
-Model::Model( void ) : ConstantMemberObject(getMemberRules()) {
+Model::Model( void ) : ConstantMemberObject( getMemberRules() ) {
 }
 
 
@@ -144,12 +141,28 @@ int Model::findIndexInVector(const std::vector<DAGNode*>& v, const DAGNode* p) c
 }
 
 
+/** Get class name of object */
+const std::string& Model::getClassName(void) { 
+    
+    static std::string rbClassName = "Model";
+    
+	return rbClassName; 
+}
 
-/** Get class vector describing object */
-const VectorString& Model::getClass(void) const {
+/** Get class type spec describing type of object */
+const TypeSpec& Model::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-    static VectorString rbClass = VectorString(Model_name) + MemberObject::getClass();
-    return rbClass;
+/** Get type spec */
+const TypeSpec& Model::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -181,18 +194,12 @@ const MemberRules& Model::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule( "sinknode"  , RbObject_name ) );
+        memberRules.push_back( new ValueRule( "sinknode"  , RbObject::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
     
     return memberRules;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Model::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -217,20 +224,20 @@ void Model::printValue(std::ostream& o) const {
 		RBOUT(nameStr);
 		msg.str("");
 
-		if ( (*i)->getType() == ConstantNode_name )
+		if ( (*i)->isTypeSpec( ConstantNode::getClassTypeSpec() ) )
 			msg << "   Type         = Constant";
-		else if ( (*i)->getType() == StochasticNode_name )
+		else if ( (*i)->isTypeSpec( StochasticNode::getClassTypeSpec() ) )
 			msg << "   Type         = Stochastic";
 		else 
 			msg << "   Type         = Deterministic";
 		RBOUT(msg.str());
 		msg.str("");
 		
-        if ((*i)->isType(DeterministicNode_name)) {
+        if ( (*i)->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
             DAGNode* dnode = *i;
             DeterministicNode* node = static_cast<DeterministicNode*>( dnode );
             msg << "   Function     = " << node->getFunction().getType();
-        } else if ((*i)->isType(StochasticNode_name)) {
+        } else if ( (*i)->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
             DAGNode* dnode = *i;
             StochasticNode* node = static_cast<StochasticNode*>( dnode );
             msg << "   Distribution = " << node->getDistribution().getType();
@@ -279,7 +286,7 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
     if (name == "sinknode") {
         
         // test whether var is a DagNodeContainer
-        while (var->getValue().isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
+        while ( var->getValue().isTypeSpec( TypeSpec(DagNodeContainer::getClassTypeSpec() ) ) ) {
             const RbObject& objPtr = var->getValue();
             const DagNodeContainer& container = dynamic_cast<const DagNodeContainer&>( objPtr );
             const RbObject& elemPtr = container.getElement(0);
@@ -299,12 +306,12 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
             DAGNode* theNewNode = (*i).second;
             
             // do not add myself into the list of nodes
-            if (theNewNode->isType(DeterministicNode_name)) {
+            if ( theNewNode->isType( DeterministicNode::getClassTypeSpec() ) ) {
                 DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>((DAGNode*)theNewNode);
                 const RbFunction& theFunction = theDetNode->getFunction();
-                if (theFunction.isType(ConstructorFunction_name)) {
+                if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {
                     const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
-                    if (theConstructorFunction.getTemplateObjectType() == Model_name) {
+                    if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
                         // remove the dag node holding the model constructor function from the dag
                         const std::set<DAGNode*>& parents = theDetNode->getParents();
                         for (std::set<DAGNode*>::const_iterator it=parents.begin(); it!=parents.end(); it++) {

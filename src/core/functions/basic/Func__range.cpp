@@ -29,10 +29,6 @@
 #include "VectorString.h"
 
 
-// Definition of the static type spec member
-const TypeSpec Func__range::typeSpec(Func__range_name);
-const TypeSpec Func__range::returnTypeSpec(VectorInteger_name);
-
 /** Clone object */
 Func__range* Func__range::clone( void ) const {
 
@@ -70,8 +66,8 @@ const ArgumentRules& Func__range::getArgumentRules( void ) const {
 
     if (!rulesSet) {
 
-        argumentRules.push_back( new ValueRule( "first", Integer_name ) );
-        argumentRules.push_back( new ValueRule( "last", Integer_name ) );
+        argumentRules.push_back( new ValueRule( "first", Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "last",  Integer::getClassTypeSpec() ) );
         rulesSet = true;
     }
 
@@ -79,16 +75,27 @@ const ArgumentRules& Func__range::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func__range::getClass( void ) const {
-
-    static VectorString rbClass = VectorString( Func__range_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Func__range::getClassName(void) { 
+    
+    static std::string rbClassName = "Range function";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& Func__range::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func__range::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& Func__range::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -96,6 +103,7 @@ const TypeSpec& Func__range::getTypeSpec(void) const {
 /** Get return type */
 const TypeSpec& Func__range::getReturnType( void ) const {
 
+    static TypeSpec returnTypeSpec = VectorInteger::getClassTypeSpec();
     return returnTypeSpec;
 }
 

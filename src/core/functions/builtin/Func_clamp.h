@@ -26,14 +26,13 @@
 class DAGNode;
 class VectorString;
 
-const std::string Func_clamp_name = "Clamp function";
-
 class Func_clamp :  public RbFunction {
 
     public:
         // Basic utility functions
         Func_clamp*                 clone(void) const;                                  //!< Clone the object
-        const VectorString&         getClass(void) const;                               //!< Get class vector
+        static const std::string&   getClassName(void);                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 
         // Regular functions
@@ -45,8 +44,6 @@ class Func_clamp :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
 
         // arguments
         RbVariablePtr               variable;

@@ -32,7 +32,8 @@ class Func_transpose :  public RbFunction {
     public:
         // Basic utility functions
         Func_transpose*             clone(void) const;                                          //!< Clone the object
-        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
@@ -44,7 +45,6 @@ class Func_transpose :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
     
         // Arguments
         RbVariablePtr               x;
@@ -59,10 +59,6 @@ class Func_transpose :  public RbFunction {
 #include "ValueRule.h"
 #include "VectorString.h"
 
-
-// Definition of the static type spec member
-template <typename matrixType>
-const TypeSpec Func_transpose<matrixType>::typeSpec("Func_transpose", new TypeSpec(matrixType().getType()));
 
 
 /** Clone object */
@@ -107,15 +103,34 @@ const ArgumentRules& Func_transpose<matrixType>::getArgumentRules( void ) const 
 }
 
 
-/** Get class vector describing type of object */
-template <typename matrixType>
-const VectorString& Func_transpose<matrixType>::getClass( void ) const {
 
-    std::string         funcName = "Func_transpose<" + matrixType().getType() + ">"; 
-    static VectorString rbClass  = VectorString( funcName ) + RbFunction::getClass();
+/** Get class name of object */
+template <typename matrixType>
+const std::string& Func_transpose<matrixType>::getClassName(void) { 
     
-    return rbClass;
+    static std::string rbClassName = "Func_transpose<" + matrixType().getType() + ">";
+    
+	return rbClassName; 
 }
+
+/** Get class type spec describing type of object */
+template <typename matrixType>
+const TypeSpec& Func_transpose<matrixType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+template <typename matrixType>
+const TypeSpec& Func_transpose<matrixType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}
+
 
 
 /** Get return type */
@@ -125,13 +140,6 @@ const TypeSpec& Func_transpose<matrixType>::getReturnType( void ) const {
     return matrixType().getTypeSpec();
 }
 
-
-/** Get return type */
-template <typename matrixType>
-const TypeSpec& Func_transpose<matrixType>::getTypeSpec( void ) const {
-    
-    return typeSpec;
-}
 
 
 /** We catch here the setting of the argument variables to store our parameters. */

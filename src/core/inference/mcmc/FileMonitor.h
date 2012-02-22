@@ -27,11 +27,8 @@
 #include <string>
 #include <vector>
 
-class RbObject;
-class VectorString;
 class VariableNode;
 
-const std::string FileMonitor_name = "FileMonitor";
 
 class FileMonitor : public Monitor {
 
@@ -43,7 +40,8 @@ public:
 
     // Basic utility functions
     FileMonitor*                        clone(void) const;                                                  //!< Clone object
-    const VectorString&                 getClass(void) const;                                               //!< Get class
+    static const std::string&           getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
     void                                printValue(std::ostream& o) const;                                  //!< Print value (for user)
 
@@ -67,7 +65,6 @@ private:
     RbVariablePtr                       filename;
     RbVariablePtr                       separator;
     
-    static const TypeSpec               typeSpec;
 };
 
 #endif

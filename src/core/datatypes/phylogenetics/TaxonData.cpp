@@ -23,9 +23,6 @@
 #include "TaxonData.h"
 
 
-// Definition of the static type spec member
-const TypeSpec TaxonData::typeSpec(TaxonData_name);
-
 /** Constructor with element type, used to properly construct vectors */
 TaxonData::TaxonData(const std::string& elemType, const std::string tname) : Vector(elemType), taxonName(tname) {
     
@@ -65,11 +62,28 @@ TaxonData* TaxonData::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& TaxonData::getClass(void) const {
+/** Get class name of object */
+const std::string& TaxonData::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(TaxonData_name) + ConstantMemberObject::getClass();
-    return rbClass;
+    static std::string rbClassName = "Taxon data";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& TaxonData::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Vector::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& TaxonData::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -88,13 +102,6 @@ size_t TaxonData::getNumberOfCharacters(void) const {
 const std::string& TaxonData::getTaxonName(void) const {
 
     return taxonName;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& TaxonData::getTypeSpec(void) const {
-
-    return typeSpec;
 }
 
 

@@ -23,11 +23,21 @@
 #include <sstream>
 
 
-/** Get class vector describing type of object */
-const VectorString& RbInternal::getClass(void) const { 
 
-    static VectorString rbClass = VectorString(RbInternal_name);
-	return rbClass; 
+/** Get class vector describing type of object */
+const std::string& RbInternal::getClassName(void) { 
+    
+    static std::string rbClassName = "internal object";
+	return rbClassName; 
+}
+
+
+/** Get class vector describing type of object */
+const TypeSpec& RbInternal::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec(getClassName(), new TypeSpec( RbObject::getClassTypeSpec() ) );
+	
+    return rbClass; 
 }
 
 

@@ -33,9 +33,6 @@
 #include <cassert>
 
 
-// Definition of the static type spec member
-const TypeSpec VariableSlot::typeSpec(VariableSlot_name);
-
 /** Constructor of filled slot with type specification. */
 VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, const RbVariablePtr& var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
@@ -44,7 +41,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, const
 }
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const RbVariablePtr& var) : RbInternal() , varTypeSpec( TypeSpec(RbObject_name) ), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const RbVariablePtr& var) : RbInternal() , varTypeSpec( RbObject::getClassTypeSpec() ), label(lbl) {
     
     variable = var;
     
@@ -111,11 +108,29 @@ VariableSlot* VariableSlot::clone( void ) const {
     return new VariableSlot( *this );
 }
 
-/** Get class vector describing type of object */
-const VectorString& VariableSlot::getClass() const {
+
+/** Get class name of object */
+const std::string& VariableSlot::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(VariableSlot_name) + RbInternal::getClass();
-    return rbClass;
+    static std::string rbClassName = "Variable slot";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& VariableSlot::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& VariableSlot::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -136,12 +151,6 @@ DAGNode* VariableSlot::getDagNode( void ) {
         return NULL;
     else
         return variable->getDagNode();
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& VariableSlot::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

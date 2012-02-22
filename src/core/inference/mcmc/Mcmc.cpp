@@ -45,8 +45,6 @@
 #include <string>
 
 
-// Definition of the static type spec member
-const TypeSpec Mcmc::typeSpec(Mcmc_name);
 
 /** Constructor passes member rules and method inits to base class */
 Mcmc::Mcmc(void) : ConstantMemberObject(getMemberRules()),
@@ -85,11 +83,28 @@ const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, co
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Mcmc::getClass(void) const {
+/** Get class name of object */
+const std::string& Mcmc::getClassName(void) { 
+    
+    static std::string rbClassName = "MCMC";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(Mcmc_name) + ConstantMemberObject::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Mcmc::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Mcmc::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -101,9 +116,9 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back( new ValueRule ( "model"    , Model_name    ) );
-        memberRules.push_back( new ValueRule ( "moves"    , TypeSpec(Vector_name,new TypeSpec(Move_name) ) ) );
-        memberRules.push_back( new ValueRule ( "monitors" , TypeSpec(Vector_name,new TypeSpec(FileMonitor_name) ) ) );
+        memberRules.push_back( new ValueRule ( "model"    , Model::getClassTypeSpec()    ) );
+        memberRules.push_back( new ValueRule ( "moves"    , TypeSpec(Vector::getClassName(), NULL, new TypeSpec(Move::getClassTypeSpec()) ) ) );
+        memberRules.push_back( new ValueRule ( "monitors" , TypeSpec(Vector::getClassName(), NULL, new TypeSpec(FileMonitor::getClassTypeSpec()) ) ) );
 
         rulesSet = true;
     }
@@ -121,7 +136,7 @@ const MethodTable& Mcmc::getMethods(void) const {
 
     if (!methodsSet) {
 
-        updateArgRules->push_back( new ValueRule( "generations", Natural_name     ) );
+        updateArgRules->push_back( new ValueRule( "generations", Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules) );
 
         methods.setParentTable( &MemberObject::getMethods() );
@@ -129,12 +144,6 @@ const MethodTable& Mcmc::getMethods(void) const {
     }
 
     return methods;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Mcmc::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
@@ -149,7 +158,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         // get the DAG nodes
         const Model& theModel = dynamic_cast<Model&>( model->getValue() );
         
-        Vector* moves = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(Move_name) ) ) );
+        Vector* moves = static_cast<Vector*>(var->getValue().convertTo( TypeSpec(Vector::getClassName(), NULL, new TypeSpec(Move::getClassTypeSpec()) ) ) );
         for (size_t i=0; i<moves->size(); i++) {
             // get the move #i
             Move& theMove = static_cast<Move&>( moves->getElement(i) );
@@ -185,7 +194,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         // get the DAG nodes
         const Model& theModel = static_cast<Model&>( model->getValue() );
         
-        Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector_name, new TypeSpec(FileMonitor_name) ) ) );
+        Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(FileMonitor::getClassTypeSpec()) ) ) );
         for (size_t i=0; i<monitors->size(); i++) {
             // get the monitor #i
             FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
@@ -258,7 +267,7 @@ void Mcmc::run(size_t ngen) {
     std::vector<double> initProb;
     for (std::vector<DAGNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
         DAGNode* node = (*i);
-        if (node->isType(StochasticNode_name)) {
+        if (node->isTypeSpec(StochasticNode::getClassTypeSpec())) {
             StochasticNode* stochNode = dynamic_cast<StochasticNode*>( node );
             double lnProb = stochNode->calculateLnProbability();
             lnProbability += lnProb;
@@ -314,7 +323,7 @@ void Mcmc::run(size_t ngen) {
             double curLnProb = 0.0;
             std::vector<double> lnRatio;
             for (std::vector<DAGNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-                if ((*i)->isType(StochasticNode_name)) {
+                if ((*i)->isTypeSpec(StochasticNode::getClassTypeSpec())) {
                     StochasticNode* stochNode = dynamic_cast<StochasticNode*>( *i );
                     double lnProb = stochNode->calculateLnProbability();
                     curLnProb += lnProb;

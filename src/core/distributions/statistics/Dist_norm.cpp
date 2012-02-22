@@ -33,10 +33,6 @@
 #include <cmath>
 
 
-// Definition of the static type spec member
-const TypeSpec Dist_norm::typeSpec(Dist_norm_name);
-const TypeSpec Dist_norm::varTypeSpec(Real_name);
-
 /** Constructor for parser use */
 Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ), mu( NULL ), sigma( NULL ) {
 
@@ -71,11 +67,28 @@ Dist_norm* Dist_norm::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_norm::getClass( void ) const {
+/** Get class name of object */
+const std::string& Dist_norm::getClassName(void) { 
+    
+    static std::string rbClassName = "Normal distribution";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Dist_norm_name ) + DistributionContinuous::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_norm::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_norm::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -87,8 +100,8 @@ const MemberRules& Dist_norm::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ValueRule( "mean", Real_name   , new Real(0.0)    ) );
-        memberRules.push_back( new ValueRule( "sd"  , RealPos_name, new RealPos(1.0) ) );
+        memberRules.push_back( new ValueRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
+        memberRules.push_back( new ValueRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
 
         rulesSet = true;
     }
@@ -97,15 +110,11 @@ const MemberRules& Dist_norm::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_norm::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_norm::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = Real::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 

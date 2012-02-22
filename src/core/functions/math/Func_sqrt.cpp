@@ -33,10 +33,6 @@
 #include <cmath>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_sqrt::typeSpec(Func_sqrt_name);
-const TypeSpec Func_sqrt::returnTypeSpec(RealPos_name);
-
 /** Clone object */
 Func_sqrt* Func_sqrt::clone( void ) const {
 
@@ -63,7 +59,7 @@ const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
 
     if (!rulesSet) 
 		{
-        argumentRules.push_back( new ValueRule( "x", RealPos_name ) );
+            argumentRules.push_back( new ValueRule( "x", RealPos::getClassTypeSpec() ) );
         rulesSet = true;
 		}
 
@@ -71,24 +67,36 @@ const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_sqrt::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_sqrt::getClassName(void) { 
+    
+    static std::string rbClassName = "Square root function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Func_sqrt_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Func_sqrt::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_sqrt::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_sqrt::getReturnType( void ) const {
-
+    
+    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_sqrt::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

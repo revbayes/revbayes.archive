@@ -27,9 +27,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Complex::typeSpec(Complex_name);
-
 /** Default constructor */
 Complex::Complex(void) : RbLanguageObject() {
 
@@ -89,16 +86,27 @@ Complex* Complex::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Complex::getClass(void) const {
-
-    static VectorString rbClass = VectorString(Complex_name) + RbLanguageObject::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Complex::getClassName(void) { 
+    
+    static std::string rbClassName = "Complex";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& Complex::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Complex::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& Complex::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -118,16 +126,6 @@ void Complex::printValue(std::ostream &o) const {
     o.precision( previousPrecision );
 }
 
-
-/** Get complete info about object */
-std::string Complex::richInfo(void) const {
-
-	std::ostringstream o;
-    o << "Complex(";
-    printValue(o);
-    o << ")";
-    return o.str();
-}
 
 ////////////////////////////////// Global Complex operators ///////////////////////////////////
 

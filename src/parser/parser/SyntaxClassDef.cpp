@@ -22,9 +22,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxClassDef::typeSpec(SyntaxClassDef_name);
-
 /** Construct definition from class name, base class name, and variable and function definitions */
 SyntaxClassDef::SyntaxClassDef( RbString* name, RbString* base, std::list<SyntaxElement*>* defs) : SyntaxElement(), className(name), baseClass(base), definitions(defs) {
     
@@ -73,11 +70,28 @@ SyntaxElement* SyntaxClassDef::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxClassDef::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxClassDef::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(SyntaxClassDef_name) + SyntaxElement::getClass();
+    static std::string rbClassName = "Class definition";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxClassDef::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxClassDef::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -88,12 +102,6 @@ RbVariablePtr SyntaxClassDef::evaluateContent( Environment& env ) {
 
     // No return value 
     return NULL;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxClassDef::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

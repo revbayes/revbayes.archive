@@ -52,7 +52,6 @@ class VectorString;
  * arguments do not match.
  *
  */
-const std::string RbFunction_name = "function";
 
 class RbFunction :  public RbInternal {
 
@@ -62,7 +61,8 @@ class RbFunction :  public RbInternal {
 
         // Basic utility functions you have to override
         virtual RbFunction*                             clone(void) const = 0;                                                              //!< Clone object
-    	virtual const VectorString&                     getClass(void) const;                                                               //!< Get class vector
+        static const std::string&                       getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
 
         // Basic utility functions you may want to override
         virtual std::string                             debugInfo(void) const;                                                              //!< Brief info about object

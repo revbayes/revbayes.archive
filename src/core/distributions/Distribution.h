@@ -32,10 +32,7 @@ class ArgumentRule;
 class DAGNode;
 class RandomNumberGenerator;
 class StochasticNode;
-class VectorString;
 
-
-const std::string Distribution_name = "Distribution";
 
 class Distribution: public ConstantMemberObject {
 
@@ -44,7 +41,8 @@ class Distribution: public ConstantMemberObject {
 
         // Basic utility functions
         virtual Distribution*               clone(void) const = 0;                                                              //!< Clone object
-        virtual const VectorString&         getClass(void) const;                                                               //!< Get class vector   
+        static const std::string&           getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                             //!< Get class type spec
 
         // Member object function you have to override
         virtual const MemberRules&          getMemberRules(void) const = 0;                                                     //!< Get member rules

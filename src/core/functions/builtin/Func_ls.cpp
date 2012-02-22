@@ -33,10 +33,6 @@
 #include <fstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_ls::typeSpec(Func_ls_name);
-const TypeSpec Func_ls::returnTypeSpec(RbVoid_name);
-
 /** Clone object */
 Func_ls* Func_ls::clone( void ) const {
 
@@ -87,24 +83,36 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_ls::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_ls::getClassName(void) { 
+    
+    static std::string rbClassName = "Ls function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Func_ls_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Func_ls::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_ls::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_ls::getReturnType( void ) const {
-
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_ls::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

@@ -35,8 +35,6 @@ class TypeSpec;
 class VectorString;
 class SyntaxElement;
 
-const std::string UserFunction_name = "user function";
-
 class UserFunction :  public RbFunction {
 
     public:
@@ -52,7 +50,8 @@ class UserFunction :  public RbFunction {
         
         // Basic utility functions
         UserFunction*                               clone() const;                      //!< Clone object
-        const VectorString&                         getClass() const;                   //!< Get class vector
+        static const std::string&                   getClassName(void);                 //!< Get class name
+        static const TypeSpec&                      getClassTypeSpec(void);             //!< Get class type spec
         const TypeSpec&                             getTypeSpec(void) const;            //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;  //!< Print the value
 
@@ -69,8 +68,6 @@ class UserFunction :  public RbFunction {
         std::list<SyntaxElement*>*                  code;                               //!< The code
         Environment*                                defineEnvironment;                  //!< The definition environment
     
-    private:
-        static const TypeSpec       typeSpec;
 };
 
 #endif

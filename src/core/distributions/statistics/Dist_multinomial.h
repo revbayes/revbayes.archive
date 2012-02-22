@@ -24,12 +24,7 @@
 #include <ostream>
 #include <string>
 
-class DAGNode;
 class Real;
-class StochasticNode;
-class VectorString;
-
-const std::string Dist_multinomial_name = "Dist_multinomial";
 
 class Dist_multinomial: public DistributionDiscrete {
 
@@ -38,7 +33,8 @@ class Dist_multinomial: public DistributionDiscrete {
 
         // Basic utility functions
         Dist_multinomial*           clone(void) const;                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                               //!< Get class vector
+        static const std::string&   getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup

@@ -19,9 +19,6 @@
 #include "VectorString.h"
 
 
-// Definition of the static type spec member
-const TypeSpec RbString::typeSpec(RbString_name);
-
 /** Constructor from string */
 RbString::RbString(const std::string& v) : RbLanguageObject(), value(v) {
 }
@@ -73,16 +70,27 @@ RbString* RbString::clone() const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& RbString::getClass() const {
-
-    static VectorString rbClass = VectorString(RbString_name) + RbLanguageObject::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& RbString::getClassName(void) { 
+    
+    static std::string rbClassName = "String";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& RbString::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& RbString::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& RbString::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 

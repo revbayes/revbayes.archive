@@ -46,9 +46,6 @@
 #include <vector>
 #include <set>
 
-// Definition of the static type spec member
-const TypeSpec Func_dppServe::typeSpec(Func_dppServe_name);
-const TypeSpec Func_dppServe::returnTypeSpec(RbVoid_name);
 
 /** Clone object */
 Func_dppServe* Func_dppServe::clone( void ) const {
@@ -90,8 +87,8 @@ const ArgumentRules& Func_dppServe::getArgumentRules( void ) const {
 	
     if ( !rulesSet ) {
 		
-        argumentRules.push_back( new ValueRule( "allocation", VectorNatural_name ) );
-        argumentRules.push_back( new ValueRule( "stochastic node ~ G_0", StochasticNode_name ) );
+        argumentRules.push_back( new ValueRule( "allocation", VectorNatural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "distribution ~ G_0", Distribution::getClassTypeSpec() ) );
         rulesSet = true;
     }
 	
@@ -99,23 +96,35 @@ const ArgumentRules& Func_dppServe::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_dppServe::getClass( void ) const {
-	
-    static VectorString rbClass = VectorString( Func_dppServe_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Func_dppServe::getClassName(void) { 
+    
+    static std::string rbClassName = "DPP parameter vector function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_dppServe::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_dppServe::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_dppServe::getReturnType( void ) const {
-	
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_dppServe::getTypeSpec(void) const {
-    return typeSpec;
 }
 

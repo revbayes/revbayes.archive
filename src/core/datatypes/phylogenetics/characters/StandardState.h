@@ -22,9 +22,6 @@
 #include <vector>
 
 
-
-const std::string StandardState_name = "Standard";
-
 class StandardState : public CharacterStateDiscrete {
 
     public:
@@ -39,7 +36,8 @@ class StandardState : public CharacterStateDiscrete {
 
         // Basic utility functions you have to override
         StandardState*                  clone(void) const;                                         //!< Clone object
-        const VectorString&             getClass(void) const;                                      //!< Get class vector
+        static const std::string&       getClassName(void);                                        //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                    //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                   //!< Get language type of the object
 
         // Discrete character observation functions
@@ -53,8 +51,6 @@ class StandardState : public CharacterStateDiscrete {
     protected:
         std::string                     stateLabels;                                               //!< The labels for the possible states
     
-    private:
-        static const TypeSpec           typeSpec;
 };
 
 #endif

@@ -28,9 +28,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Monitor::typeSpec(Monitor_name);
-
 /** Constructor */
 Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()), printgen( NULL ), variables( NULL )
 {
@@ -55,11 +52,28 @@ Monitor::~Monitor() {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Monitor::getClass() const {
+/** Get class name of object */
+const std::string& Monitor::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(Monitor_name) + ConstantMemberObject::getClass();
-    return rbClass;
+    static std::string rbClassName = "Monitor";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Monitor::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Monitor::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 /** Return member rules */
@@ -70,19 +84,13 @@ const MemberRules& Monitor::getMemberRules( void ) const {
     
     if (!rulesSet) 
     {
-        memberRules.push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) );
-        memberRules.push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
-        memberRules.push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
+        memberRules.push_back( new ValueRule( "printgen"  , Integer::getClassTypeSpec()          ) );
+        memberRules.push_back( new ValueRule( "variable"  , RbLanguageObject::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis (               RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
     return memberRules;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Monitor::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

@@ -28,11 +28,8 @@
 #include <cmath>
 
 
-// Definition of the static type spec member
-const TypeSpec Move_mscale::typeSpec(Move_mscale_name);
-
 /** Constructor for parser */
-Move_mscale::Move_mscale( void ) : MoveSimple( getMemberRules() ), lambda( TypeSpec( RealPos_name ) ) {
+Move_mscale::Move_mscale( void ) : MoveSimple( getMemberRules() ), lambda( NULL ) {
 }
 
 
@@ -43,11 +40,28 @@ Move_mscale* Move_mscale::clone( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Move_mscale::getClass() const {
+/** Get class name of object */
+const std::string& Move_mscale::getClassName(void) { 
+    
+    static std::string rbClassName = "Scaling move";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Move_mscale_name ) + MoveSimple::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Move_mscale::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MoveSimple::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Move_mscale::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -58,14 +72,13 @@ const MemberRules& Move_mscale::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
-        TypeSpec varType( RealPos_name );
-        memberRules.push_back( new ValueRule( "variable", varType ) );
+        memberRules.push_back( new ValueRule( "variable", RealPos::getClassTypeSpec() ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules.push_back( new ValueRule( "lambda", RealPos_name ) );
+        memberRules.push_back( new ValueRule( "lambda", RealPos::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -74,16 +87,11 @@ const MemberRules& Move_mscale::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Move_mscale::getTypeSpec(void) const {
-    return typeSpec;
-}
-
 
 /** Return the random variable type appropriate for the move */
 const TypeSpec Move_mscale::getVariableType( void ) const {
 
-    return TypeSpec( RealPos_name );
+    return RealPos::getClassTypeSpec();
 }
 
 
@@ -95,7 +103,7 @@ double Move_mscale::perform( void ) {
 
     // Get relevant values
     StochasticNode*        nodePtr = static_cast<StochasticNode*>( nodes[0] );
-    const RealPos&         l       = static_cast<const RealPos&>( lambda.getValue() );
+    const RealPos&         l       = static_cast<const RealPos&>( lambda->getValue() );
     const RealPos&         curVal  = static_cast<const RealPos&>( nodePtr->getValue() );
 
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)

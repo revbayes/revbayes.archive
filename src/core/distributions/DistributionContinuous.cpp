@@ -53,11 +53,20 @@ const RbLanguageObject& DistributionContinuous::executeOperationSimple( const st
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& DistributionContinuous::getClass( void ) const {
+/** Get class name of object */
+const std::string& DistributionContinuous::getClassName(void) { 
+    
+    static std::string rbClassName = "Distribution on continuous random variable";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( DistributionContinuous_name ) + Distribution::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& DistributionContinuous::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -85,12 +94,12 @@ const MethodTable& DistributionContinuous::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        cdfArgRules->push_back     ( new ValueRule    ( "q", RealPos_name      ) );
+        cdfArgRules->push_back     ( new ValueRule    ( "q", RealPos::getClassTypeSpec()      ) );
 
-        quantileArgRules->push_back( new ValueRule    ( "p", RealPos_name      ) );
+        quantileArgRules->push_back( new ValueRule    ( "p", RealPos::getClassTypeSpec()      ) );
 
-        methods.addFunction( "cdf",      new MemberFunction( Real_name, cdfArgRules      ) );
-        methods.addFunction( "quantile", new MemberFunction( Real_name, quantileArgRules ) );
+        methods.addFunction( "cdf",      new MemberFunction( Real::getClassTypeSpec(), cdfArgRules      ) );
+        methods.addFunction( "quantile", new MemberFunction( Real::getClassTypeSpec(), quantileArgRules ) );
 
         methods.setParentTable( &Distribution::getMethods() );
 

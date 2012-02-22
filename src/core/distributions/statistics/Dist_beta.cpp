@@ -18,6 +18,7 @@
 #include "DAGNode.h"
 #include "Dist_beta.h"
 #include "Move_mscale.h"
+#include "Probability.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbUtil.h"
@@ -33,10 +34,6 @@
 #include <cmath>
 #include <sstream>
 
-
-// Definition of the static type spec member
-const TypeSpec Dist_beta::typeSpec(Dist_beta_name);
-const TypeSpec Dist_beta::varTypeSpec(RealPos_name);
 
 /** Default constructor for parser use */
 Dist_beta::Dist_beta( void ) : DistributionContinuous( getMemberRules() ), alpha( NULL ), beta( NULL ) {
@@ -71,12 +68,30 @@ Dist_beta* Dist_beta::clone( void ) const {
 }
 
 
-/** Get class vector showing type of object */
-const VectorString& Dist_beta::getClass( void ) const {
-
-    static VectorString rbClass = VectorString( Dist_beta_name ) + DistributionContinuous::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Dist_beta::getClassName(void) { 
+    
+    static std::string rbClassName = "Beta distribution";
+    
+	return rbClassName; 
 }
+
+/** Get class type spec describing type of object */
+const TypeSpec& Dist_beta::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Dist_beta::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}
+
 
 /** Get member variable rules */
 const MemberRules& Dist_beta::getMemberRules( void ) const {
@@ -86,8 +101,8 @@ const MemberRules& Dist_beta::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ValueRule( "alpha", RealPos_name) );
-        memberRules.push_back( new ValueRule( "beta",  RealPos_name) );
+        memberRules.push_back( new ValueRule( "alpha", RealPos::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "beta",  RealPos::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -96,15 +111,11 @@ const MemberRules& Dist_beta::getMemberRules( void ) const {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Dist_beta::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get random variable type */
 const TypeSpec& Dist_beta::getVariableType( void ) const {
 
+    static TypeSpec varTypeSpec = Probability::getClassTypeSpec();
+    
     return varTypeSpec;
 }
 
@@ -120,9 +131,9 @@ const TypeSpec& Dist_beta::getVariableType( void ) const {
  */
 double Dist_beta::lnPdf( const RbLanguageObject& value ) const {
 
-    double shape1 = static_cast<const RealPos&>( alpha->getValue() ).getValue();
-    double shape2 = static_cast<const RealPos&>( beta->getValue()  ).getValue();
-    double x      = static_cast<const RealPos&>( value            ).getValue();
+    double shape1 = static_cast<const RealPos&    >( alpha->getValue() ).getValue();
+    double shape2 = static_cast<const RealPos&    >( beta->getValue()  ).getValue();
+    double x      = static_cast<const Probability&>( value            ).getValue();
 
     return RbStatistics::Beta::lnPdf(shape1, shape2, x);
 }
@@ -139,9 +150,9 @@ double Dist_beta::lnPdf( const RbLanguageObject& value ) const {
  */
 double Dist_beta::pdf( const RbLanguageObject& value ) const {
     
-    double shape1 = static_cast<const RealPos&>( alpha->getValue() ).getValue();
-    double shape2 = static_cast<const RealPos&>( beta->getValue()  ).getValue();
-    double x      = static_cast<const RealPos&>( value            ).getValue();
+    double shape1 = static_cast<const RealPos&    >( alpha->getValue() ).getValue();
+    double shape2 = static_cast<const RealPos&    >( beta->getValue()  ).getValue();
+    double x      = static_cast<const Probability&>( value            ).getValue();
 
     return RbStatistics::Beta::pdf(shape1, shape2, x);
 }

@@ -29,8 +29,6 @@
 #include "Workspace.h"
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxBinaryExpr::typeSpec(SyntaxBinaryExpr_name);
 
 /** Static vector of strings giving names of operator types */
 std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", "exp", "lt", "le",
@@ -81,11 +79,28 @@ SyntaxElement* SyntaxBinaryExpr::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxBinaryExpr::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxBinaryExpr::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(SyntaxBinaryExpr_name) + SyntaxElement::getClass();
+    static std::string rbClassName = "Binary expression";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxBinaryExpr::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxBinaryExpr::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -110,12 +125,6 @@ RbVariablePtr SyntaxBinaryExpr::evaluateContent( Environment& env) {
     RbFunction* theFunction = Workspace::globalWorkspace().getFunction(funcName, args);
     
     return RbVariablePtr( new Variable(new DeterministicNode( theFunction ) ) );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxBinaryExpr::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

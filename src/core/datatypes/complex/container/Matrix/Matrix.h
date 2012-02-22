@@ -42,7 +42,6 @@ class VectorInteger;
  * represent the values internally, these
  * functions are declared as abstract here.
  */
-const std::string Matrix_name = "Matrix";
 
 class Matrix : public Vector {
 
@@ -51,9 +50,9 @@ class Matrix : public Vector {
 
         // Basic utility functions you have to override
         virtual Matrix*                 clone(void) const = 0;                                              //!< Clone object
-        virtual const VectorString&     getClass(void) const;                                               //!< Get class
+        static const std::string&       getClassName(void);                                                 //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                             //!< Get class type spec
         virtual void                    printValue(std::ostream& o) const = 0;                              //!< Print value for user
-        virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
    
         // Matrix functions you have to override
         virtual const RbObject&         getElement(size_t row, size_t col) const = 0;                       //!< Get element or subcontainer
@@ -67,8 +66,8 @@ class Matrix : public Vector {
         size_t                          getNumberOfRows(void) const;                                        //!< Get the number of rows in the matrix
 
     protected:
-                                        Matrix(const std::string& elemType);                                //!< Set type of elements
-                                        Matrix(const std::string& elemType, const MemberRules& memberRules);//!< Set type of elements
+                                        Matrix(const TypeSpec& elemType);                                   //!< Set type of elements
+                                        Matrix(const TypeSpec& elemType, const MemberRules& memberRules);   //!< Set type of elements
                                         Matrix(const Matrix& m);                                            //!< Copy constructor
 
 };

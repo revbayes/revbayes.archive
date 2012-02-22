@@ -25,11 +25,8 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxFormal::typeSpec(SyntaxFormal_name);
-
 /** Constructor with implicit type */
-SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElement(), argType(new TypeSpec(RbObject_name)), label(id), defaultExpr(defaultVal) {
+SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElement(), argType(new TypeSpec(RbObject::getClassTypeSpec())), label(id), defaultExpr(defaultVal) {
     
     // Make argument rule from element
     if (defaultExpr == NULL)
@@ -136,12 +133,28 @@ const RbString* SyntaxFormal::getLabel(void) const {
 }
 
 
-
-/** Get class vector describing type of object */
-const VectorString& SyntaxFormal::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxFormal::getClassName(void) { 
     
-    static VectorString rbClass = VectorString(SyntaxFormal_name) + SyntaxElement::getClass();
+    static std::string rbClassName = "Argument specification";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxFormal::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxFormal::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -149,12 +162,6 @@ const VectorString& SyntaxFormal::getClass(void) const {
 RbVariablePtr SyntaxFormal::evaluateContent( Environment& env ) {
 
     return RbVariablePtr( NULL );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxFormal::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

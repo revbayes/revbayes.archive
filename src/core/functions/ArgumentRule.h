@@ -28,19 +28,17 @@
 
 class DAGNode;
 class RbObject;
-class VectorString;
-
-const std::string ArgumentRule_name = "argument rule";
 
 class ArgumentRule : public RbInternal {
 
     public:
         // Basic utility functions
         virtual ArgumentRule*       clone(void) const { return new ArgumentRule(*this); }                                               //!< Clone object
-        virtual const VectorString& getClass(void) const;                                                                               //!< Get class vector
+        static const std::string&   getClassName(void);                                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                                             //!< Get class type spec
         virtual const TypeSpec&     getTypeSpec(void) const;                                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
-        std::string                 richInfo(void) const;                                                                               //!< General info on object
+        std::string                 debugInfo(void) const;                                                                              //!< General info on object
 
         // ArgumentRule functions
         const std::string&          getArgumentLabel(void) const;                                                                       //!< Get label of argument
@@ -49,7 +47,7 @@ class ArgumentRule : public RbInternal {
         const Variable&             getDefaultVariable(void) const;                                                                     //!< Get default argument
         Variable&                   getDefaultVariable(void);                                                                           //!< Get default argument (non-const to return non-const variable)
         bool                        hasDefault(void) const;                                                                             //!< Has default?
-        virtual bool                isArgumentValid(const DAGNode* var, bool& needsConversion) const;                                   //!< Is var valid argument?
+        virtual bool                isArgumentValid(const RbVariablePtr& var, bool convert = false) const;                              //!< Is var valid argument?
 
     protected:
                                     ArgumentRule(const std::string& argName, RbLanguageObject *defValue);                               //!< Constructor of rule from default value
@@ -60,9 +58,7 @@ class ArgumentRule : public RbInternal {
         std::string                 label;                                                                                              //!< Label of argument
         VariableSlot                argSlot;                                                                                            //!< Slot with typespec and possibly default value
         bool                        hasDefaultVal;                                                                                      //!< Has default (which can be NULL) ?
-    
-    private:
-        static const TypeSpec       typeSpec;
+
 };
 
 #endif

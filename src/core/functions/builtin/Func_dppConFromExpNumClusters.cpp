@@ -35,9 +35,6 @@
 #include <cassert>
 #include <cmath>
 
-// Definition of the static type spec member
-const TypeSpec Func_dppConFromExpNumClusters::typeSpec(Func_dppConFromExpNumClusters_name);
-const TypeSpec Func_dppConFromExpNumClusters::returnTypeSpec(RbVoid_name);
 
 /** Clone object */
 Func_dppConFromExpNumClusters* Func_dppConFromExpNumClusters::clone( void ) const {
@@ -66,8 +63,8 @@ const ArgumentRules& Func_dppConFromExpNumClusters::getArgumentRules( void ) con
 	
     if ( !rulesSet ) {
 		
-        argumentRules.push_back( new ValueRule( "clusters", RealPos_name ) );
-        argumentRules.push_back( new ValueRule( "number", RealPos_name ) );
+        argumentRules.push_back( new ValueRule( "clusters", RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "number",   RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
 	
@@ -75,23 +72,35 @@ const ArgumentRules& Func_dppConFromExpNumClusters::getArgumentRules( void ) con
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_dppConFromExpNumClusters::getClass( void ) const {
-	
-    static VectorString rbClass = VectorString( Func_dppConFromExpNumClusters_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Func_dppConFromExpNumClusters::getClassName(void) { 
+    
+    static std::string rbClassName = "DPP concentration parameter calculation function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_dppConFromExpNumClusters::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_dppConFromExpNumClusters::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_dppConFromExpNumClusters::getReturnType( void ) const {
-	
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_dppConFromExpNumClusters::getTypeSpec(void) const {
-    return typeSpec;
 }
 

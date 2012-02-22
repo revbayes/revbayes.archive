@@ -29,9 +29,7 @@
 
 class Argument;
 class ArgumentRule;
-class RbObject;
 
-const std::string FunctionTable_name = "Function Table";
 
 class FunctionTable : public RbInternal {
 
@@ -47,7 +45,8 @@ class FunctionTable : public RbInternal {
         virtual std::string                     debugInfo(void) const;                                                                  //!< Brief info to string
         virtual FunctionTable*                  clone(void) const { return new FunctionTable(*this); }                                  //!< Clone object
         virtual const TypeSpec&                 getTypeSpec(void) const;                                                                //!< Get language type of the object
-        virtual const VectorString&             getClass() const;                                                                       //!< Get class vector
+        static const std::string&               getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                                             //!< Get class type spec
         void                                    printValue(std::ostream& o) const;                                                      //!< Print table for user
 
         // FunctionTable functions
@@ -68,9 +67,6 @@ class FunctionTable : public RbInternal {
         // Member variables
         std::multimap<std::string, RbFunction* >  table;                                                                                //!< Table of functions
         const FunctionTable*                    parentTable;                                                                            //!< Enclosing table
-    
-    private:
-        static const TypeSpec       typeSpec;
 
 };
 

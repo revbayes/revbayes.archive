@@ -29,9 +29,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxUnaryExpr::typeSpec(SyntaxUnaryExpr_name);
-
 /** Static vector of strings giving names of operator types */
 std::string SyntaxUnaryExpr::opCode[] = { "uminus", "uplus", "unot" };
 
@@ -79,11 +76,28 @@ SyntaxUnaryExpr* SyntaxUnaryExpr::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxUnaryExpr::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxUnaryExpr::getClassName(void) { 
+    
+    static std::string rbClassName = "Unary expression";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(SyntaxUnaryExpr_name) + SyntaxElement::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxUnaryExpr::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxUnaryExpr::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -101,12 +115,6 @@ RbVariablePtr SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Return new function node
     return RbVariablePtr( new Variable( new DeterministicNode(func) ) );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxUnaryExpr::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

@@ -24,9 +24,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxLabeledExpr::typeSpec(SyntaxLabeledExpr_name);
-
 /** Constructor from label and expression */
 SyntaxLabeledExpr::SyntaxLabeledExpr(RbString* id, SyntaxElement* expr) : SyntaxElement(), label(id), expression(expr) {
 }
@@ -70,11 +67,29 @@ SyntaxLabeledExpr* SyntaxLabeledExpr::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxLabeledExpr::getClass(void) const { 
 
-    static VectorString rbClass = VectorString(SyntaxLabeledExpr_name) + SyntaxElement::getClass();
+/** Get class name of object */
+const std::string& SyntaxLabeledExpr::getClassName(void) { 
+    
+    static std::string rbClassName = "Labeled expression";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxLabeledExpr::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxLabeledExpr::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -82,12 +97,6 @@ const VectorString& SyntaxLabeledExpr::getClass(void) const {
 RbVariablePtr SyntaxLabeledExpr::evaluateContent( Environment& env ) {
 
     return RbVariablePtr( NULL );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxLabeledExpr::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

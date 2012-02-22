@@ -28,8 +28,6 @@
 class DAGNode;
 class VectorString;
 
-const std::string ConstructorFunction_name = "constructor function";
-
 class ConstructorFunction :  public RbFunction {
 
     public:
@@ -42,13 +40,13 @@ class ConstructorFunction :  public RbFunction {
 
         // Basic utility functions
         ConstructorFunction*                    clone(void) const;                                                              //!< Clone the object
-        const VectorString&                     getClass(void) const;                                                           //!< Get class vector
+        static const std::string&               getClassName(void);                                                             //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Regular functions
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
-        const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
 
 	protected:
         const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function
@@ -58,11 +56,6 @@ class ConstructorFunction :  public RbFunction {
         MemberObject*                           templateObject;                                                                 //!< The template object
         MemberObject*                           copyObject;
     
-    private:
-        static const TypeSpec                   typeSpec;
-
-        // Arguments
-
 };
 
 #endif

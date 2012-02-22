@@ -21,9 +21,6 @@
 #include <ostream>
 #include <string>
 
-class VectorString;
-
-const std::string RealPos_name = "+Real";
 
 class RealPos : public Real {
 
@@ -35,17 +32,14 @@ class RealPos : public Real {
                                         RealPos(bool x);                        //!< Construct from bool
 
         // Basic utility functions
-        virtual std::string             briefInfo(void) const;                  //!< Brief info about the object
         virtual RealPos*                clone(void) const;                      //!< Clone object
-        virtual const VectorString&     getClass(void) const;                   //!< Get class vector
+        static const std::string&       getClassName(void);                     //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                //!< Get language type of the object
-        virtual std::string             richInfo(void) const;                   //!< Complete info about object
 
         // Setter disallowing nonpositive values
         virtual void                    setValue(double x);                     //!< Set value
     
-    private:
-        static const TypeSpec           typeSpec;
 };
 
 #endif

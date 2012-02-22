@@ -21,8 +21,6 @@
 #define PASSED 1
 #define NOT_CHECKED 2
 
-const std::string Trace_name = "Trace";
-
 class Trace : public MemberObject {
     public:
     
@@ -33,8 +31,9 @@ class Trace : public MemberObject {
     ~Trace();
     
     // overloaded functions from RbObject
-    MemberObject*               clone(void) const;                                              //!< Clone object
-    const VectorString&         getClass(void) const;                                           //!< Get class vector
+    Trace*                      clone(void) const;                                              //!< Clone object
+    static const std::string&   getClassName(void);                                             //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
     void                        printValue(std::ostream& o) const;                              //!< Print value for user
     XmlElement*                 encode(XmlDocument* doc, const std::string& name);
@@ -88,7 +87,6 @@ class Trace : public MemberObject {
     
 
 private:
-    static const TypeSpec   typeSpec;
     
     std::vector<double>     values;                                     //!< the values of this trace
     

@@ -27,12 +27,10 @@
 
 class RbFunction;
 
-const std::string DeterministicNode_name = "Deterministic Node";
-
 class DeterministicNode : public VariableNode {
 
 public:
-                                            DeterministicNode(const std::string& valType);                      //!< Constructor from type
+                                            DeterministicNode( void );                                          //!< Constructor
                                             DeterministicNode(RbFunction* func);                                //!< Constructor with function
                                             DeterministicNode(const DeterministicNode& x);                      //!< Copy Constructor
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
@@ -48,7 +46,8 @@ public:
     // Utility functions you have to override
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node
     std::string                             debugInfo(void) const;                                              //!< Complete info about object
-    const VectorString&                     getClass(void) const;                                               //!< Get class vector
+    static const std::string&               getClassName(void);                                                         //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
     const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
 

@@ -34,7 +34,8 @@ class Func_unique :  public RbFunction {
 public:
 	// Basic utility functions
 	Func_unique*                clone(void) const;                                  //!< Clone the object
-	const VectorString&         getClass(void) const;                               //!< Get class vector
+    static const std::string&   getClassName(void);                                 //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
@@ -46,7 +47,6 @@ protected:
     void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
     
 private:
-    static const TypeSpec       typeSpec;
     
     // Arguments
     RbVariablePtr               value;
@@ -58,11 +58,6 @@ private:
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-
-
-// Definition of the static type spec member
-template <typename valType>
-const TypeSpec Func_unique<valType>::typeSpec("Func_unique", new TypeSpec(valType().getType()));
 
 
 /** Clone object */
@@ -105,14 +100,33 @@ const ArgumentRules& Func_unique<valType>::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-template <typename valType>
-const VectorString& Func_unique<valType>::getClass( void ) const {
+/** Get class name of object */
+template <typename firstValType>
+const std::string& Func_unique<firstValType>::getClassName(void) { 
     
-    static std::string  rbName  = "Func_unique<" + valType().getType() + ">"; 
-    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+    static std::string rbClassName = "Func_unique<" + firstValType().getType() + ">";
     
-    return rbClass;
+	return rbClassName; 
+}
+
+
+/** Get class type spec describing type of object */
+template <typename firstValType>
+const TypeSpec& Func_unique<firstValType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+
+/** Get type spec */
+template <typename firstValType>
+const TypeSpec& Func_unique<firstValType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -121,14 +135,6 @@ template <typename valType>
 const TypeSpec& Func_unique<valType>::getReturnType( void ) const {
 	
     return valType().getTypeSpec();
-}
-
-
-/** Get return type */
-template <typename valType>
-const TypeSpec& Func_unique<valType>::getTypeSpec( void ) const {
-    
-    return typeSpec;
 }
 
 

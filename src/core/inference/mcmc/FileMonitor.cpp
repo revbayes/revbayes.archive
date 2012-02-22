@@ -28,9 +28,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec FileMonitor::typeSpec(FileMonitor_name);
-
 /** Constructor */
 FileMonitor::FileMonitor(void) : Monitor(getMemberRules() ),
     filename( NULL ),
@@ -57,11 +54,28 @@ FileMonitor* FileMonitor::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& FileMonitor::getClass() const {
+/** Get class name of object */
+const std::string& FileMonitor::getClassName(void) { 
+    
+    static std::string rbClassName = "File monitor";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(FileMonitor_name) + ConstantMemberObject::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& FileMonitor::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& FileMonitor::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 /** Return member rules */
@@ -72,21 +86,15 @@ const MemberRules& FileMonitor::getMemberRules( void ) const {
     
     if (!rulesSet) 
     {
-        memberRules.push_back( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) );
-        memberRules.push_back( new ValueRule( "printgen"  , TypeSpec(Integer_name),  new Integer(1)    ) );
-        memberRules.push_back( new ValueRule( "separator" , TypeSpec(RbString_name), new RbString("\t") ) );
-        memberRules.push_back( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) );
-        memberRules.push_back( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) );
+        memberRules.push_back( new ValueRule( "filename"  , RbString::getClassTypeSpec()         ) );
+        memberRules.push_back( new ValueRule( "printgen"  , Integer::getClassTypeSpec(),  new Integer(1)    ) );
+        memberRules.push_back( new ValueRule( "separator" , RbString::getClassTypeSpec(), new RbString("\t") ) );
+        memberRules.push_back( new ValueRule( "variable"  , RbLanguageObject::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis (               RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
     return memberRules;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& FileMonitor::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

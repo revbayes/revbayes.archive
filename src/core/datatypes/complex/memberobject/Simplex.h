@@ -38,7 +38,6 @@
  * is also implemented to give the RevBayes source code access to element
  * values, but not references.
  */
-const std::string Simplex_name = "Simplex";
 
 class Simplex : public VectorRealPos {
 
@@ -54,7 +53,8 @@ public:
 
     // Basic utility functions
     Simplex*                    clone(void) const;                                          //!< Clone object
-    const VectorString&         getClass(void) const;                                       //!< Get class
+    static const std::string&   getClassName(void);                                         //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
     void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
 
@@ -65,7 +65,6 @@ public:
 
 private:
     void                        rescale(void);                                              //!< Rescale the simplex
-    static const TypeSpec       typeSpec;
 
 };
 

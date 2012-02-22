@@ -26,9 +26,6 @@
 
 class VectorString;
 
-
-const std::string MutableMemberObject_name = "mutable MemberObject";
-
 class MutableMemberObject : public MemberObject {
     
 public:
@@ -36,7 +33,8 @@ public:
     
     // Basic utility functions you have to override
     virtual MutableMemberObject*    clone(void) const = 0;                                                              //!< Clone object
-    virtual const VectorString&     getClass(void) const;                                                               //!< Get class vector
+    static const std::string&       getClassName(void);                                                                 //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                                                             //!< Get class type spec
     
     // Basic utility functions you may want to override
     virtual void                    printValue(std::ostream& o) const;                                                  //!< Print value for user

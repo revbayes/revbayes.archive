@@ -71,11 +71,20 @@ int Categorical::convertSymbolToState( char c ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Categorical::getClass() const {
+/** Get class name of object */
+const std::string& Categorical::getClassName(void) { 
+    
+    static std::string rbClassName = "Categorical";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Categorical_name ) + RbLanguageObject::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Categorical::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
@@ -86,7 +95,7 @@ const MemberRules& Categorical::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule( "state"  , Integer_name ) );
+        memberRules.push_back( new ValueRule( "state"  , Integer::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

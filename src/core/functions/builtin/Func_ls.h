@@ -22,14 +22,14 @@
 
 #include "RbFunction.h"
 
-const std::string Func_ls_name = "Ls function";
 
 class Func_ls :  public RbFunction {
 
     public:
         // Basic utility functions
         Func_ls*                    clone(void) const;                                  //!< Clone object
-        const VectorString&         getClass(void) const;                               //!< Get class vector
+        static const std::string&   getClassName(void);                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 
         // Func_ls functions
@@ -41,8 +41,6 @@ class Func_ls :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
 
         // arguments
         RbVariablePtr               all;

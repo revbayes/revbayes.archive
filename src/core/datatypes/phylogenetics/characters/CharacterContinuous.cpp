@@ -20,9 +20,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec CharacterContinuous::typeSpec(CharacterContinuous_name);
-
 /** Default constructor */
 CharacterContinuous::CharacterContinuous(void) : Character() {
 
@@ -80,16 +77,27 @@ CharacterContinuous* CharacterContinuous::clone(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& CharacterContinuous::getClass(void) const {
-
-    static VectorString rbClass = VectorString( CharacterContinuous_name ) + Character::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& CharacterContinuous::getClassName(void) { 
+    
+    static std::string rbClassName = "Continuous character";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& CharacterContinuous::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Character::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& CharacterContinuous::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& CharacterContinuous::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 

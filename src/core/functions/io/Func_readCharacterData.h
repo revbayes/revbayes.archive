@@ -65,14 +65,14 @@ class VectorString;
  * Note that some data formats do not support interleaving of data (such as Fasta) or reading of certain data types, so
  * the table is unlikely to complete with Yes's (Y) in all of the cells.
  */
-const std::string Func_readAlignment_name = "Read alignment function";
 
 class Func_readCharacterData :  public RbFunction {
     
     public:
         // Basic utility functions
         Func_readCharacterData*     clone(void) const;                                                      //!< Clone the object
-        const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        static const std::string&   getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
@@ -85,9 +85,6 @@ class Func_readCharacterData :  public RbFunction {
 
     private:
         void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
-
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
 
         // Arguments
         RbVariablePtr               filename;

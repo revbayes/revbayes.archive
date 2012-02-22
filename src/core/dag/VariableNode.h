@@ -25,8 +25,6 @@ class VectorString;
 
 #include <set>
 
-const std::string VariableNode_name = "Variable node";
-
 class VariableNode : public DAGNode {
 
 public:
@@ -34,7 +32,8 @@ public:
 
     // Utility functions you have to override
     virtual VariableNode*                       clone(void) const = 0;                                                          //!< Clone this node
-    virtual const VectorString&                 getClass(void) const;                                                           //!< Get DAG node class 
+    static const std::string&                   getClassName(void);                                                             //!< Get class name
+    static const TypeSpec&                      getClassTypeSpec(void);                                                         //!< Get class type spec
     virtual const RbLanguageObject&             getStoredValue(void) const = 0;                                                 //!< Get stored value
     virtual const RbLanguageObject&             getValue(void) const = 0;                                                       //!< Get value (const)
     virtual RbLanguageObject&                   getValue(void) = 0;                                                             //!< Get value (non-const)
@@ -55,8 +54,8 @@ public:
     virtual void                                swapParentNode( DAGNode* oldP, DAGNode* newP) = 0;                              //!< Swap a parent node
 
 protected:
-    VariableNode(const std::string& valType);                                                                       //!< Constructor of empty node
-    VariableNode(const VariableNode &v);                                                                            //!< Copy Constructor
+    VariableNode( void );                                                                                                       //!< Constructor of empty node
+    VariableNode(const VariableNode &v);                                                                                        //!< Copy Constructor
 
 //    virtual void                                getAffected(std::set<DAGNode*>& affected) = 0;                    //!< Mark and get affected nodes
 

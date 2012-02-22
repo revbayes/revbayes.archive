@@ -25,10 +25,6 @@
 #include "RandomNumberFactory.h"
 #include "MoveSimple.h"
 
-class Real;
-class RbObject;
-
-const std::string Move_mscale_name = "mscale move";
 
 class Move_mscale : public MoveSimple {
 
@@ -37,7 +33,8 @@ class Move_mscale : public MoveSimple {
 
         // Basic utility functions
         Move_mscale*                clone(void) const;                                                      //!< Clone object
-        const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        static const std::string&   getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable inits
@@ -48,12 +45,9 @@ class Move_mscale : public MoveSimple {
 
 	protected:
         double                      perform(void);                                                          //!< Perform move
-    
-    private:
-        static const TypeSpec       typeSpec;
 
         // parameters
-        Variable                    lambda;
+        RbVariablePtr               lambda;
 };
 
 #endif

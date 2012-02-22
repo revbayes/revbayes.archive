@@ -35,9 +35,6 @@
 
 
 
-// Definition of the static type spec member
-const TypeSpec Natural::typeSpec(Natural_name);
-
 /** Default constructor */
 Natural::Natural( void ) : Integer( 0 ) {
 }
@@ -57,7 +54,7 @@ Natural::Natural( bool x ) : Integer() {
 Natural::Natural( int x ) : Integer() {
 
     if ( x < 0 )
-        throw RbException( "Negative value for " + Natural_name );
+        throw RbException( "Negative value for " + getClassName() );
 
     value = x;
 }
@@ -74,7 +71,7 @@ Natural::Natural( unsigned int x ) : Integer() {
 Natural::Natural( unsigned long x) : Integer() {
 
     if ( x > INT_MAX )
-        throw RbException( "Value out of range for " + Natural_name );
+        throw RbException( "Value out of range for " + getClassName() );
 
     value = int(x);
 }
@@ -84,7 +81,7 @@ Natural::Natural( unsigned long x) : Integer() {
 Natural::Natural( const Integer& x ) : Integer() {
 
     if ( x.getValue() < 0 )
-        throw RbException( "Negative value for " + Natural_name );
+        throw RbException( "Negative value for " + getClassName() );
 
     value = x.getValue();
 }
@@ -100,15 +97,6 @@ Natural::Natural( const RbBoolean& x) : Integer() {
 }
 
 
-/** Get brief info about object */
-std::string Natural::briefInfo( void ) const {
-
-	std::ostringstream o;
-    printValue( o );
-
-    return o.str();
-}
-
 /** Clone object */
 Natural* Natural::clone( void ) const {
 
@@ -119,83 +107,94 @@ Natural* Natural::clone( void ) const {
 /** Convert to type. The caller manages the returned object. */
 RbObject* Natural::convertTo( const TypeSpec& type ) const {
 
-    if ( type == RbBoolean_name )
+    if ( type == RbBoolean::getClassTypeSpec() )
         return new RbBoolean( value == 0 );
 
-    if ( type == Real_name )
+    if ( type == Real::getClassTypeSpec() )
         return new Real( value );
 
-    if ( type == RealPos_name )
+    if ( type == RealPos::getClassTypeSpec() )
         return new RealPos( value );
 
-    if ( type == RbString_name ) {
+    if ( type == RbString::getClassTypeSpec() ) {
 
         std::ostringstream o;
         printValue( o );
         return new RbString( o.str() );
     }
 
-    if ( type == VectorNatural_name )
+    if ( type == VectorNatural::getClassTypeSpec() )
         return new VectorNatural( value );
 
-    if ( type == VectorInteger_name )
+    if ( type == VectorInteger::getClassTypeSpec() )
         return new VectorInteger( value );
 
-    if ( type == VectorBoolean_name )
+    if ( type == VectorBoolean::getClassTypeSpec() )
         return new VectorBoolean( value == 0 );
 
-    if ( type == VectorReal_name )
+    if ( type == VectorReal::getClassTypeSpec() )
         return new VectorReal( value );
 
-    if ( type == VectorRealPos_name )
+    if ( type == VectorRealPos::getClassTypeSpec() )
         return new VectorRealPos( value );
 
     return Integer::convertTo( type );
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Natural::getClass() const {
-
-    static VectorString rbClass = VectorString(Natural_name) + Integer::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Natural::getClassName(void) { 
+    
+    static std::string rbClassName = "Natural";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& Natural::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Integer::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Natural::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& Natural::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
 
-/** Is convertible to type and dim? */
+/** Is convertible to type? */
 bool Natural::isConvertibleTo( const TypeSpec& type ) const {
 
-    if ( type == RbBoolean_name )
+    if ( type == RbBoolean::getClassTypeSpec() )
         return true;
 
-    if ( type == Real_name )
+    if ( type == Real::getClassTypeSpec() )
         return true;
 
-    if ( type == RealPos_name )
+    if ( type == RealPos::getClassTypeSpec() )
         return true;
 
-    if ( type == RbString_name )
+    if ( type == RbString::getClassTypeSpec() )
         return true;
 
-    if ( type == VectorNatural_name )
+    if ( type == VectorNatural::getClassTypeSpec() )
         return true;
 
-    if ( type == VectorInteger_name )
+    if ( type == VectorInteger::getClassTypeSpec() )
         return true;
 
-    if ( type == VectorBoolean_name )
+    if ( type == VectorBoolean::getClassTypeSpec() )
         return true;
 
-    if ( type == VectorReal_name )
+    if ( type == VectorReal::getClassTypeSpec() )
         return true;
 
-    if ( type == VectorRealPos_name )
+    if ( type == VectorRealPos::getClassTypeSpec() )
         return true;
 
     return Integer::isConvertibleTo( type );
@@ -209,23 +208,11 @@ void Natural::printValue( std::ostream &o ) const {
 }
 
 
-/** Get complete info about object */
-std::string Natural::richInfo( void ) const {
-
-	std::ostringstream o;
-    o << "Natural(";
-    printValue( o );
-	o << ")";
-
-    return o.str();
-}
-
-
 /** Set value from int */
 void Natural::setValue( int x ) {
 
     if ( x < 0 )
-        throw RbException( "Negative value for " + Natural_name );
+        throw RbException( "Negative value for " + getClassName() );
 
     value = x;
 }
@@ -235,7 +222,7 @@ void Natural::setValue( int x ) {
 void Natural::setValue( unsigned int x ) {
 
     if ( x > INT_MAX )
-        throw RbException( "Value out of range for " + Natural_name );
+        throw RbException( "Value out of range for " + getClassName() );
 
     value = x;
 }
@@ -245,7 +232,7 @@ void Natural::setValue( unsigned int x ) {
 void Natural::setValue( size_t x ) {
     
     if ( x > INT_MAX )
-        throw RbException( "Value out of range for " + Natural_name );
+        throw RbException( "Value out of range for " + getClassName() );
     
     value = (unsigned int)x;
 }

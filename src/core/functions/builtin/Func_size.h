@@ -35,7 +35,8 @@ class Func_size :  public RbFunction {
 public:
 	// Basic utility functions
 	Func_size*                  clone(void) const;                                  //!< Clone the object
-	const VectorString&         getClass(void) const;                               //!< Get class vector
+    static const std::string&   getClassName(void);                                 //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
@@ -47,8 +48,6 @@ protected:
     void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
 private:
-    static const TypeSpec       typeSpec;
-    static const TypeSpec       returnTypeSpec;
     
     // Arguments
     RbVariablePtr               value;
@@ -64,12 +63,6 @@ private:
 #include "TypeSpec.h"
 #include "ValueRule.h"
 
-
-// Definition of the static type spec member
-template <typename valType>
-const TypeSpec Func_size<valType>::typeSpec(Func_size_name, new TypeSpec(valType().getType()));
-template <typename valType>
-const TypeSpec Func_size<valType>::returnTypeSpec(Natural_name);
 
 
 /** Clone object */
@@ -108,30 +101,43 @@ const ArgumentRules& Func_size<valType>::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-template <typename valType>
-const VectorString& Func_size<valType>::getClass( void ) const {
+/** Get class name of object */
+template <typename firstValType>
+const std::string& Func_size<firstValType>::getClassName(void) { 
     
-    static std::string  rbName  = "Func_size<" + valType().getType() + ">"; 
-    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+    static std::string rbClassName = "Func_size<" + firstValType().getType() + ">";
     
-    return rbClass;
+	return rbClassName; 
 }
 
 
-/** Get return type */
-template <typename valType> 
-const TypeSpec& Func_size<valType>::getReturnType( void ) const {
-	
-    return returnTypeSpec;
+/** Get class type spec describing type of object */
+template <typename firstValType>
+const TypeSpec& Func_size<firstValType>::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
 }
 
 
-/** Get return type */
-template <typename valType>
-const TypeSpec& Func_size<valType>::getTypeSpec( void ) const {
+/** Get type spec */
+template <typename firstValType>
+const TypeSpec& Func_size<firstValType>::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+
+/** Get return type */
+template <typename firstValType>
+const TypeSpec& Func_size<firstValType>::getReturnType( void ) const {
+    
+    static TypeSpec returnTypeSpec = Natural::getClassTypeSpec();
+    
+    return returnTypeSpec;
 }
 
 

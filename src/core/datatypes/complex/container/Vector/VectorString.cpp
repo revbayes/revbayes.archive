@@ -26,23 +26,20 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec VectorString::typeSpec(VectorString_name);
-
 /** Construct empty string vector */
-VectorString::VectorString(void) : AbstractVector(RbString_name) {
+VectorString::VectorString(void) : AbstractVector(RbString::getClassTypeSpec()) {
 }
 
 
 /** Construct vector with one string x */
-VectorString::VectorString(const std::string& x) : AbstractVector(RbString_name) {
+VectorString::VectorString(const std::string& x) : AbstractVector(RbString::getClassTypeSpec()) {
 
     elements.push_back( x );
 }
 
 
 /** Constructor from std::string vector */
-VectorString::VectorString(const std::vector<std::string>& x) : AbstractVector(RbString_name) {
+VectorString::VectorString(const std::vector<std::string>& x) : AbstractVector(RbString::getClassTypeSpec()) {
 
     elements = x;
 }
@@ -135,11 +132,31 @@ VectorString* VectorString::clone() const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& VectorString::getClass() const {
 
-    static VectorString rbClass = VectorString(VectorString_name) + AbstractVector::getClass();
-    return rbClass;
+
+/** Get class name of object */
+const std::string& VectorString::getClassName(void) { 
+    
+    static std::string rbClassName = "String Vector";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& VectorString::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractVector::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+
+/** Get type spec */
+const TypeSpec& VectorString::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -165,12 +182,6 @@ RbObject& VectorString::getElement(size_t index) {
 }
 
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& VectorString::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /** Get STL vector of strings */
 std::vector<std::string> VectorString::getValue(void) const {	 
 
@@ -192,15 +203,15 @@ void VectorString::pop_front(void) {
 /** Push an int onto the back of the vector after checking */
 void VectorString::push_back( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
+    if ( x->isTypeSpec( RbString::getClassTypeSpec() ) ) {
         elements.push_back(static_cast<RbString*>( x )->getValue() );
-    } else if ( x->isConvertibleTo(RbString_name) ) {
-        elements.push_back(static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
+    } else if ( x->isConvertibleTo(RbString::getClassTypeSpec()) ) {
+        elements.push_back(static_cast<RbString*>(x->convertTo(RbString::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RbString_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RbString::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -215,15 +226,15 @@ void VectorString::push_back(const std::string &x) {
 /** Push an int onto the front of the vector after checking */
 void VectorString::push_front( RbObject* x ) {
     
-    if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
+    if ( x->isTypeSpec( RbString::getClassTypeSpec() ) ) {
         elements.insert( elements.begin(), static_cast<RbString*>( x )->getValue());
-    } else if ( x->isConvertibleTo(RbString_name) ) {
-        elements.insert( elements.begin(), static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
+    } else if ( x->isConvertibleTo(RbString::getClassTypeSpec()) ) {
+        elements.insert( elements.begin(), static_cast<RbString*>(x->convertTo(RbString::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RbString_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RbString::getClassName() + "[] with invalid value" );
     }
 }
 
@@ -236,13 +247,13 @@ void VectorString::resize(size_t n) {
 void VectorString::setElement(const size_t index, RbLanguageObject* x) {
     
     // check for type and convert if necessary
-    if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
+    if ( x->isTypeSpec( RbString::getClassTypeSpec() ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<RbString*>( x )->getValue());
-    } else if ( x->isConvertibleTo(RbString_name) ) {
+    } else if ( x->isConvertibleTo(RbString::getClassTypeSpec()) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
@@ -251,12 +262,12 @@ void VectorString::setElement(const size_t index, RbLanguageObject* x) {
         // remove first the old element at the index
         elements.erase(elements.begin()+index);
         
-        elements.insert( elements.begin() + index, static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
+        elements.insert( elements.begin() + index, static_cast<RbString*>(x->convertTo(RbString::getClassTypeSpec()))->getValue());
         // since we own the parameter, we delete the old type
         delete x;
     }
     else {
-        throw RbException( "Trying to set " + RbString_name + "[] with invalid value" );
+        throw RbException( "Trying to set " + RbString::getClassName() + "[] with invalid value" );
     }
 }
 

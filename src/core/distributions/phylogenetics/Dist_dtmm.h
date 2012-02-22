@@ -29,8 +29,6 @@
 class RateMatrix;
 class VectorString;
 
-const std::string Dist_dtmm_name = "Discrete time Markov model distribution";
-
 class Dist_dtmm: public DistributionDiscrete {
     
 public:
@@ -38,7 +36,8 @@ public:
     
     // Basic utility functions
     Dist_dtmm*                      clone(void) const;                                                  //!< Clone object
-    const VectorString&             getClass(void) const;                                               //!< Get class vector
+    static const std::string&       getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&                 getTypeSpec(void) const;                                            //!< Get language type of the object
     
     // Member variable setup
@@ -61,8 +60,6 @@ private:
     RbVariablePtr                   transProbabilityMatrix;
     RbVariablePtr                   initialState;
     
-    static const TypeSpec           typeSpec;
-    static const TypeSpec           varTypeSpec;
 };
 
 #endif

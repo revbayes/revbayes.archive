@@ -24,9 +24,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Probability::typeSpec(Probability_name);
-
 /** Default constructor */
 Probability::Probability( void ) : RealPos( 1.0 ) {
 }
@@ -36,7 +33,7 @@ Probability::Probability( void ) : RealPos( 1.0 ) {
 Probability::Probability( double x ) : RealPos( x ) {
     
     if ( x < 0.0 || x > 1.0)
-        throw RbException( "Creation of " + Probability_name + " with value x=" + x + "outside standard probabilities (0,1)");
+        throw RbException( "Creation of " + getClassName() + " with value x=" + x + "outside standard probabilities (0,1)");
 }
 
 
@@ -44,7 +41,7 @@ Probability::Probability( double x ) : RealPos( x ) {
 Probability::Probability( int x ) : RealPos( x ) {
     
     if ( x < 0 || x > 1)
-        throw RbException( "Creation of " + Probability_name + " with value x=" + x + "outside standard probabilities (0,1)");
+        throw RbException( "Creation of " + getClassName() + " with value x=" + x + "outside standard probabilities (0,1)");
 }
 
 
@@ -52,17 +49,7 @@ Probability::Probability( int x ) : RealPos( x ) {
 Probability::Probability( unsigned int x ) : RealPos( x ) {
     
     if ( x > 1)
-        throw RbException( "Creation of " + Probability_name + " with value x=" + int(x) + "outside standard probabilities (0,1)");
-}
-
-
-/** Get brief info about object */
-std::string Probability::briefInfo( void ) const {
-    
-	std::ostringstream o;
-    printValue( o );
-    
-    return o.str();
+        throw RbException( "Creation of " + getClassName() + " with value x=" + int(x) + "outside standard probabilities (0,1)");
 }
 
 
@@ -73,29 +60,28 @@ Probability* Probability::clone( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Probability::getClass() const {
+/** Get class name of object */
+const std::string& Probability::getClassName(void) { 
     
-    static VectorString rbClass = VectorString( Probability_name ) + RealPos::getClass();
-    return rbClass;
+    static std::string rbClassName = "Probability";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& Probability::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RealPos::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Probability::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& Probability::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
-}
-
-
-/** Get complete info about object */
-std::string Probability::richInfo( void ) const {
-    
-	std::ostringstream o;
-    o << "Prob(";
-    printValue( o );
-	o << ")";
-    
-    return o.str();
 }
 
 
@@ -103,7 +89,7 @@ std::string Probability::richInfo( void ) const {
 void Probability::setValue( double x ) {
     
     if ( x < 0.0 || x > 1.0)
-        throw RbException( "Creation of " + Probability_name + " with value x=" + x + "outside standard probabilities (0,1)");
+        throw RbException( "Creation of " + getClassName() + " with value x=" + x + "outside standard probabilities (0,1)");
     
     RealPos::setValue( x );
 }

@@ -35,10 +35,6 @@
 #include <vector>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_nj::typeSpec(Func_nj_name);
-const TypeSpec Func_nj::returnTypeSpec(TreePlate_name);
-
 /** Clone object */
 Func_nj* Func_nj::clone(void) const {
 
@@ -70,9 +66,9 @@ const ArgumentRules& Func_nj::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "d",     DistanceMatrix_name ) );
-        argumentRules.push_back( new ValueRule( "bionj", RbString_name       ) );
-        argumentRules.push_back( new ValueRule( "ties",  RbString_name       ) );
+        argumentRules.push_back( new ValueRule( "d",     DistanceMatrix::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "bionj", RbString::getClassTypeSpec()       ) );
+        argumentRules.push_back( new ValueRule( "ties",  RbString::getClassTypeSpec()       ) );
         rulesSet = true;
         }
 
@@ -80,25 +76,36 @@ const ArgumentRules& Func_nj::getArgumentRules(void) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_nj::getClass(void) const {
+/** Get class name of object */
+const std::string& Func_nj::getClassName(void) { 
+    
+    static std::string rbClassName = "Neighbor joining function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Func_nj_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Func_nj::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_nj::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
-const TypeSpec& Func_nj::getReturnType(void) const {
-
+const TypeSpec& Func_nj::getReturnType( void ) const {
+    
+    static TypeSpec returnTypeSpec = TreePlate::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_nj::getTypeSpec(void) const {
-
-    return typeSpec;
 }
 
 void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips) {

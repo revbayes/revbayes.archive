@@ -35,29 +35,23 @@ class VariableNode;
 class VectorNatural;
 class VectorString;
 
-
-const std::string DAGNode_name = "DAG Node";
-
 class DAGNode : public RbLanguageObject {
 
     public:
         virtual                                            ~DAGNode(void);                                                          //!< Virtual destructor
-
-        // Basic utility functions you should not override
-        const std::string&                                  getValueType(void) const { return valueTypeSpec.getType(); }            //!< Get value type
-        const TypeSpec&                                     getValueTypeSpec(void) const { return valueTypeSpec; }                  //!< Get value type
-        bool                                                isValueOfTypeSpec(const TypeSpec& typeSp) const;                        //!< Is DAG node of language type typeSpec?
 
         // Basic utility functions you may want to override
         virtual bool                                        isConst(void) const;                                                    //!< Is DAG node const value?
 
         // Basic utility functions you have to override
         virtual DAGNode*                                    clone(void) const = 0;                                                  //!< Clone this node
-        virtual const VectorString&                         getClass(void) const;                                                   //!< Get DAG node class vector
+        static const std::string&                           getClassName(void);                                                     //!< Get DAG node class name
+        static const TypeSpec&                              getClassTypeSpec(void);                                                 //!< Get DAG node class type spec
         virtual const RbLanguageObject&                     getStoredValue(void) const = 0;                                         //!< Get stored value
         virtual const RbLanguageObject&                     getValue(void) const = 0;                                               //!< Get value (const)
         virtual RbLanguageObject&                           getValue(void) = 0;                                                     //!< Get value (non-const)
 //        virtual const RbLanguageObject*                     getValuePtr(void) const = 0;                                            //!< Get value pointer
+        virtual const TypeSpec&                             getTypeSpec(void) const = 0;                                            //!< Get the type spec of the instance
         virtual void                                        printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
     
@@ -90,7 +84,6 @@ class DAGNode : public RbLanguageObject {
 
     protected:
                                                             DAGNode(void);                                                          //!< Constructor of empty node
-                                                            DAGNode(const std::string& valType);                                    //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                              //!< Copy constructor
 
         virtual void                                        getAffected(std::set<StochasticNode* >& affected) = 0;                  //!< Mark and get affected nodes
@@ -108,7 +101,6 @@ class DAGNode : public RbLanguageObject {
         size_t                                              refCount;
 
         // Member value variables
-        TypeSpec                                            valueTypeSpec;                                                          //!< the TypeSpec of the value
         std::string                                         name;                                                                   //!< The name/identifier of the DAG node
 };
 

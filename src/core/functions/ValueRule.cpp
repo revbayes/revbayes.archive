@@ -20,9 +20,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec ValueRule::typeSpec(ValueRule_name);
-
 /** Construct rule based on default value; use "" for no label. */
 ValueRule::ValueRule( const std::string& argName, RbLanguageObject *defVal ) : ArgumentRule( argName, defVal ) {
 }
@@ -46,22 +43,33 @@ ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, DAG
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& ValueRule::getClass( void ) const { 
+/** Get class name of object */
+const std::string& ValueRule::getClassName(void) { 
+    
+    static std::string rbClassName = "Value rule";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( ValueRule_name ) + ArgumentRule::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& ValueRule::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ArgumentRule::getClassTypeSpec() ) );
+    
 	return rbClass; 
 }
 
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& ValueRule::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& ValueRule::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
 
 /** Provide complete information about object */
-std::string ValueRule::richInfo(void) const {
+std::string ValueRule::debugInfo(void) const {
 
     std::ostringstream o;
 

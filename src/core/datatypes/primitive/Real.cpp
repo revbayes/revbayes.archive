@@ -29,9 +29,6 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec Real::typeSpec(Real_name);
-
 /** Default constructor */
 Real::Real(void) : RbLanguageObject(), value(0.0) {
 }
@@ -76,27 +73,38 @@ Real* Real::clone(void) const {
 /** Convert to type. The caller manages the returned object. */
 RbObject* Real::convertTo( const TypeSpec& type ) const {
 
-    if ( type == RbBoolean_name )
+    if ( type == RbBoolean::getClassTypeSpec() )
         return new RbBoolean(value == 0.0);
-    if ( type == RealPos_name && value > 0.0)
+    if ( type == RealPos::getClassTypeSpec() && value > 0.0)
         return new RealPos(value);
-    if ( type == Probability_name && value >= 0.0 && value <= 1.0)
+    if ( type == Probability::getClassTypeSpec() && value >= 0.0 && value <= 1.0)
         return new Probability(value);
 
     return RbLanguageObject::convertTo( type );
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Real::getClass(void) const {
-
-    static VectorString rbClass = VectorString(Real_name) + RbLanguageObject::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& Real::getClassName(void) { 
+    
+    static std::string rbClassName = "Real";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& Real::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Real::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& Real::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -104,12 +112,12 @@ const TypeSpec& Real::getTypeSpec(void) const {
 /** Is convertible to type? */
 bool Real::isConvertibleTo(const TypeSpec& type) const {
 
-    if (type == RbBoolean_name)
+    if (type == RbBoolean::getClassTypeSpec())
         return true;
-//    if (type == RealPos_name && value > 0.0)
-//        return true;
-//    if (type == Probability_name && value >= 0.0 && value <= 1.0)
-//        return true;
+    if (type == RealPos::getClassTypeSpec() && value > 0.0)
+        return true;
+    if (type == Probability::getClassTypeSpec() && value >= 0.0 && value <= 1.0)
+        return true;
 
     return RbLanguageObject::isConvertibleTo(type);
 }
@@ -127,17 +135,6 @@ void Real::printValue(std::ostream &o) const {
 
     o.setf( previousFlags );
     o.precision( previousPrecision );
-}
-
-
-/** Get complete info about object */
-std::string Real::richInfo(void) const {
-
-	std::ostringstream o;
-    o << "Real(";
-    printValue(o);
-	o << ")";
-    return o.str();
 }
 
 

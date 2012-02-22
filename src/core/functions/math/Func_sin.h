@@ -27,14 +27,14 @@
 class DAGNode;
 class VectorString;
 
-const std::string Func_sin_name = "Sin function";
 
 class Func_sin :  public RbFunction {
     
 public:
     // Basic utility functions
     Func_sin*                   clone(void) const;                                          //!< Clone the object
-    const VectorString&         getClass(void) const;                                       //!< Get class vector
+    static const std::string&   getClassName(void);                                         //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
     const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
     
     // Regular functions
@@ -51,8 +51,6 @@ private:
     // Arguments
     RbVariablePtr               x;
     
-    static const TypeSpec       typeSpec;
-    static const TypeSpec       returnTypeSpec;
 };
 
 #endif

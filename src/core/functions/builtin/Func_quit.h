@@ -22,14 +22,13 @@
 
 #include "RbFunction.h"
 
-const std::string Func_quit_name = "Quit function";
-
 class Func_quit :  public RbFunction {
 
     public:
         // Basic utility functions
         Func_quit*                  clone(void) const;                                          //!< Clone object
-        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Func_quit functions
@@ -39,9 +38,6 @@ class Func_quit :  public RbFunction {
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
-    private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       returnTypeSpec;
 };
 
 #endif

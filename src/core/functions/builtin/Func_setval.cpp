@@ -33,10 +33,6 @@
 #include <cassert>
 
 
-// Definition of the static type spec member
-const TypeSpec Func_setval::typeSpec(Func_setval_name);
-const TypeSpec Func_setval::returnTypeSpec(RbVoid_name);
-
 /** Clone object */
 Func_setval* Func_setval::clone( void ) const {
 
@@ -55,7 +51,7 @@ const RbLanguageObject& Func_setval::executeFunction( void ) {
     // remove this node as a child from the parameter node
     for (std::set<VariableNode*>::const_iterator it = theNode->getChildren().begin(); it != theNode->getChildren().end(); it++) {
         // test if the child is a deterministic node
-        if ( (*it)->isType(DeterministicNode_name) ) {
+        if ( (*it)->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
             DeterministicNode* detNode = static_cast<DeterministicNode*>( *it );
             // test the function
             if ( &detNode->getFunction() == this ) {
@@ -89,8 +85,8 @@ const ArgumentRules& Func_setval::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule ( "variable", RbObject_name ) );
-        argumentRules.push_back( new ValueRule ( "value",    RbObject_name ) );
+        argumentRules.push_back( new ValueRule ( "variable", RbObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule ( "value",    RbObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
 
@@ -98,24 +94,36 @@ const ArgumentRules& Func_setval::getArgumentRules( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Func_setval::getClass( void ) const {
+/** Get class name of object */
+const std::string& Func_setval::getClassName(void) { 
+    
+    static std::string rbClassName = "Set value function";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString( Func_setval_name ) + RbFunction::getClass();
-    return rbClass;
+/** Get class type spec describing type of object */
+const TypeSpec& Func_setval::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_setval::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
 /** Get return type */
 const TypeSpec& Func_setval::getReturnType( void ) const {
-
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_setval::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 

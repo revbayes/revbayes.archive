@@ -24,8 +24,6 @@
 #include <vector>
 
 
-const std::string Vector_name = "Vector";
-
 class Vector : public AbstractVector {
 
 public:
@@ -37,7 +35,8 @@ public:
 
     // Basic utility functions you have to override
     Vector*                                         clone(void) const;                                              //!< Clone object
-    const VectorString&                             getClass(void) const;                                           //!< Get class
+    static const std::string&                       getClassName(void);                                             //!< Get class name
+    static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
     virtual const TypeSpec&                         getTypeSpec(void) const;                                        //!< Get language type of the object
     void                                            printValue(std::ostream& o) const;                              //!< Print value for user
     

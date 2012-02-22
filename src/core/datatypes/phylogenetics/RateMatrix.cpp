@@ -45,9 +45,6 @@
 #include <iomanip>
 
 
-// Definition of the static type spec member
-const TypeSpec RateMatrix::typeSpec(RateMatrix_name);
-
 /** Constructor passes member rules and method inits to base class */
 RateMatrix::RateMatrix(void) : MemberObject(getMemberRules()) {
 
@@ -135,7 +132,7 @@ RateMatrix& RateMatrix::operator=(const RateMatrix &r) {
 const VectorReal& RateMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates.getValue() )
-        throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
+        throw RbException( "Index to " + getClassName() + "[][] out of bounds" );
     return (*theRateMatrix)[i];
 }
 
@@ -144,7 +141,7 @@ const VectorReal& RateMatrix::operator[]( const size_t i ) const {
 VectorReal& RateMatrix::operator[]( const size_t i ) {
 
     if ( i >= numStates.getValue() )
-        throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
+        throw RbException( "Index to " + getClassName() + "[][] out of bounds" );
     return (*theRateMatrix)[i];
 }
 
@@ -319,16 +316,27 @@ const RbLanguageObject& RateMatrix::executeOperationSimple(const std::string& na
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& RateMatrix::getClass(void) const {
-
-    static VectorString rbClass = VectorString(RateMatrix_name) + MemberObject::getClass();
-    return rbClass;
+/** Get class name of object */
+const std::string& RateMatrix::getClassName(void) { 
+    
+    static std::string rbClassName = "Rate matrix";
+    
+	return rbClassName; 
 }
 
+/** Get class type spec describing type of object */
+const TypeSpec& RateMatrix::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
 
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& RateMatrix::getTypeSpec(void) const {
+/** Get type spec */
+const TypeSpec& RateMatrix::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
     return typeSpec;
 }
 
@@ -370,10 +378,10 @@ const MethodTable& RateMatrix::getMethods(void) const {
     if ( methodsSet == false ) 
         {
         
-        methods.addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
-        methods.addFunction("stationaryfreqs", new MemberFunction(Simplex_name, stationaryfreqsArgRules) );
-        methods.addFunction("averate",         new MemberFunction(RealPos_name, averateArgRules)         );
-        methods.addFunction("reversible",      new MemberFunction(RbBoolean_name, reversibleArgRules)    );
+        methods.addFunction("nstates",         new MemberFunction(Natural::getClassTypeSpec(), nstatesArgRules)         );
+        methods.addFunction("stationaryfreqs", new MemberFunction(Simplex::getClassTypeSpec(), stationaryfreqsArgRules) );
+        methods.addFunction("averate",         new MemberFunction(RealPos::getClassTypeSpec(), averateArgRules)         );
+        methods.addFunction("reversible",      new MemberFunction(RbBoolean::getClassTypeSpec(), reversibleArgRules)    );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
@@ -404,15 +412,6 @@ void RateMatrix::rescaleToAverageRate(const double r) {
     for (size_t i=0; i<numStates.getValue(); i++)
         for (size_t j=0; j<numStates.getValue(); j++)
             (*theRateMatrix)[i][j] *= scaleFactor;
-}
-
-
-/** Complete info */
-std::string RateMatrix::richInfo(void) const {
-
-	std::ostringstream o;
-    printValue( o );
-    return o.str();
 }
 
 

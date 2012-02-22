@@ -27,15 +27,12 @@
 #include <sstream>
 
 
-// Definition of the static type spec member
-const TypeSpec SyntaxFunctionDef::typeSpec(SyntaxFunctionDef_name);
-
 /** Construct global function call from function name and arguments */
 SyntaxFunctionDef::SyntaxFunctionDef( RbString* type,
                                       RbString* name,
                                       std::list<SyntaxFormal*>* formals,
                                       std::list<SyntaxElement*>* stmts)
-    : SyntaxElement(), returnType(new TypeSpec(RbObject_name)), functionName(name), formalArgs(formals), code(stmts) {
+                    : SyntaxElement(), returnType(new TypeSpec(RbObject::getClassTypeSpec())), functionName(name), formalArgs(formals), code(stmts) {
 
     if (type != NULL) {
         const std::string   typeString  = *type;
@@ -120,11 +117,28 @@ SyntaxFunctionDef* SyntaxFunctionDef::clone () const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& SyntaxFunctionDef::getClass(void) const { 
+/** Get class name of object */
+const std::string& SyntaxFunctionDef::getClassName(void) { 
+    
+    static std::string rbClassName = "Function definition";
+    
+	return rbClassName; 
+}
 
-    static VectorString rbClass = VectorString(SyntaxFunctionDef_name) + SyntaxElement::getClass();
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxFunctionDef::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
 	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxFunctionDef::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -154,12 +168,6 @@ RbVariablePtr SyntaxFunctionDef::evaluateContent(Environment& env) {
 
     // No return value 
     return RbVariablePtr( NULL );
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& SyntaxFunctionDef::getTypeSpec(void) const {
-    return typeSpec;
 }
 
 
