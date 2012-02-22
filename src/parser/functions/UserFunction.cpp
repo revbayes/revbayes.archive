@@ -24,6 +24,7 @@
 #include "UserFunction.h"
 #include "VectorString.h"
 
+
 #include <list>
 #include <sstream>
 
@@ -34,13 +35,13 @@ UserFunction::UserFunction( const ArgumentRules*  argRules,
                             const TypeSpec&             retType,
                             std::list<SyntaxElement*>*  stmts,
                             Environment*                defineEnv)
-: RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
+: RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv), retValue( NULL ) {
     
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules( x.argumentRules->clone() ), returnType( x.returnType ), code( NULL ), defineEnvironment( NULL ) {
+UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules( x.argumentRules->clone() ), returnType( x.returnType ), code( NULL ), defineEnvironment( NULL ), retValue( NULL ) {
 
     // clone the environment
     defineEnvironment   = x.defineEnvironment->clone();
@@ -50,6 +51,10 @@ UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules
     for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
         SyntaxElement* element = (*i)->clone();
         code->push_back(element);
+    }
+    
+    if (x.retValue != NULL) {
+        retValue = x.retValue->clone();
     }
 }
 
@@ -79,6 +84,16 @@ UserFunction& UserFunction::operator=(const UserFunction &f) {
             SyntaxElement* element = (*i)->clone();
             code->push_back(element);
         }
+        
+        if (retValue != NULL) {
+            delete retValue;
+        }
+        if (f.retValue != NULL) {
+            retValue = f.retValue->clone();
+        }
+        else {
+            retValue = NULL;
+        }
     }
     
     return *this;
@@ -99,6 +114,8 @@ UserFunction::~UserFunction() {
     }
     
     delete code;
+    delete retValue;
+    
 }
 
 
@@ -116,7 +133,7 @@ const RbLanguageObject& UserFunction::executeFunction( void ) {
     Signals::getSignals().clearFlags();
 
     // Set initial return value
-    RbVariablePtr retValue = NULL;
+    RbVariablePtr retVar = NULL;
 
     // Create new variable frame
     Environment functionEnvironment = Environment( NULL );
@@ -127,14 +144,18 @@ const RbLanguageObject& UserFunction::executeFunction( void ) {
     for ( std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++ ) {
 
         SyntaxElement* theSyntaxElement = *i;
-        retValue = theSyntaxElement->evaluateContent( functionEnvironment );
+        retVar = theSyntaxElement->evaluateContent( *defineEnvironment );
 
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
             break;
     }
 
+    
+    delete retValue;
+    retValue = retVar->getValue().clone();
+    
     // Return the return value
-    return retValue->getDagNode()->getValue();
+    return *retValue;
 }
 
 
@@ -187,5 +208,20 @@ void UserFunction::printValue(std::ostream &o) const {
     o << "definition environment:" << std::endl;
     defineEnvironment->printValue(o);
 
+}
+
+
+/** We catch here the setting of the argument variables to store our parameters. */
+void UserFunction::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+    
+    // We actually just catch the call to the base class which would complain that the argument was not expected.
+    // User functions handle their arguments in some unknown different way.
+    
+    if ( defineEnvironment->existsVariable( name ) ) {
+        (*defineEnvironment)[name].setVariable( var );
+    }
+    else {
+        defineEnvironment->addVariable(name, var);
+    }
 }
 

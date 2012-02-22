@@ -224,6 +224,19 @@ const TypeSpec& Workspace::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const {
+    
+    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( type );
+    if ( it == typeTable.end() ) {
+        if ( parentEnvironment != NULL )
+            return static_cast<Workspace*>( parentEnvironment )->getClassTypeSpecOfType( type );
+        else
+            throw RbException( "Type '" + type + "' does not exist in environment" );;
+    }
+    else
+        return it->second->getTypeSpec();
+}
+
 /** Get type spec */
 const TypeSpec& Workspace::getTypeSpec( void ) const {
     

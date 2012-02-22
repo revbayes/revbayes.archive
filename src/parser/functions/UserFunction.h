@@ -61,7 +61,10 @@ class UserFunction :  public RbFunction {
 
 	protected:
         const RbLanguageObject&                     executeFunction(void);              //!< Execute function
+        void                                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
+        // function return value
+        RbLanguageObject*                           retValue;
     
         const ArgumentRules*                        argumentRules;                      //!< The argument rules
         const TypeSpec                              returnType;                         //!< The return type (complete specification)

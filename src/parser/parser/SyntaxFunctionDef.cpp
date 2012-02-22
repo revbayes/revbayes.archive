@@ -32,10 +32,12 @@ SyntaxFunctionDef::SyntaxFunctionDef( RbString* type,
                                       RbString* name,
                                       std::list<SyntaxFormal*>* formals,
                                       std::list<SyntaxElement*>* stmts)
-                    : SyntaxElement(), returnType(new TypeSpec(RbObject::getClassTypeSpec())), functionName(name), formalArgs(formals), code(stmts) {
+                    : SyntaxElement(), functionName(name), formalArgs(formals), code(stmts) {
 
+                        
     if (type != NULL) {
         const std::string   typeString  = *type;
+                            returnType  = new TypeSpec( Workspace::userWorkspace().getClassTypeSpecOfType(typeString) );
         int                 nDim        = 0;
         bool                isRef       = false;
         std::string         tpName      = std::string();
@@ -48,8 +50,10 @@ SyntaxFunctionDef::SyntaxFunctionDef( RbString* type,
                 tpName += (*i);
         }
 
+    }
+    else {
         // Create the type specification
-        returnType = new TypeSpec( tpName );
+        returnType = new TypeSpec( RbLanguageObject::getClassTypeSpec() );
     }
 }
 
