@@ -43,7 +43,7 @@ const RbLanguageObject& Func__range::executeFunction( void ) {
     int l = static_cast<const Integer&>( last->getValue() ).getValue();
 
     std::vector<int> temp;
-    if (first < last) {
+    if (f < l) {
         for ( int i = f; i <= l; i++ )
             temp.push_back(i);
     }

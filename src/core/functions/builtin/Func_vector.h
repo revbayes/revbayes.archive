@@ -46,7 +46,7 @@ class Func_vector :  public RbFunction {
         void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
 
     private:
-        retType*                    theVector;
+        retType                     theVector;
     
         // Arguments
         std::vector<RbVariablePtr>  values;
@@ -83,14 +83,13 @@ Func_vector<valType, retType>* Func_vector<valType, retType>::clone( void ) cons
 template <typename valType, typename retType>
 const RbLanguageObject& Func_vector<valType, retType>::executeFunction( void ) {
 
-    if (theVector != NULL)
-        delete theVector;
+//    delete theVector;
     
-    theVector = new retType();
+    theVector.clear();
     for ( size_t i = 0; i < values.size(); i++ )
-        theVector->push_back( values[i]->getValue().clone() );
+        theVector.push_back( values[i]->getValue().clone() );
 
-    return *theVector;
+    return theVector;
 }
 
 
