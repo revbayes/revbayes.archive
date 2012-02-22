@@ -76,8 +76,8 @@
 
 - (void)decrementTaskCount {
 
-
-//    OSAtomicDecrement32(&taskCount);
+    // @John: I need to comment this out to get it working on my old OS X ... (Sebastian)
+    OSAtomicDecrement32(&taskCount);
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
