@@ -88,6 +88,13 @@ TypeSpec& TypeSpec::operator=( const TypeSpec& x ) {
         else {
             elementType = NULL;
         }
+        if (x.parent != NULL) {
+            parent = new TypeSpec(*x.parent);
+        }
+        else {
+            parent = NULL;
+        }
+        
     }
     
     return ( *this );

@@ -160,7 +160,7 @@ bool ArgumentRule::isArgumentValid(const RbVariablePtr& var, bool convert) const
                 if ( convert ) {
                     ConstantNode* theConstNode = static_cast<ConstantNode*>( var->getDagNode() );
                     // Do the type conversion
-                    RbLanguageObject* convertedObj = var->getValue().clone();
+                    RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( argSlot.getSlotTypeSpec() ) );
                     theConstNode->setValue( convertedObj );
                     
                     // set the new type spec of the variable
