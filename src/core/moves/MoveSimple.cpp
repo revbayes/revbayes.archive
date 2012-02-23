@@ -115,7 +115,7 @@ double MoveSimple::performMove( double& lnProbabilityRatio) {
     // call the derived class' perform operation
     double lnHastingsRatio  = perform();
     
-    static_cast<StochasticNode*>( node->getDagNode() )->getLnProbabilityRatio();
+    lnProbabilityRatio = static_cast<StochasticNode*>( node->getDagNode() )->getLnProbabilityRatio();
     
     std::set<StochasticNode* > affectedNodes;
     node->getDagNode()->getAffectedNodes(affectedNodes);
@@ -128,7 +128,7 @@ double MoveSimple::performMove( double& lnProbabilityRatio) {
     numTried.setValue( tmp_tried++ );
     
     // Return acceptance ratio
-    return lnProbabilityRatio + lnHastingsRatio;
+    return lnHastingsRatio;
 }
 
 
