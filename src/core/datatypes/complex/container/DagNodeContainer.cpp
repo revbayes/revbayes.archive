@@ -266,17 +266,6 @@ void DagNodeContainer::resize( size_t n ) {
 }
 
 
-/** Complete info about object */
-std::string DagNodeContainer::richInfo(void) const {
-    
-    std::ostringstream o;
-    o <<  "DAG Node Container: value = ";
-    printValue(o);
-    
-    return o.str();
-}
-
-
 /** Set element */
 void DagNodeContainer::setElement(const size_t index, RbObject* elem) {
     if (index >= size()) {

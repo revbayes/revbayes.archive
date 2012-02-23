@@ -114,7 +114,7 @@ void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
     for (size_t i=0; i<n.size(); i++) {
         VariableNode* theNode = n[i];
         if (theNode != NULL) {
-//            nodes.push_back(theNode);
+            nodes.push_back(new Variable( theNode) );
         }
     }
     

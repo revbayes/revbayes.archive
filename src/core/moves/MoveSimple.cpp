@@ -33,12 +33,6 @@ MoveSimple::MoveSimple(const MemberRules& memberRules) : Move(memberRules) {
 }
 
 
-/** Copy constructor */
-MoveSimple::MoveSimple(const MoveSimple &ms) : Move(ms) {
-    
-}
-
-
 /**
  * Accept the move.
  * We need to tell that the node!
@@ -159,14 +153,15 @@ void MoveSimple::replaceDagNodes(std::vector<StochasticNode*> &n) {
     nodes.clear();
 	    
     // add all nodes
-    if ( n.size() == 1) {
+    if ( n.size() != 1) {
         throw RbException("A simple move expects exactly one node but got a different number.");
     }
         
     StochasticNode* theNode = n[0];
     if (theNode != NULL) {
         nodes.push_back(theNode);
-        node->setDagNode( theNode );
+//        node->setDagNode( theNode );
+        node = new Variable( theNode );
     }
 	    
 }

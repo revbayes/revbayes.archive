@@ -50,6 +50,7 @@ class Model : public ConstantMemberObject {
         void                                    setMemberVariable(const std::string &name, Variable* var);  //!< Set a member variable. We catch here setting of variable nodes
     
         // Model functions
+        bool                                    areDagNodesCloned(std::vector<DAGNode*> &orgNodes) const;   //!< Are these already the cloned DAG nodes?
         std::vector<DAGNode*>                   getClonedDagNodes(std::vector<DAGNode*> &orgNodes) const;   //!< Get cloned nodes corresponding to originals
         std::vector<RbDagNodePtr>               getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
 

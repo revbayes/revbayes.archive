@@ -120,6 +120,22 @@ Model& Model::operator=( const Model& x ) {
 }
 
 
+bool Model::areDagNodesCloned(std::vector<DAGNode*> &orgNodes) const {
+    
+    // test each original node and add it to the map
+    for (std::vector<DAGNode*>::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
+        DAGNode* theNode = *it;
+        std::map<const DAGNode*, RbDagNodePtr>::const_iterator orgClonePair = nodesMap.find(theNode);
+        if (orgClonePair != nodesMap.end()) {
+            return false;
+        }
+    }
+    
+    // return the clones
+    return true;
+}
+
+
 /** Clone the object */
 Model* Model::clone(void) const {
 

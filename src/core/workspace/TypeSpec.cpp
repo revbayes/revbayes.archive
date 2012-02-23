@@ -26,6 +26,20 @@ TypeSpec::TypeSpec(const std::string &objType) : parent( NULL ), baseType( objTy
     type = baseType;
 }
 
+
+/** Complete constructor */
+TypeSpec::TypeSpec(const TypeSpec& base, TypeSpec* elemType) : parent( new TypeSpec( *base.getParentType() )  ), baseType( base.getBaseType() ), elementType( elemType ) {
+    elementType = elemType;
+    
+    type = baseType;
+    
+    // add the element type
+    if (elementType != NULL) {
+        type += "<" + elementType->toString() + ">";
+    }
+}
+
+
 /** Complete constructor */
 TypeSpec::TypeSpec(const std::string &objType, TypeSpec* p, TypeSpec* elemType) : parent( p ), baseType( objType ) {
     elementType = elemType;

@@ -33,8 +33,6 @@
 /** Constructor */
 MemberObject::MemberObject() : RbLanguageObject() {
     
-//    members = new Environment();
-    
 }
 
 
@@ -42,13 +40,6 @@ MemberObject::MemberObject() : RbLanguageObject() {
 /** Constructor: we set member variables here from member rules */
 MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() {
 
-//    members = new Environment();
-//    
-//    /* Fill member table (frame) based on member rules */
-//    for ( std::vector<ArgumentRule*>::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
-//        // creare variable slots with name and type
-//        members->addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
-//    }
 }
 
 
@@ -66,9 +57,9 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 }
 
 
-/** Destructor. Just frees the memory of the members. */
+/** Destructor. */
 MemberObject::~MemberObject(void) {
-//    delete members;
+
 }
 
 
@@ -76,12 +67,8 @@ MemberObject::~MemberObject(void) {
 MemberObject& MemberObject::operator=(const MemberObject &m) {
     
     if (this != &m) {
-        
-//        if (members != NULL) {
-//            delete members;
-//        }
-//        
-//        members = m.members->clone();
+          
+        members = m.members;
     }
     
     return (*this);

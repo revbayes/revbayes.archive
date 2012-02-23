@@ -34,6 +34,9 @@
 /** Constructor of filled variable. */
 Variable::Variable(const TypeSpec& ts) : RbInternal(), valueTypeSpec( ts ), node( NULL ) {
     
+    if (ts.getType() == "" || ts.getBaseType() == "" || ( ts.getParentType() != NULL && ts.getParentType()->getType() == "" ) ) {
+        std::cerr << "Hullabulla" << std::endl; 
+    }
     refCount = 0;
     
 }
@@ -247,6 +250,10 @@ void Variable::replaceDagNode( DAGNode *newVariable) {
 /** We set here the required value type spec. */
 void Variable::setValueTypeSpec(const TypeSpec &ts) {
     valueTypeSpec = ts;
+    
+    if (ts.getType() == "" || ts.getBaseType() == "" || ( ts.getParentType() != NULL && ts.getParentType()->getType() == "" ) ) {
+        std::cerr << "Hullabulla" << std::endl; 
+    }
 }
 
 

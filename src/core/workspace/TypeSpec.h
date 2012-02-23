@@ -24,6 +24,7 @@ class TypeSpec {
     
     public:
                                     TypeSpec(const std::string& objType);                                                           //!< Complete constructor
+                                    TypeSpec(const TypeSpec& base, TypeSpec* elemType);                                             //!< Complete constructor with element type (for Vectors)
                                     TypeSpec(const std::string& objType, TypeSpec* p, TypeSpec* elemType = NULL);                   //!< Complete constructor
                                     TypeSpec(const TypeSpec& ts);                                                                   //!< Copy Constructor
         virtual                    ~TypeSpec(void);                                                                                 //!< Destructor

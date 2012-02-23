@@ -47,7 +47,6 @@ class DagNodeContainer : public Container {
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         bool                                isConvertibleTo(const TypeSpec& type) const;                                //!< Is convertible to type?
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
-        std::string                         richInfo(void) const;                                                       //!< Complete info about object
 
         // Container functions
         void                                clear(void);                                                                //!< Clear

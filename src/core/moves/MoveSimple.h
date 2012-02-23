@@ -53,7 +53,6 @@ public:
 
 protected:
     MoveSimple(const MemberRules& memberRules);                                                         //!< Default constructor
-    MoveSimple(const MoveSimple &ms);                                                                   //!< Copy constructor
 
     // Functions you have to override
     virtual double                      perform(void) = 0;                                              //!< Perform the move and fill in the affected stochastic nodes for probability calculations
