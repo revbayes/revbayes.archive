@@ -101,7 +101,7 @@ const MemberRules& FileMonitor::getMemberRules( void ) const {
 /** Monitor value unconditionally */
 void FileMonitor::monitor(void) {
 
-    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
             outStream << separator;
@@ -126,7 +126,7 @@ void FileMonitor::monitor(int gen) {
         // print the iteration number first
         outStream << gen;
         
-        for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element
             outStream << separator;
             
@@ -156,11 +156,11 @@ void FileMonitor::printHeader() {
     // print one column for the iteration number
     outStream << "Sample";
     
-    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
         outStream << separator;
         
-         const VariableNode* theNode = static_cast<const VariableNode*>((DAGNode*)*it);
+         const DAGNode* theNode = static_cast<const DAGNode*>((*it)->getDagNode());
         
         // print the header
         if (theNode->getName() != "")
@@ -186,30 +186,14 @@ void FileMonitor::printValue(std::ostream& o) const {
 void FileMonitor::setMemberVariable(std::string const &name, Variable* var) {
     
     // catch setting of the variables 
-    if (name == "variable" || name == "") {
-//        if (var->getValue().isType(DagNodeContainer_name)) {
-//            const DagNodeContainer& theContainer = static_cast<const DagNodeContainer&>( var->getValue() );
-//            for (size_t i = 0; i < theContainer.size(); i++) {
-//                var = static_cast<const VariableSlot&>( theContainer.getElement(i) ).getDagNode()->clone();
-//                if (var->isType(VariableNode_name)) {
-//                    nodes.push_back( static_cast<VariableNode*>( var ) );
-////                } else {
-////                    throw RbException("Cannot monitor a constant node!");
-//                }
-//            }
-//        }
-//        else {
-//            if (var->isType(VariableNode_name)) {
-//                nodes.push_back( static_cast<VariableNode*>( var ) );
-////            } else {
-////                throw RbException("Cannot monitor a constant node!");
-//            }
-//        }
-    } 
-    else if (name == "separator") {
+    if (name == "separator") {
         separator = var;
         
     } 
+    else if (name == "filename") {
+        filename = var;
+        
+    }
     else {
         // call parent class to set member variable
         Monitor::setMemberVariable( name, var );

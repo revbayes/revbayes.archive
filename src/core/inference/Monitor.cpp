@@ -29,18 +29,18 @@
 
 
 /** Constructor */
-Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()), printgen( NULL ), variables( NULL )
+Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()), printgen( NULL )
 {
     
 }
 
 /** Constructor */
-Monitor::Monitor(const MemberRules& rules ) : ConstantMemberObject( rules ), printgen( NULL ), variables( NULL ) {
+Monitor::Monitor(const MemberRules& rules ) : ConstantMemberObject( rules ), printgen( NULL ) {
     
 }
 
 /** Copy Constructor */
-Monitor::Monitor(const Monitor &x) : ConstantMemberObject(x), printgen( x.printgen ), variables( x.variables ) {
+Monitor::Monitor(const Monitor &x) : ConstantMemberObject(x), printgen( x.printgen ) {
     
     // shallow copy
     nodes = x.nodes;
@@ -114,7 +114,7 @@ void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
     for (size_t i=0; i<n.size(); i++) {
         VariableNode* theNode = n[i];
         if (theNode != NULL) {
-            nodes.push_back(theNode);
+//            nodes.push_back(theNode);
         }
     }
     
@@ -125,24 +125,24 @@ void Monitor::setMemberVariable(std::string const &name, Variable* var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
-//        if (theNode->getValue().isType(DagNodeContainer_name)) {
-//            DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( theNode->getValue() );
-//            for (size_t i = 0; i < theContainer.size(); i++) {
-//                theNode = static_cast<VariableSlot&>( theContainer.getElement(i) ).getDagNode();
-//                if (theNode->isType(VariableNode_name)) {
-//                    nodes.push_back( static_cast<VariableNode*>( theNode ) );
-//                    //                } else {
-//                    //                    throw RbException("Cannot monitor a constant node!");
+        if (var->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
+            DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( var->getValue() );
+            for (size_t i = 0; i < theContainer.size(); i++) {
+                const RbVariablePtr& theVar = static_cast<VariableSlot&>( theContainer.getElement(i) ).getVariablePtr();
+//                if (theVar->getDagNode()->isTypeSpec( VariableNode::getClassTypeSpec() ) ) {
+                    nodes.push_back( theVar );
+                    //                } else {
+                    //                    throw RbException("Cannot monitor a constant node!");
 //                }
+            }
+        }
+        else {
+//            if (var->getDagNode()->isTypeSepc( VariableNode::getClassTypeSpec() ) ) {
+                nodes.push_back( var );
+                //            } else {
+                //                throw RbException("Cannot monitor a constant node!");
 //            }
-//        }
-//        else {
-//            if (theNode->isType(VariableNode_name)) {
-//                nodes.push_back( static_cast<VariableNode*>( theNode ) );
-//                //            } else {
-//                //                throw RbException("Cannot monitor a constant node!");
-//            }
-//        }
+        }
     } 
     else if ( name == "printgen" ) {
         printgen = var;
@@ -157,7 +157,7 @@ void Monitor::setMemberVariable(std::string const &name, Variable* var) {
 /** Tell whether the variable with name is monitored by this monitor */
 bool Monitor::monitorsVariable( const RbString& varName) {
     for (size_t j=0; j<nodes.size(); j++) {
-        if (nodes[j]->getName() == varName) {
+        if (nodes[j]->getDagNode()->getName() == varName) {
             return( true);
         }
     }

@@ -47,18 +47,18 @@ public:
     virtual const MemberRules&          getMemberRules( void ) const;                                       //!< The member rules for a monitor
     virtual void                        setMemberVariable(const std::string &name, Variable* var);          //!< Set a member variable. We catch here setting of variable nodes
     
-    std::vector<DAGNode*>&              getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
+    std::vector<RbVariablePtr>&         getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
     virtual void                        monitor(void) = 0;                                                  //!< Monitor unconditionally
     virtual void                        monitor(int gen) = 0;                                               //!< Monitor at generation gen
     void                                replaceDagNodes(std::vector<VariableNode*> &n);                     //!< Set the nodes vector
-    bool                                monitorsVariable(const RbString& varName);                          //! Tell whether the variable with name is monitored by this monitor
+    bool                                monitorsVariable(const RbString& varName);                          //!< Tell whether the variable with name is monitored by this monitor
     
 protected:
-    std::vector<DAGNode*>               nodes;                                                              //!< Vector of nodes that this monitor monitors    
+//    std::vector<DAGNode*>               nodes;                                                              //!< Vector of nodes that this monitor monitors    
 
     // parameters
     RbVariablePtr                       printgen;
-    RbVariablePtr                       variables;
+    std::vector<RbVariablePtr>          nodes;
    
 };
 

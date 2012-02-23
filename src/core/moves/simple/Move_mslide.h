@@ -52,7 +52,6 @@ class Move_mslide : public MoveSimple {
 
         // parameters
         RbVariablePtr               delta;
-        RbVariablePtr               node;
 };
 
 #endif

@@ -42,23 +42,34 @@ public:
 
     // Member variable rules
     virtual const MemberRules&          getMemberRules(void) const;                                     //!< Get member rules
+    virtual void                        setMemberVariable(const std::string& name, Variable* var);      //!< Set member variable (ensure topologyProb is updated)
 
-    // MoveSimple functions
+    // Move functions
     void                                acceptMove(void);				                                //!< Accept the move, update statistics
-    double                              performMove(double& lnProbabilityRatio);                        //!< Call perform, calculate ratios
+    std::vector<StochasticNode*>&       getDagNodes(void);                                              //!< Get the nodes vector
+    double                              performMove(double& probRatio);                                 //!< Call perform, calculate ratios
     void                                rejectMove(void);                                               //!< Reject the move
+    void                                replaceDagNodes(std::vector<StochasticNode*> &n);                                   //!< Set the nodes vector
 
 protected:
-    MoveSimple(const MemberRules& memberRules);                                                   //!< Default constructor
+    MoveSimple(const MemberRules& memberRules);                                                         //!< Default constructor
     MoveSimple(const MoveSimple &ms);                                                                   //!< Copy constructor
 
     // Functions you have to override
     virtual double                      perform(void) = 0;                                              //!< Perform the move and fill in the affected stochastic nodes for probability calculations
     virtual const TypeSpec              getVariableType(void) const = 0;                                //!< Get type of random variable appropriate for move
 
-    // Functions you may want to override for additional statistics purposes, e.g.
+    // Functions you may want to override for e.g., additional statistics purposes
     virtual void                        accept(void) {}                                                 //!< Accept the move
     virtual void                        reject(void) {}                                                 //!< Reject the move
+
+
+    // member variables
+    RbVariablePtr                       node;
+    
+private:
+    std::vector<StochasticNode*>        nodes;
+
 };
 
 #endif

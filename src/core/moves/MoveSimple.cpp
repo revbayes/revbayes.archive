@@ -39,19 +39,24 @@ MoveSimple::MoveSimple(const MoveSimple &ms) : Move(ms) {
 }
 
 
-/** Accept the move: update statistics and call derived method */
+/**
+ * Accept the move.
+ * We need to tell that the node!
+ */
 void MoveSimple::acceptMove(void) {
-
-//    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
     
-//    std::cout << "Accept move\n";
+    // delegate to derived classes
     accept();
+    
+    // increment the acceptance counter
     size_t tmp_accepted = numAccepted.getValue();
     numAccepted.setValue( tmp_accepted++ );
-    for (std::vector<StochasticNode*>::iterator it=nodes.begin(); it!=nodes.end(); it++) {
-        (*it)->keep();
-    }
+    
+    // tell my node to keep itself
+    // this will automatically call keep for the affected nodes
+    node->getDagNode()->keep();
 }
+
 
 
 /** Get class name of object */
@@ -68,6 +73,22 @@ const TypeSpec& MoveSimple::getClassTypeSpec(void) {
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
+}
+
+
+/**
+ * Get the DAG nodes.
+ * We reset here the vector of nodes because the DAG node variable might have changed its pointer
+ * and now points to another DAG node.
+ */
+std::vector<StochasticNode*>& MoveSimple::getDagNodes(void) {
+    // we empty the vector first
+    nodes.clear();
+    
+    // and then insert the only node
+    nodes.push_back( static_cast<StochasticNode*>(node->getDagNode() ) );
+    
+    return nodes;
 }
 
 
@@ -90,40 +111,76 @@ const MemberRules& MoveSimple::getMemberRules( void ) const {
 }
 
 
-/** Perform the move */
-double MoveSimple::performMove(double& lnProbabilityRatio) {
-
-    StochasticNode* nodePtr = nodes[0];
+/** 
+ *  Perform the move. 
+ *  Currently we just delegate to the derived class, but in the future we might want to do some general stuff here.
+ *  We increment our counter for the tries.
+ */
+double MoveSimple::performMove( double& lnProbabilityRatio) {
     
-//    std::cout << "Perform simple move (" << getClassTypeSpec()[0] << ") on node \"" << nodePtr->getName() << "\"\n";
-
-    double lnHastingsRatio    = perform();
+    // call the derived class' perform operation
+    double lnHastingsRatio  = perform();
     
-    // touch the current node and the affected ones
-//    nodePtr->touch();
-    
-    lnProbabilityRatio = nodePtr->getLnProbabilityRatio();
+    static_cast<StochasticNode*>( node->getDagNode() )->getLnProbabilityRatio();
     
     std::set<StochasticNode* > affectedNodes;
-    nodePtr->getAffectedNodes(affectedNodes);
+    node->getDagNode()->getAffectedNodes(affectedNodes);
     for (std::set<StochasticNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++) {
         StochasticNode* theNode = *i;
         lnProbabilityRatio += theNode->getLnProbabilityRatio();
     }
-
+    
     size_t tmp_tried = numTried.getValue();
     numTried.setValue( tmp_tried++ );
     
-    return lnHastingsRatio;
+    // Return acceptance ratio
+    return lnProbabilityRatio + lnHastingsRatio;
 }
 
 
-/** Reject the move */
+/**
+ * Reject the move.
+ * We need to tell that the node!
+ */
 void MoveSimple::rejectMove(void) {
-
+    
+    // delegate to derived classes
     reject();
-    for (size_t i=0; i<nodes.size(); i++) {
-        nodes[i]->restore();
+    
+    // tell my node to keep itself
+    // this will automatically call keep for the affected nodes
+    node->getDagNode()->restore();
+}
+
+
+void MoveSimple::replaceDagNodes(std::vector<StochasticNode*> &n) {
+
+    // release all nodes
+    nodes.clear();
+	    
+    // add all nodes
+    if ( n.size() == 1) {
+        throw RbException("A simple move expects exactly one node but got a different number.");
+    }
+        
+    StochasticNode* theNode = n[0];
+    if (theNode != NULL) {
+        nodes.push_back(theNode);
+        node->setDagNode( theNode );
+    }
+	    
+}
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void MoveSimple::setMemberVariable(std::string const &name, Variable* var) {
+    
+    // test whether we want to set the variable 
+    if ( name == "variable" ) {
+        node = var;
+    }
+    else {
+        Move::setMemberVariable(name, var);
     }
 }
 

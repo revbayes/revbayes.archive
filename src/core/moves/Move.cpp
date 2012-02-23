@@ -50,13 +50,11 @@ Move::Move(const Move &m) : ConstantMemberObject(m), weight( m.weight ) {
     numTried    = m.numTried;
     numAccepted = m.numAccepted;
     
-    nodes       = m.nodes;
 }
 
 /** Destructor */
 Move::~Move() {
-    // release all nodes
-    nodes.clear();
+    
 }
 
 
@@ -83,10 +81,10 @@ const RbLanguageObject& Move::executeOperationSimple(const std::string& name, co
     }
     else if ( name == "propose" ) {
 
-        VectorReal* temp = new VectorReal(2);
-        Real* tmp = new Real(performMove( (*temp)[0] ) );
+        double probRatio;
+        Real* tmp = new Real(performMove( probRatio ) );
         
-        // return the Hastings ratio
+        // return the acceptance ratio
         return *tmp;
     }
     else if ( name == "reject" ) {
@@ -215,21 +213,4 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
     }
 }
 
-
-void Move::replaceDagNodes(std::vector<StochasticNode*> &n) {
-    
-    // release all nodes
-    nodes.clear();
-    
-    // add all nodes
-    for (size_t i=0; i<n.size(); i++) {
-        StochasticNode* theNode = n[i];
-        if (theNode != NULL) {
-            nodes.push_back(theNode);
-        }
-    }
-    
-    
-    
-}
 

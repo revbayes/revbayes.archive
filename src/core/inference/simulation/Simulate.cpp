@@ -166,26 +166,26 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                 FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
                 
                 // get the DAG node for this monitor
-                std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
-                
-                // convert the old nodes from Stochastic nodes to DAGNode
-                std::vector<DAGNode*> oldNodes;
-                for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
-                    oldNodes.push_back( *it );
-                }
-                // get the DAG node which corresponds in the model to the cloned original node
-                std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
-                
-                // clone the move and replace the node
-                FileMonitor* newMonitor = theMonitor.clone();
-                // convert the new nodes from DAGNode to Stochastic Nodes
-                std::vector<VariableNode*> newNodes;
-                for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
-                    newNodes.push_back( static_cast<VariableNode*>( *it ) );
-                }
-                newMonitor->replaceDagNodes(newNodes);
-                
-                monitors->setElement(i, newMonitor );
+//                std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
+//                
+//                // convert the old nodes from Stochastic nodes to DAGNode
+//                std::vector<DAGNode*> oldNodes;
+//                for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+//                    oldNodes.push_back( *it );
+//                }
+//                // get the DAG node which corresponds in the model to the cloned original node
+//                std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
+//                
+//                // clone the move and replace the node
+//                FileMonitor* newMonitor = theMonitor.clone();
+//                // convert the new nodes from DAGNode to Stochastic Nodes
+//                std::vector<VariableNode*> newNodes;
+//                for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
+//                    newNodes.push_back( static_cast<VariableNode*>( *it ) );
+//                }
+//                newMonitor->replaceDagNodes(newNodes);
+//                
+//                monitors->setElement(i, newMonitor );
             
         }
         
@@ -201,27 +201,27 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
                 ObjectMonitor& theMonitor = static_cast<ObjectMonitor&>( monitors->getElement(i) );
                 
                 // get the DAG node for this monitor
-                std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
-                
-                // convert the old nodes from Stochastic nodes to DAGNode
-                std::vector<DAGNode*> oldNodes;
-                for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
-                    oldNodes.push_back( *it );
-                }
-                // get the DAG node which corresponds in the model to the cloned original node
-                std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
-                
-                // clone the move and replace the node
-                ObjectMonitor* newMonitor = theMonitor.clone();
-                // convert the new nodes from DAGNode to Stochastic Nodes
-                std::vector<VariableNode*> newNodes;
-                for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
-                    newNodes.push_back( static_cast<VariableNode*>( *it ) );
-                }
-                newMonitor->replaceDagNodes(newNodes);
-                
-                monitors->setElement(i, newMonitor );
-                
+//                std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
+//                
+//                // convert the old nodes from Stochastic nodes to DAGNode
+//                std::vector<DAGNode*> oldNodes;
+//                for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+//                    oldNodes.push_back( *it );
+//                }
+//                // get the DAG node which corresponds in the model to the cloned original node
+//                std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
+//                
+//                // clone the move and replace the node
+//                ObjectMonitor* newMonitor = theMonitor.clone();
+//                // convert the new nodes from DAGNode to Stochastic Nodes
+//                std::vector<VariableNode*> newNodes;
+//                for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
+//                    newNodes.push_back( static_cast<VariableNode*>( *it ) );
+//                }
+//                newMonitor->replaceDagNodes(newNodes);
+//                
+//                monitors->setElement(i, newMonitor );
+//                
             }
             
 //            setMemberDagNode(name, new ConstantNode( monitors ) );

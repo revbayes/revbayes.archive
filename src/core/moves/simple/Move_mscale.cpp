@@ -109,13 +109,16 @@ double Move_mscale::perform( void ) {
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     RealPos u      = rng->uniform01();
     RealPos newVal = curVal * std::exp( l * ( u - 0.5 ) );
+    
+    // compute the Hastings ratio
+    double lnHastingsratio = log( newVal / curVal );
 
     // Propose new value
     nodePtr->setValue( newVal.clone() );
-
-    // Return Hastings ratio
-    return log( newVal / curVal );
+    
+    return lnHastingsratio;
 }
+
 
 
 /** We catch here the setting of the member variables to store our parameters. */
@@ -125,9 +128,6 @@ void Move_mscale::setMemberVariable(std::string const &name, Variable* var) {
     if ( name == "lambda" ) {
         lambda = var;
     } 
-    else if ( name == "variable" ) {
-        node = var;
-    }
     else {
         MoveSimple::setMemberVariable(name, var);
     }

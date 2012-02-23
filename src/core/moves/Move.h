@@ -45,22 +45,21 @@ class Move : public ConstantMemberObject {
 
         // Move functions you have to override
         virtual void                            acceptMove(void) = 0;                                                                   //!< Accept the move
-        virtual double                          performMove(double& lnProbabilityRatio) = 0;                                            //!< Perform the move
+        virtual std::vector<StochasticNode*>&   getDagNodes(void) = 0;                                                                  //!< Get the nodes vector
+        virtual double                          performMove(double& probRatio) = 0;                                                     //!< Perform the move
         virtual void                            rejectMove(void) = 0;                                                                   //!< Reject the move
+        virtual void                            replaceDagNodes(std::vector<StochasticNode*> &n) = 0;                                   //!< Set the nodes vector
 
         // Move functions you should not override
         double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
-        std::vector<StochasticNode*>&           getDagNodes(void) { return nodes;}                                                      //!< Get the nodes vector
         double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
-//        void                            setDagNodes(std::vector<StochasticNode*> n);                                                  //!< Set the nodes vector
-        void                                    replaceDagNodes(std::vector<StochasticNode*> &n);                                       //!< Set the nodes vector
         void                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
 
 	protected:
         Move(const MemberRules& memberRules);                                                                                           //!< Default constructor
         Move(const Move& m);                                                                                                            //!< Copy constructor
 
-        const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
+        virtual const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
 
         // parameters
         RbVariablePtr                           weight;
@@ -69,7 +68,6 @@ class Move : public ConstantMemberObject {
         Natural                                 numAccepted;                                                                            //!< Number of times accepted
         Natural                                 numTried;                                                                               //!< Number of times tried
         RealPos                                 acceptanceR;
-        std::vector<StochasticNode*>            nodes;                                                                                  //!< The nodes on which the move works
 };
 
 #endif

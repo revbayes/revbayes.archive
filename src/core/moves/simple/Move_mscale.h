@@ -29,27 +29,26 @@
 class Move_mscale : public MoveSimple {
 
     public:
-                                    Move_mscale(void);                                                      //!< Parser constructor
+                                        Move_mscale(void);                                                      //!< Parser constructor
 
         // Basic utility functions
-        Move_mscale*                clone(void) const;                                                      //!< Clone object
-        static const std::string&   getClassName(void);                                                     //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
+        Move_mscale*                    clone(void) const;                                                      //!< Clone object
+        static const std::string&       getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable inits
-        const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
-        void                        setMemberVariable(const std::string& name, Variable* var);              //!< Set member variable (ensure topologyProb is updated)
+        const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
+        void                            setMemberVariable(const std::string& name, Variable* var);              //!< Set member variable (ensure topologyProb is updated)
 
         // Return variable type
-        const TypeSpec              getVariableType(void) const;                                            //!< Get move variable type
+        const TypeSpec                  getVariableType(void) const;                                            //!< Get move variable type
 
 	protected:
-        double                      perform(void);                                                          //!< Perform move
+        double                          perform(void);                                                          //!< Perform move
 
         // parameters
-        RbVariablePtr               node;
-        RbVariablePtr               lambda;
+        RbVariablePtr                   lambda;
 };
 
 #endif

@@ -99,11 +99,11 @@ const MemberRules& ObjectMonitor::getMemberRules( void ) const {
 /** Monitor value unconditionally */
 void ObjectMonitor::monitor(void) {
     
-    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         
         // save the value        
         RbLanguageObject* temp = (*it)->getValue().clone();
-        values[(*it)->getName()].push_back( temp );
+        values[(*it)->getDagNode()->getName()].push_back( temp );
     }
     
 }
@@ -117,11 +117,11 @@ void ObjectMonitor::monitor(int gen) {
 
     if (gen % samplingFrequency == 0) {
         
-        for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             
             // save the value
             RbLanguageObject* temp = (*it)->getValue().clone();
-            values[(*it)->getName()].push_back( temp );
+            values[(*it)->getDagNode()->getName()].push_back( temp );
         }
         
     }
@@ -141,6 +141,7 @@ void ObjectMonitor::printValue(std::ostream& o) const {
 void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
     
     // catch setting of the variables 
+    // We don't have any
         
     // call parent class to set member variable
     Monitor::setMemberVariable( name, var );
