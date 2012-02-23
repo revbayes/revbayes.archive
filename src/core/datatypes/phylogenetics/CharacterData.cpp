@@ -44,14 +44,14 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec( getClassName(), new TypeSpec(charType) ) {
+CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ),new TypeSpec(charType) ) {
 
     characterType = charType;
 }
 
 
 /** Copy constructor */
-CharacterData::CharacterData(const CharacterData& x) : Matrix( x ), typeSpec( getClassName(), new TypeSpec(characterType) ) {
+CharacterData::CharacterData(const CharacterData& x) : Matrix( x ), typeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ), new TypeSpec(characterType) ) {
 
     characterType         = x.characterType;
     deletedTaxa           = x.deletedTaxa;
