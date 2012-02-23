@@ -62,13 +62,13 @@ Model::Model( const std::vector<DAGNode*>& sinkNodes ) : ConstantMemberObject(ge
 Model::Model( const Model& x ) : ConstantMemberObject( x ) {
 
     /* Make copy of DAG by pulling from first node in x */
-    std::map<const DAGNode*, DAGNode*> newNodes;
+    std::map<const DAGNode*, RbDagNodePtr> newNodes;
     if ( x.dagNodes.size() > 0 )
         x.dagNodes[0]->cloneDAG( newNodes );
    
 
     /* insert new nodes in dagNodes member frame and direct access vector */
-    for ( std::map<const DAGNode*, DAGNode*>::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
+    for ( std::map<const DAGNode*, RbDagNodePtr>::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
 
         const DAGNode* theOrgNode = (*i).first;
         const DAGNode* theOldNode = (*i).second;
@@ -95,12 +95,12 @@ Model& Model::operator=( const Model& x ) {
         nodesMap.clear();
         
         /* Make copy of DAG by pulling from first node in x */
-        std::map<const DAGNode*, DAGNode*> newNodes;
+        std::map<const DAGNode*, RbDagNodePtr> newNodes;
         if ( x.dagNodes.size() > 0 )
             x.dagNodes[0]->cloneDAG( newNodes );
 
         /* insert new nodes in dagNodes member frame and direct access vector */
-        for ( std::map<const DAGNode*, DAGNode*>::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
+        for ( std::map<const DAGNode*, RbDagNodePtr>::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
             
             const DAGNode *theOrgNode = (*i).first;
             DAGNode       *theOldNode = (*i).second;
@@ -128,10 +128,10 @@ Model* Model::clone(void) const {
 
 
 /** Find the offset of the node p in the vector v. */
-int Model::findIndexInVector(const std::vector<DAGNode*>& v, const DAGNode* p) const {
+int Model::findIndexInVector(const std::vector<RbDagNodePtr>& v, const DAGNode* p) const {
     
 	int cnt = 0;
-    for (std::vector<DAGNode*>::const_iterator i=v.begin(); i!=v.end(); i++) 
+    for (std::vector<RbDagNodePtr>::const_iterator i=v.begin(); i!=v.end(); i++) 
     {
 		cnt++;
 		if ( (*i) == p )
@@ -173,7 +173,7 @@ std::vector<DAGNode*> Model::getClonedDagNodes(std::vector<DAGNode*> &orgNodes) 
     
     // find each original node and add it to the map
     for (std::vector<DAGNode*>::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
-        std::map<const DAGNode*, DAGNode*>::const_iterator orgClonePair = nodesMap.find((*it));
+        std::map<const DAGNode*, RbDagNodePtr>::const_iterator orgClonePair = nodesMap.find((*it));
         if (orgClonePair != nodesMap.end()) {
             clones.push_back( orgClonePair->second );
         }
@@ -214,7 +214,7 @@ void Model::printValue(std::ostream& o) const {
 	msg.str("");
 	RBOUT("-------------------------------------");
 	int cnt = 0;
-    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {   	
+    for (std::vector<RbDagNodePtr>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {   	
 		msg << "Vertex " << ++cnt;
 		std::string nameStr = msg.str();
 		size_t nameStrSize = nameStr.size();
@@ -285,22 +285,30 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
     
     if (name == "sinknode") {
         
+        DAGNode* theNode = var->getDagNode();
         // test whether var is a DagNodeContainer
-        while ( var->getValue().isTypeSpec( TypeSpec(DagNodeContainer::getClassTypeSpec() ) ) ) {
-            const RbObject& objPtr = var->getValue();
-            const DagNodeContainer& container = dynamic_cast<const DagNodeContainer&>( objPtr );
-            const RbObject& elemPtr = container.getElement(0);
-//            var = &static_cast<VariableSlot&>( elemPtr ).getVariable();
+        while ( theNode != NULL && theNode->getValue().isTypeSpec( TypeSpec(DagNodeContainer::getClassTypeSpec() ) ) ) {
+            RbObject& objPtr = theNode->getValue();
+            DagNodeContainer& container = dynamic_cast<DagNodeContainer&>( objPtr );
+            RbObject& elemPtr = container.getElement(0);
+            theNode = static_cast<VariableSlot&>( elemPtr ).getVariable().getDagNode();
         }
         
         
         // if the var is not NULL we pull the DAG from it
         nodesMap.clear();
-//        if (var != NULL)
-//            var->cloneDAG(nodesMap);
+        if (theNode == NULL)
+            throw RbException("Cannot instantiate a model with a NULL DAG node.");
+            
+        theNode->cloneDAG(nodesMap);
+        
         
         /* insert new nodes in dagNodes member frame and direct access vector */
-        std::map<const DAGNode*, DAGNode*>::iterator i = nodesMap.begin();
+        std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
+        
+        std::cerr << "Cloned dag with now " << nodesMap.size() << " nodes." << std::endl;
+        
+        std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator> nodeNeedToBeRemoved;
         while ( i != nodesMap.end() ) {
             
             DAGNode* theNewNode = (*i).second;
@@ -314,14 +322,22 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
                     if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
                         // remove the dag node holding the model constructor function from the dag
                         const std::set<DAGNode*>& parents = theDetNode->getParents();
-                        for (std::set<DAGNode*>::const_iterator it=parents.begin(); it!=parents.end(); it++) {
-                            DAGNode* node = *it;
+//                        for (std::set<DAGNode*>::const_iterator it=parents.begin(); it!=parents.end(); it++) {
+//                            DAGNode* node = *it;
+//                            theDetNode->removeParentNode(node);
+//                            node->removeChildNode( theDetNode );
+//                        }
+                        while ( parents.size() > 0 ) {
+                            DAGNode* node = *parents.begin();
                             theDetNode->removeParentNode(node);
                             node->removeChildNode( theDetNode );
                         }
                         
                         // remove the dag node holding the model constructor function also from the nodes map
-                        nodesMap.erase(i++);
+                        // we do the actual remove later so that we do not disturb the loop
+//                        nodesMap.erase(i++);
+                        nodeNeedToBeRemoved.push_back(i);
+                        ++i;
             
                     }
                     else {
@@ -348,9 +364,15 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
                 dagNodes.push_back( theNewNode );
             }
         }
+        
+        for (std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator>::iterator i = nodeNeedToBeRemoved.begin(); i != nodeNeedToBeRemoved.end(); i++) {
+            nodesMap.erase(*i);
+        }
+        
     }
-    
-    ConstantMemberObject::setMemberVariable(name, var);
+    else {
+        ConstantMemberObject::setMemberVariable(name, var);
+    }
 }
 
 

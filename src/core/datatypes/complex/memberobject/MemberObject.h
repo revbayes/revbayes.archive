@@ -56,8 +56,8 @@ class MemberObject: public RbLanguageObject {
         virtual bool                                hasMember(const std::string& name) const;                                           //!< Has this object a member with name
 
         // Member variable functions you do not have to override
-        const std::vector<RbVariablePtr>&           getMembers(void) const;                                                             //!< Get members
-        std::vector<RbVariablePtr>&                 getMembers(void);                                                                   //!< Get members
+        const std::map<std::string, RbVariablePtr>& getMembers(void) const;                                                             //!< Get members
+        std::map<std::string, RbVariablePtr>&       getMembers(void);                                                                   //!< Get members
         void                                        setMember(const std::string& name, Variable* var);                                   //!< Set member variable
 //        const TypeSpec&                     getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
 
@@ -79,7 +79,7 @@ class MemberObject: public RbLanguageObject {
         virtual const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Override to map member methods to internal functions
 
         // Members is the variable frame that stores member variables
-        std::vector<RbVariablePtr>                  members;                                                                            //!< Member variables
+        std::map<std::string, RbVariablePtr>        members;                                                                            //!< Member variables
 };
 
 #endif

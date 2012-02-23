@@ -50,7 +50,7 @@ public:
 //    const RbLanguageObject*             getValuePtr(void) const;                                                    //!< Get value 
 
     // DAG functions
-    DAGNode*                            cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
+    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;           //!< Clone entire graph
     bool                                isTouched (void) const { return false; }                                    //!< Touched by a move?
    
 

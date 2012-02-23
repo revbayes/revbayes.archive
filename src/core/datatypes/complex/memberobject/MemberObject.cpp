@@ -57,8 +57,12 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() 
 /** Copy constructor */
 MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
     
-    // copy the members
-//    members = m.members->clone();
+    // copy the members.
+    // Note, this is a shallow copy because the members are pointers to variables which itself are pointers to DAG nodes.
+    members = m.members;
+//    for (std::map<std::string, RbVariablePtr>::const_iterator i = m.members.begin(); i != m.members.end(); i++) {
+//        setMember(i->first, i->second);
+//    }
 }
 
 
@@ -195,12 +199,12 @@ const MethodTable& MemberObject::getMethods(void) const {
 }
 
 
-const std::vector<RbVariablePtr>& MemberObject::getMembers(void) const {
+const std::map<std::string, RbVariablePtr>& MemberObject::getMembers(void) const {
     return members;
 }
 
 
-std::vector<RbVariablePtr>& MemberObject::getMembers(void) {
+std::map<std::string, RbVariablePtr>& MemberObject::getMembers(void) {
     return members;
 }
 
@@ -258,8 +262,18 @@ void MemberObject::setMember(const std::string& name, Variable* var) {
     // the derived classes should know how to set their members
     setMemberVariable(name, var);
     
-    // just add this node to the vector
-    members.push_back(var);
+    // test whether this element already was inserted
+    std::map<std::string, RbVariablePtr>::iterator existingElement = members.find(name);
+    if ( members.count( name ) > 0) {
+        members[name] = var;
+        if ( members.count( name ) > 1) {
+            std::cerr << "Opsi dupsi" << std::endl;
+        }
+    }
+    else {
+        // just add this node to the map
+        members.insert( std::pair<std::string, RbVariablePtr>(name,var) );
+    }
 }
 
 

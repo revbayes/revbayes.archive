@@ -62,7 +62,7 @@ ConstantNode* ConstantNode::clone( void ) const {
 
 
 /** Cloning the entire graph only involves children for a constant node */
-DAGNode* ConstantNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
+DAGNode* ConstantNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNodes ) const {
 
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );

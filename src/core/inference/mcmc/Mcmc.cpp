@@ -237,7 +237,7 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
     /* Get the dag nodes from the model */
-    std::vector<DAGNode*> dagNodes = (static_cast<Model&>( model->getValue() ) ).getDAGNodes();
+    std::vector<RbDagNodePtr> dagNodes = (static_cast<Model&>( model->getValue() ) ).getDAGNodes();
 
     /* Get the moves and monitors */
     Vector& theMonitors = static_cast<Vector&>( monitors->getValue() );
@@ -265,7 +265,7 @@ void Mcmc::run(size_t ngen) {
     /* Get initial lnProbability of model */
     double lnProbability = 0.0;
     std::vector<double> initProb;
-    for (std::vector<DAGNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+    for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
         DAGNode* node = (*i);
         if (node->isTypeSpec(StochasticNode::getClassTypeSpec())) {
             StochasticNode* stochNode = dynamic_cast<StochasticNode*>( node );

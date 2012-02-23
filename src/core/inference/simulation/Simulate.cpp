@@ -272,7 +272,7 @@ void Simulate::run(size_t ndata) {
     std::cerr << "Initializing the simulation ..." << std::endl;
     
     /* Get the dag nodes from the model */
-    std::vector<DAGNode*> dagNodes = static_cast<Model&>( model->getValue() ).getDAGNodes();
+    std::vector<RbDagNodePtr> dagNodes = static_cast<Model&>( model->getValue() ).getDAGNodes();
     
     /* Get the stochastic nodes in an ordered manner */
     std::vector<StochasticNode*> orderedStochasticNodes; 

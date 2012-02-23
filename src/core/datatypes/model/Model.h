@@ -47,18 +47,18 @@ class Model : public ConstantMemberObject {
         void                                    printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
     
         const MemberRules&                      getMemberRules(void) const;                                 //!< Get member rules
+        void                                    setMemberVariable(const std::string &name, Variable* var);  //!< Set a member variable. We catch here setting of variable nodes
     
         // Model functions
         std::vector<DAGNode*>                   getClonedDagNodes(std::vector<DAGNode*> &orgNodes) const;   //!< Get cloned nodes corresponding to originals
-        std::vector<DAGNode*>                   getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
-        void                                    setMemberVariable(const std::string& name, Variable* var);  //!< set a new member with name. catch setting of sinknode
+        std::vector<RbDagNodePtr>               getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
 
 	private:
-        int                                     findIndexInVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;
+        int                                     findIndexInVector(const std::vector<RbDagNodePtr>& v, const DAGNode* p) const;
 
     // Member variables
-    std::vector<DAGNode*>                       dagNodes;                
-    std::map<const DAGNode*, DAGNode*>          nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
+    std::vector<RbDagNodePtr>                   dagNodes;                
+    std::map<const DAGNode*, RbDagNodePtr>      nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
 };
 
 #endif

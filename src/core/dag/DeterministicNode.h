@@ -55,7 +55,7 @@ public:
     void                                    swapParentNode( DAGNode* oldP, DAGNode* newP);           //!< Swap a parent node
 
     // DAG function you have to override
-    virtual DAGNode*                        cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;       //!< Clone entire graph
+    virtual DAGNode*                        cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
 
 protected:
 

@@ -34,6 +34,7 @@ class Variable;
 class VariableNode;
 class VectorNatural;
 class VectorString;
+class RbDagNodePtr;
 
 class DAGNode : public RbLanguageObject {
 
@@ -56,7 +57,7 @@ class DAGNode : public RbLanguageObject {
         virtual void                                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
     
         // DAG function you have to override
-        virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;//!< Clone graph
+        virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;   //!< Clone graph
 
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                          //!< Add child node

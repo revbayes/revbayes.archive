@@ -63,7 +63,7 @@ public:
     void                                unclamp(void);                                                      //!< Unclamp the node
     
     // DAG functions
-    DAGNode*                            cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;       //!< Clone entire graph
+    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
     void                                swapParentNode( DAGNode* oldP, DAGNode* newP);                      //!< Swap a parent node
 
 protected:

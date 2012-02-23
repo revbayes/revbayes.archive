@@ -97,7 +97,7 @@ DeterministicNode* DeterministicNode::clone() const {
 
 
 /** Clone the entire graph: clone children, swap parents */
-DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
+DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNodes ) const {
     
     if ( newNodes.find( this ) != newNodes.end() )
         return newNodes[ this ];
@@ -125,6 +125,7 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
         
         // clone the parameter DAG node
         DAGNode* theArgClone = args[i].getVariable().getDagNode()->cloneDAG(newNodes);
+        // TODO: I don't think that we should create a new variable. That will destroy our dependencies structure.
         copyArgs[i].setVariable(new Variable(theArgClone) );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
