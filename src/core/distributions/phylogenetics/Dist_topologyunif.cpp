@@ -351,7 +351,7 @@ void Dist_topologyunif::setMemberVariable( const std::string& name, Variable* va
     if ( name == "numberTaxa" ) {
         numTaxa = var;
     } 
-    else if ( name == "idRooted" ) {
+    else if ( name == "isRooted" ) {
         isRooted = var;
     }
     else if ( name == "isBinary" ) {
