@@ -25,7 +25,6 @@
 #include "RbObject.h"
 #include "RbOptions.h"
 #include "SyntaxFunctionCall.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -162,7 +161,8 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
     }
     else {
 
-        DAGNode* theNode = variable->evaluateContent( env )->getDagNode();
+        RbVariablePtr theVar = variable->evaluateContent( env );
+        DAGNode* theNode = theVar->getDagNode();
         if ( theNode == NULL || !theNode->getValue().isTypeSpec( MemberObject::getClassTypeSpec() ) )
             throw RbException( "Variable does not have member functions" );
 

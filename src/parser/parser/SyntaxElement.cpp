@@ -17,7 +17,6 @@
 
 #include "RbUtil.h"
 #include "SyntaxElement.h"
-#include "VectorString.h"
 
 
 

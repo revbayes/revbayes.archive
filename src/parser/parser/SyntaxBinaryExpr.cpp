@@ -25,7 +25,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "SyntaxBinaryExpr.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 

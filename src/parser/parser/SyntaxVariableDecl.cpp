@@ -21,7 +21,6 @@
 #include "RbOptions.h"
 #include "RbString.h"
 #include "SyntaxVariableDecl.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <iostream>

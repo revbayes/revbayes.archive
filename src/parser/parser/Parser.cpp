@@ -21,7 +21,6 @@
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "RbString.h"
-#include "VectorString.h"
 #include "SyntaxAssignExpr.h"
 #include "SyntaxElement.h"
 #include "SyntaxFormal.h"

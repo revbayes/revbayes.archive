@@ -16,9 +16,8 @@
 #ifndef SyntaxForCondition_H
 #define SyntaxForCondition_H
 
-#include "AbstractVector.h"
-#include "VectorInteger.h"
 #include "SyntaxElement.h"
+#include "Vector.h"
 
 #include <iostream>
 #include <list>
@@ -53,7 +52,7 @@ class SyntaxForCondition : public SyntaxElement {
     protected:
         RbString*                   varName;                                                                //!< The name of the loop variable
         SyntaxElement*              inExpression;                                                           //!< The in expression (a vector of values)
-        AbstractVector*             vector;                                                                 //!< Vector result of 'in' expression
+        Container*                  vector;                                                                 //!< Vector result of 'in' expression
         int                         nextElement;                                                            //!< Next element in vector
     
 };

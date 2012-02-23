@@ -18,7 +18,6 @@
 #include "ConstantNode.h"
 #include "RbLanguageObject.h"
 #include "SyntaxConstant.h"
-#include "VectorString.h"
 
 
 /** Construct from value */

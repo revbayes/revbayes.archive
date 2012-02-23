@@ -19,7 +19,6 @@
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "SyntaxLabeledExpr.h"
-#include "VectorString.h"
 
 #include <sstream>
 

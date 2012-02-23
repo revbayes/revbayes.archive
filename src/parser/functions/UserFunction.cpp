@@ -22,7 +22,6 @@
 #include "SyntaxElement.h"
 #include "TypeSpec.h"
 #include "UserFunction.h"
-#include "VectorString.h"
 
 
 #include <list>

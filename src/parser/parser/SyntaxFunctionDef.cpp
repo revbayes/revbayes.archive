@@ -19,7 +19,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbObject.h"
-#include "VectorString.h"
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
 #include "Workspace.h"

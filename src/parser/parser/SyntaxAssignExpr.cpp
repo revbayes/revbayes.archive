@@ -25,8 +25,6 @@
 #include "SyntaxFunctionCall.h"
 #include "StochasticNode.h"
 #include "VariableSlot.h"
-#include "VectorNatural.h"
-#include "VectorString.h"
 #include "SyntaxAssignExpr.h"
 #include "Workspace.h"
 #include "ConstructorFunction.h"

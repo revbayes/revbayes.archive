@@ -21,7 +21,6 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "Signals.h"
-#include "VectorString.h"
 #include "SyntaxAssignExpr.h"
 #include "SyntaxForCondition.h"
 #include "SyntaxStatement.h"

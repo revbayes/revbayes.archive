@@ -13,15 +13,12 @@
  * $Id$
  */
 
-#include "AbstractVector.h"
 #include "ConstantNode.h"
 #include "Environment.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "SyntaxForCondition.h"
-#include "VectorNatural.h"
-#include "VectorString.h"
 
 #include <cassert>
 #include <sstream>
@@ -151,10 +148,10 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
     const RbObject& theValue = theNode->getValue();
 
     // Check that it is a vector
-    if ( theValue.isTypeSpec( AbstractVector::getClassTypeSpec() ) == false ) {
+    if ( theValue.isTypeSpec( Container::getClassTypeSpec() ) == false ) {
        throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = dynamic_cast<AbstractVector*>(theValue.clone());
+    vector = dynamic_cast<Container*>(theValue.clone());
 
     // Initialize nextValue
     nextElement = 0;
