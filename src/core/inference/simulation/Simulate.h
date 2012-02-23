@@ -55,7 +55,6 @@ public:
     
     // Simulate functions
     void                        run(size_t ndata);                                                                      //!< Simulates ndata data elements
-    Vector*                     getValues(RbString varName);                                                            //!< Get the values for variable with name varName
     
     
 protected:

@@ -78,6 +78,10 @@ const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, co
         run(n);
         return RbNullObject::getInstance();
     }
+    else if ( name == "getMonitors" ) {
+        Vector& mons = static_cast<Vector&>( monitors->getValue() );
+        return mons;
+    }
 
     return MemberObject::executeOperationSimple( name, args );
 }
@@ -131,13 +135,18 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 const MethodTable& Mcmc::getMethods(void) const {
 
     static MethodTable methods = MethodTable();
-    static ArgumentRules* updateArgRules = new ArgumentRules();
     static bool          methodsSet = false;
 
     if (!methodsSet) {
-
+        
+        // method "run" for "n" generations
+        ArgumentRules* updateArgRules = new ArgumentRules();
         updateArgRules->push_back( new ValueRule( "generations", Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules) );
+        
+        // get Monitors
+        ArgumentRules* getMonitorsRules = new ArgumentRules();
+        methods.addFunction("getMonitors", new MemberFunction( TypeSpec(Vector::getClassTypeSpec(), new TypeSpec(Monitor::getClassTypeSpec()) ), getMonitorsRules) );
 
         methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
@@ -359,13 +368,16 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Opening file and printing headers ..." << std::endl;
     for (size_t i=0; i<theMonitors.size(); i++) {
         // get the monitor
-        FileMonitor& theMonitor = static_cast<FileMonitor&>( theMonitors.getElement(i) );
-        
-        // open the file stream for the monitor
-        theMonitor.openStream();
-        
-        // print the header information
-        theMonitor.printHeader();
+        if (theMonitors.getElement(i).isTypeSpec( FileMonitor::getClassTypeSpec() ) ) {
+            
+            FileMonitor& theMonitor = static_cast<FileMonitor&>( theMonitors.getElement(i) );
+            
+            // open the file stream for the monitor
+            theMonitor.openStream();
+            
+            // print the header information
+            theMonitor.printHeader();
+        }
     }
 
 
@@ -392,7 +404,7 @@ void Mcmc::run(size_t ngen) {
     
     /* Monitor */
     for (size_t i=0; i<theMonitors.size(); i++) {
-        static_cast<FileMonitor&>( theMonitors.getElement(i) ).monitor(0);
+        static_cast<Monitor&>( theMonitors.getElement(i) ).monitor(0);
     }
 
     for (unsigned int gen=1; gen<=ngen; gen++) {
@@ -444,7 +456,7 @@ void Mcmc::run(size_t ngen) {
 
         /* Monitor */
         for (size_t i=0; i<theMonitors.size(); i++) {
-            static_cast<FileMonitor&>( theMonitors.getElement(i) ).monitor(gen);
+            static_cast<Monitor&>( theMonitors.getElement(i) ).monitor(gen);
         }
 
         /* Print to screen */

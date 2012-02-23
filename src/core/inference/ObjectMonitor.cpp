@@ -18,8 +18,10 @@
 #include "DagNodeContainer.h"
 #include "Ellipsis.h"
 #include "Integer.h"
+#include "MemberFunction.h"
 #include "ObjectMonitor.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
@@ -50,6 +52,19 @@ ObjectMonitor::~ObjectMonitor() {
 ObjectMonitor* ObjectMonitor::clone(void) const {
     
     return new ObjectMonitor(*this);
+}
+
+
+/** Map calls to member methods */
+const RbLanguageObject& ObjectMonitor::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+    
+    if (name == "getValues") {
+        const RbString& name = static_cast<const RbString&>( args[0].getVariable().getValue() );
+        
+        return getValues( name );
+    }
+    
+    return MemberObject::executeOperationSimple( name, args );
 }
 
 
@@ -93,6 +108,28 @@ const MemberRules& ObjectMonitor::getMemberRules( void ) const {
     }
     
     return memberRules;
+}
+
+
+/** Get methods */
+const MethodTable& ObjectMonitor::getMethods( void ) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool             methodsSet = false;
+    
+    if ( !methodsSet ) {
+        
+        ArgumentRules* getValues = new ArgumentRules();
+        getValues->push_back( new ValueRule( "name", RbString::getClassTypeSpec() ) );
+        
+        methods.addFunction( "getValues", new MemberFunction( Vector::getClassTypeSpec(), getValues ) );
+        
+        methods.setParentTable( &Monitor::getMethods() );
+        
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 
@@ -149,12 +186,13 @@ void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
 
 
 /** returns the values contained in the values vector for variable with name varName */
-Vector* ObjectMonitor::getValues(const RbString& varName) {
+Vector& ObjectMonitor::getValues(const RbString& varName) {
     std::map<RbString,Vector>::iterator it = values.find(varName);
+    
     if (it != values.end()) {
-        Vector* toReturn = it->second.clone();
-        return toReturn ;
+        Vector& toReturn = it->second;
+        return toReturn;
     }
     
-    return NULL;
+    throw RbException("Could not find values in object monitor for name " + varName);
 }

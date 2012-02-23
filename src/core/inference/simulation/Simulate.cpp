@@ -75,12 +75,6 @@ const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name
         run(n);
         return RbNullObject::getInstance();
     }
-    if (name == "getValues") {
-        const RbLanguageObject& argument = args[0].getVariable().getValue();
-        const RbString& n = static_cast<const RbString&>( argument ).getValue();
-        Vector* vec = getValues(n);
-        return *vec;
-    }
 
     return MemberObject::executeOperationSimple( name, args );
 }
@@ -121,7 +115,6 @@ const MemberRules& Simulate::getMemberRules(void) const {
         
         memberRules.push_back( new ValueRule ( "model"     , Model::getClassTypeSpec()    ) );
         memberRules.push_back( new ValueRule ( "monitors"  , TypeSpec(Vector::getClassName(), NULL, new TypeSpec(Monitor::getClassTypeSpec()) ) ) );
-//        memberRules.push_back( new ValueRule ( "objectMonitors", TypeSpec(Vector_name, new TypeSpec(ObjectMonitor_name) ) ) );
         
         rulesSet = true;
     }
@@ -143,8 +136,7 @@ const MethodTable& Simulate::getMethods(void) const {
         
         updateArgRules->push_back( new ValueRule( "dataElements", Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules ) );
-        getValuesArgRules->push_back( new ValueRule( "varName", RbString::getClassTypeSpec()     ) );
-        methods.addFunction("getValues", new MemberFunction( Vector::getClassTypeSpec(), getValuesArgRules ) );
+  
         methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
@@ -330,21 +322,4 @@ void Simulate::run(size_t ndata) {
     std::cerr << "Finished simulating data" << std::endl;
     
     std::cout << std::endl;
-}
-
-/** Get the values for variable with name varName */
-Vector* Simulate::getValues(RbString varName) {
-    Vector& objectMonitors = static_cast<Vector&>( monitors->getValue() );
-    if (objectMonitors.size() == 0) {
-        std::cerr << "Error: No objectMonitor is included in the simulate object. We therefore cannot get the values of variable "<< varName <<std::endl;
-        return NULL;
-    }
-    for (size_t i=0; i<objectMonitors.size(); i++) {
-        if (static_cast<ObjectMonitor&>( objectMonitors[i] ).monitorsVariable(varName) ) {
-            Vector* toReturn = static_cast<ObjectMonitor&>( objectMonitors[i] ).getValues(varName) ;
-            return (toReturn); 
-        }
-    }
-    std::cerr << "Error: variable "<< varName << " has not been monitored." <<std::endl;
-    return NULL;
 }
