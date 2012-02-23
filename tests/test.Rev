@@ -1,3 +1,15 @@
+# testing the datatypes
+source("datatypes/test.Rev")
+clear()
+
+# testing the conditional statements (if, if-else, if-else if-else)
+source("conditions/test.Rev")
+clear()
+
+# testing the loops
+source("loops/test.Rev")
+clear()
+
 # testing math stuff
 source("math/test.Rev")
 clear()
@@ -14,12 +26,6 @@ clear()
 source("user functions/test.Rev")
 clear()
 
-# an MCMC on the normal model
-#source("normaltest.Rev")
-#clear()
-
-# a testfile for the normalmodel with known expectations
-#source("normalcheck.Rev")
-
-# A simple phylogenetic model test
-#source("phylotest.Rev")
+# testing some MCMC
+source("MCMC/test.Rev")
+clear()
