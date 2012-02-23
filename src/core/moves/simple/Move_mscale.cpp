@@ -102,7 +102,7 @@ double Move_mscale::perform( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode*        nodePtr = static_cast<StochasticNode*>( nodes[0] );
+    StochasticNode*        nodePtr = static_cast<StochasticNode*>( node->getDagNode() );
     const RealPos&         l       = static_cast<const RealPos&>( lambda->getValue() );
     const RealPos&         curVal  = static_cast<const RealPos&>( nodePtr->getValue() );
 
@@ -115,5 +115,21 @@ double Move_mscale::perform( void ) {
 
     // Return Hastings ratio
     return log( newVal / curVal );
+}
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void Move_mscale::setMemberVariable(std::string const &name, Variable* var) {
+    
+    // test whether we want to set the variable 
+    if ( name == "lambda" ) {
+        lambda = var;
+    } 
+    else if ( name == "variable" ) {
+        node = var;
+    }
+    else {
+        MoveSimple::setMemberVariable(name, var);
+    }
 }
 

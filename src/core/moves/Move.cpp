@@ -203,46 +203,13 @@ void Move::resetCounters(void) {
     numTried    = 0;
 }
 
-/** Set member variable. We catch here setting of the stochastic nodes to add them to our internal vector */
+/** We catch here the setting of the member variables to store our parameters. */
 void Move::setMemberVariable(std::string const &name, Variable* var) {
     
     // test whether we want to set the variable 
-    if (name == "variable") {
-        // clear the nodes
-        nodes.clear();
-        
-        // test whether we want to set multiple variable
-        if (var->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
-            DagNodeContainer& container = dynamic_cast<DagNodeContainer&>( var->getValue() );
-            
-            // add all nodes
-            for (size_t i=0; i<container.size(); i++) {
-                RbObject& theElement = container.getElement(i);
-                
-                // check if it is a stochastic node
-                if (theElement.isTypeSpec( StochasticNode::getClassTypeSpec() )) {
-                    // cast to stochastic node
-                    StochasticNode& theNode = dynamic_cast<StochasticNode&>( theElement );
-                    
-                    // add
-                    nodes.push_back(theNode.clone());
-                }
-                else {
-                    throw RbException("Cannot add non variable node to a move.");
-                }
-            }
-        }
-        else if (var->isTypeSpec(StochasticNode::getClassTypeSpec())) {
-            // cast to stochastic node
-            StochasticNode* theNode = dynamic_cast<StochasticNode*>( var );
-            
-            // add
-            nodes.push_back(theNode);
-        }
-        else {
-            throw RbException("Cannot add non variable node to a move.");
-        }
-    } // we do not want that the nodes are added as member objects
+    if (name == "weight") {
+        weight = var;
+    } 
     else {
         ConstantMemberObject::setMemberVariable(name, var);
     }

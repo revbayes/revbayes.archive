@@ -110,7 +110,7 @@ double Move_mslide::perform( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode* nodePtr = static_cast<StochasticNode*>( nodes[0] );
+    StochasticNode* nodePtr = static_cast<StochasticNode*>( node->getDagNode() );
     const RealPos& d = static_cast<const RealPos&>( delta->getValue() );
 
     double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();
@@ -135,5 +135,21 @@ double Move_mslide::perform( void ) {
     nodePtr->setValue( newVal.clone() );
 	
     return 0.0;
+}
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void Move_mslide::setMemberVariable(std::string const &name, Variable* var) {
+    
+    // test whether we want to set the variable 
+    if ( name == "delta" ) {
+        delta = var;
+    } 
+    else if ( name == "variable" ) {
+        node = var;
+    }
+    else {
+        MoveSimple::setMemberVariable(name, var);
+    }
 }
 

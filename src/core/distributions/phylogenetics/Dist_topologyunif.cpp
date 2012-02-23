@@ -364,7 +364,5 @@ void Dist_topologyunif::setMemberVariable( const std::string& name, Variable* va
         DistributionDiscrete::setMemberVariable( name, var );
     }
     
-    // TODO: recaluclation of the probability crashes if not all variable are already set!!!
-//    calculateTopologyProb();
 }
 
