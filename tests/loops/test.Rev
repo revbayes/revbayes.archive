@@ -1,0 +1,3 @@
+# testing the loops (for, while, do-while)
+source("loops/loops.Rev")
+clear()
