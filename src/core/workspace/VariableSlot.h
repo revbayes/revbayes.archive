@@ -60,6 +60,7 @@ public:
     const RbVariablePtr&                    getVariablePtr(void) const;                                             //!< Get the pointer to the variable
     virtual bool                            isValidVariable(const DAGNode& newVariable ) const;                     //!< Is newVariable valid for the slot?
     void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
+    void                                    setLabel(const std::string l) { label = l; }
     void                                    setVariable(const RbVariablePtr& var);                                  //!< Set a slot with a variable
     
 private:

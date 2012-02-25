@@ -333,7 +333,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
                 theSlot = &dynamic_cast<VariableSlot&>(subElement);
                 theDagNode = theSlot->getDagNode();
                 // TODO: Set the name of the node here!
-//                theSlot->setLabel(name);
+                theSlot->setLabel(name);
             }
 
         }
