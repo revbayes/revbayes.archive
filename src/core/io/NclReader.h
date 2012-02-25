@@ -76,7 +76,7 @@ class NclReader{
         void                                    setExcluded(const NxsCharactersBlock* charblock, CharacterData* cMat ) const;       //!< Set excluded taxa and excluded characters
 
         // methods for reading trees
-        void                                    constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
+        void                                    constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb, std::map<const TopologyNode*, std::map<std::string, RbLanguageObject*> >& nodeParameters);  //!< Constructs a tree from NCL
         std::vector<TreePlate* >*               readTrees(const char* fileName, const std::string fileFormat);                  //!< Reads trees contained in a file
         std::vector<TreePlate* >*               convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
         TreePlate*                              translateNclSimpleTreeToTree(NxsSimpleTree &nTree,const NxsTaxaBlock *tb);      //!< Translate a single NCL tree into a RevBayes tree

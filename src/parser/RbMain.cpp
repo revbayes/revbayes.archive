@@ -10,6 +10,7 @@
 #include "RbSettings.h"
 #include "Workspace.h"
 #include "UserInterface.h"
+#include "RbVersion.h"
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -18,11 +19,8 @@
 int main(int argc, char **argv) {
 
     // Print a nifty message
-    UserInterface::userInterface().output("\n\n", false);
-    UserInterface::userInterface().output("                             RevBayes\n", false);
-    UserInterface::userInterface().output("          An R-like environment for phylogenetic analysis", false);
-    UserInterface::userInterface().output("                     using Bayesian inference\n", false);
-    UserInterface::userInterface().output("             Released under the GPL license, version 3\n\n", false);
+    RbVersion version = RbVersion();
+    UserInterface::userInterface().output(version.getHeader(), false);
 
     RbSettings::userSettings().initializeUserSettings();
     Help::getHelp().initializeHelp("~/help/");

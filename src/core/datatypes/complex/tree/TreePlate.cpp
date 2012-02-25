@@ -43,12 +43,19 @@ TreePlate::TreePlate(void) : MutableMemberObject( getMemberRules() ), orderingTo
 
 
 /* Copy constructor */
-TreePlate::TreePlate(const TreePlate& t) : MutableMemberObject( t ), orderingTopology( NULL ) {
+TreePlate::TreePlate(const TreePlate& t) : MutableMemberObject( t ), orderingTopology( t.orderingTopology ) {
+    
+    // for now we just do a shallow copy
+    nodeVariableNames = t.nodeVariableNames;
+    
     
 //    if (t.orderingTopology != NULL)
 //        orderingTopology = t.orderingTopology->clone();
 //    else
 //        orderingTopology = NULL;
+    
+    // clear the member variables because we need to set the correct matches
+//    memberVariables.clear();
 }
 
 
@@ -194,35 +201,11 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
     if (name == "addVariable") 
         {
         // get the name of the variable
-        const std::string& varName = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
+        const std::string& varName  = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
+        const TopologyNode& theNode = static_cast<const TopologyNode&>( args[1].getVariable().getValue() );
+        const RbVariablePtr& theVar = args[2].getVariablePtr();
         
-        // check if a container already exists with that name
-        if (!memberVariables.existsVariable(varName)) 
-            {
-            // we don't have a container for this variable name yet
-            // so we just create one
-            Variable* var = new Variable( new ConstantNode( new DagNodeContainer( static_cast<const Topology&>( orderingTopology->getValue() ).getNumberOfNodes() ) ) );
-            
-            memberVariables.addVariable(varName, var );
-            
-            // and we add it to our names list
-            nodeVariableNames.push_back(varName);
-            }
-        
-        // get the container with the variables for this node
-        DagNodeContainer& vars = static_cast<DagNodeContainer&>( memberVariables[varName].getValue() );
-        
-        // get the variable
-        const Variable& var = args[1].getVariable();
-        
-        // get the node we want to associate it too
-        const TopologyNode& theNode = static_cast<const TopologyNode&>( args[2].getVariable().getValue() );
-        
-        // get the index of the node
-        size_t nodeIndex = getNodeIndex(theNode);
-        
-        // set the variable
-        vars.setElement(nodeIndex - 1, var.clone() );
+        setNodeVariable(theNode, varName, theVar);
         
         return RbNullObject::getInstance();
         }
@@ -253,7 +236,7 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
         }
     else 
         {
-        return MemberObject::executeOperationSimple( name, args );
+        return MutableMemberObject::executeOperationSimple( name, args );
         }
 }
 
@@ -408,4 +391,36 @@ void TreePlate::setMemberVariable(const std::string& name, Variable* var) {
     }
 }
 
+
+/** Set the variable with identifier for a node */
+void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &name, RbLanguageObject *value) {
+    
+    setNodeVariable(node, name, new Variable( new ConstantNode(value) ) );
+}
+
+
+/** Set the variable with identifier for a node */
+void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &name, Variable *value) {
+    // check if a container already exists with that name
+    if (!memberVariables.existsVariable( name )) 
+    {
+        // we don't have a container for this variable name yet
+        // so we just create one
+        Variable* var = new Variable( new ConstantNode( new DagNodeContainer( static_cast<const Topology&>( orderingTopology->getValue() ).getNumberOfNodes() ) ) );
+        
+        memberVariables.addVariable(name, var );
+        
+        // and we add it to our names list
+        nodeVariableNames.push_back(name);
+    }
+    
+    // get the container with the variables for this node
+    DagNodeContainer& vars = static_cast<DagNodeContainer&>( memberVariables[name].getValue() );
+    
+    // get the index of the node
+    size_t nodeIndex = getNodeIndex(node);
+    
+    // set the variable
+    vars.setElement(nodeIndex - 1, value->clone() );
+}
 

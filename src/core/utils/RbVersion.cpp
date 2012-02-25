@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "Version.h"
+#include "RbVersion.h"
 
 RbVersion::RbVersion( void ) {
     

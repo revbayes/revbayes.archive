@@ -24,6 +24,7 @@
 #include "DnaState.h"
 #include "NclReader.h"
 #include "RbUtil.h"
+#include "Real.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "StringUtilities.h"
@@ -36,8 +37,17 @@
 
 
 /** Constructs a tree from NCL */
-void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb) {
+void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb, std::map<const TopologyNode*, std::map<std::string, RbLanguageObject*> >& nodeParameters) {
 
+    // add the branch length for the node
+    double edgeLength = tnNcl->GetEdgeToParent().GetDblEdgeLen();
+        
+    std::map<std::string, RbLanguageObject*> parameters;
+    parameters.insert(std::pair<std::string, RbLanguageObject*>("branchLength", new Real(edgeLength)));
+        
+    nodeParameters.insert(std::pair<TopologyNode*, std::map<std::string, RbLanguageObject*> >(tn, parameters));
+    
+    
     // get the children
     std::vector<NxsSimpleNode*> children = tnNcl->GetChildren();
     
@@ -58,7 +68,7 @@ void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpl
         child->setParent(tn);
         
         // recursive call for the child to parse the tree
-        constructTreefromNclRecursively(child, *it, tb);
+        constructTreefromNclRecursively(child, *it, tb, nodeParameters);
         }
 }
 
@@ -192,7 +202,7 @@ std::vector<TreePlate*>* NclReader::convertTreesFromNcl(void) {
                 {
 				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
 				NxsSimpleTree tree(ftd, -1, -1.0);
-                tree.WriteAsNewick(std::cout, true, true, true, tb);
+//                tree.WriteAsNewick(std::cout, true, true, true, tb);
 				TreePlate* rbTree = translateNclSimpleTreeToTree(tree,tb);
                 //! @todo Tracy: Make sure rbTreesFromFile is properly initialized before being used -- Fredrik
                 rbTreesFromFile = new std::vector<TreePlate*>(); // Temporary fix making the compiler happy
@@ -1212,7 +1222,7 @@ TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree, const N
     TopologyNode* root = new TopologyNode(name);
     
     // create a map which holds for each node a map of name value pairs.
-    std::map<TopologyNode*, std::map<std::string, RbLanguageObject> > nodeParameters;
+    std::map<const TopologyNode*, std::map<std::string, RbLanguageObject*> > nodeParameters;
     
 	// construct tree recursively
     constructTreefromNclRecursively(root, rn, tb, nodeParameters);
@@ -1230,5 +1240,15 @@ TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree, const N
     
     TreePlate* myTreePlateFromNcl = new TreePlate();
     myTreePlateFromNcl->setMember("topology", new Variable( new ConstantNode(myTreeFromNcl) ) );
+    
+    const std::vector<const TopologyNode*>& nodes = myTreeFromNcl->getNodes();
+    for (std::vector<const TopologyNode*>::const_iterator i = nodes.begin(); i != nodes.end(); i++) {
+        std::map<std::string, RbLanguageObject*>& params = nodeParameters.find( (*i) )->second;
+        
+        for (std::map<std::string, RbLanguageObject*>::iterator j = params.begin(); j != params.end(); j++) {
+            myTreePlateFromNcl->setNodeVariable( *(*i), j->first, j->second);
+        }
+    }
+    
 	return myTreePlateFromNcl;
 }

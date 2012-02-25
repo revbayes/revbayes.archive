@@ -38,7 +38,7 @@ MutableMemberObject::MutableMemberObject(const MemberRules& memberRules) : Membe
 
 /** Copy Constructor: we just delegate */
 MutableMemberObject::MutableMemberObject(const MutableMemberObject& m) : MemberObject(m) {
-    
+    memberVariables = m.memberVariables;
 }
 
 
