@@ -7,14 +7,14 @@
  * @brief Partial implementation of DeterministicNode
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-12-30 00:19:25 +0100 (Ons, 30 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
  * @extends DAGNode
  *
- * $Id: DeterministicNode.cpp 216 2009-12-29 23:19:25Z ronquist $
+ * $Id$
  */
 
 #include "ArgumentRule.h"

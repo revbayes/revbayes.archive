@@ -6,7 +6,7 @@
  * @brief Declaration of UserInterface
  *
  * (c) Copyright 2009-
- * @date Last modified: $Date: 2009-12-13 15:50:43 +0100 (Sön, 13 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @extends Frame
@@ -14,7 +14,7 @@
  * @version 1.0
  * @since version 1.0 2009-09-02
  *
- * $Id: UserInterface.h 188 2009-12-13 14:50:43Z ronquist $
+ * $Id$
  */
 
 #ifndef UserInterface_H

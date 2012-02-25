@@ -7,14 +7,14 @@
  * @brief Implementation of StochasticNode
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2010-01-12 21:51:54 +0100 (Tis, 12 Jan 2010) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
  * @extends DAGNode
  *
- * $Id: StochasticNode.cpp 221 2010-01-12 20:51:54Z Hoehna $
+ * $Id$
  */
 
 #include "RbBoolean.h"

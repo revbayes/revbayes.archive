@@ -6,11 +6,11 @@
  * @brief Declaration of RbException
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-12-29 23:33:36 +0100 (Tis, 29 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: RbException.h 214 2009-12-29 22:33:36Z ronquist $
+ * $Id$
  */
 
 #ifndef RbException_H

@@ -7,13 +7,13 @@
  * @brief Implementation of Dist_cat
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-12-14 12:43:32 +0100 (Mån, 14 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
  *
- * $Id: MemberObject.h 194 2009-12-14 11:43:32Z ronquist $
+ * $Id$
  */
 
 #include "DAGNode.h"

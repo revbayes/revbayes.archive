@@ -6,7 +6,7 @@
  * @brief Implementation of Simulate
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-12-29 23:23:09 +0100 (Tis, 29 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
@@ -14,7 +14,7 @@
  * @interface Simulate
  * @package distributions
  *
- * $Id: Simulate.cpp 211 2009-12-14 14:31 boussau $
+ * $Id$
  */
 
 #include "ConstantNode.h"

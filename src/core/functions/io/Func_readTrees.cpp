@@ -99,7 +99,8 @@ const RbLanguageObject& Func_readTrees::executeFunction( void ) {
         
         // read the files in the map containing the file names with the output being a vector of pointers to
         // the character matrices that have been read
-        std::vector<TreePlate*>* m = reader.readTrees( *p, "nexus" );
+//        std::vector<TreePlate*>* m = reader.readTrees( *p, "nexus" );
+        std::vector<TreePlate*>* m = reader.readTrees( *p, "phylip" );
             
         if (m != NULL) {
             for (std::vector<TreePlate*>::iterator it = m->begin(); it != m->end(); it++) {

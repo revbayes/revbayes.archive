@@ -36,7 +36,7 @@
 
 
 /** Constructs a tree from NCL */
-void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl) {
+void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb) {
 
     // get the children
     std::vector<NxsSimpleNode*> children = tnNcl->GetChildren();
@@ -45,7 +45,10 @@ void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpl
     for (std::vector<NxsSimpleNode*>::iterator it = children.begin(); it!=children.end(); it++) 
         {
         // create a new tree node with given name
-        const std::string& name = (*it)->GetName(); 
+        std::string name = (*it)->GetName(); 
+            if ((*it)->IsTip()) {
+                name = tb->GetTaxonLabel( (*it)->GetTaxonIndex() );
+            }
         TopologyNode* child = new TopologyNode(name);
         
         // add new node as child
@@ -55,7 +58,7 @@ void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpl
         child->setParent(tn);
         
         // recursive call for the child to parse the tree
-        constructTreefromNclRecursively(child, *it);
+        constructTreefromNclRecursively(child, *it, tb);
         }
 }
 
@@ -189,7 +192,8 @@ std::vector<TreePlate*>* NclReader::convertTreesFromNcl(void) {
                 {
 				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
 				NxsSimpleTree tree(ftd, -1, -1.0);
-				TreePlate* rbTree = translateNclSimpleTreeToTree(tree);
+                tree.WriteAsNewick(std::cout, true, true, true, tb);
+				TreePlate* rbTree = translateNclSimpleTreeToTree(tree,tb);
                 //! @todo Tracy: Make sure rbTreesFromFile is properly initialized before being used -- Fredrik
                 rbTreesFromFile = new std::vector<TreePlate*>(); // Temporary fix making the compiler happy
 				rbTreesFromFile->push_back( rbTree );
@@ -1115,7 +1119,7 @@ std::vector<CharacterData*> NclReader::readMatrices(const char* fileName, const 
 
 /** Read trees */
 std::vector<TreePlate*>* NclReader::readTrees(const std::string fn, const std::string fileFormat) {
-	
+    std::cerr << "Trying to read file:\t\t" << fn << std::endl;	
 	// check that the file exist
     if ( !fileExists(fn.c_str()) ) 
         {
@@ -1198,7 +1202,7 @@ void NclReader::setExcluded( const NxsCharactersBlock* charblock, CharacterData*
 
 
 /** Translate a single NCL tree into a RevBayes tree */
-TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
+TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree, const NxsTaxaBlock *tb) {
     
     // get the root from the ncl tree
     const NxsSimpleNode* rn = nTree.GetRootConst();
@@ -1207,8 +1211,11 @@ TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
     const std::string& name = rn->GetName();
     TopologyNode* root = new TopologyNode(name);
     
+    // create a map which holds for each node a map of name value pairs.
+    std::map<TopologyNode*, std::map<std::string, RbLanguageObject> > nodeParameters;
+    
 	// construct tree recursively
-    constructTreefromNclRecursively(root, rn);
+    constructTreefromNclRecursively(root, rn, tb, nodeParameters);
     
     // create a new simple tree
     // Tracy: Crap...sorry to break this part of the code. We now have only a single class that holds only the
@@ -1222,6 +1229,6 @@ TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
     myTreeFromNcl->setRoot(root);
     
     TreePlate* myTreePlateFromNcl = new TreePlate();
-    myTreeFromNcl->setMember("topology", new Variable( new ConstantNode(myTreeFromNcl) ) );
+    myTreePlateFromNcl->setMember("topology", new Variable( new ConstantNode(myTreeFromNcl) ) );
 	return myTreePlateFromNcl;
 }

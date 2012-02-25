@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @since Version 1.0, 2009-07-27
  *
- * $Id: RbObject.h 63 2009-11-18 00:05:57Z ronquist $
+ * $Id$
  */
 
 #ifndef RbLanguageObject_H

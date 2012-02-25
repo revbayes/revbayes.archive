@@ -403,8 +403,9 @@ void TreePlate::setMemberVariable(const std::string& name, Variable* var) {
     if ( name == "topology" ) {
         orderingTopology = var;
     }
-    
-    MemberObject::setMemberVariable(name, var);
+    else {
+        MemberObject::setMemberVariable(name, var);
+    }
 }
 
 

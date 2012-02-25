@@ -6,7 +6,7 @@
  * @brief Implementation of DAGNode
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2010-01-12 21:52:44 +0100 (Tis, 12 Jan 2010) $
+ * @date Last modified: $Date$
  * @author The REvBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
@@ -14,7 +14,7 @@
  * @interface Distribution
  * @extends RbObject
  *
- * $Id: DAGNode.cpp 222 2010-01-12 20:52:44Z Hoehna $
+ * $Id$
  */
 
 #include "DAGNode.h"

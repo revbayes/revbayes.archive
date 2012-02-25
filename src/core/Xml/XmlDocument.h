@@ -11,7 +11,7 @@
  * @brief Declaration of XmlDocument
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
+ * @date Last modified: $Date$
  * @author Sebastian Hoehna
  * @license GPL version 3
  * @version 1.0

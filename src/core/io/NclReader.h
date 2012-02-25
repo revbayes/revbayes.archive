@@ -6,7 +6,7 @@
  * @brief Declaration of NclReader
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-11-19 17:29:33 +0100 (Tor, 19 Nov 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
@@ -76,10 +76,10 @@ class NclReader{
         void                                    setExcluded(const NxsCharactersBlock* charblock, CharacterData* cMat ) const;       //!< Set excluded taxa and excluded characters
 
         // methods for reading trees
-        void                                    constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl);  //!< Constructs a tree from NCL
+        void                                    constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
         std::vector<TreePlate* >*               readTrees(const char* fileName, const std::string fileFormat);                  //!< Reads trees contained in a file
         std::vector<TreePlate* >*               convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
-        TreePlate*                              translateNclSimpleTreeToTree(NxsSimpleTree &nTree);                             //!< Translate a single NCL tree into a RevBayes tree
+        TreePlate*                              translateNclSimpleTreeToTree(NxsSimpleTree &nTree,const NxsTaxaBlock *tb);      //!< Translate a single NCL tree into a RevBayes tree
         
         MultiFormatReader                       nexusReader;                                                                    //!< The NCL object that reads the files
         std::set<std::string>                   warningsSummary;                                                                //!< A vector that contains the warnings that acumulate

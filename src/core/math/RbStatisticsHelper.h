@@ -8,11 +8,11 @@
  * @brief Namespace containing statistical functions
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-12-11 16:58:43 -0800 (Fre, 11 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: RbStatistics.h 203 2009-12-23 14:33:11Z Hoehna $
+ * $Id$
  */
 #ifndef RbStatisticsHelper_H
 #define RbStatisticsHelper_H

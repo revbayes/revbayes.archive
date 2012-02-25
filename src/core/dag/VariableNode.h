@@ -6,13 +6,13 @@
  * @brief Declaration of VariableNode
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-12-11 16:58:43 -0800 (Fre, 11 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
  *
- * $Id: DAGNode.h 187 2009-12-12 00:58:43Z jhuelsenbeck $
+ * $Id$
  */
 
 #ifndef VariableNode_H

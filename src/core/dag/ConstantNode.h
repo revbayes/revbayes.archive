@@ -7,14 +7,14 @@
  * @brief Declaration of ConstantNode
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-11-19 17:29:33 +0100 (Tor, 19 Nov 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
  * @extends DAGNode
  *
- * $Id: ConstantNode.h 69 2009-11-19 16:29:33Z ronquist $
+ * $Id$
  */
 
 #ifndef ConstantNode_H

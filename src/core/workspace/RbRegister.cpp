@@ -151,6 +151,7 @@
 #include "Func_exp.h"
 #include "Func_ln.h"
 #include "Func_log.h"
+#include "Func_mean.h"
 #include "Func_power.h"
 #include "Func_sin.h"
 #include "Func_sqrt.h"
@@ -396,6 +397,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "exp",       new Func_exp()   );
         addFunction( "ln",        new Func_ln()    );
         addFunction( "log",       new Func_log()   );
+        addFunction( "mean",      new Func_mean()  );
         addFunction( "power",     new Func_power() );
         addFunction( "sin",       new Func_sin()   );
         addFunction( "sqrt",      new Func_sqrt()  );
