@@ -36,7 +36,7 @@ for (i in tree.nnodes():1) {
    if (node[i].isRoot()) {
       bl[i] <- 0.0
    } else {
-      bl[i] ~ exp(lambda)
+      bl[i] ~ exponential(lambda)
    }
 
    tree.addVariable("branchLength", bl[i], node[i])

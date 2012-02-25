@@ -85,7 +85,7 @@ for (i in 1:nodeCount) {
    		else {
    			parent <- node.ancestor()
    			parentIndex <- tree.index(parent)	
-   			bl[i] ~ exp(lambda)
+   			bl[i] ~ exponential(lambda)
    			Q[i] := gtr(pi_unique[cluster_pi[i]], r_unique[cluster_r[i]])
 
    			if (node.isTip()) {
@@ -185,7 +185,7 @@ for (i in 1:nodeCount) {
    		else {
    			parent <- node.ancestor()
    			parentIndex <- tree.index(parent)	
-   			bl[i] ~ exp(lambda)
+   			bl[i] ~ exponential(lambda)
    			Q[i] := gtr(pi_unique[cluster_q[i]], r_unique[cluster_q[i]])
 
    			if (node.isTip()) {

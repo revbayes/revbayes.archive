@@ -18,6 +18,7 @@
 #include "VectorString.h"
 #include "ValueRule.h"
 #include "ConstantNode.h"
+#include "VariableNode.h"
 #include "DagNodeContainer.h"
 #include "DistributionDirichlet.h"
 #include "DistributionMultinomial.h"
@@ -200,7 +201,7 @@ const MemberRules& Mixture::getMemberRules(void) const {
 
 /** Print value for user */
 void Mixture::printValue(std::ostream& o) const {
-    std::cout <<"printValue"<<std::endl;
+
     o << "Parameter vector:\n";
     for ( size_t i = 0; i < parameters_->size(); i++ ) {
         DAGNode* theNode = static_cast<const VariableSlot&>( parameters_->getElement(i) ).getDagNode();
@@ -210,6 +211,11 @@ void Mixture::printValue(std::ostream& o) const {
     o << std::endl << std::endl;
 
     o << "Allocation vector:\n";
+    for ( size_t i = 0; i < allocationVector_->size(); i++ ) {
+        DAGNode* theNode = static_cast<const VariableSlot&>( allocationVector_->getElement(i) ).getDagNode();
+        theNode->printValue(o) ;
+        o << "\t";
+    }
 
     o << std::endl << std::endl;
 
@@ -231,8 +237,6 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
       }
      // (DagNodeContainer*) getParameter(index->getValue());
       return  getParameter(index.getValue());
-      
-
     }
     else if (name == "getParameters") {
        // return getParameters();
@@ -314,58 +318,69 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
     if ( name == "allocationVector" ) {
         allocationVector_ = static_cast<DagNodeContainer*>( var->getValue().clone() );
     }
-    if ( name == "parameters" ) {
+    else if ( name == "parameters" ) {
         parameters_ = static_cast<DagNodeContainer*>( var->getValue().clone() );
+        if (classProbabilities_ == 0) {
+          std::vector<double> v(parameters_->size(), 1.0);
+          RandomNumberGenerator* rng = GLOBAL_RNG;
+          classProbabilities_ = new VectorRealPos( RbStatistics::Dirichlet::rv(v, *rng) );
+          std::cout << "classProbabilities_->size() "<< classProbabilities_->size() <<std::endl;
+        }
+
     }
-    if ( name == "classProbabilities" ) {
+    else if ( name == "classProbabilities" ) {
         classProbabilities_ =  static_cast<VectorRealPos*>( var->getValue().clone() );
     }
-    if ( name == "numObservations" ) {
+    else if ( name == "numObservations" ) {
       int numObservations = static_cast<Integer&>( var->getValue() ).getValue();
       if (allocationVector_ != 0) {
         throw RbException("Mixture already constructed. Cannot reconstruct it in Mixture::setMemberVariable.");
       }
       else {
+        std::cout << "numObservations: "<< numObservations<<std::endl;
         RandomNumberGenerator* rng = GLOBAL_RNG;
-        if (classProbabilities_ == 0) {
-          std::vector<double> v(numObservations, 1.0);
-          classProbabilities_ = new VectorRealPos( RbStatistics::Dirichlet::rv(v, *rng) );
-        }
         std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)numObservations, *rng);
         allocationVector_ = new DagNodeContainer (numObservations);
         for (size_t i = 0 ; i < numObservations ; i ++ ) {
+          std::cout <<"allocationVec[i] "<<allocationVec[i] <<std::endl;
          allocationVector_->setElement(i, new Variable(new ConstantNode( new Integer( allocationVec[i] ) ) ) );
+    //      allocationVector_->setElement(i, new ConstantNode( new Integer( allocationVec[i] ) ) ) ;
         }
         std::cout << "Size of the vector: "<< allocationVector_->size()<<std::endl;
         
-        //TEST
-        std::cout <<"setMemberVariable"<<std::endl;
-        const Variable& slot = static_cast<const Variable&>( allocationVector_->getElement(0) );
-        std::cout <<"setMemberVariable 2"<<std::endl;
-        const Integer& nat = static_cast<const Integer&>( slot.getValue() );
-        std::cout <<"setMemberVariable 3"<<std::endl;
+        
+        RbObject& elemPtr = allocationVector_->getElement(0);
+        DAGNode* theNode = static_cast<VariableSlot&>( elemPtr ).getVariable().getDagNode();
+        const Integer& nat = static_cast<const Integer&>( theNode->getValue() );
         int formerlyAssignedValue = nat.getValue();
         std::cout <<"setMemberVariable 4: "<< formerlyAssignedValue<<std::endl;
+        
+        
+        for ( size_t i = 0; i < allocationVector_->size(); i++ ) {
+          DAGNode* theNode = static_cast<const VariableSlot&>( allocationVector_->getElement(i) ).getDagNode();
+          theNode->printValue(std::cout) ;
+          std::cout << "\t";
+        }
 
         
-        
-        //TEST
-       /* const VariableSlot* slot = static_cast<const VariableSlot*>( allocationVector_->getElement(0) );
-        std::cout <<"here"<<std::endl;
-        const Variable* tmp_var = slot->getVariable();
-        std::cout <<"here 2"<<std::endl;
-        tmp_var->getValue();
-        std::cout <<"here 3"<<std::endl;*/
-        
         indexAllocationVector();
+        
+        for ( size_t i = 0; i < allocationVector_->size(); i++ ) {
+          DAGNode* theNode = static_cast<const VariableSlot&>( allocationVector_->getElement(i) ).getDagNode();
+          theNode->printValue(std::cout) ;
+          std::cout << "\t";
+        }
+
+        
         
         std::cout << allocationVector_->size()<<std::endl;
         
         
       }
     }
-
-    MemberObject::setMemberVariable(name, var);
+    else {
+      MemberObject::setMemberVariable(name, var);
+    }
 }
 
 
@@ -467,23 +482,14 @@ void Mixture::indexAllocationVector() {
   //Renumber the allocation vector
   for (unsigned int i = 0 ; i < allocationVector_->size() ; i++ ) { 
    
-    //TEST
-    const VariableSlot& slot = static_cast<const VariableSlot&>( allocationVector_->getElement(i) );
-    std::cout <<"indexAllocationVector"<<std::endl;
-    const Variable& tmp_var = slot.getVariable();
-    std::cout <<"indexAllocationVector 2"<<std::endl;
-    const  RbLanguageObject& lango = (const RbLanguageObject&)( tmp_var);
-    const Natural& nat = static_cast<const Natural&>(lango);
+    RbObject& elemPtr = allocationVector_->getElement(i);
+    DAGNode* theNode = static_cast<VariableSlot&>( elemPtr ).getVariable().getDagNode();
+    const Integer& nat = static_cast<const Integer&>( theNode->getValue() );
     int formerlyAssignedValue = nat.getValue();
-    std::cout <<"indexAllocationVector 3"<<std::endl;
-    
-    
-    
-  //  int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getVariable() ) ->getValue();
-    
- //   int formerlyAssignedValue = static_cast<const Natural*>( (const RbLanguageObject*)static_cast<const VariableSlot*>( (const RbObject*) (allocationVector_->getElement(i) ) )->getValue() ) ->getValue();
+    std::cout <<"indexAllocationVector: "<< formerlyAssignedValue<<std::endl;
+
     if (rvToNumber.find(formerlyAssignedValue) != rvToNumber.end())
-      allocationVector_->setElement(i, new Integer(rvToNumber[formerlyAssignedValue]) );
+      allocationVector_->setElement(i, new Variable( new ConstantNode( new Integer(rvToNumber[formerlyAssignedValue]) ) ) );
     else {
       const VariableSlot& slot = static_cast<const VariableSlot&>( (allocationVector_->getElement(i) ) );
       std::cout <<"indexAllocationVector 4"<<std::endl;
@@ -500,11 +506,16 @@ void Mixture::indexAllocationVector() {
       maxIntSeen = maxIntSeen +1;
     }
   }
+  std::cout <<"indexAllocationVector 7"<<std::endl;
   //Renumber the classProbabilities_ vector
   VectorRealPos& copy = *(classProbabilities_->clone());
-  for (unsigned int i = 0 ; i < classProbabilities_->size() ; i++ ) { 
+ // std::cout <<"indexAllocationVector 8: classProbabilities_->size(): "<< classProbabilities_->size() <<" copy.size(): "<< copy.size()  <<std::endl;
+  
+  for (unsigned int i = 0 ; i < copy.size() ; i++ ) { 
+    std::cout <<"indexAllocationVector 9"<<std::endl;
       classProbabilities_->AbstractVector::setElement(i, copy.getElement(rvToNumber[i] ).clone() );
   }
+  std::cout <<"indexAllocationVector 10"<<std::endl;
 }
 
 

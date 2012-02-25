@@ -2,7 +2,7 @@
 # Each branch has an independently drawn rate from a common underlying distribution
 #
 #Example: 
-# sigma ~ exp(1)
+# sigma ~ exponential(1)
 #  ~ gamma(sigma)
 
 
