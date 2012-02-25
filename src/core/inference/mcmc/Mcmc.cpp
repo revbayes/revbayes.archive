@@ -216,7 +216,6 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
                 
             }
         }
-        
     }
     else if ( name == "monitors" ) {
         

@@ -326,6 +326,9 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
           classProbabilities_ = new VectorRealPos( RbStatistics::Dirichlet::rv(v, *rng) );
           std::cout << "classProbabilities_->size() "<< classProbabilities_->size() <<std::endl;
         }
+      if (allocationVector_ == NULL ) {
+        
+      }
 
     }
     else if ( name == "classProbabilities" ) {
@@ -333,18 +336,34 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
     }
     else if ( name == "numObservations" ) {
       int numObservations = static_cast<Integer&>( var->getValue() ).getValue();
-      if (allocationVector_ != 0) {
+      if (allocationVector_ != NULL ) {
         throw RbException("Mixture already constructed. Cannot reconstruct it in Mixture::setMemberVariable.");
       }
       else {
         std::cout << "numObservations: "<< numObservations<<std::endl;
         RandomNumberGenerator* rng = GLOBAL_RNG;
+        if (classProbabilities_ != NULL) {
         std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)numObservations, *rng);
         allocationVector_ = new DagNodeContainer (numObservations);
         for (size_t i = 0 ; i < numObservations ; i ++ ) {
           std::cout <<"allocationVec[i] "<<allocationVec[i] <<std::endl;
          allocationVector_->setElement(i, new Variable(new ConstantNode( new Integer( allocationVec[i] ) ) ) );
     //      allocationVector_->setElement(i, new ConstantNode( new Integer( allocationVec[i] ) ) ) ;
+        }
+        }
+        else {
+          VectorRealPos* prop = new VectorRealPos (1);
+          prop->setElement(0,  new Real( 1.0 ) );
+          std::vector<int> allocationVec = RbStatistics::Multinomial::rv(prop->getValue(), (int)numObservations, *rng);
+          allocationVector_ = new DagNodeContainer (numObservations);
+          for (size_t i = 0 ; i < numObservations ; i ++ ) {
+            std::cout <<"allocationVec[i] "<<allocationVec[i] <<std::endl;
+            allocationVector_->setElement(i, new Variable(new ConstantNode( new Integer( allocationVec[i] ) ) ) );
+            //      allocationVector_->setElement(i, new ConstantNode( new Integer( allocationVec[i] ) ) ) ;
+          }
+
+          
+          
         }
         std::cout << "Size of the vector: "<< allocationVector_->size()<<std::endl;
         
