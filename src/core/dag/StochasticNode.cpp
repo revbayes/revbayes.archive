@@ -726,7 +726,10 @@ void StochasticNode::setInstantiated(bool inst) {
         
         type = ELIMINATED;
         
-        // I need to tell my parents that I'm eliminated
+        // I need to tell my children that I'm eliminated
+        for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
+            (*i)->setFactorRoot( factorRoot );
+        }
         
         // flag for recalculation
         needsProbabilityRecalculation = true;

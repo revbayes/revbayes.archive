@@ -87,5 +87,16 @@ StochasticNode* VariableNode::getFactorRoot(void) const {
  * Set the factor root. The factor root is the node which starts the likelihood elimination for the eliminated subgraph.
  */
 void VariableNode::setFactorRoot(StochasticNode* n)  {
-     factorRoot = n;
+    
+    // if we get a new factor root, we might want to tell that our children (only if we are eliminated ourselves)
+    if (factorRoot != n) {
+        if (isEliminated()) {
+            for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
+                (*i)->setFactorRoot( n );
+            }
+        }
+    }
+    
+    // finally set the factor root
+    factorRoot = n;
 }
