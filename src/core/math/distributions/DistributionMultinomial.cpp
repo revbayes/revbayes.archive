@@ -180,19 +180,25 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
  * \throws Does not throw an error.
  */
 std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, RandomNumberGenerator& rng) {
-    
+
     std::vector<int> x(p.size(),0);
-    double u = rng.uniform01();
-    double sum = 0.0;
-    for (size_t i=0; i<p.size(); i++)
+    for (unsigned int j=0; j< p.size(); j++)
+    {
+        double u = rng.uniform01();
+        double sum = 0.0;
+        for (size_t i=0; i<p.size(); i++)
         {
-        sum += p[i];
-        if (u < sum)
+            sum += p[i];
+            if (u < sum)
             {
-            x[i]++;
-            break;
+                break;
+                x[j]++;
+            }
+            else {
+                x[j]++;
             }
         }
+    }
 	return x;
 }
 
@@ -208,18 +214,21 @@ std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, Ran
  */
 std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, int n, RandomNumberGenerator& rng) {
     
-    std::vector<int> x(p.size(),0);
-    for (int i=0; i<n; i++)
+    std::vector<int> x(n,0);
+    for (unsigned int i=0; i<n; i++)
         {
         double u = rng.uniform01();
         double sum = 0.0;
         for (size_t j=0; j<p.size(); j++)
             {
-            sum += p[j];
-            if (u < sum)
+                sum += p[j];
+                if (u < sum)
                 {
-                x[j]++;
-                break;
+                    break;
+                    x[i]++;
+                }
+                else {
+                    x[i]++;
                 }
             }
         }

@@ -447,6 +447,8 @@
 		22FFB29A14E45618000F0364 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22FFB10B14E45618000F0364 /* TextEditorWindow.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
+		BD04B8CF14FA092300ED43F9 /* RbVersion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD04B8CD14FA092300ED43F9 /* RbVersion.cpp */; };
+		BD04B8D014FA092300ED43F9 /* RbVersion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD04B8CD14FA092300ED43F9 /* RbVersion.cpp */; };
 		BF205FCB14F83CCA001DE2E3 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205DE614F83CC9001DE2E3 /* BurninEstimatorContinuous.cpp */; };
 		BF205FCC14F83CCA001DE2E3 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205DE614F83CC9001DE2E3 /* BurninEstimatorContinuous.cpp */; };
 		BF205FCD14F83CCA001DE2E3 /* ConvergenceDiagnosticContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205DE814F83CC9001DE2E3 /* ConvergenceDiagnosticContinuous.cpp */; };
@@ -1473,6 +1475,8 @@
 		85CD0235133948C400318200 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		85CD0236133948C400318200 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BD04B8CD14FA092300ED43F9 /* RbVersion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RbVersion.cpp; sourceTree = "<group>"; };
+		BD04B8CE14FA092300ED43F9 /* RbVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RbVersion.h; sourceTree = "<group>"; };
 		BF205DE614F83CC9001DE2E3 /* BurninEstimatorContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BurninEstimatorContinuous.cpp; sourceTree = "<group>"; };
 		BF205DE714F83CC9001DE2E3 /* BurninEstimatorContinuous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BurninEstimatorContinuous.h; sourceTree = "<group>"; };
 		BF205DE814F83CC9001DE2E3 /* ConvergenceDiagnosticContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvergenceDiagnosticContinuous.cpp; sourceTree = "<group>"; };
@@ -3485,6 +3489,8 @@
 		BF205F9C14F83CC9001DE2E3 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				BD04B8CD14FA092300ED43F9 /* RbVersion.cpp */,
+				BD04B8CE14FA092300ED43F9 /* RbVersion.h */,
 				BF205F9D14F83CC9001DE2E3 /* RbConstants.h */,
 				BF205F9E14F83CC9001DE2E3 /* RbException.cpp */,
 				BF205F9F14F83CC9001DE2E3 /* RbException.h */,
@@ -4113,6 +4119,7 @@
 				BF20616614F83CCA001DE2E3 /* XmlElementTextNode.cpp in Sources */,
 				BF20616814F83CCA001DE2E3 /* XmlParser.cpp in Sources */,
 				BF20616A14F83CCA001DE2E3 /* XmlTag.cpp in Sources */,
+				BD04B8D014FA092300ED43F9 /* RbVersion.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4487,6 +4494,7 @@
 				BF20616514F83CCA001DE2E3 /* XmlElementTextNode.cpp in Sources */,
 				BF20616714F83CCA001DE2E3 /* XmlParser.cpp in Sources */,
 				BF20616914F83CCA001DE2E3 /* XmlTag.cpp in Sources */,
+				BD04B8CF14FA092300ED43F9 /* RbVersion.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

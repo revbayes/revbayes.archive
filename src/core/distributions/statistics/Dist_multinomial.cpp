@@ -161,7 +161,7 @@ double Dist_multinomial::pdf( const RbLanguageObject& value ) const {
 
 
 /**
- * This function generates an multinomial-distributed
+ * This function generates a multinomial-distributed
  * random variable.
  *
  * @brief Random draw from multinomial distribution
