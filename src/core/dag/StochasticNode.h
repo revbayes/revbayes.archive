@@ -4,6 +4,27 @@
  * from VariableNode. StochasticNode is used for DAG nodes holding stochastic
  * variables with an associated distribution object.
  *
+ * Stochastic nodes come in three flavors: instantiated, eliminated and summed-over.
+ *
+ * Instantiated: Instatiated stochastic nodes are the rather simple type. They have exactly one value
+ * at each time. A clamped node can also be considered as an instantiated node, though they cannot change there values.
+ * Instantiated nodes can changed their values when moves are attached to them. 
+ * The probability for this value is computed as simply the pdf. Note, instantiated nodes with non-instantiated parents
+ * behave differently.
+ *
+ * Summed-Over: Stochastic nodes on a discrete distribution can be summed over, e.g. if one is not interested
+ * in the actual value. The simplest and safe solution for this is to calculate the sum of the probability of each 
+ * possible value, multiply it by the likelihood of the value. For multiple nodes in a subgraph bein summed-over,
+ * we need the sum-product sequence. The probability of the actual node cannot be calculated in general,
+ * but the likelihood of the whole subgraph.
+ *
+ * Eliminated: Stochastic nodes which are summed-over can also, in some situations, be eliminated. Felsenstein's pruning
+ * algorithm uses eliminated nodes. They key feature of eliminated nodes is that eliminated nodes know the likelihood 
+ * of each possible value, given the current values of all other nodes. Eliminated nodes are usually at the bottom
+ * of the summed-over subgraph. 
+ * Any node must not have two eliminated parents. The strategy is to find as many as possible eliminated nodes and
+ * set the other nodes as summed-over.
+ *
  * @brief Declaration of StochasticNode
  *
  * (c) Copyright 2009- under GPL version 3

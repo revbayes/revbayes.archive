@@ -55,6 +55,7 @@
 #include "DagNodeContainer.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
+#include "Set.h"
 #include "Vector.h"
 #include "VectorBoolean.h"
 #include "VectorComplex.h"
@@ -210,6 +211,11 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new DagNodeContainer()             );
         addType( new MatrixComplex()                );
         addType( new MatrixReal()                   );
+        addTypeWithConstructor( "set",         new Set<Integer>()          );
+        addTypeWithConstructor( "set",         new Set<Natural>()          );
+        addTypeWithConstructor( "set",         new Set<NucleotideState>()  );
+        addTypeWithConstructor( "set",         new Set<Real>()             );
+        addTypeWithConstructor( "set",         new Set<RealPos>()          );
         addType( new Vector()                       );
         addType( new VectorBoolean()                );
         addType( new VectorInteger()                );

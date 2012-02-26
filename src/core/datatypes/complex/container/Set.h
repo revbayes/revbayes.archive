@@ -48,7 +48,11 @@ public:
     setType&                                        operator[](size_t i);                                           //!< Index op allowing change
     const setType&                                  operator[](size_t i) const;                                     //!< Const index op
     Set<setType>&                                   operator=(const Set<setType>& x);                               //!< Assignment operator
-    
+ 
+    // Member object function
+    const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
+    void                                            setMemberVariable(const std::string& name, Variable* var);      //!< Set member variable
+
     // Set functions
     void                                            clear(void);                                                    //!< Clear
     const setType&                                  find(const setType& x) const;                                   //!< Find the element being equal to that one
@@ -67,11 +71,13 @@ protected:
 
 #endif
 
-
+#include "Ellipsis.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
+#include "Vector.h"
 
 /** Set type of elements */
 template <typename setType>
@@ -270,6 +276,30 @@ RbObject& Set<setType>::getElement(size_t index) {
 }
 
 
+/** 
+ * Get the member rules
+ * We expect that a set is created by "set(x,...)". 'x' can be a vector of the required type.
+ * If 'x' is a single element, the parser should automatically convert 'x' into a vector.
+ * All other variables are for simplicity just single elements.
+ */
+template <typename setType>
+const MemberRules& Set<setType>::getMemberRules(void) const {
+    
+    static MemberRules memberRules = MemberRules();
+    static bool        rulesSet = false;
+    
+    if (!rulesSet) {
+        
+        memberRules.push_back( new ValueRule( "x"  , TypeSpec( Vector::getClassTypeSpec(), new TypeSpec( setType::getClassTypeSpec() ) ) ) );
+        memberRules.push_back( new Ellipsis( setType::getClassTypeSpec() ) );
+        
+        rulesSet = true;
+    }
+    
+    return memberRules;
+}
+
+
 template <typename setType>
 const std::set<setType* >& Set<setType>::getValue(void) const {
     return elements;
@@ -308,12 +338,9 @@ void Set<setType>::printValue( std::ostream& o ) const {
 /** Push an int onto the back of the vector after checking */
 template <typename setType>
 void Set<setType>::insert( setType *x ) {
-    if (x == NULL) {
-        elements.push_back( NULL );
-    }
-    else {
-        throw RbException( "Trying to set " + getClassName() + "[] with invalid value" );
-    }
+    
+    elements.insert( x );
+    
 }
 
 
@@ -326,4 +353,25 @@ size_t Set<setType>::size( void ) const {
     
 }
 
+
+/** Set a member variable */
+template <typename setType>
+void Set<setType>::setMemberVariable(const std::string& name, Variable* var) {
+    
+    if (name == "x") {
+        Vector& v = static_cast<Vector&>( var->getValue() );
+        
+        for (size_t i = 0; i < v.size(); i++) {
+            setType* element = static_cast<setType*>( v.getElement(i).clone() );
+            insert( element );
+        }
+    }
+    else if ( name == "" ) { // the ellipsis variables
+        setType* element = static_cast<setType*>( var->getValue().clone() );
+        insert( element);
+    }
+    else {
+        Container::setMemberVariable(name, var);
+    }
+}
 
