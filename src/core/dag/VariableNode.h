@@ -43,14 +43,19 @@ public:
 
     // DAG function you should not override
     void                                        addParentNode( DAGNode* p);                                                     //!< Add parent node
+    StochasticNode*                             getFactorRoot(void) const;
     bool                                        isTouched(void) const { return touched; }                                       //!< Is node touched by move or parser?
     void                                        removeParentNode(DAGNode* p) { parents.erase(p); }                              //!< Remove a child node
-
+    void                                        setFactorRoot(StochasticNode* r);
+    
     // DAG functions you may want to override
     virtual bool                                isConst(void) const { return false; }                                           //!< Is DAG node const value?
 
     // DAG functions you have to override
+    virtual double                              calculateSummedLnProbability(void) = 0;                                         //!< Calculate summed log conditional probability over all possible states
     virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone entire graph
+    virtual bool                                isEliminated(void) const = 0;
+    virtual void                                likelihoodsNeedUpdates() = 0;                                                   //!< Tell this node that the likelihoods need to be updated
     virtual void                                swapParentNode( DAGNode* oldP, DAGNode* newP) = 0;                              //!< Swap a parent node
 
 protected:
@@ -63,7 +68,8 @@ protected:
 //    virtual void                                        restoreMe(void) = 0;                                                        //!< Restore value of this nodes
 //    virtual void                                        touchMe(void) = 0;                                                          //!< Touch myself (flag for recalculation)
 
-    
+    StochasticNode*                             factorRoot;
+
     // Member variables
     bool                                        touched;                                                                        //!< Is touched by move?
 };

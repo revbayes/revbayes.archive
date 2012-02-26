@@ -321,7 +321,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
                 theSlot->getVariable().setDagNode(theDagNode);
             }
             
-            Container& con = static_cast<Container&>( theDagNode->getValue() );
+            DagNodeContainer& con = static_cast<DagNodeContainer&>( theDagNode->getValue() );
             // test if the container is large enough
             if (con.size() <= indexValue) {
                 con.resize(indexValue);

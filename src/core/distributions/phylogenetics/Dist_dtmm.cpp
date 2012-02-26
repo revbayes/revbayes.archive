@@ -117,6 +117,12 @@ const Simplex& Dist_dtmm::getProbabilityMassVector( void ) {
 }
 
 
+/** Get the state vector for this distribution */
+const std::vector<RbLanguageObject*>& Dist_dtmm::getStateVector( void ) const {
+    return stateVector;
+}
+
+
 /** Get random variable type */
 const TypeSpec& Dist_dtmm::getVariableType( void ) const {
     
@@ -141,6 +147,12 @@ double Dist_dtmm::lnPdf( const RbLanguageObject& value ) const {
     const TransitionProbabilityMatrix&    m      = static_cast<const TransitionProbabilityMatrix&>( transProbabilityMatrix->getValue() );
     const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( initialState->getValue() );
     const CharacterStateDiscrete&         stop   = static_cast<const CharacterStateDiscrete&     >( value );
+    
+    std::cerr << "Computing lnPdf of DTMM with:\t";
+    start.printValue(std::cerr);
+    std::cerr << " <-> ";
+    stop.printValue(std::cerr);
+    std::cerr << std::endl;
     
     // calculate the transition probability matrix
         
@@ -253,6 +265,16 @@ void Dist_dtmm::setMemberVariable( const std::string& name, Variable* var ) {
     }
     else if ( name == "a" ) {
         initialState = var;
+        
+        // reset the state vector
+        stateVector.clear();
+        CharacterStateDiscrete& c = static_cast<CharacterStateDiscrete&>( var->getValue() );
+        std::string states = c.getStateLabels();
+        for (int i = 0; i < c.getNumberOfStates(); i++) {
+            CharacterStateDiscrete* tmp = c.clone();
+            tmp->setState( states[i] );
+            stateVector.push_back(tmp);
+        }
     }
     else {
         DistributionDiscrete::setMemberVariable( name, var );

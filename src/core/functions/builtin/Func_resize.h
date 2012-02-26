@@ -47,14 +47,14 @@ protected:
     void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
   
 private:
-    void                        resizeVector(Container &vec, Environment *args, unsigned int numArg);
+    void                        resizeVector(AbstractVector &vec, Environment *args, unsigned int numArg);
   
     // arguments
     RbVariablePtr               container;
     std::vector<RbVariablePtr>  sizes;
     
     // function return value
-    Container*                  retValue;
+    AbstractVector*             retValue;
 };
 
 #endif
@@ -80,7 +80,7 @@ Func_resize* Func_resize::clone( void ) const {
   return new Func_resize( *this );
 }
 
-void Func_resize::resizeVector(Container &vec, Environment *args, unsigned int numArg) { 
+void Func_resize::resizeVector(AbstractVector &vec, Environment *args, unsigned int numArg) { 
     unsigned int nrows = ( static_cast<Natural&>( (*args)[numArg].getValue() ) ).getValue();
     for (unsigned int j = 0 ; j < vec.size() ; j ++) {
         if (vec.getElement(j).isTypeSpec(Vector::getClassTypeSpec() )) { //if element j already a vector
@@ -104,7 +104,7 @@ const RbLanguageObject& Func_resize::executeFunction( void ) {
 
     unsigned long nargs = args.size();
     //The identity of the object to resize
-    retValue = static_cast<Container*>( container->getValue().clone() );
+    retValue = static_cast<AbstractVector*>( container->getValue().clone() );
 
     if (nargs == 2) {
       //Resizing a vector
@@ -116,7 +116,7 @@ const RbLanguageObject& Func_resize::executeFunction( void ) {
         int nrows = ( static_cast<Natural&>( sizes[0]->getValue() ) ).getValue();
         
         if (!retValue->isTypeSpec(Vector::getClassTypeSpec())) {
-            retValue = static_cast<Container*>( retValue->convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(RbLanguageObject::getClassTypeSpec()) ) ) );
+            retValue = static_cast<AbstractVector*>( retValue->convertTo(TypeSpec(Vector::getClassName(), new TypeSpec( AbstractVector::getClassTypeSpec() ), new TypeSpec(RbLanguageObject::getClassTypeSpec()) ) ) );
         }
         
         retValue->resize(nrows);
@@ -136,7 +136,7 @@ const ArgumentRules& Func_resize::getArgumentRules( void ) const {
   
   if ( !rulesSet ) 
   {
-      argumentRules.push_back( new ValueRule( "x", Container::getClassTypeSpec() ) );
+      argumentRules.push_back( new ValueRule( "x", AbstractVector::getClassTypeSpec() ) );
       argumentRules.push_back( new ValueRule( "size", Natural::getClassTypeSpec() ) );
       argumentRules.push_back( new Ellipsis( Natural::getClassTypeSpec() ) );
     rulesSet = true;
@@ -174,7 +174,7 @@ const TypeSpec& Func_resize::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_resize::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Container::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = AbstractVector::getClassTypeSpec();
     return returnTypeSpec;
 }
 

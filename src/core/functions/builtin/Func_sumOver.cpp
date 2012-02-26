@@ -1,25 +1,25 @@
 /**
  * @file
- * This file contains the implementation of Func_setval, which is
- * the function used to clamp stochastic nodes to an observed value.
+ * This file contains the implementation of Func_sumOver, which is
+ * the function used to flag stochastic nodes to sum over its potential values.
  *
- * @brief Implementation of Func_setval
+ * @brief Implementation of Func_sumOver
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
+ * @date Last modified: $Date: 2012-02-25 10:17:07 +0100 (Sat, 25 Feb 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @package functions
  * @since Version 1.0, 2009-09-03
  *
- * $Id$
+ * $Id: Func_sumOver.cpp 1247 2012-02-25 09:17:07Z hoehna $
  */
 
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
-#include "Func_setval.h"
+#include "Func_sumOver.h"
 #include "Integer.h"
 #include "RbException.h"
 #include "RbNullObject.h"
@@ -34,15 +34,15 @@
 
 
 /** Clone object */
-Func_setval* Func_setval::clone( void ) const {
-
-    return new Func_setval( *this );
+Func_sumOver* Func_sumOver::clone( void ) const {
+    
+    return new Func_sumOver( *this );
 }
 
 
 /** Execute function */
-const RbLanguageObject& Func_setval::executeFunction( void ) {
-
+const RbLanguageObject& Func_sumOver::executeFunction( void ) {
+    
     // Get the stochastic node from the variable reference
     StochasticNode* theNode = dynamic_cast<StochasticNode*>( variable->getDagNode() );
     if ( !theNode )
@@ -62,42 +62,37 @@ const RbLanguageObject& Func_setval::executeFunction( void ) {
         }
     }
     
-    // The following call will throw an error if the value type is wrong
-    RbLanguageObject* newVal = value->getValue().clone();
-    if (!newVal->isTypeSpec(theNode->getDistribution().getVariableType() ) ) {
-        if (newVal->isConvertibleTo(theNode->getDistribution().getVariableType())) {
-            newVal = static_cast<RbLanguageObject*>( newVal->convertTo(theNode->getDistribution().getVariableType() ) );
-        } else {
-            throw RbException( "Cannot set the value of the stochastic node because the types do not match." );
-        }
-    }
-    theNode->setValue( newVal );
-
+    bool instantiated = !static_cast<RbBoolean&>( value->getValue() ).getValue();
+    theNode->setInstantiated( instantiated );
+    
+    // call a touch which will flag for recalculation of the probabilities
+    theNode->touch();
+    // we keep the new value and probabilities
     theNode->keep();
-
+    
     return RbNullObject::getInstance();
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_setval::getArgumentRules( void ) const {
-
+const ArgumentRules& Func_sumOver::getArgumentRules( void ) const {
+    
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
-
+    
     if ( !rulesSet ) {
-
+        
         argumentRules.push_back( new ValueRule ( "variable", RbObject::getClassTypeSpec() ) );
         argumentRules.push_back( new ValueRule ( "value",    RbObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
-
+    
     return argumentRules;
 }
 
 
 /** Get class name of object */
-const std::string& Func_setval::getClassName(void) { 
+const std::string& Func_sumOver::getClassName(void) { 
     
     static std::string rbClassName = "Set value function";
     
@@ -105,7 +100,7 @@ const std::string& Func_setval::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_setval::getClassTypeSpec(void) { 
+const TypeSpec& Func_sumOver::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
     
@@ -113,7 +108,7 @@ const TypeSpec& Func_setval::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& Func_setval::getTypeSpec( void ) const {
+const TypeSpec& Func_sumOver::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -122,7 +117,7 @@ const TypeSpec& Func_setval::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_setval::getReturnType( void ) const {
+const TypeSpec& Func_sumOver::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
@@ -130,7 +125,7 @@ const TypeSpec& Func_setval::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_setval::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_sumOver::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
     
     if ( name == "variable" ) {
         variable = var;

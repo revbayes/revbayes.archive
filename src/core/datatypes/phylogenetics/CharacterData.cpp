@@ -314,7 +314,7 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
                 {
                 RbObject& o = getElement(i, j);
                 Character& c = dynamic_cast<Character&>(o);
-                if (c == NULL)
+                if (&c == NULL)
                     throw RbException( "Problem retreiving character from Character Data object" );
                 std::string s = c.getStringValue();
                 

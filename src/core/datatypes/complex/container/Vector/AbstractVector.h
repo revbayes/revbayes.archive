@@ -35,7 +35,10 @@ class AbstractVector : public Container {
         static const std::string&       getClassName(void);                                                 //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                             //!< Get class type spec
         virtual void                    printValue(std::ostream& o) const;                                  //!< Print value for user
-            
+ 
+        // Member method inits
+        virtual const MethodTable&      getMethods(void) const;                                             //!< Get methods
+
         // Container functions you have to override
         virtual void                    pop_back(void) = 0;                                                 //!< Drop element at back
         virtual void                    pop_front(void) = 0;                                                //!< Drop element from front
@@ -60,6 +63,9 @@ class AbstractVector : public Container {
         AbstractVector(const AbstractVector &v);                                                            //!< Copy Constructor
         
         AbstractVector&                 operator=(const AbstractVector& x);                                 //!< Assignment operator
+
+        // the member functions
+        virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Execute method
     
 };
 

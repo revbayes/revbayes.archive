@@ -29,11 +29,11 @@
 
 
 /** Constructor */
-VariableNode::VariableNode( void ) : DAGNode( ), touched( false ) {
+VariableNode::VariableNode( void ) : DAGNode( ), touched( false ), factorRoot( NULL ) {
 }
 
 /** Copy Constructor */
-VariableNode::VariableNode(const VariableNode &v) : DAGNode(v) {
+VariableNode::VariableNode(const VariableNode &v) : DAGNode(v), factorRoot( v.factorRoot ) {
     touched = false;
 }
 
@@ -75,3 +75,17 @@ const TypeSpec& VariableNode::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the factor root. The factor root is the node which starts the likelihood elimination for the eliminated subgraph.
+ */
+StochasticNode* VariableNode::getFactorRoot(void) const {
+    return factorRoot;
+}
+
+
+/**
+ * Set the factor root. The factor root is the node which starts the likelihood elimination for the eliminated subgraph.
+ */
+void VariableNode::setFactorRoot(StochasticNode* n)  {
+     factorRoot = n;
+}

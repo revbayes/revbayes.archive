@@ -34,6 +34,9 @@ class RbObject {
     public:
         virtual                            ~RbObject(void);                                                         //!< Virtual destructor
 
+        // overloaded operators
+        bool                                operator==(const RbObject& x) const { return &x == this; }
+        
         // Basic utility functions you have to override (also getClassTypeSpec() and getClassName()!)
         virtual RbObject*                   clone(void) const = 0;                                                  //!< Clone object
         virtual XmlElement*                 encode(XmlDocument* doc, const std::string& name);                      //!< Function to encode this object into an XML string

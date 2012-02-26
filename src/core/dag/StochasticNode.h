@@ -31,6 +31,8 @@ class VectorString;
 class StochasticNode : public VariableNode {
 
 public:
+    enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
+    
                                         StochasticNode(void);                                               //!< Construct empty stochastic node
                                         StochasticNode(Distribution* dist);                                 //!< Construct from distribution (raw object)
                                         StochasticNode(const StochasticNode& x);                            //!< Copy constructor
@@ -54,11 +56,15 @@ public:
 
     // StochasticNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
+    double                              calculateSummedLnProbability(void);                                 //!< Calculate summed log conditional probability over all possible states
     void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
     const Distribution&                 getDistribution(void) const;                                        //!< Get distribution (const)
     Distribution&                       getDistribution(void);                                              //!< Get distribution (non-const)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
+    bool                                isEliminated(void) const;
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
+    void                                likelihoodsNeedUpdates(void);                                       //!< Tell this node that the likelihoods need to be updated
+    void                                setInstantiated(bool inst);                                         //!< Set whether the node is instantiated or summed over
     void                                setValue(RbLanguageObject* value);                                  //!< Set value but do not clamp; get affected nodes
     void                                unclamp(void);                                                      //!< Unclamp the node
     
@@ -77,7 +83,7 @@ protected:
     // Member variables
     bool                                clamped;                                                            //!< Is the node clamped with data?
     Distribution*                       distribution;                                                       //!< Distribution (density functions, random draw function)
-    bool                                instantiated;                                                       //!< Is this node instantiated or integrated over?
+//    bool                                instantiated;                                                       //!< Is this node instantiated or integrated over?
     double                              lnProb;                                                             //!< Current log probability
     bool                                needsRecalculation;                                                 //!< Do we need recalculation of the ln prob?
     double                              storedLnProb;                                                       //!< Stored log probability
@@ -87,6 +93,14 @@ private:
     RbLanguageObject*                   value;                                                              //!< Value
     RbLanguageObject*                   storedValue;                                                                    //!< Stored value
 
+    VariableType                        type;
+    
+    // probability arrays and likelihood arrays for summed out computations
+    std::vector<double>                 probabilities;
+    std::vector<std::vector<double> >   likelihoods;
+    std::vector<double>                 storedProbabilities;
+    std::vector<std::vector<double> >   storedLikelihoods;
+    
 };
 
 #endif

@@ -230,6 +230,12 @@ const Simplex& Dist_topologyunif::getProbabilityMassVector( void ) {
 }
 
 
+/** Get the state vector for this distribution */
+const std::vector<RbLanguageObject*>& Dist_topologyunif::getStateVector( void ) const {
+    throw RbException("getStateVector not implemented for uniform topology distribution.");
+}
+
+
 /** Get random variable type */
 const TypeSpec& Dist_topologyunif::getVariableType( void ) const {
 

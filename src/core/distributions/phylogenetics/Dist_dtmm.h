@@ -35,30 +35,33 @@ public:
     Dist_dtmm(void);                                                                                    //!< Default constructor
     
     // Basic utility functions
-    Dist_dtmm*                      clone(void) const;                                                  //!< Clone object
-    static const std::string&       getClassName(void);                                                 //!< Get class name
-    static const TypeSpec&          getClassTypeSpec(void);                                             //!< Get class type spec
-    const TypeSpec&                 getTypeSpec(void) const;                                            //!< Get language type of the object
+    Dist_dtmm*                              clone(void) const;                                                  //!< Clone object
+    static const std::string&               getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                             //!< Get class type spec
+    const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
     
     // Member variable setup
-    const MemberRules&              getMemberRules(void) const;                                         //!< Get member variable rules
-    void                            setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure number of states is consistent)
+    const MemberRules&                      getMemberRules(void) const;                                         //!< Get member variable rules
+    void                                    setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure number of states is consistent)
     
     // Discrete distribution functions
-    size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
-    virtual const Simplex&          getProbabilityMassVector(void);                                     //!< Get probability mass vector
-    const TypeSpec&                 getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-    double                          lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
-    double                          pdf(const RbLanguageObject& value) const;                           //!< Probability density
-    const RbLanguageObject&         rv(void);                                                           //!< Generate random variable
+    size_t                                  getNumberOfStates(void) const;                                      //!< Get number of states
+    const Simplex&                          getProbabilityMassVector(void);                                     //!< Get probability mass vector
+    const std::vector<RbLanguageObject*>&   getStateVector(void) const;
+    const TypeSpec&                         getVariableType(void) const;                                        //!< Get random variable type (Simplex)
+    double                                  lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
+    double                                  pdf(const RbLanguageObject& value) const;                           //!< Probability density
+    const RbLanguageObject&                 rv(void);                                                           //!< Generate random variable
     
 private:
-    
+
+    std::vector<RbLanguageObject*>          stateVector;
+
     // member function return values
-    CharacterStateDiscrete*         randomValue;
+    CharacterStateDiscrete*                 randomValue;
     
-    RbVariablePtr                   transProbabilityMatrix;
-    RbVariablePtr                   initialState;
+    RbVariablePtr                           transProbabilityMatrix;
+    RbVariablePtr                           initialState;
     
 };
 

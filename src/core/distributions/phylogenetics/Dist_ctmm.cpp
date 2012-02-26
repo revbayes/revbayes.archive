@@ -164,6 +164,11 @@ const Simplex& Dist_ctmm::getProbabilityMassVector( void ) {
 }
 
 
+/** Get the state vector for this distribution */
+const std::vector<RbLanguageObject*>& Dist_ctmm::getStateVector( void ) const {
+    return stateVector;
+}
+
 /** Get random variable type */
 const TypeSpec& Dist_ctmm::getVariableType( void ) const {
 
@@ -334,6 +339,16 @@ void Dist_ctmm::setMemberVariable( const std::string& name, Variable* var ) {
     }
     else if ( name == "a" ) {
         initialState = var;
+        
+        // reset the state vector
+        stateVector.clear();
+        CharacterStateDiscrete& c = static_cast<CharacterStateDiscrete&>( var->getValue() );
+        std::string states = c.getStateLabels();
+        for (int i = 0; i < c.getNumberOfStates(); i++) {
+            CharacterStateDiscrete* tmp = c.clone();
+            tmp->setState( states[i] );
+            stateVector.push_back(tmp);
+        }
     }
     else {
         DistributionDiscrete::setMemberVariable( name, var );

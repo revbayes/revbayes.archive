@@ -29,15 +29,16 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), distribution( NULL ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsRecalculation( true ), storedValue( NULL ) {
 }
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( ), clamped( false ), distribution( dist ), instantiated( true ), needsRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsRecalculation( true ), storedValue( NULL ) {
     
     /* Get distribution parameters */
     std::map<std::string, RbVariablePtr>& params = dist->getMembers();
@@ -86,7 +87,7 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     }
 
     clamped             = x.clamped;
-    instantiated        = x.instantiated;
+    type                = x.type;
     needsRecalculation  = x.needsRecalculation;
     value               = x.value->clone();
     touched             = x.touched;
@@ -146,8 +147,10 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         }
 
         clamped             = x.clamped;
-        instantiated        = x.instantiated;
+        type                = x.type;
         needsRecalculation  = x.needsRecalculation;
+        
+        factorRoot          = x.factorRoot;
         
         value               = x.value->clone();
         touched             = x.touched;
@@ -186,18 +189,80 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
 /** Get the conditional ln probability of the node; do not rely on stored values */
 double StochasticNode::calculateLnProbability( void ) {
     
+    if (factorRoot != NULL) {
+        return factorRoot->calculateSummedLnProbability();
+    }
+    
     if (needsRecalculation) {
-        if (instantiated) {
+        if (type == INSTANTIATED) { // this should always be true
             lnProb = distribution->lnPdf( *value );
         }
         else {
-            // we need to iterate over my states
-            DistributionDiscrete* d = static_cast<DistributionDiscrete*>( distribution );
-            d->getNumberOfStates();
+            throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
         }
-        
-        needsRecalculation = false;
     }
+    
+    return lnProb;
+}
+
+
+/** 
+ * Calculate the ln-probability summed over all possible states.
+ * This is the variable elimination algorithm. It only works if we can condition on only one parent being eliminated.
+ */
+double StochasticNode::calculateSummedLnProbability( void ) {
+    
+    
+    if (needsRecalculation) {
+        // initialize the probability
+        double prob = 0.0;
+            
+        // we need to iterate over my states
+        DistributionDiscrete* d = static_cast<DistributionDiscrete*>( distribution );
+            
+        // we ask for the state vector
+        const std::vector<RbLanguageObject*>& states = d->getStateVector();
+            
+        // now we calculate the probabilities and likelihoods
+        size_t i = 0;
+        for (std::vector<RbLanguageObject*>::const_iterator state = states.begin(); state != states.end(); state++) {
+            // I set my value so that my children can access if for recalculation
+            RbLanguageObject* v = (*state);
+            // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
+            value = v;
+                
+            size_t j = 0;
+                
+            // initialize the likelihood for this state
+            double lnLikelihood = 0.0;
+                
+            // I need to ask for the likelihood of my children
+            for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
+                // only if the child has flag as changed I need to ask for the likelihood
+                if ( (*child)->isTouched() ) {
+                    likelihoods[i][j] = (*child)->calculateSummedLnProbability();
+                }
+                    
+                // add the log-likelihood for this child
+                lnLikelihood += likelihoods[i][j];
+                
+                // increment the child index
+                j++;
+            }
+                
+            // set the likelihood for this state to the probability array
+            probabilities[i] = distribution->lnPdf( *value ) + lnLikelihood;
+                
+            prob += exp(probabilities[i]);
+            
+            // increment the state index
+            i++;
+        }
+            
+        lnProb = log(prob);
+    }
+        
+    needsRecalculation = false;
     
     return lnProb;
 }
@@ -364,7 +429,7 @@ void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
     affected.insert( this );
     
     // if this node is integrated out, then we need to add the children too
-    if (!instantiated) {
+    if (type != INSTANTIATED) {
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
             (*i)->getAffected( affected );
         }
@@ -429,6 +494,15 @@ RbLanguageObject& StochasticNode::getValue( void ) {
 
 
 /**
+ * Is this node eliminated.
+ * We can check that here by looking if the node is instantiated.
+ */
+bool StochasticNode::isEliminated( void ) const {
+    return type != INSTANTIATED;
+}
+
+
+/**
  * Keep the current value of the node. 
  * At this point, we also need to make sure we update the stored ln probability.
  */
@@ -453,6 +527,14 @@ void StochasticNode::keepMe() {
 }
 
 
+/**
+ * 
+ */
+void StochasticNode::likelihoodsNeedUpdates() {
+    
+}
+
+
 /** Print struct for user */
 void StochasticNode::printStruct( std::ostream& o ) const {
 
@@ -464,15 +546,35 @@ void StochasticNode::printStruct( std::ostream& o ) const {
     o << std::endl;
     o << "_touched      = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
     o << "_clamped      = " << ( clamped ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
-    o << "_value        = ";
-    value->printValue(o);
-    o << std::endl;
-    if ( touched ) {
+    o << "_type         = ";
+    if ( type == INSTANTIATED ) {
+        o << "instantiated" << std::endl;
+        o << "_value        = ";
+        value->printValue(o);
+        o << std::endl;
+    }
+    else if ( type == ELIMINATED ) {
+        o << "eliminated" << std::endl;
+    }
+    else {
+        o << "summed over" << std::endl;
+    }
+    
+    // print the factor root if available
+    if ( factorRoot != NULL ) {
+        o << "_factor root  = " << factorRoot->getName() << std::endl;
+        // only nodes which are not part of a eliminated subgraph have a probability
+        o << "_lnProb       = " << lnProb << std::endl;
+    }
+    // if we are the factor root than we can print the likelihood of the eliminated subgraph.
+    if (factorRoot == this) {
+        o << "_lnLikelihood = " << lnProb << std::endl;
+    }
+    if ( touched && storedValue != NULL) {
         o << "_storedValue  = "; 
         storedValue->printValue(o);
         o << std::endl;
     }
-    o << "_lnProb       = " << lnProb << std::endl;
     if ( touched )
         o << "_storedLnProb = " << storedLnProb << std::endl;    
 
@@ -530,6 +632,67 @@ void StochasticNode::restoreMe() {
 }
 
 
+/*
+ * Set whether the node needs to be instantiated or should be summed over.
+ * During the MCMC run, an instantiated node has one specific value and hence needs moves attached to it.
+ * If the node is summed over, no value will be associated with the node.
+ * The node is in a sort of fuzzy state.
+ */
+void StochasticNode::setInstantiated(bool inst) {
+    
+    if (type != INSTANTIATED && inst) {
+        // clear the probability and likelihood values
+        probabilities.clear();
+        likelihoods.clear();
+        
+//        value = distribution->rv().clone();
+        
+        type = INSTANTIATED;
+        
+        // if we still have parent which are eliminated we keep the factor root
+        if ( factorRoot == this ) {
+            factorRoot = NULL;
+        }
+        
+        // TODO: I need to tell my children that I'm not eliminated anymore
+        
+        
+        // flag for recalculation
+        needsRecalculation = true;
+        
+    }
+    else if ( type == INSTANTIATED && !inst) {
+        // get the number of states
+        DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
+        size_t nStates = discreteDist->getNumberOfStates();
+        
+        // resize the probability vector
+        probabilities.resize( nStates );
+        for (size_t i = 0; i < nStates; i++) {
+            likelihoods.push_back( std::vector<double>(nStates) );
+        }
+        
+//        delete value;
+//        value = NULL;
+        
+        factorRoot = this;
+        // how many parents do I have which are eliminated?
+        size_t numEliminatedParents = 0;
+        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+            if ( (*i)->isEliminated() ) {
+                factorRoot = static_cast<VariableNode*>( *i )->getFactorRoot();
+                numEliminatedParents++;
+            }
+        }
+        
+        type = ELIMINATED;
+        
+        // flag for recalculation
+        needsRecalculation = true;
+    }
+}
+
+
 /**
  * Set value: same as clamp, but do not clamp. This function will
  * also be used by moves to propose a new value.
@@ -543,8 +706,12 @@ void StochasticNode::setValue( RbLanguageObject* val ) {
     if ( clamped )
         throw RbException( "Cannot change value of clamped node" );
 
-    // touch the node (which will store the lnProb)
-    touch();
+    // only if the node is instantiated (i.e. not summed out) setting the value should have an effect.
+    // summed out nodes might set the value for internal computations.
+    if ( type == INSTANTIATED ) {
+        // touch the node (which will store the lnProb)
+        touch();
+    }
     
     // delete the stored value
     if (storedValue == NULL) {
@@ -594,11 +761,17 @@ void StochasticNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode ) {
 
 /** touch this node for recalculation */
 void StochasticNode::touchMe( void ) {
+    
     if (!touched) {
         // Store the current lnProb 
         touched      = true;
     
         storedLnProb = lnProb;
+        
+        if ( type != INSTANTIATED ) {
+            storedProbabilities = probabilities;
+            storedLikelihoods   = likelihoods;
+        }
     }
     
     needsRecalculation = true;

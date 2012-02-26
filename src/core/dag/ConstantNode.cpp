@@ -135,6 +135,14 @@ RbLanguageObject& ConstantNode::getValue(void) {
 //    return value;
 //}
 
+/**
+ * Is this node eliminated.
+ * No, constant nodes can not be eliminated.
+ */
+bool ConstantNode::isEliminated( void ) const {
+    return false;
+}
+
 /** Keep value of node */
 void ConstantNode::keepMe( void ) {
     // do nothing

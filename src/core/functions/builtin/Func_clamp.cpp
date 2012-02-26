@@ -49,8 +49,24 @@ const RbLanguageObject& Func_clamp::executeFunction( void ) {
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
+    // remove this node as a child from the parameter node
+    // this is necessary because when we set the value, the stovhastic node will call touch, which then will touch us and we will touch the node again.
+    // -> there is a cycle ...
+    for (std::set<VariableNode*>::const_iterator it = theNode->getChildren().begin(); it != theNode->getChildren().end(); it++) {
+        // test if the child is a deterministic node
+        if ( (*it)->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
+            DeterministicNode* detNode = static_cast<DeterministicNode*>( *it );
+            // test the function
+            if ( &detNode->getFunction() == this ) {
+                theNode->removeChildNode(detNode);
+            }
+        }
+    }
+    
     // The following call will throw an error if the value type is wrong
     theNode->clamp( value->getValue().clone() );
+    
+    theNode->keep();
 
     return RbNullObject::getInstance();
 }

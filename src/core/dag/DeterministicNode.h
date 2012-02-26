@@ -36,26 +36,24 @@ public:
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
 
     // Utility functions implemented here
-    const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
-    const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)
-    RbLanguageObject&                       getValue(void);                                                     //!< Get value (non-const)
-//    const RbLanguageObject*                 getValuePtr(void) const;                                            //!< Get value pointer
-    void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
-    const RbFunction&                       getFunction(void) const;
-
-    // Utility functions you have to override
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node
     std::string                             debugInfo(void) const;                                              //!< Complete info about object
     static const std::string&               getClassName(void);                                                         //!< Get class name
     static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
     const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
-    void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
+    void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG functions implemented here
+    double                                  calculateSummedLnProbability(void);                                 //!< Calculate summed log conditional probability over all possible states
+    DAGNode*                                cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
+    const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
+    const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)
+    RbLanguageObject&                       getValue(void);                                                     //!< Get value (non-const)
+    const RbFunction&                       getFunction(void) const;
+    bool                                    isEliminated(void) const;
+    void                                    likelihoodsNeedUpdates();                                           //!< Tell this node that the likelihoods need to be updated
+    void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
     void                                    swapParentNode( DAGNode* oldP, DAGNode* newP);           //!< Swap a parent node
-
-    // DAG function you have to override
-    virtual DAGNode*                        cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
 
 protected:
 

@@ -79,6 +79,12 @@ void DAGNode::addChildNode(VariableNode *c) {
     PRINTF("Adding child with name \"%s\" to parent with name \"%s\".\n",c->getName().c_str(),getName().c_str());
         
     children.insert(c);
+    
+    // if this node is eliminated, than we pass on the factor root
+    // the factor root is the node which start the likelihood calculation for the part of the graph which is eliminated
+    if ( isEliminated() ) {
+        c->setFactorRoot( static_cast<const VariableNode*>( this )->getFactorRoot() );
+    }
 }
 
 
@@ -302,8 +308,12 @@ void DAGNode::restoreAffected(void) {
 
 
 /**
- * Tell affected variable nodes to keep the current value: stop the recursion here.
- * We also need to update our probability.
+ * Touch the DAG node.
+ *
+ * This function should be called if the value of the variable has changed or if you want this node to be reevaluated. 
+ * The function will automatically call the touchMe() which is implemented differently in the different DAG node types.
+ *
+ * Since the DAG node was touch and possibly changed, we tell affected variable nodes to keep the current value.
  */
 void DAGNode::touch() {
     // first touch myself

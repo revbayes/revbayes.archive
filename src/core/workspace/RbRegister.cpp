@@ -133,6 +133,7 @@
 #include "Func_quit.h"
 #include "Func_setval.h"
 #include "Func_simplex.h"
+#include "Func_sumOver.h"
 #include "Func_structure.h"
 #include "Func_type.h"
 #include "Func_unclamp.h"
@@ -185,7 +186,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( VectorString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
         addType( new RbAbstract( VectorString(Move::getClassTypeSpec()) + RbString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
         addType( new RbAbstract( VectorString(Distribution::getClassTypeSpec()) + RbString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
-        addType( new RbAbstract( VectorString(CharacterStateDiscrete::getClassTypeSpec()) + RbString(Character::getClassTypeSpec()) + RbString(Categorical::getClassTypeSpec()) + RbString(RbLanguageObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec())));
 
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
@@ -364,6 +364,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "simplex",                  new Func_simplex<Integer>()         );
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
         addFunction( "simplex",                  new Func_simplex<VectorRealPos>()   );
+        addFunction( "sumOver",                  new Func_sumOver()                  );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
         addFunction( "unclamp",                  new Func_unclamp()                  );

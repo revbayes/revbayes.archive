@@ -58,7 +58,8 @@ class DAGNode : public RbLanguageObject {
     
         // DAG function you have to override
         virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;   //!< Clone graph
-
+        virtual bool                                        isEliminated(void) const = 0;
+    
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                          //!< Add child node
         size_t                                              decrementReferenceCount(void);

@@ -25,10 +25,9 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "Real.h"
+#include "Set.h"
 #include "Simplex.h"
 #include "ValueRule.h"
-#include "VectorRealPos.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -37,7 +36,7 @@
 
 
 /** Default constructor for parser use */
-Dist_cat::Dist_cat( void ) : DistributionDiscrete( getMemberRules() ), probabilities( NULL ), templateObject( NULL ) {
+Dist_cat::Dist_cat( void ) : DistributionDiscrete( getMemberRules() ), probabilities( NULL ), states( NULL ) {
 }
 
 
@@ -80,8 +79,8 @@ const MemberRules& Dist_cat::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-            memberRules.push_back( new ValueRule( "m"    , Simplex::getClassTypeSpec() ) );
-            memberRules.push_back( new ValueRule( "dummy", Categorical::getClassTypeSpec() ) );
+            memberRules.push_back( new ValueRule( "probabilities", Simplex::getClassTypeSpec() ) );
+            memberRules.push_back( new ValueRule( "states",        Set<RbLanguageObject>::getClassTypeSpec() ) );
 
         rulesSet = true;
 		}
@@ -104,13 +103,19 @@ const Simplex& Dist_cat::getProbabilityMassVector( void ) {
 }
 
 
+/** Get the state vector for this distribution */
+const std::vector<RbLanguageObject*>& Dist_cat::getStateVector( void ) const {
+    return stateVector;
+}
+
+
 /** Get random variable type */
 const TypeSpec& Dist_cat::getVariableType( void ) const {
     
-    if (templateObject == NULL || RbNullObject::getInstance() == templateObject->getValue() ) 
-        return Categorical::getClassTypeSpec();
+    if (states == NULL || RbNullObject::getInstance() == states->getValue() ) 
+        return CharacterStateDiscrete::getClassTypeSpec();
 
-    return templateObject->getValue().getTypeSpec();
+    return states->getValue().getTypeSpec();
 }
 
 
@@ -126,13 +131,14 @@ const TypeSpec& Dist_cat::getVariableType( void ) const {
 double Dist_cat::lnPdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex&    >( probabilities->getValue() ).getValue();
-    int                 x = static_cast<const Categorical&>( value                     ).getValue();
+    std::vector<double>          m = static_cast<const Simplex&               >( probabilities->getValue() ).getValue();
+    const Set<RbLanguageObject>& x = static_cast<const Set<RbLanguageObject>& >( states->getValue()        );
 
-    if ( x < 0 )
+    int index = x.findIndex( value );
+    if ( index < 0 )
         return 0.0;
     else
-        return std::log( m[x] );
+        return std::log( m[index] );
 }
 
 
@@ -148,13 +154,14 @@ double Dist_cat::lnPdf( const RbLanguageObject& value ) const {
 double Dist_cat::pdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameter of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex&    >( probabilities->getValue() ).getValue();
-    int                 x = static_cast<const Categorical&>( value                     ).getValue();
-
-	if ( x < 0 )
-        return 1.0;
+          std::vector<double>       m = static_cast<const Simplex&               >( probabilities->getValue() ).getValue();
+    const Set<RbLanguageObject>&    s = static_cast<const Set<RbLanguageObject>& >( states->getValue()        );
+    
+    int index = s.findIndex( value );
+    if ( index < 0 )
+        return 0.0;
     else
-        return m[x];
+        return m[index];
 }
 
 
@@ -167,16 +174,15 @@ double Dist_cat::pdf( const RbLanguageObject& value ) const {
  * @return      Random draw from categorical distribution
  */
 const RbLanguageObject& Dist_cat::rv( void ) {
-
-	// Get the parameter of the categorical distribution and the rng
-    std::vector<double>    m   = static_cast<Simplex&>( probabilities->getValue() ).getValue();
+    
+	// Get the value and the parameter of the categorical distribution
+    std::vector<double>       m = static_cast<const Simplex&               >( probabilities->getValue() ).getValue();
+    const Set<RbLanguageObject>&    s = static_cast<const Set<RbLanguageObject>& >( states->getValue()        );
+    
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // Get copy of reference object
-    if (randomVariable != NULL) {
-        delete randomVariable;
-    }
-    randomVariable = static_cast<Categorical*>( templateObject->getValue().clone() );
+    delete randomVariable;
 
     // Draw a random value
     double r   = rng->uniform01();
@@ -188,8 +194,9 @@ const RbLanguageObject& Dist_cat::rv( void ) {
             break;
     }
 
-    // Set draw to this value
-    randomVariable->setValue( int( i ) );
+    // get the random variable by accessing our state vector, selecting the i-th element and cloning it
+    randomVariable = static_cast<RbLanguageObject*>( s.getElement( i ).clone() );
+
 
     // Return draw
     return *randomVariable;

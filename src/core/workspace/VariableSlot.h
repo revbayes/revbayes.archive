@@ -33,11 +33,11 @@ class Frame;
 class VariableSlot : public RbInternal {
     
 public:
-    VariableSlot(const std::string &label, const TypeSpec& typeSp, const RbVariablePtr& var);                          //!< Constructor of filled slot
-    VariableSlot(const std::string &label, const TypeSpec& typeSp);                                         //!< Constructor of empty slot
-    VariableSlot(const std::string &label, const RbVariablePtr& var);                                                  //!< Constructor with filled slot
-    VariableSlot(const VariableSlot& x);                                                                    //!< Copy value or reference correctly
-    virtual                ~VariableSlot(void);                                                             //!< Manage variable (DAGNode) destruction
+    VariableSlot(const std::string &label, const TypeSpec& typeSp, const RbVariablePtr& var);                       //!< Constructor of filled slot
+    VariableSlot(const std::string &label, const TypeSpec& typeSp);                                                 //!< Constructor of empty slot
+    VariableSlot(const std::string &label, const RbVariablePtr& var);                                               //!< Constructor with filled slot
+    VariableSlot(const VariableSlot& x);                                                                            //!< Copy value or reference correctly
+    virtual                ~VariableSlot(void);                                                                     //!< Manage variable (DAGNode) destruction
     
     // Assignment operator
     VariableSlot&                           operator=(const VariableSlot& x);                                       //!< Assignment
@@ -53,8 +53,6 @@ public:
     DAGNode*                                getDagNode(void) const;                                                 //!< Get the DAG node
     DAGNode*                                getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
     const std::string&                      getLabel(void) const { return label; }                                  //!< Get the label of the slot
-//    const std::string&                      getSlotType(void) const { return varTypeSpec.getType(); }               //!< Type of slot
-//    const TypeSpec&                         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
     const Variable&                         getVariable(void) const;                                                //!< Get the variable
     Variable&                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
     const RbVariablePtr&                    getVariablePtr(void) const;                                             //!< Get the pointer to the variable

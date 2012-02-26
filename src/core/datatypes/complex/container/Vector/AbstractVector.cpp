@@ -18,7 +18,9 @@
 
 #include "AbstractVector.h"
 #include "Container.h"
+#include "MemberFunction.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "Vector.h"
@@ -84,12 +86,59 @@ const std::string& AbstractVector::getClassName(void) {
 	return rbClassName; 
 }
 
+
+/* Get method specifications */
+const MethodTable& AbstractVector::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        
+        // sort function
+        ArgumentRules* sortArgRules = new ArgumentRules();
+        methods.addFunction("sort", new MemberFunction( RbVoid_name, sortArgRules) );
+        
+        // unique function
+        ArgumentRules* uniqueArgRules = new ArgumentRules();
+        methods.addFunction("unique", new MemberFunction( RbVoid_name, uniqueArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &Container::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
+}
+
 /** Get class type spec describing type of object */
 const TypeSpec& AbstractVector::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ) );
     
 	return rbClass; 
+}
+
+
+/* Map calls to member methods */
+const RbLanguageObject& AbstractVector::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+    
+    if (name == "sort") {
+        
+        // we set our value
+        sort();
+        
+        return RbNullObject::getInstance();
+    } else if (name == "unique") {
+        
+        // we set our value
+        unique();
+        
+        return RbNullObject::getInstance();
+    }
+    
+    return Container::executeOperationSimple( name, args );
 }
 
 

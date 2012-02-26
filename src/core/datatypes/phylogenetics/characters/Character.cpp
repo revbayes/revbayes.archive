@@ -20,7 +20,7 @@
 
 
 /** Default constructor */
-Character::Character(void) : Categorical() {
+Character::Character(void) : RbLanguageObject() {
 
 }
 
@@ -36,7 +36,7 @@ const std::string& Character::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Character::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Categorical::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

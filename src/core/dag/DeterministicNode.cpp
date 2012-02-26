@@ -96,6 +96,23 @@ DeterministicNode* DeterministicNode::clone() const {
 }
 
 
+/** 
+ *  Calculate the summed over ln-probability.
+ *  We just take the product of the probability of our children.
+ */
+double DeterministicNode::calculateSummedLnProbability(void) {
+    // initialize the log probability
+    double lnProb = 0.0;
+    
+    // our probability is the product of the probabilities of our children
+    for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
+        lnProb += (*child)->calculateSummedLnProbability();
+    }
+    
+    return lnProb;
+}
+
+
 /** Clone the entire graph: clone children, swap parents */
 DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNodes ) const {
     
@@ -252,6 +269,18 @@ RbLanguageObject& DeterministicNode::getValue( void ) {
 //    return value;
 //}
 
+/** 
+ * Is this node eliminated?
+ * If at least one parent is eliminated, then this node is also eliminated.
+ */
+bool DeterministicNode::isEliminated( void ) const {
+    // ask all parents
+//    for (std::vector<DAGNode*>::iterator i = parents.begin(); <#condition#>; <#increment#>) {
+//        
+//    }
+    return false;
+}
+
 
 /** Keep value of node and affected variable nodes */
 void DeterministicNode::keepMe( void ) {
@@ -267,6 +296,14 @@ void DeterministicNode::keepMe( void ) {
     touched = false;
     
     keepAffected();
+    
+}
+
+
+/**
+ * 
+ */
+void DeterministicNode::likelihoodsNeedUpdates() {
     
 }
 

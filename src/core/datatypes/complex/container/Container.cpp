@@ -101,14 +101,6 @@ const MethodTable& Container::getMethods(void) const {
         squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
         
-        // sort function
-        ArgumentRules* sortArgRules = new ArgumentRules();
-        methods.addFunction("sort", new MemberFunction( RbVoid_name, sortArgRules) );
-        
-        // unique function
-        ArgumentRules* uniqueArgRules = new ArgumentRules();
-        methods.addFunction("unique", new MemberFunction( RbVoid_name, uniqueArgRules) );
-        
         // necessary call for proper inheritance
         methods.setParentTable( &ConstantMemberObject::getMethods() );
         methodsSet = true;
@@ -138,19 +130,7 @@ const RbLanguageObject& Container::executeOperationSimple(const std::string& nam
         // TODO: Check what happens with DAGNodeContainers
         RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index.getValue() - 1) );
         return element;
-    } else if (name == "sort") {
-            
-            // we set our value
-        sort();
-            
-        return RbNullObject::getInstance();
-    } else if (name == "unique") {
-        
-        // we set our value
-        unique();
-        
-        return RbNullObject::getInstance();
-    }
+    } 
     
     return ConstantMemberObject::executeOperationSimple( name, args );
 }
