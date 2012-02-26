@@ -135,7 +135,7 @@ const std::string& RbObject::getType(void) const {
 }
 
 
-/** Is convertible to type and dim? */
+/** Is convertible to type? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
     
     if (typeSpec.getBaseType() == Vector::getClassName() && isTypeSpec(typeSpec.getElementType())) {

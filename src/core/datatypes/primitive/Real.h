@@ -45,6 +45,7 @@ class Real : public RbLanguageObject {
     
         // Overloaded operators
                                     operator double(void) const { return value; }                           //!< Type conversion to double for convenience
+        bool                        operator==(const Real& x) const;                                        //!< Equals operator
         
         // Basic utility functions
         virtual Real*               clone(void) const;                                                      //!< Clone object

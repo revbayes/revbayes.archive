@@ -599,11 +599,13 @@ void StochasticNode::printStruct( std::ostream& o ) const {
     // print the factor root if available
     if ( factorRoot != NULL ) {
         o << "_factor root  = " << factorRoot->getName() << std::endl;
+    }
+    else {
         // only nodes which are not part of a eliminated subgraph have a probability
         o << "_lnProb       = " << lnProb << std::endl;
     }
     // if we are the factor root than we can print the likelihood of the eliminated subgraph.
-    if (factorRoot == this) {
+    if ( factorRoot == this ) {
         o << "_lnLikelihood = " << lnProb << std::endl;
     }
     if ( touched && storedValue != NULL) {

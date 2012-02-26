@@ -117,11 +117,28 @@ TypeSpec& TypeSpec::operator=( const TypeSpec& x ) {
 
 /** Equals comparison */
 bool TypeSpec::operator==(const TypeSpec& x) const {
-
-    if ( type == x.type && elementType == x.elementType)
-        return true;
-    else
+    
+    if (baseType != x.baseType) {
         return false;
+    }
+    
+    if ( elementType != NULL) {
+        
+        if ( x.elementType != NULL ) {
+            return *elementType == *x.elementType;
+        }
+        else {
+            return false;
+        }
+        
+    }
+    else {
+        if ( x.elementType != NULL ) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 

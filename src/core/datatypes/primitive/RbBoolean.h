@@ -33,6 +33,7 @@ class RbBoolean : public RbLanguageObject {
 
         // Operators
                                         operator bool(void) const { return value; }                             //!< Type conversion to bool
+            bool                        operator==(const RbBoolean& x) const;                                   //!< Equals operator
 
         // Basic utility functions
         RbBoolean*                      clone(void) const;                                                      //!< Clone object

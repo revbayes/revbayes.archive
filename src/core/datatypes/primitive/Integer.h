@@ -37,6 +37,7 @@ public:
 
     // Overloaded operator
     operator int(void) const { return value; }                                                          //!< Type conversion to int
+    bool                        operator==(const Integer& x) const;                                     //!< Equals operator
 
     // Basic utility functions
     virtual Integer*            clone(void) const;                                                      //!< Clone object

@@ -42,7 +42,8 @@ class Complex : public RbLanguageObject {
 
         // Overloaded operators
                                     operator std::complex<double>(void) const { return value; }             //!< Type conversion to double for convenience
-        
+        bool                        operator==(const Complex& x) const;                                     //!< Equals operator
+
         // Basic utility functions
         Complex*                    clone(void) const;                                                      //!< Clone object
         static const std::string&   getClassName(void);                                                     //!< Get class name

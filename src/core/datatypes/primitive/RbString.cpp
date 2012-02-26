@@ -49,6 +49,13 @@ RbString::operator std::string() const {
 }
 
 
+/** Overloaded equals operator */
+bool RbString::operator==(const RbString &x) const {
+    
+    return value == x.value;
+}
+
+
 /** String concatenation with operator+  */
 RbString RbString::operator+(const RbString& s) const {
 

@@ -63,6 +63,13 @@ Integer::Integer(const unsigned long v) : RbLanguageObject(), value( int(v) ) {
 }
 
 
+/** Overloaded equals operator */
+bool Integer::operator==(const Integer &x) const {
+    
+    return value == x.value;
+}
+
+
 /** Clone object */
 Integer* Integer::clone(void) const {
 

@@ -79,6 +79,13 @@ Complex::Complex(const std::complex<double>& c) : RbLanguageObject() {
 }
 
 
+/** Overloaded equals operator */
+bool Complex::operator==(const Complex &x) const {
+    
+    return value == x.value;
+}
+
+
 /** Clone object */
 Complex* Complex::clone(void) const {
 

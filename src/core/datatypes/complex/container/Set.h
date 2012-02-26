@@ -29,20 +29,27 @@
 #include <iostream>
 #include <set>
 
+
 template <typename setType>
 class Set : public Container {
     
+    typedef typename std::set<setType*>::iterator iterator;
+    typedef typename std::set<setType*>::const_iterator const_iterator;
+    
 public:
+    
     Set(void);                                                                                                      //!< Default constructor with type RbLanguageObject
     Set(const Set<setType>& v);                                                                                     //!< Copy Constructor
     
     virtual                                        ~Set(void);                                                      //!< Virtual destructor 
     
-    // Basic utility functions you have to override
+    // Basic utility functions 
     Set*                                            clone(void) const;                                              //!< Clone object
+    RbObject*                                       convertTo(const TypeSpec& type) const;                          //!< Convert to type
     static const std::string&                       getClassName(void);                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                        //!< Get language type of the object
+    bool                                            isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
     void                                            printValue(std::ostream& o) const;                              //!< Print value for user
     
     setType&                                        operator[](size_t i);                                           //!< Index op allowing change
@@ -54,9 +61,13 @@ public:
     void                                            setMemberVariable(const std::string& name, Variable* var);      //!< Set member variable
 
     // Set functions
+    iterator                                        begin(void);                                                    //!< Iterator to the beginning of the set
+    const_iterator                                  begin(void) const;                                              //!< Const-iterator to the beginning of the set
     void                                            clear(void);                                                    //!< Clear
+    iterator                                        end(void);                                                      //!< Iterator to the end of the set
+    const_iterator                                  end(void) const;                                                //!< Const-iterator to the end of the set
     const setType&                                  find(const setType& x) const;                                   //!< Find the element being equal to that one
-    int                                             findIndex(const setType& x) const;                              //!< Find the element being equal to that one
+    int                                             findIndex(const setType& x) const;                              //!< Find the index if the element being equal to that one
     const RbObject&                                 getElement(size_t index) const;                                 //!< Get element
     RbObject&                                       getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
     const std::set<setType* >&                      getValue(void) const;                                           //!< Get the stl Set of elements
@@ -68,8 +79,6 @@ protected:
     // We store internally pointers to our objects. This is necessary because elements can be also of the derived type and we need to be able to make proper copies of the set and all its elements
     std::set<setType* >                             elements;
 };
-
-#endif
 
 #include "Ellipsis.h"
 #include "RbException.h"
@@ -166,6 +175,54 @@ const setType& Set<setType>::operator[](size_t index) const {
 }
 
 
+/** Get iterator to the beginning of the set. */
+template <typename setType>
+typename std::set<setType*>::iterator Set<setType>::begin( void ) {
+    return elements.begin();
+}
+
+
+/** Get iterator to the beginning of the set. */
+template <typename setType>
+typename std::set<setType*>::const_iterator Set<setType>::begin( void ) const {
+    return elements.begin();
+}
+
+
+/** Convertible to: default implementation */
+template <typename setType>
+RbObject* Set<setType>::convertTo(const TypeSpec &type) const {
+    
+    // test whether we want to convert to another set
+    if ( type.getBaseType() == getClassName() ) {
+        
+        // work through all the possible base element types
+        
+        // RbLanguageObject
+        if ( type.getElementType() == RbLanguageObject::getClassTypeSpec() ) {
+            Set<RbLanguageObject>* convObject = new Set<RbLanguageObject>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::set<setType*>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                setType* orgElement = *i;
+                // test whether this element is already of the right type
+                if ( orgElement->isTypeSpec(type.getElementType()) ) {
+                    convObject->insert( static_cast<RbLanguageObject*>( orgElement->clone() ) );
+                }
+                else {
+                    convObject->insert( static_cast<RbLanguageObject*>( orgElement->convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+    }
+    
+    return NULL;
+}
+
+
+
 /** Clear contents of value container */
 template <typename setType>
 void Set<setType>::clear( void ) {
@@ -209,6 +266,20 @@ const setType& Set<setType>::find(const setType& x) const {
     }
     
     return RbNullObject::getInstance();
+}
+
+
+/** Get iterator to the end of the set. */
+template <typename setType>
+typename std::set<setType*>::iterator Set<setType>::end( void ) {
+    return elements.end();
+}
+
+
+/** Get iterator to the end of the set. */
+template <typename setType>
+typename std::set<setType*>::const_iterator Set<setType>::end( void ) const {
+    return elements.end();
 }
 
 
@@ -316,6 +387,44 @@ const TypeSpec& Set<setType>::getTypeSpec(void) const {
 }
 
 
+/* Is convertible to: default implementation */
+template <typename setType>
+bool Set<setType>::isConvertibleTo(const TypeSpec &type) const {
+    
+    // test whether we want to convert to another set
+    if ( type.getBaseType() == getClassName() ) {
+        
+        // work through all the possible base element types
+        
+        // RbLanguageObject
+        if ( type.getElementType() == RbLanguageObject::getClassTypeSpec() ) {
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::set<setType*>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                setType* orgElement = *i;
+                // test whether this element is already of the right type
+                if ( !orgElement->isTypeSpec(type.getElementType()) && !orgElement->isConvertibleTo(type.getElementType()) ) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+
+/** Push an int onto the back of the vector after checking */
+template <typename setType>
+void Set<setType>::insert( setType *x ) {
+    
+    elements.insert( x );
+    
+}
+
+
 /** Print value for user */
 template <typename setType>
 void Set<setType>::printValue( std::ostream& o ) const {
@@ -331,15 +440,6 @@ void Set<setType>::printValue( std::ostream& o ) const {
             (*i)->printValue(o);
     }
     o <<  " ]";
-    
-}
-
-
-/** Push an int onto the back of the vector after checking */
-template <typename setType>
-void Set<setType>::insert( setType *x ) {
-    
-    elements.insert( x );
     
 }
 
@@ -375,3 +475,5 @@ void Set<setType>::setMemberVariable(const std::string& name, Variable* var) {
     }
 }
 
+
+#endif

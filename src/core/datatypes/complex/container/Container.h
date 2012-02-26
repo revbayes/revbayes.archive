@@ -31,9 +31,11 @@ public:
     virtual                            ~Container(void);                                                    //!< Virtual destructor 
     
     // Basic utility functions you have to override
+    virtual RbObject*                   convertTo(const TypeSpec& type) const;                              //!< Convert to type
     virtual Container*                  clone(void) const = 0;                                              //!< Clone object
-    static const std::string&           getClassName(void);                                                         //!< Get class name
-    static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
+    static const std::string&           getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
+    virtual bool                        isConvertibleTo(const TypeSpec& type) const;                        //!< Is convertible to type?
     virtual void                        printValue(std::ostream& o) const = 0;                              //!< Print value for user
     
     // Container functions you have to override

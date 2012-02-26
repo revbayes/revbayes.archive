@@ -67,6 +67,13 @@ Container& Container::operator=( const Container& x ) {
 }
 
 
+/** Convert this object into another type. */
+RbObject* Container::convertTo(const TypeSpec& typeSpec) const {
+    
+    return ConstantMemberObject::convertTo( typeSpec );
+}
+
+
 /** Get class name of object */
 const std::string& Container::getClassName(void) { 
     
@@ -133,6 +140,15 @@ const RbLanguageObject& Container::executeOperationSimple(const std::string& nam
     } 
     
     return ConstantMemberObject::executeOperationSimple( name, args );
+}
+
+
+
+
+/** Is convertible to type? */
+bool Container::isConvertibleTo(const TypeSpec& typeSpec) const {
+    
+    return ConstantMemberObject::isConvertibleTo( typeSpec );
 }
 
 

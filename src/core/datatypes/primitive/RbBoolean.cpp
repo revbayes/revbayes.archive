@@ -38,6 +38,13 @@ RbBoolean::RbBoolean(const bool v) : RbLanguageObject(), value(v) {
 }
 
 
+/** Overloaded equals operator */
+bool RbBoolean::operator==(const RbBoolean &x) const {
+    
+    return value == x.value;
+}
+
+
 /** Clone object */
 RbBoolean* RbBoolean::clone(void) const {
 

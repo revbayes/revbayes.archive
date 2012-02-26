@@ -63,6 +63,12 @@ Real::Real(const Real& x) : RbLanguageObject() {
 }
 
 
+/** Overloaded equals operator */
+bool Real::operator==(const Real &x) const {
+    
+    return value == x.value;
+}
+
 /** Clone object */
 Real* Real::clone(void) const {
 
