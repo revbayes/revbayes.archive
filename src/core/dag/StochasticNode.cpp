@@ -33,12 +33,12 @@
 
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
 }
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
     
     /* Get distribution parameters */
     std::map<std::string, RbVariablePtr>& params = dist->getMembers();
@@ -86,18 +86,19 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
         theParam->addChildNode(this);
     }
 
-    clamped             = x.clamped;
-    type                = x.type;
-    needsRecalculation  = x.needsRecalculation;
-    value               = x.value->clone();
-    touched             = x.touched;
+    clamped                         = x.clamped;
+    type                            = x.type;
+    needsProbabilityRecalculation   = x.needsProbabilityRecalculation;
+    needsLikelihoodRecalculation    = x.needsLikelihoodRecalculation;
+    value                           = x.value->clone();
+    touched                         = x.touched;
     if ( x.touched == true ) {
-        storedValue     = x.storedValue->clone();
+        storedValue                 = x.storedValue->clone();
     } else
-        storedValue     = NULL;
+        storedValue                 = NULL;
     
-    lnProb              = x.lnProb;
-    storedLnProb        = x.storedLnProb;
+    lnProb                          = x.lnProb;
+    storedLnProb                    = x.storedLnProb;
 }
 
 
@@ -146,17 +147,18 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
             theParam->addChildNode(this);
         }
 
-        clamped             = x.clamped;
-        type                = x.type;
-        needsRecalculation  = x.needsRecalculation;
+        clamped                         = x.clamped;
+        type                            = x.type;
+        needsProbabilityRecalculation   = x.needsProbabilityRecalculation;
+        needsLikelihoodRecalculation    = x.needsLikelihoodRecalculation;
         
-        factorRoot          = x.factorRoot;
+        factorRoot                      = x.factorRoot;
         
-        value               = x.value->clone();
-        touched             = x.touched;
-        storedValue         = x.storedValue->clone();
-        lnProb              = x.lnProb;
-        storedLnProb        = x.storedLnProb;
+        value                           = x.value->clone();
+        touched                         = x.touched;
+        storedValue                     = x.storedValue->clone();
+        lnProb                          = x.lnProb;
+        storedLnProb                    = x.storedLnProb;
         
         // set the name
         name = x.name;
@@ -193,7 +195,7 @@ double StochasticNode::calculateLnProbability( void ) {
         return factorRoot->calculateSummedLnProbability();
     }
     
-    if (needsRecalculation) {
+    if (needsProbabilityRecalculation) {
         if (type == INSTANTIATED) { // this should always be true
             lnProb = distribution->lnPdf( *value );
         }
@@ -212,8 +214,22 @@ double StochasticNode::calculateLnProbability( void ) {
  */
 double StochasticNode::calculateSummedLnProbability( void ) {
     
+    // if this node is not eliminated, then we have reached the bottom of the elimination algorithm
+    if (!isEliminated()) {
+        if (needsProbabilityRecalculation) {
+            if (type == INSTANTIATED) { // this should always be true
+                lnProb = distribution->lnPdf( *value );
+            }
+            else {
+                throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
+            }
+        }
+        
+        // TODO: here we maybe could return our stored probability for this parent?
+        return lnProb;
+    }
     
-    if (needsRecalculation) {
+    if (needsProbabilityRecalculation || needsLikelihoodRecalculation) {
         // initialize the probability
         double prob = 0.0;
             
@@ -231,29 +247,35 @@ double StochasticNode::calculateSummedLnProbability( void ) {
             // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
             value = v;
                 
-            size_t j = 0;
+            // recalculate the likelihoods if necessary    
+            if (needsLikelihoodRecalculation) {
                 
-            // initialize the likelihood for this state
-            double lnLikelihood = 0.0;
+                likelihoods[i] = 0.0;
+                size_t j = 0;
                 
-            // I need to ask for the likelihood of my children
-            for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
-                // only if the child has flag as changed I need to ask for the likelihood
-                if ( (*child)->isTouched() ) {
-                    likelihoods[i][j] = (*child)->calculateSummedLnProbability();
-                }
+                // I need to ask for the likelihood of my children
+                for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
+                    // only if the child has flag as changed I need to ask for the likelihood
+                    if ( (*child)->isTouched() ) {
+                        partialLikelihoods[i][j] = (*child)->calculateSummedLnProbability();
+                    }
                     
-                // add the log-likelihood for this child
-                lnLikelihood += likelihoods[i][j];
+                    // add the log-likelihood for this child
+                    likelihoods[i] += partialLikelihoods[i][j];
                 
-                // increment the child index
-                j++;
+                    // increment the child index
+                    j++;
+                }
             }
-                
-            // set the likelihood for this state to the probability array
-            probabilities[i] = distribution->lnPdf( *value ) + lnLikelihood;
-                
-            prob += exp(probabilities[i]);
+            
+            // only if the likelihood of this value has changed we need to update it
+            if ( needsProbabilityRecalculation ) {
+                // set the likelihood for this state to the probability array
+                probabilities[i] = distribution->lnPdf( *value );
+            }
+             
+            // add this partial probability to the total probability
+            prob += exp(probabilities[i] + likelihoods[i]);
             
             // increment the state index
             i++;
@@ -262,7 +284,7 @@ double StochasticNode::calculateSummedLnProbability( void ) {
         lnProb = log(prob);
     }
         
-    needsRecalculation = false;
+    needsProbabilityRecalculation = needsLikelihoodRecalculation = false;
     
     return lnProb;
 }
@@ -337,9 +359,10 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
     else {
         copy->storedValue = storedValue->clone();
     }
-    copy->lnProb             = lnProb;
-    copy->storedLnProb       = storedLnProb;
-    copy->needsRecalculation = needsRecalculation;
+    copy->lnProb                        = lnProb;
+    copy->storedLnProb                  = storedLnProb;
+    copy->needsProbabilityRecalculation = needsProbabilityRecalculation;
+    copy->needsLikelihoodRecalculation  = needsLikelihoodRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
     std::map<std::string, RbVariablePtr>& params     = distribution->getMembers();
@@ -517,7 +540,7 @@ void StochasticNode::keepMe() {
         storedValue = NULL;
         
         storedLnProb = 1.0E6;       // An almost impossible value for the density
-        if (needsRecalculation) {
+        if (needsProbabilityRecalculation || needsLikelihoodRecalculation) {
             lnProb = calculateLnProbability();
         }
     }
@@ -528,10 +551,23 @@ void StochasticNode::keepMe() {
 
 
 /**
- * 
+ * The likelihoods for this node need recalculations. This should only ever be called if this node is eliminated.
+ * We set the flag for likelihood recalculation and also tell that our eliminated parents.
  */
 void StochasticNode::likelihoodsNeedUpdates() {
     
+    if (!needsLikelihoodRecalculation) {
+        
+        //  I need to tell all my eliminated parents that they need to update their likelihoods
+        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+            if ( (*i)->isEliminated() ) {
+                // since only variable nodes can be eliminated
+                static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
+            }
+        }
+    }
+    
+    needsLikelihoodRecalculation = true;
 }
 
 
@@ -625,7 +661,8 @@ void StochasticNode::restoreMe() {
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
         
-        needsRecalculation = false;
+        // reset flags that recalculation is not needed
+        needsProbabilityRecalculation = needsLikelihoodRecalculation = false;
     }
 
     touched = false;
@@ -644,6 +681,7 @@ void StochasticNode::setInstantiated(bool inst) {
         // clear the probability and likelihood values
         probabilities.clear();
         likelihoods.clear();
+        partialLikelihoods.clear();
         
 //        value = distribution->rv().clone();
         
@@ -658,7 +696,7 @@ void StochasticNode::setInstantiated(bool inst) {
         
         
         // flag for recalculation
-        needsRecalculation = true;
+        needsProbabilityRecalculation = true;
         
     }
     else if ( type == INSTANTIATED && !inst) {
@@ -668,8 +706,9 @@ void StochasticNode::setInstantiated(bool inst) {
         
         // resize the probability vector
         probabilities.resize( nStates );
+        likelihoods.resize( nStates );
         for (size_t i = 0; i < nStates; i++) {
-            likelihoods.push_back( std::vector<double>(nStates) );
+            partialLikelihoods.push_back( std::vector<double>(nStates) );
         }
         
 //        delete value;
@@ -687,8 +726,11 @@ void StochasticNode::setInstantiated(bool inst) {
         
         type = ELIMINATED;
         
+        // I need to tell my parents that I'm eliminated
+        
         // flag for recalculation
-        needsRecalculation = true;
+        needsProbabilityRecalculation = true;
+        needsLikelihoodRecalculation = true;
     }
 }
 
@@ -769,12 +811,23 @@ void StochasticNode::touchMe( void ) {
         storedLnProb = lnProb;
         
         if ( type != INSTANTIATED ) {
-            storedProbabilities = probabilities;
-            storedLikelihoods   = likelihoods;
+            storedProbabilities         = probabilities;
+            storedLikelihoods           = likelihoods;
+            storedPartialLikelihoods    = partialLikelihoods;
         }
+        
+        //  I need to tell all my eliminated parents that they need to update their likelihoods
+        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+            if ( (*i)->isEliminated() ) {
+                // since only variable nodes can be eliminated
+                static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
+            }
+        }
+            
+        
     }
     
-    needsRecalculation = true;
+    needsProbabilityRecalculation = true;
 }
 
 /** Unclamp the value; use the clamped value as initial value */

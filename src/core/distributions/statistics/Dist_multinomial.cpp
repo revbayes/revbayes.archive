@@ -105,6 +105,12 @@ const Simplex& Dist_multinomial::getProbabilityMassVector( void ) {
 }
 
 
+/** Get the state vector for this distribution */
+const std::vector<RbLanguageObject*>& Dist_multinomial::getStateVector( void ) const {
+    throw RbException("getStateVector not implemented for multinomial distribution.");
+}
+
+
 /** Get random variable type */
 const TypeSpec& Dist_multinomial::getVariableType( void ) const {
 

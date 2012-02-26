@@ -301,10 +301,18 @@ void DeterministicNode::keepMe( void ) {
 
 
 /**
- * 
+ * The likelihoods for this node need to be updated. This should only be ever called if this node is eliminated, i.e. at least one parent is eliminated.
+ * Since this is a deterministic node, we just tell it our eliminated parents.
  */
 void DeterministicNode::likelihoodsNeedUpdates() {
     
+    //  I need to tell all my eliminated parents that they need to update their likelihoods
+    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+        if ( (*i)->isEliminated() ) {
+            // since only variable nodes can be eliminated
+            static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
+        }
+    }
 }
 
 

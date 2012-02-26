@@ -83,9 +83,9 @@ protected:
     // Member variables
     bool                                clamped;                                                            //!< Is the node clamped with data?
     Distribution*                       distribution;                                                       //!< Distribution (density functions, random draw function)
-//    bool                                instantiated;                                                       //!< Is this node instantiated or integrated over?
     double                              lnProb;                                                             //!< Current log probability
-    bool                                needsRecalculation;                                                 //!< Do we need recalculation of the ln prob?
+    bool                                needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
+    bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?
     double                              storedLnProb;                                                       //!< Stored log probability
 
 private:
@@ -97,9 +97,11 @@ private:
     
     // probability arrays and likelihood arrays for summed out computations
     std::vector<double>                 probabilities;
-    std::vector<std::vector<double> >   likelihoods;
+    std::vector<double>                 likelihoods;
+    std::vector<std::vector<double> >   partialLikelihoods;
     std::vector<double>                 storedProbabilities;
-    std::vector<std::vector<double> >   storedLikelihoods;
+    std::vector<double>                 storedLikelihoods;
+    std::vector<std::vector<double> >   storedPartialLikelihoods;
     
 };
 
