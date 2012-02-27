@@ -606,8 +606,6 @@
 		BF20606214F83CCA001DE2E3 /* Dist_topologyunif.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E8B14F83CC9001DE2E3 /* Dist_topologyunif.cpp */; };
 		BF20606314F83CCA001DE2E3 /* Dist_beta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E8E14F83CC9001DE2E3 /* Dist_beta.cpp */; };
 		BF20606414F83CCA001DE2E3 /* Dist_beta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E8E14F83CC9001DE2E3 /* Dist_beta.cpp */; };
-		BF20606514F83CCA001DE2E3 /* Dist_cat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E9014F83CC9001DE2E3 /* Dist_cat.cpp */; };
-		BF20606614F83CCA001DE2E3 /* Dist_cat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E9014F83CC9001DE2E3 /* Dist_cat.cpp */; };
 		BF20606714F83CCA001DE2E3 /* Dist_dirichlet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E9214F83CC9001DE2E3 /* Dist_dirichlet.cpp */; };
 		BF20606814F83CCA001DE2E3 /* Dist_dirichlet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E9214F83CC9001DE2E3 /* Dist_dirichlet.cpp */; };
 		BF20606914F83CCA001DE2E3 /* Dist_exp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E9414F83CC9001DE2E3 /* Dist_exp.cpp */; };
@@ -1484,7 +1482,7 @@
 		BD75975A14FAE7B500F781E5 /* Func_sumOver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_sumOver.cpp; sourceTree = "<group>"; };
 		BD75975B14FAE7B500F781E5 /* Func_sumOver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_sumOver.h; sourceTree = "<group>"; };
 		BD75976214FB081300F781E5 /* Move_reallocateAll.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Move_reallocateAll.cpp; sourceTree = "<group>"; };
-		BD75976514FB084900F781E5 /* Move_reallocateAll.h */ = {isa = PBXFileReference; fileEncoding = 4; path = Move_reallocateAll.h; sourceTree = "<group>"; };
+		BD75976514FB084900F781E5 /* Move_reallocateAll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Move_reallocateAll.h; sourceTree = "<group>"; };
 		BF205DE614F83CC9001DE2E3 /* BurninEstimatorContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BurninEstimatorContinuous.cpp; sourceTree = "<group>"; };
 		BF205DE714F83CC9001DE2E3 /* BurninEstimatorContinuous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BurninEstimatorContinuous.h; sourceTree = "<group>"; };
 		BF205DE814F83CC9001DE2E3 /* ConvergenceDiagnosticContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvergenceDiagnosticContinuous.cpp; sourceTree = "<group>"; };
@@ -1639,7 +1637,6 @@
 		BF205E8C14F83CC9001DE2E3 /* Dist_topologyunif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dist_topologyunif.h; sourceTree = "<group>"; };
 		BF205E8E14F83CC9001DE2E3 /* Dist_beta.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dist_beta.cpp; sourceTree = "<group>"; };
 		BF205E8F14F83CC9001DE2E3 /* Dist_beta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dist_beta.h; sourceTree = "<group>"; };
-		BF205E9014F83CC9001DE2E3 /* Dist_cat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dist_cat.cpp; sourceTree = "<group>"; };
 		BF205E9114F83CC9001DE2E3 /* Dist_cat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dist_cat.h; sourceTree = "<group>"; };
 		BF205E9214F83CC9001DE2E3 /* Dist_dirichlet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dist_dirichlet.cpp; sourceTree = "<group>"; };
 		BF205E9314F83CC9001DE2E3 /* Dist_dirichlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dist_dirichlet.h; sourceTree = "<group>"; };
@@ -3114,7 +3111,6 @@
 			children = (
 				BF205E8E14F83CC9001DE2E3 /* Dist_beta.cpp */,
 				BF205E8F14F83CC9001DE2E3 /* Dist_beta.h */,
-				BF205E9014F83CC9001DE2E3 /* Dist_cat.cpp */,
 				BF205E9114F83CC9001DE2E3 /* Dist_cat.h */,
 				BF205E9214F83CC9001DE2E3 /* Dist_dirichlet.cpp */,
 				BF205E9314F83CC9001DE2E3 /* Dist_dirichlet.h */,
@@ -4008,7 +4004,6 @@
 				BF20606014F83CCA001DE2E3 /* Dist_neutralcoalescent.cpp in Sources */,
 				BF20606214F83CCA001DE2E3 /* Dist_topologyunif.cpp in Sources */,
 				BF20606414F83CCA001DE2E3 /* Dist_beta.cpp in Sources */,
-				BF20606614F83CCA001DE2E3 /* Dist_cat.cpp in Sources */,
 				BF20606814F83CCA001DE2E3 /* Dist_dirichlet.cpp in Sources */,
 				BF20606A14F83CCA001DE2E3 /* Dist_exp.cpp in Sources */,
 				BF20606C14F83CCA001DE2E3 /* Dist_gamma.cpp in Sources */,
@@ -4385,7 +4380,6 @@
 				BF20605F14F83CCA001DE2E3 /* Dist_neutralcoalescent.cpp in Sources */,
 				BF20606114F83CCA001DE2E3 /* Dist_topologyunif.cpp in Sources */,
 				BF20606314F83CCA001DE2E3 /* Dist_beta.cpp in Sources */,
-				BF20606514F83CCA001DE2E3 /* Dist_cat.cpp in Sources */,
 				BF20606714F83CCA001DE2E3 /* Dist_dirichlet.cpp in Sources */,
 				BF20606914F83CCA001DE2E3 /* Dist_exp.cpp in Sources */,
 				BF20606B14F83CCA001DE2E3 /* Dist_gamma.cpp in Sources */,

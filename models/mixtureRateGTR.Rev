@@ -83,18 +83,18 @@ dna_state[i][j] ~ categorical(pi)
 else {
 parent <- node.ancestor()
 parentIndex[i] <- tree.index(parent)	
-bl[i] ~ exp(lambda)
+bl[i] ~ exponential(lambda)
 Q[i] := gtr(pi, exchange)
 
 if (node.isTip()) {
 for (j in 1:siteCount) {
-dna_state[i][j] ~ ctmc(Q[i], bl[i]*rateMixture.getObservation(j), dna_state[parentIndex[i]][j])
+dna_state[i][j] ~ dtmm(Q[i], bl[i]*rateMixture.getObservation(j), dna_state[parentIndex[i]][j])
 clamp(dna_state[i][j], D[i][j])
 }
 }
 else {
 for (j in 1:siteCount) {
-dna_state[i][j] ~ ctmc(Q[i], bl[i]*rateMixture.getObservation(j), dna_state[parentIndex[i]][j])
+dna_state[i][j] ~ dtmm(Q[i], bl[i]*rateMixture.getObservation(j), dna_state[parentIndex[i]][j])
 
 }
 }	
