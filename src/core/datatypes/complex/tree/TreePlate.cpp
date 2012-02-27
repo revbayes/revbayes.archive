@@ -202,8 +202,8 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
         {
         // get the name of the variable
         const std::string& varName  = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
-        const TopologyNode& theNode = static_cast<const TopologyNode&>( args[1].getVariable().getValue() );
-        const RbVariablePtr& theVar = args[2].getVariablePtr();
+        const RbVariablePtr& theVar = args[1].getVariablePtr();
+        const TopologyNode& theNode = static_cast<const TopologyNode&>( args[2].getVariable().getValue() );
         
         setNodeVariable(theNode, varName, theVar);
         
@@ -320,8 +320,8 @@ size_t TreePlate::getNodeIndex(const TopologyNode& theNode) const {
     
     size_t index = 0;
     for (; index<nodes.size(); index++) {
-        const TopologyNode& node = *nodes[index];
-        if (theNode.equals( node ) ) {
+        const TopologyNode* node = nodes[index];
+        if (theNode.equals( *node ) ) {
             break;
         }
     }

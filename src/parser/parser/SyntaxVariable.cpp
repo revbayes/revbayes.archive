@@ -388,7 +388,7 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
         }
         else {
             
-            functionCall->setBaseVariable( baseVariable );
+            functionCall->setBaseVariable( baseVariable->clone() );
             theVar = functionCall->evaluateContent( env );
         }
     }

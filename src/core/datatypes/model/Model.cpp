@@ -194,7 +194,7 @@ std::vector<DAGNode*> Model::getClonedDagNodes(std::vector<DAGNode*> &orgNodes) 
             clones.push_back( orgClonePair->second );
         }
         else {
-            throw RbException("Could not find original DAG node in Model.");
+//            throw RbException("Could not find original DAG node in Model.");
         }
     }
     
