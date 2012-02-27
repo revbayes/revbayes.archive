@@ -84,7 +84,7 @@ class TopologyNode : public ConstantMemberObject {
         void                                removeChild(TopologyNode* p);                                         //!< Removes a specific child
          
     protected:
-        const RbLanguageObject&             executeOperationSimple(const std::string& name, Environment& args);         //!< Execute method
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
         
     private:
         std::string                         buildNewickString(const TopologyNode& node) const;                          //!< compute the newick string for a tree rooting at this node

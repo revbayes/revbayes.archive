@@ -214,7 +214,7 @@ bool TopologyNode::equals(const TopologyNode& node) const {
 }
 
 
-const RbLanguageObject& TopologyNode::executeOperationSimple(const std::string& name, Environment& args) {
+const RbLanguageObject& TopologyNode::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     if (name == "isTip") {
         return isTipNode;
