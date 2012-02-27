@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of Move_mscale, which scales a
+ * This file contains the declaration of Move_mscale, which scales
  * a real value with a factor drawn from an appropriate distribution.
  *
  * @brief Declaration of Move_mscale

@@ -449,6 +449,10 @@
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 		BD04B8CF14FA092300ED43F9 /* RbVersion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD04B8CD14FA092300ED43F9 /* RbVersion.cpp */; };
 		BD04B8D014FA092300ED43F9 /* RbVersion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD04B8CD14FA092300ED43F9 /* RbVersion.cpp */; };
+		BD75975C14FAE7B500F781E5 /* Func_sumOver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD75975A14FAE7B500F781E5 /* Func_sumOver.cpp */; };
+		BD75975D14FAE7B500F781E5 /* Func_sumOver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD75975A14FAE7B500F781E5 /* Func_sumOver.cpp */; };
+		BD75976314FB081300F781E5 /* Move_reallocateAll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD75976214FB081300F781E5 /* Move_reallocateAll.cpp */; };
+		BD75976414FB081300F781E5 /* Move_reallocateAll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD75976214FB081300F781E5 /* Move_reallocateAll.cpp */; };
 		BF205FCB14F83CCA001DE2E3 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205DE614F83CC9001DE2E3 /* BurninEstimatorContinuous.cpp */; };
 		BF205FCC14F83CCA001DE2E3 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205DE614F83CC9001DE2E3 /* BurninEstimatorContinuous.cpp */; };
 		BF205FCD14F83CCA001DE2E3 /* ConvergenceDiagnosticContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205DE814F83CC9001DE2E3 /* ConvergenceDiagnosticContinuous.cpp */; };
@@ -552,7 +556,6 @@
 		BF20602F14F83CCA001DE2E3 /* TransitionProbabilityMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E5614F83CC9001DE2E3 /* TransitionProbabilityMatrix.cpp */; };
 		BF20603014F83CCA001DE2E3 /* TransitionProbabilityMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E5614F83CC9001DE2E3 /* TransitionProbabilityMatrix.cpp */; };
 		BF20603114F83CCA001DE2E3 /* Categorical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E5914F83CC9001DE2E3 /* Categorical.cpp */; };
-		BF20603214F83CCA001DE2E3 /* Categorical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E5914F83CC9001DE2E3 /* Categorical.cpp */; };
 		BF20603314F83CCA001DE2E3 /* Complex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E5B14F83CC9001DE2E3 /* Complex.cpp */; };
 		BF20603414F83CCA001DE2E3 /* Complex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E5B14F83CC9001DE2E3 /* Complex.cpp */; };
 		BF20603514F83CCA001DE2E3 /* Integer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF205E5D14F83CC9001DE2E3 /* Integer.cpp */; };
@@ -1477,6 +1480,11 @@
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		BD04B8CD14FA092300ED43F9 /* RbVersion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RbVersion.cpp; sourceTree = "<group>"; };
 		BD04B8CE14FA092300ED43F9 /* RbVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RbVersion.h; sourceTree = "<group>"; };
+		BD75975914FAE74A00F781E5 /* Set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Set.h; sourceTree = "<group>"; };
+		BD75975A14FAE7B500F781E5 /* Func_sumOver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_sumOver.cpp; sourceTree = "<group>"; };
+		BD75975B14FAE7B500F781E5 /* Func_sumOver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_sumOver.h; sourceTree = "<group>"; };
+		BD75976214FB081300F781E5 /* Move_reallocateAll.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Move_reallocateAll.cpp; sourceTree = "<group>"; };
+		BD75976514FB084900F781E5 /* Move_reallocateAll.h */ = {isa = PBXFileReference; fileEncoding = 4; path = Move_reallocateAll.h; sourceTree = "<group>"; };
 		BF205DE614F83CC9001DE2E3 /* BurninEstimatorContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BurninEstimatorContinuous.cpp; sourceTree = "<group>"; };
 		BF205DE714F83CC9001DE2E3 /* BurninEstimatorContinuous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BurninEstimatorContinuous.h; sourceTree = "<group>"; };
 		BF205DE814F83CC9001DE2E3 /* ConvergenceDiagnosticContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvergenceDiagnosticContinuous.cpp; sourceTree = "<group>"; };
@@ -2792,6 +2800,15 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		BD75976114FB081300F781E5 /* mixture */ = {
+			isa = PBXGroup;
+			children = (
+				BD75976214FB081300F781E5 /* Move_reallocateAll.cpp */,
+				BD75976514FB084900F781E5 /* Move_reallocateAll.h */,
+			);
+			path = mixture;
+			sourceTree = "<group>";
+		};
 		BF205DE414F83CC9001DE2E3 /* core */ = {
 			isa = PBXGroup;
 			children = (
@@ -2897,6 +2914,7 @@
 		BF205E0514F83CC9001DE2E3 /* container */ = {
 			isa = PBXGroup;
 			children = (
+				BD75975914FAE74A00F781E5 /* Set.h */,
 				BF205E0614F83CC9001DE2E3 /* Container.cpp */,
 				BF205E0714F83CC9001DE2E3 /* Container.h */,
 				BF205E0814F83CC9001DE2E3 /* DagNodeContainer.cpp */,
@@ -3180,6 +3198,8 @@
 		BF205EBB14F83CC9001DE2E3 /* builtin */ = {
 			isa = PBXGroup;
 			children = (
+				BD75975A14FAE7B500F781E5 /* Func_sumOver.cpp */,
+				BD75975B14FAE7B500F781E5 /* Func_sumOver.h */,
 				BF205EBC14F83CC9001DE2E3 /* Func_clamp.cpp */,
 				BF205EBD14F83CC9001DE2E3 /* Func_clamp.h */,
 				BF205EBE14F83CC9001DE2E3 /* Func_clear.cpp */,
@@ -3393,6 +3413,7 @@
 		BF205F5C14F83CC9001DE2E3 /* moves */ = {
 			isa = PBXGroup;
 			children = (
+				BD75976114FB081300F781E5 /* mixture */,
 				BF205F5D14F83CC9001DE2E3 /* Move.cpp */,
 				BF205F5E14F83CC9001DE2E3 /* Move.h */,
 				BF205F5F14F83CC9001DE2E3 /* MoveSimple.cpp */,
@@ -3962,7 +3983,6 @@
 				BF20602C14F83CCA001DE2E3 /* RateMatrix.cpp in Sources */,
 				BF20602E14F83CCA001DE2E3 /* TaxonData.cpp in Sources */,
 				BF20603014F83CCA001DE2E3 /* TransitionProbabilityMatrix.cpp in Sources */,
-				BF20603214F83CCA001DE2E3 /* Categorical.cpp in Sources */,
 				BF20603414F83CCA001DE2E3 /* Complex.cpp in Sources */,
 				BF20603614F83CCA001DE2E3 /* Integer.cpp in Sources */,
 				BF20603814F83CCA001DE2E3 /* Natural.cpp in Sources */,
@@ -4120,6 +4140,8 @@
 				BF20616814F83CCA001DE2E3 /* XmlParser.cpp in Sources */,
 				BF20616A14F83CCA001DE2E3 /* XmlTag.cpp in Sources */,
 				BD04B8D014FA092300ED43F9 /* RbVersion.cpp in Sources */,
+				BD75975D14FAE7B500F781E5 /* Func_sumOver.cpp in Sources */,
+				BD75976414FB081300F781E5 /* Move_reallocateAll.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4495,6 +4517,8 @@
 				BF20616714F83CCA001DE2E3 /* XmlParser.cpp in Sources */,
 				BF20616914F83CCA001DE2E3 /* XmlTag.cpp in Sources */,
 				BD04B8CF14FA092300ED43F9 /* RbVersion.cpp in Sources */,
+				BD75975C14FAE7B500F781E5 /* Func_sumOver.cpp in Sources */,
+				BD75976314FB081300F781E5 /* Move_reallocateAll.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

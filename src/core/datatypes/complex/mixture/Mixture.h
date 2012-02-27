@@ -54,6 +54,7 @@ public:
     
     // Mixture functions
     size_t                          getNumberOfClasses();                                                   //!< Get the number of classes in the mixture
+    size_t                          getNumberOfElements();                                                   //!< Get the number of elements in the mixture
     void                            addClass(DagNodeContainer* parameter);                           //!< Add a new class to the mixture
     void                            removeClass(unsigned int classId);                                      //!< Remove a class from the mixture
     DagNodeContainer*               getParameters();                                                        //!< Get the vector of parameter values associated to the classes of the mixture
@@ -65,7 +66,7 @@ public:
     void                            allocateElementToNewClass (int elementId);                              //!< Change the class of a particular element
     VectorRealPos                   getClassTypeSpecProbabilities();                                                //!< Get the vector containing class probabilities
     void                            setClassProbabilities();                                                //!< Set the vector containing class probabilities
-
+    const VectorRealPos&            getClassProbabilities();                                                //!< Get the vector containing class probabilities
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
     void                            indexAllocationVector();                                                //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
