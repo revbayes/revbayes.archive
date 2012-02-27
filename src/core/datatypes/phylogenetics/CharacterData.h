@@ -69,15 +69,15 @@ class CharacterData : public Matrix {
         void                                transpose(void);                                                            //!< Transpose the matrix
 
         // CharacterData functions
-        void                                addTaxonData(TaxonData* obs);                                         //!< Add taxon data
-        void                                addTaxonData(TaxonData* obs, bool forceAdd);                          //!< Add taxon data
+        void                                addTaxonData(TaxonData* obs);                                               //!< Add taxon data
+        void                                addTaxonData(TaxonData* obs, bool forceAdd);                                //!< Add taxon data
         void                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
         const Character&                    getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
-        const std::string&                  getDataType(void) const;                                                    //!< Returns the data type for the matrix
+        const std::string                   getDataType(void) const;                                                    //!< Returns the data type for the matrix
         const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
-        bool                                getIsHomologyEstablished(void) const { return isHomologyEstablished; }            //!< Returns whether the homology of the characters has been established
+        bool                                getIsHomologyEstablished(void) const { return isHomologyEstablished; }      //!< Returns whether the homology of the characters has been established
         size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
@@ -117,21 +117,21 @@ class CharacterData : public Matrix {
         bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
 
         // memberfunction return values
-    Natural                             numTaxa;
-    VectorNatural                       numChar;
-    Natural                             numExcludedTaxa;
-    Natural                             numExcludedChars;
-    Natural                             numIncludedTaxa;
-    Natural                             numIncludedChars;
-    VectorString                        excludedTaxa;
-    VectorNatural                       excludedChars;
-    VectorString                        includedTaxa;
-    VectorNatural                       includedChars;
-    Natural                             numConstPatterns;
-    Natural                             numMissing;
-    RbBoolean                           isHomologous;
-    
-    std::map<std::string, DAGNode*>     taxonMap;
+        Natural                             numTaxa;
+        VectorNatural                       numChar;
+        Natural                             numExcludedTaxa;
+        Natural                             numExcludedChars;
+        Natural                             numIncludedTaxa;
+        Natural                             numIncludedChars;
+        VectorString                        excludedTaxa;
+        VectorNatural                       excludedChars;
+        VectorString                        includedTaxa;
+        VectorNatural                       includedChars;
+        Natural                             numConstPatterns;
+        Natural                             numMissing;
+        RbBoolean                           isHomologous;
+        
+        std::map<std::string, DAGNode*>     taxonMap;
 };
 
 #endif

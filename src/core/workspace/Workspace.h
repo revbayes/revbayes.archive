@@ -76,7 +76,7 @@ typedef std::map<std::string, RbObject*> TypeTable;
 class Workspace : public Environment {
 
     public:
-        virtual                     ~Workspace(void);                                                                    //!< Delete function table
+        virtual                    ~Workspace(void);                                                                    //!< Delete function table
     
         // Frame functions you have to override
         Workspace*                  clone(void) const;                                                                  //!< Clone frame
@@ -84,7 +84,6 @@ class Workspace : public Environment {
         static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                  //!< Print table for user
-
 
         bool                        addDistribution(const std::string& name, Distribution* dist);                       //!< Add distribution
         bool                        addDistribution(const std::string& name, DistributionContinuous* dist);             //!< Add distribution on continuous variable
@@ -98,21 +97,21 @@ class Workspace : public Environment {
                                                         const std::vector<Argument>&   args);                           //!< Execute function
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
 //        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
-        const TypeSpec&             getClassTypeSpecOfType(const std::string& type) const;                                         //!< Get reference to class vector of type
+        const TypeSpec&             getClassTypeSpecOfType(const std::string& type) const;                              //!< Get reference to class vector of type
         const FunctionTable&        getFunctionTable(void) const { return *functionTable; }                             //!< Get function table (const)
         FunctionTable&              getFunctionTable(void) { return *functionTable; }                                   //!< Get function table (non-const)
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
-                                    {
+                                        {
                                         static Workspace globalSpace = Workspace();
                                         return globalSpace;
-                                    }
+                                        }
         static Workspace&           userWorkspace(void)                                                                 //!< Get user workspace
-                                    {
-                                         static Workspace userSpace = Workspace(&globalWorkspace());
-                                         return userSpace;
-                                    }
+                                        {
+                                        static Workspace userSpace = Workspace(&globalWorkspace());
+                                        return userSpace;
+                                        }
  
     private:
                                     Workspace(void);                                                                    //!< Workspace with NULL parent

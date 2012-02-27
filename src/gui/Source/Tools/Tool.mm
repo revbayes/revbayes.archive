@@ -16,6 +16,7 @@
 @synthesize isCurrentlyExecuting;
 @synthesize isLoop;
 @synthesize isVisited;
+@synthesize workspaceName;
 
 - (void)addInletOfColor:(NSColor*)c {
 
@@ -53,16 +54,18 @@
 
 	[inlets release];
 	[outlets release];
+    [workspaceName release];
 	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
-	[aCoder encodeObject:inlets       forKey:@"inlets"];
-	[aCoder encodeObject:outlets      forKey:@"outlets"];
-	[aCoder encodeInt:flagCount       forKey:@"flagCount"];
-	[aCoder encodeBool:touchOnRevival forKey:@"touchOnRevival"];
-    [aCoder encodeBool:isLoop         forKey:@"isLoop"];
+	[aCoder encodeObject:inlets        forKey:@"inlets"];
+	[aCoder encodeObject:outlets       forKey:@"outlets"];
+	[aCoder encodeInt:flagCount        forKey:@"flagCount"];
+	[aCoder encodeBool:touchOnRevival  forKey:@"touchOnRevival"];
+    [aCoder encodeBool:isLoop          forKey:@"isLoop"];
+    [aCoder encodeObject:workspaceName forKey:@"workspaceName"];
 	
     [super encodeWithCoder:aCoder];
 }
@@ -143,6 +146,7 @@
         progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
+        workspaceName     = [[NSString alloc] initWithString:@""];
 		flagCount         = 0;
 		touchOnRevival    = NO;
         isLoop            = NO;
@@ -157,6 +161,7 @@
         progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
+        workspaceName     = [[NSString alloc] initWithString:@""];
 		flagCount         = 0;
 		touchOnRevival    = NO;
         isLoop            = NO;
@@ -174,8 +179,10 @@
 		flagCount         = [aDecoder decodeIntForKey:@"flagCount"];
 		touchOnRevival    = [aDecoder decodeBoolForKey:@"touchOnRevival"];
         isLoop            = [aDecoder decodeBoolForKey:@"isLoop"];
+        workspaceName     = [aDecoder decodeObjectForKey:@"workspaceName"];
         [inlets retain];
         [outlets retain];
+        [workspaceName retain];
 		}
 	return self;
 }

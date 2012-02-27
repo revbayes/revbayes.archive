@@ -23,18 +23,17 @@
 
 @property (readwrite,retain) NSString* fileName;
 @property (readwrite,retain) NSString* pathName;
-@property (readwrite) int dataAlignment;
-@property (readwrite) int dataFormat;
-@property (readwrite) int dataInterleaved;
-@property (readwrite) int dataType;
-@property (readwrite) int dataTypeSimulated;
-@property (readwrite) int numberOfCharacters;
-@property (readwrite) int numberOfTaxa;
-@property (readwrite) int matrixType;
+@property (readwrite)        int       dataAlignment;
+@property (readwrite)        int       dataFormat;
+@property (readwrite)        int       dataInterleaved;
+@property (readwrite)        int       dataType;
+@property (readwrite)        int       dataTypeSimulated;
+@property (readwrite)        int       numberOfCharacters;
+@property (readwrite)        int       numberOfTaxa;
+@property (readwrite)        int       matrixType;
 
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
-- (void)execute;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (BOOL)readDataFile;

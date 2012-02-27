@@ -229,7 +229,7 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
         {
         int n = (int)(getNumberOfCharacters() - deletedCharacters.size());
         numIncludedChars.setValue( n );
-        return numIncludedTaxa;
+        return numIncludedChars;
         }
     else if (name == "excludedtaxa")
         {
@@ -287,12 +287,12 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
     else if (name == "excludechar")
         {
         const RbLanguageObject& argument = args[1].getVariable().getValue();
-            if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
+        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
             {
             int n = static_cast<const Natural&>( argument ).getValue();
             deletedCharacters.insert( n );
             }
-            else if ( argument.isTypeSpec( VectorNatural::getClassTypeSpec() ) ) 
+        else if ( argument.isTypeSpec( VectorNatural::getClassTypeSpec() ) ) 
             {
             std::vector<unsigned int> x = static_cast<const VectorNatural&>( argument ).getValue();
             for ( size_t i=0; i<x.size(); i++ )
@@ -364,9 +364,10 @@ const TypeSpec& CharacterData::getClassTypeSpec(void) {
 }
 
 
-const std::string& CharacterData::getDataType(void) const {
+const std::string CharacterData::getDataType(void) const {
 
-    return characterType;
+    std::string stlStr = characterType.getValue();
+    return stlStr;
 }
 
 

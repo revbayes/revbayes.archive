@@ -226,6 +226,50 @@
         return;
         }
 
+    
+    // instantiate data matrices for the gui, by reading the matrices that were 
+    // read in by the core
+#   if 1
+    // retrieve the value (character data matrix or matrices) from the workspace
+    RbLanguageObject* dv = Workspace::userWorkspace().getValue(variableName).clone();
+    if ( dv == NULL )
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        return;
+        }
+
+    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
+    CharacterData* cd = dynamic_cast<CharacterData*>( dv );
+    if ( dnc != NULL )
+        {
+        [self removeAllDataMatrices];
+        for (int i=0; i<dnc->size(); i++)
+            {
+            const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
+            const RbLanguageObject& theDagNode = vs->getDagNode()->getValue();
+            const CharacterData& cd = static_cast<const CharacterData&>( theDagNode );
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            [newMatrix setAlignmentMethod:@"Unknown"];
+            [self addMatrix:newMatrix];
+            }
+        }
+    else if ( cd != NULL )
+        {
+        [self removeAllDataMatrices];
+        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:*cd];
+        [newMatrix setAlignmentMethod:@"Unknown"];
+        [self addMatrix:newMatrix];
+        }
+    else
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        goto errorExit;
+        }
+
+#   else
+
     // retrieve the value (character data matrix or matrices) from the workspace
     const RbLanguageObject& dv = Workspace::userWorkspace().getValue(variableName);
     if ( RbNullObject::getInstance() == dv )
@@ -234,9 +278,6 @@
         [self stopProgressIndicator];
         return;
         }
-    
-    // instantiate data matrices for the gui, by reading the matrices that were 
-    // read in by the core
     const DagNodeContainer& dnc = dynamic_cast<const DagNodeContainer&>( dv );
     const CharacterData& cd = dynamic_cast<const CharacterData&>( dv );
     if ( &dnc != NULL )
@@ -278,7 +319,8 @@
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         goto errorExit;
         }
-        
+#   endif
+
     // set the name of the variable in the tool
     [self setDataWorkspaceName:[NSString stringWithUTF8String:(variableName.c_str())]];
     
@@ -514,7 +556,7 @@
     if ( [unalignedData count] == 0 || [unalignedData count] != [self numDataMatrices] )
         {
         [self removeAllDataMatrices];
-        [self alignSequences];
+        //[self alignSequences];
         return;
         }
         
@@ -536,7 +578,7 @@
     if (numNotTraced > 0)
         {
         [self removeAllDataMatrices];
-        [self alignSequences];
+        //[self alignSequences];
         return;
         }
 }

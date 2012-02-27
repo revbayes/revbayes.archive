@@ -268,43 +268,25 @@
     // read in by the core
     DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
     CharacterData* cd = dynamic_cast<CharacterData*>( dv );
-    if ( NULL != dnc )
+    if ( dnc != NULL )
         {
-            if ( NULL != dnc)
+        [self removeAllDataMatrices];
+        for (int i=0; i<dnc->size(); i++)
             {
-            [self removeAllDataMatrices];
-            for (int i=0; i<dnc->size(); i++)
-                {
-                const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
-                const RbLanguageObject& theDagNode = vs->getDagNode()->getValue();
-                const CharacterData& cd = static_cast<const CharacterData&>( theDagNode );
-                RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
-                [newMatrix setAlignmentMethod:@"Unknown"];
-                [self addMatrix:newMatrix];
-                }
-            }
-        else
-            {
-            [self readDataError:@"Failure reading in a set of character matrices" forVariableNamed:nsVariableName];
-            [self stopProgressIndicator];
-            return NO;
+            const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
+            const RbLanguageObject& theDagNode = vs->getDagNode()->getValue();
+            const CharacterData& cd = static_cast<const CharacterData&>( theDagNode );
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            [newMatrix setAlignmentMethod:@"Unknown"];
+            [self addMatrix:newMatrix];
             }
         }
     else if ( cd != NULL )
         {
-        if ( cd != NULL)
-            {
-            [self removeAllDataMatrices];
-            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:*cd];
-            [newMatrix setAlignmentMethod:@"Unknown"];
-            [self addMatrix:newMatrix];
-            }
-        else
-            {
-            [self readDataError:@"Failed to read character matrix" forVariableNamed:nsVariableName];
-            [self stopProgressIndicator];
-            return NO;
-            }
+        [self removeAllDataMatrices];
+        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:*cd];
+        [newMatrix setAlignmentMethod:@"Unknown"];
+        [self addMatrix:newMatrix];
         }
     else
         {

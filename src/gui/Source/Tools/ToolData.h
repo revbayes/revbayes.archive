@@ -15,8 +15,8 @@ class CharacterData;
 }
 
 @property (readwrite,retain) NSString* dataWorkspaceName;
-@property (readwrite) int numAligned;
-@property (readwrite) int numUnaligned;
+@property (readwrite)        int       numAligned;
+@property (readwrite)        int       numUnaligned;
 
 - (void)addMatrix:(RbData*)m;
 - (NSMutableArray*)dataMatrices;

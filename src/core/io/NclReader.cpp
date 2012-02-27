@@ -384,6 +384,7 @@ CharacterData* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
     // instantiate the character matrix
 	CharacterData* cMat = new CharacterData( DnaState::getClassName() );
     cMat->setIsHomologyEstablished(true);
+    std::cout << cMat->getDataType() << std::endl;
     std::cout << "setting isHomologyEstablished to true for CharacterData " << cMat << std::endl;
     
 	// read in the data, including taxon names

@@ -233,11 +233,14 @@
         const char* cmdAsCStr = [fn UTF8String];
         std::string cmdAsStlStr = cmdAsCStr;
         std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+std::cout << "variableName = \"" << variableName << "\"" << std::endl;
+std::cout << line << std::endl;
         int coreResult = Parser::getParser().processCommand(line);
         if (coreResult != 0)
             NSLog(@"Error: Could not create data in workspace");
         if ( !Workspace::userWorkspace().existsVariable(variableName) )
             NSLog(@"Error: Could not create data in workspace");
+return;
         }
     else if ( [dataMatrices count] > 1 )
         {

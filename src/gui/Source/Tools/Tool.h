@@ -18,13 +18,15 @@
     BOOL                          isCurrentlyExecuting;
     BOOL                          isLoop;
     YRKSpinningProgressIndicator* progressIndicator;
+    NSString*                     workspaceName;
 }
 
-@property (readwrite) int flagCount;
-@property (readwrite) BOOL touchOnRevival;
-@property (readwrite) BOOL isCurrentlyExecuting;
-@property (readwrite) BOOL isLoop;
-@property (readwrite) BOOL isVisited;
+@property (readwrite)        int       flagCount;
+@property (readwrite)        BOOL      touchOnRevival;
+@property (readwrite)        BOOL      isCurrentlyExecuting;
+@property (readwrite)        BOOL      isLoop;
+@property (readwrite)        BOOL      isVisited;
+@property (readwrite,retain) NSString* workspaceName;
 
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;
