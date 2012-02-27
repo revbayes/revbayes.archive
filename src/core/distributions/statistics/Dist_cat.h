@@ -296,6 +296,14 @@ void Dist_cat<setType>::setMemberVariable(std::string const &name, Variable *var
     }
     else if ( name == "states" ){
         states = var;
+        
+        // reset the state vector
+        stateVector.clear();
+        Set<setType>& c = static_cast<Set<setType>& >( var->getValue() );
+        for (int i = 0; i < c.size(); i++) {
+            RbLanguageObject* tmp = static_cast<RbLanguageObject*>( c.getElement(i).clone() );
+            stateVector.push_back(tmp);
+        }
     }
     else {
         DistributionDiscrete::setMemberVariable(name, var);

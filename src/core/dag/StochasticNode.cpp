@@ -192,7 +192,7 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
 double StochasticNode::calculateLnProbability( void ) {
     
     if (factorRoot != NULL) {
-        return factorRoot->calculateSummedLnProbability();
+        return factorRoot->calculateSummedLnProbability(0);
     }
     
     if (needsProbabilityRecalculation) {
@@ -212,7 +212,7 @@ double StochasticNode::calculateLnProbability( void ) {
  * Calculate the ln-probability summed over all possible states.
  * This is the variable elimination algorithm. It only works if we can condition on only one parent being eliminated.
  */
-double StochasticNode::calculateSummedLnProbability( void ) {
+double StochasticNode::calculateEliminatedLnProbability( void ) {
     
     // if this node is not eliminated, then we have reached the bottom of the elimination algorithm
     if (!isEliminated()) {
@@ -232,13 +232,13 @@ double StochasticNode::calculateSummedLnProbability( void ) {
     if (needsProbabilityRecalculation || needsLikelihoodRecalculation) {
         // initialize the probability
         double prob = 0.0;
-            
+        
         // we need to iterate over my states
         DistributionDiscrete* d = static_cast<DistributionDiscrete*>( distribution );
-            
+        
         // we ask for the state vector
         const std::vector<RbLanguageObject*>& states = d->getStateVector();
-            
+        
         // now we calculate the probabilities and likelihoods
         size_t i = 0;
         for (std::vector<RbLanguageObject*>::const_iterator state = states.begin(); state != states.end(); state++) {
@@ -246,7 +246,7 @@ double StochasticNode::calculateSummedLnProbability( void ) {
             RbLanguageObject* v = (*state);
             // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
             value = v;
-                
+            
             // recalculate the likelihoods if necessary    
             if (needsLikelihoodRecalculation) {
                 
@@ -257,12 +257,12 @@ double StochasticNode::calculateSummedLnProbability( void ) {
                 for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
                     // only if the child has flag as changed I need to ask for the likelihood
                     if ( (*child)->isTouched() ) {
-                        partialLikelihoods[i][j] = (*child)->calculateSummedLnProbability();
+                        partialLikelihoods[i][j] = (*child)->calculateEliminatedLnProbability();
                     }
                     
                     // add the log-likelihood for this child
                     likelihoods[i] += partialLikelihoods[i][j];
-                
+                    
                     // increment the child index
                     j++;
                 }
@@ -273,21 +273,93 @@ double StochasticNode::calculateSummedLnProbability( void ) {
                 // set the likelihood for this state to the probability array
                 probabilities[i] = distribution->lnPdf( *value );
             }
-             
+            
             // add this partial probability to the total probability
             prob += exp(probabilities[i] + likelihoods[i]);
             
             // increment the state index
             i++;
         }
-            
+        
         lnProb = log(prob);
     }
-        
+    
     needsProbabilityRecalculation = needsLikelihoodRecalculation = false;
     
     return lnProb;
 }
+
+
+
+/** 
+ * Calculate the ln-probability summed over all possible states.
+ * This is the sum-product algorithm. We try to use variable elimination for parts of the graph internally.
+ */
+double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
+    // get the node we are talking about from the sum-product sequence
+    StochasticNode* theNode = sumProductSequence[nodeIndex];
+    
+    // test if this node is eliminated or summed-over
+    if ( theNode->type == ELIMINATED ) {
+        return theNode->calculateEliminatedLnProbability() + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
+    }
+    else if ( theNode->type == INSTANTIATED ) {
+        return theNode->getDistribution().lnPdf( theNode->getValue() ) + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
+    }
+    
+//    if (needsProbabilityRecalculation) {
+        // initialize the probability
+        double sumProb = 0.0;
+        
+        // we need to iterate over my states
+        DistributionDiscrete& d = static_cast<DistributionDiscrete&>( theNode->getDistribution() );
+        
+        // store the current value
+        RbLanguageObject* tmp_value = theNode->value;
+        
+        // we ask for the state vector
+        const std::vector<RbLanguageObject*>& states = d.getStateVector();
+        
+        // now we calculate the probabilities
+        for (std::vector<RbLanguageObject*>::const_iterator state = states.begin(); state != states.end(); state++) {
+            // I set my value so that my children can access if for recalculation
+            RbLanguageObject* v = (*state);
+            // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
+            theNode->value = v;
+            
+            // TODO: we need to stop somehow the recursion
+            if ( nodeIndex < sumProductSequence.size() - 1 ) {
+                double prob = calculateSummedLnProbability( nodeIndex + 1 );
+                
+                // add the probability for being in this state
+                sumProb += d.pdf( *v ) * exp(prob);
+            }
+            else {
+                
+                // add the probability for being in this state
+                sumProb += d.pdf( *v );
+            }
+            
+        }
+        
+        // restore the current value
+        theNode->value = tmp_value;
+        
+            
+        // the ln prob is just the log of the sum of the single probs
+        theNode->lnProb = log(sumProb);
+//    }
+    
+    if ( lnProb == NAN || lnProb < -1000000) {
+        std::cerr << "Oh oh, didn't get a valid likelihood ..." << std::endl;
+    }
+    
+    needsProbabilityRecalculation = needsLikelihoodRecalculation = false;
+    
+    return theNode->lnProb;
+}
+
+
 
 
 /** Clamp the node to an observed value */
@@ -394,6 +466,62 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
     return copy;
 }
 
+
+/**
+ * Construct the set of nodes which are not instantiated.
+ *
+ * I need to add all nodes which are either:
+ * a) not instantiated, or
+ * b) have not instantiated parents
+ */
+void StochasticNode::constructFactor(std::set<VariableNode *> &nodes, std::vector<StochasticNode*>& sequence) {
+    // if I was added already, then I'm done
+    if ( nodes.find( this ) == nodes.end() ) {
+        nodes.insert( this );
+        
+        // test whether I'm actually eliminated
+        if ( isEliminated() ) {
+            // if so, add my parents
+            
+            // first the parents
+            for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+                if ( (*i)->isEliminated() ) {
+                    static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
+                }
+            }
+        }
+        
+        // insert the node now after all parents have been inserted
+        sequence.push_back( this );
+        
+        // test whether I'm actually eliminated
+        if ( isEliminated() ) {
+            // if so, add my children
+            
+            // then the children
+            for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
+                static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
+            }
+        }
+    }
+    
+}
+
+
+/**
+ * Construct the elimination sequence.
+ *
+ * For now we use a very basic approach.
+ */
+std::vector<StochasticNode*> StochasticNode::constructSumProductSequence( void ) {
+    // get all nodes of the factor
+    std::set<VariableNode*> factor;
+    std::vector<StochasticNode*> sequence;
+    constructFactor(factor, sequence);
+    
+    return sequence;
+}
+ 
 
 /** Complete info about object */
 std::string StochasticNode::debugInfo(void) const {
@@ -702,6 +830,9 @@ void StochasticNode::setInstantiated(bool inst) {
         
     }
     else if ( type == INSTANTIATED && !inst) {
+        // set our new type
+        type = SUMMED_OVER;
+        
         // get the number of states
         DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
         size_t nStates = discreteDist->getNumberOfStates();
@@ -716,17 +847,17 @@ void StochasticNode::setInstantiated(bool inst) {
 //        delete value;
 //        value = NULL;
         
-        factorRoot = this;
-        // how many parents do I have which are eliminated?
-        size_t numEliminatedParents = 0;
-        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-            if ( (*i)->isEliminated() ) {
-                factorRoot = static_cast<VariableNode*>( *i )->getFactorRoot();
-                numEliminatedParents++;
-            }
+        // recalculate the factor
+        std::vector<StochasticNode*> sequence = constructSumProductSequence();
+        
+        // for all nodes in the sequence, set the new factor root
+        for (std::vector<StochasticNode*>::iterator i = sequence.begin(); i != sequence.end(); i++) {
+            (*i)->setFactorRoot( sequence[0] );
+            (*i)->touch();
         }
         
-        type = ELIMINATED;
+        // set the sum-product sequence for the factor root
+        sequence[0]->setSumProductSequence( sequence );
         
         // I need to tell my children that I'm eliminated
         for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
@@ -737,6 +868,12 @@ void StochasticNode::setInstantiated(bool inst) {
         needsProbabilityRecalculation = true;
         needsLikelihoodRecalculation = true;
     }
+}
+
+
+/** Setting the sum-product sequence */
+void StochasticNode::setSumProductSequence(const std::vector<StochasticNode *> seq) {
+    sumProductSequence = seq;
 }
 
 

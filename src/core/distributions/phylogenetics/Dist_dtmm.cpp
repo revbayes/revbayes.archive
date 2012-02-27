@@ -148,11 +148,11 @@ double Dist_dtmm::lnPdf( const RbLanguageObject& value ) const {
     const CharacterStateDiscrete&         start  = static_cast<const CharacterStateDiscrete&     >( initialState->getValue() );
     const CharacterStateDiscrete&         stop   = static_cast<const CharacterStateDiscrete&     >( value );
     
-    std::cerr << "Computing lnPdf of DTMM with:\t";
-    start.printValue(std::cerr);
-    std::cerr << " <-> ";
-    stop.printValue(std::cerr);
-    std::cerr << std::endl;
+//    std::cerr << "Computing lnPdf of DTMM with:\t";
+//    start.printValue(std::cerr);
+//    std::cerr << " <-> ";
+//    stop.printValue(std::cerr);
+//    std::cerr << std::endl;
     
     // calculate the transition probability matrix
         
@@ -172,6 +172,8 @@ double Dist_dtmm::lnPdf( const RbLanguageObject& value ) const {
             }
         }
     }
+    
+//    std::cerr << "LnProb:\t\t" << lnprob << std::endl; 
     
     return lnprob;
 }

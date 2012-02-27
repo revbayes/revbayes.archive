@@ -44,8 +44,9 @@ public:
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG functions implemented here
-    double                                  calculateSummedLnProbability(void);                                 //!< Calculate summed log conditional probability over all possible states
+    double                                  calculateEliminatedLnProbability(void);                             //!< Calculate summed log conditional probability over all possible states
     DAGNode*                                cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
+    void                                    constructFactor(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
     const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
     const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                       getValue(void);                                                     //!< Get value (non-const)

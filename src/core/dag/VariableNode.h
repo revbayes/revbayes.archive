@@ -52,7 +52,10 @@ public:
     virtual bool                                isConst(void) const { return false; }                                           //!< Is DAG node const value?
 
     // DAG functions you have to override
-    virtual double                              calculateSummedLnProbability(void) = 0;                                         //!< Calculate summed log conditional probability over all possible states
+//    virtual double                              calculateSummedLnProbability(size_t nodeIndex) = 0;                             //!< Calculate summed log conditional probability over all possible states
+    virtual double                              calculateEliminatedLnProbability(void) = 0;                                     //!< Calculate summed log conditional probability over all possible states
+//    virtual std::vector<StochasticNode*>        constructSumProductSequence(void) = 0;                                          //!< Construct the sum-product sequence
+    virtual void                                constructFactor(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
     virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone entire graph
     virtual bool                                isEliminated(void) const = 0;
     virtual void                                likelihoodsNeedUpdates() = 0;                                                   //!< Tell this node that the likelihoods need to be updated
@@ -61,7 +64,7 @@ public:
 protected:
     VariableNode( void );                                                                                                       //!< Constructor of empty node
     VariableNode(const VariableNode &v);                                                                                        //!< Copy Constructor
-
+        
 //    virtual void                                getAffected(std::set<DAGNode*>& affected) = 0;                    //!< Mark and get affected nodes
 
 //    virtual void                                        keepMe(void) = 0;                                                           //!< Keep value of myself

@@ -100,16 +100,54 @@ DeterministicNode* DeterministicNode::clone() const {
  *  Calculate the summed over ln-probability.
  *  We just take the product of the probability of our children.
  */
-double DeterministicNode::calculateSummedLnProbability(void) {
+double DeterministicNode::calculateEliminatedLnProbability(void) {
     // initialize the log probability
     double lnProb = 0.0;
     
     // our probability is the product of the probabilities of our children
     for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
-        lnProb += (*child)->calculateSummedLnProbability();
+        lnProb += (*child)->calculateEliminatedLnProbability();
     }
     
     return lnProb;
+}
+
+
+/**
+ * Construct the set of nodes which are not instantiated.
+ *
+ * I need to add all nodes which are either:
+ * a) not instantiated, or
+ * b) have not instantiated parents
+ */
+void DeterministicNode::constructFactor(std::set<VariableNode *> &nodes, std::vector<StochasticNode*>& sequence) {
+    // if I was added already, then I'm done
+    if ( nodes.find( this ) == nodes.end() ) {
+        nodes.insert( this );
+        
+        // test whether I'm actually eliminated
+        if ( isEliminated() ) {
+            // if so, add my parents
+            
+            // first the parents
+            for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+                if ( (*i)->isEliminated() ) {
+                    static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
+                }
+            }
+        }
+        
+        // test whether I'm actually eliminated
+        if ( isEliminated() ) {
+            // if so, add my children
+            
+            // then the children
+            for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
+                static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
+            }
+        }
+    }
+    
 }
 
 
@@ -275,9 +313,13 @@ RbLanguageObject& DeterministicNode::getValue( void ) {
  */
 bool DeterministicNode::isEliminated( void ) const {
     // ask all parents
-//    for (std::vector<DAGNode*>::iterator i = parents.begin(); <#condition#>; <#increment#>) {
-//        
-//    }
+    for (std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
+        if ( (*i)->isEliminated() ) {
+            return true;
+        }
+    }
+    
+    // non of the parents was eleminated, so this node isn't either
     return false;
 }
 

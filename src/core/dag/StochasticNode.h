@@ -77,7 +77,6 @@ public:
 
     // StochasticNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
-    double                              calculateSummedLnProbability(void);                                 //!< Calculate summed log conditional probability over all possible states
     void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
     const Distribution&                 getDistribution(void) const;                                        //!< Get distribution (const)
     Distribution&                       getDistribution(void);                                              //!< Get distribution (non-const)
@@ -86,11 +85,16 @@ public:
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
     void                                likelihoodsNeedUpdates(void);                                       //!< Tell this node that the likelihoods need to be updated
     void                                setInstantiated(bool inst);                                         //!< Set whether the node is instantiated or summed over
+    void                                setSumProductSequence(const std::vector<StochasticNode*> seq);      //!< Set the sum-product sequence
     void                                setValue(RbLanguageObject* value);                                  //!< Set value but do not clamp; get affected nodes
     void                                unclamp(void);                                                      //!< Unclamp the node
     
     // DAG functions
+    double                              calculateSummedLnProbability(size_t nodeIndex);                     //!< Calculate summed log conditional probability over all possible states
+    double                              calculateEliminatedLnProbability(void);                             //!< Calculate summed log conditional probability over all possible states
     DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
+    std::vector<StochasticNode*>        constructSumProductSequence(void);                                  //!< Construct the sum-product sequecence
+    void                                constructFactor(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
     void                                swapParentNode( DAGNode* oldP, DAGNode* newP);                      //!< Swap a parent node
 
 protected:
@@ -123,6 +127,8 @@ private:
     std::vector<double>                 storedProbabilities;
     std::vector<double>                 storedLikelihoods;
     std::vector<std::vector<double> >   storedPartialLikelihoods;
+    
+    std::vector<StochasticNode*>        sumProductSequence;
     
 };
 
