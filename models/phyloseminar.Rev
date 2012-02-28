@@ -109,8 +109,10 @@ mymcmcgtr.run(generations=1000)
 alpha_prior <- 1.0
 
 alpha ~ exponential (alpha_prior)
-#WARNING: I DON'T know how to get the quantiles of a gamma
-distgama ~ cat (probabilities = [0.25, 0.25, 0.25, 0.25], states = gamma.quantiles() )
+#TAH: 
+# Since the gamma has a mean = 1, then the rate of the gamma is equal to alpha, hence 
+gamma_quantiles = [qgamma(0.125,alpha,alpha), qgamma(0.375,alpha,alpha), qgamma(0.625,alpha,alpha), qgamma(0.875,alpha,alpha)]
+distgama ~ cat (probabilities = [0.25, 0.25, 0.25, 0.25], states = gamma_quantiles)
 
 #Draw rate for each cluster of sites 
 for (j in 1:(num_rates ) ) {  
