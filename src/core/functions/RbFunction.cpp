@@ -645,7 +645,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
             continue;
 
         if ( !theRules[i].hasDefault() )
-            throw RbException("No argument found for parameter.");
+            throw RbException("No argument found for parameter '" + theRules[i].getArgumentLabel() + "'.");
 
         const ArgumentRule& theRule = theRules[i];
         RbVariablePtr theVar = theRule.getDefaultVariable().clone();
