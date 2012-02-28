@@ -2,29 +2,24 @@
 
 # By Bastien Boussau, Tracy Heath and Sebastian Hoehna
 
-#################
-# First we construct the tree topology with 5 taxa (we could also read it from a file)
-#################
-taxaCount <- 5
-names <- ["A", "B", "C", "D", "E"]
+
+
+#####################
+# Now we have the datat
+# Let's do some inference
+#####################
+
+D <- read("data/primates_short.nex")
+
+taxaCount <- D.ntaxa()
+names <- D.names()
 
 tau ~ unifTopology( numberTaxa=taxaCount, tipNames=names, isRooted=false, isBinary=true )
 
 # Create the tree plate that is ordered by the topology
 tree <- treeplate(tau)
 
-# or
-# tree <- readTrees("trees/phyloseminar.trees")
-
-#################
-# First a simple GTR model without heterogeneity
-#################
-# Here we can specify the model by using the tree functions for generating node or branch
-# indices. In rooted trees, T.node(i) would simply give the node at the index with respect
-# to the root. node.ancestor() returns the parent of the node. Note, internally also unrooted trees 
-# are rooted at an arbitrary node and therefore have a direction (parent <-> child relationship).
-
-siteCount <- 100
+siteCount <- D.nchar()[1]
 
 nucleotides <- set(dna("A"),dna("C"),dna("G"),dna("T"))
 pi <- simplex(1,2,3,4)
@@ -39,6 +34,7 @@ for (i in nodeCount:1) {
     if (node.isRoot()) {   
         for (j in 1:siteCount) {
             dna_state[i][j] ~ cat(pi,nucleotides)
+            sumOver(dna_state[i][j], TRUE)
         }
     } else {
         parent <- node.ancestor()
@@ -56,38 +52,45 @@ for (i in nodeCount:1) {
         if (node.isTip()) {
             for (j in 1:siteCount) {
                 dna_state[i][j] ~ dtmm(tp[i], dna_state[parentIndex[i]][j])
-#                clamp(dna_state[i][j], D[i][j])
+                clamp(dna_state[i][j], D[i][j])
             }
-#            taxon[i] := taxonData(node.getName(), dna_state[i][1], dna_state[i][2], dna_state[i][3], dna_state[i][4], dna_state[i][5] )
-            taxon[i] := taxonData(node.getName(), dna_state[i] )
         } else {
             for (j in 1:siteCount) {
                 dna_state[i][j] ~ dtmm(tp[i], dna_state[parentIndex[i]][j])
+                sumOver(dna_state[i][j], TRUE)
             }
         }	
     }
 }
 
+
 mygtr <- model( pi )
 
 ################
-# Now we have a simple GTR model on a tree with 5 leaves.
-# Let's simulate nsites sites
+# Now we can do some inference!
 ################
-
-#Where we want to put the simulated alignment:
-monitors[1] <- objectMonitor(printgen=1, taxon)
-monitors[2] <- fileMonitor(filename="gtrSimulation.out", printgen=1, separator="	", taxon)
-
-mysimu <- simulate(mygtr, monitors)
-mysimu.run(1)
-
-
-mons <- mysimu.getMonitors()
-for (i in 1:tau.nTips()) {
-   t[i] <- mons[1].getValues("taxon[" + i + "]")[1]
+##We need to define moves
+#Moves on branch lengths
+lambda <- 1.0
+for (i in tree.nnodes():1) {
+node <- tree.node(i)
+if (! node.isRoot()) {
+moves[i] <- mscale(bl[i], weight=1.0, lambda = 1.0)
 }
-D <- characterData("dna", t[1], t[2], t[3], t[4], t[5])
+}
 
 
+#numMoves <- size(moves)
+
+
+#Moves on the stationary frequencies and rates (in this model the
+#rates and stationary frequencies are fixed!)
+#moves[numMoves+1] <- msimplex(pi,4)
+#moves[numMoves+2] <- msimplex(rates,6)
+
+monitors[1] <- fileMonitor(filename="gtrSimulation.out", printgen=1, separator="	", bl)
+
+mymcmcgtr <- mcmc(mygtr, moves=moves, monitor=monitors)
+
+mymcmcgtr.run(generations=1000)
 
