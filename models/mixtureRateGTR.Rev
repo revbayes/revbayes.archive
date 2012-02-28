@@ -12,7 +12,7 @@ lambda_rate_prior <- 2.0
 
 #Draw rate for each cluster of sites 
 for (j in 1:(num_rates ) ) {  
-rate_parameters[j] ~ exponential(lambda_rate_prior)  # G_0 is an exponential(2)
+    rate_parameters[j] ~ exponential(lambda_rate_prior)  # G_0 is an exponential(2)
 }
 
 
@@ -111,8 +111,12 @@ return model(pi)
 ############## Specifying moves ################
 ################################################
 #### First, mixture-specific moves
-moves[0]<-reallocationMove(rateMixture)
-moves[1]<-probVecMove(rateMixture)
+moves[1]<-changeClassProbabilitiesMove(rateMixture)
+
+numMoves <- size(moves)
+for (i in 1:rateMixture.getNumberOfElements() ) {
+moves[i + numMoves] <- reallocate(rateMixture, i)
+}
 
 numMoves <- size(moves)
 for (i in 1:rateMixture.getNumberOfClasses() ) {
