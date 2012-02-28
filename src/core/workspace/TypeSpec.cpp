@@ -157,6 +157,11 @@ bool TypeSpec::isDerivedOf(const TypeSpec &x) const {
         return true;
     }
     
+    // then we test if we are a specialization of type x
+    if ( baseType == x.baseType && ( x.elementType == NULL || ( elementType != NULL && elementType->isDerivedOf(*x.elementType) ) ) ) {
+        return true;
+    }
+    
     // now we climb up our derivation tree
     if ( parent != NULL ) {
         return parent->isDerivedOf(x);
