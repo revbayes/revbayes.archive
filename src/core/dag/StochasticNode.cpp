@@ -307,7 +307,7 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
         return theNode->getDistribution().lnPdf( theNode->getValue() ) + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
     }
     
-//    if (needsProbabilityRecalculation) {
+    if (theNode->needsProbabilityRecalculation || theNode->needsLikelihoodRecalculation) {
         // initialize the probability
         double sumProb = 0.0;
         
@@ -326,6 +326,7 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
             RbLanguageObject* v = (*state);
             // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
             theNode->value = v;
+            theNode->touch();
             
             // TODO: we need to stop somehow the recursion
             if ( nodeIndex < sumProductSequence.size() - 1 ) {
@@ -348,13 +349,13 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
             
         // the ln prob is just the log of the sum of the single probs
         theNode->lnProb = log(sumProb);
-//    }
+    }
     
     if ( lnProb == NAN || lnProb < -1000000) {
         std::cerr << "Oh oh, didn't get a valid likelihood ..." << std::endl;
     }
     
-    needsProbabilityRecalculation = needsLikelihoodRecalculation = false;
+    theNode->needsProbabilityRecalculation = theNode->needsLikelihoodRecalculation = false;
     
     return theNode->lnProb;
 }
@@ -365,8 +366,8 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
 /** Clamp the node to an observed value */
 void StochasticNode::clamp( RbLanguageObject* observedVal ) {
 
-    if ( touched )
-        throw RbException( "Cannot clamp stochastic node in volatile state" );
+//    if ( touched )
+//        throw RbException( "Cannot clamp stochastic node in volatile state" );
 
     // touch for recalculation
     touch(); 
@@ -479,15 +480,10 @@ void StochasticNode::constructFactor(std::set<VariableNode *> &nodes, std::vecto
     if ( nodes.find( this ) == nodes.end() ) {
         nodes.insert( this );
         
-        // test whether I'm actually eliminated
-        if ( isEliminated() ) {
-            // if so, add my parents
-            
-            // first the parents
-            for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-                if ( (*i)->isEliminated() ) {
-                    static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
-                }
+        // first the parents
+        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+            if ( (*i)->isEliminated() ) {
+                static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
             }
         }
         
@@ -958,15 +954,14 @@ void StochasticNode::touchMe( void ) {
             storedPartialLikelihoods    = partialLikelihoods;
         }
         
-        //  I need to tell all my eliminated parents that they need to update their likelihoods
-        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-            if ( (*i)->isEliminated() ) {
-                // since only variable nodes can be eliminated
-                static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
-            }
+    }
+    
+    //  I need to tell all my eliminated parents that they need to update their likelihoods
+    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+        if ( (*i)->isEliminated() ) {
+            // since only variable nodes can be eliminated
+            static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
         }
-            
-        
     }
     
     needsProbabilityRecalculation = true;

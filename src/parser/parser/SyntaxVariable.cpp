@@ -39,25 +39,25 @@
 
 /** Construct from identifier and index */
 SyntaxVariable::SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(NULL) {
+    SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(NULL), replacementValue( NULL ) {
 }
 
 
 /** Construct from function call and index */
 SyntaxVariable::SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(NULL) {
+    SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(NULL), replacementValue( NULL ) {
 }
 
 
 /** Construct from base variable (member object), identifier and index */
 SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(var) {
+    SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(var), replacementValue( NULL ) {
 }
 
 
 /** Construct from base variable (member object), function call and index */
 SyntaxVariable::SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(var) {
+    SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(var), replacementValue( NULL ) {
 }
 
 
@@ -81,6 +81,13 @@ SyntaxVariable::SyntaxVariable(const SyntaxVariable& x) : SyntaxElement(x) {
     }
     else
         index = NULL;
+    
+    if (x.replacementValue != NULL) {
+        replacementValue = x.replacementValue->clone();
+    }
+    else {
+        replacementValue = NULL;
+    }
 }
 
 
@@ -99,6 +106,8 @@ SyntaxVariable::~SyntaxVariable() {
         delete *i;
     }
     delete index;
+    
+    delete replacementValue;
 }
 
 
@@ -114,6 +123,14 @@ SyntaxVariable& SyntaxVariable::operator=(const SyntaxVariable& x) {
         baseVariable = x.baseVariable;
 
         index = x.index;
+        
+        delete replacementValue;
+        if (x.replacementValue != NULL) {
+            replacementValue = x.replacementValue->clone();
+        }
+        else {
+            replacementValue = NULL;
+        }
     }
 
     return (*this);
@@ -356,6 +373,12 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
  * the function call can replace the identifier.
  */
 RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
+    
+    // test whether this variable was replace inside a loop
+    if ( replacementValue != NULL ) {
+        RbVariablePtr theVar = RbVariablePtr( new Variable( new ConstantNode( replacementValue->clone() ) ) );
+        return theVar;
+    }
 
     /* Get variable */
     RbVariablePtr theVar = NULL;
@@ -477,5 +500,35 @@ void SyntaxVariable::printValue(std::ostream& o) const {
 
     for (std::list<SyntaxElement*>::const_iterator i=index->begin(); i!=index->end(); i++)
         (*i)->printValue(o);
+}
+
+
+/**
+ * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+ * 
+ */
+void SyntaxVariable::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+    // test whether this variable is the one we are looking for
+    if ( name == identifier->getValue() ) {
+        delete replacementValue;
+        replacementValue = c.clone();
+    }
+    
+    // also change the indices if we had some
+    if ( index != NULL) {
+        for (std::list<SyntaxElement*>::iterator i = index->begin(); i != index->end(); i++) {
+            (*i)->replaceVariableWithConstant(name, c);
+        }
+    }
+    
+    // also change the function call if we had some
+    if ( functionCall != NULL) {
+        functionCall->replaceVariableWithConstant(name, c);
+    }
+    
+    // also change the base variable if we had some
+    if ( baseVariable != NULL) {
+        baseVariable->replaceVariableWithConstant(name, c);
+    }
 }
 

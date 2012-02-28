@@ -35,31 +35,32 @@ class SyntaxUnaryExpr : public SyntaxElement {
 
     public:
         // Unary operator types
-        enum                        operatorT { UMinus, UPlus, UNot, UAnd };                                //!< Operator types
-        static std::string          opCode[];                                                               //!< Operator codes for printing
+        enum                        operatorT { UMinus, UPlus, UNot, UAnd };                                        //!< Operator types
+        static std::string          opCode[];                                                                       //!< Operator codes for printing
 
         // Constructors and destructor
-                                    SyntaxUnaryExpr(SyntaxUnaryExpr::operatorT op, SyntaxElement* expr);    //!< Standard constructor 
-                                    SyntaxUnaryExpr(const SyntaxUnaryExpr& x);                              //!< Copy constructor
-	    virtual                    ~SyntaxUnaryExpr();                                                      //!< Destroy operands
+                                    SyntaxUnaryExpr(SyntaxUnaryExpr::operatorT op, SyntaxElement* expr);            //!< Standard constructor 
+                                    SyntaxUnaryExpr(const SyntaxUnaryExpr& x);                                      //!< Copy constructor
+	    virtual                    ~SyntaxUnaryExpr();                                                              //!< Destroy operands
 
         // Assignment operator
-        SyntaxUnaryExpr&            operator=(const SyntaxUnaryExpr& x);                                    //!< Assignment operator
+        SyntaxUnaryExpr&            operator=(const SyntaxUnaryExpr& x);                                            //!< Assignment operator
 
         // Basic utility functions
-        SyntaxUnaryExpr*            clone() const;                                                          //!< Clone object
-        static const std::string&   getClassName(void);                                                     //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object 
-        void                        printValue(std::ostream& o) const;                                      //!< Print info about object
+        SyntaxUnaryExpr*            clone() const;                                                                  //!< Clone object
+        static const std::string&   getClassName(void);                                                             //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object 
+        void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RbVariablePtr               evaluateContent(Environment& env);                                      //!< Get semantic value
-        bool                        isConstExpression(void) const;                                          //!< Is the expression constant?
+        RbVariablePtr               evaluateContent(Environment& env);                                              //!< Get semantic value
+        bool                        isConstExpression(void) const;                                                  //!< Is the expression constant?
+        void                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
-        SyntaxElement*              expression;                                                             //!< The expression
-        enum operatorT              operation;                                                              //!< The type of operation
+        SyntaxElement*              expression;                                                                     //!< The expression
+        enum operatorT              operation;                                                                      //!< The type of operation
     
 };
 

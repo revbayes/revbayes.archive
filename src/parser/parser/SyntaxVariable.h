@@ -64,13 +64,14 @@ class SyntaxVariable : public SyntaxElement {
         VariableSlot&                       createVariable(Environment& env);                                                       //!< Get semantic value
         RbVariablePtr                       evaluateContent(Environment& env);                                                      //!< Get semantic value
         bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
+        void                                replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);        //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         RbString*                           identifier;                                                                             //!< The name of the variable, if identified by name
         SyntaxFunctionCall*                 functionCall;                                                                           //!< Function call giving a reference to a variable (we hope)
         std::list<SyntaxElement*>*          index;                                                                                  //!< Vector of int indices to variable element
         SyntaxVariable*                     baseVariable;                                                                           //!< Base variable (pointing to a composite node)
-    
+        RbLanguageObject*                   replacementValue;
 };
 
 #endif

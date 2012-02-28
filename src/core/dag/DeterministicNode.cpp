@@ -441,7 +441,6 @@ void DeterministicNode::swapParentNode( DAGNode* oldParent, DAGNode* newParent )
 void DeterministicNode::touchMe( void ) {
     
     // only if this node is not touched we start touching all affected nodes
-    // this pervents infinite recursion in statement like "a <- a + b"
     if (!touched) {
         // flag myself as being touched
         touched     = true;
@@ -457,7 +456,15 @@ void DeterministicNode::touchMe( void ) {
     // touch all my children because they are affected too
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->touchMe();
-//    }
+    
+    
+    //  I need to tell all my eliminated parents that they need to update their likelihoods
+    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+        if ( (*i)->isEliminated() ) {
+            // since only variable nodes can be eliminated
+            static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
+        }
+    }
     
 }
 

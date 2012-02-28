@@ -30,39 +30,40 @@ class SyntaxStatement : public SyntaxElement {
         static std::string          stmtName[];                                                                         //!< Statement names for printing
 
         // Constructors and destructor
-                                                    SyntaxStatement(statementT type);                                   //!< NEXT, BREAK, RETURN statements
+                                                    SyntaxStatement(statementT type);                                               //!< NEXT, BREAK, RETURN statements
                                                     SyntaxStatement(SyntaxStatement::statementT type,
-                                                                    SyntaxElement*              expr);                  //!< RETURN statement
+                                                                    SyntaxElement*              expr);                              //!< RETURN statement
                                                     SyntaxStatement(statementT                  type,
                                                                     SyntaxElement*              cond,
-                                                                    std::list<SyntaxElement*>*  stmts);                 //!< IF, FOR, WHILE statements
+                                                                    std::list<SyntaxElement*>*  stmts);                             //!< IF, FOR, WHILE statements
                                                     SyntaxStatement(statementT                  type,
                                                                     SyntaxElement*              expr,
                                                                     std::list<SyntaxElement*>*  stmts1,
-                                                                    std::list<SyntaxElement*>*  stmts2);                //!< IF_ELSE statements
-                                                    SyntaxStatement(const SyntaxStatement& x);                          //!< Copy constructor
-	    virtual                                    ~SyntaxStatement();                                                  //!< Destroy operands
+                                                                    std::list<SyntaxElement*>*  stmts2);                            //!< IF_ELSE statements
+                                                    SyntaxStatement(const SyntaxStatement& x);                                      //!< Copy constructor
+	    virtual                                    ~SyntaxStatement();                                                              //!< Destroy operands
 
         // Assignment operator
-        SyntaxStatement&                            operator=(const SyntaxStatement& x);                                //!< Assignment operator
+        SyntaxStatement&                            operator=(const SyntaxStatement& x);                                            //!< Assignment operator
 
         // Basic utility functions
-        SyntaxStatement*                            clone() const;                                                      //!< Clone object
-        static const std::string&                   getClassName(void);                                                 //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
-        const TypeSpec&                             getTypeSpec(void) const;                                            //!< Get language type of the object
-        void                                        printValue(std::ostream& o) const;                                  //!< Print info about object
+        SyntaxStatement*                            clone() const;                                                                  //!< Clone object
+        static const std::string&                   getClassName(void);                                                             //!< Get class name
+        static const TypeSpec&                      getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                             getTypeSpec(void) const;                                                        //!< Get language type of the object
+        void                                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RbVariablePtr                               evaluateContent(Environment& env);                                  //!< Get semantic value
+        RbVariablePtr                               evaluateContent(Environment& env);                                              //!< Get semantic value
+        void                                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
-        bool                                        isTrue(SyntaxElement* expression, Environment& env) const;          //!< Does expression evaluate to true?
+        bool                                        isTrue(SyntaxElement* expression, Environment& env) const;                      //!< Does expression evaluate to true?
 
-        enum statementT                             statementType;                                                      //!< The type of statement
-        SyntaxElement*                              expression;                                                         //!< Expression, conditional expr, or for condition
-        std::list<SyntaxElement*>*                  statements1;                                                        //!< First set of statements
-        std::list<SyntaxElement*>*                  statements2;                                                        //!< Second set of statements
+        enum statementT                             statementType;                                                                  //!< The type of statement
+        SyntaxElement*                              expression;                                                                     //!< Expression, conditional expr, or for condition
+        std::list<SyntaxElement*>*                  statements1;                                                                    //!< First set of statements
+        std::list<SyntaxElement*>*                  statements2;                                                                    //!< Second set of statements
     
 };
 
