@@ -24,7 +24,7 @@ namespace RbStatistics {
         double                      pdf(double v, double x);                                              /*!< Chi-Square(v) probability density */
         double                      lnPdf(double v, double x);                                            /*!< Chi-Square(v) log_e probability density */
         double                      cdf(double v, double x);                                              /*!< Chi-Square(v) cumulative probability */
-        double                      quantile(double v, double p);                                         /*!< Chi-Square(v) quantile */
+        double                      quantile(double prob, double v);                                         /*!< Chi-Square(v) quantile */
         double                      rv(double v, RandomNumberGenerator& rng);                             /*!< Chi-Square(v) random variable */
 	}
 }

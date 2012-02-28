@@ -128,9 +128,8 @@ double RbStatistics::Gamma::cdf(double a, double b, double x) {
  * \throws Does not throw an error.
  */
 double RbStatistics::Gamma::quantile(double a, double b, double p) {
-  //TODO!!!  
-	return RbStatistics::ChiSquare::quantile(p, 2.0 * a) / (2.0 * b); // TAH: this was correct
-    // return -INFINITY;
+
+	return RbStatistics::ChiSquare::quantile(p, 2.0 * a) / (2.0 * b); 
 }
 
 

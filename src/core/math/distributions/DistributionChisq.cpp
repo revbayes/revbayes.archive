@@ -88,9 +88,66 @@ double RbStatistics::ChiSquare::cdf(double v, double x) {
  * \return Returns quantile value (or -1 if in error). 
  * \throws Does not throw an error.
  */
-double RbStatistics::ChiSquare::quantile(double v, double prob) {
-
-    return RbStatistics::Gamma::quantile(0.5 * v, 2.0, prob);    
+double RbStatistics::ChiSquare::quantile(double prob, double v) {
+	
+	double 		e = 0.5e-6, aa = 0.6931471805, p = prob, g,
+	xx, c, ch, a = 0.0, q = 0.0, p1 = 0.0, p2 = 0.0, t = 0.0, 
+	x = 0.0, b = 0.0, s1, s2, s3, s4, s5, s6;
+	
+	if (p < 0.000002 || p > 0.999998 || v <= 0.0) 
+		return (-1.0);
+	g = RbMath::lnGamma(v/2.0);
+	xx = v/2.0;   
+	c = xx - 1.0;
+	if (v >= -1.24*log(p)) 
+		goto l1;
+	ch = pow((p*xx*exp(g+xx*aa)), 1.0/xx);
+	if (ch-e < 0) 
+		return (ch);
+	goto l4;
+	l1:
+		if (v > 0.32) 
+			goto l3;
+		ch = 0.4;   
+		a = log(1.0-p);
+	l2:
+		q = ch;  
+		p1 = 1.0+ch*(4.67+ch);  
+		p2 = ch*(6.73+ch*(6.66+ch));
+		t = -0.5+(4.67+2.0*ch)/p1 - (6.73+ch*(13.32+3.0*ch))/p2;
+		ch -= (1.0-exp(a+g+0.5*ch+c*aa)*p2/p1)/t;
+		if (fabs(q/ch-1.0)-0.01 <= 0.0) 
+			goto l4;
+		else                       
+			goto l2;
+	l3: 
+		x = RbStatistics::Normal::quantile(p);
+		p1 = 0.222222/v;   
+		ch = v*pow((x*sqrt(p1)+1.0-p1), 3.0);
+		if (ch > 2.2*v+6.0)  
+			ch = -2.0*(log(1.0-p)-c*log(0.5*ch)+g);
+	l4:
+		q = ch;   
+		p1 = 0.5*ch;
+		if ((t = RbMath::incompleteGamma (p1, xx, g)) < 0.0) {
+			printf ("\nerr IncompleteGamma");
+			return (-1.0);
+		}
+		p2 = p-t;
+		t = p2*exp(xx*aa+g+p1-c*log(ch));   
+		b = t/ch;  
+		a = 0.5*t-b*c;
+		s1 = (210.0+a*(140.0+a*(105.0+a*(84.0+a*(70.0+60.0*a))))) / 420.0;
+		s2 = (420.0+a*(735.0+a*(966.0+a*(1141.0+1278.0*a))))/2520.0;
+		s3 = (210.0+a*(462.0+a*(707.0+932.0*a)))/2520.0;
+		s4 = (252.0+a*(672.0+1182.0*a)+c*(294.0+a*(889.0+1740.0*a)))/5040.0;
+		s5 = (84.0+264.0*a+c*(175.0+606.0*a))/2520.0;
+		s6 = (120.0+c*(346.0+127.0*c))/5040.0;
+		ch += t*(1+0.5*t*s1-b*c*(s1-b*(s2-b*(s3-b*(s4-b*(s5-b*s6))))));
+		if (fabs(q/ch-1.0) > e) 
+			goto l4;
+		return (ch);
+	
 }
 
 double RbStatistics::ChiSquare::rv(double v, RandomNumberGenerator& rng) {

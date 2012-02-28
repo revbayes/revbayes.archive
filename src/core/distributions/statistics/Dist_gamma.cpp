@@ -170,7 +170,7 @@ const Real& Dist_gamma::quantile(const double p) {
     
     double alpha  = static_cast<      RealPos&>( shape->getValue() ).getValue();
     double lambda = static_cast<      RealPos&>( rate->getValue()  ).getValue();
-    
+	
     double quantile = RbStatistics::Gamma::quantile(alpha, lambda, p);     
     quant.setValue( quantile );
     
