@@ -335,8 +335,12 @@ void TopologyNode::refreshNewickString(void) {
 void TopologyNode::removeAllChildren(void) {
     
     // free the memory
-    for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); it++) {
-        TopologyNode* theNode = *it;
+//    for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); it++) {
+//        TopologyNode* theNode = *it;
+//        delete theNode;
+//    }
+    while (children.size() > 0) {
+        TopologyNode* theNode = children[0];
         delete theNode;
     }
     
