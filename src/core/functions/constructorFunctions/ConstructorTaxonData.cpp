@@ -19,6 +19,7 @@
 #include "Character.h"
 #include "ConstructorTaxonData.h"
 #include "DAGNode.h"
+#include "DagNodeContainer.h"
 #include "MemberObject.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
@@ -58,11 +59,22 @@ const RbLanguageObject& ConstructorTaxonData::executeFunction(void) {
     const std::string& n = static_cast<RbString&>( name->getValue() ).getValue();
     retVal.setTaxonName( n );
     
-    // set the vector of characters
-    Vector& v = static_cast<Vector&>( chars->getValue() );
-    for (size_t i = 0; i < v.size(); i++) {
-        Character* c = static_cast<Character*>( v.getElement( i ).clone() );
-        retVal.addCharacter( c );
+    // TODO: We should not use DAG node containers directly, but for now that has to do
+    DAGNode* theNode = chars->getDagNode();
+    if ( theNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        DagNodeContainer& con = static_cast<DagNodeContainer&>( theNode->getValue() );
+        for (size_t i = 0; i < con.size(); i++) {
+            Character* c = static_cast<Character*>( static_cast<VariableSlot&>( con.getElement( i ) ).getValue().clone() );
+            retVal.addCharacter( c );
+        }
+    }
+    else {
+        // set the vector of characters
+        Vector& v = static_cast<Vector&>( chars->getValue() );
+        for (size_t i = 0; i < v.size(); i++) {
+            Character* c = static_cast<Character*>( v.getElement( i ).clone() );
+            retVal.addCharacter( c );
+        }
     }
     
     return retVal;
@@ -78,7 +90,9 @@ const ArgumentRules& ConstructorTaxonData::getArgumentRules(void) const {
    if (!rulesSet) {
        
        argRules.push_back( new ValueRule( "name", RbString::getClassTypeSpec() ) );
-       argRules.push_back( new ValueRule( "x"   , TypeSpec( Vector::getClassTypeSpec(), new TypeSpec( Character::getClassTypeSpec() ) ) ) );
+       // TODO: We should specificly expect elements of type character and not DAG node containers for which we cannot guarantee what is inside.
+//       argRules.push_back( new ValueRule( "x"   , TypeSpec( Vector::getClassTypeSpec(), new TypeSpec( Character::getClassTypeSpec() ) ) ) );
+       argRules.push_back( new ValueRule( "x"   , RbObject::getClassTypeSpec() ) );
        
        rulesSet = true;
    }
