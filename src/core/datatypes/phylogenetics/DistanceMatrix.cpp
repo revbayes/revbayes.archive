@@ -50,8 +50,14 @@ DistanceMatrix::DistanceMatrix(const size_t nTaxa) : MatrixReal(nTaxa, nTaxa), t
 /** Copy constructor */
 DistanceMatrix::DistanceMatrix(const DistanceMatrix& x) : MatrixReal(x), typeSpec(DistanceMatrix::getClassTypeSpec()) {
 
-    deletedTaxa       = x.deletedTaxa;
-    sequenceNames     = x.sequenceNames;
+    deletedTaxa         = x.deletedTaxa;
+    sequenceNames       = x.sequenceNames;
+    
+    numTaxa             = x.numTaxa;
+    numIncludedTaxa     = x.numIncludedTaxa;
+    numExcludedTaxa     = x.numExcludedTaxa;
+    excludedTaxa        = x.excludedTaxa;
+    includedTaxa        = x.includedTaxa;
 }
 
 
@@ -66,7 +72,7 @@ DistanceMatrix& DistanceMatrix::operator=(const DistanceMatrix& x) {
 
     if ( this != &x ) 
         {
-        MemberObject::operator=( x );
+        MatrixReal::operator=( x );
         deletedTaxa = x.deletedTaxa;
         }
     return (*this);

@@ -89,11 +89,11 @@ class DistanceMatrix : public MatrixReal {
         TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
 
         // memberfunction return values
-    Natural                             numTaxa;
-    Natural                             numIncludedTaxa;
-    Natural                             numExcludedTaxa;
-    VectorString                        excludedTaxa;
-    VectorString                        includedTaxa;
+        Natural                             numTaxa;
+        Natural                             numIncludedTaxa;
+        Natural                             numExcludedTaxa;
+        VectorString                        excludedTaxa;
+        VectorString                        includedTaxa;
 };
 
 #endif
