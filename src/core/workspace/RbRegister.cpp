@@ -158,6 +158,9 @@
 #include "Func_sin.h"
 #include "Func_sqrt.h"
 
+/* Constructor functions */
+#include "ConstructorTaxonData.h"
+
 /* Phylogeny functions */
 #include "Func_distance.h"
 #include "Func_gtr.h"
@@ -242,6 +245,10 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "objectMonitor", new ObjectMonitor()     );
         addTypeWithConstructor( "simulate",      new Simulate()          );
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
+        
+        /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
+        // TODO: Does this really make sense to use the general character type?! (Sebastian)
+        addTypeWithConstructor( "taxonData",    new TaxonData( Character::getClassName() ) );
 
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
@@ -412,7 +419,10 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "power",     new Func_power() );
         addFunction( "sin",       new Func_sin()   );
         addFunction( "sqrt",      new Func_sqrt()  );
-
+        
+        /* Add constructuor functions (alphabetical order) */
+        addFunction( "taxonData", new ConstructorTaxonData()    );
+        
         /* Add phylogeny-related functions (alphabetical order) */
         addFunction( "distances", new Func_distance()          );
         addFunction( "gtr",       new Func_gtr()               );

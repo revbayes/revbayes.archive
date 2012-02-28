@@ -28,7 +28,7 @@ class VectorString;
 class Func_distance :  public RbFunction {
     
     public:
-    Func_distance(void);
+        Func_distance(void);
     
         // Basic utility functions
         Func_distance*              clone(void) const;                                                       //!< Clone the object

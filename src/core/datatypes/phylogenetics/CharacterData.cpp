@@ -112,10 +112,10 @@ void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
 void CharacterData::addTaxonData( TaxonData* obs ) {
 
     // set the number of character per sequence
-    if ( size() > 0 && obs->size() != getNumberOfCharacters() ) 
+    if ( size() > 0 && obs->getNumberOfCharacters() != getNumberOfCharacters() ) 
         {
         std::ostringstream msg;
-        msg << "Invalid attempt to add sequence of length " << obs->size() << " to aligned character matrix of length " << getNumberOfCharacters();
+        msg << "Invalid attempt to add sequence of length " << obs->getNumberOfCharacters() << " to aligned character matrix of length " << getNumberOfCharacters();
         throw RbException( msg );
         }
         
@@ -463,7 +463,7 @@ size_t CharacterData::getNumberOfCharacters(void) const {
 
     if (size() > 0) 
         {
-        return getTaxonData(0).size();
+        return getTaxonData(0).getNumberOfCharacters();
         }
     return 0;
 }
@@ -474,7 +474,7 @@ size_t CharacterData::getNumberOfCharacters(size_t idx) const {
 
     if (size() > 0) 
         {
-        return getTaxonData(idx).size();
+        return getTaxonData(idx).getNumberOfCharacters();
         }
     return 0;
 }
@@ -490,7 +490,7 @@ size_t CharacterData::getNumberOfStates(void) const {
         return 0;
 
     const TaxonData& sequence = getTaxonData( 0 );
-    if ( sequence.size() == 0 )
+    if ( sequence.getNumberOfCharacters() == 0 )
         return 0;
 
     return static_cast<const Character&>(sequence[0]).getNumberOfStates();
