@@ -196,7 +196,7 @@ void TaxonData::setMemberVariable(const std::string& name, Variable* var) {
         sequence.push_back( element );
     }
     else {
-        Container::setMemberVariable(name, var);
+        ConstantMemberObject::setMemberVariable(name, var);
     }
 }
 
