@@ -22,13 +22,17 @@ tree <- treeplate(tau)
 siteCount <- D.nchar()[1]
 
 nucleotides <- set(dna("A"),dna("C"),dna("G"),dna("T"))
-pi <- simplex(1,2,3,4)
-exchange <- simplex(1,1,1,1,1,1)
+
+pi_prior <- v(1,1,1,1)
+pi ~ dirichlet(pi_prior)
+
+r_prior <- v(1,1,1,1,1,1)
+r ~ dirichlet(r_prior)
 
 lambda <- 1.0
 nodeCount <- tree.nnodes()
 
-# We need to iterate from the root to the parent. The indices of the nodes are in phylogenetic ordering, i.e. the tip are at 1,É,n.
+# We need to iterate from the root to the parent. The indices of the nodes are in phylogenetic ordering, i.e. the tip are at 1,ƒ,n.
 for (i in nodeCount:1) {
     node <- tree.node(i)
     if (node.isRoot()) {   
@@ -46,7 +50,7 @@ for (i in nodeCount:1) {
         tree.addVariable("branchLength", bl[i], node)
 
 # create the rate matrix for this node
-        Q[i] := gtr(rates=exchange, freqs=pi)
+        Q[i] := gtr(rates=r, freqs=pi)
 # create the transition probability matrix for this node
         tp[i] := ctmmtp(Q[i],bl[i])
         if (node.isTip()) {
@@ -80,13 +84,11 @@ moves[i] <- mscale(bl[i], weight=1.0, lambda = 1.0)
 }
 
 
-#numMoves <- size(moves)
+numMoves <- moves.size()
 
-
-#Moves on the stationary frequencies and rates (in this model the
-#rates and stationary frequencies are fixed!)
-#moves[numMoves+1] <- msimplex(pi,4)
-#moves[numMoves+2] <- msimplex(rates,6)
+j <- numMoves+1
+moves[j] <- msimplex(variable=pi,tuning=2.0,num_cats=4)
+moves[j+1] <- msimplex(variable=r,tuning=2.0,num_cats=6)
 
 monitors[1] <- fileMonitor(filename="gtrSimulation.out", printgen=1, separator="	", bl)
 
