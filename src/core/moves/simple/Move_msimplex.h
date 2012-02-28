@@ -40,6 +40,7 @@ class Move_msimplex : public MoveSimple {
 
         // Member variable inits
         const MemberRules&          getMemberRules(void) const;                                                         //!< Get member rules
+        void                        setMemberVariable(const std::string& name, Variable* var);                          //!< Set member variable (ensure topologyProb is updated)
 
         // Return variable type
         const TypeSpec              getVariableType(void) const;                                                        //!< Get variable type for move
@@ -50,7 +51,6 @@ class Move_msimplex : public MoveSimple {
     private:
 
         // parameters
-        RbVariablePtr               variable;
         RbVariablePtr               alpha;
         RbVariablePtr               numCategories;
 

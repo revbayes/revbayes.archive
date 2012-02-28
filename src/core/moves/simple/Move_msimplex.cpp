@@ -34,7 +34,7 @@
 
 
 /** Constructor for parser */
-Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ), variable( NULL ), alpha( NULL ), numCategories( NULL ) {
+Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ), alpha( NULL ), numCategories( NULL ) {
 }
 
 
@@ -216,5 +216,22 @@ double Move_msimplex::perform( void ) {
     nodePtr->setValue( new Simplex( newVal ) );
 	
     return lnProposalRatio;
+}
+
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void Move_msimplex::setMemberVariable(std::string const &name, Variable* var) {
+    
+    // test whether we want to set the variable 
+    if ( name == "tuning" ) {
+        alpha = var;
+    } 
+    else if ( name == "num_cats" ) {
+        numCategories = var;
+    }
+    else {
+        MoveSimple::setMemberVariable(name, var);
+    }
 }
 
