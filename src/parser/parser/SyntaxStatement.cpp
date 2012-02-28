@@ -447,13 +447,19 @@ void SyntaxStatement::printValue(std::ostream& o) const {
 void SyntaxStatement::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
     
     // the first set of statements
-    for (std::list<SyntaxElement*>::iterator i = statements1->begin(); i != statements1->end(); i++) {
-        (*i)->replaceVariableWithConstant(name, c);
+    if ( statements1 != NULL ) {
+        for (std::list<SyntaxElement*>::iterator i = statements1->begin(); i != statements1->end(); i++) {
+            (*i)->replaceVariableWithConstant(name, c);
+        }
     }
+    
     // the second set of statements
-    for (std::list<SyntaxElement*>::iterator i = statements1->begin(); i != statements1->end(); i++) {
-        (*i)->replaceVariableWithConstant(name, c);
+    if ( statements2 != NULL ) {
+        for (std::list<SyntaxElement*>::iterator i = statements2->begin(); i != statements2->end(); i++) {
+            (*i)->replaceVariableWithConstant(name, c);
+        }
     }
+    
     // the expression itself
     expression->replaceVariableWithConstant(name, c);
     
