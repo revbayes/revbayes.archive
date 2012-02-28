@@ -22,6 +22,7 @@
 #include "CharacterData.h"
 #include "ConstantNode.h"
 #include "DnaState.h"
+#include "Ellipsis.h"
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -395,6 +396,17 @@ const std::string& CharacterData::getFileName(void) const {
 const MemberRules& CharacterData::getMemberRules(void) const {
 
     static MemberRules memberRules = MemberRules();
+    static bool rulesSet = false;
+    
+    if ( !rulesSet ) {
+        
+        memberRules.push_back( new ValueRule("type", RbString::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule("x", TaxonData::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis( TaxonData::getClassTypeSpec() ) );
+        
+        rulesSet = true;
+    }
+    
     
     return memberRules;
 }
@@ -427,27 +439,27 @@ const MethodTable& CharacterData::getMethods(void) const {
     if ( methodsSet == false ) 
         {
 
-            excludecharArgRules->push_back(        new ValueRule(     "", Natural::getClassTypeSpec()       ) );
-            excludecharArgRules2->push_back(       new ValueRule(     "", VectorNatural::getClassTypeSpec() ) );
-            
-            methods.addFunction("names",               new MemberFunction(VectorString::getClassTypeSpec(),  namesArgRules              ) );
-            methods.addFunction("nchar",               new MemberFunction(VectorNatural::getClassTypeSpec(), ncharArgRules              ) );
-            methods.addFunction("ntaxa",               new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
-            methods.addFunction("chartype",            new MemberFunction(RbString::getClassTypeSpec(),      chartypeArgRules           ) );
-            methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
-            methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
-            methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
-            methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
-            methods.addFunction("excludedtaxa",        new MemberFunction(VectorNatural::getClassTypeSpec(), excludedtaxaArgRules       ) );
-            methods.addFunction("excludedchars",       new MemberFunction(VectorNatural::getClassTypeSpec(), excludedcharsArgRules      ) );
-            methods.addFunction("includedtaxa",        new MemberFunction(VectorNatural::getClassTypeSpec(), includedtaxaArgRules       ) );
-            methods.addFunction("includedchars",       new MemberFunction(VectorNatural::getClassTypeSpec(), includedcharsArgRules      ) );
-            methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
-            methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
+        excludecharArgRules->push_back(        new ValueRule(     "", Natural::getClassTypeSpec()       ) );
+        excludecharArgRules2->push_back(       new ValueRule(     "", VectorNatural::getClassTypeSpec() ) );
+        
+        methods.addFunction("names",               new MemberFunction(VectorString::getClassTypeSpec(),  namesArgRules              ) );
+        methods.addFunction("nchar",               new MemberFunction(VectorNatural::getClassTypeSpec(), ncharArgRules              ) );
+        methods.addFunction("ntaxa",               new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
+        methods.addFunction("chartype",            new MemberFunction(RbString::getClassTypeSpec(),      chartypeArgRules           ) );
+        methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
+        methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
+        methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
+        methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
+        methods.addFunction("excludedtaxa",        new MemberFunction(VectorNatural::getClassTypeSpec(), excludedtaxaArgRules       ) );
+        methods.addFunction("excludedchars",       new MemberFunction(VectorNatural::getClassTypeSpec(), excludedcharsArgRules      ) );
+        methods.addFunction("includedtaxa",        new MemberFunction(VectorNatural::getClassTypeSpec(), includedtaxaArgRules       ) );
+        methods.addFunction("includedchars",       new MemberFunction(VectorNatural::getClassTypeSpec(), includedcharsArgRules      ) );
+        methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
+        methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
         methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules        ) );
         methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules2       ) );
         methods.addFunction("show",                new MemberFunction(RbVoid_name,        showdataArgRules           ) );
-            methods.addFunction("ishomologous",        new MemberFunction(RbBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+        methods.addFunction("ishomologous",        new MemberFunction(RbBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &Matrix::getMethods() );
@@ -723,6 +735,24 @@ void CharacterData::setElement( size_t row, size_t col, RbLanguageObject* var ) 
     
     throw RbException("Not implemented method Alignment::setElement()");
 }
+
+
+/** Catch setting of the mixture variable */
+void CharacterData::setMemberVariable(const std::string& name, Variable* var) {
+    
+    if ( name == "type" ) {
+//        elementType = TypeSpec( static_cast<RbString&>( var->getValue() ).getValue() );
+    }
+    else if ( name == "x" || name == "" ) {
+        TaxonData& obs = static_cast<TaxonData&>( var->getValue() );
+        addTaxonData( obs.clone() );        
+    }
+    else {
+        MemberObject::setMemberVariable(name, var);
+    }
+}
+
+
 
 void CharacterData::showData(void) {
 

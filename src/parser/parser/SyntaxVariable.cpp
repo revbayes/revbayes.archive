@@ -509,7 +509,7 @@ void SyntaxVariable::printValue(std::ostream& o) const {
  */
 void SyntaxVariable::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
     // test whether this variable is the one we are looking for
-    if ( name == identifier->getValue() ) {
+    if ( identifier != NULL && name == identifier->getValue() ) {
         delete replacementValue;
         replacementValue = c.clone();
     }

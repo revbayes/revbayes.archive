@@ -199,12 +199,22 @@ std::map<std::string, RbVariablePtr>& MemberObject::getMembers(void) {
 /** Get a member variable */
 const Variable* MemberObject::getMember(const std::string& name) const {
     
+    std::map<std::string, RbVariablePtr>::const_iterator i = members.find( name );
+    if ( i != members.end()) {
+        return i->second;
+    }
+    
     throw RbException("No Member named '" + name + "' available.");
 }
 
 
 /** Get a member variable (non-const, for derived classes) */
 Variable* MemberObject::getMember(const std::string& name) {
+    
+    std::map<std::string, RbVariablePtr>::iterator i = members.find( name );
+    if ( i != members.end()) {
+        return i->second;
+    }
     
     throw RbException("No Member named '" + name + "' available.");
 }

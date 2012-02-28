@@ -228,7 +228,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new VectorString()                 );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-        addType( new CharacterData(DnaState::getClassName())   );
         addType( new Simplex()                      );
         addType( new Topology()                     );
         addType( new TopologyNode()                 );
@@ -248,7 +247,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         
         /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
         // TODO: Does this really make sense to use the general character type?! (Sebastian)
-        addTypeWithConstructor( "taxonData",    new TaxonData( Character::getClassName() ) );
+        addTypeWithConstructor( "taxonData",     new TaxonData( Character::getClassName() ) );
+        addTypeWithConstructor( "characterData", new CharacterData(DnaState::getClassName())   );
 
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
@@ -297,6 +297,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_add",      new Func__add<            Integer,           Real,       Real >() );
         addFunction( "_add",      new Func__add<               Real,        Integer,       Real >() );
         addFunction( "_add",      new Func__add<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_add",      new Func__add<           RbString,       RbString,   RbString >() );
         addFunction( "_div",      new Func__div<            Natural,        Natural,    RealPos >() );
         addFunction( "_div",      new Func__div<            Integer,        Integer,       Real >() );
         addFunction( "_div",      new Func__div<            RealPos,        RealPos,    RealPos >() );

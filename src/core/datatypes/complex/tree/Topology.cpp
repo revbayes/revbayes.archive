@@ -117,7 +117,7 @@ const TypeSpec& Topology::getTypeSpec( void ) const {
 /* Map calls to member methods */
 const RbLanguageObject& Topology::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
-    if (name == "ntips") {
+    if (name == "nTips") {
     
         numTips.setValue( getNumberOfTips() );
         return numTips;
@@ -191,7 +191,7 @@ const MethodTable& Topology::getMethods(void) const {
     
     if ( methodsSet == false ) 
     {
-        methods.addFunction("ntips",  new MemberFunction(Natural::getClassTypeSpec(), ntipsArgRules) );
+        methods.addFunction("nTips",  new MemberFunction(Natural::getClassTypeSpec(), ntipsArgRules) );
         methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(), nnodesArgRules) );
         
         // necessary call for proper inheritance

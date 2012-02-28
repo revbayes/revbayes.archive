@@ -51,8 +51,9 @@ class CharacterData : public Matrix {
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
 
-        // Member variable rules
+        // Member variable functions
         const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
+        void                                setMemberVariable(const std::string& name, Variable* var);                  //!< Catch setting of the topology
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
