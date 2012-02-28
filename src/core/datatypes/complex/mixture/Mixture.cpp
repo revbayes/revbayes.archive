@@ -46,8 +46,10 @@ Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameter
         throw( RbException(o.str()) );        
     }
     
-    for (unsigned int i = 0 ; i < parameters_->size() ; i++) {
-        classProbabilities_->push_back( RealPos ( 1.0 / parameters_->size() ) );
+    if (classProbabilities_->size() == 0 ) {
+        for (unsigned int i = 0 ; i < parameters_->size() ; i++) {
+            classProbabilities_->push_back( RealPos ( 1.0 / parameters_->size() ) );
+        }
     }
     computeNumberOfElementsInClasses();
     
@@ -55,7 +57,7 @@ Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameter
 
 
 /* constructor */
-Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters, VectorRealPos* classProbabilities ) : MutableMemberObject( getMemberRules() ) {
+Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters, Simplex* classProbabilities ) : MutableMemberObject( getMemberRules() ) {
 
     allocationVector_ = allocationVector;
     parameters_ = parameters;
@@ -68,9 +70,9 @@ Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameter
 Mixture::Mixture(const size_t numObservations, DagNodeContainer* parameters) : MutableMemberObject( getMemberRules() ) {
     
   parameters_ = parameters;
-  std::vector<double> v(numObservations, 1.0);
+  std::vector<double> v(parameters->size(), 1.0);
   RandomNumberGenerator* rng = GLOBAL_RNG;
-  classProbabilities_ = new VectorRealPos( RbStatistics::Dirichlet::rv(v, *rng) );
+  classProbabilities_ = new Simplex( RbStatistics::Dirichlet::rv(v, *rng) );
   std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)numObservations, *rng);
   allocationVector_ = new DagNodeContainer(numObservations);
   for (size_t i = 0 ; i < numObservations ; i ++ ) {
@@ -213,9 +215,19 @@ void Mixture::printValue(std::ostream& o) const {
         theNode->printValue(o) ;
         o << "\t";
     }
-
+    
     o << std::endl << std::endl;
 
+    o << "Class probabilities:\n";
+    classProbabilities_->printValue(o) ;
+  /*  for ( size_t i = 0; i < classProbabilities_->size(); i++ ) {
+        classProbabilities_[i].printValue(o) ;
+        o << "\t";
+    }*/
+    
+    o << std::endl << std::endl;
+
+    
 }
 
 
@@ -236,8 +248,8 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
       return  getParameter(index.getValue());
     }
     else if (name == "getParameters") {
-       // return getParameters();
-        return RbNullObject::getInstance();
+        return getParameters();
+        //return RbNullObject::getInstance();
     }
     else if (name == "setParameters") {
         Environment& a = args;
@@ -246,66 +258,41 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
         return RbNullObject::getInstance();
     }
     else if (name == "setParameter") {
-      Environment& a = args;
       const Natural& index = static_cast<const Natural&>( args[0].getValue() );
-      DagNodeContainer& params =  static_cast<DagNodeContainer&>( a[1].getValue() );
+      DagNodeContainer& params =  static_cast<DagNodeContainer&>( args[1].getValue() );
       setParameter ( (index.getValue()), params.clone() ) ;
       return RbNullObject::getInstance();
     }
-
-  
-  
+    else if (name == "getAllocationVector") {
+        return getAllocationVector();
+    }
+    else if (name == "setAllocationVector") {
+        Environment& a = args;
+        DagNodeContainer& params = static_cast<DagNodeContainer&>( a[0].getValue() );
+        setAllocationVector ( params.clone() ) ;
+        return RbNullObject::getInstance();
+    }
+    else if (name == "allocateElement") {
+        const Natural& index = static_cast<const Natural&>( args[0].getValue() );
+        const Natural& classId = static_cast<const Natural&>( args[1].getValue() );
+        allocateElement ((index.getValue()), (classId.getValue()));
+        return RbNullObject::getInstance();
+    }
+    else if (name == "getElementAllocation") {
+        const Natural& index = static_cast<const Natural&>( args[0].getValue() );
+        return getElementAllocation(index.getValue() );
+    }
+    else if (name == "setClassProbabilities") {
+        Environment& a = args;
+        Simplex& params = static_cast<Simplex&>( a[0].getValue() );
+        setClassProbabilities ( params.clone() ) ;
+        return RbNullObject::getInstance();
+    }
+    else if (name == "getClassProbabilities") {
+        return getClassProbabilities();
+    }
     return RbNullObject::getInstance();
-    /*
-    // special handling for adding a variable
-    if (name == "addVariable") {
-        // get the name of the variable
-        std::string varName = static_cast<const RbString*>( args[0].getValue() )->getValue();
-        
-        // check if a container already exists with that name
-        if (!members.existsVariable(varName)) {
-            // we don't have a container for this variable name yet
-            // so we just create one
-            members.addVariable(varName, new Variable(new ConstantNode(new DagNodeContainer(orderingTopology->getNumberOfNodes()))));
-        }
-        
-        // get the container with the variables for this node
-        DagNodeContainer *vars = static_cast<DagNodeContainer*>(members[varName].getDagNodePtr()->getValuePtr());
-        
-        // get the variable
-        Variable* var = args[1].getVariable();
-        
-        // get the node we want to associate it too
-        const TopologyNode *theNode = static_cast<const TopologyNode*>(args[2].getDagNodePtr()->getValue());
-        
-        // get the index of the node
-        size_t nodeIndex = getNodeIndex(theNode);
-        
-        // set the variable
-        vars->setElement(nodeIndex, var);
-        
-        return NULL;
-    }
-    else if (name == "nnodes") {
-        return new Natural( orderingTopology->getNumberOfNodes() );
-    }
-    else if (name == "node") {
-        // we assume that the node indices in the RevLanguage are from 1:nnodes()
-        int index = dynamic_cast<const Natural *>(args.getValue("index"))->getValue() - 1;
-        
-        return orderingTopology->getNodes()[index];
-    }
-    else if (name == "index") {
-        TopologyNode *theNode = dynamic_cast<TopologyNode*>(args[0].getDagNodePtr()->getValuePtr());
-        return new Natural(getNodeIndex(theNode));
-    }
-    else if (name == "tipIndex") {
-        TopologyNode *theNode = dynamic_cast<TopologyNode*>(args[0].getDagNodePtr()->getValuePtr());
-        return new Natural(getTipIndex(theNode));
-    }
-    else {
-        return MemberObject::executeOperation( name, args );
-    }*/
+
 }
 
 
@@ -320,12 +307,12 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
         RandomNumberGenerator* rng = GLOBAL_RNG;
         if (classProbabilities_ == 0) {
           std::vector<double> v(parameters_->size(), 1.0);
-          classProbabilities_ = new VectorRealPos( RbStatistics::Dirichlet::rv(v, *rng) );
+          classProbabilities_ = new Simplex( RbStatistics::Dirichlet::rv(v, *rng) );
         }
         else {
             std::vector<double> v(parameters_->size(), 1.0);
             delete classProbabilities_;
-            classProbabilities_ = new VectorRealPos( RbStatistics::Dirichlet::rv(v, *rng) );
+            classProbabilities_ = new Simplex( RbStatistics::Dirichlet::rv(v, *rng) );
         }
       if (allocationVector_ != NULL ) { //we re-draw the allocation vector
           std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)allocationVector_->size(), *rng);
@@ -337,7 +324,7 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
 
     }
     else if ( name == "classProbabilities" ) {
-        classProbabilities_ =  static_cast<VectorRealPos*>( var->getValue().clone() );
+        classProbabilities_ =  static_cast<Simplex*>( var->getValue().clone() );
     }
     else if ( name == "numObservations" ) {
         int numObservations = static_cast<Integer&>( var->getValue() ).getValue();
@@ -466,11 +453,6 @@ DagNodeContainer& Mixture::getParameter(unsigned int classId) {
   return static_cast<DagNodeContainer&>( parameters_->getElement(classId) );
 }
 
-/** Set the vector of parameter values associated to the classes of the mixture*/
-const VectorRealPos& Mixture::getClassProbabilities() {
-    return static_cast<const VectorRealPos&>( *classProbabilities_ );
-}
-
 
 /** Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1*/
 void Mixture::indexAllocationVector() {
@@ -483,7 +465,6 @@ void Mixture::indexAllocationVector() {
     DAGNode* theNode = static_cast<VariableSlot&>( elemPtr ).getVariable().getDagNode();
     const Integer& nat = static_cast<const Integer&>( theNode->getValue() );
     int formerlyAssignedValue = nat.getValue();
-
       if (rvToNumber.find(formerlyAssignedValue) != rvToNumber.end()) {//Value met before
           allocationVector_->setElement(i, new Variable( new ConstantNode( new Integer(rvToNumber[formerlyAssignedValue]) ) ) );
       }
@@ -500,14 +481,55 @@ void Mixture::indexAllocationVector() {
   //Renumber the classProbabilities_ vector
   VectorRealPos& copy = *(classProbabilities_->clone());
  // std::cout <<"indexAllocationVector 8: classProbabilities_->size(): "<< classProbabilities_->size() <<" copy.size(): "<< copy.size()  <<std::endl;
-  
+    classProbabilities_->clear();
   for (unsigned int i = 0 ; i < copy.size() ; i++ ) { 
       classProbabilities_->AbstractVector::setElement(i, copy.getElement(rvToNumber[i] ).clone() );
   }    
 }
 
+/** Get the allocation vector associating class indices to elements */
+DagNodeContainer& Mixture::getAllocationVector() {
+    return *(allocationVector_ ) ;
+}
+
+/** Change the class of a particular element */
+void Mixture::allocateElement (int elementId, int classId) {
+    allocationVector_->setElement(elementId, new Variable( new ConstantNode( new Integer(classId) ) ) );
+    return;
+}
 
 
+/** Get the class of a particular element */
+Integer Mixture::getElementAllocation (int elementId) {
+    const VariableSlot& slot = static_cast<const VariableSlot&>( (allocationVector_->getElement(elementId) ) );
+    const Variable& var = slot.getVariable();
+    var.getValue();
+    const Integer& j = static_cast<const  Integer&> (  (var.getValue() ) );    
+    return (j); 
+}
 
 
+/** Get the vector of parameter values associated to the classes of the mixture */
+DagNodeContainer& Mixture::getParameters() {
+    return *parameters_;
+}
+
+/** Set the allocation vector associating class indices to elements */
+
+void Mixture::setAllocationVector(DagNodeContainer*  allocationVector) {
+    allocationVector_ = allocationVector;
+    return;
+}
+
+
+/** Set the vector containing class probabilities */
+void Mixture::setClassProbabilities(Simplex* proba) {
+    classProbabilities_ = proba->clone();
+}
+
+
+/** Get the vector containing class probabilities */
+const Simplex& Mixture::getClassProbabilities() {
+    return static_cast<const VectorRealPos&>( *classProbabilities_ );
+}
 

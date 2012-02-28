@@ -23,6 +23,7 @@
 #include "VectorNatural.h"
 #include "VectorRealPos.h"
 #include "DagNodeContainer.h"
+#include "Simplex.h"
 
 
 class Mixture: public MutableMemberObject {
@@ -30,7 +31,7 @@ class Mixture: public MutableMemberObject {
 public:
     Mixture(void);                                                                                          //!< Default constructor
     Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters);                      //!< constructor
-    Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters, VectorRealPos* classProbabilities );        //!< constructor
+    Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters, Simplex* classProbabilities );        //!< constructor
     Mixture(const size_t numObservations, DagNodeContainer* parameters);                                //!< constructor
 
 
@@ -57,18 +58,18 @@ public:
     size_t                          getNumberOfElements();                                                   //!< Get the number of elements in the mixture
     void                            addClass(DagNodeContainer* parameter);                           //!< Add a new class to the mixture
     void                            removeClass(unsigned int classId);                                      //!< Remove a class from the mixture
-    DagNodeContainer*               getParameters();                                                        //!< Get the vector of parameter values associated to the classes of the mixture
+    DagNodeContainer&               getParameters();                                                        //!< Get the vector of parameter values associated to the classes of the mixture
     void                            setParameters(DagNodeContainer* parameters);              //!< Set the vector of parameter values associated to the classes of the mixture
     void                            setParameter(unsigned int classId, DagNodeContainer* parameter);                                                    //!< Set the value of a parameter associated to a particular class
-    VectorNatural                   getAllocationVector();                                                  //!< Get the allocation vector associating class indices to elements
-    void                            setAllocationVector(Vector allocationVector);                           //!< Set the allocation vector associating class indices to elements
+    DagNodeContainer&               getAllocationVector();                                                  //!< Get the allocation vector associating class indices to elements
+    void                            setAllocationVector(DagNodeContainer*  allocationVector);               //!< Set the allocation vector associating class indices to elements
     void                            allocateElement (int elementId, int classId);                           //!< Change the class of a particular element
     void                            allocateElementToNewClass (int elementId);                              //!< Change the class of a particular element
-    VectorRealPos                   getClassTypeSpecProbabilities();                                                //!< Get the vector containing class probabilities
-    void                            setClassProbabilities();                                                //!< Set the vector containing class probabilities
-    const VectorRealPos&            getClassProbabilities();                                                //!< Get the vector containing class probabilities
+    Integer                         getElementAllocation (int elementId);                                   //!< Get the class of a particular element
+    void                            setClassProbabilities(Simplex* proba);                                  //!< Set the vector containing class probabilities
+    const Simplex&                  getClassProbabilities();                                                //!< Get the vector containing class probabilities
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
-    void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
+    void                            computeNumberOfElementsInClasses();                                     //!< Compute the number of elements in each class by going through the allocation vector
     void                            indexAllocationVector();                                                //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
     DagNodeContainer&               getParameter(unsigned int classId);                                     //!< Get the vector of parameter values associated to the classe classId
 
@@ -77,7 +78,7 @@ private:
     DagNodeContainer*               allocationVector_;                                                      //!< Vector allocating elements to cluster indices
     DagNodeContainer*               parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
     VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
-    VectorRealPos*                  classProbabilities_;                                                    //!< Vector giving class probabilities
+    Simplex*                        classProbabilities_;                                                    //!< Vector giving class probabilities
 
     // memberfunction return values
     Natural                         numClasses;
