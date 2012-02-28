@@ -185,6 +185,22 @@ void TaxonData::printValue(std::ostream &o) const {
 }
 
 
+/** Set a member variable */
+void TaxonData::setMemberVariable(const std::string& name, Variable* var) {
+    
+    if ( name == "name" ) {
+        taxonName = static_cast<RbString&>( var->getValue() ).getValue();
+    }
+    else if (name == "x" || name == "" ) { // the ellipsis variables
+        Character* element = static_cast<Character*>( var->getValue().clone() );
+        sequence.push_back( element );
+    }
+    else {
+        Container::setMemberVariable(name, var);
+    }
+}
+
+
 
 void TaxonData::setTaxonName(std::string tn) {
 

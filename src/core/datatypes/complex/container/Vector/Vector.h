@@ -35,9 +35,11 @@ public:
 
     // Basic utility functions you have to override
     Vector*                                         clone(void) const;                                              //!< Clone object
+    RbObject*                                       convertTo(const TypeSpec& type) const;                          //!< Convert to type
     static const std::string&                       getClassName(void);                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
     virtual const TypeSpec&                         getTypeSpec(void) const;                                        //!< Get language type of the object
+    bool                                            isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
     void                                            printValue(std::ostream& o) const;                              //!< Print value for user
     
     RbLanguageObject&                               operator[](size_t i);                                           //!< Index op allowing change

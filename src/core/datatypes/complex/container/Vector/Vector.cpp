@@ -109,6 +109,29 @@ Vector* Vector::clone() const {
     return new Vector(*this);
 }
 
+RbObject* Vector::convertTo(TypeSpec const &type) const {
+    
+    if ( type.getBaseType() == Vector::getClassName() ) {
+        // test whether each object in the container is actually a constant node holding a value
+        Vector* valueVector = new Vector(type.getElementType());
+        for (std::vector<RbLanguageObject* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            if ( (*it)->isTypeSpec(type.getElementType())) {
+                RbObject* element = (*it)->clone();
+                valueVector->push_back( element );
+            }
+            else {
+                return NULL;
+            }
+        }
+        
+        // return the vector
+        return valueVector;
+    }
+    
+    
+    return Container::convertTo(type);
+}
+
 
 /** Get class name of object */
 const std::string& Vector::getClassName(void) { 
@@ -149,6 +172,25 @@ const std::vector<RbLanguageObject* >& Vector::getValue(void) const {
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& Vector::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+/** Can we convert this DAG node container into another object? */
+bool Vector::isConvertibleTo(TypeSpec const &type) const {
+    
+    if ( type.getBaseType() == Vector::getClassName() ) {
+        // test whether each object in the container is actually a constant node holding a value
+        for (std::vector<RbLanguageObject* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            if ( !(*it)->isTypeSpec(type.getElementType()) ) {
+                return false;
+            }
+        }
+        
+        // return the true
+        return true;
+    }
+    
+    return Container::isConvertibleTo(type);
 }
 
 

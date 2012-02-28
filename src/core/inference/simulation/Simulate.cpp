@@ -75,6 +75,10 @@ const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name
         run(n);
         return RbNullObject::getInstance();
     }
+    else if ( name == "getMonitors" ) {
+        Vector& mons = static_cast<Vector&>( monitors->getValue() );
+        return mons;
+    }
 
     return MemberObject::executeOperationSimple( name, args );
 }
@@ -113,8 +117,9 @@ const MemberRules& Simulate::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule ( "model"     , Model::getClassTypeSpec()    ) );
-        memberRules.push_back( new ValueRule ( "monitors"  , TypeSpec(Vector::getClassName(), NULL, new TypeSpec(Monitor::getClassTypeSpec()) ) ) );
+        memberRules.push_back( new ValueRule ( "model"    , Model::getClassTypeSpec()    ) );
+        memberRules.push_back( new ValueRule ( "monitors" , TypeSpec(Vector::getClassTypeSpec(), new TypeSpec(Monitor::getClassTypeSpec()) ) ) );
+        
         
         rulesSet = true;
     }
@@ -127,16 +132,19 @@ const MemberRules& Simulate::getMemberRules(void) const {
 const MethodTable& Simulate::getMethods(void) const {
     
     static MethodTable methods = MethodTable();
-    static ArgumentRules* updateArgRules = new ArgumentRules();
-    static ArgumentRules* getValuesArgRules = new ArgumentRules();
 
     static bool          methodsSet = false;
     
     if (!methodsSet) {
         
+        ArgumentRules* updateArgRules = new ArgumentRules();
         updateArgRules->push_back( new ValueRule( "dataElements", Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules ) );
-  
+        
+        // get Monitors
+        ArgumentRules* getMonitorsRules = new ArgumentRules();
+        methods.addFunction("getMonitors", new MemberFunction( TypeSpec(Vector::getClassTypeSpec(), new TypeSpec(Monitor::getClassTypeSpec()) ), getMonitorsRules) );
+        
         methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
@@ -148,78 +156,103 @@ const MethodTable& Simulate::getMethods(void) const {
 /** Allow only constant member variables */
 void Simulate::setMemberVariable(const std::string& name, Variable* var) {
     
-        if ( name == "fileMonitors" ) {
-        // get the DAG nodes
-        const Model& theModel = static_cast<Model&>( model->getValue() );
+    // we need to change the DAG nodes to which the moves are pointing to
+    // when the moves where created they pointed to DAG nodes in the workspace
+    // but the model created clones of theses nodes.
+    // Hence we need to set the DAG nodes of the moves to these clones.
+    if ( name == "monitors" ) {
         
-            Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(FileMonitor::getClassTypeSpec()) ) ) );
-            for (size_t i=0; i<monitors->size(); i++) {
-                // get the monitor #i
-                FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors->getElement(i) );
-                
-                // get the DAG node for this monitor
-//                std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
-//                
-//                // convert the old nodes from Stochastic nodes to DAGNode
-//                std::vector<DAGNode*> oldNodes;
-//                for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
-//                    oldNodes.push_back( *it );
-//                }
-//                // get the DAG node which corresponds in the model to the cloned original node
-//                std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
-//                
-//                // clone the move and replace the node
-//                FileMonitor* newMonitor = theMonitor.clone();
-//                // convert the new nodes from DAGNode to Stochastic Nodes
-//                std::vector<VariableNode*> newNodes;
-//                for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
-//                    newNodes.push_back( static_cast<VariableNode*>( *it ) );
-//                }
-//                newMonitor->replaceDagNodes(newNodes);
-//                
-//                monitors->setElement(i, newMonitor );
+        //        Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(FileMonitor::getClassTypeSpec()) ) ) );
+        // The parser should have made sure that we get a vector of moves, even if it is only a single move.
+        Vector& monitors = static_cast<Vector&>( var->getValue() );
+        // Our new vector of moves
+        Vector* myMonitors = new Vector( Monitor::getClassTypeSpec() ); 
+        for (size_t i=0; i<monitors.size(); i++) {
+            // get the monitor #i
+            Monitor& theMonitor = static_cast<Monitor&>( monitors.getElement(i) );
+            
+            // clone the move and replace the node
+            Monitor* newMonitor = theMonitor.clone();
+            
+            // add this monitor to the list of my monitors
+            myMonitors->push_back(newMonitor );
             
         }
         
-//        setMemberDagNode(name, new ConstantNode(monitors) );
-    }
-        else if ( name == "objectMonitors" ) {
+        this->monitors = RbVariablePtr( new Variable ( new ConstantNode( myMonitors ) ) );
+        
+        if (model != NULL) {
             // get the DAG nodes
-            const Model& theModel = static_cast<Model&>( model->getValue() );
-            
-            Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(ObjectMonitor::getClassTypeSpec()) ) ) );
-            for (size_t i=0; i<monitors->size(); i++) {
-                // get the monitor #i
-                ObjectMonitor& theMonitor = static_cast<ObjectMonitor&>( monitors->getElement(i) );
+            const Model& theModel = dynamic_cast<Model&>( model->getValue() );
+            for (size_t i=0; i<myMonitors->size(); i++) {
+                // get the move #i
+                Monitor& theMonitor = static_cast<Monitor&>( myMonitors->getElement(i) );
                 
-                // get the DAG node for this monitor
-//                std::vector<DAGNode*> &theOldNodes = theMonitor.getDagNodes();
-//                
-//                // convert the old nodes from Stochastic nodes to DAGNode
-//                std::vector<DAGNode*> oldNodes;
-//                for (std::vector<DAGNode*>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
-//                    oldNodes.push_back( *it );
-//                }
-//                // get the DAG node which corresponds in the model to the cloned original node
-//                std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
-//                
-//                // clone the move and replace the node
-//                ObjectMonitor* newMonitor = theMonitor.clone();
-//                // convert the new nodes from DAGNode to Stochastic Nodes
-//                std::vector<VariableNode*> newNodes;
-//                for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
-//                    newNodes.push_back( static_cast<VariableNode*>( *it ) );
-//                }
-//                newMonitor->replaceDagNodes(newNodes);
-//                
-//                monitors->setElement(i, newMonitor );
-//                
+                // get the DAG node for this move
+                std::vector<RbVariablePtr> &theOldNodes = theMonitor.getDagNodes();
+                
+                // convert the old nodes from Stochastic nodes to DAGNode
+                std::vector<DAGNode*> oldNodes;
+                for (std::vector<RbVariablePtr>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+                    oldNodes.push_back( (*it)->getDagNode() );
+                }
+                
+                // test whether this node is already a cloned one
+                if (!theModel.areDagNodesCloned(oldNodes) ) {
+                    // get the DAG node which corresponds in the model to the cloned original node
+                    std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
+                    
+                    // convert the new nodes from DAGNode to Stochastic Nodes
+                    std::vector<VariableNode*> newNodes;
+                    for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
+                        newNodes.push_back( static_cast<VariableNode*>( *it ) );
+                    }
+                    theMonitor.replaceDagNodes(newNodes);
+                }
+                
             }
-            
-//            setMemberDagNode(name, new ConstantNode( monitors ) );
         }
+        
+    } 
+    else if ( name == "model" ) {
+        model = var;
+        
+        // update the monitors
+        if (monitors != NULL) {
+            // get the DAG nodes
+            Vector& myMonitors = static_cast<Vector&>( monitors->getValue() );
+            const Model& theModel = dynamic_cast<Model&>( model->getValue() );
+            for (size_t i=0; i<myMonitors.size(); i++) {
+                // get the move #i
+                Monitor& theMonitor = static_cast<Monitor&>( myMonitors.getElement(i) );
+                
+                // get the DAG node for this move
+                std::vector<RbVariablePtr> &theOldNodes = theMonitor.getDagNodes();
+                
+                // convert the old nodes from Stochastic nodes to DAGNode
+                std::vector<DAGNode*> oldNodes;
+                for (std::vector<RbVariablePtr>::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+                    oldNodes.push_back( (*it)->getDagNode() );
+                }
+                
+                // test whether this node is already a cloned one
+                if (!theModel.areDagNodesCloned(oldNodes) ) {
+                    // get the DAG node which corresponds in the model to the cloned original node
+                    std::vector<DAGNode*> theNewNodes = theModel.getClonedDagNodes(oldNodes);
+                    
+                    // convert the new nodes from DAGNode to Stochastic Nodes
+                    std::vector<VariableNode*> newNodes;
+                    for (std::vector<DAGNode*>::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
+                        newNodes.push_back( static_cast<VariableNode*>( *it ) );
+                    }
+                    theMonitor.replaceDagNodes(newNodes);
+                }
+            }
+        }
+    }
     else {
         ConstantMemberObject::setMemberVariable(name, var);
+        
     }
 }
 
@@ -271,26 +304,24 @@ void Simulate::run(size_t ndata) {
     std::set<DAGNode*> visitedNodes;
 
     getOrderedStochasticNodes(dagNodes[0], orderedStochasticNodes, visitedNodes);
-
+    
     /* Get the monitors */
-//    Vector& fileMonitors    = static_cast<Vector&>( getMemberDagNode( "fileMonitors" )->getValue() );
-    Vector& m  = static_cast<Vector&>( monitors->getValue() );
-
-    
-    /* Get the chain settings */
-    std::cerr << "Getting the random generator ..." << std::endl;
-    
+    Vector& theMonitors = static_cast<Vector&>( monitors->getValue() );
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;
-    for (size_t i=0; i<m.size(); i++) {
+    for (size_t i=0; i<theMonitors.size(); i++) {
         // get the monitor
-        FileMonitor& theMonitor = static_cast<FileMonitor&>( m.getElement(i) );
+        if (theMonitors.getElement(i).isTypeSpec( FileMonitor::getClassTypeSpec() ) ) {
+            
+            FileMonitor& theMonitor = static_cast<FileMonitor&>( theMonitors.getElement(i) );
+            
+            // open the file stream for the monitor
+            theMonitor.openStream();
+            
+            // print the header information
+            theMonitor.printHeader();
+        }
         
-        // open the file stream for the monitor
-        theMonitor.openStream();
-        
-        // print the header information
-        theMonitor.printHeader();
     }
 
         
@@ -308,13 +339,11 @@ void Simulate::run(size_t ndata) {
             orderedStochasticNodes[i]->keep();
         }
         
+        
         /* Monitor */
-//        for (size_t i=0; i<fileMonitors.size(); i++) {
-//            static_cast<FileMonitor&>( fileMonitors.getElement(i) ).monitor(data);
-//        }
-//        for (size_t i=0; i<objectMonitors.size(); i++) {
-//            static_cast<ObjectMonitor&>( objectMonitors.getElement(i) ).monitor(data);
-//        }
+        for (size_t i=0; i<theMonitors.size(); i++) {
+            static_cast<Monitor&>( theMonitors.getElement(i) ).monitor(data);
+        }
 
                 
     }

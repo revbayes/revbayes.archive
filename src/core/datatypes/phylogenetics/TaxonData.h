@@ -45,6 +45,7 @@ class TaxonData : public ConstantMemberObject {
         // Member object methods 
         const MemberRules&                      getMemberRules(void) const;                                         //!< Get member rules
         virtual const MethodTable&              getMethods(void) const;                                             //!< Get methods
+        void                                    setMemberVariable(const std::string &name, Variable* var);          //!< Set a member variable. We catch here setting of variable nodes
        
         // TaxonData functions
         void                                    addCharacter( Character* newChar );                                 //!< Push back a new character
