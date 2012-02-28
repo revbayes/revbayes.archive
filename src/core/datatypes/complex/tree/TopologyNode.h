@@ -38,6 +38,7 @@
 
 #include "ConstantMemberObject.h"
 #include "RbBoolean.h"
+#include "RbString.h"
 
 #include <vector>
 
@@ -81,7 +82,7 @@ class TopologyNode : public ConstantMemberObject {
         void                                setName(const std::string& n);                                              //!< Set the name of this node
         void                                setParent(TopologyNode* p);                                                 //!< Sets the node's parent
         void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
-        void                                removeChild(TopologyNode* p);                                         //!< Removes a specific child
+        void                                removeChild(TopologyNode* p);                                               //!< Removes a specific child
          
     protected:
         const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
@@ -92,7 +93,7 @@ class TopologyNode : public ConstantMemberObject {
         
         std::vector<TopologyNode*>          children;                                                                   //!< Vector holding the node's children. Note that the parent owns the children but not the other way around. 
         TopologyNode*                       parent;                                                                     //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
-        std::string                         name;                                                                       //!< Name of the node, i.e. identifier/taxon name
+        RbString                            name;                                                                       //!< Name of the node, i.e. identifier/taxon name
         int                                 index;                                                                      //!< Node index
         RbBoolean                           isInteriorNode;
         RbBoolean                           isRootNode;

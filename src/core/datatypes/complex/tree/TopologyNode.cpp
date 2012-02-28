@@ -228,6 +228,9 @@ const RbLanguageObject& TopologyNode::executeOperationSimple(const std::string& 
     else if (name == "ancestor") {
         return *parent;
     }
+    else if (name == "getName") {
+        return this->name;
+    }
     else
         throw RbException("No member method called '" + name + "'");
     
@@ -265,15 +268,18 @@ std::vector<int> TopologyNode::getChildrenIndices() const {
 const MethodTable& TopologyNode::getMethods(void) const {
     
     static MethodTable methods = MethodTable();
-    static ArgumentRules* ancestorRules = new ArgumentRules();
-    static ArgumentRules* isTipArgRules = new ArgumentRules();
-    static ArgumentRules* isRootArgRules = new ArgumentRules();
-    static ArgumentRules* isInteriorArgRules = new ArgumentRules();
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) {
         
+        ArgumentRules* ancestorRules = new ArgumentRules();
+        ArgumentRules* getNameRules = new ArgumentRules();
+        ArgumentRules* isTipArgRules = new ArgumentRules();
+        ArgumentRules* isRootArgRules = new ArgumentRules();
+        ArgumentRules* isInteriorArgRules = new ArgumentRules();
+        
         methods.addFunction("ancestor",   new MemberFunction(TopologyNode::getClassTypeSpec(), ancestorRules) );
+        methods.addFunction("getName",    new MemberFunction(RbString::getClassTypeSpec(),     getNameRules) );
         methods.addFunction("isTip",      new MemberFunction(RbBoolean::getClassTypeSpec(),    isTipArgRules) );
         methods.addFunction("isRoot",     new MemberFunction(RbBoolean::getClassTypeSpec(),    isRootArgRules) );
         methods.addFunction("isInterior", new MemberFunction(RbBoolean::getClassTypeSpec(),    isInteriorArgRules) );
@@ -337,7 +343,7 @@ void TopologyNode::removeAllChildren(void) {
     // empty the children vector
     children.clear();
     
-    name = "";
+    name = RbString("");
     
     isTipNode.setValue(true);
     isInteriorNode.setValue(false);
