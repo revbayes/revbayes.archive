@@ -183,10 +183,10 @@ const RbLanguageObject& TreePlate::executeOperation(const std::string& name, con
             size_t nodeIndex = getNodeIndex(theNode) - 1;
             
             // get the variable
-            Variable& var = static_cast<VariableSlot&>( vars.getElement(nodeIndex) ).getVariable();
-            
-//            return static_cast<RbLanguageObject*>( var.getDagNode() );
-            return RbNullObject::getInstance();
+           Variable& var = static_cast<VariableSlot&>( vars.getElement(nodeIndex) ).getVariable();
+            return ( var.getValue() );
+          //  return static_cast<RbLanguageObject*>( var.getDagNode() );
+          //  return RbNullObject::getInstance();
         }
     }
 
