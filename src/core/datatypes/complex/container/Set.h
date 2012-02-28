@@ -349,9 +349,9 @@ RbObject& Set<setType>::getElement(size_t index) {
 
 /** 
  * Get the member rules
- * We expect that a set is created by "set(x,...)". 'x' can be a vector of the required type.
- * If 'x' is a single element, the parser should automatically convert 'x' into a vector.
- * All other variables are for simplicity just single elements.
+ * We expect that a set is created by "set(x,...)". 
+ * All variables are for simplicity just single elements. For more sophisticated constructors (e.g. from a vector of elements)
+ * constructor functions should be used.
  */
 template <typename setType>
 const MemberRules& Set<setType>::getMemberRules(void) const {
@@ -361,7 +361,7 @@ const MemberRules& Set<setType>::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule( "x"  , TypeSpec( Vector::getClassTypeSpec(), new TypeSpec( setType::getClassTypeSpec() ) ) ) );
+        memberRules.push_back( new ValueRule( "x"  , setType::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( setType::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -458,15 +458,7 @@ size_t Set<setType>::size( void ) const {
 template <typename setType>
 void Set<setType>::setMemberVariable(const std::string& name, Variable* var) {
     
-    if (name == "x") {
-        Vector& v = static_cast<Vector&>( var->getValue() );
-        
-        for (size_t i = 0; i < v.size(); i++) {
-            setType* element = static_cast<setType*>( v.getElement(i).clone() );
-            insert( element );
-        }
-    }
-    else if ( name == "" ) { // the ellipsis variables
+    if (name == "x" || name == "" ) { // the ellipsis variables
         setType* element = static_cast<setType*>( var->getValue().clone() );
         insert( element);
     }

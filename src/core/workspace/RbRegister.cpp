@@ -247,6 +247,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
         addDistribution( "beta",         new Dist_beta()        );
         addDistribution( "birthdeath",   new Dist_birthdeath()  );
+        addDistribution( "cat",          new Dist_cat<Integer>());
+        addDistribution( "cat",          new Dist_cat<Natural>());
         addDistribution( "cat",          new Dist_cat<NucleotideState>());
         addDistribution( "cat",          new Dist_cat<Real>()   );
         addDistribution( "cat",          new Dist_cat<RealPos>());

@@ -218,7 +218,7 @@ double Dist_cat<setType>::lnPdf( const RbLanguageObject& value ) const {
     
     int index = x.findIndex( static_cast<const setType&>( value ) );
     if ( index < 0 )
-        return 0.0;
+        return std::log( 0.0 );
     else
         return std::log( m[index] );
 }
