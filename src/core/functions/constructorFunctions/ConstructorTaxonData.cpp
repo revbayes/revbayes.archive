@@ -36,10 +36,9 @@ ConstructorTaxonData::ConstructorTaxonData() : RbFunction(), name( NULL ), chars
 }
 
 
-///** Constructor */
-//ConstructorTaxonData::ConstructorTaxonData( const ConstructorTaxonData& c ) : RbFunction(c), name( c.name ), chars( c.chars ), retVal( c.retVal ) {
-//    
-//}
+ConstructorTaxonData::~ConstructorTaxonData() {
+    
+}
 
 
 /** Clone the object */
