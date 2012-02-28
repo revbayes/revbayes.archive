@@ -1,0 +1,96 @@
+# Series of phylogenetic models with and without mixtures to account for rate heterogeneity among sites. 
+
+# By Bastien Boussau, Tracy Heath and Sebastian Hoehna
+
+#####################
+# Now we have the datat
+# Let's do some inference
+#####################
+
+D <- read("/Users/tracyh/Code/RevBayes_proj/revbayes/trunk/examples/data/primates_short.nex")
+
+taxaCount <- D.ntaxa()
+names <- D.names()
+
+tau ~ unifTopology( numberTaxa=taxaCount, tipNames=names, isRooted=false, isBinary=true )
+
+
+tree <- treeplate(tau)
+
+siteCount <- D.nchar()[1]
+
+nucleotides <- set(dna("A"),dna("C"),dna("G"),dna("T"))
+
+pi_prior <- v(1,1,1,1)
+pi ~ dirichlet(pi_prior)
+
+r_prior <- v(1,1,1,1,1,1)
+r ~ dirichlet(r_prior)
+
+lambda <- 1.0
+nodeCount <- tree.nnodes()
+
+
+num_gamm_rates <- 4
+#Prior for the rates
+alpha_prior <- 1.0
+
+alpha ~ exponential (alpha_prior)
+
+#Draw rate for each cluster of sites 
+rate_parameters[1] := qgamma(0.125,alpha,alpha)
+rate_parameters[2] := qgamma(0.375,alpha,alpha)
+rate_parameters[3] := qgamma(0.625,alpha,alpha)
+rate_parameters[4] := qgamma(0.875,alpha,alpha)
+
+
+
+class_probabilities<-simplex(0.25, 0.25, 0.25, 0.25)
+## Looking for a constructer that allows you to set the class probabilities
+rateMixture <- mixture( numObservations=siteCount, parameters=rate_parameters, class_probabilities)
+
+
+# We need to iterate from the root to the parent. The indices of the nodes are in phylogenetic ordering, i.e. the tip are at 1,ƒ,n.
+for (i in nodeCount:1) {
+    node <- tree.node(i)
+    if (node.isRoot()) {   
+        for (j in 1:siteCount) {
+            dna_state[i][j] ~ cat(pi,nucleotides)
+            sumOver(dna_state[i][j], TRUE)
+        }
+    } else {
+        parent <- node.ancestor()
+        parentIndex[i] <- tree.index(parent)	
+
+		# here the prior for branch lengths
+        bl[i] ~ exponential(lambda)
+		# adding this variable to the tree, so that we can easily access it later ...
+        tree.addVariable("branchLength", bl[i], node)
+
+		# create the rate matrix for this node
+        Q[i] := gtr(rates=r, freqs=pi)
+		# create the transition probability matrix for this node
+        if (node.isTip()) {
+            for (j in 1:siteCount) {
+				tp[i][j] := ctmmtp(Q[i],bl[i]*rateMixture.getParameterForElem(j))
+                dna_state[i][j] ~ dtmm(tp[i], dna_state[parentIndex[i]][j])
+                clamp(dna_state[i][j], D[i][j])
+            }
+        } else {
+            for (j in 1:siteCount) {
+				tp[i][j] := ctmmtp(Q[i],bl[i]*rateMixture.getParameterForElem(j))
+                dna_state[i][j] ~ dtmm(tp[i], dna_state[parentIndex[i]][j])
+                sumOver(dna_state[i][j], TRUE)
+            }
+        }	
+    }
+}
+
+
+mygtrg <- model( pi )
+
+################
+# Now we can do some inference!
+################
+##We need to define moves
+#Moves on branch lengths
