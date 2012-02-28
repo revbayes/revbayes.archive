@@ -104,7 +104,7 @@ void FileMonitor::monitor(void) {
     for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
-            outStream << separator;
+            outStream << static_cast<RbString&>( separator->getValue() ).getValue();
         
         // print the value
         (*it)->printValue(outStream);
@@ -128,7 +128,7 @@ void FileMonitor::monitor(int gen) {
         
         for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element
-            outStream << separator;
+            outStream << static_cast<RbString&>( separator->getValue() ).getValue();
             
             // print the value
             (*it)->printValue(outStream);
@@ -158,7 +158,7 @@ void FileMonitor::printHeader() {
     
     for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
-        outStream << separator;
+        outStream << static_cast<RbString&>( separator->getValue() ).getValue();
         
          const DAGNode* theNode = static_cast<const DAGNode*>((*it)->getDagNode());
         
