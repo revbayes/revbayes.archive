@@ -15,15 +15,19 @@
 
 #include "Mixture.h"
 #include "RbException.h"
-#include "VectorString.h"
-#include "ValueRule.h"
 #include "ConstantNode.h"
-#include "VariableNode.h"
 #include "DagNodeContainer.h"
 #include "DistributionDirichlet.h"
 #include "DistributionMultinomial.h"
+#include "MemberFunction.h"
+#include "Natural.h"
 #include "RandomNumberFactory.h"
 #include "RbNullObject.h"
+#include "RbUtil.h"
+#include "ValueRule.h"
+#include "VariableNode.h"
+#include "VectorString.h"
+
 
 #include <sstream>
 
@@ -137,46 +141,76 @@ const TypeSpec& Mixture::getTypeSpec( void ) const {
 const MethodTable& Mixture::getMethods(void) const {
     
     static MethodTable   methods = MethodTable();
-    /*
-    static ArgumentRules addvariableArgRules;
-    static ArgumentRules getNodeIndexArgRules;
-    static ArgumentRules getTipIndexArgRules;
-    static ArgumentRules nnodesArgRules;
-    static ArgumentRules nodeArgRules;
+    
+    static ArgumentRules* getNumberOfClassesArgRules = new ArgumentRules();
+    static ArgumentRules* getParameterArgRules = new ArgumentRules();
+    static ArgumentRules* getParametersArgRules = new ArgumentRules();
+    static ArgumentRules* setParametersArgRules = new ArgumentRules();
+    static ArgumentRules* setParameterArgRules = new ArgumentRules();
+  static ArgumentRules* getAllocationVectorArgRules = new ArgumentRules();
+  static ArgumentRules* setAllocationVectorArgRules = new ArgumentRules();
+  static ArgumentRules* allocateElementArgRules = new ArgumentRules();
+  static ArgumentRules* getElementAllocationArgRules = new ArgumentRules();
+  static ArgumentRules* setClassProbabilitiesArgRules = new ArgumentRules();
+  static ArgumentRules* getClassProbabilitiesArgRules = new ArgumentRules();
+  static ArgumentRules* getParameterForElemArgRules = new ArgumentRules();
+
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) {
         
-        // add the 'addVariable()' method
-        addvariableArgRules.push_back(  new ValueRule( "name"      , RbString_name      ) );
-        addvariableArgRules.push_back(  new ValueRule( ""          , RbObject_name      ) );
-        addvariableArgRules.push_back(  new ValueRule( "node"      , TopologyNode_name  ) );
-        
-        methods.addFunction("addVariable",  new MemberFunction(RbVoid_name, addvariableArgRules)  );
-        
-        // add the 'index(node)' method
-        getNodeIndexArgRules.push_back( new ValueRule( "node", TopologyNode_name ));
-        
-        methods.addFunction("index", new MemberFunction(Natural_name, getNodeIndexArgRules));
-        
-        // add the 'tipIndex(node)' method
-        getTipIndexArgRules.push_back( new ValueRule( "node", TopologyNode_name ));
-        
-        methods.addFunction("tipIndex", new MemberFunction(Natural_name, getTipIndexArgRules));
-        
-        // add the 'node(i)' method
-        nodeArgRules.push_back(  new ValueRule( "index" , Natural_name  ) );
-        
-        methods.addFunction("node", new MemberFunction(TopologyNode_name, nodeArgRules) );
-        
-        // add the 'nnodes()' method
-        methods.addFunction("nnodes", new MemberFunction(Natural_name, nnodesArgRules) );
-        
+      //add the 'getNumberOfClasses()' method
+      methods.addFunction("getNumberOfClasses", new MemberFunction(Natural::getClassTypeSpec(), getNumberOfClassesArgRules) );
+
+      //add the 'getParameter(i)' method
+      getParameterArgRules->push_back(  new ValueRule( "index" , Natural::getClassTypeSpec()   ) );
+      methods.addFunction("getParameter", new MemberFunction(DagNodeContainer::getClassTypeSpec(), getParameterArgRules) );
+
+      //add the 'getParameters()' method
+      methods.addFunction("getParameters", new MemberFunction(DagNodeContainer::getClassTypeSpec(), getParametersArgRules) );
+
+      //add the 'setParameters(d)' method
+      setParametersArgRules->push_back(  new ValueRule( "parameters" , DagNodeContainer::getClassTypeSpec()   ) );
+      methods.addFunction("setParameters", new MemberFunction(RbVoid_name, setParametersArgRules) );
+      
+      //add the 'setParameter(i,d)' method
+      setParameterArgRules->push_back(  new ValueRule( "index" , Natural::getClassTypeSpec()   ) );
+      setParameterArgRules->push_back(  new ValueRule( "parameters" , DagNodeContainer::getClassTypeSpec()   ) );
+      methods.addFunction("setParameter", new MemberFunction(RbVoid_name, setParameterArgRules) );
+
+      //add the 'getAllocationVector()' method
+      methods.addFunction("getAllocationVector", new MemberFunction(DagNodeContainer::getClassTypeSpec(), getAllocationVectorArgRules) );
+      
+      //add the 'setAllocationVector(v)' method
+      setAllocationVectorArgRules->push_back(  new ValueRule( "vector" , DagNodeContainer::getClassTypeSpec()   ) );
+      methods.addFunction("setAllocationVector", new MemberFunction(RbVoid_name, setAllocationVectorArgRules) );
+
+      //add the 'allocateElement(i,c)' method
+      allocateElementArgRules->push_back(  new ValueRule( "index" , Natural::getClassTypeSpec()   ) );
+      allocateElementArgRules->push_back(  new ValueRule( "class" , Natural::getClassTypeSpec()   ) );
+      methods.addFunction("allocateElement", new MemberFunction(RbVoid_name, allocateElementArgRules) );
+
+      //add the 'getElementAllocation(i)' method
+      getElementAllocationArgRules->push_back(  new ValueRule( "index" , Natural::getClassTypeSpec()   ) );
+      methods.addFunction("getElementAllocation", new MemberFunction(Natural::getClassTypeSpec(), getElementAllocationArgRules) );
+
+      //add the 'setClassProbabilities(p)' method
+      setClassProbabilitiesArgRules->push_back(  new ValueRule( "vector" , Simplex::getClassTypeSpec()   ) );
+      methods.addFunction("setClassProbabilities", new MemberFunction(RbVoid_name, setClassProbabilitiesArgRules) );
+
+      //add the 'getClassProbabilities()' method
+      methods.addFunction("getClassProbabilities", new MemberFunction(Simplex::getClassTypeSpec(), getClassProbabilitiesArgRules) );
+
+      //add the 'getParameterForElem(i)' method
+      getParameterForElemArgRules->push_back(  new ValueRule( "index" , Natural::getClassTypeSpec()   ) );
+      methods.addFunction("getParameterForElem", new MemberFunction(DagNodeContainer::getClassTypeSpec(), getParameterForElemArgRules) );
+
+      
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
         methodsSet = true;
     }
-    */
+    
     return methods;
 }
 
@@ -190,10 +224,11 @@ const MemberRules& Mixture::getMemberRules(void) const {
     {
         memberRules.push_back( new ValueRule( "numObservations", Integer::getClassTypeSpec() ) );
         memberRules.push_back( new ValueRule( "parameters", DagNodeContainer::getClassTypeSpec() ) );
-      
+        memberRules.push_back( new ValueRule( "classProbabilities", Simplex::getClassTypeSpec() ) );
+
         rulesSet = true;
     }
-    
+
     return memberRules;
 }
 
@@ -291,9 +326,96 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
     else if (name == "getClassProbabilities") {
         return getClassProbabilities();
     }
+    else if (name == "getParameterForElem") {
+      // get the member with given index
+      const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+      
+      if (allocationVector_->size() < (size_t)(index.getValue())) {
+        throw RbException("Index out of bounds in Mixture::getParameterForElem");
+      }
+      // (DagNodeContainer*) getParameter(index->getValue());
+      return  getParameterForElem(index.getValue());
+    }
     return RbNullObject::getInstance();
 
 }
+
+
+/* Map calls to member methods */
+const RbLanguageObject& Mixture::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+  if (name == "getNumberOfClasses") {
+    numClasses.setValue( getNumberOfClasses() );
+    return numClasses;
+  }
+  else if (name == "getParameter") {      
+    // get the member with given index
+    const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+    
+    if (parameters_->size() < (size_t)(index.getValue())) {
+      throw RbException("Index out of bounds in Mixture::getParameter");
+    }
+    // (DagNodeContainer*) getParameter(index->getValue());
+    return  getParameter(index.getValue());
+  }
+  else if (name == "getParameters") {
+    return getParameters();
+    //return RbNullObject::getInstance();
+  }
+  else if (name == "setParameters") {
+    const DagNodeContainer& params = static_cast<const DagNodeContainer&>( args[0].getVariable().getValue() );
+    setParameters ( params.clone() ) ;
+    return RbNullObject::getInstance();
+  }
+  else if (name == "setParameter") {
+    const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+    const DagNodeContainer& params =  static_cast<const DagNodeContainer&>( args[1].getVariable().getValue() );
+    setParameter ( (index.getValue()), params.clone() ) ;
+    return RbNullObject::getInstance();
+  }
+  else if (name == "getAllocationVector") {
+    return getAllocationVector();
+  }
+  else if (name == "setAllocationVector") {
+    const DagNodeContainer& params = static_cast<const DagNodeContainer&>( args[0].getVariable().getValue() );
+    setAllocationVector ( params.clone() ) ;
+    return RbNullObject::getInstance();
+  }
+  else if (name == "allocateElement") {
+    const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+    const Natural& classId = static_cast<const Natural&>( args[1].getVariable().getValue() );
+    allocateElement ((index.getValue()), (classId.getValue()));
+    return RbNullObject::getInstance();
+  }
+  else if (name == "getElementAllocation") {
+    const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+    return getElementAllocation(index.getValue() );
+  }
+  else if (name == "setClassProbabilities") {
+    const Simplex& params = static_cast<const Simplex&>( args[0].getVariable().getValue() );
+    setClassProbabilities ( params.clone() ) ;
+    return RbNullObject::getInstance();
+  }
+  else if (name == "getClassProbabilities") {
+    return getClassProbabilities();
+  }
+  else if (name == "getParameterForElem") {
+    // get the member with given index
+    const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+    
+    if (allocationVector_->size() < (size_t)(index.getValue())) {
+      throw RbException("Index out of bounds in Mixture::getParameterForElem");
+    }
+    // (DagNodeContainer*) getParameter(index->getValue());
+    return  getParameterForElem(index.getValue());
+
+  }
+  else 
+  {
+    return MutableMemberObject::executeOperationSimple( name, args );
+  }
+}
+
+
 
 
 /** Catch setting of the mixture variable */
@@ -310,9 +432,12 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
           classProbabilities_ = new Simplex( RbStatistics::Dirichlet::rv(v, *rng) );
         }
         else {
-            std::vector<double> v(parameters_->size(), 1.0);
+          if (classProbabilities_->size() != parameters_->size() ) {
+            throw RbException("Class probability vector and parameter vector of different sizes. Cannot construct the mixture in Mixture::setMemberVariable.");
+          }
+            /*std::vector<double> v(parameters_->size(), 1.0);
             delete classProbabilities_;
-            classProbabilities_ = new Simplex( RbStatistics::Dirichlet::rv(v, *rng) );
+            classProbabilities_ = new Simplex( RbStatistics::Dirichlet::rv(v, *rng) );*/
         }
       if (allocationVector_ != NULL ) { //we re-draw the allocation vector
           std::vector<int> allocationVec = RbStatistics::Multinomial::rv(classProbabilities_->getValue(), (int)allocationVector_->size(), *rng);
@@ -443,10 +568,12 @@ void Mixture::setParameters(DagNodeContainer* parameters) {
     parameters_ = parameters;
 }
 
+
 /**Set the value of a parameter associated to a particular class*/
 void Mixture::setParameter(unsigned int classId, DagNodeContainer* parameter) {
   parameters_->setElement(classId, parameter);
 }
+
 
 /** Set the vector of parameter values associated to the classes of the mixture*/
 DagNodeContainer& Mixture::getParameter(unsigned int classId) {
@@ -487,10 +614,12 @@ void Mixture::indexAllocationVector() {
   }    
 }
 
+
 /** Get the allocation vector associating class indices to elements */
 DagNodeContainer& Mixture::getAllocationVector() {
     return *(allocationVector_ ) ;
 }
+
 
 /** Change the class of a particular element */
 void Mixture::allocateElement (int elementId, int classId) {
@@ -531,5 +660,14 @@ void Mixture::setClassProbabilities(Simplex* proba) {
 /** Get the vector containing class probabilities */
 const Simplex& Mixture::getClassProbabilities() {
     return static_cast<const VectorRealPos&>( *classProbabilities_ );
+}
+
+/** Get the vector of parameter values associated to the element index */
+DagNodeContainer& Mixture::getParameterForElem(unsigned int index) {
+  const VariableSlot& slot = static_cast<const VariableSlot&>( (allocationVector_->getElement(index) ) );
+  const Variable& var = slot.getVariable();
+  var.getValue();
+  const Integer& j = static_cast<const  Integer&> (  (var.getValue() ) );      
+  return (getParameter(j.getValue() ) );
 }
 

@@ -39,8 +39,10 @@ bls[1][i] <- tree1.getVariable("branchLength", tree1.node(i))
 bls[2][i] <- tree2.getVariable("branchLength", tree2.node(i))
 }
 
+classprobas <- simplex(1,1)
+
 #The Mixture simplest constructor creates the allocation vector and the probability vector (probabilityVector) and links them to the parameter vector into a coherent DAG on which computations can be performed.
-blMixture <- mixture( numObservations=siteCount * nodeCount, parameters=bls )
+blMixture <- mixture( numObservations=siteCount * nodeCount, parameters=bls , classProbabilities=classprobas)
 
 for (i in nodeCount:1) {
 node <- tree.node(i)
@@ -51,10 +53,11 @@ dna_state[i][j] ~ cat(pi,nucleotides)
 } else {
 parent <- node.ancestor()
 parentIndex[i] <- tree.index(parent)	
-Q[i] := gtr(pi, exchange)
+# create the rate matrix for this node
+Q[i] := gtr(rates=exchange, freqs=pi)
 #We generate the 2 substitution matrices corresponding to the two branch lengths
-tp[1][i] := ctmmtp(Q[i],bl[1][i])
-tp[2][i] := ctmmtp(Q[i],bl[2][i])
+tp[1][i] := ctmmtp(Q[i],bls[1][i])
+tp[2][i] := ctmmtp(Q[i],bls[2][i])
 if (node.isTip()) {
 for (j in 1:siteCount) {
 numParam <- (i-1)*siteCount + j
@@ -95,6 +98,16 @@ filemonitors <- fileMonitor(filename="gtrSimulation.out", printgen=1, separator=
 
 mysimu <- simulate(mygtrheterotachy, filemonitors, objectMonitors)
 mysimu.run(1)
+
+
+
+mons <- mysimu.getMonitors()
+for (i in 1:tau.nTips()) {
+t[i] <- mons[1].getValues("taxon[" + i + "]")[1]
+}
+D <- characterData("dna", t[1], t[2], t[3], t[4], t[5])
+
+
 
 ################
 # Now we can do some inference!

@@ -47,10 +47,11 @@ public:
     
     // Member variable functions
     const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
-    void                            setMemberVariable(const std::string& name, Variable* var);                //!< Catch setting of the topology
+    void                            setMemberVariable(const std::string& name, Variable* var);                //!< Catch setting of the mixture
     
     // Member method inits
     const RbLanguageObject&         executeOperation(const std::string& name, Environment& args);           //!< Execute method
+    const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Execute method
     const MethodTable&              getMethods(void) const;                                                 //!< Get methods
     
     // Mixture functions
@@ -71,7 +72,8 @@ public:
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!< Compute the number of elements in each class by going through the allocation vector
     void                            indexAllocationVector();                                                //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
-    DagNodeContainer&               getParameter(unsigned int classId);                                     //!< Get the vector of parameter values associated to the classe classId
+    DagNodeContainer&               getParameter(unsigned int classId);                                     //!< Get the vector of parameter values associated to the class classId
+    DagNodeContainer&               getParameterForElem(unsigned int index);                                //!< Get the vector of parameter values associated to the element index
 
     
 private:
