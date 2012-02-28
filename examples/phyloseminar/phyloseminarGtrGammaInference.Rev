@@ -87,10 +87,36 @@ for (i in nodeCount:1) {
 }
 
 
-mygtrg <- model( pi )
+mygtrgamm <- model( pi )
 
 ################
 # Now we can do some inference!
 ################
 ##We need to define moves
 #Moves on branch lengths
+lambda <- 1.0
+for (i in tree.nnodes():1) {
+	node <- tree.node(i)
+	if (! node.isRoot()) {
+		moves[i] <- mscale(bl[i], weight=1.0, lambda = 1.0)
+	}
+}
+
+numMoves <- moves.size()
+
+j <- numMoves+1
+moves[j] <- msimplex(variable=pi,tuning=2.0,num_cats=4)
+moves[j+1] <- msimplex(variable=r,tuning=2.0,num_cats=6)
+moves[j+2] <- mscale(alpha, weight=1.0, lambda = 1.0)
+numMoves <- moves.size()
+for (i in 1:rateMixture.getNumberOfElements() ) {
+	moves[i + numMoves] <- reallocate(rateMixture, i)
+}
+
+
+monitors[1] <- fileMonitor(filename="gtrGammaInference.out", printgen=1, separator="	", bl)
+
+mymcmcgtrgamm <- mcmc(mygtrgamm, moves=moves, monitor=monitors)
+
+mymcmcgtrgamm.run(generations=1000)
+
