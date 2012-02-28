@@ -186,3 +186,17 @@ void SyntaxFunctionDef::printValue(std::ostream& o) const {
     o << "code         = <" << code->size() << " code statements>" << std::endl;
 }
 
+
+/**
+ * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+ * We just delegate that to the arguments.
+ * 
+ * TODO: Currently we do not replace the variable inside the function
+ */
+void SyntaxFunctionDef::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+    
+    for (std::list<SyntaxFormal*>::iterator i = formalArgs->begin(); i != formalArgs->end(); i++) {
+        (*i)->replaceVariableWithConstant(name, c);
+    }
+}
+

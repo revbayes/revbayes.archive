@@ -34,26 +34,27 @@ class VectorString;
 class SyntaxConstant : public SyntaxElement {
 
     public:
-                                                SyntaxConstant(RbLanguageObject* val);                              //!< Constructor from value
-                                                SyntaxConstant(const SyntaxConstant& sc);                           //!< Copy constructor
-	    virtual                                ~SyntaxConstant();                                                   //!< Destructor deletes value
+                                                SyntaxConstant(RbLanguageObject* val);                                          //!< Constructor from value
+                                                SyntaxConstant(const SyntaxConstant& sc);                                       //!< Copy constructor
+	    virtual                                ~SyntaxConstant();                                                               //!< Destructor deletes value
 
         // Assignment operator
-        SyntaxConstant&                         operator=(const SyntaxConstant& x);                                 //!< Assignment operator
+        SyntaxConstant&                         operator=(const SyntaxConstant& x);                                             //!< Assignment operator
 
         // Basic utility functions
-        SyntaxConstant*                         clone(void) const;                                                  //!< Clone object
-        static const std::string&               getClassName(void);                                                 //!< Get class name
-        static const TypeSpec&                  getClassTypeSpec(void);                                             //!< Get class type spec
-        const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
-        void                                    printValue(std::ostream& o) const;                                  //!< Print info about object
+        SyntaxConstant*                         clone(void) const;                                                              //!< Clone object
+        static const std::string&               getClassName(void);                                                             //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
+        void                                    printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RbVariablePtr                           evaluateContent( Environment& env );                                //!< Get semantic value
-        bool                                    isConstExpression(void) const;                                      //!< Is the expression constant?
+        RbVariablePtr                           evaluateContent( Environment& env );                                            //!< Get semantic value
+        bool                                    isConstExpression(void) const;                                                  //!< Is the expression constant?
+        void                                    replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
-        RbLanguageObject*                       value;                                                              //!< The constant value
+        RbLanguageObject*                       value;                                                                          //!< The constant value
     
 };
 

@@ -29,31 +29,34 @@ class RbString;
 class SyntaxForCondition : public SyntaxElement {
 
     public:
-                                    SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr);        //!< Standard constructor
-                                    SyntaxForCondition(const SyntaxForCondition& x);                        //!< Copy constructor
-	    virtual                    ~SyntaxForCondition();                                                   //!< Destructor
+                                    SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr);                //!< Standard constructor
+                                    SyntaxForCondition(const SyntaxForCondition& x);                                //!< Copy constructor
+	    virtual                    ~SyntaxForCondition();                                                           //!< Destructor
 
         // Assignment operator
-        SyntaxForCondition&         operator=(const SyntaxForCondition& x);                                 //!< Assignment operator
+        SyntaxForCondition&         operator=(const SyntaxForCondition& x);                                         //!< Assignment operator
         
         // Basic utility functions
-        SyntaxElement*              clone() const;                                                          //!< Clone object
-        static const std::string&   getClassName(void);                                                     //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
-        void                        printValue(std::ostream& o) const;                                      //!< Print info about object
+        SyntaxElement*              clone() const;                                                                  //!< Clone object
+        static const std::string&   getClassName(void);                                                             //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object
+        void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        void                        finalizeLoop(void);                                                     //!< Finalize loop
-        bool                        getNextLoopState(Environment& env);                                     //!< Get next state of loop
-        RbVariablePtr               evaluateContent( Environment& env );                                    //!< Get semantic value
-        void                        initializeLoop(Environment& env);                                       //!< Initialize loop
+        RbVariablePtr               evaluateContent( Environment& env );                                            //!< Get semantic value
+        void                        finalizeLoop(void);                                                             //!< Finalize loop
+        const RbString&             getIndexVarName(void) const;                                                    //!< Get the name of the index variable
+        RbLanguageObject&           getNextLoopState(void);                                                         //!< Get next state of loop
+        bool                        isFinished() const;                                                             //!< Have we iterated over the whole loop?
+        void                        initializeLoop(Environment& env);                                               //!< Initialize loop
+        void                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
-        RbString*                   varName;                                                                //!< The name of the loop variable
-        SyntaxElement*              inExpression;                                                           //!< The in expression (a vector of values)
-        Container*                  vector;                                                                 //!< Vector result of 'in' expression
-        int                         nextElement;                                                            //!< Next element in vector
+        RbString*                   varName;                                                                        //!< The name of the loop variable
+        SyntaxElement*              inExpression;                                                                   //!< The in expression (a vector of values)
+        Container*                  vector;                                                                         //!< Vector result of 'in' expression
+        int                         nextElement;                                                                    //!< Next element in vector
     
 };
 

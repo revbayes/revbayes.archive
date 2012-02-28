@@ -329,3 +329,14 @@ void SyntaxAssignExpr::printValue(std::ostream& o) const {
     o << "operation     = " << opCode[opType];
 }
 
+
+/**
+ * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+ * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
+ */
+void SyntaxAssignExpr::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+    expression->replaceVariableWithConstant(name, c);
+    variable->replaceVariableWithConstant(name, c);
+}
+
+

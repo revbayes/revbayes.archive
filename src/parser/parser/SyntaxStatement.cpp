@@ -183,18 +183,22 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
         Signals::getSignals().clearFlags();
         
         // create a new environment for the loop
-        // we need a new environment so that the elements will nt be visible from the outside
+        // we need a new environment so that the elements will not be visible from the outside
 //        Environment *loopEnv = new Environment(env);
         Environment& loopEnv = env;
         
+        // here we initialize the loop
         forCond->initializeLoop(loopEnv);
 
         // Now loop over statements inside the for loop
-        while (forCond->getNextLoopState(loopEnv)) {
-
+        while ( forCond->isFinished() ) {
+            
+            RbLanguageObject& indexValue = forCond->getNextLoopState();
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
                 SyntaxElement* theSyntaxElement = *i;
+                // replace the index variable first with its new value
+                theSyntaxElement->replaceVariableWithConstant(forCond->getIndexVarName(), indexValue);
                 // Execute statement
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 
@@ -225,6 +229,9 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
                 Signals::getSignals().clearFlags();  // Just continue with next loop state
             }
         }
+        
+        // finalize the loop
+        forCond->finalizeLoop();
         
     }
     else if (statementType == Break) {
@@ -430,5 +437,25 @@ void SyntaxStatement::printValue(std::ostream& o) const {
             (*i)->printValue(o);
         }
     }
+}
+
+
+/**
+ * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+ * We just delegate that to the elements.
+ */
+void SyntaxStatement::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+    
+    // the first set of statements
+    for (std::list<SyntaxElement*>::iterator i = statements1->begin(); i != statements1->end(); i++) {
+        (*i)->replaceVariableWithConstant(name, c);
+    }
+    // the second set of statements
+    for (std::list<SyntaxElement*>::iterator i = statements1->begin(); i != statements1->end(); i++) {
+        (*i)->replaceVariableWithConstant(name, c);
+    }
+    // the expression itself
+    expression->replaceVariableWithConstant(name, c);
+    
 }
 

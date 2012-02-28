@@ -72,6 +72,12 @@ SyntaxElement* SyntaxForCondition::clone () const {
     return (SyntaxElement*)(new SyntaxForCondition(*this));
 }
 
+/** Get semantic value (not applicable so return NULL) */
+RbVariablePtr SyntaxForCondition::evaluateContent( Environment& env ) {
+    
+    return RbVariablePtr( NULL );
+}
+
 
 /** Finalize loop. */
 void SyntaxForCondition::finalizeLoop(void) {
@@ -83,26 +89,36 @@ void SyntaxForCondition::finalizeLoop(void) {
 }
 
 
+/** Get the name of the index variable */
+const RbString& SyntaxForCondition::getIndexVarName( void ) const {
+    return *varName;
+}
+
+
 /** Get next loop state */
-bool SyntaxForCondition::getNextLoopState(Environment& env) {
+RbLanguageObject& SyntaxForCondition::getNextLoopState( void ) {
 
-    if ( nextElement < 0 )
-        initializeLoop( env );
+    // We do not check here for the loop initialization or finalization. The caller needs to do some work! (Sebastian)
+//    if ( nextElement < 0 )
+//        initializeLoop( env );
+//    
+//    if ( nextElement == static_cast<int>(vector->size()) ) {
+//        finalizeLoop();
+//        return false;
+//    }
+
+    // We do not have the index variable inserted in the environment but replace it with a constant (Sebastian)
+//    Variable& theVar = env[ *varName ].getVariable();
+//    // set the new value of the iterator variable
+//    theVar.setDagNode( new ConstantNode( static_cast<RbLanguageObject*>( vector->getElement( nextElement ).clone() ) ) );
+//    // the setting of the new iterator might have affected other nodes; therefore we call a keep
+//    theVar.getDagNode()->keep();
     
-    if ( nextElement == static_cast<int>(vector->size()) ) {
-        finalizeLoop();
-        return false;
-    }
-
-    Variable& theVar = env[ *varName ].getVariable();
-    // set the new value of the iterator variable
-    theVar.setDagNode( new ConstantNode( static_cast<RbLanguageObject*>( vector->getElement( nextElement ).clone() ) ) );
-    // the setting of the new iterator might have affected other nodes; therefore we call a keep
-    theVar.getDagNode()->keep();
+    RbLanguageObject& elm = static_cast<RbLanguageObject&>( vector->getElement( nextElement ) );
     
     nextElement++;
 
-    return true;
+    return elm;
 }
 
 
@@ -131,10 +147,9 @@ const TypeSpec& SyntaxForCondition::getTypeSpec( void ) const {
 }
 
 
-/** Get semantic value (not applicable so return NULL) */
-RbVariablePtr SyntaxForCondition::evaluateContent( Environment& env ) {
-
-    return RbVariablePtr( NULL );
+/** Have we already reached the end of the loop? */
+bool SyntaxForCondition::isFinished( void ) const {
+    return nextElement < static_cast<int>(vector->size());
 }
 
 
@@ -156,10 +171,11 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
     // Initialize nextValue
     nextElement = 0;
 
-    // Add loop variable to frame if it is not there already
-    if (!env.existsVariable(*varName)) {
-        env.addVariable( *varName );
-    }
+    // We do not add the index variable because we will replace the variable in all statements (Sebastian)
+//    // Add loop variable to frame if it is not there already
+//    if (!env.existsVariable(*varName)) {
+//        env.addVariable( *varName );
+//    }
     
 }
 
@@ -173,5 +189,16 @@ void SyntaxForCondition::printValue(std::ostream& o) const {
     o << std::endl;
 
     inExpression->printValue(o);
+}
+
+
+/**
+ * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+ * We just delegate that to the inExpression.
+ */
+void SyntaxForCondition::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+    
+    inExpression->replaceVariableWithConstant(name, c);
+    
 }
 

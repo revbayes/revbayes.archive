@@ -114,3 +114,13 @@ void SyntaxConstant::printValue(std::ostream& o) const {
     o << std::endl;
 }
 
+
+/**
+ * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+ * Don't do anything.
+ */
+void SyntaxConstant::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+    
+    
+}
+

@@ -30,42 +30,43 @@ class SyntaxAssignExpr : public SyntaxElement {
 
     public:
         // Static operator types
-        enum operatorT { ArrowAssign, TildeAssign, TildeIidAssign, EquationAssign };                    //!< Enum of operator types
-        static std::string opCode[];                                                                    //!< Operator codes for printing
+        enum operatorT { ArrowAssign, TildeAssign, TildeIidAssign, EquationAssign };                                //!< Enum of operator types
+        static std::string opCode[];                                                                                //!< Operator codes for printing
 
                                     SyntaxAssignExpr(operatorT                  op,
                                                      SyntaxVariable*            var,
-                                                     SyntaxElement*             expr);                  //!< Constructor with lhs = variable
+                                                     SyntaxElement*             expr);                              //!< Constructor with lhs = variable
                                     SyntaxAssignExpr(operatorT                  op,
                                                      SyntaxFunctionCall*        fxnCall,
-                                                     SyntaxElement*             expr);                  //!< Constructor with lhs = function call
+                                                     SyntaxElement*             expr);                              //!< Constructor with lhs = function call
                                     SyntaxAssignExpr(operatorT                  op,
                                                      SyntaxVariable*            var,
-                                                     SyntaxFunctionCall*        expr);                  //!< Constructor with lhs = variable
+                                                     SyntaxFunctionCall*        expr);                              //!< Constructor with lhs = variable
                                     SyntaxAssignExpr(operatorT                  op,
                                                      SyntaxFunctionCall*        fxnCall,
-                                                     SyntaxFunctionCall*        expr);                  //!< Constructor with lhs = function call
-                                    SyntaxAssignExpr(const SyntaxAssignExpr& x);                        //!< Copy constructor
-	    virtual                    ~SyntaxAssignExpr();                                                 //!< Destructor
+                                                     SyntaxFunctionCall*        expr);                              //!< Constructor with lhs = function call
+                                    SyntaxAssignExpr(const SyntaxAssignExpr& x);                                    //!< Copy constructor
+	    virtual                    ~SyntaxAssignExpr();                                                             //!< Destructor
 
         // Assignment operator
-        SyntaxAssignExpr&           operator=(const SyntaxAssignExpr& x);                               //!< Assignment operator
+        SyntaxAssignExpr&           operator=(const SyntaxAssignExpr& x);                                           //!< Assignment operator
 
         // Basic utility functions
-        SyntaxAssignExpr*           clone() const;                                                      //!< Clone object
-        static const std::string&   getClassName(void);                                                                 //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
-        void                        printValue(std::ostream& o) const;                                  //!< Print info about object
+        SyntaxAssignExpr*           clone() const;                                                                  //!< Clone object
+        static const std::string&   getClassName(void);                                                             //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object
+        void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
     // Regular functions
-        RbVariablePtr               evaluateContent(Environment& env);                                  //!< Get semantic value
+        RbVariablePtr               evaluateContent(Environment& env);                                              //!< Get semantic value
+        void                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
-        SyntaxVariable*             variable;                                                           //!< A lhs variable (or NULL)
-        SyntaxFunctionCall*         functionCall;                                                       //!< A lhs function call (or NULL)
-        SyntaxElement*              expression;                                                         //!< The rhs expression
-        SyntaxAssignExpr::operatorT opType;                                                             //!< The type of assignment
+        SyntaxVariable*             variable;                                                                       //!< A lhs variable (or NULL)
+        SyntaxFunctionCall*         functionCall;                                                                   //!< A lhs function call (or NULL)
+        SyntaxElement*              expression;                                                                     //!< The rhs expression
+        SyntaxAssignExpr::operatorT opType;                                                                         //!< The type of assignment
     
 };
 

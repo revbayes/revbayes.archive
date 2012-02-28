@@ -19,6 +19,7 @@
 #define SyntaxElement_H
 
 #include "RbInternal.h"
+#include "RbLanguageObject.h"
 #include "RbVariablePtr.h"
 
 #include <iostream>
@@ -66,17 +67,18 @@ class VectorString;
 class SyntaxElement : public RbInternal {
 
     public:
-        virtual                        ~SyntaxElement(void) {}                                      //!< Destructor; delete syntax subtree
+        virtual                        ~SyntaxElement(void) {}                                                              //!< Destructor; delete syntax subtree
 
         // Basic utility functions you have to override
-        virtual SyntaxElement*          clone(void) const = 0;                                      //!< Clone object
-        static const std::string&       getClassName(void);                                         //!< Get class name
-        static const TypeSpec&          getClassTypeSpec(void);                                     //!< Get class type spec
-        virtual void                    printValue(std::ostream& o) const = 0;                      //!< Print info about object
+        virtual SyntaxElement*          clone(void) const = 0;                                                              //!< Clone object
+        static const std::string&       getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                                             //!< Get class type spec
+        virtual void                    printValue(std::ostream& o) const = 0;                                              //!< Print info about object
 
         // Regular functions
-        virtual RbVariablePtr           evaluateContent(Environment& env) = 0;                      //!< Get semantic value
-        virtual bool                    isConstExpression(void) const;                              //!< Is subtree constant expr?
+        virtual RbVariablePtr           evaluateContent(Environment& env) = 0;                                              //!< Get semantic value
+        virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?
+        virtual void                    replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) = 0;//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
                                         SyntaxElement(void) : RbInternal() {}                       //!< Protected constructor, just in case
