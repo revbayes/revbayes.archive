@@ -105,19 +105,29 @@ mymcmcgtr.run(generations=1000)
 ################
 # We first need to create a mixture model with 4 categories of gamma.
 ################
+num_rates <- 4
 #Prior for the rates
 alpha_prior <- 1.0
 
 alpha ~ exponential (alpha_prior)
 #TAH: 
 # Since the gamma has a mean = 1, then the rate of the gamma is equal to alpha, hence 
-gamma_quantiles <- [qgamma(0.125,alpha,alpha), qgamma(0.375,alpha,alpha), qgamma(0.625,alpha,alpha), qgamma(0.875,alpha,alpha)]
-distgama ~ cat (probabilities = [0.25, 0.25, 0.25, 0.25], states = gamma_quantiles)
+####gamma_quantiles <- [qgamma(0.125,alpha,alpha), qgamma(0.375,alpha,alpha), qgamma(0.625,alpha,alpha), qgamma(0.875,alpha,alpha)]
+####distgama ~ cat (probabilities = [0.25, 0.25, 0.25, 0.25], states = gamma_quantiles)
 
+gamma_cat_probs <- v(0.125, 0.375, 0.625, 0.875)
 #Draw rate for each cluster of sites 
-for (j in 1:(num_rates ) ) {  
-    rate_parameters[j] ~ distgama
-}
+rate_parameters[1] := qgamma(0.125,alpha,alpha)
+rate_parameters[2] := qgamma(0.375,alpha,alpha)
+rate_parameters[3] := qgamma(0.625,alpha,alpha)
+rate_parameters[4] := qgamma(0.875,alpha,alpha)
+
+## This doesn't work because we get an error when we use gamma_cat_probs[j] as the argument for qgamma, I'm not sure why...
+#for (j in 1:(num_rates ) ) {  
+#	rate_parameters[j] := qgamma(gamma_cat_probs[j],alpha,alpha)
+#}
+
+
 
 #The Mixture simplest constructor creates the allocation vector and the probability vector (probabilityVector) and links them to the parameter vector into a coherent DAG on which computations can be performed.
 rateMixture <- mixture( numObservations=siteCount, parameters=rate_parameters )
