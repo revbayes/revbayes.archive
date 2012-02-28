@@ -65,6 +65,7 @@ dna_state[i][j] ~ dtmm(tp[2][i] ,  dna_state[parentIndex[i]][j])
 }
 clamp(dna_state[i][j], D[i][j])
 }
+taxon[i] := taxonData(node.getName(), dna_state[i][1], dna_state[i][2], dna_state[i][3], dna_state[i][4], dna_state[i][5] )
 }  else {
 for (j in 1:siteCount) {
 numParam <- (i-1)*siteCount + j
