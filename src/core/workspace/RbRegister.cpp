@@ -77,10 +77,13 @@
 #include "FileMonitor.h"
 #include "Mcmc.h"
 #include "Mixture.h"
+#include "Move_changeClassProbabilities.h"
 #include "Move_mmultinomial.h"
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
 #include "Move_mslide.h"
+#include "Move_reallocate.h"
+#include "Move_reallocateAll.h"
 #include "ObjectMonitor.h"
 #include "Simulate.h"
 #include "TreePlate.h"
@@ -241,6 +244,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "msimplex",      new Move_msimplex()     );
         addTypeWithConstructor( "mslide",        new Move_mslide()       );
         addTypeWithConstructor( "mscale",        new Move_mscale()       );
+        addTypeWithConstructor( "mreallocate",    new Move_reallocate()       );
+        addTypeWithConstructor( "mreallocateAll",    new Move_reallocateAll()       );
+        addTypeWithConstructor( "mchangeClassProbabilities",    new Move_changeClassProbabilities()       );
         addTypeWithConstructor( "objectMonitor", new ObjectMonitor()     );
         addTypeWithConstructor( "simulate",      new Simulate()          );
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
@@ -310,7 +316,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_mul",      new Func__mul<            Integer,        Integer,    Integer >() );
         addFunction( "_mul",      new Func__mul<            RealPos,        RealPos,    RealPos >() );
         addFunction( "_mul",      new Func__mul<               Real,           Real,       Real >() );
-        addFunction( "_mul",      new Func__mul<               Real,        RealPos,       Real >() );
+        addFunction( "_mul",      new Func__mul<            Real,           RealPos,       Real >() );
         addFunction( "_mul",      new Func__mul<            RealPos,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<            Integer,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<               Real,        Integer,       Real >() );

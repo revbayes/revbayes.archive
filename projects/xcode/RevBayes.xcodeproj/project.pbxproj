@@ -1940,6 +1940,7 @@
 		85CD0236133948C400318200 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		BD122C7214FD676900111CB4 /* phyloseminarHeterotachyGtrSimulation.Rev */ = {isa = PBXFileReference; lastKnownFileType = text; name = phyloseminarHeterotachyGtrSimulation.Rev; path = ../../examples/phyloseminar/phyloseminarHeterotachyGtrSimulation.Rev; sourceTree = "<group>"; };
+		BD559BB914FDB12F00FAAB1D /* phyloseminarHeterotachyGtrInference.Rev */ = {isa = PBXFileReference; lastKnownFileType = text; name = phyloseminarHeterotachyGtrInference.Rev; path = ../../examples/phyloseminar/phyloseminarHeterotachyGtrInference.Rev; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3551,6 +3552,7 @@
 		85CD0223133948C300318200 = {
 			isa = PBXGroup;
 			children = (
+				BD559BB914FDB12F00FAAB1D /* phyloseminarHeterotachyGtrInference.Rev */,
 				BD122C7214FD676900111CB4 /* phyloseminarHeterotachyGtrSimulation.Rev */,
 				645EAC7413FEE01700018F3A /* src */,
 				645EB76913FEE08C00018F3A /* documentation */,
