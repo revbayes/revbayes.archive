@@ -113,7 +113,7 @@ moves[j] <- msimplex(variable=pi,tuning=2.0,num_cats=4)
 moves[j+1] <- msimplex(variable=r,tuning=2.0,num_cats=6)
 moves[j+2] <- mscale(alpha, weight=1.0, lambda = 1.0)
 numMoves <- moves.size()
-for (i in 1:rateMixture.getNumberOfElements() ) {
+for (i in 1:siteCount ) {
 	moves[i + numMoves] <- reallocate(rateMixture, i)
 }
 
