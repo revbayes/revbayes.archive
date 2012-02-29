@@ -39,7 +39,7 @@ bls[1][i] <- tree1.getVariable("branchLength", tree1.node(i))
 bls[2][i] <- tree2.getVariable("branchLength", tree2.node(i))
 }
 
-classprobas <- simplex(1,1)
+classprobas ~ dirichlet([1,1])
 
 #The Mixture simplest constructor creates the allocation vector and the probability vector (probabilityVector) and links them to the parameter vector into a coherent DAG on which computations can be performed.
 blMixture <- mixture( numObservations=siteCount * nodeCount, parameters=bls , classProbabilities=classprobas)
@@ -82,7 +82,6 @@ dna_state[i][j] ~ dtmm(tp[2][i] , dna_state[parentIndex[i]][j])
 }
 }
 
-###BUG HERE
 
 mygtrheterotachy <- model( tree.node(1) )
 

@@ -280,7 +280,9 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
         throw RbException("Index out of bounds in Mixture::getParameter");
       }
      // (DagNodeContainer*) getParameter(index->getValue());
-      return  getParameter(index.getValue());
+      //return  static_cast<const RbLanguageObject&> ( getParameter(index.getValue() ) );
+      return  static_cast<const VariableSlot&> (getParameter(index.getValue() ) ).getValue();
+
     }
     else if (name == "getParameters") {
         return getParameters();
@@ -334,7 +336,7 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
         throw RbException("Index out of bounds in Mixture::getParameterForElem");
       }
       // (DagNodeContainer*) getParameter(index->getValue());
-      return  getParameterForElem(index.getValue());
+      return  static_cast<const VariableSlot&> (getParameterForElem(index.getValue() ) ).getValue();
     }
     return RbNullObject::getInstance();
 
@@ -355,7 +357,9 @@ const RbLanguageObject& Mixture::executeOperationSimple(const std::string& name,
       throw RbException("Index out of bounds in Mixture::getParameter");
     }
     // (DagNodeContainer*) getParameter(index->getValue());
-    return  getParameter(index.getValue());
+    return  static_cast<const VariableSlot&> (getParameter(index.getValue() ) ).getValue();
+
+//    return  static_cast<const RbLanguageObject&> (getParameter(index.getValue() ) );
   }
   else if (name == "getParameters") {
     return getParameters();
@@ -406,7 +410,7 @@ const RbLanguageObject& Mixture::executeOperationSimple(const std::string& name,
       throw RbException("Index out of bounds in Mixture::getParameterForElem");
     }
     // (DagNodeContainer*) getParameter(index->getValue());
-    return  getParameterForElem(index.getValue());
+    return  static_cast<const VariableSlot&> (getParameterForElem(index.getValue() ) ).getValue();
 
   }
   else 
@@ -576,8 +580,9 @@ void Mixture::setParameter(unsigned int classId, DagNodeContainer* parameter) {
 
 
 /** Set the vector of parameter values associated to the classes of the mixture*/
-DagNodeContainer& Mixture::getParameter(unsigned int classId) {
-  return static_cast<DagNodeContainer&>( parameters_->getElement(classId) );
+RbObject& Mixture::getParameter(unsigned int classId) {
+ // return static_cast<DagNodeContainer&>( parameters_->getElement(classId) );
+   return parameters_->getElement(classId) ;
 }
 
 
@@ -663,7 +668,7 @@ const Simplex& Mixture::getClassProbabilities() {
 }
 
 /** Get the vector of parameter values associated to the element index */
-DagNodeContainer& Mixture::getParameterForElem(unsigned int index) {
+RbObject& Mixture::getParameterForElem(unsigned int index) {
   const VariableSlot& slot = static_cast<const VariableSlot&>( (allocationVector_->getElement(index) ) );
   const Variable& var = slot.getVariable();
   var.getValue();

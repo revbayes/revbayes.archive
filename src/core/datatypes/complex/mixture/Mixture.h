@@ -72,8 +72,8 @@ public:
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!< Compute the number of elements in each class by going through the allocation vector
     void                            indexAllocationVector();                                                //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
-    DagNodeContainer&               getParameter(unsigned int classId);                                     //!< Get the vector of parameter values associated to the class classId
-    DagNodeContainer&               getParameterForElem(unsigned int index);                                //!< Get the vector of parameter values associated to the element index
+    RbObject&                       getParameter(unsigned int classId);                                     //!< Get the vector of parameter values associated to the class classId
+    RbObject&                       getParameterForElem(unsigned int index);                                //!< Get the vector of parameter values associated to the element index
 
     
 private:
