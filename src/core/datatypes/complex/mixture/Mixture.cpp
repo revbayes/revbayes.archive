@@ -154,7 +154,7 @@ const MethodTable& Mixture::getMethods(void) const {
   static ArgumentRules* setClassProbabilitiesArgRules = new ArgumentRules();
   static ArgumentRules* getClassProbabilitiesArgRules = new ArgumentRules();
   static ArgumentRules* getParameterForElemArgRules = new ArgumentRules();
-
+  static ArgumentRules* getNumberOfElementsArgRules = new ArgumentRules();
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) {
@@ -205,6 +205,10 @@ const MethodTable& Mixture::getMethods(void) const {
       getParameterForElemArgRules->push_back(  new ValueRule( "index" , Natural::getClassTypeSpec()   ) );
       methods.addFunction("getParameterForElem", new MemberFunction(DagNodeContainer::getClassTypeSpec(), getParameterForElemArgRules) );
 
+      //add the 'getNumberOfElements()' method
+      methods.addFunction("getNumberOfElements", new MemberFunction(Natural::getClassTypeSpec(), getNumberOfElementsArgRules) );
+
+      
       
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
@@ -338,6 +342,11 @@ const RbLanguageObject& Mixture::executeOperation(const std::string& name, Envir
       // (DagNodeContainer*) getParameter(index->getValue());
       return  static_cast<const VariableSlot&> (getParameterForElem(index.getValue() ) ).getValue();
     }
+    else if (name == "getNumberOfElements") {
+      numElements.setValue( getNumberOfElements() );
+      return numElements;
+    }
+
     return RbNullObject::getInstance();
 
 }
@@ -409,9 +418,11 @@ const RbLanguageObject& Mixture::executeOperationSimple(const std::string& name,
     if (allocationVector_->size() < (size_t)(index.getValue())) {
       throw RbException("Index out of bounds in Mixture::getParameterForElem");
     }
-    // (DagNodeContainer*) getParameter(index->getValue());
     return  static_cast<const VariableSlot&> (getParameterForElem(index.getValue() ) ).getValue();
-
+  }
+  else if (name == "getNumberOfElements") {
+    numElements.setValue( getNumberOfElements() );
+    return numElements;
   }
   else 
   {

@@ -84,6 +84,7 @@ private:
 
     // memberfunction return values
     Natural                         numClasses;
+    Natural                         numElements;
 
 };
 
