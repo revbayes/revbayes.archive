@@ -1,15 +1,107 @@
-
-
-
 ################
 # Now we can do some inference!
 ################
+
+
+#Tree with mock branch lengths, so that we get the topology right
+#tree <- readTrees("/Users/boussau/travail/revbayes/trunk/examples/phyloseminar/tree.dnd")
+
+
+
+D <- read("/Users/boussau/travail/revbayes/trunk/examples/data/primates_short.nex")
+
+taxaCount <- D.ntaxa()
+names <- D.names()
+
+tau ~ unifTopology( numberTaxa=taxaCount, tipNames=names, isRooted=false, isBinary=true )
+
+# Create the tree plate that is ordered by the topology
+tree <- treeplate(tau)
+
+siteCount <- D.nchar()[1]
+
+nucleotides <- set(dna("A"),dna("C"),dna("G"),dna("T"))
+
+pi_prior <- v(1,1,1,1)
+pi ~ dirichlet(pi_prior)
+
+r_prior <- v(1,1,1,1,1,1)
+r ~ dirichlet(r_prior)
+
+lambda <- 1.0
+nodeCount <- tree.nnodes()
+
+
+
+
+nodeCount <- tree.nnodes()
+
+num_setbl <- 2
+
+#Prior for the rates
+lambda_rate_prior <- 1.0
+
+#Draw sets of branch lengths for each cluster of sites 
+
+for (i in 1: (nodeCount - 1) ) {  
+bls[1][i] ~ exponential(lambda_rate_prior)
+bls[2][i] ~ exponential(lambda_rate_prior)
+}
+
+classprobas ~ dirichlet([1,1])
+
+#The Mixture simplest constructor creates the allocation vector and the probability vector (probabilityVector) and links them to the parameter vector into a coherent DAG on which computations can be performed.
+blMixture <- mixture( numObservations=siteCount * nodeCount, parameters=bls , classProbabilities=classprobas)
+
+for (i in nodeCount:1) {
+node <- tree.node(i)
+if (node.isRoot()) {   
+for (j in 1:siteCount) {
+dna_state[i][j] ~ cat(pi,nucleotides)
+}
+} else {
+parent <- node.ancestor()
+parentIndex[i] <- tree.index(parent)	
+# create the rate matrix for this node
+Q[i] := gtr(rates=r, freqs=pi)
+#We generate the 2 substitution matrices corresponding to the two branch lengths
+tp[1][i] := ctmmtp(Q[i],bls[1][i])
+tp[2][i] := ctmmtp(Q[i],bls[2][i])
+if (node.isTip()) {
+for (j in 1:siteCount) {
+numParam <- (i-1)*siteCount + j
+if (blMixture.getElementAllocation(numParam) == 0 ) {
+dna_state[i][j] ~ dtmm(tp[1][i] , dna_state[parentIndex[i]][j])
+} else {
+dna_state[i][j] ~ dtmm(tp[2][i] ,  dna_state[parentIndex[i]][j])
+}
+clamp(dna_state[i][j], D[i][j])
+}
+taxon[i] := taxonData(node.getName(), dna_state[i][1], dna_state[i][2], dna_state[i][3], dna_state[i][4], dna_state[i][5] )
+}  else {
+for (j in 1:siteCount) {
+numParam <- (i-1)*siteCount + j
+if (blMixture.getElementAllocation(numParam) == 0 ) {
+dna_state[i][j] ~ dtmm(tp[1][i] , dna_state[parentIndex[i]][j])
+} else {
+dna_state[i][j] ~ dtmm(tp[2][i] , dna_state[parentIndex[i]][j])
+}
+}
+}	
+}
+}
+
+
+mygtrheterotachy <- model( tree.node(1) )
+
+
+
 ##We need to define moves
 numMoves <- 0
 
 #Move on the stationary frequencies and rates
-moves[numMoves+1] <- msimplex(4)
-moves[numMoves+2] <- msimplex(6)
+moves[numMoves+1] <-  msimplex(variable=pi,tuning=2.0,num_cats=4)
+moves[numMoves+2] <- msimplex(variable=r,tuning=2.0,num_cats=6)
 
 #Moves on the mixture
 numMoves <- size(moves)
@@ -20,16 +112,18 @@ moves[numMoves+j] <- mscale(rate_parameters[j], weight=1.0, lambda = 1.0)
 }
 
 numMoves <- size(moves)
-moves[numMoves+1]<-changeClassProbabilitiesMove(rateMixture)
+moves[numMoves+1]<-mchangeClassProbabilities(rateMixture)
 
 numMoves <- size(moves)
 for (i in 1:rateMixture.getNumberOfElements() ) {
-moves[i + numMoves] <- reallocate(rateMixture, i)
+moves[i + numMoves] <- mreallocate(rateMixture, i)
 }
 
 numMoves <- size(moves)
 for (i in 1:rateMixture.getNumberOfClasses() ) {
-moves[i + numMoves] <- mscale(rateMixture.getParameter(i), weight=1.0, lambda = 1.0)
+for ( j in 1:rateMixture.getParameter(i).size() ) {
+moves[(i-1) *rateMixture.getParameter(i).size() + numMoves] <- mscale(rateMixture.getParameter(i)[j], weight=1.0, lambda = 1.0)
+}
 }
 
 
