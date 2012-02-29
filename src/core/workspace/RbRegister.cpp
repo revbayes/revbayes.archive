@@ -310,6 +310,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_mul",      new Func__mul<            Integer,        Integer,    Integer >() );
         addFunction( "_mul",      new Func__mul<            RealPos,        RealPos,    RealPos >() );
         addFunction( "_mul",      new Func__mul<               Real,           Real,       Real >() );
+        addFunction( "_mul",      new Func__mul<               Real,        RealPos,       Real >() );
+        addFunction( "_mul",      new Func__mul<            RealPos,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<            Integer,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<               Real,        Integer,       Real >() );
         addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
