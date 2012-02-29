@@ -93,8 +93,8 @@ public:
     double                              calculateSummedLnProbability(size_t nodeIndex);                     //!< Calculate summed log conditional probability over all possible states
     double                              calculateEliminatedLnProbability(void);                             //!< Calculate summed log conditional probability over all possible states
     DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
-    std::vector<StochasticNode*>        constructSumProductSequence(void);                                  //!< Construct the sum-product sequecence
-    void                                constructFactor(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
+    void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence); //!< Construct the sum-product sequecence
+    void                                constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
     void                                swapParentNode( DAGNode* oldP, DAGNode* newP);                      //!< Swap a parent node
 
 protected:

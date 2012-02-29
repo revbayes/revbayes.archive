@@ -55,7 +55,7 @@ public:
 //    virtual double                              calculateSummedLnProbability(size_t nodeIndex) = 0;                             //!< Calculate summed log conditional probability over all possible states
     virtual double                              calculateEliminatedLnProbability(void) = 0;                                     //!< Calculate summed log conditional probability over all possible states
 //    virtual std::vector<StochasticNode*>        constructSumProductSequence(void) = 0;                                          //!< Construct the sum-product sequence
-    virtual void                                constructFactor(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
+    virtual void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
     virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone entire graph
     virtual bool                                isEliminated(void) const = 0;
     virtual void                                likelihoodsNeedUpdates() = 0;                                                   //!< Tell this node that the likelihoods need to be updated

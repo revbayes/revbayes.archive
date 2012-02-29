@@ -120,7 +120,7 @@ double DeterministicNode::calculateEliminatedLnProbability(void) {
  * a) not instantiated, or
  * b) have not instantiated parents
  */
-void DeterministicNode::constructFactor(std::set<VariableNode *> &nodes, std::vector<StochasticNode*>& sequence) {
+void DeterministicNode::constructSumProductSequence(std::set<VariableNode *> &nodes, std::vector<StochasticNode*>& sequence) {
     // if I was added already, then I'm done
     if ( nodes.find( this ) == nodes.end() ) {
         nodes.insert( this );
@@ -132,7 +132,7 @@ void DeterministicNode::constructFactor(std::set<VariableNode *> &nodes, std::ve
             // first the parents
             for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
                 if ( (*i)->isEliminated() ) {
-                    static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
+                    static_cast<VariableNode*>( *i )->constructSumProductSequence(nodes,sequence);
                 }
             }
         }
@@ -143,7 +143,7 @@ void DeterministicNode::constructFactor(std::set<VariableNode *> &nodes, std::ve
             
             // then the children
             for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
-                static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
+                static_cast<VariableNode*>( *i )->constructSumProductSequence(nodes,sequence);
             }
         }
     }
@@ -227,8 +227,15 @@ std::string DeterministicNode::debugInfo( void ) const {
 /** Get affected nodes: pass through to next stochastic node */
 void DeterministicNode::getAffected( std::set<StochasticNode* >& affected ) {
 
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-        (*i)->getAffected( affected );
+    // if this node is eliminated, then we just add the factor root and that's it
+    if ( isEliminated() ) {
+        affected.insert( factorRoot );
+    }
+    else {
+        // we add all our children
+        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
+            (*i)->getAffected( affected );
+        }
     }
     
 }

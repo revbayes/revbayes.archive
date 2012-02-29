@@ -382,17 +382,58 @@ void Mcmc::run(size_t ngen) {
 
     /* Get initial lnProbability of model */
     double lnProbability = 0.0;
+    // just a debug counter
+    size_t numEliminated = 0;
     std::vector<double> initProb;
     for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
         DAGNode* node = (*i);
         if (node->isTypeSpec(StochasticNode::getClassTypeSpec())) {
             StochasticNode* stochNode = dynamic_cast<StochasticNode*>( node );
-            double lnProb = stochNode->calculateLnProbability();
-            lnProbability += lnProb;
+            // if this node is eliminated, then we do not need to add its log-likelihood
+            if ( stochNode->isEliminated() ) {
+                
+                // test whether the factor root is NULL
+                // if so, we need to construct the sum-product sequence for this node
+                if ( stochNode->getFactorRoot() == NULL ) {
+                    stochNode->constructFactor();
+                }
+                
+                // only if this node is actually the factor root we add the log-likelihood
+                if ( stochNode->getFactorRoot() == stochNode) {
+                    
+                    double lnProb = stochNode->calculateLnProbability();
+                    lnProbability += lnProb;
+                }
+                
+                numEliminated++;
+            }
+            else {
+                
+                // if one of my parents is eliminated, then my likelihood should be added either
+                bool eliminated = false;
+                for (std::set<DAGNode*>::iterator j = stochNode->getParents().begin(); j != stochNode->getParents().end(); j++) {
+    
+                    if ( (*j)->isEliminated() ) {
+                        eliminated = true;
+                        numEliminated++;
+                        
+                        // we don't need to check the other parents
+                        break;
+                    }
+                }
+                
+                // since this node is neither eliminated nor one of its parents, we add the log-likelihood
+                if ( !eliminated ) {
+                    
+                    double lnProb = stochNode->calculateLnProbability();
+                    lnProbability += lnProb;
+                }
+            }
 //            initProb.push_back(lnProb);
         }
         node->keep();
     }
+    std::cerr << "Number eliminated nodes = " << numEliminated << std::endl;
     std::cerr << "Initial lnProbability = " << lnProbability << std::endl;
 
     /* Run the chain */

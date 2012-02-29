@@ -206,8 +206,14 @@ double Move_msimplex::perform( void ) {
 		
 		// and calculate the Dirichlet parameters for the (imagined) reverse move
 		std::vector<double> alphaReverse(newVal.size());
-		for (size_t i=0; i<curVal.size(); i++)
-			alphaReverse[i] = newVal[i] * alpha0;	
+        for (size_t i=0; i<curVal.size(); i++) {
+			alphaReverse[i] = newVal[i] * alpha0;
+            // we need to check for 0 values
+            if (alphaReverse[i] < 1E-10) {
+                // very low proposal probability which will hopefully result into a rejected proposal
+                return -1E10;
+            }
+        }
 		
 		// finally, we calculate the log of the Hastings ratio
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);

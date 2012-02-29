@@ -117,8 +117,8 @@ const TypeSpec& DAGNode::getClassTypeSpec(void) {
 
 
 /**
- * Restore all affected nodes this DAGNode.
- * This means we call restoreMe() of all children. restoreMe() is pure virtual.
+ * Get all affected nodes this DAGNode.
+ * This means we call getAffected() of all children. getAffected() is pure virtual.
  */
 void DAGNode::getAffectedNodes(std::set<StochasticNode* > &affected) {
     
@@ -126,6 +126,7 @@ void DAGNode::getAffectedNodes(std::set<StochasticNode* > &affected) {
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->getAffected(affected);
 }
+
 
 const RbObject& DAGNode::getElement(size_t index) const {
     

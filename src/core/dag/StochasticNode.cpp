@@ -196,12 +196,16 @@ double StochasticNode::calculateLnProbability( void ) {
     }
     
     if (needsProbabilityRecalculation) {
-        if (type == INSTANTIATED) { // this should always be true
+        // TODO: Hack! We should make sure that the likelihood is properly calculated. (Sebastian)
+        // I switched this test of, because we now instantiate the model from the RevLanguage
+        // but do not actually sum over all possible values. This is only done in the MCMC.
+        // Trying to safe some time ...
+//        if (type == INSTANTIATED) { // this should always be true
             lnProb = distribution->lnPdf( *value );
-        }
-        else {
-            throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
-        }
+//        }
+//        else {
+//            throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
+//        }
     }
     
     return lnProb;
@@ -351,9 +355,9 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
         theNode->lnProb = log(sumProb);
     }
     
-    if ( lnProb == NAN || lnProb < -1000000) {
-        std::cerr << "Oh oh, didn't get a valid likelihood ..." << std::endl;
-    }
+//    if ( lnProb == NAN || lnProb < -1000000) {
+//        std::cerr << "Oh oh, didn't get a valid likelihood ..." << std::endl;
+//    }
     
     theNode->needsProbabilityRecalculation = theNode->needsLikelihoodRecalculation = false;
     
@@ -432,6 +436,8 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
     else {
         copy->storedValue = storedValue->clone();
     }
+    // set also the type of this node (if it is eliminated or not)
+    copy->type                          = type;
     copy->lnProb                        = lnProb;
     copy->storedLnProb                  = storedLnProb;
     copy->needsProbabilityRecalculation = needsProbabilityRecalculation;
@@ -469,13 +475,40 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
 
 
 /**
+ * Construct the whole factor.
+ *
+ * We first construct the sum-product sequence, then set the factor root for all nodes in the sequences
+ * and set the sequence to the factor root. This should enable calculation using the sum-product algorithm.
+ */
+void StochasticNode::constructFactor( void ) {
+    
+    // get all nodes of the factor
+    std::set<VariableNode*> factor;
+    std::vector<StochasticNode*> sequence;
+    
+    // construct the sum product sequence
+    constructSumProductSequence(factor, sequence);
+    
+    // now we have to set the sequence to the factor root
+    sequence[0]->setSumProductSequence( sequence );
+    
+    // next, we set the factor root for all nodes in the sequence
+    for (std::vector<StochasticNode*>::iterator i = sequence.begin(); i != sequence.end(); ++i) {
+        (*i)->setFactorRoot( sequence[0] );
+    }
+}
+
+
+/**
  * Construct the set of nodes which are not instantiated.
  *
  * I need to add all nodes which are either:
  * a) not instantiated, or
  * b) have not instantiated parents
  */
-void StochasticNode::constructFactor(std::set<VariableNode *> &nodes, std::vector<StochasticNode*>& sequence) {
+void StochasticNode::constructSumProductSequence( std::set<VariableNode *> &nodes, std::vector<StochasticNode*>& sequence ) {
+    
+    
     // if I was added already, then I'm done
     if ( nodes.find( this ) == nodes.end() ) {
         nodes.insert( this );
@@ -483,7 +516,7 @@ void StochasticNode::constructFactor(std::set<VariableNode *> &nodes, std::vecto
         // first the parents
         for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
             if ( (*i)->isEliminated() ) {
-                static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
+                static_cast<VariableNode*>( *i )->constructSumProductSequence(nodes,sequence);
             }
         }
         
@@ -496,26 +529,11 @@ void StochasticNode::constructFactor(std::set<VariableNode *> &nodes, std::vecto
             
             // then the children
             for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
-                static_cast<VariableNode*>( *i )->constructFactor(nodes,sequence);
+                static_cast<VariableNode*>( *i )->constructSumProductSequence(nodes,sequence);
             }
         }
     }
     
-}
-
-
-/**
- * Construct the elimination sequence.
- *
- * For now we use a very basic approach.
- */
-std::vector<StochasticNode*> StochasticNode::constructSumProductSequence( void ) {
-    // get all nodes of the factor
-    std::set<VariableNode*> factor;
-    std::vector<StochasticNode*> sequence;
-    constructFactor(factor, sequence);
-    
-    return sequence;
 }
  
 
@@ -570,18 +588,13 @@ const TypeSpec& StochasticNode::getTypeSpec( void ) const {
 /** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
 void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
     
-    /* If we have already touched this node, we are done; otherwise, get the affected children */
-    //    if ( !touched ) {
-    //        touched = true;
-    affected.insert( this );
-    
-    // if this node is integrated out, then we need to add the children too
-    if (type != INSTANTIATED) {
-        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-            (*i)->getAffected( affected );
-        }
+    // if this node is integrated out, then we need to add the factor root, otherwise myself
+    if (type == INSTANTIATED) {
+        affected.insert( this );
     }
-    //    }
+    else {
+        affected.insert( factorRoot );
+    }
 }
 
 
@@ -829,36 +842,40 @@ void StochasticNode::setInstantiated(bool inst) {
         // set our new type
         type = SUMMED_OVER;
         
-        // get the number of states
-        DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
-        size_t nStates = discreteDist->getNumberOfStates();
+        // for now, we don't automatically recompute the sum-product sequence.
+        // Instead, this needs to be called actively, as done by the MCMC class. (Sebastian)
+        // (Therefore, we also don't need to store the likelihood vectors)
         
-        // resize the probability vector
-        probabilities.resize( nStates );
-        likelihoods.resize( nStates );
-        for (size_t i = 0; i < nStates; i++) {
-            partialLikelihoods.push_back( std::vector<double>(nStates) );
-        }
-        
-//        delete value;
-//        value = NULL;
-        
-        // recalculate the factor
-        std::vector<StochasticNode*> sequence = constructSumProductSequence();
-        
-        // for all nodes in the sequence, set the new factor root
-        for (std::vector<StochasticNode*>::iterator i = sequence.begin(); i != sequence.end(); i++) {
-            (*i)->setFactorRoot( sequence[0] );
-            (*i)->touch();
-        }
-        
-        // set the sum-product sequence for the factor root
-        sequence[0]->setSumProductSequence( sequence );
-        
-        // I need to tell my children that I'm eliminated
-        for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
-            (*i)->setFactorRoot( factorRoot );
-        }
+//        // get the number of states
+//        DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
+//        size_t nStates = discreteDist->getNumberOfStates();
+//        
+//        // resize the probability vector
+//        probabilities.resize( nStates );
+//        likelihoods.resize( nStates );
+//        for (size_t i = 0; i < nStates; i++) {
+//            partialLikelihoods.push_back( std::vector<double>(nStates) );
+//        }
+//        
+////        delete value;
+////        value = NULL;
+//        
+//        // recalculate the factor
+//        std::vector<StochasticNode*> sequence = constructSumProductSequence();
+//        
+//        // for all nodes in the sequence, set the new factor root
+//        for (std::vector<StochasticNode*>::iterator i = sequence.begin(); i != sequence.end(); i++) {
+//            (*i)->setFactorRoot( sequence[0] );
+//            (*i)->touch();
+//        }
+//        
+//        // set the sum-product sequence for the factor root
+//        sequence[0]->setSumProductSequence( sequence );
+//        
+//        // I need to tell my children that I'm eliminated
+//        for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
+//            (*i)->setFactorRoot( factorRoot );
+//        }
         
         // flag for recalculation
         needsProbabilityRecalculation = true;
