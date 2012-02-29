@@ -16,9 +16,11 @@
  * $Id$
  */
 
+#include "MemberFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "Vector.h"
 #include "VectorString.h"
 #include <algorithm>
@@ -172,6 +174,30 @@ const std::vector<RbLanguageObject* >& Vector::getValue(void) const {
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& Vector::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+
+/* Get method specifications */
+const MethodTable& Vector::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        
+        // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new MemberFunction( RbLanguageObject::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &AbstractVector::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 

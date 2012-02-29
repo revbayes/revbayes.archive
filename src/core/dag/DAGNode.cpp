@@ -82,7 +82,7 @@ void DAGNode::addChildNode(VariableNode *c) {
     
     // if this node is eliminated, than we pass on the factor root
     // the factor root is the node which start the likelihood calculation for the part of the graph which is eliminated
-    if ( isEliminated() ) {
+    if ( isNotInstantiated() ) {
         c->setFactorRoot( static_cast<const VariableNode*>( this )->getFactorRoot() );
         
         // we know that this must be a variable node

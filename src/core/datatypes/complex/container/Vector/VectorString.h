@@ -43,6 +43,9 @@ public:
     VectorString                operator+(const VectorString& x) const;                         //!< Concatenate
     VectorString                operator+(const std::string& x) const;                          //!< Concatenate
 
+    // Member object functions
+    virtual const MethodTable&  getMethods(void) const;                                         //!< Get methods
+
     // Basic utility functions
     VectorString*               clone(void) const;                                              //!< Clone object
     static const std::string&   getClassName(void);                                             //!< Get class name

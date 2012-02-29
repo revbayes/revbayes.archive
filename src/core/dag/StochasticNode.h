@@ -81,10 +81,13 @@ public:
     const Distribution&                 getDistribution(void) const;                                        //!< Get distribution (const)
     Distribution&                       getDistribution(void);                                              //!< Get distribution (non-const)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
-    bool                                isEliminated(void) const;
+    bool                                isNotInstantiated(void) const;
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
+    bool                                isEliminated() const;
+    bool                                isSummedOver() const { return type == SUMMED_OVER; }
     void                                likelihoodsNeedUpdates(void);                                       //!< Tell this node that the likelihoods need to be updated
     void                                setInstantiated(bool inst);                                         //!< Set whether the node is instantiated or summed over
+    void                                setSummationType(VariableType t);  
     void                                setSumProductSequence(const std::vector<StochasticNode*> seq);      //!< Set the sum-product sequence
     void                                setValue(RbLanguageObject* value);                                  //!< Set value but do not clamp; get affected nodes
     void                                unclamp(void);                                                      //!< Unclamp the node

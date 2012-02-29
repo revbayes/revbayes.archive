@@ -49,6 +49,9 @@ class VectorComplex : public AbstractVector {
     static const TypeSpec&              getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                        //!< Get language type of the object
     void                                printValue(std::ostream& o) const;                              //!< Print value (for user)
+    
+    // Member object functions
+    virtual const MethodTable&          getMethods(void) const;                                         //!< Get methods
 
     // Vector functions, including STL-like functions
     void                                clear(void);                                                    //!< Clear

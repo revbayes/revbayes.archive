@@ -17,9 +17,11 @@
  */
 
 #include "Integer.h"
+#include "MemberFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
@@ -207,6 +209,30 @@ RbObject& VectorInteger::getElement(size_t index) {
     RbObject* n = new Integer(elements[index]);
     
     return *n;
+}
+
+
+
+/* Get method specifications */
+const MethodTable& VectorInteger::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        
+        // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new MemberFunction( Integer::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &AbstractVector::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 

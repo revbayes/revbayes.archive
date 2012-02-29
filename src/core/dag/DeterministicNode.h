@@ -51,6 +51,7 @@ public:
     const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                       getValue(void);                                                     //!< Get value (non-const)
     const RbFunction&                       getFunction(void) const;
+    bool                                    isNotInstantiated(void) const;
     bool                                    isEliminated(void) const;
     void                                    likelihoodsNeedUpdates();                                           //!< Tell this node that the likelihoods need to be updated
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user

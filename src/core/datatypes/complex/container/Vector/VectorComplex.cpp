@@ -17,8 +17,10 @@
  */
 
 #include "Complex.h"
+#include "MemberFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "ValueRule.h"
 #include "VectorInteger.h"
 #include "VectorComplex.h"
 #include "VectorString.h"
@@ -179,6 +181,30 @@ RbObject& VectorComplex::getElement(size_t index) {
     
     RbObject* c = new Complex(elements[index]);
     return *c;
+}
+
+
+
+/* Get method specifications */
+const MethodTable& VectorComplex::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        
+        // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new MemberFunction( Complex::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &AbstractVector::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 

@@ -126,19 +126,19 @@ void DeterministicNode::constructSumProductSequence(std::set<VariableNode *> &no
         nodes.insert( this );
         
         // test whether I'm actually eliminated
-        if ( isEliminated() ) {
+        if ( isNotInstantiated() ) {
             // if so, add my parents
             
             // first the parents
             for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-                if ( (*i)->isEliminated() ) {
+                if ( (*i)->isNotInstantiated() ) {
                     static_cast<VariableNode*>( *i )->constructSumProductSequence(nodes,sequence);
                 }
             }
         }
         
         // test whether I'm actually eliminated
-        if ( isEliminated() ) {
+        if ( isNotInstantiated() ) {
             // if so, add my children
             
             // then the children
@@ -228,7 +228,7 @@ std::string DeterministicNode::debugInfo( void ) const {
 void DeterministicNode::getAffected( std::set<StochasticNode* >& affected ) {
 
     // if this node is eliminated, then we just add the factor root and that's it
-    if ( isEliminated() ) {
+    if ( isNotInstantiated() ) {
         affected.insert( factorRoot );
     }
     else {
@@ -330,6 +330,22 @@ bool DeterministicNode::isEliminated( void ) const {
     return false;
 }
 
+/** 
+ * Is this node eliminated?
+ * If at least one parent is not instantiated, then this node is also eliminated.
+ */
+bool DeterministicNode::isNotInstantiated( void ) const {
+    // ask all parents
+    for (std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
+        if ( (*i)->isNotInstantiated() ) {
+            return true;
+        }
+    }
+    
+    // non of the parents was eleminated, so this node isn't either
+    return false;
+}
+
 
 /** Keep value of node and affected variable nodes */
 void DeterministicNode::keepMe( void ) {
@@ -340,6 +356,14 @@ void DeterministicNode::keepMe( void ) {
         
         if ( needsUpdate )
             update();
+        
+        //  I need to tell all my eliminated parents that they need to restore their likelihoods
+        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); ++i) {
+            if ( (*i)->isNotInstantiated() ) {
+                // since only variable nodes can be eliminated
+                static_cast<VariableNode*>( *i )->keepMe();
+            }
+        }
         
     }
     touched = false;
@@ -357,7 +381,7 @@ void DeterministicNode::likelihoodsNeedUpdates() {
     
     //  I need to tell all my eliminated parents that they need to update their likelihoods
     for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-        if ( (*i)->isEliminated() ) {
+        if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
             static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
         }
@@ -424,6 +448,14 @@ void DeterministicNode::restoreMe( void ) {
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
             (*i)->restoreMe();
         }
+        
+        //  I need to tell all my eliminated parents that they need to restore their likelihoods
+        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); ++i) {
+            if ( (*i)->isNotInstantiated() ) {
+                // since only variable nodes can be eliminated
+                static_cast<VariableNode*>( *i )->restoreMe();
+            }
+        }
     }
     touched = false;
 }
@@ -467,7 +499,7 @@ void DeterministicNode::touchMe( void ) {
     
     //  I need to tell all my eliminated parents that they need to update their likelihoods
     for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-        if ( (*i)->isEliminated() ) {
+        if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
             static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
         }

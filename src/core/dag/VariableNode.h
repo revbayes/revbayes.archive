@@ -58,6 +58,7 @@ public:
     virtual void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
     virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone entire graph
     virtual bool                                isEliminated(void) const = 0;
+    virtual bool                                isNotInstantiated(void) const = 0;
     virtual void                                likelihoodsNeedUpdates() = 0;                                                   //!< Tell this node that the likelihoods need to be updated
     virtual void                                swapParentNode( DAGNode* oldP, DAGNode* newP) = 0;                              //!< Swap a parent node
 

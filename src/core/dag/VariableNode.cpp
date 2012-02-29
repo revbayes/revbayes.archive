@@ -90,7 +90,7 @@ void VariableNode::setFactorRoot(StochasticNode* n)  {
     
     // if we get a new factor root, we might want to tell that our children (only if we are eliminated ourselves)
     if (factorRoot != n) {
-        if (isEliminated()) {
+        if ( isNotInstantiated()) {
             for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
                 (*i)->setFactorRoot( n );
             }

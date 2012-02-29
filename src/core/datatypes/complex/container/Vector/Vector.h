@@ -46,6 +46,9 @@ public:
     const RbLanguageObject&                         operator[](size_t i) const;                                     //!< Const index op
     Vector&                                         operator=(const Vector& x);                                     //!< Assignment operator
     
+    // Member object functions
+    virtual const MethodTable&                      getMethods(void) const;                                         //!< Get methods
+
     // Vector functions
     virtual void                                    clear(void);                                                    //!< Clear
     virtual const RbObject&                         getElement(size_t index) const;                                 //!< Get element

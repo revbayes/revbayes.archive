@@ -17,12 +17,14 @@
  */
 
 #include "DagNodeContainer.h"
+#include "MemberFunction.h"
 #include "Natural.h"
 #include "Move.h"
 #include "Monitor.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "Vector.h"
 #include "VectorString.h"
 #include "ConstantNode.h"
@@ -167,6 +169,30 @@ RbObject& DagNodeContainer::getElement(const size_t index) {
     }
     
     return *elements[index];
+}
+
+
+
+/* Get method specifications */
+const MethodTable& DagNodeContainer::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        
+        // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &Container::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 

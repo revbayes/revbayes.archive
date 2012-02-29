@@ -48,6 +48,9 @@ class DagNodeContainer : public Container {
         bool                                isConvertibleTo(const TypeSpec& type) const;                                //!< Is convertible to type?
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
 
+        // Member object functions
+        virtual const MethodTable&          getMethods(void) const;                                                     //!< Get methods
+
         // Container functions
         void                                clear(void);                                                                //!< Clear
         const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Execute a member method

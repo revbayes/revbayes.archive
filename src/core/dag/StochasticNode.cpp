@@ -180,7 +180,7 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
         if ( !theNode->isTypeSpec( VariableNode::getClassTypeSpec() ) )
             continue;
 
-        if ( static_cast<const VariableNode*>( (DAGNode*)theNode )->isTouched() )
+        if ( static_cast<const VariableNode*>( theNode )->isTouched() )
             return true;
     }
 
@@ -192,10 +192,9 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
 double StochasticNode::calculateLnProbability( void ) {
     
     if (factorRoot != NULL) {
-        return factorRoot->calculateSummedLnProbability(0);
+        lnProb =  factorRoot->calculateSummedLnProbability(0);
     }
-    
-    if (needsProbabilityRecalculation) {
+    else if (needsProbabilityRecalculation) {
         // TODO: Hack! We should make sure that the likelihood is properly calculated. (Sebastian)
         // I switched this test of, because we now instantiate the model from the RevLanguage
         // but do not actually sum over all possible values. This is only done in the MCMC.
@@ -219,7 +218,7 @@ double StochasticNode::calculateLnProbability( void ) {
 double StochasticNode::calculateEliminatedLnProbability( void ) {
     
     // if this node is not eliminated, then we have reached the bottom of the elimination algorithm
-    if (!isEliminated()) {
+    if ( type == INSTANTIATED ) {
         if (needsProbabilityRecalculation) {
             if (type == INSTANTIATED) { // this should always be true
                 lnProb = distribution->lnPdf( *value );
@@ -260,9 +259,9 @@ double StochasticNode::calculateEliminatedLnProbability( void ) {
                 // I need to ask for the likelihood of my children
                 for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
                     // only if the child has flag as changed I need to ask for the likelihood
-                    if ( (*child)->isTouched() ) {
+//                    if ( (*child)->isTouched() ) {
                         partialLikelihoods[i][j] = (*child)->calculateEliminatedLnProbability();
-                    }
+//                    }
                     
                     // add the log-likelihood for this child
                     likelihoods[i] += partialLikelihoods[i][j];
@@ -305,7 +304,7 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
     
     // test if this node is eliminated or summed-over
     if ( theNode->type == ELIMINATED ) {
-        return theNode->calculateEliminatedLnProbability() + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
+        return theNode->calculateEliminatedLnProbability(); // + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
     }
     else if ( theNode->type == INSTANTIATED ) {
         return theNode->getDistribution().lnPdf( theNode->getValue() ) + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
@@ -496,6 +495,27 @@ void StochasticNode::constructFactor( void ) {
     for (std::vector<StochasticNode*>::iterator i = sequence.begin(); i != sequence.end(); ++i) {
         (*i)->setFactorRoot( sequence[0] );
     }
+    
+    // TODO: We need a better algorithm to find the elimination sequence
+    // now we try to find nodes which can eliminated
+    for (std::vector<StochasticNode*>::iterator i = sequence.begin(); i != sequence.end(); ++i) {
+        StochasticNode* currNode = *i;
+        
+        // first we check if this node is clamped (or instantiated), because then we cannot eliminate it
+        if ( currNode->isNotInstantiated() ) {
+            // test whether this node has at most one eliminated parent
+            size_t eliminatedParentCount = 0;
+            for (std::set<DAGNode*>::iterator j = currNode->getParents().begin(); j != currNode->getParents().end(); ++j) {
+                if ( (*j)->isNotInstantiated() ) {
+                eliminatedParentCount++;
+                }
+            }
+        
+            if ( eliminatedParentCount <= 1 ) {
+                currNode->setSummationType( ELIMINATED );
+            }
+        }
+    }
 }
 
 
@@ -515,7 +535,7 @@ void StochasticNode::constructSumProductSequence( std::set<VariableNode *> &node
         
         // first the parents
         for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-            if ( (*i)->isEliminated() ) {
+            if ( (*i)->isNotInstantiated() ) {
                 static_cast<VariableNode*>( *i )->constructSumProductSequence(nodes,sequence);
             }
         }
@@ -524,7 +544,7 @@ void StochasticNode::constructSumProductSequence( std::set<VariableNode *> &node
         sequence.push_back( this );
         
         // test whether I'm actually eliminated
-        if ( isEliminated() ) {
+        if ( isNotInstantiated() ) {
             // if so, add my children
             
             // then the children
@@ -589,7 +609,7 @@ const TypeSpec& StochasticNode::getTypeSpec( void ) const {
 void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
     
     // if this node is integrated out, then we need to add the factor root, otherwise myself
-    if (type == INSTANTIATED) {
+    if (factorRoot == NULL) {
         affected.insert( this );
     }
     else {
@@ -654,10 +674,19 @@ RbLanguageObject& StochasticNode::getValue( void ) {
 
 
 /**
+* Is this node eliminated.
+* We can check that here by looking if the node is instantiated.
+*/
+bool StochasticNode::isEliminated( void ) const {
+    return type == ELIMINATED;
+}
+
+
+/**
  * Is this node eliminated.
  * We can check that here by looking if the node is instantiated.
  */
-bool StochasticNode::isEliminated( void ) const {
+bool StochasticNode::isNotInstantiated( void ) const {
     return type != INSTANTIATED;
 }
 
@@ -680,6 +709,15 @@ void StochasticNode::keepMe() {
         if (needsProbabilityRecalculation || needsLikelihoodRecalculation) {
             lnProb = calculateLnProbability();
         }
+        
+        // Tell all my not instantiated parents that they need keeping.
+        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); ++i) {
+            if ( (*i)->isNotInstantiated() ) {
+                // since only variable nodes can be eliminated
+                static_cast<VariableNode*>( *i )->keepMe();
+            }
+        }
+        
     }
 
     touched = false;
@@ -693,11 +731,15 @@ void StochasticNode::keepMe() {
  */
 void StochasticNode::likelihoodsNeedUpdates() {
     
+    if ( !touched ) {
+        touchMe();
+    }
+    
     if (!needsLikelihoodRecalculation) {
         
         //  I need to tell all my eliminated parents that they need to update their likelihoods
         for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-            if ( (*i)->isEliminated() ) {
+            if ( (*i)->isNotInstantiated() ) {
                 // since only variable nodes can be eliminated
                 static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
             }
@@ -800,6 +842,20 @@ void StochasticNode::restoreMe() {
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
         
+        if ( type != INSTANTIATED) {
+            probabilities       = storedProbabilities;
+            likelihoods         = storedLikelihoods;
+            partialLikelihoods  = storedPartialLikelihoods;
+        }
+        
+        //  I need to tell all my eliminated parents that they need to restore their likelihoods
+        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); ++i) {
+            if ( (*i)->isNotInstantiated() ) {
+                // since only variable nodes can be eliminated
+                static_cast<VariableNode*>( *i )->restoreMe();
+            }
+        }
+        
         // reset flags that recalculation is not needed
         needsProbabilityRecalculation = needsLikelihoodRecalculation = false;
     }
@@ -881,6 +937,30 @@ void StochasticNode::setInstantiated(bool inst) {
         needsProbabilityRecalculation = true;
         needsLikelihoodRecalculation = true;
     }
+}
+
+
+/** 
+ * Set the summation type for this node.
+ * We might need to initialize the likelihood and probability vectors.
+ */
+void StochasticNode::setSummationType(StochasticNode::VariableType t) {
+    
+    if ( type != ELIMINATED && t == ELIMINATED ) {
+        // get the number of states
+        DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
+        size_t nStates = discreteDist->getNumberOfStates();
+        
+        // resize the probability vector
+        probabilities.resize( nStates );
+        likelihoods.resize( nStates );
+        for (size_t i = 0; i < nStates; i++) {
+            partialLikelihoods.push_back( std::vector<double>(nStates) );
+        }
+    }
+    
+    type = t;
+    
 }
 
 
@@ -975,7 +1055,7 @@ void StochasticNode::touchMe( void ) {
     
     //  I need to tell all my eliminated parents that they need to update their likelihoods
     for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-        if ( (*i)->isEliminated() ) {
+        if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
             static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
         }

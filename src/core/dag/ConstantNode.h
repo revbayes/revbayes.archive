@@ -53,6 +53,7 @@ public:
     DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;           //!< Clone entire graph
     bool                                isTouched (void) const { return false; }                                    //!< Touched by a move?
     bool                                isEliminated(void) const;
+    bool                                isNotInstantiated(void) const;
 
 
 protected:

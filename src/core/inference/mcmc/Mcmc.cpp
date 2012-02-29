@@ -381,8 +381,14 @@ void Mcmc::run(size_t ngen) {
 
 
     /* Get initial lnProbability of model */
+    
+    // first we touch all nodes so that the likelihood is dirty
+//    for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+//        (*i)->touch();
+//    }
     double lnProbability = 0.0;
     // just a debug counter
+    size_t numSummedOver = 0;
     size_t numEliminated = 0;
     std::vector<double> initProb;
     for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
@@ -390,7 +396,7 @@ void Mcmc::run(size_t ngen) {
         if (node->isTypeSpec(StochasticNode::getClassTypeSpec())) {
             StochasticNode* stochNode = dynamic_cast<StochasticNode*>( node );
             // if this node is eliminated, then we do not need to add its log-likelihood
-            if ( stochNode->isEliminated() ) {
+            if ( stochNode->isNotInstantiated() ) {
                 
                 // test whether the factor root is NULL
                 // if so, we need to construct the sum-product sequence for this node
@@ -405,7 +411,13 @@ void Mcmc::run(size_t ngen) {
                     lnProbability += lnProb;
                 }
                 
-                numEliminated++;
+                if ( stochNode->isSummedOver() ) {
+                    numSummedOver++;
+                }
+                else {
+                    numEliminated++;
+                }
+                
             }
             else {
                 
@@ -413,7 +425,7 @@ void Mcmc::run(size_t ngen) {
                 bool eliminated = false;
                 for (std::set<DAGNode*>::iterator j = stochNode->getParents().begin(); j != stochNode->getParents().end(); j++) {
     
-                    if ( (*j)->isEliminated() ) {
+                    if ( (*j)->isNotInstantiated() ) {
                         eliminated = true;
                         numEliminated++;
                         
@@ -434,6 +446,7 @@ void Mcmc::run(size_t ngen) {
         node->keep();
     }
     std::cerr << "Number eliminated nodes = " << numEliminated << std::endl;
+    std::cerr << "Number summedOver nodes = " << numSummedOver << std::endl;
     std::cerr << "Initial lnProbability = " << lnProbability << std::endl;
 
     /* Run the chain */
@@ -466,7 +479,7 @@ void Mcmc::run(size_t ngen) {
                 r = 0.0;
             else
                 r = exp(lnR);
-
+    
             /* Accept or reject the move */
             double u = rng->uniform01(); // TODO No need to draw rng if lnR > 0.0x
             if (u < r) {

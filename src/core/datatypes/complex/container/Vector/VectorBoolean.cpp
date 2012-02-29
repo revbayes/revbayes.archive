@@ -20,7 +20,9 @@
 #include "VectorBoolean.h"
 #include "RbException.h"
 #include "Integer.h"
+#include "MemberFunction.h"
 #include "RbUtil.h"
+#include "ValueRule.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 
@@ -160,6 +162,30 @@ RbObject& VectorBoolean::getElement(size_t index) {
     
     RbObject* b = new RbBoolean(elements[index]);
     return *b;
+}
+
+
+
+/* Get method specifications */
+const MethodTable& VectorBoolean::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        
+        // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new MemberFunction( RbBoolean::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &AbstractVector::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 

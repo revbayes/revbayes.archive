@@ -103,11 +103,6 @@ const MethodTable& Container::getMethods(void) const {
         ArgumentRules* sizeArgRules = new ArgumentRules();
         methods.addFunction("size", new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
-        // add method for call "x[]" as a function
-        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
-        
         // necessary call for proper inheritance
         methods.setParentTable( &ConstantMemberObject::getMethods() );
         methodsSet = true;

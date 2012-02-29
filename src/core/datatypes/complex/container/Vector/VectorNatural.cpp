@@ -13,10 +13,12 @@
  * $Id$
  */
 
+#include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "Real.h"
+#include "ValueRule.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorReal.h"
@@ -243,6 +245,30 @@ RbObject& VectorNatural::getElement(size_t index) {
     RbObject* n = new Natural(elements[index]);
     
     return *n;
+}
+
+
+
+/* Get method specifications */
+const MethodTable& VectorNatural::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        
+        // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new MemberFunction( Natural::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &AbstractVector::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 

@@ -143,6 +143,14 @@ bool ConstantNode::isEliminated( void ) const {
     return false;
 }
 
+/**
+ * Is this node eliminated.
+ * No, constant nodes can not be eliminated.
+ */
+bool ConstantNode::isNotInstantiated( void ) const {
+    return false;
+}
+
 /** Keep value of node */
 void ConstantNode::keepMe( void ) {
     // do nothing
