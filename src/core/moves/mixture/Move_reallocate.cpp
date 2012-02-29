@@ -105,26 +105,18 @@ double Move_reallocate::perform( void ) {
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
-    // Get relevant values
-    //   StochasticNode*        nodePtr = static_cast<StochasticNode*>( node->getDagNode() );
-    // const RealPos&         l       = static_cast<const RealPos&>( lambda->getValue() );
-    //  const RealPos&         curVal  = static_cast<const RealPos&>( nodePtr->getValue() );
-    
+        
     // Generate new allocation vector
     Mixture mix = static_cast< const Mixture&>( mixture->getValue() );
     std::vector<int>  newClass = RbStatistics::Multinomial::rv(mix.getClassProbabilities().getValue(), 1, *rng);
     int oldClassInt = (mix.getElementAllocation(static_cast<const Integer&>(index->getValue() ) ) ).getValue();
     std::vector <int> oldClass;
     oldClass.push_back(oldClassInt);
-    // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
-  //  RealPos u      = rng->uniform01();
-    //   RealPos newVal = curVal * std::exp( l * ( u - 0.5 ) );
     
     // compute the Hastings ratio
     double pnew = RbStatistics::Multinomial::lnPdf (mix.getClassProbabilities().getValue(), newClass);
     double pold = RbStatistics::Multinomial::lnPdf (mix.getClassProbabilities().getValue(),  oldClass);
-    double lnHastingsratio = pnew - pold ; //log( newVal / curVal );
+    double lnHastingsratio =  pold - pnew ; 
     
     // Propose new value
     //  nodePtr->setValue( newVal.clone() );
