@@ -72,14 +72,16 @@ for (i in nodeCount:1) {
 		# create the transition probability matrix for this node
         if (node.isTip()) {
             for (j in 1:siteCount) {
+				### Right now, this doesn't work because getParameterForElem() has to return
+				### a complex object and this gives an error because it won't multiply
 				tp[i][j] := ctmmtp(Q[i],bl[i]*rateMixture.getParameterForElem(j))
-                dna_state[i][j] ~ dtmm(tp[i], dna_state[parentIndex[i]][j])
+                dna_state[i][j] ~ dtmm(tp[i][j], dna_state[parentIndex[i]][j])
                 clamp(dna_state[i][j], D[i][j])
             }
         } else {
             for (j in 1:siteCount) {
 				tp[i][j] := ctmmtp(Q[i],bl[i]*rateMixture.getParameterForElem(j))
-                dna_state[i][j] ~ dtmm(tp[i], dna_state[parentIndex[i]][j])
+                dna_state[i][j] ~ dtmm(tp[i][j], dna_state[parentIndex[i]][j])
                 sumOver(dna_state[i][j], TRUE)
             }
         }	
