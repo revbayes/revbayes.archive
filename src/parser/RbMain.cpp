@@ -16,7 +16,7 @@
 #include <cstdlib>
 
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
     // Print a nifty message
     RbVersion version = RbVersion();

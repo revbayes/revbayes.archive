@@ -5,23 +5,24 @@
 #define IN_OUT_SIZE                              15.0
 #define BURY_FRACTION                             0.7
 
-#define NUM_TOOLS                                16
+#define NUM_TOOLS                                17
 #define TOOL_LOOP                                 0
 #define TOOL_READDATA                             1
 #define TOOL_ALIGN                                2
 #define TOOL_COMBINER                             3
-#define TOOL_MATRIXFILTER                         4
-#define TOOL_BOOTSTRAP                            5
-#define TOOL_MODEL                                6
-#define TOOL_MCMC                                 7
-#define TOOL_SIMULATE                             8
-#define TOOL_DISTANCEMATRIX                       9
-#define TOOL_NEIGHBORJOINING                     10
-#define TOOL_PARSIMONY                           11
-#define TOOL_TREECONTAINER                       12
-#define TOOL_NUMBERSET                           13
-#define TOOL_TREEDIAGNOSIS                       14
-#define TOOL_NUMBERDIAGNOSIS                     15
+#define TOOL_CONCATENATE                          4
+#define TOOL_MATRIXFILTER                         5
+#define TOOL_BOOTSTRAP                            6
+#define TOOL_MODEL                                7
+#define TOOL_MCMC                                 8
+#define TOOL_SIMULATE                             9
+#define TOOL_DISTANCEMATRIX                      10
+#define TOOL_NEIGHBORJOINING                     11
+#define TOOL_PARSIMONY                           12
+#define TOOL_TREECONTAINER                       13
+#define TOOL_NUMBERSET                           14
+#define TOOL_TREEDIAGNOSIS                       15
+#define TOOL_NUMBERDIAGNOSIS                     16
 
 #define DISTRIBUTION_CONSTANT                     0
 #define DISTRIBUTION_FIXED                        0

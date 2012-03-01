@@ -11,6 +11,7 @@
 #import "ToolAlign.h"
 #import "ToolBootstrap.h"
 #import "ToolCombiner.h"
+#import "ToolConcatenate.h"
 #import "ToolDistanceMatrix.h"
 #import "ToolLoop.h"
 #import "ToolNumericalMcmcOutput.h"
@@ -1938,6 +1939,8 @@
             newTool = [[ToolAlign alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_COMBINER)
             newTool = [[ToolCombiner alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_CONCATENATE)
+            newTool = [[ToolConcatenate alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_MATRIXFILTER)
             newTool = [[ToolMatrixFilter alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_BOOTSTRAP)

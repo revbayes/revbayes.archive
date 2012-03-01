@@ -62,6 +62,8 @@
             toolImage = [NSImage imageNamed:@"Tool_Align.icns"];
         else if (i == TOOL_COMBINER)
             toolImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
+        else if (i == TOOL_CONCATENATE)
+            toolImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
         else if (i == TOOL_MATRIXFILTER)
             toolImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];
         else if (i == TOOL_BOOTSTRAP)
@@ -115,6 +117,8 @@
 			myTip = [NSString stringWithString:@" Sequence Alignment Tool "];
         else if (toolForToolTip == TOOL_COMBINER)
 			myTip = [NSString stringWithString:@" Matrix Combiner Tool "];
+        else if (toolForToolTip == TOOL_CONCATENATE)
+			myTip = [NSString stringWithString:@" Alignment Concatenation Tool "];
         else if (toolForToolTip == TOOL_MATRIXFILTER)
 			myTip = [NSString stringWithString:@" Data Matrix Filter Tool "];
         else if (toolForToolTip == TOOL_BOOTSTRAP)
@@ -225,6 +229,8 @@
 	else if (whichToolSelected == TOOL_ALIGN)
 		anImage = [NSImage imageNamed:@"Tool_Align.icns"];
 	else if (whichToolSelected == TOOL_COMBINER)
+		anImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
+	else if (whichToolSelected == TOOL_CONCATENATE)
 		anImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
 	else if (whichToolSelected == TOOL_MATRIXFILTER)
 		anImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];

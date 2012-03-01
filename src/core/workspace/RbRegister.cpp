@@ -430,16 +430,16 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sqrt",      new Func_sqrt()  );
         
         /* Add constructuor functions (alphabetical order) */
-        addFunction( "taxonData", new ConstructorTaxonData()    );
+        addFunction( "taxonData", new ConstructorTaxonData() );
         
         /* Add phylogeny-related functions (alphabetical order) */
-        addFunction( "distances", new Func_distance()          );
-        addFunction( "gtr",       new Func_gtr()               );
-        addFunction( "nj",        new Func_nj()                );
-        addFunction( "read",      new Func_readCharacterData() );
-        addFunction( "readTrees", new Func_readTrees()         );
-        addFunction( "ctmmtp",    new Func_CtmmTransitionProbabilities()           );
-        addFunction( "ctmmTransitionProbabilities", new Func_CtmmTransitionProbabilities());
+        addFunction( "distances",                   new Func_distance()                    );
+        addFunction( "gtr",                         new Func_gtr()                         );
+        addFunction( "nj",                          new Func_nj()                          );
+        addFunction( "read",                        new Func_readCharacterData()           );
+        addFunction( "readTrees",                   new Func_readTrees()                   );
+        addFunction( "ctmmtp",                      new Func_CtmmTransitionProbabilities() );
+        addFunction( "ctmmTransitionProbabilities", new Func_CtmmTransitionProbabilities() );
 
         /* Add builtin templated functions */
         addFunction( "resize",    new Func_resize() );

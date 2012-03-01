@@ -278,11 +278,18 @@
         [self stopProgressIndicator];
         return;
         }
-    const DagNodeContainer& dnc = dynamic_cast<const DagNodeContainer&>( dv );
-    const CharacterData& cd = dynamic_cast<const CharacterData&>( dv );
-    if ( &dnc != NULL )
+    
+NSLog(@" 1 ");
+    // instantiate data matrices for the gui, by reading the matrices that were 
+    // read in by the core
+    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
+    CharacterData* cd     = dynamic_cast<CharacterData*>( dv );
+
+std::cout << dnc << std::endl;
+std::cout << cd << std::endl;
+    if ( dnc != NULL )
         {
-        if ( &dnc != NULL)
+        if ( dnc != NULL)
             {
             [self removeAllDataMatrices];
             for (int i=0; i<dnc.size(); i++)
@@ -300,9 +307,9 @@
             goto errorExit;
             }
         }
-    else if ( &cd != NULL )
+    else if ( cd != NULL )
         {
-        if ( &cd != NULL)
+        if ( cd != NULL)
             {
             [self removeAllDataMatrices];
             RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];

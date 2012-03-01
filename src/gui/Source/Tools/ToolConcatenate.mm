@@ -1,15 +1,19 @@
 #import "Inlet.h"
-#import "RbData.h"
 #import "RevBayes.h"
-#import "ToolCombiner.h"
-#import "WindowControllerCombiner.h"
+#import "ToolConcatenate.h"
+#import "WindowControllerConcatenate.h"
 
 
 
-@implementation ToolCombiner
 
-@synthesize numberOfInlets;
-@synthesize startingNumberOfInlets;
+@implementation ToolConcatenate
+
+@synthesize useMinimalSet;
+@synthesize matchUsingNames;
+
+- (void)awakeFromNib {
+
+}
 
 - (void)closeControlPanel {
 
@@ -17,8 +21,17 @@
 	[controlWindow close];
 }
 
-- (void)encodeWithCoder:(NSCoder*)aCoder {
-    
+- (void)dealloc {
+
+	[controlWindow release];
+	[super dealloc];
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+
+	[aCoder encodeBool:useMinimalSet   forKey:@"useMinimalSet"];
+	[aCoder encodeBool:matchUsingNames forKey:@"matchUsingNames"];
+
 	[super encodeWithCoder:aCoder];
 }
 
@@ -37,54 +50,74 @@
         [self setImageWithSize:itemSize];
 		
 		// initialize the inlet/outlet information
-        [self setNumberOfInlets:2];
-		[self addInletOfColor:[NSColor greenColor]];
 		[self addInletOfColor:[NSColor greenColor]];
 		[self addOutletOfColor:[NSColor greenColor]];
         [self setInletLocations];
         [self setOutletLocations];
-            
+
+		// initialize some variables
+        useMinimalSet   = YES;
+        matchUsingNames = YES;
+		
 		// initialize the control window
-		controlWindow = [[WindowControllerCombiner alloc] initWithTool:self];
+		controlWindow = [[WindowControllerConcatenate alloc] initWithTool:self];
 		}
     return self;
 }
 
-- (id)initWithCoder:(NSCoder*)aDecoder {
+- (id)initWithCoder:(NSCoder *)aDecoder {
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
-        // initialize the tool image
+		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-            
-        // initialize the control window
-		controlWindow = [[WindowControllerCombiner alloc] initWithTool:self];
+        
+        useMinimalSet   = [aDecoder decodeBoolForKey:@"useMinimalSet"];
+        matchUsingNames = [aDecoder decodeBoolForKey:@"matchUsingNames"];
+
+		// initialize the control window
+		controlWindow = [[WindowControllerConcatenate alloc] initWithTool:self];
 		}
 	return self;
 }
 
 - (void)initializeImage {
 
-    itemImage[0] = [NSImage imageNamed:@"Tool_Combiner25.icns"];
-    itemImage[1] = [NSImage imageNamed:@"Tool_Combiner50.icns"];
-    itemImage[2] = [NSImage imageNamed:@"Tool_Combiner75.icns"];
-    itemImage[3] = [NSImage imageNamed:@"Tool_Combiner100.icns"];
-    itemImage[4] = [NSImage imageNamed:@"Tool_Combiner125.icns"];
-    itemImage[5] = [NSImage imageNamed:@"Tool_Combiner150.icns"];
-    itemImage[6] = [NSImage imageNamed:@"Tool_Combiner200.icns"];
-    itemImage[7] = [NSImage imageNamed:@"Tool_Combiner400.icns"];
+    itemImage[0] = [NSImage imageNamed:@"Tool_MatrixFilter25.icns"];
+    itemImage[1] = [NSImage imageNamed:@"Tool_MatrixFilter50.icns"];
+    itemImage[2] = [NSImage imageNamed:@"Tool_MatrixFilter75.icns"];
+    itemImage[3] = [NSImage imageNamed:@"Tool_MatrixFilter100.icns"];
+    itemImage[4] = [NSImage imageNamed:@"Tool_MatrixFilter125.icns"];
+    itemImage[5] = [NSImage imageNamed:@"Tool_MatrixFilter150.icns"];
+    itemImage[6] = [NSImage imageNamed:@"Tool_MatrixFilter200.icns"];
+    itemImage[7] = [NSImage imageNamed:@"Tool_MatrixFilter400.icns"];
 
 	float s[8] = { 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 2.0, 4.0 };
 	for (int i=0; i<8; i++)
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (int)numberOfIncomingAlignments {
+
+    return 0;
+}
+
+- (int)mininumNumberOfIncomingSequences {
+
+    return 0;
+}
+
+- (int)maximumNumberOfIncomingSequences {
+
+    return 0;
+}
+
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Character Matrix Combiner Tool "];
+    NSString* myTip = [NSString stringWithString:@" Sequence Concatenation Tool "];
     if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
+        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", [self numDataMatrices]];
     else 
         myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
@@ -101,22 +134,11 @@
     return attrString;
 }
 
-- (void)setInletsAndOutlets {
-
-    [self removeAllInlets];
-    for (int i=0; i<[self numberOfInlets]; i++)
-        {
-		[self addInletOfColor:[NSColor greenColor]];
-        [self setInletLocations];
-        }
-}
-
 - (void)showControlPanel {
 
-    startingNumberOfInlets = [self numberOfInlets];
-    [controlWindow setNumberOfInlets:[self numberOfInlets]];
     NSPoint p = [self originForControlWindow:[controlWindow window]];
     [[controlWindow window] setFrameOrigin:p];
+	//[controlWindow setMatrixList];
 	[controlWindow showWindow:self];    
 	[[controlWindow window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[controlWindow window]];
@@ -154,6 +176,9 @@
 		{
 		// we have parent data-containing tool(s)
         
+        // for the hell of it, we'll delete everything and freshly concatenate the sequences
+		[self removeAllDataMatrices];
+
         // check to see if our current data is simply a copy of the data in the parents, in which case
         // we don't need to do anything
         NSMutableArray* parentDataMatrices = [NSMutableArray arrayWithCapacity:1];
@@ -165,11 +190,10 @@
                 {
                 [parentDataMatrices addObjectsFromArray:[t getAlignedData]];
                 }
-            else if ( [ol toolColor] == [NSColor cyanColor] )
-                {
-                [parentDataMatrices addObjectsFromArray:[t getUnalignedData]];
-                }
             }
+            
+        
+        
         int numFound = 0;
         for (int i=0; i<[dataMatrices count]; i++)
             {
@@ -204,7 +228,7 @@
             [self makeDataInspector];
             }
 		}
-        
+                
     [self stopProgressIndicator];
 }
 
