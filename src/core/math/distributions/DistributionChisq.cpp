@@ -130,7 +130,7 @@ double RbStatistics::ChiSquare::quantile(double prob, double v) {
 		q = ch;   
 		p1 = 0.5*ch;
 		if ((t = RbMath::incompleteGamma (p1, xx, g)) < 0.0) {
-			printf ("\nerr IncompleteGamma");
+    		        std::cerr<<"\nerr IncompleteGamma";
 			return (-1.0);
 		}
 		p2 = p-t;
