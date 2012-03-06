@@ -30,26 +30,26 @@ class VectorString;
 
 class Func_readTrees :  public RbFunction {
     
-public:
-    // Basic utility functions
-    Func_readTrees*             clone(void) const;                                                      //!< Clone the object
-    static const std::string&   getClassName(void);                                                     //!< Get class name
-    static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
-    const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
-    
-    // Regular functions
-    const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
-    const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
-    
-protected:
-    const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
-    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
-    
-private:
-    void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
+    public:
+        // Basic utility functions
+        Func_readTrees*             clone(void) const;                                                      //!< Clone the object
+        static const std::string&   getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
+        
+        // Regular functions
+        const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
+        const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
+        
+    protected:
+        const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
+        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        
+    private:
+        void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
 
-    // Arguments
-    RbVariablePtr               filename;
+        // Arguments
+        RbVariablePtr               filename;
     
 };
 

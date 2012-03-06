@@ -90,7 +90,7 @@ class Func_readCharacterData :  public RbFunction {
         RbVariablePtr               filename;
     
         // function return value
-        DagNodeContainer                retList;
+        DagNodeContainer            retList;
 
 };
 
