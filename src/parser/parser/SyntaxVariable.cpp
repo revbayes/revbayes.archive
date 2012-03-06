@@ -405,9 +405,18 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
             if ( identifier == NULL )
                 throw RbException( "Member variable identifier missing" );
 
-            MemberObject* theMemberObject = static_cast<const MemberObject&>( baseVar->getDagNode()->getValue() ).clone();
-//            const Environment& members = theMemberObject->getMembers();
-//            theVar->setDagNode( theMemberObject->getMember( *identifier ) );
+            const MemberObject& theMemberObject = static_cast<const MemberObject&>( baseVar->getDagNode()->getValue() );
+            const std::map<std::string, RbVariablePtr>& members = theMemberObject.getMembers();
+            
+            const std::map<std::string, RbVariablePtr>::const_iterator& i = members.find( identifier->getValue() );
+            // test whether we actually got a variable back
+            if ( i != members.end() ) {
+                const RbVariablePtr& memberAttribute = i->second;
+                theVar = memberAttribute;
+            }
+            else {
+                throw RbException("Cannot find member '" + identifier->getValue() + "' of variable '" + baseVar->getDagNode()->getName() + "'.");
+            }
         }
         else {
             

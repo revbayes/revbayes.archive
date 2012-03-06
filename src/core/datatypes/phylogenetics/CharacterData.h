@@ -33,7 +33,7 @@ class ArgumentRule;
 class DAGNode;
 
 
-class CharacterData : public Matrix {
+class CharacterData : public MemberObject {
 
     public:
                                             CharacterData(const std::string& characterType);                            //!< Constructor requires character type
@@ -52,8 +52,10 @@ class CharacterData : public Matrix {
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
 
         // Member variable functions
-        const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
-        void                                setMemberVariable(const std::string& name, Variable* var);                  //!< Catch setting of the topology
+        const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules
+        const std::map<std::string, RbVariablePtr>& getMembers(void) const;                                                             //!< Get members
+        std::map<std::string, RbVariablePtr>&       getMembers(void);                                                                   //!< Get members
+        void                                        setMemberVariable(const std::string& name, Variable* var);                  //!< Catch setting of the topology
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
@@ -66,6 +68,7 @@ class CharacterData : public Matrix {
         const RbObject&                     getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
         RbObject&                           getElement(size_t row, size_t col);                                         //!< Get element or subcontainer (non-const to return non-const element)
         void                                setElement(size_t row, size_t col, RbLanguageObject* var);                  //!< set element
+        size_t                              size(void) const;
         void                                resize(size_t nRows, size_t nCols);                                         //!< Resize to new length vector
         void                                transpose(void);                                                            //!< Transpose the matrix
 
@@ -95,7 +98,7 @@ class CharacterData : public Matrix {
         void                                setFileName(const std::string fn) { fileName = fn; }                        //!< Set the file name
         void                                setIsHomologyEstablished(bool tf) { isHomologyEstablished = tf; }           //!< Set whether the homology of the characters has been established
         void                                showData(void);                                                             //!< Show the data in the character matrix
-
+    
     protected:
         const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
 
@@ -132,7 +135,7 @@ class CharacterData : public Matrix {
         Natural                             numMissing;
         RbBoolean                           isHomologous;
         
-        std::map<std::string, DAGNode*>     taxonMap;
+        std::map<std::string, RbVariablePtr> taxonMap;
 };
 
 #endif

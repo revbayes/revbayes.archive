@@ -45,21 +45,22 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ),new TypeSpec(charType) ) {
+CharacterData::CharacterData( const std::string& charType ) : MemberObject( getMemberRules() ), typeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ),new TypeSpec(charType) ) {
 
     characterType = charType;
 }
 
 
 /** Copy constructor */
-CharacterData::CharacterData(const CharacterData& x) : Matrix( x ), typeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ), new TypeSpec(characterType) ) {
+CharacterData::CharacterData(const CharacterData& x) : MemberObject( x ), typeSpec( getClassName(), new TypeSpec( Matrix::getClassTypeSpec() ), new TypeSpec(characterType) ) {
 
-    characterType         = x.characterType;
-    deletedTaxa           = x.deletedTaxa;
-    deletedCharacters     = x.deletedCharacters;
-    fileName              = x.fileName;
-    sequenceNames         = x.sequenceNames;
-    isHomologyEstablished = x.isHomologyEstablished;
+    characterType           = x.characterType;
+    deletedTaxa             = x.deletedTaxa;
+    deletedCharacters       = x.deletedCharacters;
+    fileName                = x.fileName;
+    sequenceNames           = x.sequenceNames;
+    isHomologyEstablished   = x.isHomologyEstablished;
+    taxonMap                = x.taxonMap;
 }
 
 
@@ -79,12 +80,13 @@ CharacterData& CharacterData::operator=( const CharacterData& x ) {
 
         MemberObject::operator=( x );
 
-        characterType         = x.characterType;
-        deletedTaxa           = x.deletedTaxa;
-        deletedCharacters     = x.deletedCharacters;
-        fileName              = x.fileName;
-        sequenceNames         = x.sequenceNames;
-        isHomologyEstablished = x.isHomologyEstablished;
+        characterType           = x.characterType;
+        deletedTaxa             = x.deletedTaxa;
+        deletedCharacters       = x.deletedCharacters;
+        fileName                = x.fileName;
+        sequenceNames           = x.sequenceNames;
+        isHomologyEstablished   = x.isHomologyEstablished;
+        taxonMap                = x.taxonMap;
         }
     return (*this);
 }
@@ -99,15 +101,13 @@ const TaxonData& CharacterData::operator[]( const size_t i ) const {
 
 /** Add a sequence to the character matrix. For now, we require same data type and same length. */
 void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
-
-    push_back( obs );
     
     // add the sequence name to the list
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
     DAGNode* var = new ConstantNode( obs );
-    taxonMap.insert( std::pair<std::string,DAGNode*>( obs->getTaxonName(), var ) );
+    taxonMap.insert( std::pair<std::string,RbVariablePtr>( obs->getTaxonName(), new Variable( var ) ) );
 }
 
 void CharacterData::addTaxonData( TaxonData* obs ) {
@@ -128,8 +128,7 @@ void CharacterData::addTaxonData( TaxonData* obs ) {
 void CharacterData::clear( void ) {
     
     sequenceNames.clear();
-    
-    Matrix::clear();
+    taxonMap.clear();
 }
 
 
@@ -180,6 +179,19 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
     if (name == "names") 
         {
         return sequenceNames;
+        }
+    else if (name == "[]") 
+        {
+        // get the member with give index
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+        
+        if (size() < (size_t)(index.getValue()) ) {
+            throw RbException("Index out of bounds in []");
+        }
+        
+        // TODO: Check what happens with DAGNodeContainers
+        const TaxonData& element = getTaxonData(index.getValue() - 1);
+        return element;
         }
     else if (name == "ntaxa") 
         {
@@ -334,7 +346,7 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
         return isHomologous;
         }
 
-    return Matrix::executeOperationSimple( name, args );
+    return MemberObject::executeOperationSimple( name, args );
 }
 
 
@@ -374,21 +386,30 @@ const std::string CharacterData::getDataType(void) const {
 
 const RbObject& CharacterData::getElement(size_t row, size_t col) const {
 
-    const TaxonData* sequence = dynamic_cast<const TaxonData*>( elements[row] );
-    return sequence->getElement(col);
+    const TaxonData& sequence = getTaxonData( row );
+    return sequence.getElement(col);
 }
 
 
 RbObject& CharacterData::getElement(size_t row, size_t col) {
 
-    TaxonData* sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
-    return (sequence->getElement(col));
+    throw RbException("Non-const getElement(row,col) not implemented in CharacterData.");
 }
 
 
 const std::string& CharacterData::getFileName(void) const {
 
     return fileName;
+}
+
+
+const std::map<std::string, RbVariablePtr>& CharacterData::getMembers(void) const {
+    return taxonMap;
+}
+
+
+std::map<std::string, RbVariablePtr>& CharacterData::getMembers(void) {
+    return taxonMap;
 }
 
 
@@ -460,9 +481,14 @@ const MethodTable& CharacterData::getMethods(void) const {
         methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules2       ) );
         methods.addFunction("show",                new MemberFunction(RbVoid_name,        showdataArgRules           ) );
         methods.addFunction("ishomologous",        new MemberFunction(RbBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
-        
+            
+        // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new MemberFunction( TaxonData::getClassTypeSpec(), squareBracketArgRules) );
+            
         // necessary call for proper inheritance
-        methods.setParentTable( &Matrix::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
         }
 
@@ -520,9 +546,16 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
     if ( tn >= getNumberOfTaxa() )
         throw RbException( "Taxon index out of range" );
 
-    const TaxonData* sequence = static_cast<const TaxonData*>( elements[tn] );
+    const std::string& name = sequenceNames[tn];
+    const std::map<std::string, RbVariablePtr>::const_iterator& i = taxonMap.find(name); 
+    
+    if (i != taxonMap.end() ) {
+        return static_cast<const TaxonData&>( i->second->getValue() );
+    }
+    else {
+        throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
+    }
 
-    return *sequence;
 }
 
 
@@ -632,7 +665,7 @@ Vector* CharacterData::makeSiteColumn( size_t cn ) const {
         throw RbException( "Character matrix is empty" );
 
     const std::string& name = sequenceNames[0];
-    std::map<std::string, DAGNode*>::const_iterator it = taxonMap.find(name);
+    const std::map<std::string, RbVariablePtr>::const_iterator& it = taxonMap.find(name);
     Vector* temp = static_cast<Vector*>( ( it->second->getValue() ).clone() );
     temp->clear();
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
@@ -722,11 +755,10 @@ void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
 //        sequenceNames.erase(sequenceNames.begin() + index);
 //        sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());        
         sequenceNames[index] = seq->getTaxonName();
-        elements.insert( elements.begin() + index, var );
         
         // add the sequence also as a member so that we can access it by name
         DAGNode* variable = new ConstantNode(var );
-        taxonMap.insert( std::pair<std::string,DAGNode*>( seq->getTaxonName(), variable ) );
+        taxonMap.insert( std::pair<std::string,RbVariablePtr>( seq->getTaxonName(), new Variable( variable ) ) );
     }
 }
 
@@ -756,6 +788,11 @@ void CharacterData::setMemberVariable(const std::string& name, Variable* var) {
 
 void CharacterData::showData(void) {
 
+}
+
+
+size_t CharacterData::size(void) const {
+    return taxonMap.size();
 }
 
 /** transpose the matrix */

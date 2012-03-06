@@ -237,12 +237,12 @@ void MemberObject::printValue(std::ostream& o) const {
     
     o << "Printing members of MemberObject ...." << std::endl;
 
-//    for ( size_t i = 0; i < members->size(); i++ ) {
-//
-//        o << "." << members->getName(i) << std::endl;
-//        (*members)[members->getName(i)].getValue().printValue(o);
-//        o << std::endl << std::endl;
-//    }
+    for ( std::map<std::string, RbVariablePtr>::const_iterator i = members.begin(); i != members.end(); i++ ) {
+
+        o << "." << i->first << std::endl;
+        i->second->getValue().printValue(o);
+        o << std::endl << std::endl;
+    }
 }
 
 

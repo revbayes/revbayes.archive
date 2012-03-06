@@ -36,50 +36,50 @@ class VectorString;
 class MemberObject: public RbLanguageObject {
 
     public:
-        virtual                                    ~MemberObject(void);                                                                 //!< Destructor
+        virtual                                            ~MemberObject(void);                                                                 //!< Destructor
 
         // Basic utility functions you have to override
-        virtual MemberObject*                       clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                   getClassName(void);                                                                 //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                                             //!< Get class type spec
+        virtual MemberObject*                               clone(void) const = 0;                                                              //!< Clone object
+        static const std::string&                           getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
         
         // Basic utility functions you may want to override
-        virtual void                                printValue(std::ostream& o) const;                                                  //!< Print value for user
+        virtual void                                        printValue(std::ostream& o) const;                                                  //!< Print value for user
 
         // Basic utility functions you do not have to override
-        bool                                        isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
+        bool                                                isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
 
         // Member variable functions you have to override
-        virtual const Variable*                     getMember(const std::string& name) const;                                           //!< Get member variable 
-        virtual Variable*                           getMember(const std::string& name);                                                 //!< Get member variable (non-const node)
-        virtual const MemberRules&                  getMemberRules(void) const;                                                         //!< Get member rules (const)
-        virtual bool                                hasMember(const std::string& name) const;                                           //!< Has this object a member with name
+        virtual const Variable*                             getMember(const std::string& name) const;                                           //!< Get member variable 
+        virtual Variable*                                   getMember(const std::string& name);                                                 //!< Get member variable (non-const node)
+        virtual const MemberRules&                          getMemberRules(void) const;                                                         //!< Get member rules (const)
+        virtual bool                                        hasMember(const std::string& name) const;                                           //!< Has this object a member with name
 
         // Member variable functions you do not have to override
-        const std::map<std::string, RbVariablePtr>& getMembers(void) const;                                                             //!< Get members
-        std::map<std::string, RbVariablePtr>&       getMembers(void);                                                                   //!< Get members
-        void                                        setMember(const std::string& name, Variable* var);                                   //!< Set member variable
+        virtual const std::map<std::string, RbVariablePtr>& getMembers(void) const;                                                             //!< Get members
+        virtual std::map<std::string, RbVariablePtr>&       getMembers(void);                                                                   //!< Get members
+        void                                                setMember(const std::string& name, Variable* var);                                   //!< Set member variable
 //        const TypeSpec&                     getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
 
         // Member method functions
-        const RbLanguageObject&                     executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
-        virtual const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
-        virtual const MethodTable&                  getMethods(void) const;                                                             //!< Get member methods (const)
+        const RbLanguageObject&                             executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
+        virtual const RbLanguageObject&                     executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
+        virtual const MethodTable&                          getMethods(void) const;                                                             //!< Get member methods (const)
 
-        virtual bool                                supportsIndex(void) const { return false; }                                         //!< Does object support index operator?
+        virtual bool                                        supportsIndex(void) const { return false; }                                         //!< Does object support index operator?
 
     protected:
-                                                    MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
-                                                    MemberObject(void);                                                                 //!< Default constructor; no members or methods
-                                                    MemberObject(const MemberObject &m);                                                //!< Copy constructor
+                                                            MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
+                                                            MemberObject(void);                                                                 //!< Default constructor; no members or methods
+                                                            MemberObject(const MemberObject &m);                                                //!< Copy constructor
     
-        MemberObject&                               operator=(const MemberObject& m);
+        MemberObject&                                       operator=(const MemberObject& m);
  
-        virtual void                                setMemberVariable(const std::string& name, Variable* var);                          //!< Set member variable
-        virtual const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Override to map member methods to internal functions
+        virtual void                                        setMemberVariable(const std::string& name, Variable* var);                          //!< Set member variable
+        virtual const RbLanguageObject&                     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Override to map member methods to internal functions
 
         // Members is the variable frame that stores member variables
-        std::map<std::string, RbVariablePtr>        members;                                                                            //!< Member variables
+        std::map<std::string, RbVariablePtr>                members;                                                                            //!< Member variables
 };
 
 #endif
