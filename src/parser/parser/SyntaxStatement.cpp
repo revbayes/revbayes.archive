@@ -461,7 +461,9 @@ void SyntaxStatement::replaceVariableWithConstant(const std::string& name, const
     }
     
     // the expression itself
-    expression->replaceVariableWithConstant(name, c);
+    if ( expression != NULL ) {
+        expression->replaceVariableWithConstant(name, c);
+    }
     
 }
 

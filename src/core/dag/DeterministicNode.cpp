@@ -28,6 +28,9 @@
 #include "UserInterface.h"
 #include "VectorString.h"
 #include "Workspace.h"
+#include "ConstructorFunction.h"
+#include "DeterministicNode.h"
+#include "Model.h"
 
 #include <algorithm>
 #include <cassert>
@@ -181,7 +184,8 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& ne
         // clone the parameter DAG node
         DAGNode* theArgClone = args[i].getVariable().getDagNode()->cloneDAG(newNodes);
         // TODO: I don't think that we should create a new variable. That will destroy our dependencies structure.
-        copyArgs[i].setVariable(new Variable(theArgClone) );
+//        copyArgs[i].getVariable().setDagNode( theArgClone );
+        copy->function->setArgument(args[i].getLabel(), Argument( RbVariablePtr( new Variable( theArgClone ) ) ) );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
         copy->addParentNode( theArgClone );
@@ -190,6 +194,18 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& ne
     
     /* Make sure the children clone themselves */
     for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        VariableNode* theNewNode = *i;
+        // do not add myself into the list of nodes
+        if ( theNewNode->isType( DeterministicNode::getClassTypeSpec() ) ) {
+            DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>(theNewNode);
+            const RbFunction& theFunction = theDetNode->getFunction();
+            if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {
+                const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
+                if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
+                    continue;
+                }
+            }
+        }
         (*i)->cloneDAG( newNodes );
     }
     

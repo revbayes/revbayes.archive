@@ -191,7 +191,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                 }
                 msg << " " << it->getVariable().getDagNode()->getValue().getType();
             }
-            msg << "). Correct usage is:" << std::endl;
+            msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
             msg << std::endl;
             throw RbException( msg );

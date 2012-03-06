@@ -26,6 +26,9 @@
 #include "UserInterface.h"
 #include "VectorString.h"
 #include "Workspace.h"
+#include "ConstructorFunction.h"
+#include "DeterministicNode.h"
+#include "Model.h"
 
 #include <algorithm>
 #include <cassert>
@@ -466,6 +469,18 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
 
     /* Make sure the children clone themselves */
     for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        VariableNode* theNewNode = *i;
+        // do not add myself into the list of nodes
+        if ( theNewNode->isType( DeterministicNode::getClassTypeSpec() ) ) {
+            DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>(theNewNode);
+            const RbFunction& theFunction = theDetNode->getFunction();
+            if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {
+                const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
+                if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
+                    continue;
+                }
+            }
+        }
         (*i)->cloneDAG( newNodes );
     }
 
@@ -637,8 +652,9 @@ double StochasticNode::getLnProbabilityRatio( void ) {
     }
     else {
 //        assert( !areDistributionParamsTouched() );
+        double lnR = calculateLnProbability() - storedLnProb;
         
-        return calculateLnProbability() - storedLnProb;
+        return lnR;
     }
 }
 
