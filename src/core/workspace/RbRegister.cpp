@@ -165,6 +165,7 @@
 #include "ConstructorTaxonData.h"
 
 /* Phylogeny functions */
+#include "Func_concatenate.h"
 #include "Func_distance.h"
 #include "Func_gtr.h"
 #include "Func_nj.h"
@@ -433,6 +434,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "taxonData", new ConstructorTaxonData() );
         
         /* Add phylogeny-related functions (alphabetical order) */
+        addFunction( "concatenate",                 new Func_concatenate()                 );
         addFunction( "distances",                   new Func_distance()                    );
         addFunction( "gtr",                         new Func_gtr()                         );
         addFunction( "nj",                          new Func_nj()                          );

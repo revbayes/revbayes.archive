@@ -91,7 +91,6 @@ class Func_readCharacterData :  public RbFunction {
     
         // function return value
         DagNodeContainer            retList;
-
 };
 
 #endif
