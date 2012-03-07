@@ -53,8 +53,8 @@ class CharacterData : public MemberObject {
 
         // Member variable functions
         const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules
-        const std::map<std::string, RbVariablePtr>& getMembers(void) const;                                                             //!< Get members
-        std::map<std::string, RbVariablePtr>&       getMembers(void);                                                                   //!< Get members
+        const std::map<std::string, const Variable*>& getMembers(void) const;                                                             //!< Get members
+        std::map<std::string, const Variable*>&       getMembers(void);                                                                   //!< Get members
         void                                        setMemberVariable(const std::string& name, Variable* var);                  //!< Catch setting of the topology
 
         // Member method inits
@@ -135,7 +135,7 @@ class CharacterData : public MemberObject {
         Natural                             numMissing;
         RbBoolean                           isHomologous;
         
-        std::map<std::string, RbVariablePtr> taxonMap;
+        std::map<std::string, const Variable*> taxonMap;
 };
 
 #endif

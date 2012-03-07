@@ -9,9 +9,6 @@
 RbVariablePtr::RbVariablePtr(Variable* inPtr) {
     
     initializePointer(inPtr);
-    //    if (RbMemoryManager::rbMemoryManager().countForAddress(inPtr) == 1) {
-    //        std::cerr << "Initialize pointer " << mPtr << " of type " << typeid(mPtr).name() << "|" << typeid(*mPtr).name() << std::endl;
-    //    }
 }
 
 RbVariablePtr::RbVariablePtr(const RbVariablePtr& src) {
@@ -47,7 +44,6 @@ void RbVariablePtr::finalizePointer(void) {
     
     if ( decrementCountForAddress(mPtr) ) { 
         delete mPtr;
-        //                std::cerr << "Destroying pointer " << mPtr << " of type " << typeid(mPtr).name() << std::endl;
     }
 }
 
@@ -64,14 +60,9 @@ Variable& RbVariablePtr::operator*(void) const {
 
 size_t RbVariablePtr::countForAddress(const Variable* qPtr) {
     
-    //    std::map<const Variable*,size_t>& refCountMap = getRefCountMap();
     
     // check if we got the NULL pointer
     if (qPtr == 0) return -1;
-    
-    //    if ( refCountMap.find(qPtr) != refCountMap.end() ) {
-    //        return refCountMap[qPtr];
-    //    }
     
     return qPtr->getReferenceCount();
 }

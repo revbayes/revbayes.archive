@@ -44,7 +44,7 @@
 
 
 /** Constructor passes member rules and method inits to base class */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberObject(getMemberRules()) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : MemberObject(getMemberRules()) {
 
     numStates = 2;
     theMatrix = new MatrixReal(numStates.getValue(), numStates.getValue());
@@ -52,7 +52,7 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberO
 
 
 /** Construct rate matrix with n states */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : ConstantMemberObject(getMemberRules()) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : MemberObject(getMemberRules()) {
 
     numStates = n;
     theMatrix = new MatrixReal(numStates.getValue(), numStates.getValue());
@@ -77,7 +77,7 @@ TransitionProbabilityMatrix::~TransitionProbabilityMatrix(void) {
 TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator=(const TransitionProbabilityMatrix &m) {
     
     if (this != &m) {
-        ConstantMemberObject::operator=(m);
+        MemberObject::operator=(m);
         
         delete theMatrix;
         
@@ -136,7 +136,7 @@ const std::string& TransitionProbabilityMatrix::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& TransitionProbabilityMatrix::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

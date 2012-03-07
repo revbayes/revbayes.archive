@@ -18,7 +18,7 @@
 #ifndef FileMonitor_H
 #define FileMonitor_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "Monitor.h"
 
 

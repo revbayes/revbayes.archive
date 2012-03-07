@@ -20,7 +20,7 @@
 #ifndef Mcmc_H
 #define Mcmc_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "Variable.h"
 
 #include <set>
@@ -32,7 +32,7 @@ class Model;
 class VectorString;
 
 
-class Mcmc: public ConstantMemberObject {
+class Mcmc: public MemberObject {
 
 public:
     Mcmc(void);                                                                                                         //!< Default constructor

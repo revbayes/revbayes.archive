@@ -43,7 +43,7 @@ class Func_normalizeVector :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
 
@@ -51,8 +51,8 @@ class Func_normalizeVector :  public RbFunction {
         Simplex                     normalizedVector;
 
         // arguments
-        RbVariablePtr               vector;
-        RbVariablePtr               total;
+        RbConstVariablePtr          vector;
+        RbConstVariablePtr          total;
 };
 
 #endif

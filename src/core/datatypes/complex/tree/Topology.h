@@ -17,7 +17,7 @@
 #ifndef Topology_H
 #define Topology_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "Natural.h"
 #include <set>
 #include <string>
@@ -30,7 +30,7 @@ class TopologyNode;
 class VectorString;
 
 
-class Topology: public ConstantMemberObject {
+class Topology: public MemberObject {
     
     public:
                                                     Topology(void);                                                         //!< Default constructor

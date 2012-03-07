@@ -44,14 +44,14 @@ public:
 protected:
     void                        clearArguments(void);                               //!< Clear the arguments of this class
 	const RbLanguageObject&     executeFunction( void);                              //!< Execute operation
-    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+    void                        setArgumentVariable(const std::string& name, const Variable* var);
   
 private:
     void                        resizeVector(AbstractVector &vec, Environment *args, unsigned int numArg);
   
     // arguments
-    RbVariablePtr               container;
-    std::vector<RbVariablePtr>  sizes;
+    RbConstVariablePtr          container;
+    std::vector<RbConstVariablePtr>  sizes;
     
     // function return value
     AbstractVector*             retValue;
@@ -108,12 +108,12 @@ const RbLanguageObject& Func_resize::executeFunction( void ) {
 
     if (nargs == 2) {
       //Resizing a vector
-      unsigned int nrows = ( static_cast<Natural&>( sizes[0]->getValue() ) ).getValue();
+      unsigned int nrows = ( static_cast<const Natural&>( sizes[0]->getValue() ) ).getValue();
       retValue->resize(nrows);
     }
     else {
       //Resizing a matrix of nargs-1 dimensions
-        int nrows = ( static_cast<Natural&>( sizes[0]->getValue() ) ).getValue();
+        int nrows = ( static_cast<const Natural&>( sizes[0]->getValue() ) ).getValue();
         
         if (!retValue->isTypeSpec(Vector::getClassTypeSpec())) {
             retValue = static_cast<AbstractVector*>( retValue->convertTo(TypeSpec(Vector::getClassName(), new TypeSpec( AbstractVector::getClassTypeSpec() ), new TypeSpec(RbLanguageObject::getClassTypeSpec()) ) ) );
@@ -179,7 +179,7 @@ const TypeSpec& Func_resize::getReturnType( void ) const {
 }
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_resize::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_resize::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "x" ) {
         container = var;

@@ -30,18 +30,18 @@
 #include <algorithm>
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType) : ConstantMemberObject(), elementType(elemType) {
+Container::Container(const TypeSpec& elemType) : MemberObject(), elementType(elemType) {
     
 }
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
+Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) : MemberObject(memberRules), elementType(elemType) {
     
 }
 
 
 /** Copy Constructor */
-Container::Container(const Container &v) : ConstantMemberObject(v), elementType(v.elementType) {
+Container::Container(const Container &v) : MemberObject(v), elementType(v.elementType) {
     
 }
 
@@ -70,7 +70,7 @@ Container& Container::operator=( const Container& x ) {
 /** Convert this object into another type. */
 RbObject* Container::convertTo(const TypeSpec& typeSpec) const {
     
-    return ConstantMemberObject::convertTo( typeSpec );
+    return MemberObject::convertTo( typeSpec );
 }
 
 
@@ -85,7 +85,7 @@ const std::string& Container::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Container::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -104,7 +104,7 @@ const MethodTable& Container::getMethods(void) const {
         methods.addFunction("size", new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &ConstantMemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
     
@@ -134,7 +134,7 @@ const RbLanguageObject& Container::executeOperationSimple(const std::string& nam
         return element;
     } 
     
-    return ConstantMemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeOperationSimple( name, args );
 }
 
 
@@ -143,7 +143,7 @@ const RbLanguageObject& Container::executeOperationSimple(const std::string& nam
 /** Is convertible to type? */
 bool Container::isConvertibleTo(const TypeSpec& typeSpec) const {
     
-    return ConstantMemberObject::isConvertibleTo( typeSpec );
+    return MemberObject::isConvertibleTo( typeSpec );
 }
 
 

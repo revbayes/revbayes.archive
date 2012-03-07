@@ -94,7 +94,7 @@ const TypeSpec& Func_type::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_type::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_type::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "variable" ) {
         variable = var;

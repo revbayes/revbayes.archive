@@ -29,18 +29,18 @@
 
 
 /** Constructor */
-Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()), printgen( NULL )
+Monitor::Monitor(void) : MemberObject(getMemberRules()), printgen( NULL )
 {
     
 }
 
 /** Constructor */
-Monitor::Monitor(const MemberRules& rules ) : ConstantMemberObject( rules ), printgen( NULL ) {
+Monitor::Monitor(const MemberRules& rules ) : MemberObject( rules ), printgen( NULL ) {
     
 }
 
 /** Copy Constructor */
-Monitor::Monitor(const Monitor &x) : ConstantMemberObject(x), printgen( x.printgen ) {
+Monitor::Monitor(const Monitor &x) : MemberObject(x), printgen( x.printgen ) {
     
     // shallow copy
     nodes = x.nodes;
@@ -63,7 +63,7 @@ const std::string& Monitor::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Monitor::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -149,7 +149,7 @@ void Monitor::setMemberVariable(std::string const &name, Variable* var) {
     }
     else {
         // call parent class to set member variable
-        ConstantMemberObject::setMemberVariable( name, var );
+        MemberObject::setMemberVariable( name, var );
     }
 }
 

@@ -31,6 +31,13 @@ template <typename firstValType, typename secondValType>
 class Func__le :  public RbFunction {
 
     public:
+                                    Func__le( void );
+                                    Func__le( const Func__le& f);
+        virtual                    ~Func__le( void );
+    
+        // overloaded operators
+        Func__le&                  operator=( const Func__le& f);
+    
         // Basic utility functions
         Func__le*                   clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassName(void);                                         //!< Get class name
@@ -43,13 +50,13 @@ class Func__le :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     protected:       
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
         // Arguments
-        RbVariablePtr               first;
-        RbVariablePtr               second;
+        const Variable*             first;
+        const Variable*             second;
     
         // function return value
         RbBoolean                   retValue;
@@ -71,6 +78,74 @@ class Func__le :  public RbFunction {
 
 
 
+/** default constructor */
+template <typename firstValType, typename secondValType>
+Func__le<firstValType, secondValType>::Func__le( void ) : RbFunction( ) {
+    first  = NULL;
+    second = NULL;
+}
+
+/** default constructor */
+template <typename firstValType, typename secondValType>
+Func__le<firstValType, secondValType>::Func__le( const Func__le& f ) : RbFunction( f ) {
+    
+    first  = f.first;
+    if ( first != NULL ) {
+        first->incrementReferenceCount();
+    }
+    second = f.second;
+    if ( second != NULL ) {
+        second->incrementReferenceCount();
+    }
+}
+
+/** destructor */
+template <typename firstValType, typename secondValType>
+Func__le<firstValType, secondValType>::~Func__le( void ) {
+    
+    if ( first != NULL && first->decrementReferenceCount() == 0 ) {
+        delete first;
+    }
+    
+    if ( second != NULL && second->decrementReferenceCount() == 0 ) {
+        delete second;
+    }
+}
+
+
+/** Overloaded assignment operator */
+template <typename firstValType, typename secondValType>
+Func__le<firstValType,secondValType>& Func__le<firstValType, secondValType>::operator=( Func__le<firstValType, secondValType> const &f ) {
+    
+    if ( this != &f ) {
+        // call the base class assignment operator
+        RbFunction::operator=( f );
+        
+        // free the memory first
+        if ( first != NULL && first->decrementReferenceCount() == 0 ) {
+            delete first;
+        }
+        
+        if ( second != NULL && second->decrementReferenceCount() == 0 ) {
+            delete second;
+        }
+        
+        // reassign the member variables
+        first  = f.first;
+        if ( first != NULL ) {
+            first->incrementReferenceCount();
+        }
+        
+        second = f.second;
+        if ( second != NULL ) {
+            second->incrementReferenceCount();
+        }
+    }
+    
+    return *this;
+}
+
+
 /** Clone object */
 template <typename firstValType, typename secondValType>
 Func__le<firstValType, secondValType>* Func__le<firstValType, secondValType>::clone( void ) const {
@@ -83,8 +158,8 @@ Func__le<firstValType, secondValType>* Func__le<firstValType, secondValType>::cl
 template <typename firstValType, typename secondValType>
 const RbLanguageObject& Func__le<firstValType,secondValType>::executeFunction( void ) {
 
-    const firstValType&  val1 = static_cast<firstValType&> ( first->getValue()  );
-    const secondValType& val2 = static_cast<secondValType&>( second->getValue() );
+    const firstValType&  val1 = static_cast<const firstValType&> ( first->getValue()  );
+    const secondValType& val2 = static_cast<const secondValType&>( second->getValue() );
     retValue.setValue( val1 <= val2 );
     
     return retValue;
@@ -150,13 +225,37 @@ const TypeSpec& Func__le<firstValType, secondValType>::getReturnType( void ) con
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename firstValType, typename secondValType>
-void Func__le<firstValType, secondValType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func__le<firstValType, secondValType>::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "first" ) {
+        // free the memory of the old variable
+        // Variable uses reference counting so we need to free the memory manually
+        if ( first != NULL && first->decrementReferenceCount() == 0 ) {
+            delete first;
+        }
+        
+        // set my variable to the new variable
         first = var;
+        
+        // increment the reference count for the variable
+        if (first != NULL ) {
+            first->incrementReferenceCount();
+        }
     }
     else if ( name == "second" ) {
+        // free the memory of the old variable
+        // Variable uses reference counting so we need to free the memory manually
+        if ( second != NULL && second->decrementReferenceCount() == 0 ) {
+            delete second;
+        }
+        
+        // set my variable to the new variable
         second = var;
+        
+        // increment the reference count for the variable
+        if (second != NULL ) {
+            second->incrementReferenceCount();
+        }
     }
     else {
         RbFunction::setArgumentVariable(name, var);

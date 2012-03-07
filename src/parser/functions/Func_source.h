@@ -26,10 +26,17 @@
 class Func_source :  public RbFunction {
 
     public:
+        Func_source( void );
+        Func_source( const Func_source& f);                                                                                 //!< Copy constructor
+        virtual                                ~Func_source();                                                              //!< Destructor
+    
+        // overloaded operator
+        Func_source&                            operator=( const Func_source& f);                                           //!< Assignment operator
+    
         // Basic utility functions
         Func_source*                            clone(void) const;                                                          //!< Clone object
-        static const std::string&               getClassName(void);                                                                 //!< Get class name
-        static const TypeSpec&                  getClassTypeSpec(void);                                                             //!< Get class type spec
+        static const std::string&               getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                    //!< Get language type of the object
 
         // Func_source functions
@@ -39,12 +46,12 @@ class Func_source :  public RbFunction {
     
     protected:
         const RbLanguageObject&                 executeFunction(void);                                                      //!< Execute function
-        void                                    setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                                    setArgumentVariable(const std::string& name, const Variable* var);
     
     private:
     
-        RbVariablePtr                           filename;
-        RbVariablePtr                           echo;
+        const Variable*                         filename;
+        const Variable*                         echo;
 
 };
 

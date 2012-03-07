@@ -44,7 +44,8 @@ Func_setval* Func_setval::clone( void ) const {
 const RbLanguageObject& Func_setval::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>( variable->getDagNode() );
+    DAGNode* theDagNode = const_cast<DAGNode*>( (const DAGNode*)variable->getDagNode() );
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>( theDagNode );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
@@ -130,7 +131,7 @@ const TypeSpec& Func_setval::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_setval::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_setval::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "variable" ) {
         variable = var;

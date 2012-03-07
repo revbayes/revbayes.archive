@@ -403,12 +403,12 @@ const std::string& CharacterData::getFileName(void) const {
 }
 
 
-const std::map<std::string, RbVariablePtr>& CharacterData::getMembers(void) const {
+const std::map<std::string, const Variable*>& CharacterData::getMembers(void) const {
     return taxonMap;
 }
 
 
-std::map<std::string, RbVariablePtr>& CharacterData::getMembers(void) {
+std::map<std::string, const Variable*>& CharacterData::getMembers(void) {
     return taxonMap;
 }
 
@@ -547,7 +547,7 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
         throw RbException( "Taxon index out of range" );
 
     const std::string& name = sequenceNames[tn];
-    const std::map<std::string, RbVariablePtr>::const_iterator& i = taxonMap.find(name); 
+    const std::map<std::string, const Variable*>::const_iterator& i = taxonMap.find(name); 
     
     if (i != taxonMap.end() ) {
         return static_cast<const TaxonData&>( i->second->getValue() );
@@ -665,7 +665,7 @@ Vector* CharacterData::makeSiteColumn( size_t cn ) const {
         throw RbException( "Character matrix is empty" );
 
     const std::string& name = sequenceNames[0];
-    const std::map<std::string, RbVariablePtr>::const_iterator& it = taxonMap.find(name);
+    const std::map<std::string, const Variable*>::const_iterator& it = taxonMap.find(name);
     Vector* temp = static_cast<Vector*>( ( it->second->getValue() ).clone() );
     temp->clear();
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )

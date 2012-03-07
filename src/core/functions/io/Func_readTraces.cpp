@@ -43,7 +43,7 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_readTraces::executeFunction( void ) {
     // get the information from the arguments for reading the file
-    RbString& fn = static_cast<RbString&>( filename->getValue() );
+    const RbString& fn = static_cast<const RbString&>( filename->getValue() );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn.getValue() );
@@ -92,7 +92,7 @@ const RbLanguageObject& Func_readTraces::executeFunction( void ) {
         bool hasHeaderBeenRead = false;
         
         /* Open file */
-        std::ifstream inFile( fn.c_str() );
+        std::ifstream inFile( fn.getValue().c_str() );
         
         if ( !inFile )
             throw RbException( "Could not open file \"" + fn + "\"" );
@@ -244,7 +244,7 @@ const TypeSpec& Func_readTraces::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_readTraces::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_readTraces::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "filename" ) {
         filename = var;

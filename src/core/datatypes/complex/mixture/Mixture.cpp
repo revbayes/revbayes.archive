@@ -32,12 +32,12 @@
 #include <sstream>
 
 /* Default constructor */
-Mixture::Mixture(void) : MutableMemberObject( getMemberRules() ) {
+Mixture::Mixture(void) : MemberObject( getMemberRules() ) {
 
 }
 
 /* constructor; the vector of class probabilities is filled with values 1/number_of_classes */
-Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters) : MutableMemberObject( getMemberRules() ) {
+Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters) : MemberObject( getMemberRules() ) {
 
     allocationVector_ = allocationVector;
     parameters_ = parameters;
@@ -61,7 +61,7 @@ Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameter
 
 
 /* constructor */
-Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters, Simplex* classProbabilities ) : MutableMemberObject( getMemberRules() ) {
+Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameters, Simplex* classProbabilities ) : MemberObject( getMemberRules() ) {
 
     allocationVector_ = allocationVector;
     parameters_ = parameters;
@@ -71,7 +71,7 @@ Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameter
 
 
 /* constructor */
-Mixture::Mixture(const size_t numObservations, DagNodeContainer* parameters) : MutableMemberObject( getMemberRules() ) {
+Mixture::Mixture(const size_t numObservations, DagNodeContainer* parameters) : MemberObject( getMemberRules() ) {
     
   parameters_ = parameters;
   std::vector<double> v(parameters->size(), 1.0);
@@ -89,7 +89,7 @@ Mixture::Mixture(const size_t numObservations, DagNodeContainer* parameters) : M
 
 
 /* Copy constructor */
-Mixture::Mixture(const Mixture& m) : MutableMemberObject( m ) {
+Mixture::Mixture(const Mixture& m) : MemberObject( m ) {
 
     allocationVector_ = m.allocationVector_;
     parameters_ = m.parameters_;
@@ -123,7 +123,7 @@ const std::string& Mixture::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Mixture::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MutableMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -270,87 +270,6 @@ void Mixture::printValue(std::ostream& o) const {
 }
 
 
-/* Map calls to member methods */
-const RbLanguageObject& Mixture::executeOperation(const std::string& name, Environment& args) {
-    if (name == "getNumberOfClasses") {
-        numClasses.setValue( getNumberOfClasses() );
-        return numClasses;
-    }
-    else if (name == "getParameter") {      
-      // get the member with given index
-      const Natural& index = static_cast<const Natural&>( args[0].getValue() );
-      
-      if (parameters_->size() < (size_t)(index.getValue())) {
-        throw RbException("Index out of bounds in Mixture::getParameter");
-      }
-     // (DagNodeContainer*) getParameter(index->getValue());
-      //return  static_cast<const RbLanguageObject&> ( getParameter(index.getValue() ) );
-      return  static_cast<const VariableSlot&> (getParameter(index.getValue() ) ).getValue();
-
-    }
-    else if (name == "getParameters") {
-        return getParameters();
-        //return RbNullObject::getInstance();
-    }
-    else if (name == "setParameters") {
-        Environment& a = args;
-        DagNodeContainer& params = static_cast<DagNodeContainer&>( a[0].getValue() );
-        setParameters ( params.clone() ) ;
-        return RbNullObject::getInstance();
-    }
-    else if (name == "setParameter") {
-      const Natural& index = static_cast<const Natural&>( args[0].getValue() );
-      DagNodeContainer& params =  static_cast<DagNodeContainer&>( args[1].getValue() );
-      setParameter ( (index.getValue()), params.clone() ) ;
-      return RbNullObject::getInstance();
-    }
-    else if (name == "getAllocationVector") {
-        return getAllocationVector();
-    }
-    else if (name == "setAllocationVector") {
-        Environment& a = args;
-        DagNodeContainer& params = static_cast<DagNodeContainer&>( a[0].getValue() );
-        setAllocationVector ( params.clone() ) ;
-        return RbNullObject::getInstance();
-    }
-    else if (name == "allocateElement") {
-        const Natural& index = static_cast<const Natural&>( args[0].getValue() );
-        const Natural& classId = static_cast<const Natural&>( args[1].getValue() );
-        allocateElement ((index.getValue()), (classId.getValue()));
-        return RbNullObject::getInstance();
-    }
-    else if (name == "getElementAllocation") {
-        const Natural& index = static_cast<const Natural&>( args[0].getValue() );
-        return getElementAllocation(index.getValue() );
-    }
-    else if (name == "setClassProbabilities") {
-        Environment& a = args;
-        Simplex& params = static_cast<Simplex&>( a[0].getValue() );
-        setClassProbabilities ( params.clone() ) ;
-        return RbNullObject::getInstance();
-    }
-    else if (name == "getClassProbabilities") {
-        return getClassProbabilities();
-    }
-    else if (name == "getParameterForElem") {
-      // get the member with given index
-      const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
-      
-      if (allocationVector_->size() < (size_t)(index.getValue())) {
-        throw RbException("Index out of bounds in Mixture::getParameterForElem");
-      }
-      // (DagNodeContainer*) getParameter(index->getValue());
-      return  static_cast<const VariableSlot&> (getParameterForElem(index.getValue() ) ).getValue();
-    }
-    else if (name == "getNumberOfElements") {
-      numElements.setValue( getNumberOfElements() );
-      return numElements;
-    }
-
-    return RbNullObject::getInstance();
-
-}
-
 
 /* Map calls to member methods */
 const RbLanguageObject& Mixture::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
@@ -426,7 +345,7 @@ const RbLanguageObject& Mixture::executeOperationSimple(const std::string& name,
   }
   else 
   {
-    return MutableMemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeOperationSimple( name, args );
   }
 }
 

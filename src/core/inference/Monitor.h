@@ -18,7 +18,7 @@
 #ifndef Monitor_H
 #define Monitor_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "RbString.h"
 
 #include <fstream>
@@ -27,7 +27,7 @@
 #include <vector>
 
 
-class Monitor : public ConstantMemberObject {
+class Monitor : public MemberObject {
     
 public:
     // Constructors and Destructors

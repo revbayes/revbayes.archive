@@ -96,9 +96,9 @@ typedef std::map<std::string, BlockReaderList> BlockTypeToBlockList;
 
 	The advantage of ExceptionRaisingNxsReader is that one is no longer required to subclass NxsReader to handle errors.
 
-	\section signalsection Signal Handling in NCL:
+	\section MemberObjectection Signal Handling in NCL:
 		Traditionally, the user of an application can send an SIGINT to cause it to stop. NCL has very limited support
-	for handling signals, and this support is turned off by default.
+	for handling MemberObject, and this support is turned off by default.
 
 		If you want NCL to raise an NxsSignalCanceledParseException if a signal is encountered during a parse then call:
 			NxsReader::setNCLCatchesSignals(true);
@@ -142,23 +142,23 @@ class NxsReader
 			SUPPRESS_WARNINGS_LEVEL = 8 /**<  if the NxsReader's warning level is set to this, then warnings will be suppressed */
 			};
 
-		/*! If true then NCL will call a handler function if signals are encountered during NxsReader::Execute
+		/*! If true then NCL will call a handler function if MemberObject are encountered during NxsReader::Execute
 			(signal handling is off by default).
-			\sa The section on signal handling \ref signalsection
+			\sa The section on signal handling \ref MemberObjectection
 		*/
 		static void setNCLCatchesSignals(bool);
-		/*! \returns true if NCL will call a handler function if signals are encountered during NxsReader::Execute
+		/*! \returns true if NCL will call a handler function if MemberObject are encountered during NxsReader::Execute
 					(signal handling is off by default).
-			\sa The section on signal handling \ref signalsection
+			\sa The section on signal handling \ref MemberObjectection
 		*/
 		static bool getNCLCatchesSignals();
 		/*! Usually used internally when signal catching is enabled. If the number of sigints has changed, since the last
 			call, then NCL has detected a signal.
-			\sa The section on signal handling \ref signalsection
+			\sa The section on signal handling \ref MemberObjectection
 		*/
 		static unsigned getNumSignalIntsCaught();
 		/*! Used internally.  If NCL is handling SIGINTs then this will be incremented with every SIGINT.
-			\sa The section on signal handling \ref signalsection
+			\sa The section on signal handling \ref MemberObjectection
 		*/
 		static void setNumSignalsIntsCaught(unsigned);
 

@@ -42,12 +42,12 @@ class Func_transpose :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
         // Arguments
-        RbVariablePtr               x;
+        RbConstVariablePtr          x;
 
         // function return value
         matrixType                  retValue;
@@ -73,7 +73,7 @@ Func_transpose<matrixType>* Func_transpose<matrixType>::clone( void ) const {
 template <typename matrixType>
 const RbLanguageObject& Func_transpose<matrixType>::executeFunction( void ) {
 
-    const matrixType& mat = static_cast<matrixType&>( x->getValue() );
+    const matrixType& mat = static_cast<const matrixType&>( x->getValue() );
 
     retValue = matrixType( mat.getNumberOfColumns(), mat.getNumberOfRows() );
     
@@ -144,7 +144,7 @@ const TypeSpec& Func_transpose<matrixType>::getReturnType( void ) const {
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename matrixType>
-void Func_transpose<matrixType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_transpose<matrixType>::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "x" ) {
         x = var;

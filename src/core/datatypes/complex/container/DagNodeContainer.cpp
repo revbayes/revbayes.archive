@@ -118,7 +118,7 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
 /** Execute a member method. We overwrite the executeOperation function here because we return DAG nodes directly. */
 const RbLanguageObject& DagNodeContainer::executeOperation(std::string const &name, const std::vector<Argument>& args) {
     
-    return ConstantMemberObject::executeOperation( name, args );
+    return MemberObject::executeOperation( name, args );
 }
 
 

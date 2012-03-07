@@ -50,11 +50,11 @@
 
 
 /** Constructor passes member rules and method inits to base class */
-Simulate::Simulate(void) : ConstantMemberObject(getMemberRules()), model( NULL ), monitors( NULL ) {
+Simulate::Simulate(void) : MemberObject(getMemberRules()), model( NULL ), monitors( NULL ) {
 }
 
 /** Copy constructor */
-Simulate::Simulate(const Simulate &x) : ConstantMemberObject(x), model( x.model ), monitors( x.monitors ) {
+Simulate::Simulate(const Simulate &x) : MemberObject(x), model( x.model ), monitors( x.monitors ) {
     
 }
 
@@ -95,7 +95,7 @@ const std::string& Simulate::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Simulate::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -251,7 +251,7 @@ void Simulate::setMemberVariable(const std::string& name, Variable* var) {
         }
     }
     else {
-        ConstantMemberObject::setMemberVariable(name, var);
+        MemberObject::setMemberVariable(name, var);
         
     }
 }

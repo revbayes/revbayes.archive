@@ -42,9 +42,9 @@ class Func_simplex :  public RbFunction {
         bool                        throws(void) const;                                         //!< One variant needs to throw
 
     protected:
-        void                        clearArguments(void);                               //!< Clear the arguments of this class
+        void                        clearArguments(void);                                       //!< Clear the arguments of this class
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
@@ -52,7 +52,7 @@ class Func_simplex :  public RbFunction {
         Simplex                     s;
     
         // arguments
-        std::vector<RbVariablePtr>  values;
+        std::vector<RbConstVariablePtr>  values;
 };
 
 #endif
@@ -104,7 +104,7 @@ const RbLanguageObject& Func_simplex<Integer>::executeFunction( void ) {
 template <>
 const RbLanguageObject& Func_simplex<VectorRealPos>::executeFunction( void ) {
 
-    const VectorRealPos& tempVec = static_cast<VectorRealPos&>( values[0]->getValue() );
+    const VectorRealPos& tempVec = static_cast<const VectorRealPos&>( values[0]->getValue() );
 
     s.setValue( tempVec );
 
@@ -220,7 +220,7 @@ bool Func_simplex<Integer>::throws( void ) const {
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename valType>
-void Func_simplex<valType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_simplex<valType>::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "" ) {
         values.push_back( var );

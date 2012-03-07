@@ -82,7 +82,7 @@ RbFunction::~RbFunction(void) {
  * 2 a match to a grandparent class, etc. A large number is used for arguments that
  * need type conversion.
  *
- * The evaluateOnce parameter signals whether the function is to be evaluated once,
+ * The evaluateOnce parameter MemberObject whether the function is to be evaluated once,
  * immediately after the call to processArguments, or whether the processed arguments
  * will be used in repeated function calls in a function node. Argument matching is
  * based on current values in the first case, but on the wrapper type in the second.
@@ -150,8 +150,8 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, Vecto
         
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
             
-            const Argument& theArgument = passedArgs[i];
-            const RbVariablePtr& theVar = theArgument.getVariablePtr();
+            const Argument&     theArgument = passedArgs[i];
+            const Variable*     theVar      = theArgument.getVariablePtr();
             if ( theVar == NULL )
                 return false;   // This should never happen
             if ( !theRules[nRules-1].isArgumentValid( theVar ) )
@@ -264,7 +264,7 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, Vecto
         for (size_t j=0; j<numRegularRules; j++) {
             
             if ( filled[j] == false ) {
-                const RbVariablePtr& argVar = passedArgs[i].getVariablePtr();
+                const Variable* argVar = passedArgs[i].getVariablePtr();
                 if ( theRules[j].isArgumentValid( argVar ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -440,7 +440,7 @@ void RbFunction::printValue(std::ostream& o) const {
  * 2 a match to a grandparent class, etc. A large number is used for arguments that
  * need type conversion.
  *
- * The evaluateOnce parameter signals whether the function is to be evaluated once,
+ * The evaluateOnce parameter MemberObject whether the function is to be evaluated once,
  * immediately after the call to processArguments, or whether the processed arguments
  * will be used in repeated function calls in a function node. Argument matching is
  * based on current values in the first case, but on the wrapper type in the second.
@@ -512,8 +512,8 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
 
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 
-            const Argument& theArgument = passedArgs[i];
-            const RbVariablePtr& theVar = theArgument.getVariablePtr();
+            const Argument&     theArgument     = passedArgs[i];
+            const Variable*     theVar          = theArgument.getVariablePtr();
             if ( theVar == NULL )
                 throw RbException("Null argument not valid.");
             if ( !theRules[nRules-1].isArgumentValid( theVar, true ) )
@@ -664,7 +664,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
 
 
 /** Set a argument variable. This is the base class and we do not expect to set any variables! */
-void RbFunction::setArgumentVariable(const std::string& name, const RbVariablePtr& var) {
+void RbFunction::setArgumentVariable(const std::string& name, const Variable* var) {
     
     throw RbException("No argument named '" + name + "' expected and therefore cannot set it.");
 }
@@ -672,7 +672,7 @@ void RbFunction::setArgumentVariable(const std::string& name, const RbVariablePt
 
 /** Set a member variable */
 void RbFunction::setArgument(const std::string& name, const Argument& arg) {
-    // calling the internal mthod to set the DAG node
+    // calling the internal method to set the DAG node
     // the derived classes should know how to set their members
     setArgumentVariable(name, arg.getVariablePtr() );
     

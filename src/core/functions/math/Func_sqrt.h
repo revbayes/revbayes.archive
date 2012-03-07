@@ -43,13 +43,13 @@ class Func_sqrt :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
         RealPos                     value;
     
         // Arguments
-        RbVariablePtr               x;
+        RbConstVariablePtr          x;
     
 };
 

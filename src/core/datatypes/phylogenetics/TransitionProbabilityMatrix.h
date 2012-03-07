@@ -16,7 +16,7 @@
 #ifndef TransitionProbabilityMatrix_H
 #define TransitionProbabilityMatrix_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "Natural.h"
 
 class ArgumentRule;
@@ -26,7 +26,7 @@ class VectorReal;
 class VectorString;
 
 
-class TransitionProbabilityMatrix : public ConstantMemberObject {
+class TransitionProbabilityMatrix : public MemberObject {
 
     public:
                                             TransitionProbabilityMatrix(void);                                 //!< Default constructor (never call this except from the workspace once)

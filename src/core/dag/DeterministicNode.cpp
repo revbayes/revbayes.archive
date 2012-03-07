@@ -53,7 +53,7 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode( ), need
     
     /* Set parents and add this node as a child node of these */
     for ( size_t i = 0; i < arguments.size(); i++ ) {
-        DAGNode* theArgument = arguments[i].getVariablePtr()->getDagNode();
+        DAGNode* theArgument = const_cast<Variable*>( (const Variable*)arguments[i].getVariablePtr())->getDagNode();
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -81,7 +81,7 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     std::vector<Argument>& args = function->getArguments();
     for ( size_t i = 0; i < args.size(); i++ ) {
         
-        DAGNode* theArgument = args[i].getVariable().getDagNode();
+        DAGNode* theArgument = const_cast<DAGNode*>( args[i].getVariable().getDagNode() );
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }

@@ -40,13 +40,13 @@ class Func_structure :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(void);                                      //!< Execute operation
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
         // Arguments
-        RbVariablePtr               variable;
+        RbConstVariablePtr           variable;
 
 };
 

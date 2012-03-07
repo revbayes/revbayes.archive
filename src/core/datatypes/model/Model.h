@@ -18,7 +18,7 @@
 #ifndef Model_H
 #define Model_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 
 #include <ostream>
 #include <string>
@@ -29,7 +29,7 @@ class DAGNode;
 class StochasticNode;
 
 
-class Model : public ConstantMemberObject {
+class Model : public MemberObject {
 
     public:
                                                 Model(void);                                                //!< Default constructor for a Model object

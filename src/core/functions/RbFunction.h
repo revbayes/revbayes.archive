@@ -92,7 +92,7 @@ class RbFunction :  public RbInternal {
 
         virtual void                                    clearArguments(void);                                                               //!< Clear argument Environment "args"
         virtual const RbLanguageObject&                 executeFunction(void);                                                              //!< Execute the function. This is the function one has to overwrite for simple return values.
-        virtual void                                    setArgumentVariable(const std::string& name, const RbVariablePtr& var);             //!< Set the private member variable here (for derived classes)!
+        virtual void                                    setArgumentVariable(const std::string& name, const Variable* var);                  //!< Set the private member variable here (for derived classes)!
     
         // Member variables
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?

@@ -43,7 +43,7 @@ Func_clamp* Func_clamp::clone( void ) const {
 const RbLanguageObject& Func_clamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
-    DAGNode* theDagNode = variable->getDagNode();
+    DAGNode* theDagNode = const_cast<DAGNode*>( (const DAGNode*)variable->getDagNode() );
     
     StochasticNode* theNode = dynamic_cast<StochasticNode*>( theDagNode );
     if ( !theNode )
@@ -124,7 +124,7 @@ const TypeSpec& Func_clamp::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_clamp::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_clamp::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "variable" ) {
         variable = var;

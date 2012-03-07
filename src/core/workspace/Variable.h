@@ -55,7 +55,7 @@ public:
     
     // Regular functions
     Variable*                           clone(void) const;                                  //!< Clone variable
-    size_t                              decrementReferenceCount(void);
+    size_t                              decrementReferenceCount(void) const;
     static const std::string&           getClassName(void);                                 //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
@@ -65,7 +65,7 @@ public:
     const RbLanguageObject&             getValue(void) const;                               //!< Get the value of the variable
     RbLanguageObject&                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
     const TypeSpec&                     getValueTypeSpec(void) const;                       //!< Get the required value type spec
-    size_t                              incrementReferenceCount(void);
+    size_t                              incrementReferenceCount(void) const;
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable
     void                                setDagNode(DAGNode* newVar);                        //!< Set a variable with a variable
     void                                setValueTypeSpec(const TypeSpec& ts);               //!< set the required value type spec

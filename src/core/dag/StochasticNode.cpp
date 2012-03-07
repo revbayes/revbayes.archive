@@ -44,19 +44,19 @@ StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), dist
 StochasticNode::StochasticNode( Distribution* dist ) : VariableNode( ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
     
     /* Get distribution parameters */
-    std::map<std::string, RbVariablePtr>& params = dist->getMembers();
+    std::map<std::string, const Variable*>& params = dist->getMembers();
 
     /* Check for cycles */
     std::list<DAGNode*> done;
-    for ( std::map<std::string, RbVariablePtr>::iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
         done.clear();
         if ( i->second->getDagNode()->isParentInDAG( this, done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
 
     /* Set parent(s) and add myself as a child to these */
-    for ( std::map<std::string, RbVariablePtr>::iterator i = params.begin(); i != params.end(); i++ ) {
-        DAGNode* theParam = i->second->getDagNode();
+    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
+        DAGNode* theParam = const_cast<DAGNode*>( (const DAGNode*)i->second->getDagNode() );
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -80,11 +80,11 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     distribution = x.distribution->clone();
 
     /* Get distribution parameters */
-    std::map<std::string, RbVariablePtr>& params = distribution->getMembers();
+    std::map<std::string, const Variable*>& params = distribution->getMembers();
 
     /* Set parent(s) and add myself as a child to these */
-    for ( std::map<std::string, RbVariablePtr>::iterator i = params.begin(); i != params.end(); i++ ) {
-        DAGNode* theParam = i->second->getDagNode();
+    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
+        DAGNode* theParam = const_cast<DAGNode*>( (const DAGNode*)i->second->getDagNode() );
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -141,11 +141,11 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         distribution = x.distribution->clone();
 
         /* Get distribution parameters */
-        std::map<std::string, RbVariablePtr>& params = distribution->getMembers();
+        std::map<std::string, const Variable*>& params = distribution->getMembers();
 
         /* Set parent(s) and add myself as a child to these */
-        for ( std::map<std::string, RbVariablePtr>::iterator i = params.begin(); i != params.end(); i++ ) {
-            DAGNode* theParam = i->second->getDagNode();
+        for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
+            DAGNode* theParam = const_cast<DAGNode*>( (const DAGNode*)i->second->getDagNode() );
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -174,11 +174,11 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 /** Are any distribution params touched? Get distribution params and check if any one is touched */
 bool StochasticNode::areDistributionParamsTouched( void ) const {
 
-    std::map<std::string, RbVariablePtr>& params = distribution->getMembers();
+    std::map<std::string, const Variable*>& params = distribution->getMembers();
     
-    for ( std::map<std::string, RbVariablePtr>::iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
         
-        DAGNode* theNode  = i->second->getDagNode();
+        const DAGNode* theNode  = i->second->getDagNode();
 
         if ( !theNode->isTypeSpec( VariableNode::getClassTypeSpec() ) )
             continue;
@@ -446,15 +446,15 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
     copy->needsLikelihoodRecalculation  = needsLikelihoodRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
-    std::map<std::string, RbVariablePtr>& params     = distribution->getMembers();
+    std::map<std::string, const Variable*>& params     = distribution->getMembers();
     
     // first we need to remove the copied params
 //    copy->distribution->clear();
     
-    for ( std::map<std::string, RbVariablePtr>::iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
         
         // clone the i-th member and get the clone back
-        DAGNode* theParam = i->second->getDagNode();
+        const DAGNode* theParam = i->second->getDagNode();
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         DAGNode* theParamClone = theParam->cloneDAG( newNodes );
         

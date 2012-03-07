@@ -24,6 +24,7 @@
 #include "RbInternal.h"
 #include "RbObject.h"
 #include "RbVariablePtr.h"
+#include "RbConstVariablePtr.h"
 #include "Variable.h"
 
 #include <ostream>
@@ -32,8 +33,8 @@
 class Argument : public RbInternal {
 
     public:
-                                            Argument(const RbVariablePtr& arg);                                            //!< Constructor 
-                                            Argument(const std::string& argLabel, const RbVariablePtr& arg);               //!< Constructor 
+                                            Argument(const Variable* arg);                                      //!< Constructor 
+                                            Argument(const std::string& argLabel, const Variable* arg);         //!< Constructor 
                                             Argument(const Argument &x);                                        //!< Copy constructor 
     virtual                                ~Argument(void);                                                     //!< Destructor
    
@@ -51,13 +52,14 @@ class Argument : public RbInternal {
         // Regular functions
         const std::string&                  getLabel(void) const;                                               //!< Get label of argument
         const Variable&                     getVariable(void) const;                                            //!< Get the variable contained in this argument
-        Variable&                           getVariable(void);                                                  //!< Get the variable contained in this argument (non-const to return non-const variable)
-        const RbVariablePtr&                getVariablePtr(void) const;                                         //!< Get the variable contained in this argument (non-const to return non-const variable)
+//        Variable&                           getVariable(void);                                                  //!< Get the variable contained in this argument (non-const to return non-const variable)
+        const Variable*                     getVariablePtr(void) const;                                         //!< Get the variable contained ptr in this argument (
+//        Variable*                           getVariablePtr(void);                                               //!< Get the variable contained ptr in this argument (non-const to return non-const variable)
         void                                setVariable(const RbVariablePtr& newVar);                           //!< set the variable of the argument
 
     protected:
         std::string                         label;                                                              //!< Label of argument
-        RbVariablePtr                       var;                                                                //!< Pointer to the variable slot containing the variable (and value)
+        const Variable*                     var;                                                                //!< Pointer to the variable slot containing the variable (and value)
     
 };
 

@@ -17,7 +17,7 @@
 #ifndef TreePlate_H
 #define TreePlate_H
 
-#include "MutableMemberObject.h"
+#include "MemberObject.h"
 #include "Topology.h"
 #include <set>
 #include <string>
@@ -26,7 +26,7 @@ class TopologyNode;
 class ValueRule;
 
 
-class TreePlate: public MutableMemberObject {
+class TreePlate: public MemberObject {
 
 public:
                                     TreePlate(void);                                                                                    //!< Default constructor
@@ -51,7 +51,7 @@ public:
     // Tree plate functions
     const Topology&                 getTopology(void) const;                                                                            //!< Get the topology for this tree
     void                            setNodeVariable(const TopologyNode& node, const std::string& name, RbLanguageObject* value);
-    void                            setNodeVariable(const TopologyNode& node, const std::string& name, Variable* value);
+    void                            setNodeVariable(const TopologyNode& node, const std::string& name, const Variable& value);
 protected:
     const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
 
@@ -72,6 +72,9 @@ private:
     Natural                         numNodes;
     Natural                         nodeIndex;
     Natural                         tipIndex;
+
+
+    Environment                     memberVariables;
 };
 
 #endif

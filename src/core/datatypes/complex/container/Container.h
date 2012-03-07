@@ -18,14 +18,14 @@
 #ifndef Container_H
 #define Container_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "Natural.h"
 
 #include <iostream>
 #include <vector>
 
 
-class Container : public ConstantMemberObject {
+class Container : public MemberObject {
     
 public:
     virtual                            ~Container(void);                                                    //!< Virtual destructor 

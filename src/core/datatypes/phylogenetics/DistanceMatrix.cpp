@@ -228,7 +228,7 @@ const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string
         return RbNullObject::getInstance();
         }
 
-    return ConstantMemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeOperationSimple( name, args );
 }
 
 

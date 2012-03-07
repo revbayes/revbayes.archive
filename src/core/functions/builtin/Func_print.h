@@ -38,14 +38,14 @@ public:
 protected:
     void                        clearArguments(void);                               //!< Clear the arguments of this class
     const RbLanguageObject&     executeFunction(void);                              //!< Execute function
-    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+    void                        setArgumentVariable(const std::string& name, const Variable* var);
     
 private:
 
     // Arguments
-    RbVariablePtr               filename;
-    RbVariablePtr               append;
-    std::vector<RbVariablePtr>  elements;
+    RbConstVariablePtr          filename;
+    RbConstVariablePtr          append;
+    std::vector<RbConstVariablePtr>  elements;
 
 };
 

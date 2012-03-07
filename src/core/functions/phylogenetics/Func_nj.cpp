@@ -46,9 +46,9 @@ Func_nj* Func_nj::clone(void) const {
 const RbLanguageObject& Func_nj::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    DistanceMatrix& dm          = static_cast<DistanceMatrix&>( d->getValue() );
-    RbString&       useBioNj    = static_cast<RbString&>      ( bioNj->getValue() );
-    RbString&       tieBreaking = static_cast<RbString&>      ( ties->getValue() );
+    const DistanceMatrix& dm          = static_cast<const DistanceMatrix&>( d->getValue() );
+    const RbString&       useBioNj    = static_cast<const RbString&>      ( bioNj->getValue() );
+    const RbString&       tieBreaking = static_cast<const RbString&>      ( ties->getValue() );
         
     Topology* top = neighborJoining(dm);
     
@@ -265,7 +265,7 @@ Topology* Func_nj::neighborJoining(const DistanceMatrix& d) {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_nj::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_nj::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "d" ) {
         d = var;

@@ -44,7 +44,8 @@ Func_sumOver* Func_sumOver::clone( void ) const {
 const RbLanguageObject& Func_sumOver::executeFunction( void ) {
     
     // Get the stochastic node from the variable reference
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>( variable->getDagNode() );
+    DAGNode* theDagNode = const_cast<DAGNode*>( (const DAGNode*)variable->getDagNode() );
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>( theDagNode );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
@@ -62,7 +63,7 @@ const RbLanguageObject& Func_sumOver::executeFunction( void ) {
         }
     }
     
-    bool instantiated = !static_cast<RbBoolean&>( value->getValue() ).getValue();
+    bool instantiated = !static_cast<const RbBoolean&>( value->getValue() ).getValue();
     theNode->setInstantiated( instantiated );
     
     // call a touch which will flag for recalculation of the probabilities
@@ -125,7 +126,7 @@ const TypeSpec& Func_sumOver::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_sumOver::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_sumOver::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "variable" ) {
         variable = var;

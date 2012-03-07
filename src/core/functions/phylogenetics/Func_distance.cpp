@@ -52,12 +52,12 @@ Func_distance* Func_distance::clone(void) const {
 const RbLanguageObject& Func_distance::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    CharacterData& m      = static_cast<CharacterData&>( data->getValue() );
-    RbString&      dName  = static_cast<RbString&>     ( model->getValue() );
-    RbString&      f      = static_cast<RbString&>     ( freqs->getValue() );
-    RbString&      a      = static_cast<RbString&>     ( asrv->getValue() );
-    Real&          s      = static_cast<Real&>         ( shape->getValue() );
-    Real&          pi     = static_cast<Real&>         ( pinvar->getValue() );
+    const CharacterData& m      = static_cast<const CharacterData&>( data->getValue() );
+    const RbString&      dName  = static_cast<const RbString&>     ( model->getValue() );
+    const RbString&      f      = static_cast<const RbString&>     ( freqs->getValue() );
+    const RbString&      a      = static_cast<const RbString&>     ( asrv->getValue() );
+    const Real&          s      = static_cast<const Real&>         ( shape->getValue() );
+    const Real&          pi     = static_cast<const Real&>         ( pinvar->getValue() );
         
     // check that the data matrix is aligned
     if ( m.getIsHomologyEstablished() == false )
@@ -232,7 +232,7 @@ const TypeSpec& Func_distance::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_distance::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_distance::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "data" ) {
         data = var;

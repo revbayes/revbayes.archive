@@ -101,7 +101,7 @@ const TypeSpec& Func_sin::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_sin::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_sin::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "x" ) {
         x = var;

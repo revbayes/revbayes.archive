@@ -24,7 +24,7 @@
 
 
 
-/** Constructor allowing all types; ref signals whether arguments should be values or references */
+/** Constructor allowing all types; ref MemberObject whether arguments should be values or references */
 Ellipsis::Ellipsis( void ) : ArgumentRule("", RbObject::getClassTypeSpec() ) {
 }
 

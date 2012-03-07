@@ -24,21 +24,17 @@
 
 class Variable;
 
-//#include <map>
-//#include <string>
-
 class RbVariablePtr {
     
 public:
     RbVariablePtr(Variable* inPtr = NULL);
     ~RbVariablePtr(void);
     RbVariablePtr(const RbVariablePtr& src);
-    RbVariablePtr&                               operator=(const RbVariablePtr& rhs);
-    Variable&                                    operator*(void) const;
-    Variable*                                    operator->(void) const;
+    RbVariablePtr&                              operator=(const RbVariablePtr& rhs);
+    Variable&                                   operator*(void) const;
+    Variable*                                   operator->(void) const;
     operator                                    Variable*(void) const { return mPtr; }
     static bool                                 decrementCountForAddress(Variable* qPtr);
-    //    static std::map<const Variable*,size_t>&     getRefCountMap(void);                                           //!< Get the memory manager
     static void                                 incrementCountForAddress(Variable* qPtr);
     
 private:
@@ -46,7 +42,7 @@ private:
     void                                        finalizePointer(void);
     void                                        initializePointer(Variable* inPtr);
     
-    Variable*                                    mPtr;
+    Variable*                                   mPtr;
 };
 
 

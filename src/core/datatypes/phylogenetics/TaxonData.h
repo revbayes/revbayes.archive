@@ -16,7 +16,7 @@
 #ifndef TaxonData_H
 #define TaxonData_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "Vector.h"
 #include "VectorString.h"
 
@@ -27,7 +27,7 @@
 class Character;
 
 
-class TaxonData : public ConstantMemberObject {
+class TaxonData : public MemberObject {
     
     public:
                                                 TaxonData(const std::string& elemType, const std::string tname=""); //!< Set type spec of container from type of elements

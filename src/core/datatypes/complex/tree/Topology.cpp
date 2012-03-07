@@ -17,7 +17,7 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "MutableMemberObject.h"
+#include "MemberObject.h"
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -29,13 +29,13 @@
 
 
 /* Default constructor */
-Topology::Topology(void) : ConstantMemberObject( getMemberRules() ), root( NULL ) {
+Topology::Topology(void) : MemberObject( getMemberRules() ), root( NULL ) {
 
 }
 
 
 /* Copy constructor */
-Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() ), root( NULL ) {
+Topology::Topology(const Topology& t) : MemberObject( getMemberRules() ), root( NULL ) {
 
     // set the parameters
     isRooted = t.isRooted;
@@ -66,7 +66,7 @@ Topology& Topology::operator=(const Topology &t) {
     
     if (this != &t) {
         // delegate to the base class
-        ConstantMemberObject::operator=(t);
+        MemberObject::operator=(t);
         
         nodes.clear();
         delete root;
@@ -100,7 +100,7 @@ const std::string& Topology::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Topology::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

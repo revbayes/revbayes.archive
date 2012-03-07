@@ -28,6 +28,13 @@ template <typename valType, typename retType>
 class Func__uminus :  public RbFunction {
 
     public:
+                                    Func__uminus( void );
+                                    Func__uminus( const Func__uminus& f);
+        virtual                    ~Func__uminus( void );
+    
+        // overloaded operators
+        Func__uminus&                  operator=( const Func__uminus& f);
+    
         // Basic utility functions
         Func__uminus*               clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassName(void);                                         //!< Get class name
@@ -40,12 +47,12 @@ class Func__uminus :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
         // Arguments
-        RbVariablePtr               value;
+        const Variable*             value;
     
         // function return value
         retType                     retValue;
@@ -61,6 +68,56 @@ class Func__uminus :  public RbFunction {
 
 
 
+/** default constructor */
+template <typename firstValType, typename retType>
+Func__uminus<firstValType, retType>::Func__uminus( void ) : RbFunction( ) {
+    value = NULL;
+}
+
+/** default constructor */
+template <typename firstValType, typename retType>
+Func__uminus<firstValType, retType>::Func__uminus( const Func__uminus& f ) : RbFunction( f ) {
+    
+    value = f.value;
+    if ( value != NULL ) {
+        value->incrementReferenceCount();
+    }
+}
+
+/** destructor */
+template <typename firstValType, typename retType>
+Func__uminus<firstValType, retType>::~Func__uminus( void ) {
+    
+    if ( value != NULL && value->decrementReferenceCount() == 0 ) {
+        delete value;
+    }
+}
+
+
+/** Overloaded assignment operator */
+template <typename firstValType, typename retType>
+Func__uminus<firstValType,retType>& Func__uminus<firstValType, retType>::operator=( Func__uminus<firstValType, retType> const &f ) {
+    
+    if ( this != &f ) {
+        // call the base class assignment operator
+        RbFunction::operator=( f );
+        
+        // free the memory first
+        if ( value != NULL && value->decrementReferenceCount() == 0 ) {
+            delete value;
+        }
+        
+        // reassign the member variables
+        value  = f.value;
+        if ( value != NULL ) {
+            value->incrementReferenceCount();
+        }
+    }
+    
+    return *this;
+}
+
+
 /** Clone object */
 template <typename valType, typename retType>
 Func__uminus<valType, retType>* Func__uminus<valType, retType>::clone( void ) const {
@@ -73,7 +130,7 @@ Func__uminus<valType, retType>* Func__uminus<valType, retType>::clone( void ) co
 template <typename valType, typename retType>
 const RbLanguageObject& Func__uminus<valType, retType>::executeFunction( void ) {
 
-    const valType& val = static_cast<valType&> ( value->getValue() );
+    const valType& val = static_cast<const valType&> ( value->getValue() );
              retValue = -( val );
 
     return retValue;
@@ -137,10 +194,22 @@ const TypeSpec& Func__uminus<valType, retType>::getReturnType( void ) const {
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename firstValType, typename retType>
-void Func__uminus<firstValType, retType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func__uminus<firstValType, retType>::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "value" ) {
+        // free the memory of the old variable
+        // Variable uses reference counting so we need to free the memory manually
+        if ( value != NULL && value->decrementReferenceCount() == 0 ) {
+            delete value;
+        }
+        
+        // set my variable to the new variable
         value = var;
+        
+        // increment the reference count for the variable
+        if (value != NULL ) {
+            value->incrementReferenceCount();
+        }
     }
     else {
         RbFunction::setArgumentVariable(name, var);

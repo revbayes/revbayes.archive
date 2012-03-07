@@ -36,14 +36,14 @@
 
 
 /* Default constructor */
-TreePlate::TreePlate(void) : MutableMemberObject( getMemberRules() ), orderingTopology( NULL ) {
+TreePlate::TreePlate(void) : MemberObject( getMemberRules() ), orderingTopology( NULL ) {
     
 //    orderingTopology = NULL;
 }
 
 
 /* Copy constructor */
-TreePlate::TreePlate(const TreePlate& t) : MutableMemberObject( t ), orderingTopology( t.orderingTopology ) {
+TreePlate::TreePlate(const TreePlate& t) : MemberObject( t ), orderingTopology( t.orderingTopology ) {
     
     // for now we just do a shallow copy
     nodeVariableNames = t.nodeVariableNames;
@@ -144,7 +144,7 @@ const std::string& TreePlate::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& TreePlate::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MutableMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -191,7 +191,7 @@ const RbLanguageObject& TreePlate::executeOperation(const std::string& name, con
     }
 
     
-    return MutableMemberObject::executeOperation(name, args);
+    return MemberObject::executeOperation(name, args);
 }
 
 /* Map calls to member methods */
@@ -202,7 +202,7 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
         {
         // get the name of the variable
         const std::string& varName  = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
-        const RbVariablePtr& theVar = args[1].getVariablePtr();
+        const Variable& theVar = args[1].getVariable();
         const TopologyNode& theNode = static_cast<const TopologyNode&>( args[2].getVariable().getValue() );
         
         setNodeVariable(theNode, varName, theVar);
@@ -236,7 +236,7 @@ const RbLanguageObject& TreePlate::executeOperationSimple(const std::string& nam
         }
     else 
         {
-        return MutableMemberObject::executeOperationSimple( name, args );
+        return MemberObject::executeOperationSimple( name, args );
         }
 }
 
@@ -395,12 +395,12 @@ void TreePlate::setMemberVariable(const std::string& name, Variable* var) {
 /** Set the variable with identifier for a node */
 void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &name, RbLanguageObject *value) {
     
-    setNodeVariable(node, name, new Variable( new ConstantNode(value) ) );
+    setNodeVariable(node, name, Variable( new ConstantNode(value) ) );
 }
 
 
 /** Set the variable with identifier for a node */
-void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &name, Variable *value) {
+void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &name, const Variable& value) {
     // check if a container already exists with that name
     if (!memberVariables.existsVariable( name )) 
     {
@@ -421,6 +421,6 @@ void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &nam
     size_t nodeIndex = getNodeIndex(node);
     
     // set the variable
-    vars.setElement(nodeIndex - 1, value->clone() );
+    vars.setElement(nodeIndex - 1, value.clone() );
 }
 

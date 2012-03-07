@@ -50,7 +50,7 @@ class ConstructorFunction :  public RbFunction {
 
 	protected:
         const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function
-        void                                    setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                                    setArgumentVariable(const std::string& name, const Variable* var);
 
         const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
         MemberObject*                           templateObject;                                                                 //!< The template object

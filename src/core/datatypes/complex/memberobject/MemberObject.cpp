@@ -106,9 +106,9 @@ const RbLanguageObject& MemberObject::executeOperation(std::string const &name, 
 const RbLanguageObject& MemberObject::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     if (name == "memberNames") {
-//        for (size_t i=0; i<members->size(); i++) {
-//            RBOUT(members->getName(i));
-//        }
+        for (std::map<std::string, const Variable*>::iterator i = members.begin(); i != members.end(); ++i) {
+            RBOUT( i->first );
+        }
         
         return RbNullObject::getInstance();
     } 
@@ -186,12 +186,12 @@ const MethodTable& MemberObject::getMethods(void) const {
 }
 
 
-const std::map<std::string, RbVariablePtr>& MemberObject::getMembers(void) const {
+const std::map<std::string, const Variable*>& MemberObject::getMembers(void) const {
     return members;
 }
 
 
-std::map<std::string, RbVariablePtr>& MemberObject::getMembers(void) {
+std::map<std::string, const Variable*>& MemberObject::getMembers(void) {
     return members;
 }
 
@@ -199,7 +199,7 @@ std::map<std::string, RbVariablePtr>& MemberObject::getMembers(void) {
 /** Get a member variable */
 const Variable* MemberObject::getMember(const std::string& name) const {
     
-    std::map<std::string, RbVariablePtr>::const_iterator i = members.find( name );
+    std::map<std::string, const Variable*>::const_iterator i = members.find( name );
     if ( i != members.end()) {
         return i->second;
     }
@@ -208,16 +208,16 @@ const Variable* MemberObject::getMember(const std::string& name) const {
 }
 
 
-/** Get a member variable (non-const, for derived classes) */
-Variable* MemberObject::getMember(const std::string& name) {
-    
-    std::map<std::string, RbVariablePtr>::iterator i = members.find( name );
-    if ( i != members.end()) {
-        return i->second;
-    }
-    
-    throw RbException("No Member named '" + name + "' available.");
-}
+///** Get a member variable (non-const, for derived classes) */
+//Variable* MemberObject::getMember(const std::string& name) {
+//    
+//    std::map<std::string, RbVariablePtr>::iterator i = members.find( name );
+//    if ( i != members.end()) {
+//        return i->second;
+//    }
+//    
+//    throw RbException("No Member named '" + name + "' available.");
+//}
 
 /** Does this object have a member called "name" */
 bool MemberObject::hasMember(std::string const &name) const {
@@ -235,41 +235,42 @@ bool MemberObject::isConstant( void ) const {
 /** Print value for user */
 void MemberObject::printValue(std::ostream& o) const {
     
-    o << "Printing members of MemberObject ...." << std::endl;
+    o << "Printing members of MemberObject:" << std::endl;
 
-    for ( std::map<std::string, RbVariablePtr>::const_iterator i = members.begin(); i != members.end(); i++ ) {
+    for ( std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++ ) {
 
-        o << "." << i->first << std::endl;
+        o << "   ." << i->first << ":\t\t";
         i->second->getValue().printValue(o);
-        o << std::endl << std::endl;
+        o << std::endl;
     }
 }
 
 
 /** Set a member DAG node */
-void MemberObject::setMemberVariable(const std::string& name, Variable* var) {
+void MemberObject::setMemberVariable(const std::string& name, const Variable* var) {
 
     throw RbException("No Member named '" + name + "' expected and therefore cannot set it.");
 }
 
 
 /** Set a member variable */
-void MemberObject::setMember(const std::string& name, Variable* var) {
+void MemberObject::setMember(const std::string& name, const Variable* var) {
     // calling the internal mthod to set the DAG node
     // the derived classes should know how to set their members
     setMemberVariable(name, var);
     
     // test whether this element already was inserted
-    std::map<std::string, RbVariablePtr>::iterator existingElement = members.find(name);
+    std::map<std::string, const Variable*>::iterator existingElement = members.find(name);
     if ( members.count( name ) > 0) {
         members[name] = var;
+        var->incrementReferenceCount();
         if ( members.count( name ) > 1) {
             std::cerr << "Opsi dupsi" << std::endl;
         }
     }
     else {
         // just add this node to the map
-        members.insert( std::pair<std::string, RbVariablePtr>(name,var) );
+        members.insert( std::pair<std::string, const Variable*>(name,var) );
     }
 }
 

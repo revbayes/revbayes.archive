@@ -47,14 +47,14 @@
 
 
 /** Constructor passes member rules and method inits to base class */
-Mcmc::Mcmc(void) : ConstantMemberObject(getMemberRules()),
+Mcmc::Mcmc(void) : MemberObject(getMemberRules()),
     model( NULL ),
     moves( NULL ), 
     monitors( NULL ) {
 }
 
 /** Copy constructor */
-Mcmc::Mcmc(const Mcmc &x) : ConstantMemberObject(x),
+Mcmc::Mcmc(const Mcmc &x) : MemberObject(x),
 model( x.model ),
 moves( x.moves ), 
 monitors( x.monitors ) {
@@ -98,7 +98,7 @@ const std::string& Mcmc::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Mcmc::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -341,7 +341,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         }
     }
     else {
-        ConstantMemberObject::setMemberVariable(name, var);
+        MemberObject::setMemberVariable(name, var);
     }
 }
 

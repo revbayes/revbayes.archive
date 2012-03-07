@@ -17,7 +17,7 @@
 #ifndef Mixture_h
 #define Mixture_h
 
-#include "MutableMemberObject.h"
+#include "MemberObject.h"
 #include <string>
 #include "Vector.h"
 #include "VectorNatural.h"
@@ -26,7 +26,7 @@
 #include "Simplex.h"
 
 
-class Mixture: public MutableMemberObject {
+class Mixture: public MemberObject {
     
 public:
     Mixture(void);                                                                                          //!< Default constructor
@@ -50,7 +50,6 @@ public:
     void                            setMemberVariable(const std::string& name, Variable* var);                //!< Catch setting of the mixture
     
     // Member method inits
-    const RbLanguageObject&         executeOperation(const std::string& name, Environment& args);           //!< Execute method
     const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Execute method
     const MethodTable&              getMethods(void) const;                                                 //!< Get methods
     

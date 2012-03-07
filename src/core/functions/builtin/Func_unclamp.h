@@ -43,12 +43,12 @@ class Func_unclamp :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
         // Arguments
-        RbVariablePtr               variable;
+        RbConstVariablePtr          variable;
     
 };
 

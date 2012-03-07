@@ -36,14 +36,14 @@
 #ifndef TopologyNode_H
 #define TopologyNode_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "RbBoolean.h"
 #include "RbString.h"
 
 #include <vector>
 
 
-class TopologyNode : public ConstantMemberObject {
+class TopologyNode : public MemberObject {
     
     public:
                                             TopologyNode(int indx=0);                                                   //!< Default constructor with optional index

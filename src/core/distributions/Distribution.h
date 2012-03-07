@@ -21,7 +21,7 @@
 #ifndef Distribution_H
 #define Distribution_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "Real.h"
 #include "RealPos.h"
 
@@ -34,7 +34,7 @@ class RandomNumberGenerator;
 class StochasticNode;
 
 
-class Distribution: public ConstantMemberObject {
+class Distribution: public MemberObject {
 
     public:
         virtual                    ~Distribution(void) {}                                                                       //!< Destructor

@@ -40,15 +40,15 @@ class Func_gtr :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                                   //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
 
         // Arguments
-        RbVariablePtr               rates;
-        RbVariablePtr               freqs;
+        RbConstVariablePtr          rates;
+        RbConstVariablePtr          freqs;
 
         // function return value
         RateMatrix                  m;

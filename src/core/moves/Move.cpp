@@ -38,14 +38,14 @@
 
 
 /** Constructor */
-Move::Move( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ), weight( NULL ) {
+Move::Move( const MemberRules& memberRules ) : MemberObject( memberRules ), weight( NULL ) {
 
     numAccepted = 0;
     numTried    = 0;
 }
 
 /** Copy Constructor. We use a shallow copy of the nodes */
-Move::Move(const Move &m) : ConstantMemberObject(m), weight( m.weight ) {
+Move::Move(const Move &m) : MemberObject(m), weight( m.weight ) {
     
     numTried    = m.numTried;
     numAccepted = m.numAccepted;
@@ -121,7 +121,7 @@ const std::string& Move::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Move::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -209,7 +209,7 @@ void Move::setMemberVariable(std::string const &name, Variable* var) {
         weight = var;
     } 
     else {
-        ConstantMemberObject::setMemberVariable(name, var);
+        MemberObject::setMemberVariable(name, var);
     }
 }
 

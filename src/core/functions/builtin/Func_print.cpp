@@ -54,11 +54,11 @@ Func_print* Func_print::clone( void ) const {
 const RbLanguageObject& Func_print::executeFunction( void ) {
     
 
-    const std::string& f = static_cast<RbString&>( filename->getValue() ).getValue();
+    const std::string& f = static_cast<const RbString&>( filename->getValue() ).getValue();
     if ( f != "" ) {
         std::ofstream outStream;
         
-        if (static_cast<RbBoolean&>( append->getValue() ).getValue()) {
+        if (static_cast<const RbBoolean&>( append->getValue() ).getValue()) {
             
             // open the stream to the file
             outStream.open(f.c_str(), std::fstream::out | std::fstream::app);
@@ -143,7 +143,7 @@ const TypeSpec& Func_print::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_print::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_print::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "filename" ) {
         filename = var;

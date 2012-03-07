@@ -31,7 +31,7 @@
 
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-TopologyNode::TopologyNode(int indx) : ConstantMemberObject( getMemberRules() ), name(""), index(indx), isRootNode( true ), isTipNode( true ), isInteriorNode( false ) {
+TopologyNode::TopologyNode(int indx) : MemberObject( getMemberRules() ), name(""), index(indx), isRootNode( true ), isTipNode( true ), isInteriorNode( false ) {
     
     // initialize
     parent = NULL;
@@ -39,7 +39,7 @@ TopologyNode::TopologyNode(int indx) : ConstantMemberObject( getMemberRules() ),
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-TopologyNode::TopologyNode(const std::string& n, int indx) : ConstantMemberObject( getMemberRules() ), name(n), index(indx), isRootNode( true ), isTipNode( true ), isInteriorNode( false ) {
+TopologyNode::TopologyNode(const std::string& n, int indx) : MemberObject( getMemberRules() ), name(n), index(indx), isRootNode( true ), isTipNode( true ), isInteriorNode( false ) {
     
     // initialize
     parent = NULL;
@@ -47,7 +47,7 @@ TopologyNode::TopologyNode(const std::string& n, int indx) : ConstantMemberObjec
 
 
 /** Copy constructor. We use a shallow copy. */
-TopologyNode::TopologyNode(const TopologyNode &n) : ConstantMemberObject(n) {
+TopologyNode::TopologyNode(const TopologyNode &n) : MemberObject(n) {
     
     // copy the members
     name            = n.name;
@@ -90,7 +90,7 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
     
     if (this == &n) {
         // delegate to the parent
-        ConstantMemberObject::operator=(n);
+        MemberObject::operator=(n);
         
         removeAllChildren();
         
@@ -164,7 +164,7 @@ const std::string& TopologyNode::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& TopologyNode::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

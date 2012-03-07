@@ -56,21 +56,21 @@ const RbLanguageObject& ConstructorTaxonData::executeFunction(void) {
     retVal = TaxonData( Character::getClassName() );
     
     // the name of the taxon
-    const std::string& n = static_cast<RbString&>( name->getValue() ).getValue();
+    const std::string& n = static_cast<const RbString&>( name->getValue() ).getValue();
     retVal.setTaxonName( n );
     
     // TODO: We should not use DAG node containers directly, but for now that has to do
-    DAGNode* theNode = chars->getDagNode();
+    const DAGNode* theNode = chars->getDagNode();
     if ( theNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        DagNodeContainer& con = static_cast<DagNodeContainer&>( theNode->getValue() );
+        const DagNodeContainer& con = static_cast<const DagNodeContainer&>( theNode->getValue() );
         for (size_t i = 0; i < con.size(); i++) {
-            Character* c = static_cast<Character*>( static_cast<VariableSlot&>( con.getElement( i ) ).getValue().clone() );
+            Character* c = static_cast<Character*>( static_cast<const VariableSlot&>( con.getElement( i ) ).getValue().clone() );
             retVal.addCharacter( c );
         }
     }
     else {
         // set the vector of characters
-        Vector& v = static_cast<Vector&>( chars->getValue() );
+        const Vector& v = static_cast<const Vector&>( chars->getValue() );
         for (size_t i = 0; i < v.size(); i++) {
             Character* c = static_cast<Character*>( v.getElement( i ).clone() );
             retVal.addCharacter( c );
@@ -135,7 +135,7 @@ const TypeSpec& ConstructorTaxonData::getReturnType(void) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void ConstructorTaxonData::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void ConstructorTaxonData::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "name" ) {
         this->name = var;

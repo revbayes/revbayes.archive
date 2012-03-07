@@ -45,12 +45,12 @@ public:
 
 protected:
     const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
-    void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+    void                        setArgumentVariable(const std::string& name, const Variable* var);
 
 private:
     
     // Arguments
-    RbVariablePtr               value;
+    RbConstVariablePtr          value;
     
     // function return value
     Natural                     retValue;
@@ -77,7 +77,7 @@ Func_size<valType>* Func_size<valType>::clone( void ) const {
 template <typename valType> 
 const RbLanguageObject& Func_size<valType>::executeFunction( void ) {
     
-    const valType& val = static_cast<valType&> ( value->getValue() ) ;
+    const valType& val = static_cast<const valType&> ( value->getValue() ) ;
     retValue.setValue( val.size() ); 
     
     return retValue;
@@ -143,7 +143,7 @@ const TypeSpec& Func_size<firstValType>::getReturnType( void ) const {
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename firstValType>
-void Func_size<firstValType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_size<firstValType>::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "value" ) {
         value = var;

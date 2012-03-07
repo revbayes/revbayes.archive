@@ -29,6 +29,13 @@ template <typename valType>
 class Func__unot :  public RbFunction {
 
     public:
+                                    Func__unot( void );
+                                    Func__unot( const Func__unot& f);
+        virtual                    ~Func__unot( void );
+    
+        // overloaded operators
+        Func__unot&                  operator=( const Func__unot& f);
+    
         // Basic utility functions
         Func__unot*                 clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassName(void);                                         //!< Get class name
@@ -41,12 +48,12 @@ class Func__unot :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
         // Arguments
-        RbVariablePtr               value;
+        const Variable*             value;
     
         // function return value
         RbBoolean                   retValue;
@@ -62,6 +69,57 @@ class Func__unot :  public RbFunction {
 #include "VectorString.h"
 
 
+
+/** default constructor */
+template <typename valType>
+Func__unot<valType>::Func__unot( void ) : RbFunction( ) {
+    value = NULL;
+}
+
+/** default constructor */
+template <typename valType>
+Func__unot<valType>::Func__unot( const Func__unot& f ) : RbFunction( f ) {
+    
+    value = f.value;
+    if ( value != NULL ) {
+        value->incrementReferenceCount();
+    }
+}
+
+/** destructor */
+template <typename valType>
+Func__unot<valType>::~Func__unot( void ) {
+    
+    if ( value != NULL && value->decrementReferenceCount() == 0 ) {
+        delete value;
+    }
+}
+
+
+/** Overloaded assignment operator */
+template <typename valType>
+Func__unot<valType>& Func__unot<valType>::operator=( Func__unot<valType> const &f ) {
+    
+    if ( this != &f ) {
+        // call the base class assignment operator
+        RbFunction::operator=( f );
+        
+        // free the memory first
+        if ( value != NULL && value->decrementReferenceCount() == 0 ) {
+            delete value;
+        }
+        
+        // reassign the member variables
+        value = f.value;
+        if ( value != NULL ) {
+            value->incrementReferenceCount();
+        }
+    }
+    
+    return *this;
+}
+
+
 /** Clone object */
 template <typename valType>
 Func__unot<valType>* Func__unot<valType>::clone( void ) const {
@@ -74,7 +132,7 @@ Func__unot<valType>* Func__unot<valType>::clone( void ) const {
 template <typename valType>
 const RbLanguageObject& Func__unot<valType>::executeFunction( void ) {
 
-    const valType& val = static_cast<valType&> ( value->getValue() );
+    const valType& val = static_cast<const valType&> ( value->getValue() );
     retValue = ! (val);
 
     return retValue;
@@ -140,10 +198,22 @@ const TypeSpec& Func__unot<firstValType>::getReturnType( void ) const {
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename firstValType>
-void Func__unot<firstValType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func__unot<firstValType>::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "value" ) {
+        // free the memory of the old variable
+        // Variable uses reference counting so we need to free the memory manually
+        if ( value != NULL && value->decrementReferenceCount() == 0 ) {
+            delete value;
+        }
+        
+        // set my variable to the new variable
         value = var;
+        
+        // increment the reference count for the variable
+        if (value != NULL ) {
+            value->incrementReferenceCount();
+        }
     }
     else {
         RbFunction::setArgumentVariable(name, var);

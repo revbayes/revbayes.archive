@@ -28,7 +28,7 @@
 
 
 /** Constructor with element type, used to properly construct vectors */
-TaxonData::TaxonData(const std::string& elemType, const std::string tname) : ConstantMemberObject(), sequence(elemType), taxonName(tname) {
+TaxonData::TaxonData(const std::string& elemType, const std::string tname) : MemberObject(), sequence(elemType), taxonName(tname) {
     
 }
 
@@ -88,7 +88,7 @@ const RbLanguageObject& TaxonData::executeOperationSimple(const std::string& nam
         return element;
     } 
     
-    return ConstantMemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeOperationSimple( name, args );
 }
 
 
@@ -103,7 +103,7 @@ const std::string& TaxonData::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& TaxonData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -144,7 +144,7 @@ const MethodTable& TaxonData::getMethods(void) const {
         methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &ConstantMemberObject::getMethods() );
+        methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
     
@@ -196,7 +196,7 @@ void TaxonData::setMemberVariable(const std::string& name, Variable* var) {
         sequence.push_back( element );
     }
     else {
-        ConstantMemberObject::setMemberVariable(name, var);
+        MemberObject::setMemberVariable(name, var);
     }
 }
 

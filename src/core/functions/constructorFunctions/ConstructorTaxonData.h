@@ -43,10 +43,10 @@ public:
     
 protected:
     const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function
-    void                                    setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+    void                                    setArgumentVariable(const std::string& name, const Variable* var);
     
-    RbVariablePtr                           name;
-    RbVariablePtr                           chars;
+    RbConstVariablePtr                      name;
+    RbConstVariablePtr                      chars;
     
     // member function return object
     TaxonData                               retVal;

@@ -30,7 +30,7 @@
 
 
 /** Constructor with inheritance for member rules */
-Distribution::Distribution( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ) {
+Distribution::Distribution( const MemberRules& memberRules ) : MemberObject( memberRules ) {
 }
 
 
@@ -67,7 +67,7 @@ const std::string& Distribution::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Distribution::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

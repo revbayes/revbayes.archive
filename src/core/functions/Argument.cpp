@@ -25,32 +25,45 @@
 
 
 /** Construct from argument label and DAG node */
-Argument::Argument(const RbVariablePtr& v) : RbInternal() {
+Argument::Argument( const Variable* v) : RbInternal() {
     
     label   = "";
     var     = v;
+    
+    // we need to increment the reference count
+    var->incrementReferenceCount();
 }
 
 
 /** Construct from argument label and DAG node */
-Argument::Argument(const std::string& argLabel, const RbVariablePtr& v) : RbInternal() {
+Argument::Argument(const std::string& argLabel, const Variable* v) : RbInternal() {
 
     label   = argLabel;
     var     = v;
+    
+    // we need to increment the reference count
+    var->incrementReferenceCount();
+    
 }
 
 /** Copy Constructor. We keep the same pointer to the variable stored inside this argument. */
 Argument::Argument(const Argument &x) : RbInternal(x) {
     
     label   = x.label;
-    if (x.var != NULL)
-        var     = x.var;
+    var     = x.var;
+    
+    if (var != NULL)
+        var->incrementReferenceCount();
 }
 
 
 /** Destructor */
 Argument::~Argument() {
     
+    // decrement the reference count and delete the object if it is not reference anymore
+    if ( var->decrementReferenceCount() == 0) {
+        delete var;
+    }
 }
 
 
@@ -58,7 +71,7 @@ Argument& Argument::operator=(const Argument &x) {
     
     if ( &x != this ) {
         
-        if (var != NULL) {
+        if (var != NULL && var->decrementReferenceCount() == 0) {
             delete var;
         }
         // Copy the new variable
@@ -67,6 +80,7 @@ Argument& Argument::operator=(const Argument &x) {
         }
         else {
             var     = x.var;
+            var->incrementReferenceCount();
         }
         label   = x.label;
     }
@@ -109,14 +123,20 @@ const Variable& Argument::getVariable(void) const {
 }
 
 
-Variable& Argument::getVariable(void) {
-    return *var;
-}
+//Variable& Argument::getVariable(void) {
+//    return *var;
+//}
 
 
-const RbVariablePtr& Argument::getVariablePtr(void) const {
+const Variable* Argument::getVariablePtr(void) const {
     return var;
 }
+
+
+//Variable* Argument::getVariablePtr(void) {
+//    return var;
+//}
+
 
 
 /** Complete info about object */

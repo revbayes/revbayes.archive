@@ -38,12 +38,12 @@ class Func_ls :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                              //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
 
         // arguments
-        RbVariablePtr               all;
+        RbConstVariablePtr          all;
 
 };
 

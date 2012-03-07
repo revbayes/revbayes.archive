@@ -20,7 +20,7 @@
 #ifndef Simulate_H
 #define Simulate_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "RbString.h"
 #include "Vector.h"
 
@@ -33,7 +33,7 @@ class Model;
 class VectorString;
 
 
-class Simulate: public ConstantMemberObject {
+class Simulate: public MemberObject {
     
 public:
     Simulate(void);                                                                                                     //!< Default constructor

@@ -34,12 +34,12 @@
 
 
 /** Default constructor for a Model object. */
-Model::Model( void ) : ConstantMemberObject( getMemberRules() ) {
+Model::Model( void ) : MemberObject( getMemberRules() ) {
 }
 
 
 /** Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. */
-Model::Model( const std::vector<DAGNode*>& sinkNodes ) : ConstantMemberObject(getMemberRules()) {
+Model::Model( const std::vector<DAGNode*>& sinkNodes ) : MemberObject(getMemberRules()) {
 
     /* Check to see that we have at least one DAG node */
     if ( sinkNodes.empty() )
@@ -59,7 +59,7 @@ Model::Model( const std::vector<DAGNode*>& sinkNodes ) : ConstantMemberObject(ge
 
 
 /** Copy constructor */
-Model::Model( const Model& x ) : ConstantMemberObject( x ) {
+Model::Model( const Model& x ) : MemberObject( x ) {
 
     /* Make copy of DAG by pulling from first node in x */
     std::map<const DAGNode*, RbDagNodePtr> newNodes;
@@ -168,7 +168,7 @@ const std::string& Model::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstantMemberObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -387,7 +387,7 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
         
     }
     else {
-        ConstantMemberObject::setMemberVariable(name, var);
+        MemberObject::setMemberVariable(name, var);
     }
 }
 

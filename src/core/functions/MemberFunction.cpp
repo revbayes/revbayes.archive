@@ -109,7 +109,7 @@ void MemberFunction::setMemberObject(MemberObject& obj) {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void MemberFunction::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void MemberFunction::setArgumentVariable(std::string const &name, const Variable* var) {
     
     
     // We expect a couple of parameters which we need to add to the member function. Therefore we do not call the base class.

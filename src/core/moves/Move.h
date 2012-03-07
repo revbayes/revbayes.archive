@@ -18,14 +18,14 @@
 #ifndef Move_H
 #define Move_H
 
-#include "ConstantMemberObject.h"
+#include "MemberObject.h"
 #include "Natural.h"
 #include "RealPos.h"
 
 class RandomNumberGenerator;
 
 
-class Move : public ConstantMemberObject {
+class Move : public MemberObject {
 
     public:
     virtual                                    ~Move(void);                                                                             //!< Destructor

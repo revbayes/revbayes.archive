@@ -36,15 +36,15 @@ class Func_CtmmTransitionProbabilities :  public RbFunction {
 
     protected:
         const RbLanguageObject&             executeFunction(void);                                                  //!< Execute function
-        void                                setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                                setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
         size_t                              nStates;                                                                //!< The number of states in the model
         TransitionProbabilityMatrix         transProbsMatrix;                                                       //!< The transition probability matrix
     
         // Arguments
-        RbVariablePtr                       rateMatrix;
-        RbVariablePtr                       time;
+        RbConstVariablePtr                  rateMatrix;
+        RbConstVariablePtr                  time;
 
 };
 

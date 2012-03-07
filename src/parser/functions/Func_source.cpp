@@ -33,6 +33,73 @@
 #include <fstream>
 
 
+
+/** Default constructor */
+Func_source::Func_source( void ) : RbFunction() {
+    filename = NULL;
+    echo = NULL;
+}
+
+/** Copy constructor */
+Func_source::Func_source( const Func_source& f) : RbFunction( f ) {
+
+    filename = f.filename;
+    if ( filename != NULL ) {
+        filename->incrementReferenceCount();
+    }
+    
+    echo = f.echo;
+    if ( echo != NULL ) {
+        echo->incrementReferenceCount();
+    }
+}
+
+
+/** Destructor */
+Func_source::~Func_source(void) {
+    
+    if ( filename != NULL && filename->decrementReferenceCount() == 0 ) {
+        delete filename;
+    }
+    
+    if ( echo != NULL && echo->decrementReferenceCount() == 0 ) {
+        delete  echo;
+    }
+}
+
+
+/** Overloaded assignment operator */
+Func_source& Func_source::operator=(const Func_source &f) {
+    
+    if ( this != &f ) {
+        // call the base class assignment operator first
+        RbFunction::operator=( f );
+        
+        // free the memory if necessary
+        if ( filename != NULL && filename->decrementReferenceCount() == 0 ) {
+            delete filename;
+        }
+        
+        if ( echo != NULL && echo->decrementReferenceCount() == 0 ) {
+            delete  echo;
+        }
+        
+        // set the arguments
+        filename = f.filename;
+        if ( filename != NULL ) {
+            filename->incrementReferenceCount();
+        }
+        
+        echo = f.echo;
+        if ( echo != NULL ) {
+            echo->incrementReferenceCount();
+        }
+    }
+    
+    return *this;
+}
+
+
 /** Clone object */
 Func_source* Func_source::clone( void ) const {
 
@@ -44,11 +111,11 @@ Func_source* Func_source::clone( void ) const {
 const RbLanguageObject& Func_source::executeFunction( void ) {
 
     /* Open file */
-    std::string fname = static_cast<RbString&>( filename->getValue() ).getValue();
+    std::string fname = static_cast<const RbString&>( filename->getValue() ).getValue();
     std::ifstream inFile( fname.c_str() );
     
     
-    bool echo_on = static_cast<RbBoolean&>( echo->getValue() ).getValue();
+    bool echo_on = static_cast<const RbBoolean&>( echo->getValue() ).getValue();
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + fname + "\"" );
@@ -143,7 +210,7 @@ const TypeSpec& Func_source::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_source::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_source::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "file" ) {
         filename = var;

@@ -18,7 +18,7 @@
 #ifndef ObjectMonitor_H
 #define ObjectMonitor_H
 
-//#include "ConstantMemberObject.h"
+//#include "MemberObject.h"
 #include "Monitor.h"
 #include "Vector.h"
 #include "RbString.h"

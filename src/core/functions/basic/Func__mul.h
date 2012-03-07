@@ -30,6 +30,13 @@ template <typename firstValType, typename secondValType, typename retType>
 class Func__mul :  public RbFunction {
 
     public:
+                                    Func__mul( void );
+                                    Func__mul( const Func__mul& f);
+        virtual                    ~Func__mul( void );
+    
+        // overloaded operators
+        Func__mul&                  operator=( const Func__mul& f);
+    
         // Basic utility functions
         Func__mul*                  clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassName(void);                                         //!< Get class name
@@ -42,13 +49,13 @@ class Func__mul :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
         // Arguments
-        RbVariablePtr               first;
-        RbVariablePtr               second;
+        const Variable*             first;
+        const Variable*             second;
     
         // function return value
         retType                     retValue;
@@ -68,6 +75,74 @@ class Func__mul :  public RbFunction {
 
 
 
+/** default constructor */
+template <typename firstValType, typename secondValType, typename retType>
+Func__mul<firstValType, secondValType, retType>::Func__mul( void ) : RbFunction( ) {
+    first  = NULL;
+    second = NULL;
+}
+
+/** default constructor */
+template <typename firstValType, typename secondValType, typename retType>
+Func__mul<firstValType, secondValType, retType>::Func__mul( const Func__mul& f ) : RbFunction( f ) {
+    
+    first  = f.first;
+    if ( first != NULL ) {
+        first->incrementReferenceCount();
+    }
+    second = f.second;
+    if ( second != NULL ) {
+        second->incrementReferenceCount();
+    }
+}
+
+/** destructor */
+template <typename firstValType, typename secondValType, typename retType>
+Func__mul<firstValType, secondValType, retType>::~Func__mul( void ) {
+    
+    if ( first != NULL && first->decrementReferenceCount() == 0 ) {
+        delete first;
+    }
+    
+    if ( second != NULL && second->decrementReferenceCount() == 0 ) {
+        delete second;
+    }
+}
+
+
+/** Overloaded assignment operator */
+template <typename firstValType, typename secondValType, typename retType>
+Func__mul<firstValType,secondValType,retType>& Func__mul<firstValType, secondValType, retType>::operator=( Func__mul<firstValType, secondValType, retType> const &f ) {
+    
+    if ( this != &f ) {
+        // call the base class assignment operator
+        RbFunction::operator=( f );
+        
+        // free the memory first
+        if ( first != NULL && first->decrementReferenceCount() == 0 ) {
+            delete first;
+        }
+        
+        if ( second != NULL && second->decrementReferenceCount() == 0 ) {
+            delete second;
+        }
+        
+        // reassign the member variables
+        first  = f.first;
+        if ( first != NULL ) {
+            first->incrementReferenceCount();
+        }
+        
+        second = f.second;
+        if ( second != NULL ) {
+            second->incrementReferenceCount();
+        }
+    }
+    
+    return *this;
+}
+
+
 /** Clone object */
 template <typename firstValType, typename secondValType, typename retType>
 Func__mul<firstValType, secondValType, retType>* Func__mul<firstValType, secondValType, retType>::clone( void ) const {
@@ -80,8 +155,8 @@ Func__mul<firstValType, secondValType, retType>* Func__mul<firstValType, secondV
 template <typename firstValType, typename secondValType, typename retType>
 const RbLanguageObject& Func__mul<firstValType,secondValType,retType>::executeFunction( void ) {
 
-    const firstValType&  val1 = static_cast<firstValType&> ( first->getValue() );
-    const secondValType& val2 = static_cast<secondValType&>( second->getValue() );
+    const firstValType&  val1 = static_cast<const firstValType&> ( first->getValue() );
+    const secondValType& val2 = static_cast<const secondValType&>( second->getValue() );
 
                   retValue = val1 * val2;
         
@@ -147,13 +222,37 @@ const TypeSpec& Func__mul<firstValType, secondValType, retType>::getReturnType(v
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename firstValType, typename secondValType, typename retType>
-void Func__mul<firstValType, secondValType, retType>::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func__mul<firstValType, secondValType, retType>::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "first" ) {
+        // free the memory of the old variable
+        // Variable uses reference counting so we need to free the memory manually
+        if ( first != NULL && first->decrementReferenceCount() == 0 ) {
+            delete first;
+        }
+        
+        // set my variable to the new variable
         first = var;
+        
+        // increment the reference count for the variable
+        if (first != NULL ) {
+            first->incrementReferenceCount();
+        }
     }
     else if ( name == "second" ) {
+        // free the memory of the old variable
+        // Variable uses reference counting so we need to free the memory manually
+        if ( second != NULL && second->decrementReferenceCount() == 0 ) {
+            delete second;
+        }
+        
+        // set my variable to the new variable
         second = var;
+        
+        // increment the reference count for the variable
+        if (second != NULL ) {
+            second->incrementReferenceCount();
+        }
     }
     else {
         RbFunction::setArgumentVariable(name, var);

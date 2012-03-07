@@ -42,8 +42,8 @@ Func_unclamp* Func_unclamp::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_unclamp::executeFunction( void ) {
 
-    // Get the stochastic node from the variable reference or lookup
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>( variable->getDagNode() );
+    // Get the stochastic node from the variable
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>( const_cast<DAGNode*>( variable->getDagNode() ) );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
@@ -104,7 +104,7 @@ const TypeSpec& Func_unclamp::getReturnType( void ) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_unclamp::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void Func_unclamp::setArgumentVariable(std::string const &name, const Variable* var) {
     
     if ( name == "variable" ) {
         variable = var;

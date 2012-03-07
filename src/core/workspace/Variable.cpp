@@ -105,8 +105,8 @@ Variable* Variable::clone( void ) const {
 
 
 /** Decrement the reference count. */
-size_t Variable::decrementReferenceCount( void ) {
-    refCount--;
+size_t Variable::decrementReferenceCount( void ) const {
+    const_cast<Variable*>( this )->refCount--;
     
     return refCount;
 }
@@ -201,8 +201,8 @@ const TypeSpec& Variable::getValueTypeSpec(void) const {
 
 
 /** Increment the reference count for this instance. */
-size_t Variable::incrementReferenceCount( void ) {
-    return refCount++;
+size_t Variable::incrementReferenceCount( void ) const {
+    return const_cast<Variable*>( this )->refCount++;
 }
 
 

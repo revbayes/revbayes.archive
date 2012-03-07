@@ -91,6 +91,7 @@ const RbLanguageObject& ConstructorFunction::executeFunction(void) {
     }
     copyObject = templateObject->clone();
 
+    
     for ( size_t i = 0; i < args.size(); i++ ) {
         copyObject->setMember( args[i].getLabel(), args[i].getVariablePtr() );
     }
@@ -139,7 +140,7 @@ const TypeSpec& ConstructorFunction::getReturnType(void) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void ConstructorFunction::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void ConstructorFunction::setArgumentVariable(std::string const &name, const Variable* var) {
     
     // We do nothing here because the only thing we need is to collect the arguments in a vector.
     // This is done by the base class alreay.
