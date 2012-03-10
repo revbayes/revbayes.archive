@@ -22,7 +22,6 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 

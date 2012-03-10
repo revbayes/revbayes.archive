@@ -16,11 +16,11 @@
 #ifndef DistanceMatrix_H
 #define DistanceMatrix_H
 
-#include "MatrixReal.h"
+#include "Matrix.h"
 #include "Natural.h"
+#include "RbString.h"
+#include "RbVector.h"
 #include "ValueRule.h"
-#include "VectorReal.h"
-#include "VectorString.h"
 
 #include <set>
 #include <string>
@@ -30,7 +30,7 @@ class ArgumentRule;
 class DAGNode;
 
 
-class DistanceMatrix : public MatrixReal {
+class DistanceMatrix : public MemberObject {
 
     public:
                                             DistanceMatrix(const size_t nTaxa);                                         //!< Constructor requires character type
@@ -39,7 +39,9 @@ class DistanceMatrix : public MatrixReal {
 
         // Overloaded operators
         DistanceMatrix&                     operator=(const DistanceMatrix& x);                                         //!< Assignment operator
-
+        const RbVector<Real>&               operator[](size_t index) const;
+        RbVector<Real>&                     operator[](size_t index);
+    
         // Basic utility functions
         DistanceMatrix*                     clone(void) const;                                                          //!< Clone object
         static const std::string&           getClassName(void);                                                         //!< Get class name
@@ -62,10 +64,11 @@ class DistanceMatrix : public MatrixReal {
         RbObject&                           getElement(size_t row, size_t col);                                         //!< Get element or subcontainer (non-const to return non-const element)
         void                                setElement(size_t row, size_t col, RbLanguageObject* var);                  //!< set element
         void                                resize(size_t nRows, size_t nCols);                                         //!< Resize to new length vector
+        size_t                              size(void) const;
         void                                transpose(void);                                                            //!< Transpose the matrix
 
         // CharacterData functions
-        void                                addTaxonWithName(std::string s) { sequenceNames.push_back(s); }             //!< Add a taxon name to the matrix
+        void                                addTaxonWithName(std::string s);                                            //!< Add a taxon name to the matrix
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
@@ -81,19 +84,20 @@ class DistanceMatrix : public MatrixReal {
 
     private:
         // Utility functions
-        size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
+        size_t                              indexOfTaxonWithName(const std::string& s) const;                           //!< Get the index of the taxon
 
         // Member variables
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
-        VectorString                        sequenceNames;                                                              //!< names of the sequences
+        Matrix<Real>                        elements;
+        RbVector<RbString>                  sequenceNames;                                                              //!< names of the sequences
         TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
 
         // memberfunction return values
         Natural                             numTaxa;
         Natural                             numIncludedTaxa;
         Natural                             numExcludedTaxa;
-        VectorString                        excludedTaxa;
-        VectorString                        includedTaxa;
+        RbVector<RbString>                  excludedTaxa;
+        RbVector<RbString>                  includedTaxa;
 };
 
 #endif

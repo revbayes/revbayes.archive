@@ -26,7 +26,6 @@
 
 class DAGNode;
 class RbFileManager;
-class VectorString;
 
 /**
  * This is the interface for a class that reads in phylogenetic character matrix data, such as

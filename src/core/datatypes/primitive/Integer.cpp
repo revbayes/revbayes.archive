@@ -26,8 +26,6 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
-#include "VectorInteger.h"
-#include "VectorString.h"
 
 #include <sstream>
 
@@ -92,9 +90,6 @@ RbObject* Integer::convertTo( const TypeSpec& type ) const {
         return new RbString( o.str() );
     }
 
-    if ( type == VectorInteger::getClassTypeSpec() )
-        return new VectorInteger( value );
-
     if ( type == RealPos::getClassTypeSpec() && value > 0 )
         return new RealPos( value );
 
@@ -140,9 +135,6 @@ bool Integer::isConvertibleTo( const TypeSpec& type ) const {
         return true;
 
     if ( type == RbString::getClassTypeSpec() )
-        return true;
-    
-    if ( type == VectorInteger::getClassTypeSpec() )
         return true;
 
     if ( type == RealPos::getClassTypeSpec() && value > 0 )

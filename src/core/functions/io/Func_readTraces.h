@@ -25,7 +25,6 @@
 
 class DAGNode;
 class RbFileManager;
-class VectorString;
 
 
 class Func_readTraces :  public RbFunction {

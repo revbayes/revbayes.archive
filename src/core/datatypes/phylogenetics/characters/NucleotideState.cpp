@@ -15,7 +15,6 @@
 
 #include "NucleotideState.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 
 
 

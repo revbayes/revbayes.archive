@@ -26,7 +26,6 @@
 
 class DAGNode;
 class StochasticNode;
-class VectorString;
 
 class Dist_beta: public DistributionContinuous {
 

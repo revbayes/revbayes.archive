@@ -23,9 +23,9 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNullObject.h"
+#include "RbString.h"
 #include "RbUtil.h"
 #include "UserInterface.h"
-#include "VectorString.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
 

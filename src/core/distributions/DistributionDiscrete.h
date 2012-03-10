@@ -28,7 +28,6 @@ class ArgumentRule;
 class Move;
 class Simplex;
 class StochasticNode;
-class VectorString;
 
 
 class DistributionDiscrete: public Distribution {

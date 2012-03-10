@@ -24,9 +24,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
-
-const std::string Func_sumOver_name = "sumOver function";
 
 class Func_sumOver :  public RbFunction {
     

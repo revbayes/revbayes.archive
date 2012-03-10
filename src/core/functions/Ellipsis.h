@@ -27,7 +27,6 @@
 #include <string>
 
 class DAGNode;
-class VectorString;
 
 class Ellipsis : public ArgumentRule {
 

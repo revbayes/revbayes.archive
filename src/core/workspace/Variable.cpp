@@ -24,7 +24,6 @@
 #include "TypeSpec.h"
 #include "Variable.h"
 #include "VariableNode.h"
-#include "VectorString.h"
 
 #include <cassert>
 #include <string>

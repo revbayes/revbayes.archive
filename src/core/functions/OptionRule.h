@@ -18,7 +18,7 @@
 #define OptionRule_H
 
 #include "ValueRule.h"
-#include "VectorString.h"
+#include "RbVector.h"
 
 #include <string>
 
@@ -30,8 +30,8 @@ class RbString;
 class OptionRule : public ValueRule {
 
     public:
-                                    OptionRule(const std::string& argName, VectorString optVals);                       //!< Constructor of rule without default value
-                                    OptionRule(const std::string& argName, RbString* defVal, VectorString optVals);     //!< Constructor of rule with default value
+                                    OptionRule(const std::string& argName, RbVector<RbString> optVals);                       //!< Constructor of rule without default value
+                                    OptionRule(const std::string& argName, RbString* defVal, RbVector<RbString> optVals);     //!< Constructor of rule with default value
 
         // Basic utility functions
         OptionRule*                 clone(void) const { return new OptionRule(*this); }                                 //!< Clone object
@@ -42,9 +42,9 @@ class OptionRule : public ValueRule {
         void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
 
     protected:
-        bool                        areOptionsUnique(const VectorString& optVals) const;                                //!< Test if options are unique
+        bool                        areOptionsUnique(const RbVector<RbString>& optVals) const;                                //!< Test if options are unique
 
-        VectorString                options;                                                                            //!< Permissible values
+        RbVector<RbString>          options;                                                                            //!< Permissible values
     
 };
 

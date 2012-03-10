@@ -21,7 +21,6 @@
 #include "Complex.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "VectorString.h"
 
 #include <iomanip>
 #include <sstream>
@@ -83,6 +82,62 @@ Complex::Complex(const std::complex<double>& c) : RbLanguageObject() {
 bool Complex::operator==(const Complex &x) const {
     
     return value == x.value;
+}
+
+/** Overloaded operator +=. */
+Complex& Complex::operator+=(const Complex &A) {
+    value += A.getValue();
+    
+    return *this;
+}
+
+/** Overloaded operator +=. */
+Complex& Complex::operator+=(const double A) {
+    value += A;
+    
+    return *this;
+}
+
+/** Overloaded operator -=. */
+Complex& Complex::operator-=(const Complex &A) {
+    value -= A.getValue();
+    
+    return *this;
+}
+
+/** Overloaded operator -=. */
+Complex& Complex::operator-=(const double A) {
+    value -= A;
+    
+    return *this;
+}
+
+/** Overloaded operator *=. */
+Complex& Complex::operator*=(const Complex &A) {
+    value *= A.getValue();
+    
+    return *this;
+}
+
+/** Overloaded operator *=. */
+Complex& Complex::operator*=(const double A) {
+    value *= A;
+    
+    return *this;
+}
+
+/** Overloaded operator /=. */
+Complex& Complex::operator/=(const Complex &A) {
+    value /= A.getValue();
+    
+    return *this;
+}
+
+/** Overloaded operator /=. */
+Complex& Complex::operator/=(const double A) {
+    value /= A;
+    
+    return *this;
 }
 
 
@@ -166,6 +221,198 @@ Complex operator-(const Complex& A) {
 	Complex B( - A.getValue() );
     
     return B;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator+
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator+(const Complex& A, const Complex& B) {
+    
+	Complex C = A.getValue() + B.getValue();
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator+
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator+(const Complex& A, const double B) {
+    
+	Complex C = A.getValue() + B;
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator+
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator+(const double A, const Complex& B) {
+    
+	Complex C = A + B.getValue();
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator-
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator-(const Complex& A, const Complex& B) {
+    
+	Complex C = A.getValue() - B.getValue();
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator-
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator-(const Complex& A, const double B) {
+    
+	Complex C = A.getValue() - B;
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator-
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator-(const double A, const Complex& B) {
+    
+	Complex C = A - B.getValue();
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator*
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator*(const Complex& A, const Complex& B) {
+    
+	Complex C = A.getValue() * B.getValue();
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator*
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator*(const Complex& A, const double B) {
+    
+	Complex C = A.getValue() * B;
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator*
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator*(const double A, const Complex& B) {
+    
+	Complex C = A * B.getValue();
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator/
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator/(const Complex& A, const Complex& B) {
+    
+	Complex C = A.getValue() / B.getValue();
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator/
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator/(const Complex& A, const double B) {
+    
+	Complex C = A.getValue() / B;
+	return C;
+}
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief binary operator/
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator/(const double A, const Complex& B) {
+    
+	Complex C = A / B.getValue();
+	return C;
 }
 
 

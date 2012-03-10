@@ -25,7 +25,6 @@
 #include <string>
 
 class DAGNode;
-class VectorString;
 
 template <typename firstValType, typename secondValType>
 class Func__ne :  public RbFunction {
@@ -67,13 +66,11 @@ class Func__ne :  public RbFunction {
 #include "RbBoolean.h"
 #include "DAGNode.h"
 #include "Integer.h"
-#include "MatrixReal.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "Real.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 
 

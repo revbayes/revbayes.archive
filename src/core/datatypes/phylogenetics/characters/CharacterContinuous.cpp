@@ -15,7 +15,6 @@
 
 #include "RbUtil.h"
 #include "CharacterContinuous.h"
-#include "VectorString.h"
 #include <cmath>
 #include <sstream>
 

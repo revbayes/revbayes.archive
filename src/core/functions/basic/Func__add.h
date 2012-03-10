@@ -65,13 +65,12 @@ class Func__add :  public RbFunction {
 
 #include "DAGNode.h"
 #include "Integer.h"
-#include "MatrixReal.h"
+#include "MatrixRealOperators.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "Real.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 
 /** default constructor */

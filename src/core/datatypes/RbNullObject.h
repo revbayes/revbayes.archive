@@ -22,8 +22,6 @@
 #include <ostream>
 #include <string>
 
-class VectorString;
-
 class RbNullObject : public RbLanguageObject {
     
 public:

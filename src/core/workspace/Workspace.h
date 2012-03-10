@@ -25,7 +25,6 @@
 
 #include "Environment.h"
 #include "FunctionTable.h"
-#include "VectorString.h"
 
 #include <map>
 #include <ostream>

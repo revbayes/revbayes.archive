@@ -28,8 +28,6 @@
 #include "TransitionProbabilityMatrix.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
-#include "VectorReal.h"
-#include "VectorString.h"
 #include <sstream>
 #include <vector>
 

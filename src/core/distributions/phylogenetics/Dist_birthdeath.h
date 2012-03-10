@@ -24,8 +24,6 @@
 #include <ostream>
 #include <string>
 
-class VectorString;
-
 class Dist_birthdeath: public Distribution {
     
 public:

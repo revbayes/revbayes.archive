@@ -28,7 +28,6 @@
 #include "TreePlate.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 #include <cmath>
 #include <iomanip>
 #include <sstream>
@@ -108,7 +107,7 @@ const TypeSpec& Func_nj::getReturnType( void ) const {
     return returnTypeSpec;
 }
 
-void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips) {
+void Func_nj::buildNj(const DistanceMatrix& distances, std::vector<TopologyNode*> nodes, int nTips) {
 
     if (nTips > 2)
         {
@@ -179,8 +178,7 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
         ndeJ->setParent(newNode);
         
         // construct a new distance matrix that is one row and column smaller
-        std::vector<std::vector<double> > newDistances;
-        newDistances.resize(nTips-1);
+        DistanceMatrix newDistances(nTips-1);
         std::vector<TopologyNode*> newNodes;
         for (size_t i=0, k=0; i<nTips; i++)  
             {
@@ -190,16 +188,16 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
                 for (size_t j=0; j<nTips; j++)
                     {
                     if (j != smallestI && j != smallestJ)
-                        newDistances[k].push_back(distances[i][j]);
+                        newDistances[k].push_back(distances[i][j].clone());
                     }
                 double x = distances[i][smallestI] + distances[i][smallestJ] - distances[smallestI][smallestJ];
-                newDistances[k].push_back(x);
-                newDistances[nTips-2].push_back(x);
+                newDistances[k].push_back(new Real(x) );
+                newDistances[nTips-2].push_back(new Real(x) );
                 k++;
                 }
             }
         newNodes.push_back(newNode);
-        newDistances[nTips-2].push_back(0.0);
+        newDistances[nTips-2].push_back( new Real(0.0) );
         
         
         // recursively call function again
@@ -247,10 +245,10 @@ Topology* Func_nj::neighborJoining(const DistanceMatrix& d) {
         }
         
     // initialize a distance matrix
-    const std::vector<std::vector<double> >& activeDistances = d.getValue();
+//    const std::vector<std::vector<double> >& activeDistances = d.getValue();
         
     // recursively build the neighbor-joining tree
-    buildNj(activeDistances, activeNodes, (int)nTaxa);
+    buildNj(d, activeNodes, (int)nTaxa);
     // after the neighbor joining the matrix should only contain 1 node, which is our new root
     topo->setRoot(activeNodes[0]);
     TreePlate* tp = new TreePlate();

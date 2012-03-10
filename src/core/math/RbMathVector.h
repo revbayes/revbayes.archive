@@ -14,12 +14,14 @@
  * $Id$
  */
 
-#include "MatrixReal.h"
-#include "VectorReal.h"
+
 #include <vector>
+
+#include "RbVector.h"
 
 namespace RbMath {
     
-    void                        normalize(std::vector<double>& x, double sum);                                    //!< Normalize a vector so that its sum is sum
-    void                        vectorMultiplication(const VectorReal& v1, const VectorReal& v2, MatrixReal& p);  //!< Vector multiplication
+    void                        normalize(std::vector<double>& x, double sum);                                      //!< Normalize a vector so that its sum is sum
+    RbVector<Real>              normalize(const RbVector<Real>& x, double sum);                                     //!< Normalize a vector so that its sum is sum
+    RbVector<RealPos>           normalize(const RbVector<RealPos>& x, double sum);                                  //!< Normalize a vector so that its sum is sum
 }

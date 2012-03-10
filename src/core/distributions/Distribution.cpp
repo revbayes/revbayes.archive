@@ -25,7 +25,6 @@
 #include "RbUtil.h"
 #include "RealPos.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 

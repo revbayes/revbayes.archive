@@ -25,7 +25,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 
 class Func_normalizeVector :  public RbFunction {
@@ -48,7 +47,7 @@ class Func_normalizeVector :  public RbFunction {
     private:
 
         // memberfunction return values
-        Simplex                     normalizedVector;
+        RbVector<RealPos>           normalizedVector;
 
         // arguments
         RbConstVariablePtr          vector;

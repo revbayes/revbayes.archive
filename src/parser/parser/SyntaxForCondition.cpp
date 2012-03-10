@@ -14,6 +14,7 @@
  */
 
 #include "ConstantNode.h"
+#include "Container.h"
 #include "Environment.h"
 #include "RbException.h"
 #include "RbUtil.h"

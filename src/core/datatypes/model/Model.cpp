@@ -26,7 +26,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 #include "UserInterface.h"
 
 #include <algorithm>

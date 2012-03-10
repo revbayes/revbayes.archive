@@ -24,7 +24,6 @@
 #include <vector>
 
 class ArgumentRule;
-class VectorString;
 
 class ArgumentRules : public RbInternal {
     

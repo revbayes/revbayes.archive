@@ -16,11 +16,9 @@
 
 #include "ArgumentRule.h"
 #include "FunctionTable.h"
-#include "VectorInteger.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 #include "Ellipsis.h"
 
 #include <sstream>
@@ -200,8 +198,8 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
         return *retVal.first->second;
     }
     else {
-        VectorInteger* matchScore = new VectorInteger();
-        VectorInteger bestScore;
+        std::vector<unsigned int>* matchScore = new std::vector<unsigned int>();
+        std::vector<unsigned int> bestScore;
         RbFunction* bestMatch = NULL;
 
         bool ambiguous = false;

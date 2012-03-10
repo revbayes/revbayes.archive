@@ -23,12 +23,11 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbStatisticsHelper.h"
+#include "RbVector.h"
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"
-#include "VectorReal.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -80,7 +79,7 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-            memberRules.push_back( new ValueRule( "variable", VectorRealPos::getClassTypeSpec() ) );
+            memberRules.push_back( new ValueRule( "variable", RbVector<RealPos>::getClassTypeSpec() ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
@@ -115,17 +114,17 @@ double Move_mmultinomial::perform( void ) {
     double                 alpha0  = static_cast<const RealPos&>( alpha->getValue()         ).getValue();
     int                    k       = static_cast<const Integer&>( numCategories->getValue() ).getValue();
 
-    const VectorReal& valPtr = static_cast<const VectorReal&>( nodePtr->getValue() );
+    const RbVector<RealPos>& valPtr = static_cast<const RbVector<RealPos> &>( nodePtr->getValue() );
 
-    std::vector<double>    curVal  = valPtr.getValue();
-    int                    n       = int( curVal.size() );
+    RbVector<RealPos>  curVal  = valPtr;
+    int             n       = int( curVal.size() );
 
     double sum = 0.0;
     for ( size_t i = 0; i < curVal.size(); i++ )
         sum += curVal[i];
     for ( size_t i = 0; i < curVal.size(); i++ )
         curVal[i] /= sum;
-    std::vector<double> newVal = curVal;
+    RbVector<RealPos>* newVal = curVal.clone();
 
 	/* We update the simplex values by proposing new values from a Dirichlet centered
 	   on the current values. The i-th parameter of the Dirichlet is the i-th value
@@ -211,22 +210,26 @@ double Move_mmultinomial::perform( void ) {
 		for (size_t i=0; i<curVal.size(); i++)
 			alphaForward[i] = curVal[i] * alpha0;
 			
-		// then, we propose new values
-		newVal = RbStatistics::Dirichlet::rv( alphaForward, *rng );
+        // then, we propose new values
+        const std::vector<double>& tmp = RbStatistics::Dirichlet::rv( alphaForward, *rng );
+        newVal->clear();
+        for (size_t i = 0; i < tmp.size(); i++) {
+            newVal->push_back( new RealPos(tmp[i]) );
+        }
 		
 		// and calculate the Dirichlet parameters for the (imagined) reverse move
-		std::vector<double> alphaReverse(newVal.size());
+		std::vector<double> alphaReverse(newVal->size());
 		for (size_t i=0; i<curVal.size(); i++)
-			alphaReverse[i] = newVal[i] * alpha0;	
+			alphaReverse[i] = (*newVal)[i] * alpha0;	
 		
 		// finally, ew calculate the log of the Hastings ratio
-		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
+		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, *newVal);
 		}
         
     for ( size_t i = 0; i < valPtr.size(); i++ )
-        newVal[i] *= sum;
+        (*newVal)[i] *= sum;
 		
-    nodePtr->setValue( new VectorReal( newVal ) );
+    nodePtr->setValue( newVal );
 	
     return lnProposalRatio;
 }

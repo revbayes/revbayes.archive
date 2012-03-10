@@ -16,7 +16,6 @@
 
 
 #include "RbNullObject.h"
-#include "VectorString.h"
 
 #include <sstream>
 

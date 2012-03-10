@@ -27,13 +27,13 @@
  */
 
 #include "EigenSystem.h"
-#include "MatrixReal.h"
+#include "Matrix.h"
 #include <vector>
 
 
 
 /** Constructor from real matrix */
-EigenSystem::EigenSystem(MatrixReal* m) {
+EigenSystem::EigenSystem(Matrix<Real>* m) {
 
     // set the pointer to the rate matrix for this system of eigen values and vectors
     qPtr = m;
@@ -48,12 +48,12 @@ EigenSystem::EigenSystem(MatrixReal* m) {
 
 	// allocate and initialize components of eigensystem
 	// assuming it is going to be real and not complex
-	eigenvectors               = MatrixReal(n, n, 0.0);
-	inverseEigenvectors        = MatrixReal(n, n, 0.0);
-	realEigenvalues            = VectorReal(n, 0.0);
-	imaginaryEigenvalues       = VectorReal(n, 0.0);
-	complexEigenvectors        = MatrixComplex(n, n);
-	complexInverseEigenvectors = MatrixComplex(n, n);    
+	eigenvectors               = Matrix<Real>(n, n, new Real(0.0) );
+	inverseEigenvectors        = Matrix<Real>(n, n, new Real(0.0) );
+	realEigenvalues            = RbVector<Real>(n, new Real(0.0) );
+	imaginaryEigenvalues       = RbVector<Real>(n, new Real(0.0) );
+	complexEigenvectors        = Matrix<Complex>(n, n);
+	complexInverseEigenvectors = Matrix<Complex>(n, n);    
 }
 
 
@@ -62,12 +62,12 @@ EigenSystem::EigenSystem(const EigenSystem& e) {
     n                          = e.n;
     qPtr                       = e.qPtr;
     complex                    = e.complex;
-	eigenvectors               = MatrixReal( e.eigenvectors );
-	inverseEigenvectors        = MatrixReal( e.inverseEigenvectors );
-	realEigenvalues            = VectorReal( e.realEigenvalues );
-	imaginaryEigenvalues       = VectorReal( e.imaginaryEigenvalues );
-	complexEigenvectors        = MatrixComplex( e.complexEigenvectors );
-	complexInverseEigenvectors = MatrixComplex( e.complexInverseEigenvectors );    
+	eigenvectors               = Matrix<Real>( e.eigenvectors );
+	inverseEigenvectors        = Matrix<Real>( e.inverseEigenvectors );
+	realEigenvalues            = RbVector<Real>( e.realEigenvalues );
+	imaginaryEigenvalues       = RbVector<Real>( e.imaginaryEigenvalues );
+	complexEigenvectors        = Matrix<Complex>( e.complexEigenvectors );
+	complexInverseEigenvectors = Matrix<Complex>( e.complexInverseEigenvectors );    
 }
 
 
@@ -92,7 +92,7 @@ EigenSystem::~EigenSystem(void) {
  * the positions 0 to low-1 and high to n-1. Its other components contain
  * the scaling factors for transforming A
  */
-void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, int* high) {
+void EigenSystem::balance(Matrix<Real>& a, std::vector<double>& scale, int* low, int* high) {
 
 	//! \todo The code below should be RADIX = numeric_limits<double>::radix;
 	// check why this does not work with vcpp (problem with <limits> or compile settings)
@@ -228,7 +228,7 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
  * \param scale [in] Vector of scalers from balance
  * \param eivec [out]Scaling data from balance
  */
-void EigenSystem::balback(int low, int high, std::vector<double>& scale, MatrixReal& eivec) {
+void EigenSystem::balback(int low, int high, std::vector<double>& scale, Matrix<Real>& eivec) {
 
 	for (int i=low; i<=high; i++)
 		{
@@ -296,7 +296,7 @@ EigenSystem* EigenSystem::clone(void) const {
  * first one does not correspond to the statement above, nor does the
  * statement above make much sense in the context.
  */
-void EigenSystem::complexLUBackSubstitution(MatrixComplex& a, int* indx, VectorComplex& b) {
+void EigenSystem::complexLUBackSubstitution(Matrix<Complex>& a, int* indx, RbVector<Complex>& b) {
 
 	int             ip, j, ii = -1;
 	
@@ -309,7 +309,7 @@ void EigenSystem::complexLUBackSubstitution(MatrixComplex& a, int* indx, VectorC
 		if ( ii >= 0 ) 
 			{
 			for (j = ii; j <= i - 1; j++)
-				sum -= a[i][j] * b[j];
+				sum -= (a[i][j] * b[j]).getValue();
 				// was originally sum = a[i][j] - b[j]; this must be wrong!!
 				//sum = ComplexSubtraction (sum, ComplexMultiplication (a[i][j], b[j]));
 			} 
@@ -322,7 +322,7 @@ void EigenSystem::complexLUBackSubstitution(MatrixComplex& a, int* indx, VectorC
 		sum = b[i];
 		for (j=i+1; j<n; j++)
 			{
-			sum -= a[i][j] * b[j];
+			sum -= (a[i][j] * b[j]).getValue();
 			//sum = ComplexSubtraction (sum, ComplexMultiplication (a[i][j], b[j]));
 			}
 		b[i] = sum / a[i][i];
@@ -340,7 +340,7 @@ void EigenSystem::complexLUBackSubstitution(MatrixComplex& a, int* indx, VectorC
  * \param pd [in/out] 1.0 or -1.0 on output if not NULL on input
  * \return 0 if success, 1 if a is singular (has a row with all zeros)
  */
-bool EigenSystem::complexLUDecompose(MatrixComplex& a, double* vv, int* indx, double* pd) {
+bool EigenSystem::complexLUDecompose(Matrix<Complex>& a, double* vv, int* indx, double* pd) {
 
 	double d = 1.0;
 	int imax = 0;
@@ -350,7 +350,7 @@ bool EigenSystem::complexLUDecompose(MatrixComplex& a, double* vv, int* indx, do
 		for (int j=0; j<n; j++) 
 			{
 			double temp;
-			if ((temp = abs(a[i][j])) > big)
+			if ((temp = abs(a[i][j].getValue())) > big)
 				big = temp;
 			}
 		if ( big == 0.0 ) 
@@ -399,7 +399,7 @@ bool EigenSystem::complexLUDecompose(MatrixComplex& a, double* vv, int* indx, do
 			vv[imax] = vv[j];
 			}
 		indx[j] = imax;
-		if ( a[j][j].real() == 0.0 && a[j][j].imag() == 0.0 )
+		if ( a[j][j].getValue().real() == 0.0 && a[j][j].getValue().imag() == 0.0 )
 			a[j][j] = std::complex<double>(1.0e-20, 1.0e-20);
 		if ( j != n - 1 )
 			{
@@ -426,7 +426,7 @@ bool EigenSystem::complexLUDecompose(MatrixComplex& a, double* vv, int* indx, do
  * \param high [in] Index to last non-xero row
  * \param perm [out] Permutation vector for elemtrans
  */
-void EigenSystem::elmhes(int low, int high, MatrixReal& a, std::vector<int>& perm) {
+void EigenSystem::elmhes(int low, int high, Matrix<Real>& a, std::vector<int>& perm) {
 
 	for (int m=low+1; m<high; m++)
 		{
@@ -487,7 +487,7 @@ void EigenSystem::elmhes(int low, int high, MatrixReal& a, std::vector<int>& per
  * \param perm [in] Vector of permutation data from elmhes
  * \param h [out] Hessenberg matrix
  */
-void EigenSystem::elmtrans(int low, int high, MatrixReal& a, std::vector<int>& perm, MatrixReal& h) {
+void EigenSystem::elmtrans(int low, int high, Matrix<Real>& a, std::vector<int>& perm, Matrix<Real>& h) {
 	
 	for (int i=0; i<n; i++)
 		{
@@ -550,7 +550,7 @@ double EigenSystem::getDeterminant(void) {
  * \param wi [out] Imaginary parts of the eigenvalues
  * \return 0 on success, 1 on failure
  */
-int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorReal& wi, MatrixReal& eivec) {	
+int EigenSystem::hqr2(int low, int high, Matrix<Real>& h, RbVector<Real>& wr, RbVector<Real>& wi, Matrix<Real>& eivec) {	
 
 	/* store roots isolated by balance, and compute matrix norm */
 	double norm = 0.0;
@@ -656,7 +656,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 					{
 					p = h[k][k-1];
 					q = h[k+1][k-1];
-					r = (k != na) ? h[k+2][k-1] : 0.0;
+					r = (k != na) ? h[k+2][k-1].getValue() : 0.0;
 					x = fabs(p) + fabs(q) + fabs(r);
 					if (x == 0.0)
 						continue;
@@ -865,7 +865,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 					else
 						{
 						m = i;
-						if ( wi[i] == 0.0 )
+						if ( wi[i].getValue() == 0.0 )
 							{
 							//complexDivision(-ra, -sa, w, q, &h[i][na], &h[i][en]);
 							std::complex<double> ca( -ra, -sa );
@@ -959,7 +959,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 					else
 						{
 						m = i;
-						if ( wi[i] == 0.0 )
+						if ( wi[i].getValue() == 0.0 )
 							{
 							t = w;
 							if ( t == 0.0 )
@@ -1053,7 +1053,7 @@ void EigenSystem::initializeComplexEigenvectors(void) {
 	for(int i=0; i<n; i++) 
         {
 		// real eigenvector
-		if (imaginaryEigenvalues[i] == 0.0) 
+		if (imaginaryEigenvalues[i].getValue() == 0.0) 
             { 
 			for(int j=0; j<n; j++)
 				complexEigenvectors[j][i] = std::complex<double>(eigenvectors[j][i], 0.0);
@@ -1085,16 +1085,16 @@ void EigenSystem::initializeComplexEigenvectors(void) {
  * \param aInv [out] The inverse of the matrix
  * \return 0 on success, non-zero if matrix is singular
  */
-int EigenSystem::invertComplexMatrix(MatrixComplex& a, MatrixComplex& aInv) {
+int EigenSystem::invertComplexMatrix(Matrix<Complex>& a, Matrix<Complex>& aInv) {
 
 	/* allocate work space for inversion */ 
 	double* dwork = new double[n];
 	int* indx = new int[n];
 	//std::vector<std::complex<double> > col(n);
-    VectorComplex col(n, 0.0);
+    RbVector<Complex> col(n, new Complex(0.0) );
 	
 	/* copy a (the complex eigenvectors, in this case), so we don't over-write them */
-    MatrixComplex tempA(a);
+    Matrix<Complex> tempA(a);
 
 	bool isSingular = complexLUDecompose(tempA, dwork, indx, (double *)NULL);
 
@@ -1128,7 +1128,7 @@ int EigenSystem::invertComplexMatrix(MatrixComplex& a, MatrixComplex& aInv) {
  * \param aInv [out] The inverse of the matrix
  * \return 0 on success, 1 if matrix is singular
  */
-int EigenSystem::invertMatrix(MatrixReal& a, MatrixReal& aInv) {
+int EigenSystem::invertMatrix(Matrix<Real>& a, Matrix<Real>& aInv) {
 	
 	double *col = new double[n];
 	int *indx = new int[n];
@@ -1161,7 +1161,7 @@ int EigenSystem::invertMatrix(MatrixReal& a, MatrixReal& aInv) {
  * \param indx [in] ??
  * \param b [in] ??
  */
-void EigenSystem::luBackSubstitution(MatrixReal& a, int* indx, double* b) {
+void EigenSystem::luBackSubstitution(Matrix<Real>& a, int* indx, double* b) {
 	
 	int ip, ii = -1;
 	for (int i=0; i<n; i++)
@@ -1198,7 +1198,7 @@ void EigenSystem::luBackSubstitution(MatrixReal& a, int* indx, double* b) {
  * \param pd [in/out] 1.0 or -1.0 on output if not NULL on input
  * \return 0 if success, 1 if a is singular (has row with all zeros)
  */
-int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
+int EigenSystem::luDecompose(Matrix<Real>& a, double* vv, int* indx, double* pd) {
 
 	double d = 1.0;
 	int imax = 0;
@@ -1251,7 +1251,7 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
 			vv[imax] = vv[j];
 			}
 		indx[j] = imax;
-		if ( a[j][j] == 0.0 )
+		if ( a[j][j].getValue() == 0.0 )
 			a[j][j] = 1.0e-20;
 		if ( j != n - 1 )
 			{
@@ -1282,7 +1282,7 @@ bool EigenSystem::update(void) {
 	
 	// copy the rate matrix into A because we don't want to destroy
     // the rate matrix
-    MatrixReal A(*qPtr);
+    Matrix<Real> A(*qPtr);
 
 	// check that the dimension of A is right
 	if (A.getNumberOfRows() != static_cast<unsigned int>(n)|| A.getNumberOfColumns() != static_cast<unsigned int>(n))
@@ -1291,7 +1291,7 @@ bool EigenSystem::update(void) {
 	// balance the n X n matrix
 	int low = 0, high = 0;
 	std::vector<double> scale(n);
-    //VectorReal scale(n, 0.0);
+    //Vector<Real> scale(n, 0.0);
 	balance(A, scale, &low, &high);
 	
 	// transform to upper Hessenberg form

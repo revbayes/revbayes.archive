@@ -15,7 +15,6 @@
 
 #include "RbUtil.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <sstream>
 

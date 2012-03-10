@@ -21,8 +21,6 @@
 #include "RateMatrix.h"
 
 class DAGNode;
-class VectorString;
-
 
 
 class Func_gtr :  public RbFunction {

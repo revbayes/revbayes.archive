@@ -15,7 +15,6 @@
 
 #include "AminoAcidState.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 #include <sstream>
 
 const std::string AminoAcidState::stateLabels = "ARNDCQEGHILKMFPSTWYV";

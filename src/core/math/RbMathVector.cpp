@@ -48,45 +48,55 @@ void RbMath::normalize(std::vector<double>& x, double sum) {
         x[i] *= factor;
 }
 
-void RbMath::vectorMultiplication(const VectorReal& v1, const VectorReal& v2, MatrixReal& p) {
+
+/*!
+ * This function normalizes a vector such that its sum is some value.
+ *
+ * \brief Vector normalization function.
+ * \param x is the vector to be normalized (call-by-value).
+ * \param sum is the desired sum for the normalized vector.
+ * \return The normalized vector. 
+ * \throws Does not throw an error.
+ */
+RbVector<Real> RbMath::normalize(const RbVector<Real>& x, double sum) {
     
-    if ( v1.size() != v2.size() )
-        throw (RbException("Cannot multiply two vectors of different dimensions"));
+    RbVector<Real> retVector;
     
-//    std::cout << "v1 : " << v1.getIsRowVector() << std::endl;
-//    std::cout << "v2 : " << v2.getIsRowVector() << std::endl;
+    double s = 0.0;
+    for (size_t i=0; i<x.size(); i++)
+        s += x[i];
+    double factor = sum / s;
+    for (size_t i=0; i<x.size(); i++)
+        retVector.push_back( new Real(x[i] * factor) );
     
-//    int n = v1.size();
-//    if ( v1.getIsRowVector() == true && v2.getIsRowVector() == false )
-//    {
-//        VectorInteger sizeVec(2);
-//        sizeVec[0] = 1;
-//        sizeVec[1] = 1;
-//        p.resize(sizeVec);
-//        
-//        double sum = 0.0;
-//        for (size_t i=0; i<n; i++)
-//            sum += v1[i] * v2[i];
-//        p[0][0] = sum;
-//    }
-//    else if ( v1.getIsRowVector() == false && v2.getIsRowVector() == true )
-//    {
-//        VectorInteger sizeVec(2);
-//        sizeVec[0] = n;
-//        sizeVec[1] = n;
-//        p.resize(sizeVec);
-//        
-//        for (size_t i=0; i<n; i++)
-//            for (size_t j=0; j<n; j++)
-//                p[i][j] = v1[i] * v2[j];
-//    }
-//    else if ( v1.getIsRowVector() == false && v2.getIsRowVector() == false )
-//    {
-//        throw (RbException("Cannot multiply two column vectors"));
-//    }
-//    else 
-//    {
-//        throw (RbException("Cannot multiply two row vectors"));
-//    }
+    return retVector;
 }
+
+
+
+
+/*!
+ * This function normalizes a vector such that its sum is some value.
+ *
+ * \brief Vector normalization function.
+ * \param x is the vector to be normalized (call-by-value).
+ * \param sum is the desired sum for the normalized vector.
+ * \return The normalized vector. 
+ * \throws Does not throw an error.
+ */
+RbVector<RealPos> RbMath::normalize(const RbVector<RealPos>& x, double sum) {
+    
+    RbVector<RealPos> retVector;
+    
+    double s = 0.0;
+    for (size_t i=0; i<x.size(); i++)
+        s += x[i];
+    double factor = sum / s;
+    for (size_t i=0; i<x.size(); i++)
+        retVector.push_back( new RealPos(x[i] * factor) );
+    
+    return retVector;
+}
+
+
 

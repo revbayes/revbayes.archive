@@ -24,7 +24,6 @@
 #include <string>
 
 class DAGNode;
-class VectorString;
 
 template <typename valType>
 class Func_simplex :  public RbFunction {
@@ -62,10 +61,10 @@ class Func_simplex :  public RbFunction {
 #include "Integer.h"
 #include "RbUtil.h"
 #include "RealPos.h"
+#include "RbVector.h"
 #include "Simplex.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 
 
@@ -102,9 +101,9 @@ const RbLanguageObject& Func_simplex<Integer>::executeFunction( void ) {
 
 /** Execute function: Simplex <- ( VectorRealPos ) */
 template <>
-const RbLanguageObject& Func_simplex<VectorRealPos>::executeFunction( void ) {
+const RbLanguageObject& Func_simplex<RbVector<RealPos> >::executeFunction( void ) {
 
-    const VectorRealPos& tempVec = static_cast<const VectorRealPos&>( values[0]->getValue() );
+    const RbVector<RealPos>& tempVec = static_cast<const RbVector<RealPos>& >( values[0]->getValue() );
 
     s.setValue( tempVec );
 
@@ -116,9 +115,9 @@ const RbLanguageObject& Func_simplex<VectorRealPos>::executeFunction( void ) {
 template <>
 const RbLanguageObject& Func_simplex<RealPos>::executeFunction( void ) {
 
-    VectorReal  tempVec;
+    RbVector<Real>  tempVec;
     for ( size_t i = 0; i < values.size(); i++ )
-        tempVec.push_back( static_cast<const RealPos&>( values[i]->getValue() ) );
+        tempVec.push_back( static_cast<const RealPos&>( values[i]->getValue() ).clone() );
 
     // Normalization is done by the Simplex constructor
     s.setValue( tempVec );

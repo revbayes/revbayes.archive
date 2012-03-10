@@ -26,12 +26,13 @@
 #include "RbConstants.h"
 #include "RbNullObject.h"
 #include "RbException.h"
+#include "RbString.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "Simplex.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <cmath>
 #include <sstream>
@@ -89,9 +90,9 @@ void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode*> &tips, 
 void Dist_topologyunif::calculateTopologyProb( void ) {
     
     // Get the parameters
-    int  nTaxa  = static_cast<Natural&  >( numTaxa->getValue()  ).getValue();
-    bool rooted = static_cast<RbBoolean&>( isRooted->getValue() ).getValue();
-    bool binary = static_cast<RbBoolean&>( isBinary->getValue() ).getValue();
+    int  nTaxa  = static_cast<const Natural&  >( numTaxa->getValue()  ).getValue();
+    bool rooted = static_cast<const RbBoolean&>( isRooted->getValue() ).getValue();
+    bool binary = static_cast<const RbBoolean&>( isBinary->getValue() ).getValue();
     
     // Calculate probabilities of a topology drawn from the distribution
     if (binary) {
@@ -123,9 +124,9 @@ void Dist_topologyunif::calculateTopologyProb( void ) {
 void Dist_topologyunif::calculateNumberOfStates( void ) {
     
     // Get the parameters
-    int  nTaxa  = static_cast<Natural&  >( numTaxa->getValue()  ).getValue();
-    bool rooted = static_cast<RbBoolean&>( isRooted->getValue() ).getValue();
-    bool binary = static_cast<RbBoolean&>( isBinary->getValue() ).getValue();
+    int  nTaxa  = static_cast<const Natural&  >( numTaxa->getValue()  ).getValue();
+    bool rooted = static_cast<const RbBoolean&>( isRooted->getValue() ).getValue();
+    bool binary = static_cast<const RbBoolean&>( isBinary->getValue() ).getValue();
     
     // Calculate probabilities of a topology drawn from the distribution
     if (binary) {
@@ -198,7 +199,7 @@ const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
     if ( !rulesSet )
 		{
         memberRules.push_back( new ValueRule( "numberTaxa" , Natural::getClassTypeSpec()      ) );
-        memberRules.push_back( new ValueRule( "tipNames"   , VectorString::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "tipNames"   , RbVector<RbString>::getClassTypeSpec() ) );
         memberRules.push_back( new ValueRule( "isRooted"   , RbBoolean::getClassTypeSpec()    ) );
         memberRules.push_back( new ValueRule( "isBinary"   , new RbBoolean(true) ) );
 
@@ -219,7 +220,7 @@ size_t Dist_topologyunif::getNumberOfStates( void ) const {
 /** Get the probability mass vector */
 const Simplex& Dist_topologyunif::getProbabilityMassVector( void ) {
 
-    int nTaxa  = static_cast<Natural&>( numTaxa->getValue() ).getValue();
+    int nTaxa  = static_cast<const Natural&>( numTaxa->getValue() ).getValue();
 
     if ( nTaxa <= 6 ) {
         probMassVector = Simplex( getNumberOfStates() );
@@ -310,10 +311,10 @@ const RbLanguageObject& Dist_topologyunif::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    int  nTaxa          = static_cast<Natural&     >( numTaxa->getValue()  ).getValue();
-    bool rooted         = static_cast<RbBoolean&   >( isRooted->getValue() ).getValue();
-    bool binary         = static_cast<RbBoolean&   >( isBinary->getValue() ).getValue();
-    VectorString& names = static_cast<VectorString&>( tipNames->getValue() );
+    int  nTaxa                      = static_cast<const Natural&            >( numTaxa->getValue()  ).getValue();
+    bool rooted                     = static_cast<const RbBoolean&          >( isRooted->getValue() ).getValue();
+    bool binary                     = static_cast<const RbBoolean&          >( isBinary->getValue() ).getValue();
+    const RbVector<RbString>& names = static_cast<const RbVector<RbString>& >( tipNames->getValue() );
 
     // Draw a random topology
     if (binary) {
@@ -352,7 +353,7 @@ const RbLanguageObject& Dist_topologyunif::rv( void ) {
 
 
 /** We intercept a call to set a member variable to make sure that the topology prob gets recalculated */
-void Dist_topologyunif::setMemberVariable( const std::string& name, Variable* var ) {
+void Dist_topologyunif::setMemberVariable( const std::string& name, const Variable* var ) {
 
     if ( name == "numberTaxa" ) {
         numTaxa = var;

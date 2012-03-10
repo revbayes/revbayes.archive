@@ -16,14 +16,13 @@
 #ifndef TransitionProbabilityMatrix_H
 #define TransitionProbabilityMatrix_H
 
+#include "Matrix.h"
 #include "MemberObject.h"
 #include "Natural.h"
+#include "RbVector.h"
 
 class ArgumentRule;
 class DAGNode;
-class MatrixReal;
-class VectorReal;
-class VectorString;
 
 
 class TransitionProbabilityMatrix : public MemberObject {
@@ -36,8 +35,8 @@ class TransitionProbabilityMatrix : public MemberObject {
 
         // overloaded operators
         TransitionProbabilityMatrix&        operator=(const TransitionProbabilityMatrix& m);
-        VectorReal&                         operator[](size_t i);                                              //!< Subscript operator
-        const VectorReal&                   operator[](size_t i) const;                                        //!< Subscript operator (const)
+        RbVector<Real>&                     operator[](size_t i);                                              //!< Subscript operator
+        const RbVector<Real>&               operator[](size_t i) const;                                        //!< Subscript operator (const)
     
         // Basic utility functions
         TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object
@@ -57,7 +56,7 @@ class TransitionProbabilityMatrix : public MemberObject {
 
     private:
         Natural                             numStates;                                                         //!< The number of character states
-        MatrixReal*                         theMatrix;                                                         //!< Holds the transition probability matrix
+        Matrix<Real>*                       theMatrix;                                                         //!< Holds the transition probability matrix
     
 };
 

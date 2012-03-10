@@ -28,8 +28,6 @@
 #include "StochasticNode.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorReal.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <iostream>
@@ -167,7 +165,7 @@ const MethodTable& Move::getMethods(void) const {
         methods.addFunction( "numAccepted",     new MemberFunction( Natural::getClassTypeSpec(),    numAcceptedArgRules       ) );
         methods.addFunction( "numRejected",     new MemberFunction( Natural::getClassTypeSpec(),    numRejectedArgRules       ) );
         methods.addFunction( "numTried",        new MemberFunction( Natural::getClassTypeSpec(),    numTriedArgRules          ) );
-        methods.addFunction( "propose",         new MemberFunction( VectorReal::getClassTypeSpec(), proposeArgRules           ) );
+//        methods.addFunction( "propose",         new MemberFunction( RbVector<Real>::getClassTypeSpec(), proposeArgRules           ) );
         methods.addFunction( "reject",          new MemberFunction( RbVoid_name,     rejectArgRules            ) );
         methods.addFunction( "resetCounters",   new MemberFunction( RbVoid_name,     resetCountersArgRules     ) );
         

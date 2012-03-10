@@ -17,8 +17,8 @@
 #define SyntaxVariable_H
 
 #include "RbString.h"
+#include "RbVector.h"
 #include "SyntaxElement.h"
-#include "VectorNatural.h"
 
 #include <iostream>
 #include <list>
@@ -59,7 +59,7 @@ class SyntaxVariable : public SyntaxElement {
 
         // Regular functions
         RbString&                           getIdentifier(void) { return *identifier; }                                             //!< Get identifier
-        VectorNatural                       computeIndex(Environment& env);                                                         //!< Evaluate index
+        RbVector<Natural>                   computeIndex(Environment& env);                                                         //!< Evaluate index
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         VariableSlot&                       createVariable(Environment& env);                                                       //!< Get semantic value
         RbVariablePtr                       evaluateContent(Environment& env);                                                      //!< Get semantic value

@@ -31,8 +31,6 @@
 class ArgumentRule;
 class DAGNode;
 class MemberObject;
-class VectorInteger;
-class VectorString;
 
 class MemberFunction :  public RbFunction {
 

@@ -27,7 +27,6 @@
 #include "RealPos.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <sstream>
 

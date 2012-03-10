@@ -18,7 +18,6 @@
 
 #include "RbUtil.h"
 #include "RbInternal.h"
-#include "VectorString.h"
 
 #include <sstream>
 

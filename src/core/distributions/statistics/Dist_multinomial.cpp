@@ -27,9 +27,6 @@
 #include "RbUtil.h"
 #include "Simplex.h"
 #include "ValueRule.h"
-#include "VectorInteger.h"
-#include "VectorReal.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -101,7 +98,7 @@ size_t Dist_multinomial::getNumberOfStates( void ) const {
 /** Get the probability mass vector */
 const Simplex& Dist_multinomial::getProbabilityMassVector( void ) {
     
-    return static_cast<Simplex&>( probabilities->getValue() );
+    return static_cast<const Simplex&>( probabilities->getValue() );
 }
 
 
@@ -114,7 +111,7 @@ const std::vector<RbLanguageObject*>& Dist_multinomial::getStateVector( void ) c
 /** Get random variable type */
 const TypeSpec& Dist_multinomial::getVariableType( void ) const {
 
-    static TypeSpec varTypeSpec = VectorNatural::getClassTypeSpec();
+    static TypeSpec varTypeSpec = RbVector<Natural>::getClassTypeSpec();
     
     return varTypeSpec;
 }
@@ -132,8 +129,8 @@ const TypeSpec& Dist_multinomial::getVariableType( void ) const {
 double Dist_multinomial::lnPdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double>       p = static_cast<const Simplex&      >( probabilities->getValue() ).getValue();
-    std::vector<unsigned int> x = static_cast<const VectorNatural&>( value ).getValue();
+    std::vector<double>         p = static_cast<const Simplex&           >( probabilities->getValue() ).getValue();
+    const RbVector<Natural>&    x = static_cast<const RbVector<Natural>& >( value );
 
 	// Check that the vectors are both the same size
 	if ( p.size() != x.size() )
@@ -155,8 +152,8 @@ double Dist_multinomial::lnPdf( const RbLanguageObject& value ) const {
 double Dist_multinomial::pdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double>       p = static_cast<const Simplex&      >( probabilities->getValue() ).getValue();
-    std::vector<unsigned int> x = static_cast<const VectorNatural&>( value ).getValue();
+    std::vector<double>     p = static_cast<const Simplex&           >( probabilities->getValue() ).getValue();
+    const RbVector<Natural> x = static_cast<const RbVector<Natural>& >( value );
 
 	// check that the vectors are both the same size
 	if ( p.size() != x.size() )
@@ -176,19 +173,22 @@ double Dist_multinomial::pdf( const RbLanguageObject& value ) const {
  */
 const RbLanguageObject& Dist_multinomial::rv( void ) {
 
-    std::vector<double> p      = static_cast<Simplex&>( probabilities->getValue() ).getValue();
+    std::vector<double> p      = static_cast<const Simplex&>( probabilities->getValue() ).getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<int> r( p.size() );
 
 	r = RbStatistics::Multinomial::rv( p, *rng );
-    randomVariable.setValue( r );
+    randomVariable.clear();
+    for (size_t i = 0; i < r.size(); i++) {
+        randomVariable.push_back( new Natural(r[i]) );
+    }
     
     return randomVariable;
 }
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_multinomial::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_multinomial::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "probabilities" ) {
         probabilities = var;

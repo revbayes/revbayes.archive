@@ -27,7 +27,6 @@
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "StochasticNode.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>

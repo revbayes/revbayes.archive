@@ -21,10 +21,10 @@
 #include "Func_print.h"
 #include "RbException.h"
 #include "RbNullObject.h"
+#include "RbString.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 //#include <iostream>

@@ -34,10 +34,6 @@
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorInteger.h"
-#include "VectorNatural.h"
-#include "VectorString.h"
-#include "VectorReal.h"
 #include "Workspace.h"
 
 #include <algorithm>
@@ -87,7 +83,7 @@ const ArgumentRules& Func_dppServe::getArgumentRules( void ) const {
 	
     if ( !rulesSet ) {
 		
-        argumentRules.push_back( new ValueRule( "allocation", VectorNatural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "allocation", RbVector<Natural>::getClassTypeSpec() ) );
         argumentRules.push_back( new ValueRule( "distribution ~ G_0", Distribution::getClassTypeSpec() ) );
         rulesSet = true;
     }

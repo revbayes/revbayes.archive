@@ -20,7 +20,6 @@
 #include "MoveSimple.h"
 #include "RbException.h"
 #include "StochasticNode.h"
-#include "VectorString.h"
 
 #include <set>
 

@@ -19,14 +19,13 @@
 #define Func_dppSeat_H
 
 #include "RbFunction.h"
-#include "VectorNatural.h"
+#include "RbVector.h"
 
 #include <map>
 #include <string>
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 
 class Func_dppSeat :  public RbFunction {
@@ -48,7 +47,7 @@ protected:
 private:
 
     // function return value
-    VectorNatural                   allocation;
+    RbVector<Natural>               allocation;
 };
 
 #endif

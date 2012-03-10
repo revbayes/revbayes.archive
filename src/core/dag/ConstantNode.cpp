@@ -26,7 +26,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cassert>

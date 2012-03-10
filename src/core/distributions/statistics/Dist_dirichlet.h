@@ -42,10 +42,10 @@ class Dist_dirichlet: public DistributionContinuous {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
+        void                        setMemberVariable(const std::string& name, const Variable* var);    //!< Catching the setting of the member variables.
 
         // Real-valued distribution functions
-        double                      cdf(const RbLanguageObject& value);                           //!< Cumulative density
+        double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
         double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
         double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
@@ -55,7 +55,7 @@ class Dist_dirichlet: public DistributionContinuous {
     private:
 
         // parameters
-        RbVariablePtr               alpha;
+        RbConstVariablePtr          alpha;
 
         // memberfunction return variables
         Simplex                     randomVariable;

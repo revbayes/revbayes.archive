@@ -29,7 +29,6 @@
 class ArgumentRule;
 class DAGNode;
 class Model;
-class VectorString;
 
 
 class Mcmc: public MemberObject {
@@ -47,7 +46,7 @@ public:
 
     // Member variable rules
     const MemberRules&          getMemberRules(void) const;                                                             //!< Get member rules
-    void                        setMemberVariable(const std::string& name, Variable* var);                              //!< Only constants allowed
+    void                        setMemberVariable(const std::string& name, const Variable* var);                              //!< Only constants allowed
 
     // Member method inits
     const MethodTable&          getMethods(void) const;                                                                 //!< Get methods
@@ -62,9 +61,9 @@ protected:
 private:
     
     // parameters
-    RbVariablePtr               model;
-    RbVariablePtr               moves;
-    RbVariablePtr               monitors;
+    RbConstVariablePtr          model;
+    RbConstVariablePtr          moves;
+    RbConstVariablePtr          monitors;
 };
 
 #endif

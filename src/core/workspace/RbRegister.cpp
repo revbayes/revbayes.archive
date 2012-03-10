@@ -53,17 +53,9 @@
 
 /* Container types (alphabetic order) */
 #include "DagNodeContainer.h"
-#include "MatrixComplex.h"
-#include "MatrixReal.h"
+#include "Matrix.h"
 #include "Set.h"
-#include "Vector.h"
-#include "VectorBoolean.h"
-#include "VectorComplex.h"
-#include "VectorInteger.h"
-#include "VectorNatural.h"
-#include "VectorReal.h"
-#include "VectorRealPos.h"
-#include "VectorString.h"
+#include "RbVector.h"
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
 #include "CharacterData.h"
@@ -144,7 +136,6 @@
 #include "Func_unique.h"
 #include "Func_size.h"
 #include "Func_sort.h"
-#include "Func_resize.h"
 
 /* Builtin templated functions */
 #include "Func_transpose.h"
@@ -184,16 +175,15 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
 
         /* Add special abstract types that do not correspond directly to classes */
-        VectorString tmp = VectorString(RbVoid_name);
-        addType( new RbAbstract( tmp ) );
+        addType( new RbAbstract( TypeSpec(RbVoid_name) ) );
 
         /* Add abstract types */
-        addType( new RbAbstract( VectorString(RbObject::getClassTypeSpec()) ) );
-        addType( new RbAbstract( VectorString(RbLanguageObject::getClassTypeSpec()) + VectorString(RbObject::getClassTypeSpec()) ) );
-        addType( new RbAbstract( VectorString(RbInternal::getClassTypeSpec()) + VectorString(RbObject::getClassTypeSpec()) ) );
-        addType( new RbAbstract( VectorString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
-        addType( new RbAbstract( VectorString(Move::getClassTypeSpec()) + RbString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
-        addType( new RbAbstract( VectorString(Distribution::getClassTypeSpec()) + RbString(MemberObject::getClassTypeSpec()) + RbString(RbObject::getClassTypeSpec()) ) );
+        addType( new RbAbstract( RbObject::getClassTypeSpec() ) );
+        addType( new RbAbstract( RbLanguageObject::getClassTypeSpec() ) );
+        addType( new RbAbstract( RbInternal::getClassTypeSpec() ) );
+        addType( new RbAbstract( MemberObject::getClassTypeSpec() ) );
+        addType( new RbAbstract( Move::getClassTypeSpec() ) );
+        addType( new RbAbstract( Distribution::getClassTypeSpec() ) );
 
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
@@ -216,20 +206,20 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add container types (alphabetic order) */
         addType( new DagNodeContainer()             );
-        addType( new MatrixComplex()                );
-        addType( new MatrixReal()                   );
+        addType( new Matrix<Complex>()              );
+        addType( new Matrix<Real>()                 );
         addTypeWithConstructor( "set",         new Set<Integer>()          );
         addTypeWithConstructor( "set",         new Set<Natural>()          );
         addTypeWithConstructor( "set",         new Set<NucleotideState>()  );
         addTypeWithConstructor( "set",         new Set<Real>()             );
         addTypeWithConstructor( "set",         new Set<RealPos>()          );
-        addType( new Vector()                       );
-        addType( new VectorBoolean()                );
-        addType( new VectorInteger()                );
-        addType( new VectorNatural()                );
-        addType( new VectorReal()                   );
-        addType( new VectorRealPos()                );
-        addType( new VectorString()                 );
+        addType( new RbVector<RbLanguageObject>()   );
+        addType( new RbVector<RbBoolean>()          );
+        addType( new RbVector<Integer>()            );
+        addType( new RbVector<Natural>()            );
+        addType( new RbVector<Real>()               );
+        addType( new RbVector<RealPos>()            );
+        addType( new RbVector<RbString>()           );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
         addType( new Simplex()                      );
@@ -288,47 +278,47 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add basic unary arithmetic and logical templated functions */
         addFunction( "_uplus",    new Func__uplus <         Integer,        Integer >() );
         addFunction( "_uplus",    new Func__uplus <            Real,           Real >() );
-        addFunction( "_uplus",    new Func__uplus <      MatrixReal,     MatrixReal >() );
+        addFunction( "_uplus",    new Func__uplus <    Matrix<Real>,   Matrix<Real> >() );
         addFunction( "_uminus",   new Func__uminus<         Integer,        Integer >() );
         addFunction( "_uminus",   new Func__uminus<            Real,           Real >() );
-        addFunction( "_uminus",   new Func__uminus<      MatrixReal,     MatrixReal >() );
+        addFunction( "_uminus",   new Func__uminus<    Matrix<Real>,   Matrix<Real> >() );
         addFunction( "_unot",     new Func__unot  <       RbBoolean                 >() );
         addFunction( "_unot",     new Func__unot  <         Integer                 >() );
         addFunction( "_unot",     new Func__unot  <            Real                 >() );
 
         /* Add basic arithmetic templated functions */
-        addFunction( "_add",      new Func__add<            Natural,        Natural,    Natural >() );
-        addFunction( "_add",      new Func__add<            Integer,        Integer,    Integer >() );
-        addFunction( "_add",      new Func__add<            RealPos,        RealPos,    RealPos >() );
-        addFunction( "_add",      new Func__add<               Real,           Real,       Real >() );
-        addFunction( "_add",      new Func__add<            Integer,           Real,       Real >() );
-        addFunction( "_add",      new Func__add<               Real,        Integer,       Real >() );
-        addFunction( "_add",      new Func__add<         MatrixReal,     MatrixReal, MatrixReal >() );
-        addFunction( "_add",      new Func__add<           RbString,       RbString,   RbString >() );
-        addFunction( "_div",      new Func__div<            Natural,        Natural,    RealPos >() );
-        addFunction( "_div",      new Func__div<            Integer,        Integer,       Real >() );
-        addFunction( "_div",      new Func__div<            RealPos,        RealPos,    RealPos >() );
-        addFunction( "_div",      new Func__div<               Real,           Real,       Real >() );
-        addFunction( "_div",      new Func__div<            Integer,           Real,       Real >() );
-        addFunction( "_div",      new Func__div<               Real,        Integer,       Real >() );
-        addFunction( "_div",      new Func__div<         MatrixReal,     MatrixReal, MatrixReal >() );
-        addFunction( "_exp",      new Func_power()                                                  );
-        addFunction( "_mul",      new Func__mul<            Natural,        Natural,    Natural >() );
-        addFunction( "_mul",      new Func__mul<            Integer,        Integer,    Integer >() );
-        addFunction( "_mul",      new Func__mul<            RealPos,        RealPos,    RealPos >() );
-        addFunction( "_mul",      new Func__mul<               Real,           Real,       Real >() );
-        addFunction( "_mul",      new Func__mul<            Real,           RealPos,       Real >() );
-        addFunction( "_mul",      new Func__mul<            RealPos,           Real,       Real >() );
-        addFunction( "_mul",      new Func__mul<            Integer,           Real,       Real >() );
-        addFunction( "_mul",      new Func__mul<               Real,        Integer,       Real >() );
-        addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
-        addFunction( "_mul",      new Func__mul<         MatrixReal,           Real, MatrixReal >() );
-        addFunction( "_mul",      new Func__mul<               Real,     MatrixReal, MatrixReal >() );
-        addFunction( "_sub",      new Func__sub<            Integer,        Integer,    Integer >() );
-        addFunction( "_sub",      new Func__sub<               Real,           Real,       Real >() );
-        addFunction( "_sub",      new Func__sub<            Integer,           Real,       Real >() );
-        addFunction( "_sub",      new Func__sub<               Real,        Integer,       Real >() );
-        addFunction( "_sub",      new Func__sub<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_add",      new Func__add<            Natural,        Natural,      Natural >() );
+        addFunction( "_add",      new Func__add<            Integer,        Integer,      Integer >() );
+        addFunction( "_add",      new Func__add<            RealPos,        RealPos,      RealPos >() );
+        addFunction( "_add",      new Func__add<               Real,           Real,         Real >() );
+        addFunction( "_add",      new Func__add<            Integer,           Real,         Real >() );
+        addFunction( "_add",      new Func__add<               Real,        Integer,         Real >() );
+        addFunction( "_add",      new Func__add<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
+        addFunction( "_add",      new Func__add<           RbString,       RbString,     RbString >() );
+        addFunction( "_div",      new Func__div<            Natural,        Natural,      RealPos >() );
+        addFunction( "_div",      new Func__div<            Integer,        Integer,         Real >() );
+        addFunction( "_div",      new Func__div<            RealPos,        RealPos,      RealPos >() );
+        addFunction( "_div",      new Func__div<               Real,           Real,         Real >() );
+        addFunction( "_div",      new Func__div<            Integer,           Real,         Real >() );
+        addFunction( "_div",      new Func__div<               Real,        Integer,         Real >() );
+        addFunction( "_div",      new Func__div<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
+        addFunction( "_exp",      new Func_power()                                                    );
+        addFunction( "_mul",      new Func__mul<            Natural,        Natural,      Natural >() );
+        addFunction( "_mul",      new Func__mul<            Integer,        Integer,      Integer >() );
+        addFunction( "_mul",      new Func__mul<            RealPos,        RealPos,      RealPos >() );
+        addFunction( "_mul",      new Func__mul<               Real,           Real,         Real >() );
+        addFunction( "_mul",      new Func__mul<            Real,           RealPos,         Real >() );
+        addFunction( "_mul",      new Func__mul<            RealPos,           Real,         Real >() );
+        addFunction( "_mul",      new Func__mul<            Integer,           Real,         Real >() );
+        addFunction( "_mul",      new Func__mul<               Real,        Integer,         Real >() );
+        addFunction( "_mul",      new Func__mul<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
+        addFunction( "_mul",      new Func__mul<       Matrix<Real>,           Real, Matrix<Real> >() );
+        addFunction( "_mul",      new Func__mul<               Real,   Matrix<Real>, Matrix<Real> >() );
+        addFunction( "_sub",      new Func__sub<            Integer,        Integer,      Integer >() );
+        addFunction( "_sub",      new Func__sub<               Real,           Real,         Real >() );
+        addFunction( "_sub",      new Func__sub<            Integer,           Real,         Real >() );
+        addFunction( "_sub",      new Func__sub<               Real,        Integer,         Real >() );
+        addFunction( "_sub",      new Func__sub<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
 
         /* Add basic logic templated functions */
         addFunction( "_and",      new Func__and<            Integer,        Integer >()             );
@@ -390,34 +380,34 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "setval",                   new Func_setval()                   );
         addFunction( "simplex",                  new Func_simplex<Integer>()         );
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
-        addFunction( "simplex",                  new Func_simplex<VectorRealPos>()   );
+        addFunction( "simplex",                  new Func_simplex<RbVector<RealPos> >() );
         addFunction( "sumOver",                  new Func_sumOver()                  );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
         addFunction( "unclamp",                  new Func_unclamp()                  );
-        addFunction( "unique",                   new Func_unique<VectorBoolean>()    );
-        addFunction( "unique",                   new Func_unique<VectorInteger>()    );
-        addFunction( "unique",                   new Func_unique<VectorNatural>()    );
-        addFunction( "unique",                   new Func_unique<VectorReal>()       );
-        addFunction( "unique",                   new Func_unique<VectorRealPos>()    );
-        addFunction( "unique",                   new Func_unique<VectorComplex>()    );
-        addFunction( "unique",                   new Func_unique<VectorString>()     );
+        addFunction( "unique",                   new Func_unique<RbVector<RbBoolean> >()  );
+        addFunction( "unique",                   new Func_unique<RbVector<Integer> >()    );
+        addFunction( "unique",                   new Func_unique<RbVector<Natural> >()    );
+        addFunction( "unique",                   new Func_unique<RbVector<Real> >()       );
+        addFunction( "unique",                   new Func_unique<RbVector<RealPos> >()    );
+        addFunction( "unique",                   new Func_unique<RbVector<Complex> >()    );
+        addFunction( "unique",                   new Func_unique<RbVector<RbString> >()   );
         addFunction( "size",                     new Func_size<DagNodeContainer>()   );
-        addFunction( "size",                     new Func_size<VectorBoolean>()      );
-        addFunction( "size",                     new Func_size<VectorInteger>()      );
-        addFunction( "size",                     new Func_size<VectorNatural>()      );
-        addFunction( "size",                     new Func_size<VectorReal>()         );
-        addFunction( "size",                     new Func_size<VectorRealPos>()      );
-        addFunction( "size",                     new Func_size<VectorComplex>()      );
-        addFunction( "size",                     new Func_size<VectorString>()       );
-        addFunction( "sort",                     new Func_sort<VectorBoolean>()      );
-        addFunction( "sort",                     new Func_sort<VectorInteger>()      );
-        addFunction( "sort",                     new Func_sort<VectorNatural>()      );
-        addFunction( "sort",                     new Func_sort<VectorReal>()         );
-        addFunction( "sort",                     new Func_sort<VectorRealPos>()      );
-        addFunction( "sort",                     new Func_sort<VectorComplex>()      );
-        addFunction( "sort",                     new Func_sort<VectorString>()       );
-        addFunction( "sort",                     new Func_sort<Vector>()             );
+        addFunction( "size",                     new Func_size<RbVector<RbBoolean> >()    );
+        addFunction( "size",                     new Func_size<RbVector<Integer> >()      );
+        addFunction( "size",                     new Func_size<RbVector<Natural> >()      );
+        addFunction( "size",                     new Func_size<RbVector<Real> >()         );
+        addFunction( "size",                     new Func_size<RbVector<RealPos> >()      );
+        addFunction( "size",                     new Func_size<RbVector<Complex> >()      );
+        addFunction( "size",                     new Func_size<RbVector<RbString> >()     );
+        addFunction( "sort",                     new Func_sort<RbVector<RbBoolean> >()    );
+        addFunction( "sort",                     new Func_sort<RbVector<Integer> >()      );
+        addFunction( "sort",                     new Func_sort<RbVector<Natural> >()      );
+        addFunction( "sort",                     new Func_sort<RbVector<Real> >()         );
+        addFunction( "sort",                     new Func_sort<RbVector<RealPos> >()      );
+        addFunction( "sort",                     new Func_sort<RbVector<Complex> >()      );
+        addFunction( "sort",                     new Func_sort<RbVector<RbString> >()     );
+        addFunction( "sort",                     new Func_sort<RbVector<RbLanguageObject> >());
 
         /* Add math functions (alphabetical order) */
         addFunction( "abs",       new Func_abs()   );
@@ -444,18 +434,16 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "ctmmTransitionProbabilities", new Func_CtmmTransitionProbabilities() );
 
         /* Add builtin templated functions */
-        addFunction( "resize",    new Func_resize() );
-
-        addFunction( "transpose", new Func_transpose<       MatrixReal                                                      >() );
-        addFunction( "v",         new Func_vector<          RbBoolean,                      VectorBoolean                   >() );
-        addFunction( "v",         new Func_vector<          Integer,                        VectorInteger                   >() );
-        addFunction( "v",         new Func_vector<          Natural,                        VectorNatural                   >() );
-        addFunction( "v",         new Func_vector<          Real,                           VectorReal                      >() );
-        addFunction( "v",         new Func_vector<          RealPos,                        VectorRealPos                   >() );
-        addFunction( "v",         new Func_vector<          Complex,                        VectorComplex                   >() );
-        addFunction( "v",         new Func_vector<          RbString,                       VectorString                    >() );
-        addFunction( "v",         new Func_vector<          VectorReal,                     MatrixReal                      >() );
-        addFunction( "v",         new Func_vector<          VectorComplex,                  MatrixComplex                   >() );
+        addFunction( "transpose", new Func_transpose<       Matrix<Real>                                                    >() );
+        addFunction( "v",         new Func_vector<          RbBoolean,                      RbVector<RbBoolean>             >() );
+        addFunction( "v",         new Func_vector<          Integer,                        RbVector<Integer>               >() );
+        addFunction( "v",         new Func_vector<          Natural,                        RbVector<Natural>               >() );
+        addFunction( "v",         new Func_vector<          Real,                           RbVector<Real>                  >() );
+        addFunction( "v",         new Func_vector<          RealPos,                        RbVector<RealPos>               >() );
+        addFunction( "v",         new Func_vector<          Complex,                        RbVector<Complex>               >() );
+        addFunction( "v",         new Func_vector<          RbString,                       RbVector<RbString>              >() );
+        addFunction( "v",         new Func_vector<          RbVector<Real>,                 Matrix<Real>                    >() );
+        addFunction( "v",         new Func_vector<          RbVector<Complex>,              Matrix<Complex>                 >() );
     }
     catch(RbException& rbException) {
 

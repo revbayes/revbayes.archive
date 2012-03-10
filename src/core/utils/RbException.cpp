@@ -15,7 +15,6 @@
 
 #include "RbException.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 
 #include <string>
 #include <iostream>

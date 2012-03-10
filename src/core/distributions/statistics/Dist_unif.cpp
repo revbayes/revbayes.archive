@@ -26,7 +26,6 @@
 #include "RbUtil.h"
 #include "Real.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>

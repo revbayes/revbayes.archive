@@ -23,12 +23,6 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
-#include "VectorBoolean.h"
-#include "VectorInteger.h"
-#include "VectorNatural.h"
-#include "VectorRealPos.h"
-#include "VectorReal.h"
-#include "VectorString.h"
 #include <climits>
 #include <sstream>
 #include <climits>
@@ -123,21 +117,6 @@ RbObject* Natural::convertTo( const TypeSpec& type ) const {
         return new RbString( o.str() );
     }
 
-    if ( type == VectorNatural::getClassTypeSpec() )
-        return new VectorNatural( value );
-
-    if ( type == VectorInteger::getClassTypeSpec() )
-        return new VectorInteger( value );
-
-    if ( type == VectorBoolean::getClassTypeSpec() )
-        return new VectorBoolean( value == 0 );
-
-    if ( type == VectorReal::getClassTypeSpec() )
-        return new VectorReal( value );
-
-    if ( type == VectorRealPos::getClassTypeSpec() )
-        return new VectorRealPos( value );
-
     return Integer::convertTo( type );
 }
 
@@ -180,21 +159,6 @@ bool Natural::isConvertibleTo( const TypeSpec& type ) const {
         return true;
 
     if ( type == RbString::getClassTypeSpec() )
-        return true;
-
-    if ( type == VectorNatural::getClassTypeSpec() )
-        return true;
-
-    if ( type == VectorInteger::getClassTypeSpec() )
-        return true;
-
-    if ( type == VectorBoolean::getClassTypeSpec() )
-        return true;
-
-    if ( type == VectorReal::getClassTypeSpec() )
-        return true;
-
-    if ( type == VectorRealPos::getClassTypeSpec() )
         return true;
 
     return Integer::isConvertibleTo( type );

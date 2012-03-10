@@ -28,9 +28,6 @@
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorInteger.h"
-#include "VectorString.h"
-#include "VectorReal.h"
 
 #include <cassert>
 #include <cmath>

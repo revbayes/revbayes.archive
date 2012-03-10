@@ -19,14 +19,11 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Func__range.h"
-#include "VectorInteger.h"
 #include "Integer.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorNatural.h"
-#include "VectorString.h"
 
 
 
@@ -107,17 +104,15 @@ const RbLanguageObject& Func__range::executeFunction( void ) {
     int f = static_cast<const Integer&>( first->getValue() ).getValue();
     int l = static_cast<const Integer&>( last->getValue() ).getValue();
 
-    std::vector<int> temp;
+    range.clear();
     if (f < l) {
         for ( int i = f; i <= l; i++ )
-            temp.push_back(i);
+            range.push_back( new Integer(i) );
     }
     else {
         for ( int i = f; i >= l; i-- )
-            temp.push_back(i);
+            range.push_back( new Integer(i) );
     }
-    
-    range.setValue( temp );
     
     return range;
 }
@@ -168,7 +163,7 @@ const TypeSpec& Func__range::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func__range::getReturnType( void ) const {
 
-    static TypeSpec returnTypeSpec = VectorInteger::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RbVector<Integer>::getClassTypeSpec();
     return returnTypeSpec;
 }
 

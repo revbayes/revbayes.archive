@@ -16,6 +16,7 @@
 #ifndef RateMatrix_H
 #define RateMatrix_H
 
+#include "Matrix.h"
 #include "MemberObject.h"
 #include "Natural.h"
 #include "RbBoolean.h"
@@ -26,11 +27,8 @@
 class ArgumentRule;
 class DAGNode;
 class EigenSystem;
-class MatrixReal;
 class Simplex;
 class TransitionProbabilityMatrix;
-class VectorReal;
-class VectorString;
 
 
 class RateMatrix : public MemberObject {
@@ -43,8 +41,8 @@ class RateMatrix : public MemberObject {
 
         // overloaded operators
         RateMatrix&                         operator=(const RateMatrix& r);
-        VectorReal&                         operator[](size_t i);                                                             //!< Subscript operator
-        const VectorReal&                   operator[](size_t i) const;                                                       //!< Subscript operator (const)
+        RbVector<Real>&                     operator[](size_t i);                                                             //!< Subscript operator
+        const RbVector<Real>&               operator[](size_t i) const;                                                       //!< Subscript operator (const)
         
         // Basic utility functions
         RateMatrix*                         clone(void) const;                                                                  //!< Clone object
@@ -85,7 +83,7 @@ class RateMatrix : public MemberObject {
         bool                                reversibilityChecked;                                                               //!< Flag indicating if time reversibility has been checked
         RbBoolean                           isReversible;                                                                       //!< Is the matrix time reversible
         Natural                             numStates;                                                                          //!< The number of character states
-        MatrixReal*                         theRateMatrix;                                                                      //!< Holds the rate matrix
+        Matrix<Real>*                       theRateMatrix;                                                                      //!< Holds the rate matrix
         Simplex*                            theStationaryFreqs;                                                                 //!< Holds the stationary frequencies
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse

@@ -25,7 +25,6 @@
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <algorithm>
 

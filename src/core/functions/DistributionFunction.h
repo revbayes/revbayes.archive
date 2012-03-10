@@ -28,8 +28,6 @@
 class ArgumentRule;
 class DAGNode;
 class Distribution;
-class VectorInteger;
-class VectorString;
 
 
 class DistributionFunction :  public RbFunction {

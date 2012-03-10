@@ -29,7 +29,6 @@
 #include "Simplex.h"
 #include "TransitionProbabilityMatrix.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <cmath>
 #include <sstream>
@@ -310,7 +309,7 @@ const RbLanguageObject& Dist_ctmm::rv( void ) {
     for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
         // test whether the state is set
         if (*itStart) {
-            VectorReal& probs = m[indexStart];
+            RbVector<Real>& probs = m[indexStart];
             double u = rng->uniform01();
             for (size_t i=0; i<probs.size(); i++) {
                 u -= probs[i];

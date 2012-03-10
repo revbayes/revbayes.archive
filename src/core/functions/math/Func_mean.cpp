@@ -24,10 +24,10 @@
 #include "Real.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "Vector.h"
 
 #include <cassert>
 #include <cmath>
@@ -49,20 +49,12 @@ Func_mean* Func_mean::clone( void ) const {
 const RbLanguageObject& Func_mean::executeFunction( void ) {
     
     double m = 0.0;
-    const Vector& v = static_cast<const Vector&>( x->getValue() );
+    const RbVector<Real>& v = static_cast<const RbVector<Real>&>( x->getValue() );
     for (size_t i = 0; i < v.size(); i++) {
         m += static_cast<const Real&>( v.getElement(i) ).getValue();
     }
     
     m /= v.size();
-    
-//    for (std::vector<RbVariablePtr>::iterator i = x.begin(); i != x.end(); i++) {
-//        const Vector& v = static_cast<const Vector&>( (*i)->getValue() );
-//        for (size_t i = 0; i < v.size(); i++) {
-//            m += static_cast<const Real&>( v.getElement(i) ).getValue();
-//            count++;
-//        }
-//    }
     
     value.setValue( m );
     return value;
@@ -77,7 +69,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "x", TypeSpec(Vector::getClassTypeSpec(), new TypeSpec( Real::getClassTypeSpec() ) ) ) );
+        argumentRules.push_back( new ValueRule( "x", RbVector<Real>::getClassTypeSpec() ) );
 //        argumentRules.push_back( new Ellipsis( TypeSpec(Vector::getClassTypeSpec(), new TypeSpec( Real::getClassTypeSpec() ) ) ) );
         rulesSet = true;
     }

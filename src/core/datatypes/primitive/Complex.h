@@ -43,6 +43,14 @@ class Complex : public RbLanguageObject {
         // Overloaded operators
                                     operator std::complex<double>(void) const { return value; }             //!< Type conversion to double for convenience
         bool                        operator==(const Complex& x) const;                                     //!< Equals operator
+        Complex&                    operator+=(const Complex& x);                                           //!< operator += 
+        Complex&                    operator+=(double x);                                                   //!< operator += 
+        Complex&                    operator-=(const Complex& x);                                           //!< operator -= 
+        Complex&                    operator-=(double x);                                                   //!< operator -= 
+        Complex&                    operator*=(const Complex& x);                                           //!< operator *= 
+        Complex&                    operator*=(double x);                                                   //!< operator *= 
+        Complex&                    operator/=(const Complex& x);                                           //!< operator /= 
+        Complex&                    operator/=(double x);                                                   //!< operator /= 
 
         // Basic utility functions
         Complex*                    clone(void) const;                                                      //!< Clone object
@@ -64,10 +72,22 @@ class Complex : public RbLanguageObject {
 // Operators defined outside of the class
 Complex                     operator+ (const Complex& A);                                           //!< Unary operator + 
 Complex                     operator- (const Complex& A);                                           //!< Unary operator - 
+Complex                     operator+ (const Complex& A, const Complex& B);                         //!< operator + 
+Complex                     operator+ (const Complex& A, double B);                                 //!< Binary operator + 
+Complex                     operator+ (double A, const Complex& B);                                 //!< Binary operator + 
+Complex                     operator- (const Complex& A, const Complex& B);                         //!< operator - 
+Complex                     operator- (const Complex& A, double B);                                 //!< Binary operator - 
+Complex                     operator- (double A, const Complex& B);                                 //!< Binary operator - 
+Complex                     operator* (const Complex& A, const Complex& B);                         //!< operator *
+Complex                     operator* (const Complex& A, double B);                                 //!< Binary operator * 
+Complex                     operator* (double A, const Complex& B);                                 //!< Binary operator * 
+Complex                     operator/ (const Complex& A, const Complex& B);                         //!< operator / 
+Complex                     operator/ (const Complex& A, double B);                                 //!< Binary operator / 
+Complex                     operator/ (double A, const Complex& B);                                 //!< Binary operator / 
 RbBoolean                   operator! (const Complex& A);                                           //!< Unary operator !
 RbBoolean                   operator==(const Complex& A, const Complex& B);                         //!< operator == 
 RbBoolean                   operator!=(const Complex& A, const Complex& B);                         //!< operator != 
-RbBoolean                     operator< (const Complex& A, const Complex& B);                         //!< operator < 
+RbBoolean                   operator< (const Complex& A, const Complex& B);                         //!< operator < 
 
 
 

@@ -21,8 +21,6 @@
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "RbOptions.h"
-#include "VectorInteger.h"
-#include "VectorString.h"
 #include "VariableNode.h"
 
 #include <algorithm>

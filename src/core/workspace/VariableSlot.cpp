@@ -27,7 +27,6 @@
 #include "Variable.h"
 #include "VariableNode.h"
 #include "VariableSlot.h"
-#include "VectorNatural.h"
 #include "Workspace.h"
 
 #include <cassert>

@@ -25,9 +25,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
-
-const std::string Func_mean_name = "mean function";
 
 class Func_mean :  public RbFunction {
     

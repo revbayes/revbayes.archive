@@ -25,7 +25,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 const std::string Func_size_name = "Size function";
 

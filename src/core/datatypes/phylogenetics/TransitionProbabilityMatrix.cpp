@@ -18,23 +18,20 @@
  */
 
 #include "RbBoolean.h"
-#include "MatrixReal.h"
+#include "Matrix.h"
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
-#include "RbUtil.h"
 #include "RbString.h"
+#include "RbUtil.h"
+#include "RbVector.h"
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorNatural.h"
-#include "VectorReal.h"
-#include "VectorRealPos.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -47,7 +44,7 @@
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : MemberObject(getMemberRules()) {
 
     numStates = 2;
-    theMatrix = new MatrixReal(numStates.getValue(), numStates.getValue());
+    theMatrix = new Matrix<Real>(numStates.getValue(), numStates.getValue());
 }
 
 
@@ -55,7 +52,7 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : MemberObject(ge
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : MemberObject(getMemberRules()) {
 
     numStates = n;
-    theMatrix = new MatrixReal(numStates.getValue(), numStates.getValue());
+    theMatrix = new Matrix<Real>(numStates.getValue(), numStates.getValue());
 }
 
 
@@ -90,7 +87,7 @@ TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator=(const Transi
 
 
 /** Index operator (const) */
-const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
+const RbVector<Real>& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates.getValue() )
         throw RbException( "Index to " + getClassName() + "[][] out of bounds" );
@@ -99,7 +96,7 @@ const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) cons
 
 
 /** Index operator */
-VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) {
+RbVector<Real>& TransitionProbabilityMatrix::operator[]( const size_t i ) {
 
     if ( i >= numStates.getValue() )
         throw RbException( "Index to " + getClassName() + "[][] out of bounds" );

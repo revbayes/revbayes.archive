@@ -21,8 +21,6 @@
 #include "DistanceMatrix.h"
 
 class DAGNode;
-class VectorString;
-
 
 
 class Func_distance :  public RbFunction {

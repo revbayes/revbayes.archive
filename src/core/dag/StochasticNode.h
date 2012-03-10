@@ -46,7 +46,6 @@
 class Distribution;
 class MemberNode;
 class RbObject;
-class VectorString;
 
 
 class StochasticNode : public VariableNode {

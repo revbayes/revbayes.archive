@@ -32,8 +32,6 @@
 class StochasticNode;
 class Variable;
 class VariableNode;
-class VectorNatural;
-class VectorString;
 class RbDagNodePtr;
 
 class DAGNode : public RbLanguageObject {

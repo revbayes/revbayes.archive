@@ -14,14 +14,13 @@
  */
 
 #include "CharacterStateDiscrete.h"
+#include "MemberObject.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbString.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "ValueRule.h"
-#include "Vector.h"
-#include "VectorBoolean.h"
-#include "VectorString.h"
 
 
 
@@ -98,7 +97,7 @@ unsigned CharacterStateDiscrete::getUnsignedValue(void) const {
 
 
 /** Initialize the discrete character state variable. We just set the value. */
-void CharacterStateDiscrete::initialize(const Vector &attributes) {
+void CharacterStateDiscrete::initialize(const RbVector<RbLanguageObject> &attributes) {
     
     // set the state
     setState(static_cast<const RbString&>( attributes[0] ).getValue()[0]);

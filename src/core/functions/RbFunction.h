@@ -32,8 +32,6 @@
 #include "RbInternal.h"
 
 class DAGNode;
-class VectorInteger;
-class VectorString;
 
 /**
  * This is the interface and abstract base class for functions in
@@ -76,7 +74,7 @@ class RbFunction :  public RbInternal {
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, VectorInteger* matchScore); //!< Process args, return a match score if pointer is not null
+        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
         virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
     

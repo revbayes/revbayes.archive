@@ -29,8 +29,6 @@
 #include "TaxonData.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
-#include "VectorReal.h"
-#include "VectorString.h"
 #include <cmath>
 #include <sstream>
 #include <vector>

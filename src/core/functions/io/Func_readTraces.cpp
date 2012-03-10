@@ -19,13 +19,13 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbNullObject.h"
+#include "RbString.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 #include "Trace.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
-#include "Vector.h"
-#include "VectorString.h"
+#include "RbVector.h"
 
 #include <map>
 #include <set>
@@ -81,7 +81,7 @@ const RbLanguageObject& Func_readTraces::executeFunction( void ) {
         RBOUT(o1.str());
     }
     
-    Vector* data = new Vector( Trace::getClassTypeSpec() );
+    RbVector<Trace>* data = new RbVector<Trace>;
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -237,7 +237,7 @@ const TypeSpec& Func_readTraces::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTraces::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = TypeSpec(Vector::getClassName(), NULL, new TypeSpec( Trace::getClassTypeSpec() ) );
+    static TypeSpec returnTypeSpec = RbVector<Trace>::getClassName();
 
     return returnTypeSpec;
 }

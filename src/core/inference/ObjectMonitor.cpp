@@ -25,7 +25,6 @@
 #include "RbUtil.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorString.h"
 
 
 #include <sstream>
@@ -122,7 +121,7 @@ const MethodTable& ObjectMonitor::getMethods( void ) const {
         ArgumentRules* getValues = new ArgumentRules();
         getValues->push_back( new ValueRule( "name", RbString::getClassTypeSpec() ) );
         
-        methods.addFunction( "getValues", new MemberFunction( Vector::getClassTypeSpec(), getValues ) );
+        methods.addFunction( "getValues", new MemberFunction( RbVector<RbLanguageObject>::getClassTypeSpec(), getValues ) );
         
         methods.setParentTable( &Monitor::getMethods() );
         
@@ -186,11 +185,11 @@ void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
 
 
 /** returns the values contained in the values vector for variable with name varName */
-Vector& ObjectMonitor::getValues(const RbString& varName) {
-    std::map<RbString,Vector>::iterator it = values.find(varName);
+RbVector<RbLanguageObject>& ObjectMonitor::getValues(const RbString& varName) {
+    std::map<RbString,RbVector<RbLanguageObject> >::iterator it = values.find(varName);
     
     if (it != values.end()) {
-        Vector& toReturn = it->second;
+        RbVector<RbLanguageObject>& toReturn = it->second;
         return toReturn;
     }
     

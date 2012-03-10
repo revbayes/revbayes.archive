@@ -31,8 +31,6 @@
 #include "TopologyNode.h"
 #include "ValueRule.h"
 #include "Variable.h"
-#include "VectorString.h"
-#include "VectorRealPos.h"
 
 #include <algorithm>
 #include <cmath>

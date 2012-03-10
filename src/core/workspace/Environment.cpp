@@ -21,7 +21,6 @@
 #include "RbOptions.h"
 #include "Variable.h"
 #include "VariableSlot.h"
-#include "VectorString.h"
 
 
 /** Destructor */

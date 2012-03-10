@@ -29,11 +29,9 @@
 #include "RbLanguageObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
+#include "RbVector.h"
 #include "SyntaxFunctionCall.h"
 #include "Variable.h"
-#include "VectorInteger.h"
-#include "VectorNatural.h"
-#include "VectorString.h"
 #include "SyntaxVariable.h"
 
 
@@ -184,16 +182,16 @@ std::string SyntaxVariable::getFullName(Environment& env) const {
 
 
 /** Get index */
-VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
+RbVector<Natural> SyntaxVariable::computeIndex( Environment& env ) {
     
-    VectorNatural   theIndex;
+    RbVector<Natural>   theIndex;
     
     int count = 1;
     for ( std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++ ) {
         
         if ( (*i) == NULL )
             
-            theIndex.push_back( -1 );
+            theIndex.push_back( new Natural(-1) );
         
         else {
             
@@ -216,7 +214,7 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
                 }
                 
                 // Get zero-based value corresponding to integer index
-                theIndex.push_back(intIndex-1);
+                theIndex.push_back( new Natural(intIndex-1) );
             }
             
             else if ( indexVar->getValue().isTypeSpec( RbString::getClassTypeSpec() ) ) {
@@ -255,7 +253,7 @@ VectorNatural SyntaxVariable::computeIndex( Environment& env ) {
 VariableSlot& SyntaxVariable::createVariable( Environment& env) {
     
     /* Get index */
-    VectorNatural indices = computeIndex(env);
+    RbVector<Natural> indices = computeIndex(env);
     
     VariableSlot* theSlot = NULL;
     

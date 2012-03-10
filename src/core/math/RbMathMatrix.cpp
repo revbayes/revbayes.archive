@@ -14,12 +14,13 @@
  * $Id$
  */
 
+#include "MatrixRealOperators.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "RbMathGaussianElimination.h"
 #include "RbSettings.h"
-#include "VectorReal.h"
+
 #include <cassert>
 #include <cmath>
 #include <complex>
@@ -41,7 +42,7 @@
  * \param uMat The U matrix
  * \return Returns nothing
  */
-void RbMath::computeLandU(MatrixComplex& aMat, MatrixComplex& lMat, MatrixComplex& uMat) {
+void RbMath::computeLandU(Matrix<Complex>& aMat, Matrix<Complex>& lMat, Matrix<Complex>& uMat) {
 
 	size_t n = aMat.getNumberOfRows();
 	for (size_t j=0; j<n; j++)
@@ -87,7 +88,7 @@ void RbMath::computeLandU(MatrixComplex& aMat, MatrixComplex& lMat, MatrixComple
  * \param uMat The U matrix
  * \return Returns nothing
  */
-void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) {
+void RbMath::computeLandU(Matrix<Real>& aMat, Matrix<Real>& lMat, Matrix<Real>& uMat) {
 
 	size_t n = aMat.getNumberOfRows();
 	for (size_t j=0; j<n; j++)
@@ -136,16 +137,16 @@ void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) 
  *    The Johns Hopkins University Press, Baltimore, Maryland. [algorithm 11.3.1]
  * \todo See if ldexp is faster than regular matrix division by scalar
  */
-int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
+int RbMath::expMatrixPade(Matrix<Real>& A, Matrix<Real>& F, int qValue) {
 
 	size_t dim = A.getNumberOfRows();
 	if (dim != A.getNumberOfColumns())
 		return (1);
 
 	// create identity matrices
-	MatrixReal D(dim, dim, 0.0);
-	MatrixReal N(dim, dim, 0.0);
-	MatrixReal X(dim, dim, 0.0);
+	Matrix<Real> D(dim, dim, new Real(0.0) );
+	Matrix<Real> N(dim, dim, new Real(0.0) );
+	Matrix<Real> X(dim, dim, new Real(0.0) );
 	for (size_t i=0; i<dim; i++)
         {
 		D[i][i] = 1.0;
@@ -154,7 +155,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
         }
 
 	// create uninitialized matrix
-	MatrixReal cX(dim, dim, 0.0);
+	Matrix<Real> cX(dim, dim, new Real(0.0) );
 
 	// We assume that we have a rate matrix where rows sum to zero
 	// Then the infinity-norm is twice the maximum absolute value
@@ -255,18 +256,18 @@ int RbMath::findPadeQValue(const double& tolerance) {
 }
 
 
-void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
+void RbMath::matrixInverse(const Matrix<Complex>& a, Matrix<Complex>& aInv) {
 
     // get dimensions: we assume a square matrix
 	size_t n = a.getNumberOfRows();
 
     // copy original matrix, a, into a working version, aTmp
-    MatrixComplex aTmp(a);
+    Matrix<Complex> aTmp(a);
 
     // set up some matrices for work
-	MatrixComplex lMat(n, n, 0.0);
-	MatrixComplex uMat(n, n, 0.0);
-    MatrixComplex identity(n, n, 0.0);
+	Matrix<Complex> lMat(n, n, new Complex(0.0) );
+	Matrix<Complex> uMat(n, n, new Complex(0.0) );
+    Matrix<Complex> identity(n, n, new Complex(0.0) );
     for (size_t i=0; i<n; i++)
         identity[i][i] = 1.0;
 	std::vector<std::complex<double> > bVec(n);
@@ -290,18 +291,18 @@ void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
 }
 
 
-void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
+void RbMath::matrixInverse(const Matrix<Real>& a, Matrix<Real>& aInv) {
 
     // get dimensions: we assume a square matrix
 	size_t n = a.getNumberOfRows();
 
     // copy original matrix, a, into a working version, aTmp
-    MatrixReal aTmp(a);
+    Matrix<Real> aTmp(a);
 
     // set up some matrices for work
-	MatrixReal lMat(n, n, 0.0);
-	MatrixReal uMat(n, n, 0.0);
-    MatrixReal identity(n, n, 0.0);
+	Matrix<Real> lMat(n, n, new Real(0.0) );
+	Matrix<Real> uMat(n, n, new Real(0.0) );
+    Matrix<Real> identity(n, n, new Real(0.0) );
     for (size_t i=0; i<n; i++)
         identity[i][i] = 1.0;
 	std::vector<double> bVec(n);
@@ -335,7 +336,7 @@ void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
  * \param t [out] Transposed matrix
  * \return 0 on success, 1 on failure
  */
-int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
+int RbMath::transposeMatrix(const Matrix<Real>& a, Matrix<Real>& t) {
 
 	size_t m = a.getNumberOfRows();
 	size_t n = a.getNumberOfColumns();
@@ -359,12 +360,12 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
  * \param a [in] Matrix
  * \return sum for each column
  */
-VectorReal RbMath::colSumMatrix(const MatrixReal& a) {
+RbVector<Real> RbMath::colSumMatrix(const Matrix<Real>& a) {
 
 	size_t m = a.getNumberOfRows();
 	size_t n = a.getNumberOfColumns();
 
-	VectorReal s(n, 0);
+	RbVector<Real> s(n, new Real(0) );
 
 	for (size_t i=0; i<m; i++) {
 		for (size_t j=0; j<n; j++) {
@@ -383,12 +384,12 @@ VectorReal RbMath::colSumMatrix(const MatrixReal& a) {
  * \param a [in] Matrix
  * \return sum for each row
  */
-VectorReal RbMath::rowSumMatrix(const MatrixReal& a) {
+RbVector<Real> RbMath::rowSumMatrix(const Matrix<Real>& a) {
 
 	size_t m = a.getNumberOfRows();
 	size_t n = a.getNumberOfColumns();
 
-	VectorReal s(m, 0);
+	RbVector<Real> s(m, 0);
 
 	for (size_t i=0; i<m; i++) {
 		for (size_t j=0; j<n; j++) {
@@ -407,12 +408,12 @@ VectorReal RbMath::rowSumMatrix(const MatrixReal& a) {
  * \param a [in] Matrix
  * \return mean for each row
  */
-VectorReal RbMath::rowMeansMatrix(const MatrixReal& a) {
+RbVector<Real> RbMath::rowMeansMatrix(const Matrix<Real>& a) {
 
 	size_t m = a.getNumberOfRows();
 	size_t n = a.getNumberOfColumns();
 
-	VectorReal s = rowSumMatrix(a);
+	RbVector<Real> s = rowSumMatrix(a);
 	for(size_t i=0; i<m; i++){
         s[i] /= n;
 	}
@@ -429,12 +430,12 @@ VectorReal RbMath::rowMeansMatrix(const MatrixReal& a) {
  * \param a [in] Matrix
  * \return mean for each column
  */
-VectorReal RbMath::colMeansMatrix(const MatrixReal& a) {
+RbVector<Real> RbMath::colMeansMatrix(const Matrix<Real>& a) {
 
 	size_t m = a.getNumberOfRows();
 	size_t n = a.getNumberOfColumns();
 
-	VectorReal s = colSumMatrix(a);
+	RbVector<Real> s = colSumMatrix(a);
 	for(size_t i=0; i<n; i++){
         s[i] /= m;
 	}

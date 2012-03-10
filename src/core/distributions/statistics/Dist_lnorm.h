@@ -25,7 +25,6 @@
 
 class DAGNode;
 class Real;
-class VectorString;
 
 class Dist_lnorm: public DistributionContinuous {
 	

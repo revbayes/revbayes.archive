@@ -18,14 +18,13 @@
 #define Func__range_H
 
 #include "RbFunction.h"
-#include "VectorInteger.h"
+#include "RbVector.h"
 
 #include <map>
 #include <string>
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 class Func__range :  public RbFunction {
 
@@ -58,7 +57,7 @@ class Func__range :  public RbFunction {
         const Variable*             last;
 
         // memberfunction return values
-        VectorInteger               range;
+        RbVector<Integer>           range;
 };
 
 #endif

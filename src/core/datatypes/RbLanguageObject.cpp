@@ -21,7 +21,6 @@
 #include "RbUtil.h"
 #include "RbLanguageObject.h"
 #include "TypeSpec.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -74,7 +73,7 @@ const MemberRules& RbLanguageObject::getMemberRules(void) const {
  * Initialize this instance with the parameters given. 
  * The ordering of the parameters is specified by the member rules. 
  */
-void RbLanguageObject::initialize(const Vector& params) {
+void RbLanguageObject::initialize(const std::vector<RbObject*>& params) {
     // do nothing because we do not have any parameters. Some derived classes might have ...
 }
 

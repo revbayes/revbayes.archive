@@ -22,7 +22,6 @@
 #include <string>
 
 class RbLanguageObject;
-class VectorString;
 
 template <typename valType, typename retType>
 class Func__uminus :  public RbFunction {
@@ -61,10 +60,10 @@ class Func__uminus :  public RbFunction {
 #endif
 
 #include "DAGNode.h"
+#include "MatrixRealOperators.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 
 

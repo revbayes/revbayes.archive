@@ -18,7 +18,6 @@
 #include "RealPos.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 
 #include <sstream>
 

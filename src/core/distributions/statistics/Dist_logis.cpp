@@ -25,15 +25,12 @@
 #include "Real.h"
 #include "Simplex.h"
 #include "ValueRule.h"
-#include "VectorRealPos.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
 #include <sstream>
 #include <vector>
 
-#include "MatrixReal.h"
 #include "RbMathMatrix.h"
 
 

@@ -31,7 +31,6 @@ class ArgumentFrame;
 class ArgumentRule;
 class DAGNode;
 class MethodTable;
-class VectorString;
 
 class MemberObject: public RbLanguageObject {
 

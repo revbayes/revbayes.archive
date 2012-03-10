@@ -24,7 +24,6 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TopologyNode.h"
-#include "VectorString.h"
 #include "ValueRule.h"
 
 #include <algorithm>

@@ -22,10 +22,10 @@
 #include "DagNodeContainer.h"
 #include "MemberObject.h"
 #include "RbFunction.h"
+#include "RbString.h"
 #include "RbUtil.h"
 #include "TaxonData.h"
 #include "TypeSpec.h"
-#include "VectorString.h"
 #include "ValueRule.h"
 
 #include <sstream>
@@ -70,7 +70,7 @@ const RbLanguageObject& ConstructorTaxonData::executeFunction(void) {
     }
     else {
         // set the vector of characters
-        const Vector& v = static_cast<const Vector&>( chars->getValue() );
+        const RbVector<Character>& v = static_cast<const RbVector<Character>& >( chars->getValue() );
         for (size_t i = 0; i < v.size(); i++) {
             Character* c = static_cast<Character*>( v.getElement( i ).clone() );
             retVal.addCharacter( c );

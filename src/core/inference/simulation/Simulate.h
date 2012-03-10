@@ -30,7 +30,6 @@
 class ArgumentRule;
 class DAGNode;
 class Model;
-class VectorString;
 
 
 class Simulate: public MemberObject {

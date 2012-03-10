@@ -32,7 +32,6 @@
 #include "ValueRule.h"
 #include "VariableSlot.h"
 #include "Variable.h"
-#include "VectorString.h"
 
 
 /* Default constructor */

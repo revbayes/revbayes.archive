@@ -24,6 +24,7 @@
 
 class ValueRule;
 class RbString;
+class Container;
 
 
 class SyntaxForCondition : public SyntaxElement {

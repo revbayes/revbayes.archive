@@ -26,7 +26,6 @@
 #include "StringUtilities.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 #include <cmath>
 #include <iomanip>
 #include <sstream>

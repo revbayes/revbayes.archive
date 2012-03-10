@@ -25,7 +25,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 
 class Func_ln :  public RbFunction {

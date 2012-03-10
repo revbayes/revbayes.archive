@@ -22,12 +22,11 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "DistributionDirichlet.h"
 #include "Real.h"
 #include "Simplex.h"
 #include "ValueRule.h"
-#include "VectorRealPos.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -109,7 +108,7 @@ const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "alpha", VectorRealPos::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "alpha", RbVector<RealPos>::getClassTypeSpec() ) );
 
         rulesSet = true;
 		}
@@ -138,8 +137,8 @@ const TypeSpec& Dist_dirichlet::getVariableType( void ) const {
 double Dist_dirichlet::lnPdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorRealPos&>( alpha->getValue() ).getValue();
-    std::vector<double> x = static_cast<const Simplex&      >( value            ).getValue();
+    const RbVector<RealPos>& a  = static_cast<const RbVector<RealPos>& >( alpha->getValue() );
+    std::vector<double> x       = static_cast<const Simplex&           >( value             ).getValue();
 
 	// Check that the vectors are both the same size
 	if ( a.size() != x.size() )
@@ -160,8 +159,8 @@ double Dist_dirichlet::lnPdf( const RbLanguageObject& value ) const {
 double Dist_dirichlet::pdf( const RbLanguageObject& value ) const {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorRealPos&>( alpha->getValue() ).getValue();
-    std::vector<double> x = static_cast<const Simplex&      >( value            ).getValue();
+    const RbVector<RealPos>& a  = static_cast<const RbVector<RealPos>& >( alpha->getValue() );
+    std::vector<double> x       = static_cast<const Simplex&           >( value            ).getValue();
 
 	// Check that the vectors are both the same size
 	if ( a.size() != x.size() )
@@ -197,7 +196,7 @@ const Real& Dist_dirichlet::quantile( const double p ) {
  */
 const RbLanguageObject& Dist_dirichlet::rv( void ) {
 
-    std::vector<double> a = static_cast<VectorRealPos&>( alpha->getValue() ).getValue();
+    const RbVector<RealPos>& a = static_cast<const RbVector<RealPos>& >( alpha->getValue() );
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<double> r(a.size());
 
@@ -209,7 +208,7 @@ const RbLanguageObject& Dist_dirichlet::rv( void ) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_dirichlet::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_dirichlet::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "alpha" ) {
         alpha = var;

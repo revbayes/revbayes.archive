@@ -26,7 +26,6 @@
 #include "RbMemoryManager.h"
 #include "RbUtil.h"
 #include "UserInterface.h"
-#include "VectorString.h"
 #include "Workspace.h"
 #include "ConstructorFunction.h"
 #include "DeterministicNode.h"

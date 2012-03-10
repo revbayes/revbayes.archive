@@ -26,14 +26,12 @@
 #include "RbException.h"
 #include "RbMathVector.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorReal.h"
-#include "VectorRealPos.h"
-#include "VectorString.h"
 
 #include <cassert>
 #include <cmath>
@@ -50,12 +48,11 @@ Func_normalizeVector* Func_normalizeVector::clone( void ) const {
 const RbLanguageObject& Func_normalizeVector::executeFunction( void ) {
 
     // Get first element
-    std::vector<double> tempVec    = static_cast<const VectorRealPos&>( vector->getValue() ).getValue();
-    double              desiredSum = static_cast<const RealPos&      >( total->getValue() ).getValue();
+    const RbVector<RealPos>&    tempVec    = static_cast<const RbVector<RealPos>& >( vector->getValue() );
+    double                      desiredSum = static_cast<const RealPos&      >( total->getValue() ).getValue();
     
     // normalize the vector
-    RbMath::normalize(tempVec, desiredSum);
-    normalizedVector.setValue( tempVec );
+    normalizedVector = RbMath::normalize(tempVec, desiredSum);
     
     return normalizedVector;
 }
@@ -69,7 +66,7 @@ const ArgumentRules& Func_normalizeVector::getArgumentRules( void ) const {
 
     if (!rulesSet)
 		{
-        argumentRules.push_back( new ValueRule( "vector", VectorRealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "vector", RbVector<RealPos>::getClassTypeSpec() ) );
         argumentRules.push_back( new ValueRule( "total",  new RealPos( 1.0 ) ) );
         rulesSet = true;
 		}
@@ -106,7 +103,7 @@ const TypeSpec& Func_normalizeVector::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_normalizeVector::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = VectorRealPos::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RbVector<RealPos>::getClassTypeSpec();
     
     return returnTypeSpec;
 }

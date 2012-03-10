@@ -19,42 +19,40 @@
 #include "RbUtil.h"
 #include "Real.h"
 #include "Simplex.h"
-#include "VectorInteger.h"
-#include "VectorReal.h"
-#include "VectorRealPos.h"
-#include "VectorString.h"
 #include <iomanip>
 
 
 /** Construct simplex of length (size) n */
-Simplex::Simplex(const size_t n) : VectorRealPos(n,1.0/n) {
+Simplex::Simplex(const size_t n) : MemberObject() {
+    
+    double value = 1.0 / n;
+    for (size_t i = 0; i < n; i++) {
+        elements.push_back( value );
+    }
 
 }
 
 
 /** Construct simplex from STL vector */
-Simplex::Simplex(const std::vector<double>& x) : VectorRealPos(x) {
+Simplex::Simplex(const std::vector<double>& x) : MemberObject() {
 
+    elements = x;
+    
+    // rescale so that the elements sum to 1
     rescale();
 }
 
-
-/** Construct simplex from VectorRealPos, which is guaranteed to have real positive numbers */
-Simplex::Simplex(const VectorRealPos& x) : VectorRealPos(x) {
-
-    rescale();
-}
 
 /** Const subscript operator allowing caller to see value but not to modify it */
 double Simplex::operator[](size_t i) {
     
-    return VectorRealPos::operator[](i);
+    return elements[i];
 }
 
 /** Const subscript operator allowing caller to see value but not to modify it */
 double Simplex::operator[](size_t i) const {
 
-    return VectorRealPos::operator[](i);
+    return elements[i];
 }
 
 
@@ -73,10 +71,16 @@ const std::string& Simplex::getClassName(void) {
 	return rbClassName; 
 }
 
+
+/** Get the stl vector */
+const std::vector<double>& Simplex::getValue( void ) const {
+    return elements;
+}
+
 /** Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( VectorRealPos::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -92,9 +96,28 @@ const TypeSpec& Simplex::getTypeSpec( void ) const {
 
 /** Print value for user */
 void Simplex::printValue(std::ostream& o) const {
-
-    VectorRealPos::printValue(o);
+    
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << "[ ";
+    o << std::fixed;
+    o << std::setprecision(4);
+    for (std::vector<double>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
+    {
+        if (i != elements.begin())
+            o << ", ";
+        o << (*i);
+    }
+    o <<  " ]";
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
 }
+
+
+/** Push back a value. This will automatically rescale the elements.*/
+
 
 
 /** Rescale the simplex */
@@ -112,28 +135,6 @@ void Simplex::rescale(void) {
 }
 
 
-/** Set value of simplex using VectorReal */
-void Simplex::setValue(const VectorReal& x) {
-
-    elements.clear();
-    for (size_t i=0; i<x.size(); i++)    
-        elements.push_back(x[i]);
-    
-    rescale();
-}   
-
-
-/** Set value of simplex using VectorRealPos */
-void Simplex::setValue(const VectorRealPos& x) {
-    
-    elements.clear();
-    for (size_t i=0; i<x.size(); i++)    
-        elements.push_back(x[i]);
-    rescale();
-    
-}   
-
-
 /** Set value of simplex using vector<double> */
 void Simplex::setValue(const std::vector<double>& x) {
 
@@ -148,5 +149,43 @@ void Simplex::setValue(const std::vector<double>& x) {
     elements.clear();
     for (size_t i=0; i<x.size(); i++)    
         elements.push_back(x[i]/sum);
+}
+
+
+/** Set value of simplex using vector<double> */
+void Simplex::setValue(const RbVector<Real>& x) {
+    
+    for (RbVector<Real>::const_iterator i=x.begin(); i!=x.end(); i++) {
+        const Real& r = *i;
+        if ( r.getValue() < 0.0)
+            throw (RbException("Cannot set simplex with negative value"));
+    }
+    
+    double sum = 0.0;
+    for (size_t i=0; i<x.size(); i++)
+        sum += x[i];
+    
+    elements.clear();
+    for (size_t i=0; i<x.size(); i++)    
+        elements.push_back(x[i]/sum);
+}
+
+
+/** Set value of simplex using vector<double> */
+void Simplex::setValue(const RbVector<RealPos>& x) {
+    
+    double sum = 0.0;
+    for (size_t i=0; i<x.size(); i++)
+        sum += x[i];
+    
+    elements.clear();
+    for (size_t i=0; i<x.size(); i++)    
+        elements.push_back(x[i]/sum);
+}
+
+
+/** Get the size of the simplex (number of elements) */
+size_t Simplex::size( void ) const {
+    return elements.size();
 }
 

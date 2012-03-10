@@ -21,10 +21,8 @@
 #include "RbFunction.h"
 #include <map>
 #include <string>
-#include <typeinfo>
 
 class DAGNode;
-class VectorString;
 
 template <typename valType, typename retType>
 class Func_vector :  public RbFunction {
@@ -58,7 +56,6 @@ class Func_vector :  public RbFunction {
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 
 
@@ -87,7 +84,7 @@ const RbLanguageObject& Func_vector<valType, retType>::executeFunction( void ) {
     
     theVector.clear();
     for ( size_t i = 0; i < values.size(); i++ )
-        theVector.push_back( values[i]->getValue().clone() );
+        theVector.push_back( static_cast<valType*>( values[i]->getValue().clone() ) );
 
     return theVector;
 }

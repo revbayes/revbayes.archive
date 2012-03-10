@@ -28,7 +28,6 @@ class Categorical;
 class Move;
 class Simplex;
 class StochasticNode;
-class VectorString;
 
 
 template <typename setType>

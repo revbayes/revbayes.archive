@@ -24,8 +24,6 @@
 #include "RbOptions.h"
 #include "RbString.h"
 #include "Variable.h"
-#include "VectorNatural.h"
-#include "VectorString.h"
 #include "VariableNode.h"
 #include "Workspace.h"
 

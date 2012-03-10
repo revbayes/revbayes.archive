@@ -28,7 +28,6 @@
 #include <string>
 
 class RateMatrix;
-class VectorString;
 
 class Dist_ctmm: public DistributionDiscrete {
 

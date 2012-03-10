@@ -16,40 +16,22 @@
 #ifndef Simplex_H
 #define Simplex_H
 
-#include "VectorRealPos.h"
+#include "MemberObject.h"
+#include "RbVector.h"
 
 #include <ostream>
 #include <string>
 #include <vector>
 
 
-/**
- * @brief Simplex class
- *
- * This class is used to hold a simplex. Note that a simplex cannot
- * be a container because then it would be a loose collection of
- * RealPos numbers. Such a collection could not be associated with
- * a single distribution. Nor would type checking work properly then,
- * because the language type would then be +Real[] and not Simplex.
- *
- * For these reasons, we derive simplex from MemberObject. We
- * implement subscripting so that you can access the elements through
- * subscripting (their values, no modify access). The subscript operator
- * is also implemented to give the RevBayes source code access to element
- * values, but not references.
- */
-
-class Simplex : public VectorRealPos {
+class Simplex : public MemberObject {
 
 public:
                                 Simplex(const size_t n = 2);                                //!< Simplex of length (size) n
                                 Simplex(const std::vector<double>& x);                      //!< Simplex from double vector
-                                Simplex(const VectorRealPos& x);                            //!< Simplex from positive real vector
 
     double                      operator[](size_t i);                                       //!< Index op
     double                      operator[](size_t i) const;                                 //!< Const index op
-    bool                        operator==(const VectorReal& x) const;                      //!< Equals comparison
-    bool                        operator!=(const VectorReal& x) const;                      //!< Not equals comparison
 
     // Basic utility functions
     Simplex*                    clone(void) const;                                          //!< Clone object
@@ -59,13 +41,18 @@ public:
     void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
 
     // Vector functions, including STL-like functions
-    void                        setValue(const std::vector<double>& x);                     //!< Set the value using STL vector of int
-    void                        setValue(const VectorReal& x);                              //!< Set the value using VectorReal
-    void                        setValue(const VectorRealPos& x);                           //!< Set the value using VectorRealPos
-
+    const std::vector<double>&  getValue( void ) const;
+//    void                        push_back( double x );
+    void                        setElement(size_t index, double x);                         //!< Set the value of position
+    void                        setValue(const std::vector<double>& x);                     //!< Set the value using STL vector of double
+    void                        setValue(const RbVector<Real>& x);                          //!< Set the value using Rb vector of real
+    void                        setValue(const RbVector<RealPos>& x);                       //!< Set the value using Rb vector of +real
+    size_t                      size(void) const;
+    
 private:
     void                        rescale(void);                                              //!< Rescale the simplex
 
+    std::vector<double>         elements;
 };
 
 #endif

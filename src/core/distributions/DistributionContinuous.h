@@ -27,7 +27,6 @@ class DAGNode;
 class Move;
 class RandomNumberGenerator;
 class StochasticNode;
-class VectorString;
 
 class DistributionContinuous: public Distribution {
 

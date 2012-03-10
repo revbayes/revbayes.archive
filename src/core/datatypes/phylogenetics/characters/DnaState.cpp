@@ -15,7 +15,6 @@
 
 #include "DnaState.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 #include <sstream>
 
 const std::string DnaState::stateLabels = "ACGT";

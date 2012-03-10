@@ -27,7 +27,6 @@ class ArgumentRule;
 class DAGNode;
 class MethodTable;
 class TopologyNode;
-class VectorString;
 
 
 class Topology: public MemberObject {

@@ -21,15 +21,14 @@
 #ifndef Func_dppServe_H
 #define Func_dppServe_H
 
+#include "RbVector.h"
 #include "RbFunction.h"
-#include "VectorReal.h"
 
 #include <map>
 #include <string>
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 
 class Func_dppServe :  public RbFunction {
@@ -51,7 +50,7 @@ protected:
 private:
 
     // function return value
-    VectorReal                      values;
+    RbVector<Real>                  values;
 };
 
 #endif

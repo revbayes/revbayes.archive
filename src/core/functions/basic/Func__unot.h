@@ -23,7 +23,6 @@
 #include <string>
 
 class DAGNode;
-class VectorString;
 
 template <typename valType>
 class Func__unot :  public RbFunction {
@@ -66,7 +65,6 @@ class Func__unot :  public RbFunction {
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 
 

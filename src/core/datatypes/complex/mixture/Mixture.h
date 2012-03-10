@@ -19,9 +19,7 @@
 
 #include "MemberObject.h"
 #include <string>
-#include "Vector.h"
-#include "VectorNatural.h"
-#include "VectorRealPos.h"
+#include "RbVector.h"
 #include "DagNodeContainer.h"
 #include "Simplex.h"
 
@@ -78,7 +76,7 @@ public:
 private:
     DagNodeContainer*               allocationVector_;                                                      //!< Vector allocating elements to cluster indices
     DagNodeContainer*               parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
-    VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
+    RbVector<Natural>               numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
     Simplex*                        classProbabilities_;                                                    //!< Vector giving class probabilities
 
     // memberfunction return values

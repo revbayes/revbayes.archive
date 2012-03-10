@@ -22,13 +22,12 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
-#include "VectorInteger.h"
-#include "VectorString.h"
 
 #include <sstream>
 
 /** Constructor */
-RbAbstract::RbAbstract( const VectorString& classVec, TypeSpec* elemType ) : RbLanguageObject(), classVector( classVec ), elementType( elemType ), typeSpec( classVec[0], elemType) {
+RbAbstract::RbAbstract( const TypeSpec& classType ) : RbLanguageObject(), typeSpec( classType) {
+
 }
 
 
@@ -48,7 +47,7 @@ const TypeSpec& RbAbstract::getTypeSpec( void ) const {
 /** Print value for user */
 void RbAbstract::printValue(std::ostream &o) const {
 
-    o << classVector;
+    o << "Abstract class does not have values!";
 }
 
 

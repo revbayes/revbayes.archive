@@ -23,7 +23,6 @@
 #include "RbUtil.h"
 #include "Real.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -48,7 +47,7 @@ Dist_exp::Dist_exp( void ) : DistributionContinuous( getMemberRules() ), rate( N
  */
 double Dist_exp::cdf( const RbLanguageObject& value ) {
 
-    const double lambda = static_cast<      RealPos&>( rate->getValue() ).getValue();
+    const double lambda = static_cast<const RealPos&>( rate->getValue() ).getValue();
     const double q      = static_cast<const RealPos&>( value                  ).getValue();
 
     return 1.0 - std::exp( - lambda * q );
@@ -160,7 +159,7 @@ double Dist_exp::pdf( const RbLanguageObject& value ) const {
  */
 const Real& Dist_exp::quantile(const double p) {
 
-    double lambda = static_cast<RealPos&>( rate->getValue() ).getValue();
+    double lambda = static_cast<const RealPos&>( rate->getValue() ).getValue();
     quant.setValue( -( 1.0 / lambda ) * std::log( 1.0 - p ) );
     return quant;
 }
@@ -176,7 +175,7 @@ const Real& Dist_exp::quantile(const double p) {
  */
 const RbLanguageObject& Dist_exp::rv( void ) {
 
-    double lambda = static_cast<RealPos&>( rate->getValue() ).getValue();
+    double lambda = static_cast<const RealPos&>( rate->getValue() ).getValue();
     RandomNumberGenerator* rng    = GLOBAL_RNG;
 
     double u = rng->uniform01();
@@ -187,7 +186,7 @@ const RbLanguageObject& Dist_exp::rv( void ) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_exp::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_exp::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "rate" ) {
         rate = var;

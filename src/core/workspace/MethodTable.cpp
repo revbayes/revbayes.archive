@@ -19,7 +19,6 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 
 #include <sstream>
 

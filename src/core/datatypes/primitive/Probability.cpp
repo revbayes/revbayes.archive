@@ -18,8 +18,8 @@
 #include "Probability.h"
 #include "RealPos.h"
 #include "RbException.h"
+#include "RbString.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 
 #include <sstream>
 

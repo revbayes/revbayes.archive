@@ -21,7 +21,6 @@
 #include "Argument.h"
 #include "DAGNode.h"
 #include "RbUtil.h"
-#include "VectorString.h"
 
 
 /** Construct from argument label and DAG node */

@@ -24,9 +24,9 @@
 #include "RandomNumberFactory.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorString.h"
 
 
 #include <sstream>
@@ -50,11 +50,13 @@ Mixture::Mixture(DagNodeContainer* allocationVector, DagNodeContainer* parameter
         throw( RbException(o.str()) );        
     }
     
+    std::vector<double> probs;
     if (classProbabilities_->size() == 0 ) {
         for (unsigned int i = 0 ; i < parameters_->size() ; i++) {
-            classProbabilities_->push_back( RealPos ( 1.0 / parameters_->size() ) );
+            probs.push_back( 1.0 / parameters_->size() );
         }
     }
+    classProbabilities_->setValue( probs );
     computeNumberOfElementsInClasses();
     
 }
@@ -415,14 +417,11 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
 
 
 void Mixture::estimateClassProbabilities() {
+    std::vector<double> probs;
     for (unsigned int i = 0 ; i <  numberOfElementsInClasses_.size() ; i++) {
-        if (classProbabilities_->size() <= i ) {
-            classProbabilities_->push_back( (double) numberOfElementsInClasses_[i] / (double) allocationVector_->size() );
-        }
-        else {
-        classProbabilities_->setElement(i, new RealPos ( (double) numberOfElementsInClasses_[i] / (double) allocationVector_->size() ) );
-        }
+        probs.push_back( (double) numberOfElementsInClasses_[i] / (double) allocationVector_->size() );
     }
+    classProbabilities_->setValue( probs );
 }
 
 void Mixture::computeNumberOfElementsInClasses() {
@@ -435,9 +434,11 @@ void Mixture::computeNumberOfElementsInClasses() {
             numberOfElementsInClasses.push_back(0);
         }
         numberOfElementsInClasses[index ] += 1;
-        
     }
-    numberOfElementsInClasses_ = VectorNatural(numberOfElementsInClasses);
+//    numberOfElementsInClasses_ = RbVector<Natural>(numberOfElementsInClasses);
+    for (size_t i = 0; i < numberOfElementsInClasses.size(); i++) {
+        numberOfElementsInClasses_.push_back( new Natural(numberOfElementsInClasses[i]) );
+    }
 }
 
 
@@ -456,7 +457,9 @@ size_t Mixture::getNumberOfElements() {
 /** Add a new class to the mixture */
 void Mixture::addClass(DagNodeContainer* parameter) {                                                            
   numberOfElementsInClasses_.push_back(new Natural(0));
-  classProbabilities_->push_back(new RealPos(0.0));
+    std::vector<double> probs = classProbabilities_->getValue();
+    probs.push_back(0.0);
+  classProbabilities_->setValue( probs );
   parameters_->push_back( parameter );
 }
 
@@ -473,19 +476,22 @@ void Mixture::removeClass(unsigned int classId) {
     else {
       if (i > classId) 
         oldToNew[i] = i -1 ;
-        numberOfElementsInClasses_.AbstractVector::setElement(i, numberOfElementsInClasses_.getElement(i+1).clone() );
+        // Sebastian: This is not working. Not sure what it should do!
+//        numberOfElementsInClasses_.Container::setElement(i, numberOfElementsInClasses_.getElement(i+1).clone() );
     }
   }
   numberOfElementsInClasses_.pop_back();
-  VectorRealPos copy = *(classProbabilities_->clone());
+  Simplex copy = *(classProbabilities_->clone()); // Sebastian: This will create a memory leak!
   double classProba =  *(static_cast<const RealPos*>( (const RbObject*)classProbabilities_->getElement(classId).clone() ) );
   //double classProba =  *(static_cast<RealPos*> ( (static_cast<VectorRealPos*> (classProbabilities_) )->getElement(classId) ) );
   double multiplier = 1.0/ ( 1.0 - classProba);
-  classProbabilities_->clear();
+  
+    std::vector<double> probs;
   for (unsigned int i = 0 ; i < copy.size(); i++) {
     if (i != classId)
-      classProbabilities_->push_back(copy[i] * multiplier);
+      probs.push_back(copy[i] * multiplier);
   }
+    classProbabilities_->setValue( probs );
 
   DagNodeContainer* copyParam = parameters_->clone();
   parameters_->clear();
@@ -541,12 +547,12 @@ void Mixture::indexAllocationVector() {
       }
   }
   //Renumber the classProbabilities_ vector
-  VectorRealPos& copy = *(classProbabilities_->clone());
+  Simplex& copy = *(classProbabilities_->clone());
  // std::cout <<"indexAllocationVector 8: classProbabilities_->size(): "<< classProbabilities_->size() <<" copy.size(): "<< copy.size()  <<std::endl;
-    classProbabilities_->clear();
-  for (unsigned int i = 0 ; i < copy.size() ; i++ ) { 
-      classProbabilities_->AbstractVector::setElement(i, copy.getElement(rvToNumber[i] ).clone() );
-  }    
+//    classProbabilities_->clear();
+//  for (unsigned int i = 0 ; i < copy.size() ; i++ ) { 
+//      classProbabilities_->Container::setElement(i, copy.getElement(rvToNumber[i] ).clone() );
+//  }    
 }
 
 
@@ -594,7 +600,7 @@ void Mixture::setClassProbabilities(Simplex* proba) {
 
 /** Get the vector containing class probabilities */
 const Simplex& Mixture::getClassProbabilities() {
-    return static_cast<const VectorRealPos&>( *classProbabilities_ );
+    return *classProbabilities_;
 }
 
 /** Get the vector of parameter values associated to the element index */

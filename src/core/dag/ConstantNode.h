@@ -24,7 +24,6 @@
 #include "RbLanguageObject.h"
 
 class RbObject;
-class VectorString;
 
 class ConstantNode : public DAGNode {
 

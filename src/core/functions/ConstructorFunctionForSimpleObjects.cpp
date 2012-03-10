@@ -20,8 +20,7 @@
 #include "DAGNode.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "Vector.h"
-#include "VectorString.h"
+#include "RbVector.h"
 
 #include <sstream>
 
@@ -58,7 +57,7 @@ const RbLanguageObject& ConstructorFunctionForSimpleObjects::executeFunction(voi
     
     copyObject = templateObject->clone();
     
-    Vector params = Vector( RbObject::getClassTypeSpec() );
+    std::vector<RbObject*> params;
     for ( size_t i = 0; i < args.size(); i++ ) {
         params.push_back( args[i].getVariable().getValue().clone() );
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );

@@ -18,6 +18,7 @@
 #define CharacterStateDiscrete_H
 
 #include "Character.h"
+#include "RbVector.h"
 #include <ostream>
 #include <vector>
 
@@ -30,7 +31,7 @@ class CharacterStateDiscrete : public Character {
 
         // Basic utility functions you can override
         virtual const MemberRules&              getMemberRules(void) const;                         //!< Get member rules
-        virtual void                            initialize(const Vector& attributes);                     //!< Initialize this object with the values inside the vector
+        virtual void                            initialize(const RbVector<RbLanguageObject>& attributes);//!< Initialize this object with the values inside the vector
 
         // Basic utility functions you have to override
         virtual CharacterStateDiscrete*         clone(void) const = 0;                              //!< Clone object

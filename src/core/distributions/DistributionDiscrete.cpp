@@ -26,7 +26,6 @@
 #include "RbUtil.h"
 #include "Simplex.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <cfloat>
 

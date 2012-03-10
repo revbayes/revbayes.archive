@@ -30,7 +30,6 @@
 #include "StringUtilities.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <map>
 #include <set>

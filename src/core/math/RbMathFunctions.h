@@ -14,8 +14,6 @@
  * $Id$
  */
 
-#include "MatrixReal.h"
-#include "VectorReal.h"
 #include <vector>
 
 namespace RbMath {

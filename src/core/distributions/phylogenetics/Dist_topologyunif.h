@@ -26,7 +26,6 @@
 #include <ostream>
 #include <string>
 
-class VectorString;
 class TopologyNode;
 
 
@@ -43,7 +42,7 @@ class Dist_topologyunif: public DistributionDiscrete {
     
         // Member variable setup
         const MemberRules&                      getMemberRules(void) const;                                         //!< Get member variable rules
-        void                                    setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure topologyProb is updated)
+        void                                    setMemberVariable(const std::string& name, const Variable* var);    //!< Set member variable (ensure topologyProb is updated)
 
         // Discrete distribution functions
         size_t                                  getNumberOfStates(void) const;                                      //!< Get number of states
@@ -64,10 +63,10 @@ class Dist_topologyunif: public DistributionDiscrete {
         size_t                          numberOfStates;                                                     //!< The number of states for this topology distribution
     
         // parameters
-        RbVariablePtr                   numTaxa;
-        RbVariablePtr                   isRooted;
-        RbVariablePtr                   isBinary;
-        RbVariablePtr                   tipNames;
+        RbConstVariablePtr              numTaxa;
+        RbConstVariablePtr              isRooted;
+        RbConstVariablePtr              isBinary;
+        RbConstVariablePtr              tipNames;
     
         // memberfunction return values
         Topology                        randomVariable;

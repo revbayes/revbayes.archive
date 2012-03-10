@@ -17,7 +17,6 @@
  * $Id$
  */
 
-#include "AbstractVector.h"
 #include "DistanceMatrix.h"
 #include "ConstantNode.h"
 #include "MemberFunction.h"
@@ -30,8 +29,6 @@
 #include "ValueRule.h"
 #include "VariableNode.h"
 #include "Vector.h"
-#include "VectorNatural.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -42,16 +39,17 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-DistanceMatrix::DistanceMatrix(const size_t nTaxa) : MatrixReal(nTaxa, nTaxa), typeSpec(DistanceMatrix::getClassTypeSpec()) {
+DistanceMatrix::DistanceMatrix(const size_t nTaxa) : MemberObject( getMemberRules() ), elements(nTaxa, nTaxa), typeSpec(DistanceMatrix::getClassTypeSpec()) {
 
 }
 
 
 /** Copy constructor */
-DistanceMatrix::DistanceMatrix(const DistanceMatrix& x) : MatrixReal(x), typeSpec(DistanceMatrix::getClassTypeSpec()) {
+DistanceMatrix::DistanceMatrix(const DistanceMatrix& x) : MemberObject(x), typeSpec(DistanceMatrix::getClassTypeSpec()) {
 
     deletedTaxa         = x.deletedTaxa;
     sequenceNames       = x.sequenceNames;
+    elements            = x.elements;
     
     numTaxa             = x.numTaxa;
     numIncludedTaxa     = x.numIncludedTaxa;
@@ -72,10 +70,31 @@ DistanceMatrix& DistanceMatrix::operator=(const DistanceMatrix& x) {
 
     if ( this != &x ) 
         {
-        MatrixReal::operator=( x );
-        deletedTaxa = x.deletedTaxa;
+        MemberObject::operator=( x );
+            
+        deletedTaxa         = x.deletedTaxa;
+        sequenceNames       = x.sequenceNames;
+        elements            = x.elements;
+        
+        numTaxa             = x.numTaxa;
+        numIncludedTaxa     = x.numIncludedTaxa;
+        numExcludedTaxa     = x.numExcludedTaxa;
+        excludedTaxa        = x.excludedTaxa;
+        includedTaxa        = x.includedTaxa;
         }
     return (*this);
+}
+
+
+/** Overloaded subscript operator */
+const RbVector<Real>& DistanceMatrix::operator[](size_t index) const {
+    return elements[index];
+}
+
+
+/** Overloaded subscript operator */
+RbVector<Real>& DistanceMatrix::operator[](size_t index) {
+    return elements[index];
 }
 
 
@@ -83,9 +102,23 @@ DistanceMatrix& DistanceMatrix::operator=(const DistanceMatrix& x) {
 void DistanceMatrix::clear(void) {
     
     sequenceNames.clear();
-    MatrixReal::clear();
+    elements.clear();
 }
 
+
+/** Add the taxon with given name. */
+void DistanceMatrix::addTaxonWithName(std::string s) {
+    // @John: Not sure how this function should work (Sebastian)
+    // Here is a possibility.
+    
+    // add the name to our names list
+    sequenceNames.push_back( new RbString(s) );
+    
+    // resize the current matrix
+    elements.RbVector<RbVector<Real> >::resize( elements.size() + 1 );
+    
+    
+}
 
 /** Clone object */
 DistanceMatrix* DistanceMatrix::clone(void) const {
@@ -106,7 +139,7 @@ void DistanceMatrix::excludeTaxon(size_t i) {
 /** Exclude a taxon */
 void DistanceMatrix::excludeTaxon(std::string& s) {
 
-    for (size_t i = 0; i < size(); i++) 
+    for (size_t i = 0; i < elements.size(); i++) 
         {
         if (s == sequenceNames[i]) 
             {
@@ -144,29 +177,26 @@ const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string
         }
     else if (name == "excludedtaxa")
         {
-        std::vector<std::string> et;
+        excludedTaxa.clear();
         for (std::set<size_t>::iterator it = deletedTaxa.begin(); it != deletedTaxa.end(); it++)
             {
             std::string tn = getTaxonNameWithIndex(*it);
-            et.push_back( tn );
+            excludedTaxa.push_back( new RbString( tn ) );
             }
-        excludedTaxa.setValue( et );
         return excludedTaxa;
         }
     else if (name == "includedtaxa")
         {
-        std::vector<std::string> it;
+        includedTaxa.clear();
         for (size_t i=0; i<getNumberOfTaxa(); i++)
             {
             if ( isTaxonExcluded(i) == false )
-                it.push_back( getTaxonNameWithIndex(i) );
+                includedTaxa.push_back( new RbString( getTaxonNameWithIndex(i) ) );
             }
-            includedTaxa.setValue( it );
         return includedTaxa;
         }
     else if (name == "show")
         {
-        std::vector<std::vector<double> > m = getValue();
         size_t n = getNumberOfTaxa();
         size_t lenOfLongestName = 0;
         for (int i=0; i<n; i++)
@@ -186,7 +216,7 @@ const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string
                 for (int j=0; j<n; j++)
                     {
                     if ( isTaxonExcluded(j) == false )
-                        std::cout << std::fixed << std::setprecision(4) << m[i][j] << " ";
+                        std::cout << std::fixed << std::setprecision(4) << elements[i][j] << " ";
                     }
                 std::cout << std::endl;
                 }
@@ -204,11 +234,11 @@ const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string
             deletedTaxa.insert( n-1 );
             std::cout << "excluded e" << std::endl;
             }
-        else if ( argument.isTypeSpec( VectorNatural::getClassTypeSpec() ) ) 
+        else if ( argument.isTypeSpec( RbVector<Natural>::getClassTypeSpec() ) ) 
             {
-            std::vector<unsigned int> x = static_cast<const VectorNatural&>( argument ).getValue();
+            const RbVector<Natural>& x = static_cast<const RbVector<Natural>& >( argument );
             for ( size_t i=0; i<x.size(); i++ )
-                deletedTaxa.insert( x[i]-1 );
+                deletedTaxa.insert( x[i].getValue() - 1 );
             }
         else if ( argument.isTypeSpec( RbString::getClassTypeSpec() ) ) 
             {
@@ -216,12 +246,13 @@ const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string
             size_t idx = indexOfTaxonWithName(x);
             deletedTaxa.insert(idx);
             }
-        else if ( argument.isTypeSpec( VectorString::getClassTypeSpec() ) ) 
+        else if ( argument.isTypeSpec( RbVector<RbString>::getClassTypeSpec() ) ) 
             {
-            std::vector<std::string> x = static_cast<const VectorString&>( argument ).getValue();
-            for (std::vector<std::string>::iterator it = x.begin(); it != x.end(); it++)
+            const RbVector<RbString>& x = static_cast<const RbVector<RbString>& >( argument );
+            for ( RbVector<RbString>::const_iterator it = x.begin(); it != x.end(); ++it)
                 {
-                size_t idx = indexOfTaxonWithName(*it);
+                RbString* tmp = *it;
+                size_t idx = indexOfTaxonWithName( tmp->getValue() );
                 deletedTaxa.insert(idx);
                 }
             }
@@ -243,7 +274,7 @@ const std::string& DistanceMatrix::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& DistanceMatrix::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MatrixReal::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -259,16 +290,16 @@ const TypeSpec& DistanceMatrix::getTypeSpec( void ) const {
 
 const RbObject& DistanceMatrix::getElement(size_t row, size_t col) const {
 
-    //RealPos* x(value[row][col]);
-    //const TaxonData* sequence = dynamic_cast<const TaxonData*>( (RbLanguageObject*)elements[row] );
-    //return sequence->getElement(col);
+    const Real& x = elements[row][col];
+//    const TaxonData* sequence = dynamic_cast<const TaxonData*>( elements[row] );
+    return x;
 }
 
 
 RbObject& DistanceMatrix::getElement(size_t row, size_t col) {
 
     //TaxonData* sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
-    //return (sequence->getElement(col));
+    return elements[row][col];
 }
 
 
@@ -301,16 +332,16 @@ const MethodTable& DistanceMatrix::getMethods(void) const {
     if ( methodsSet == false ) 
         {
             excludetaxaArgRules->push_back(        new ValueRule(     "", Natural::getClassTypeSpec()       ) );
-            excludetaxaArgRules2->push_back(       new ValueRule(     "", VectorNatural::getClassTypeSpec() ) );
+            excludetaxaArgRules2->push_back(       new ValueRule(     "", RbVector<Natural>::getClassTypeSpec() ) );
             excludetaxaArgRules3->push_back(       new ValueRule(     "", RbString::getClassTypeSpec()      ) );
-            excludetaxaArgRules4->push_back(       new ValueRule(     "", VectorString::getClassTypeSpec()  ) );
+            excludetaxaArgRules4->push_back(       new ValueRule(     "", RbVector<RbString>::getClassTypeSpec()  ) );
 
-            methods.addFunction("names",         new MemberFunction(VectorString::getClassTypeSpec(),  namesArgRules              ) );
+            methods.addFunction("names",         new MemberFunction(RbVector<RbString>::getClassTypeSpec(),  namesArgRules              ) );
             methods.addFunction("ntaxa",         new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
             methods.addFunction("nexcludedtaxa", new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
             methods.addFunction("nincludedtaxa", new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
-            methods.addFunction("excludedtaxa",  new MemberFunction(VectorNatural::getClassTypeSpec(), excludedtaxaArgRules       ) );
-            methods.addFunction("includedtaxa",  new MemberFunction(VectorNatural::getClassTypeSpec(), includedtaxaArgRules       ) );
+            methods.addFunction("excludedtaxa",  new MemberFunction(RbVector<Natural>::getClassTypeSpec(), excludedtaxaArgRules       ) );
+            methods.addFunction("includedtaxa",  new MemberFunction(RbVector<Natural>::getClassTypeSpec(), includedtaxaArgRules       ) );
         methods.addFunction("show",          new MemberFunction(RbVoid_name,        showdataArgRules           ) );
         methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules        ) );
         methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules2       ) );
@@ -340,7 +371,7 @@ const std::string& DistanceMatrix::getTaxonNameWithIndex( size_t idx ) const {
 
 
 /** Return the index of the element ( the index of the taxon with name elemName ) */
-size_t DistanceMatrix::indexOfTaxonWithName( std::string& s ) const {
+size_t DistanceMatrix::indexOfTaxonWithName( const std::string& s ) const {
     
     // search through all names
     for (size_t i=0; i<sequenceNames.size(); i++) 
@@ -428,6 +459,12 @@ void DistanceMatrix::setElement( size_t row, size_t col, RbLanguageObject* var )
 
 void DistanceMatrix::showData(void) {
 
+}
+
+
+/** The size of the matrix. */
+size_t DistanceMatrix::size( void ) const {
+    return elements.size();
 }
 
 /** transpose the matrix */

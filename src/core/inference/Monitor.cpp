@@ -23,7 +23,6 @@
 #include "RbUtil.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorString.h"
 
 #include <sstream>
 

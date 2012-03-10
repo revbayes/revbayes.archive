@@ -24,7 +24,6 @@
 #include "RbUtil.h"
 #include "Topology.h"
 #include "TopologyNode.h"
-#include "VectorString.h"
 #include "ValueRule.h"
 
 

@@ -32,15 +32,15 @@
  * \param b Solution vector
  * \return Returns nothing
  */
-void RbMath::backSubstitutionRow(MatrixComplex& u, std::vector<std::complex<double> >& b) {
+void RbMath::backSubstitutionRow(Matrix<Complex>& u, std::vector<std::complex<double> >& b) {
     
 	size_t n = u.getNumberOfRows();
-	b[n-1] /= u[n-1][n-1];
+	b[n-1] /= u[n-1][n-1].getValue();
 	for ( int i = static_cast<int>( n ) - 2; i >= 0; i-- ) 
         {
 		std::complex<double> dotProduct(0.0, 0.0);
 		for (size_t j=i+1; j<n; j++)
-			dotProduct += u[i][j] * b[j];
+			dotProduct += u[i][j].getValue() * b[j];
 		b[i] = (b[i] - dotProduct) / u[i][i];
         }
 }
@@ -54,7 +54,7 @@ void RbMath::backSubstitutionRow(MatrixComplex& u, std::vector<std::complex<doub
  * \param b Solution vector
  * \return Returns nothing
  */
-void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
+void RbMath::backSubstitutionRow(Matrix<Real>& u, std::vector<double>& b) {
     
 	size_t n = u.getNumberOfRows();
 	b[n-1] /= u[n-1][n-1];
@@ -76,7 +76,7 @@ void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
  * \param b [in/out] Solution vector
  * \return Returns nothing
  */
-void RbMath::forwardSubstitutionRow(MatrixComplex& L, std::vector<std::complex<double> >& b) {
+void RbMath::forwardSubstitutionRow(Matrix<Complex>& L, std::vector<std::complex<double> >& b) {
     
 	size_t n = L.getNumberOfRows();
 	b[0] = b[0] / L[0][0];
@@ -85,7 +85,7 @@ void RbMath::forwardSubstitutionRow(MatrixComplex& L, std::vector<std::complex<d
 		std::complex<double> dotProduct(0.0,0.0);
 		for (size_t j=0; j<i; j++)
             {
-	      	dotProduct += L[i][j] * b[j];
+	      	dotProduct += L[i][j].getValue() * b[j];
             }
 		b[i] = (b[i] - dotProduct) / L[i][i];
         }
@@ -100,7 +100,7 @@ void RbMath::forwardSubstitutionRow(MatrixComplex& L, std::vector<std::complex<d
  * \param b [in/out] Solution vector
  * \return Returns nothing
  */
-void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
+void RbMath::forwardSubstitutionRow(Matrix<Real>& L, std::vector<double>& b) {
     
 	size_t n = L.getNumberOfRows();
 	b[0] = b[0] / L[0][0];
@@ -125,11 +125,11 @@ void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
  * \param xMat ??
  * \return Returns nothing
  */
-void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xMat) {
+void RbMath::gaussianElimination(Matrix<Real>& a, Matrix<Real>& bMat, Matrix<Real>& xMat) {
     
 	size_t n = a.getNumberOfRows();
-	MatrixReal lMat(n, n, 0.0);
-	MatrixReal uMat(n, n, 0.0);
+	Matrix<Real> lMat(n, n, new Real(0.0) );
+	Matrix<Real> uMat(n, n, new Real(0.0) );
 	std::vector<double> bVec(n);
 	RbMath::computeLandU(a, lMat, uMat);
     

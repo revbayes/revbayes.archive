@@ -57,7 +57,6 @@ class Func_transpose :  public RbFunction {
 
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 
 

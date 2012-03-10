@@ -19,7 +19,7 @@
 #define Dist_multinomial_H
 
 #include "DistributionDiscrete.h"
-#include "VectorNatural.h"
+#include "RbVector.h"
 
 #include <ostream>
 #include <string>
@@ -39,7 +39,7 @@ class Dist_multinomial: public DistributionDiscrete {
 
         // Member variable setup
         const MemberRules&                      getMemberRules(void) const;                                         //!< Get member variable rules
-        void                                    setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
+        void                                    setMemberVariable(const std::string& name, const Variable* var);    //!< Catching the setting of the member variables.
 
         // Multinomial distribution functions
         size_t                                  getNumberOfStates(void) const;                                      //!< Get number of states
@@ -53,10 +53,10 @@ class Dist_multinomial: public DistributionDiscrete {
     private:
 
         // parameters
-        RbVariablePtr               probabilities;
+        RbConstVariablePtr                      probabilities;
     
         // memberfunction return values
-        VectorNatural               randomVariable;
+        RbVector<Natural>                       randomVariable;
 
 };
 

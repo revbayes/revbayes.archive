@@ -15,7 +15,6 @@
 
 #include "RbUtil.h"
 #include "RnaState.h"
-#include "VectorString.h"
 #include <sstream>
 
 const std::string RnaState::stateLabels = "ACGU";

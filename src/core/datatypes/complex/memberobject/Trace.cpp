@@ -9,7 +9,6 @@
 #include "Trace.h"
 
 #include "RbUtil.h"
-#include "VectorString.h"
 #include "XmlDocument.h"
 #include "XmlElementReference.h"
 #include "XmlElementInstance.h"

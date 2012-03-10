@@ -23,12 +23,11 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "RbVector.h"
 #include "StringUtilities.h"
 #include "TreePlate.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
-#include "Vector.h"
-#include "VectorString.h"
 
 #include <map>
 #include <set>
@@ -93,7 +92,7 @@ const RbLanguageObject& Func_readTrees::executeFunction( void ) {
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    Vector* trees = new Vector( TreePlate::getClassTypeSpec() );
+    RbVector<TreePlate>* trees = new RbVector<TreePlate>();
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
         // we should check here the file type first and make sure it is valid
         
@@ -234,7 +233,7 @@ const TypeSpec& Func_readTrees::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTrees::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = TypeSpec( Vector::getClassName(), NULL, new TypeSpec( TreePlate::getClassTypeSpec() ) );
+    static TypeSpec returnTypeSpec = RbVector<TreePlate>::getClassName();
     return returnTypeSpec;
 }
 

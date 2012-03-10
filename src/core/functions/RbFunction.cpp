@@ -24,8 +24,7 @@
 #include "RbFunction.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
-#include "VectorInteger.h"
-#include "VectorString.h"
+#include "RbVector.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -105,7 +104,7 @@ RbFunction::~RbFunction(void) {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, VectorInteger* matchScore) {
+bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore) {
     
     /*********************  0. Initialization  **********************/
     

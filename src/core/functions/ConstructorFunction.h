@@ -26,7 +26,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 class ConstructorFunction :  public RbFunction {
 

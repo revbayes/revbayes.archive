@@ -25,7 +25,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 const std::string Func_exp_name = "Exponential function";
 

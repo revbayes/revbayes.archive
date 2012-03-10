@@ -18,11 +18,10 @@
 
 #include "ConstantNode.h"
 #include "RbException.h"
-#include "RbUtil.h"
 #include "RbObject.h"
+#include "RbUtil.h"
+#include "RbVector.h"
 #include "TypeSpec.h"
-#include "Vector.h"
-#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cassert>
@@ -43,12 +42,21 @@ RbObject::~RbObject() {
     Here we just convert from scalar types to vectors and overwritten function do more fancy stuff. */
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
-    if (typeSpec.getBaseType() == Vector::getClassName()) {
-        Vector *v = new Vector(typeSpec.getElementType().getBaseType());
+    // test if we need to convert this into an object
+    if (typeSpec.getBaseType() == RbVector<RbObject>::getClassName()) {
+        RbVector<RbObject> *v = new RbVector<RbObject>();
         v->push_back( this->clone() );
         
-        return v;
+        // we rely on the implemented conversion functions inside the vector class
+        RbObject* returnVector = v->convertTo( typeSpec );
+        
+        // we need to free the temporary vector object
+        delete v;
+        
+        return returnVector;
     }
+    
+    throw RbException("Failed conversion from " + getTypeSpec() + " to " + typeSpec);
     
     return NULL;
 }
@@ -138,7 +146,7 @@ const std::string& RbObject::getType(void) const {
 /** Is convertible to type? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
     
-    if (typeSpec.getBaseType() == Vector::getClassName() && isTypeSpec(typeSpec.getElementType())) {
+    if (typeSpec.getBaseType() == RbVector<RbObject>::getClassName() && isTypeSpec(typeSpec.getElementType())) {
         return true;
     }
 

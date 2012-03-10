@@ -17,7 +17,6 @@
 
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "VectorInteger.h"
 #include <ctime>
 
 

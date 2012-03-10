@@ -24,7 +24,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 class Func_clamp :  public RbFunction {
 

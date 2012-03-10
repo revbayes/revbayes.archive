@@ -21,7 +21,6 @@
 #include "DAGNode.h"
 
 class StochasticNode;
-class VectorString;
 
 #include <set>
 

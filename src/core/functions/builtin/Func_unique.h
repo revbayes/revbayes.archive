@@ -24,7 +24,6 @@
 #include <vector>
 
 class DAGNode;
-class VectorString;
 
 const std::string Func_unique_name = "Unique function";
 

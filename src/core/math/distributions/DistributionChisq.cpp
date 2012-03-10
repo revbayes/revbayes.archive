@@ -15,6 +15,7 @@
  */
 
 #include <cmath>
+#include <iostream>
 
 #include "DistributionChisq.h"
 #include "DistributionGamma.h"

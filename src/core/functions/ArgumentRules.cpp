@@ -18,7 +18,6 @@
 
 #include "ArgumentRules.h"
 #include "ArgumentRule.h"
-#include "VectorString.h"
 
 
 ArgumentRules::ArgumentRules(void) {

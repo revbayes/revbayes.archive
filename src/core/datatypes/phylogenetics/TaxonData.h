@@ -17,8 +17,7 @@
 #define TaxonData_H
 
 #include "MemberObject.h"
-#include "Vector.h"
-#include "VectorString.h"
+#include "RbVector.h"
 
 #include <ostream>
 #include <string>
@@ -64,7 +63,7 @@ class TaxonData : public MemberObject {
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
-        Vector                                  sequence;
+        RbVector<Character>                     sequence;
     
         // memberfunction return value
         Natural                                 returnValueSize;

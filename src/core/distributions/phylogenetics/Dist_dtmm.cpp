@@ -28,7 +28,6 @@
 #include "Simplex.h"
 #include "TransitionProbabilityMatrix.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <cmath>
 #include <sstream>
@@ -109,7 +108,7 @@ const Simplex& Dist_dtmm::getProbabilityMassVector( void ) {
     // initialize the number of states
     const size_t stateIndex = c.getUnsignedValue();
     
-    VectorReal& probs = m[stateIndex];
+    RbVector<Real>& probs = m[stateIndex];
     
     //
     probMassVector.setValue( probs );
@@ -241,7 +240,7 @@ const RbLanguageObject& Dist_dtmm::rv( void ) {
     for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
         // test whether the state is set
         if (*itStart) {
-            const VectorReal& probs = m[indexStart];
+            const RbVector<Real>& probs = m[indexStart];
             double u = rng->uniform01();
             for (size_t i=0; i<probs.size(); i++) {
                 u -= probs[i];

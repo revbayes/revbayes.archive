@@ -38,7 +38,7 @@ class Dist_exp: public DistributionContinuous {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
+        void                        setMemberVariable(const std::string& name, const Variable* var);    //!< Catching the setting of the member variables.
 
         // Exponential distribution functions
         double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
@@ -51,7 +51,7 @@ class Dist_exp: public DistributionContinuous {
     private:
 
         // parameters
-        RbVariablePtr               rate;
+        RbConstVariablePtr          rate;
         
         // memberfunction return value
         RealPos                     randomVariable;

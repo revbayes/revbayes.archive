@@ -23,7 +23,6 @@
 #include "RealPos.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "VectorString.h"
 
 #include <iomanip>
 #include <sstream>
@@ -67,6 +66,62 @@ Real::Real(const Real& x) : RbLanguageObject() {
 bool Real::operator==(const Real &x) const {
     
     return value == x.value;
+}
+
+/** Overloaded operator +=. */
+Real& Real::operator+=(const Real &A) {
+    value += A.getValue();
+    
+    return *this;
+}
+
+/** Overloaded operator +=. */
+Real& Real::operator+=(const double A) {
+    value += A;
+    
+    return *this;
+}
+
+/** Overloaded operator -=. */
+Real& Real::operator-=(const Real &A) {
+    value -= A.getValue();
+    
+    return *this;
+}
+
+/** Overloaded operator -=. */
+Real& Real::operator-=(const double A) {
+    value -= A;
+    
+    return *this;
+}
+
+/** Overloaded operator *=. */
+Real& Real::operator*=(const Real &A) {
+    value *= A.getValue();
+    
+    return *this;
+}
+
+/** Overloaded operator *=. */
+Real& Real::operator*=(const double A) {
+    value *= A;
+    
+    return *this;
+}
+
+/** Overloaded operator /=. */
+Real& Real::operator/=(const Real &A) {
+    value /= A.getValue();
+    
+    return *this;
+}
+
+/** Overloaded operator /=. */
+Real& Real::operator/=(const double A) {
+    value /= A;
+    
+    return *this;
 }
 
 /** Clone object */

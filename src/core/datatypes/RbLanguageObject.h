@@ -26,9 +26,6 @@ class ArgumentRule;
 class ArgumentRules;
 class DAGNode;
 class TypeSpec;
-class Vector;
-class VectorInteger;
-class VectorString;
 class XmlDocument;
 class XmlElement;
 
@@ -50,7 +47,7 @@ public:
     // Basic utility functions you may want to override
     virtual RbObject*                   convertTo(const TypeSpec& type) const;                                  //!< Convert to type
     virtual const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
-    virtual void                        initialize(const Vector& attributes);                                   //!< Initialize this object with the values inside the vector
+    virtual void                        initialize(const std::vector<RbObject*>& attributes);                   //!< Initialize this object with the values inside the vector
     virtual bool                        isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
     virtual bool                        supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]

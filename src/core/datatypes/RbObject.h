@@ -26,8 +26,6 @@
 
 
 class DAGNode;
-class VectorInteger;
-class VectorString;
 
 class RbObject {
 

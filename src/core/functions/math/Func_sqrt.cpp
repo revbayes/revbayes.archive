@@ -27,7 +27,6 @@
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorString.h"
 
 #include <cassert>
 #include <cmath>

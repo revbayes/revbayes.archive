@@ -16,7 +16,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
-#include "VectorString.h"
 
 
 /** Constructor from string */
