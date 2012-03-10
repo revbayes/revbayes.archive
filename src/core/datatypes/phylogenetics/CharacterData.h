@@ -19,11 +19,10 @@
 #include "Character.h"
 #include "Matrix.h"
 #include "Natural.h"
+#include "RbString.h"
+#include "RbVector.h"
 #include "TaxonData.h"
 #include "ValueRule.h"
-#include "Vector.h"
-#include "VectorNatural.h"
-#include "VectorString.h"
 
 #include <set>
 #include <string>
@@ -36,106 +35,106 @@ class DAGNode;
 class CharacterData : public MemberObject {
 
     public:
-                                                    CharacterData(const std::string& characterType);                                     //!< Constructor requires character type
-                                                    CharacterData(const CharacterData& x);                                               //!< Copy constructor to deal with sequenceTypeRule
-        virtual                                    ~CharacterData(void);                                                                 //!< Destructor to deal with sequenceTypeRule
+                                            CharacterData(const std::string& characterType);                            //!< Constructor requires character type
+                                            CharacterData(const CharacterData& x);                                      //!< Copy constructor to deal with sequenceTypeRule
+        virtual                            ~CharacterData(void);                                                        //!< Destructor to deal with sequenceTypeRule
 
         // Overloaded operators
-        CharacterData&                              operator=(const CharacterData& x);                                                   //!< Assignment operator
-        const TaxonData&                            operator[](size_t i) const;                                                          //!< Subscript operator (const)
+        CharacterData&                      operator=(const CharacterData& x);                                          //!< Assignment operator
+        const TaxonData&                    operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
         // Basic utility functions
-        CharacterData*                              clone(void) const;                                                                   //!< Clone object
-        static const std::string&                   getClassName(void);                                                                  //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                                              //!< Get class type spec
-        const TypeSpec&                             getTypeSpec(void) const;                                                             //!< Get language type of the object
-        void                                        printValue(std::ostream& o) const;                                                   //!< Print value for user
+        CharacterData*                      clone(void) const;                                                          //!< Clone object
+        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        void                                printValue(std::ostream& o) const;                                          //!< Print value for user
 
         // Member variable functions
-        const MemberRules&                          getMemberRules(void) const;                                                          //!< Get member rules
-        const std::map<std::string, RbVariablePtr>& getMembers(void) const;                                                              //!< Get members
-        std::map<std::string, RbVariablePtr>&       getMembers(void);                                                                    //!< Get members
-        void                                        setMemberVariable(const std::string& name, Variable* var);                           //!< Catch setting of the topology
+        const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules
+        const std::map<std::string, const Variable*>& getMembers(void) const;                                                             //!< Get members
+        std::map<std::string, const Variable*>&       getMembers(void);                                                                   //!< Get members
+        void                                        setMemberVariable(const std::string& name, Variable* var);                  //!< Catch setting of the topology
 
         // Member method inits
-        const MethodTable&                          getMethods(void) const;                                                              //!< Get methods
+        const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
     
         // Container functions
-        void                                        clear(void);
-        void                                        setElement(const size_t index, RbLanguageObject* elem);                              //!< Set element with type conversion
+        void                                clear(void);
+        void                                setElement(const size_t index, RbLanguageObject* elem);                     //!< Set element with type conversion
 
         // Matrix functions
-        const RbObject&                             getElement(size_t row, size_t col) const;                                            //!< Get element or subcontainer
-        RbObject&                                   getElement(size_t row, size_t col);                                                  //!< Get element or subcontainer (non-const to return non-const element)
-        void                                        setElement(size_t row, size_t col, RbLanguageObject* var);                           //!< set element
-        size_t                                      size(void) const;
-        void                                        resize(size_t nRows, size_t nCols);                                                  //!< Resize to new length vector
-        void                                        transpose(void);                                                                     //!< Transpose the matrix
+        const RbObject&                     getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
+        RbObject&                           getElement(size_t row, size_t col);                                         //!< Get element or subcontainer (non-const to return non-const element)
+        void                                setElement(size_t row, size_t col, RbLanguageObject* var);                  //!< set element
+        size_t                              size(void) const;
+        void                                resize(size_t nRows, size_t nCols);                                         //!< Resize to new length vector
+        void                                transpose(void);                                                            //!< Transpose the matrix
 
         // CharacterData functions
-        void                                        addTaxonData(TaxonData* obs);                                                        //!< Add taxon data
-        void                                        addTaxonData(TaxonData* obs, bool forceAdd);                                         //!< Add taxon data
-        void                                        excludeCharacter(size_t i);                                                          //!< Exclude character
-        void                                        excludeTaxon(size_t i);                                                              //!< Exclude taxon
-        void                                        excludeTaxon(std::string& s);                                                        //!< Exclude taxon
-        const Character&                            getCharacter(size_t tn, size_t cn) const;                                            //!< Return a reference to a character element in the character matrix
-        const std::string                           getDataType(void) const;                                                             //!< Returns the data type for the matrix
-        const std::string&                          getFileName(void) const;                                                             //!< Returns the name of the file the data came from
-        bool                                        getIsHomologyEstablished(void) const { return isHomologyEstablished; }               //!< Returns whether the homology of the characters has been established
-        size_t                                      getNumberOfCharacters(void) const;                                                   //!< Number of characters
-        size_t                                      getNumberOfCharacters(size_t idx) const;                                             //!< Number of characters for a specific taxon
-        size_t                                      getNumberOfStates(void) const;                                                       //!< Get the number of states for the characters in this matrix
-        size_t                                      getNumberOfTaxa(void) const;                                                         //!< Number of taxa
-        const TaxonData&                            getTaxonData(size_t tn) const;                                                       //!< Return a reference to a sequence in the character matrix
-        const std::string&                          getTaxonNameWithIndex(size_t idx) const;                                             //!< Returns the idx-th taxon name
-        bool                                        isCharacterExcluded(size_t i) const;                                                 //!< Is the character excluded
-        bool                                        isTaxonExcluded(size_t i) const;                                                     //!< Is the taxon excluded
-        bool                                        isTaxonExcluded(std::string& s) const;                                               //!< Is the taxon excluded
-        Vector*                                     makeSiteColumn(size_t cn) const;                                                     //!< Return a reference to a sequence in the character matrix
-        void                                        restoreCharacter(size_t i);                                                          //!< Restore character
-        void                                        restoreTaxon(size_t i);                                                              //!< Restore taxon
-        void                                        restoreTaxon(std::string& s);                                                        //!< Restore taxon
-        void                                        setFileName(const std::string fn) { fileName = fn; }                                 //!< Set the file name
-        void                                        setIsHomologyEstablished(bool tf) { isHomologyEstablished = tf; }                    //!< Set whether the homology of the characters has been established
-        void                                        showData(void);                                                                      //!< Show the data in the character matrix
+        void                                addTaxonData(TaxonData* obs);                                               //!< Add taxon data
+        void                                addTaxonData(TaxonData* obs, bool forceAdd);                                //!< Add taxon data
+        void                                excludeCharacter(size_t i);                                                 //!< Exclude character
+        void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
+        void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
+        const Character&                    getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
+        const std::string                   getDataType(void) const;                                                    //!< Returns the data type for the matrix
+        const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
+        bool                                getIsHomologyEstablished(void) const { return isHomologyEstablished; }      //!< Returns whether the homology of the characters has been established
+        size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
+        size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
+        size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
+        size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
+        const TaxonData&                    getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
+        const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
+        bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
+        bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
+        bool                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
+        RbVector<Character>*                makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
+        void                                restoreCharacter(size_t i);                                                 //!< Restore character
+        void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
+        void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
+        void                                setFileName(const std::string fn) { fileName = fn; }                        //!< Set the file name
+        void                                setIsHomologyEstablished(bool tf) { isHomologyEstablished = tf; }           //!< Set whether the homology of the characters has been established
+        void                                showData(void);                                                             //!< Show the data in the character matrix
     
     protected:
-        const RbLanguageObject&                     executeOperationSimple(const std::string& name, const std::vector<Argument>& args);  //!< Execute method
+        const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
 
     private:
         // Utility functions
-        size_t                                      indexOfTaxonWithName(std::string& s) const;                                          //!< Get the index of the taxon
-        bool                                        isCharacterConstant(size_t idx) const;                                               //!< Is the idx-th character a constant pattern?
-        bool                                        isCharacterMissingOrAmbiguous(size_t idx) const;                                     //!< Does the character have missing or ambiguous data?
-        size_t                                      numConstantPatterns(void) const;                                                     //!< The number of constant patterns
-        size_t                                      numMissAmbig(void) const;                                                            //!< The number of patterns with missing or ambiguous characters
+        size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
+        bool                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
+        bool                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
+        size_t                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
+        size_t                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
 
         // Member variables
-        std::set<size_t>                            deletedTaxa;                                                                         //!< Set of deleted taxa
-        std::set<size_t>                            deletedCharacters;                                                                   //!< Set of deleted characters
-        std::string                                 fileName;                                                                            //!< The path/filename from where this matrix originated
-        VectorString                                sequenceNames;                                                                       //!< names of the sequences
-        size_t                                      sequenceLength;                                                                      //!< The length of each sequence
-        RbString                                    characterType;                                                                       //!< Rule describing sequence type
-        TypeSpec                                    typeSpec;                                                                            //!< The type of this character matrix including element type
-        bool                                        isHomologyEstablished;                                                               //!< Whether the homology of the characters has been established
+        std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
+        std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
+        std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
+        RbVector<RbString>                  sequenceNames;                                                              //!< names of the sequences
+        size_t                              sequenceLength;                                                             //!< The length of each sequence
+        RbString                            characterType;                                                              //!< Rule describing sequence type
+        TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
+        bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
 
         // memberfunction return values
-        Natural                                     numTaxa;
-        VectorNatural                               numChar;
-        Natural                                     numExcludedTaxa;
-        Natural                                     numExcludedChars;
-        Natural                                     numIncludedTaxa;
-        Natural                                     numIncludedChars;
-        VectorString                                excludedTaxa;
-        VectorNatural                               excludedChars;
-        VectorString                                includedTaxa;
-        VectorNatural                               includedChars;
-        Natural                                     numConstPatterns;
-        Natural                                     numMissing;
-        RbBoolean                                   isHomologous;
+        Natural                             numTaxa;
+        RbVector<Natural>                   numChar;
+        Natural                             numExcludedTaxa;
+        Natural                             numExcludedChars;
+        Natural                             numIncludedTaxa;
+        Natural                             numIncludedChars;
+        RbVector<RbString>                  excludedTaxa;
+        RbVector<Natural>                   excludedChars;
+        RbVector<RbString>                  includedTaxa;
+        RbVector<Natural>                   includedChars;
+        Natural                             numConstPatterns;
+        Natural                             numMissing;
+        RbBoolean                           isHomologous;
         
-        std::map<std::string, RbVariablePtr>        taxonMap;
+        std::map<std::string, const Variable*> taxonMap;
 };
 
 #endif
