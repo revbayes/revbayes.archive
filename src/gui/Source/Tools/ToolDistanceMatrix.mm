@@ -178,13 +178,13 @@
     [distances removeAllObjects];
 
     // fill in the distance matrix in the tool
-    std::vector<std::vector<double> > dMat = dm.getValue();
+//    std::vector<std::vector<double> > dMat = dm.getValue();
     numTaxa = (int)dm.getNumberOfTaxa();
     for (int i=0; i<numTaxa; i++)
         {
         for (int j=0; j<numTaxa; j++)
             {
-            NSNumber* myNumber = [[NSNumber alloc] initWithDouble:(dMat[i][j])];
+            NSNumber* myNumber = [[NSNumber alloc] initWithDouble:(dm[i][j])];
             [distances addObject:myNumber];
             [myNumber release];
             }

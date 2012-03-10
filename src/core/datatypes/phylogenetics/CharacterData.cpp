@@ -102,8 +102,10 @@ void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
     sequenceNames.push_back( new RbString(obs->getTaxonName()) );
     
     // add the sequence also as a member so that we can access it by name
-    DAGNode* var = new ConstantNode( obs );
-    taxonMap.insert( std::pair<std::string,RbVariablePtr>( obs->getTaxonName(), new Variable( var ) ) );
+    DAGNode* node = new ConstantNode( obs );
+    Variable* var = new Variable( node );
+    var->incrementReferenceCount();
+    taxonMap.insert( std::pair<std::string,const Variable*>( obs->getTaxonName(), var ) );
 }
 
 void CharacterData::addTaxonData( TaxonData* obs ) {
@@ -752,7 +754,9 @@ void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
         
         // add the sequence also as a member so that we can access it by name
         DAGNode* variable = new ConstantNode(var );
-        taxonMap.insert( std::pair<std::string,RbVariablePtr>( seq->getTaxonName(), new Variable( variable ) ) );
+        Variable* var = new Variable( variable );
+        var->incrementReferenceCount();
+        taxonMap.insert( std::pair<std::string, const Variable*>( seq->getTaxonName(), var ) );
     }
 }
 
