@@ -58,11 +58,12 @@ class SyntaxVariable : public SyntaxElement {
         void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
 
         // Regular functions
-        RbString&                           getIdentifier(void) { return *identifier; }                                             //!< Get identifier
         RbVector<Natural>                   computeIndex(Environment& env);                                                         //!< Evaluate index
-        std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         VariableSlot&                       createVariable(Environment& env);                                                       //!< Get semantic value
         RbVariablePtr                       evaluateContent(Environment& env);                                                      //!< Get semantic value
+        RbString&                           getIdentifier(void) { return *identifier; }                                             //!< Get identifier
+        std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
+        bool                                hasFunctionCall(void) const;                                                            //!< Does this variable have a function call (e.g. a.xxx() )
         bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
         void                                replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);        //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 

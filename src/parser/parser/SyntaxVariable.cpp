@@ -151,35 +151,6 @@ const std::string& SyntaxVariable::getClassName(void) {
 	return rbClassName; 
 }
 
-/** Get class type spec describing type of object */
-const TypeSpec& SyntaxVariable::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& SyntaxVariable::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/** Return nice representation of the syntax element */
-std::string SyntaxVariable::getFullName(Environment& env) const {
-
-    std::ostringstream theName;
-    if (baseVariable != NULL)
-        theName << baseVariable->getFullName(env) << ".";
-
-    theName << std::string(*identifier);
-
-    return theName.str();
-}
-
 
 /** Get index */
 RbVector<Natural> SyntaxVariable::computeIndex( Environment& env ) {
@@ -479,6 +450,43 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
         
     return theVar;
     
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& SyntaxVariable::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( SyntaxElement::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& SyntaxVariable::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}
+
+
+/** Return nice representation of the syntax element */
+std::string SyntaxVariable::getFullName(Environment& env) const {
+    
+    std::ostringstream theName;
+    if (baseVariable != NULL)
+        theName << baseVariable->getFullName(env) << ".";
+    
+    theName << std::string(*identifier);
+    
+    return theName.str();
+}
+
+
+/* Does this variable have a function call (e.g a.xxx())?
+ * If so, then this will be a function call, otherwise just a variable.
+ */
+bool SyntaxVariable::hasFunctionCall( void ) const {
+    return functionCall != NULL;
 }
 
 

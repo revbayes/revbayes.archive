@@ -204,9 +204,11 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         theVariable = expression->evaluateContent( env );
         PRINTF ( "Created %s with function \"%s\" and value %s \n", theVariable->getDagNode()->getType().c_str(), theVariable->getDagNode()->getValue().getTypeSpec().toString().c_str());
         
-        // if the right-hand-side was not a function then we interpret it as the user wanted a reference to the original object (e.g. b := a)
+        // if the right-hand-side was a lookup to a variable (e.g. b := a)
         // we therefore create a new reference function which will lookup the value of the original node each time. Hence, the new node (left-hand-side) is just a reference of the original node (right-hand-side).
-        if ( !theVariable->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
+        SyntaxVariable* rhs = dynamic_cast<SyntaxVariable*>( expression );
+        if ( !theVariable->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) || rhs != NULL && !rhs->hasFunctionCall() ) {
+            
             RbFunction* func = new Func_reference();
             std::vector<Argument> args;
             args.push_back( Argument( theVariable ) );
