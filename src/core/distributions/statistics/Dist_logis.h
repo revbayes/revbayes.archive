@@ -39,10 +39,10 @@ class Dist_logis: public DistributionContinuous {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
+        void                        setMemberVariable(const std::string& name, const Variable* var);    //!< Catching the setting of the member variables.
 
         // Normal distribution functions
-        double                      cdf(const RbLanguageObject& value);                           //!< Cumulative density
+        double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (RealPos)
         double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
         double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
@@ -52,8 +52,8 @@ class Dist_logis: public DistributionContinuous {
     private:
 
         // parameters
-        RbVariablePtr               location;
-        RbVariablePtr               scale;
+        RbConstVariablePtr          location;
+        RbConstVariablePtr          scale;
     
         // memberfunction return variables
         Real                        randomVariable;
