@@ -104,7 +104,7 @@ const ArgumentRules& Func_size<valType>::getArgumentRules( void ) const {
 template <typename firstValType>
 const std::string& Func_size<firstValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_size<" + firstValType().getType() + ">";
+    static std::string rbClassName = "Func_size<" + firstValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

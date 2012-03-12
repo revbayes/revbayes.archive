@@ -105,7 +105,7 @@ const ArgumentRules& Func_sort<valType>::getArgumentRules( void ) const {
 template <typename firstValType>
 const std::string& Func_sort<firstValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_sort<" + firstValType().getType() + ">";
+    static std::string rbClassName = "Func_sort<" + firstValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

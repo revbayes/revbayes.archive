@@ -158,7 +158,7 @@ const ArgumentRules& Func__unot<valType>::getArgumentRules( void ) const {
 template <typename firstValType>
 const std::string& Func__unot<firstValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__unot<" + firstValType().getType() + ">";
+    static std::string rbClassName = "Func__unot<" + firstValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

@@ -183,7 +183,7 @@ const ArgumentRules& Func__ne<firstValType, secondValType>::getArgumentRules(voi
 template <typename firstValType, typename secondValType>
 const std::string& Func__ne<firstValType, secondValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__ne<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    static std::string rbClassName = "Func__ne<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

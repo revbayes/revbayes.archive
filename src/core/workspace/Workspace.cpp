@@ -94,10 +94,10 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
     PRINTF("Adding distribution %s to workspace\n", name.c_str());
 
     if ( typeTable.find(name) != typeTable.end())
-        throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
+        throw RbException("There is already a type named '" + dist->getTypeSpec() + "' in the workspace");
 
     PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
-    typeTable.insert(std::pair<std::string, RbObject*>(dist->getType(),dist->clone()));
+    typeTable.insert(std::pair<std::string, RbObject*>(dist->getTypeSpec(),dist->clone()));
 
     functionTable->addFunction(name, new ConstructorFunction( dist ) );
     functionTable->addFunction("d" + name, new DistributionFunction(dist->clone(), DistributionFunction::DENSITY));
@@ -144,7 +144,7 @@ bool Workspace::addFunction(const std::string& name, RbFunction* func) {
 /** Add type to the workspace */
 bool Workspace::addType(RbObject* exampleObj) {
 
-    std::string name = exampleObj->getType();
+    std::string name = exampleObj->getTypeSpec();
 
     PRINTF("Adding type %s to workspace\n", name.c_str());
 
@@ -179,7 +179,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbObject*>(templ->getType(), templ->clone()));
+    typeTable.insert(std::pair<std::string, RbObject*>(templ->getTypeSpec(), templ->clone()));
 
     functionTable->addFunction(name, new ConstructorFunction(templ));
 
@@ -194,7 +194,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RbLanguageObject
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
     
-    typeTable.insert(std::pair<std::string, RbObject*>(templ->getType(), templ->clone()));
+    typeTable.insert(std::pair<std::string, RbObject*>(templ->getTypeSpec(), templ->clone()));
     
     functionTable->addFunction(name, new ConstructorFunctionForSimpleObjects(templ));
     

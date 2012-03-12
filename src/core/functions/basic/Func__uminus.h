@@ -157,7 +157,7 @@ const ArgumentRules& Func__uminus<valType, retType>::getArgumentRules( void ) co
 template <typename firstValType, typename secondValType>
 const std::string& Func__uminus<firstValType, secondValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__uminus<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    static std::string rbClassName = "Func__uminus<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

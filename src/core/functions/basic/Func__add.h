@@ -183,7 +183,7 @@ const ArgumentRules& Func__add<firstValType, secondValType, retType>::getArgumen
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& Func__add<firstValType, secondValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__add<" + firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() + ">";
+    static std::string rbClassName = "Func__add<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + "," + retType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

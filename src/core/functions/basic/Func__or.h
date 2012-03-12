@@ -185,7 +185,7 @@ const ArgumentRules& Func__or<firstValType, secondValType>::getArgumentRules( vo
 template <typename firstValType, typename secondValType>
 const std::string& Func__or<firstValType, secondValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__or<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    static std::string rbClassName = "Func__or<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

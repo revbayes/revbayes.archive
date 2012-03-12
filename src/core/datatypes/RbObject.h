@@ -56,8 +56,6 @@ class RbObject {
       
 
         // Basic utility functions you should not have to override
-        const std::string&                  getType(void) const;                                                    //!< Get type of object
-        bool                                isType(const std::string& type) const;                                  //!< Does the language type of the object fit type specification typeSpec?
         bool                                isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
 
 protected:

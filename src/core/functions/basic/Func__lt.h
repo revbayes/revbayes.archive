@@ -183,7 +183,7 @@ const ArgumentRules& Func__lt<firstValType, secondValType>::getArgumentRules(voi
 template <typename firstValType, typename secondValType>
 const std::string& Func__lt<firstValType, secondValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__lt<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    static std::string rbClassName = "Func__lt<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

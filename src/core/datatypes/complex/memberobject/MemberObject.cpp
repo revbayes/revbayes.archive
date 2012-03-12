@@ -249,7 +249,7 @@ void MemberObject::printValue(std::ostream& o) const {
 /** Set a member DAG node */
 void MemberObject::setMemberVariable(const std::string& name, const Variable* var) {
 
-    throw RbException("No Member named '" + name + "' expected and therefore cannot set it.");
+    throw RbException("No Member named '" + name + "' expected in an object of class " + getTypeSpec().getBaseType() + " and therefore cannot set it.");
 }
 
 

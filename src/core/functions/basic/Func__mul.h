@@ -184,7 +184,7 @@ const ArgumentRules& Func__mul<firstValType, secondValType, retType>::getArgumen
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& Func__mul<firstValType, secondValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__mul<" + firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() + ">";
+    static std::string rbClassName = "Func__mul<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + "," + retType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

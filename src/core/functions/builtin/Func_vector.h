@@ -112,7 +112,7 @@ const ArgumentRules& Func_vector<valType, retType>::getArgumentRules( void ) con
 template <typename firstValType, typename secondValType>
 const std::string& Func_vector<firstValType, secondValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_vector<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    static std::string rbClassName = "Func_vector<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

@@ -105,7 +105,7 @@ const ArgumentRules& Func_unique<valType>::getArgumentRules( void ) const {
 template <typename firstValType>
 const std::string& Func_unique<firstValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_unique<" + firstValType().getType() + ">";
+    static std::string rbClassName = "Func_unique<" + firstValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

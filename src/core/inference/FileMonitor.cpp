@@ -165,7 +165,7 @@ void FileMonitor::printHeader() {
         if (theNode->getName() != "")
             outStream << theNode->getName();
         else
-            outStream << "Unnamed " << theNode->getType();
+            outStream << "Unnamed " << theNode->getTypeSpec();
     }
     
     outStream << std::endl;

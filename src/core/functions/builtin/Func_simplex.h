@@ -165,7 +165,7 @@ const ArgumentRules& Func_simplex<RealPos>::getArgumentRules( void ) const {
 template <typename firstValType>
 const std::string& Func_simplex<firstValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_simplex<" + firstValType().getType() + ">";
+    static std::string rbClassName = "Func_simplex<" + firstValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

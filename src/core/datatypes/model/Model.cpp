@@ -251,11 +251,11 @@ void Model::printValue(std::ostream& o) const {
         if ( (*i)->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
             DAGNode* dnode = *i;
             DeterministicNode* node = static_cast<DeterministicNode*>( dnode );
-            msg << "   Function     = " << node->getFunction().getType();
+            msg << "   Function     = " << node->getFunction().getTypeSpec();
         } else if ( (*i)->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
             DAGNode* dnode = *i;
             StochasticNode* node = static_cast<StochasticNode*>( dnode );
-            msg << "   Distribution = " << node->getDistribution().getType();
+            msg << "   Distribution = " << node->getDistribution().getTypeSpec();
         }
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
@@ -329,7 +329,7 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
             DAGNode* theNewNode = (*i).second;
             
             // do not add myself into the list of nodes
-            if ( theNewNode->isType( DeterministicNode::getClassTypeSpec() ) ) {
+            if ( theNewNode->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
                 DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>((DAGNode*)theNewNode);
                 const RbFunction& theFunction = theDetNode->getFunction();
                 if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {

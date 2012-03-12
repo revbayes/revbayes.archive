@@ -329,7 +329,7 @@ int RbFunction::computeMatchScore(const DAGNode *arg, const ArgumentRule &rule) 
 std::string RbFunction::debugInfo(void) const {
     
     std::ostringstream o;
-    o << getType() << ": " << std::endl;
+    o << getTypeSpec() << ": " << std::endl;
     
     if (argsProcessed)
         o << "Arguments processed; there are " << args.size() << " values." << std::endl;

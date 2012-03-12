@@ -183,7 +183,7 @@ const ArgumentRules& Func__sub<firstValType, secondValType, retType>::getArgumen
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& Func__sub<firstValType, secondValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__sub<" + firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() + ">";
+    static std::string rbClassName = "Func__sub<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + "," + retType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

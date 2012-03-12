@@ -182,7 +182,7 @@ const ArgumentRules& Func__eq<firstValType, secondValType>::getArgumentRules(voi
 template <typename firstValType, typename secondValType>
 const std::string& Func__eq<firstValType, secondValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__eq<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    static std::string rbClassName = "Func__eq<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

@@ -43,7 +43,7 @@ public:
     // Regular functions
     const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
-    const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
+    const TypeSpec&                         getTemplateObjectType(void) const { return templateObject->getTypeSpec(); }         //!< Get the type of the template object
     
 protected:
     const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function

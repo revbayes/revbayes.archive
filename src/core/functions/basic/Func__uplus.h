@@ -153,7 +153,7 @@ const ArgumentRules& Func__uplus<valType, retType>::getArgumentRules( void ) con
 template <typename firstValType, typename secondValType>
 const std::string& Func__uplus<firstValType, secondValType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__uplus<" + firstValType().getType() + "," + secondValType().getType() + ">";
+    static std::string rbClassName = "Func__uplus<" + firstValType().getTypeSpec() + "," + secondValType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

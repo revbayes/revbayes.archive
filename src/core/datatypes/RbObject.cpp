@@ -121,7 +121,7 @@ const TypeSpec& RbObject::getTypeSpec( void ) const {
 const RbObject& RbObject::getElement(size_t index) const {
     
     std::ostringstream  msg;
-    msg << "Illegal call to getElement in type \"" << getType() << "\"";
+    msg << "Illegal call to getElement in type \"" << getTypeSpec() << "\"";
     throw RbException( msg );
 }
 
@@ -131,15 +131,8 @@ const RbObject& RbObject::getElement(size_t index) const {
 RbObject& RbObject::getElement(size_t index) {
     
     std::ostringstream  msg;
-    msg << "Illegal call to getElement in type \"" << getType() << "\"";
+    msg << "Illegal call to getElement in type \"" << getTypeSpec() << "\"";
     throw RbException( msg );
-}
-
-
-/** Get object type */
-const std::string& RbObject::getType(void) const {
-
-    return getTypeSpec().toString();
 }
 
 
@@ -151,13 +144,6 @@ bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
     }
 
     return false;
-}
-
-
-/** Are we of specified type? We need to check entire class vector in case we are derived from type. */
-bool RbObject::isType(const std::string& type) const {
-    
-    return getTypeSpec().isDerivedOf( type );
 }
 
 

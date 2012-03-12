@@ -283,7 +283,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             if (theDagNode != NULL && !theDagNode->getValue().allowsVariableInsertion()) {
                 // throw expection because we don't allow insertion of variable
                 std::ostringstream msg;
-                msg << "Object of type " << theDagNode->getValue().getType() << " does not allow insertion of variables.";
+                msg << "Object of type " << theDagNode->getValue().getTypeSpec() << " does not allow insertion of variables.";
                 throw RbException(msg);
             }
             

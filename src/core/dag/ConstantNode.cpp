@@ -77,7 +77,7 @@ DAGNode* ConstantNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNode
     for( std::set<VariableNode* >::const_iterator i = children.begin(); i != children.end(); i++ ) {
         VariableNode* theNewNode = *i;
         // do not add myself into the list of nodes
-        if ( theNewNode->isType( DeterministicNode::getClassTypeSpec() ) ) {
+        if ( theNewNode->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
             DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>(theNewNode);
             const RbFunction& theFunction = theDetNode->getFunction();
             if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {
@@ -184,7 +184,7 @@ void ConstantNode::printValue( std::ostream& o ) const {
 void ConstantNode::printStruct(std::ostream &o) const {
 
     o << "_Class        = " << getClassTypeSpec() << std::endl;
-    o << "_valueType    = " << value->getType() << std::endl;
+    o << "_valueType    = " << value->getTypeSpec() << std::endl;
     o << "_value        = ";
     value->printValue(o);
     o << std::endl;

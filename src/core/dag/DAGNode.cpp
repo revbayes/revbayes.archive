@@ -136,7 +136,7 @@ const RbObject& DAGNode::getElement(size_t index) const {
     } else {
         
         std::ostringstream  msg;
-        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << getValue().getType() << "\"";
+        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << getValue().getTypeSpec() << "\"";
         throw RbException( msg );
     }
     
@@ -153,7 +153,7 @@ RbObject& DAGNode::getElement(size_t index) {
     } else {
         
         std::ostringstream  msg;
-        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << getValue().getType() << "\"";
+        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << getValue().getTypeSpec() << "\"";
         throw RbException( msg );
     }
     

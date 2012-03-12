@@ -93,7 +93,7 @@ const ArgumentRules& Func_transpose<matrixType>::getArgumentRules( void ) const 
 
     if (!rulesSet) {
 
-        argumentRules.push_back( new ValueRule( "x", matrixType().getType() ) );
+        argumentRules.push_back( new ValueRule( "x", matrixType().getTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -107,7 +107,7 @@ const ArgumentRules& Func_transpose<matrixType>::getArgumentRules( void ) const 
 template <typename matrixType>
 const std::string& Func_transpose<matrixType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_transpose<" + matrixType().getType() + ">";
+    static std::string rbClassName = "Func_transpose<" + matrixType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }

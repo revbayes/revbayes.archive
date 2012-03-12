@@ -396,7 +396,7 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
         delete observedVal;
     }
     else {
-        throw RbException("Cannot clamp stochastic node with value of type \"" + observedVal->getType() + "\" because the distribution requires a \"" + distribution->getVariableType().toString() + "\".");
+        throw RbException("Cannot clamp stochastic node with value of type \"" + observedVal->getTypeSpec() + "\" because the distribution requires a \"" + distribution->getVariableType().toString() + "\".");
     }
 
     clamped = true;
@@ -470,7 +470,7 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
     for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
         VariableNode* theNewNode = *i;
         // do not add myself into the list of nodes
-        if ( theNewNode->isType( DeterministicNode::getClassTypeSpec() ) ) {
+        if ( theNewNode->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
             DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>(theNewNode);
             const RbFunction& theFunction = theDetNode->getFunction();
             if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {
@@ -770,7 +770,7 @@ void StochasticNode::printStruct( std::ostream& o ) const {
 
     o << "_Class        = " << getClassTypeSpec() << std::endl;
     o << "_Adress       = " << this << std::endl;
-    o << "_valueType    = " << value->getType() << std::endl;
+    o << "_valueType    = " << value->getTypeSpec() << std::endl;
     o << "_distribution = ";
     distribution->printValue(o);
     o << std::endl;
