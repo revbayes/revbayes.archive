@@ -49,8 +49,8 @@ public:
     static const std::string&                       getClassName(void);                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                        //!< Get language type of the object
-    bool                                            isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
-    void                                            printValue(std::ostream& o) const;                              //!< Print value for user
+    virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
+    virtual void                                    printValue(std::ostream& o) const;                              //!< Print value for user
     
     valueType&                                      operator[](size_t i);                                           //!< Index op allowing change
     const valueType&                                operator[](size_t i) const;                                     //!< Const index op
@@ -90,6 +90,9 @@ public:
 
 protected:
     
+    virtual const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Execute method
+    
+
     // We store internally pointers to our objects. This is necessary because elements can be also of the derived type and we need to be able to make proper copies of the Vector and all its elements
     std::vector<valueType* >                        elements;
 };
@@ -380,6 +383,21 @@ typename std::vector<valueType*>::const_iterator RbVector<valueType>::end( void 
 }
 
 
+/** Execute member function. */
+template <typename valueType>
+const RbLanguageObject& RbVector<valueType>::executeOperationSimple(std::string const &name, const std::vector<Argument> &args) {
+    
+    if ( name == "sort" ) {
+        sort();
+        
+        return RbNullObject::getInstance();
+    }
+    
+    return Container::executeOperationSimple(name, args);
+}
+
+
+
 /**
  * Find the index of the given element.
  * We rely on overloaded operator== in the element classes to check for matches.
@@ -483,6 +501,10 @@ const MethodTable& RbVector<valueType>::getMethods(void) const {
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new MemberFunction( valueType::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // add method for call "x.sort()" as a function
+        ArgumentRules* sortArgRules = new ArgumentRules();
+        methods.addFunction("sort",  new MemberFunction( RbVoid_name, sortArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &Container::getMethods() );
