@@ -52,8 +52,8 @@ Dist_beta::Dist_beta( void ) : DistributionContinuous( getMemberRules() ), alpha
  */
 double Dist_beta::cdf( const RbLanguageObject& value ) {
 
-    double shape1 = static_cast<RealPos&>( alpha->getValue() ).getValue();
-    double shape2 = static_cast<RealPos&>( beta->getValue()  ).getValue();
+    double shape1 = static_cast<const RealPos&>( alpha->getValue() ).getValue();
+    double shape2 = static_cast<const RealPos&>( beta->getValue()  ).getValue();
     double x      = static_cast<const RealPos&>(value).getValue();
 
     return RbStatistics::Beta::cdf(shape1, shape2, x);
@@ -169,8 +169,8 @@ double Dist_beta::pdf( const RbLanguageObject& value ) const {
  */
 const Real& Dist_beta::quantile(const double p) {
 
-    double shape1 = static_cast<RealPos&>( alpha->getValue() ).getValue();
-    double shape2 = static_cast<RealPos&>( beta->getValue()  ).getValue();
+    double shape1 = static_cast<const RealPos&>( alpha->getValue() ).getValue();
+    double shape2 = static_cast<const RealPos&>( beta->getValue()  ).getValue();
 
     double quantile = RbStatistics::Beta::quantile(shape1, shape2, p);
     quant.setValue( quantile );
@@ -188,8 +188,8 @@ const Real& Dist_beta::quantile(const double p) {
  */
 const RbLanguageObject& Dist_beta::rv( void ) {
 
-    double shape1 = static_cast<RealPos&>( alpha->getValue() ).getValue();
-    double shape2 = static_cast<RealPos&>( beta->getValue()  ).getValue();
+    double shape1 = static_cast<const RealPos&>( alpha->getValue() ).getValue();
+    double shape2 = static_cast<const RealPos&>( beta->getValue()  ).getValue();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
     double rv = RbStatistics::Beta::rv(shape1, shape2, *rng);
@@ -200,7 +200,7 @@ const RbLanguageObject& Dist_beta::rv( void ) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_beta::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_beta::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "alpha" ) {
         alpha = var;
