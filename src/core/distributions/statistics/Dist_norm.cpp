@@ -221,7 +221,7 @@ const RbLanguageObject& Dist_norm::rv(void) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_norm::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_norm::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "mean" ) {
         mu = var;
