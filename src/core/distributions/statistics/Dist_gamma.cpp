@@ -51,8 +51,8 @@ Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ), sha
  */
 double Dist_gamma::cdf( const RbLanguageObject& value ) {
     
-    double alpha  = static_cast<      RealPos&>( shape->getValue() ).getValue();
-    double lambda = static_cast<      RealPos&>( rate->getValue()  ).getValue();
+    double alpha  = static_cast<const RealPos&>( shape->getValue() ).getValue();
+    double lambda = static_cast<const RealPos&>( rate->getValue()  ).getValue();
     double x      = static_cast<const RealPos&>( value            ).getValue();    
 
     return RbStatistics::Gamma::cdf(alpha, lambda, x);
@@ -167,8 +167,8 @@ double Dist_gamma::pdf( const RbLanguageObject& value ) const {
  */
 const Real& Dist_gamma::quantile(const double p) {
     
-    double alpha  = static_cast<      RealPos&>( shape->getValue() ).getValue();
-    double lambda = static_cast<      RealPos&>( rate->getValue()  ).getValue();
+    double alpha  = static_cast<const RealPos&>( shape->getValue() ).getValue();
+    double lambda = static_cast<const RealPos&>( rate->getValue()  ).getValue();
 	
     double quantile = RbStatistics::Gamma::quantile(alpha, lambda, p);     
     quant.setValue( quantile );
@@ -187,8 +187,8 @@ const Real& Dist_gamma::quantile(const double p) {
  */
 const RbLanguageObject& Dist_gamma::rv( void ) {
     
-    double alpha  = static_cast<      RealPos&>( shape->getValue() ).getValue();
-    double lambda = static_cast<      RealPos&>( rate->getValue()  ).getValue();
+    double alpha  = static_cast<const RealPos&>( shape->getValue() ).getValue();
+    double lambda = static_cast<const RealPos&>( rate->getValue()  ).getValue();
     
     RandomNumberGenerator* rng = GLOBAL_RNG;        
     double rv = RbStatistics::Gamma::rv(alpha, lambda, *rng);
@@ -199,7 +199,7 @@ const RbLanguageObject& Dist_gamma::rv( void ) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_gamma::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_gamma::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "rate" ) {
         rate = var;
