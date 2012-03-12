@@ -105,6 +105,8 @@ protected:
 #include "Complex.h"
 #include "Ellipsis.h"
 #include "MemberFunction.h"
+#include "Monitor.h"
+#include "Move.h"
 #include "Probability.h"
 #include "RbBoolean.h"
 #include "RbException.h"
@@ -456,6 +458,40 @@ RbObject* RbVector<valueType>::convertTo(const TypeSpec &type) const {
                 }
                 else {
                     convObject->push_back( static_cast<RealPos*>( orgElement->convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+        else if ( type.getElementType() == Move::getClassTypeSpec() ) {
+            RbVector<Move>* convObject = new RbVector<Move>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<valueType*>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                valueType* orgElement = *i;
+                // test whether this element is already of the right type
+                if ( orgElement->isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<Move*>( orgElement->clone() ) );
+                }
+                else {
+                    convObject->push_back( static_cast<Move*>( orgElement->convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+        else if ( type.getElementType() == Monitor::getClassTypeSpec() ) {
+            RbVector<Monitor>* convObject = new RbVector<Monitor>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<valueType*>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                valueType* orgElement = *i;
+                // test whether this element is already of the right type
+                if ( orgElement->isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<Monitor*>( orgElement->clone() ) );
+                }
+                else {
+                    convObject->push_back( static_cast<Monitor*>( orgElement->convertTo(type.getElementType()) ) );
                 }
             }
             
