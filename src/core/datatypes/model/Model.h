@@ -47,7 +47,7 @@ class Model : public MemberObject {
         void                                    printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
     
         const MemberRules&                      getMemberRules(void) const;                                 //!< Get member rules
-        void                                    setMemberVariable(const std::string &name, Variable* var);  //!< Set a member variable. We catch here setting of variable nodes
+        void                                    setMemberVariable(const std::string &name, const Variable* var);  //!< Set a member variable. We catch here setting of variable nodes
     
         // Model functions
         bool                                    areDagNodesCloned(std::vector<DAGNode*> &orgNodes) const;   //!< Are these already the cloned DAG nodes?

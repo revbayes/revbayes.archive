@@ -296,17 +296,17 @@ void Model::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Model::setMemberVariable(const std::string& name, Variable* var) {
+void Model::setMemberVariable(const std::string& name, const Variable* var) {
     
     if (name == "sinknode") {
         
-        DAGNode* theNode = var->getDagNode();
+        const DAGNode* theNode = var->getDagNode();
         // test whether var is a DagNodeContainer
-        while ( theNode != NULL && theNode->getValue().isTypeSpec( TypeSpec(DagNodeContainer::getClassTypeSpec() ) ) ) {
-            RbObject& objPtr = theNode->getValue();
-            DagNodeContainer& container = dynamic_cast<DagNodeContainer&>( objPtr );
-            RbObject& elemPtr = container.getElement(0);
-            theNode = static_cast<VariableSlot&>( elemPtr ).getVariable().getDagNode();
+        while ( theNode != NULL && theNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+            const RbObject& objPtr = theNode->getValue();
+            const DagNodeContainer& container = dynamic_cast<const DagNodeContainer&>( objPtr );
+            const RbObject& elemPtr = container.getElement(0);
+            theNode = static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode();
         }
         
         
