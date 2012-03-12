@@ -30,10 +30,10 @@ SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElem
     
     // Make argument rule from element
     if (defaultExpr == NULL)
-        argRule = new ValueRule(*label, *argType);
+        argRule = new ValueRule(label->getValue(), *argType);
     else {
         Environment env = Environment();
-        argRule = new ValueRule(*label, *argType, defaultExpr->evaluateContent( env )->getDagNode() );
+        argRule = new ValueRule(label->getValue(), *argType, defaultExpr->evaluateContent( env )->getDagNode() );
     }
 }
 
@@ -42,7 +42,7 @@ SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElem
 SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defaultVal) : SyntaxElement(), argType(NULL), label(id), defaultExpr(defaultVal) {
 
     // Convert to standard string
-    const std::string typeString = *typeSpec;
+    const std::string typeString = typeSpec->getValue();
 
     // Count dimensions and check if reference
     int         nDim        = 0;
@@ -59,10 +59,10 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
     
     // Make argument rule from element
     if (defaultExpr == NULL)
-        argRule = new ValueRule(*label, *argType);
+        argRule = new ValueRule(label->getValue(), *argType);
     else {
         Environment env = Environment();
-        argRule = new ValueRule(*label, *argType, defaultExpr->evaluateContent(env)->getDagNode());
+        argRule = new ValueRule(label->getValue(), *argType, defaultExpr->evaluateContent(env)->getDagNode());
     }
 }
 

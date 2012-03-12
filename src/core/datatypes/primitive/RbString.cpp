@@ -69,6 +69,12 @@ std::ostream& operator<<(std::ostream& stream, const RbString& s) {
 	return stream;
 }
 
+
+/** Overloaded < operator. */
+//bool RbString::operator<(const RbString &x) const {
+//    return value.compare( x.value );
+//}
+
 /** Clone function */
 RbString* RbString::clone() const {
 

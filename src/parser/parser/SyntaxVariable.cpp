@@ -234,14 +234,14 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
         
         if ( functionCall == NULL ) {
 
-            if ( !env.existsVariable( *identifier ) ) {
+            if ( !env.existsVariable( identifier->getValue() ) ) {
                 // create a new slot
                 RbVariablePtr theVar = RbVariablePtr( new Variable( RbObject::getClassTypeSpec() ) );
-                env.addVariable(*identifier,theVar);
+                env.addVariable(identifier->getValue(),theVar);
             }
             
             // get the slot and variable
-            theSlot          = &env[ (*identifier) ]; // TODO: We should not allow dereferencing!!!
+            theSlot          = &env[ identifier->getValue() ]; // TODO: We should not allow dereferencing!!!
             Variable& theVar = theSlot->getVariable();
             theDagNode       = theVar.getDagNode();
                 
@@ -356,7 +356,7 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
-            theVar = env[ (*identifier) ].getVariablePtr();
+            theVar = env[ identifier->getValue() ].getVariablePtr();
         } else {
             theVar = functionCall->evaluateContent( env );
         }
@@ -476,7 +476,7 @@ std::string SyntaxVariable::getFullName(Environment& env) const {
     if (baseVariable != NULL)
         theName << baseVariable->getFullName(env) << ".";
     
-    theName << std::string(*identifier);
+    theName << identifier;
     
     return theName.str();
 }

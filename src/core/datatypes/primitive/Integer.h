@@ -38,7 +38,9 @@ public:
     // Overloaded operator
     operator int(void) const { return value; }                                                          //!< Type conversion to int
     bool                        operator==(const Integer& x) const;                                     //!< Equals operator
-
+    bool                        operator!=(const Integer& x) const;                                     //!< Not-Equals operator
+    bool                        operator<(const Integer& x) const;                                      //!< Smaller comparison
+    
     // Basic utility functions
     virtual Integer*            clone(void) const;                                                      //!< Clone object
     virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type

@@ -68,6 +68,13 @@ bool Real::operator==(const Real &x) const {
     return value == x.value;
 }
 
+
+/** Overloaded not-equals operator */
+bool Real::operator!=(const Real &x) const {
+    
+    return value != x.value;
+}
+
 /** Overloaded operator +=. */
 Real& Real::operator+=(const Real &A) {
     value += A.getValue();
@@ -122,6 +129,18 @@ Real& Real::operator/=(const double A) {
     value /= A;
     
     return *this;
+}
+
+
+/** Overloaded < operator. */
+bool Real::operator<(const Real &x) const {
+    return value < x.value;
+}
+
+
+/** Overloaded < operator. */
+bool Real::operator<(const double &x) const {
+    return value < x;
 }
 
 /** Clone object */

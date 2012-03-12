@@ -147,14 +147,14 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
             theVar->setDagNode( new ConstantNode( theVar->getValue().clone() ) );
         }
         
-        Argument theArg = Argument( theLabel, theVar );
+        Argument theArg = Argument( theLabel.getValue(), theVar );
         args.push_back( theArg );
     }
 
     RbFunction* func;
     if (variable == NULL) {
 
-        func = Workspace::userWorkspace().getFunction(*functionName, args);
+        func = Workspace::userWorkspace().getFunction(functionName->getValue(), args);
         if (func == NULL)
             throw(RbException("Could not find function called '" + functionName->getValue() +
                 "' taking specified arguments"));
@@ -170,7 +170,7 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
         // TODO: We shouldn't allow const casts!!!
         MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
-        MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( *functionName, args ) );
+        MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( functionName->getValue(), args ) );
         theMemberFunction->setMemberObject(theMemberObject);
         func = theMemberFunction;
     }

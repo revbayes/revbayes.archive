@@ -198,7 +198,7 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
 
                 SyntaxElement* theSyntaxElement = *i;
                 // replace the index variable first with its new value
-                theSyntaxElement->replaceVariableWithConstant(forCond->getIndexVarName(), indexValue);
+                theSyntaxElement->replaceVariableWithConstant(forCond->getIndexVarName().getValue(), indexValue);
                 // Execute statement
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 

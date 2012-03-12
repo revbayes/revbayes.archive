@@ -156,7 +156,7 @@ const RbLanguageObject& Func__lt<firstValType,secondValType>::executeFunction( v
 
     const firstValType&  val1 = static_cast<const firstValType&> ( first->getValue()  );
     const secondValType& val2 = static_cast<const secondValType&>( second->getValue() );
-    retValue.setValue( val1 < val2 );
+    retValue.setValue( val1.getValue() < val2.getValue() );
     
     return retValue;
 }

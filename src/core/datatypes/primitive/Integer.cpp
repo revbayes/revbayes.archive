@@ -68,6 +68,18 @@ bool Integer::operator==(const Integer &x) const {
 }
 
 
+/** Overloaded not-equals operator */
+bool Integer::operator!=(const Integer &x) const {
+    
+    return value != x.value;
+}
+
+/** Overloaded < operator. */
+bool Integer::operator<(const Integer &x) const {
+    return value < x.value;
+}
+
+
 /** Clone object */
 Integer* Integer::clone(void) const {
 

@@ -120,7 +120,7 @@ RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
     PRINTF( "Evaluating variable declaration\n" );
     
     // Check if variable exists
-    if ( env.existsVariable( *variableName ) )
+    if ( env.existsVariable( variableName->getValue() ) )
         throw RbException( "Illegal attempt to redefine variable " + *variableName );
     
     // Check if type exists
@@ -148,7 +148,7 @@ RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
     }
     
     // Make type specification
-    TypeSpec typeSpec( *elementTypeName );
+    TypeSpec typeSpec( elementTypeName->getValue() );
 
     // Check if we have some positive lengths
     bool positiveLengthSpec = false;
@@ -173,7 +173,7 @@ RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
     else {
 
         // Create new slot in frame with null variable
-        env.addVariable( *variableName );
+        env.addVariable( variableName->getValue() );
     }
     
     return RbVariablePtr( NULL );

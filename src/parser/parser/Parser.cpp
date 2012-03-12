@@ -158,7 +158,7 @@ int Parser::execute(SyntaxElement* root) const {
         if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
 
             RbString& fxnName = theVariable->getIdentifier();
-            const std::vector<RbFunction*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( fxnName );
+            const std::vector<RbFunction*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( fxnName.getValue() );
             if ( functions.size() != 0 ) {
                 RBOUT( "Usage:" );
                 for ( std::vector<RbFunction*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
@@ -245,18 +245,18 @@ int Parser::help(const RbString& symbol) const {
 
     // Get some help
     Help& userHelp = Help::getHelp();
-    if ( userHelp.isUserHelpAvailable() == true && userHelp.isHelpAvailableForQuery( std::string( symbol ) ) == true )
+    if ( userHelp.isUserHelpAvailable() == true && userHelp.isHelpAvailableForQuery( symbol.getValue() ) == true )
         {
-        std::string hStr = userHelp.formatHelpString(std::string(symbol), 100);
+        std::string hStr = userHelp.formatHelpString( symbol.getValue(), 100);
         UserInterface::userInterface().output(hStr, false);
         }
     else {
         if (userHelp.isUserHelpAvailable() == false)
             RBOUT("User help is unavailable");
-        else if ( userHelp.isHelpAvailableForQuery(std::string(symbol)) == false )
-            RBOUT("Help unavailable for \"" + std::string(symbol) + "\"");
+        else if ( userHelp.isHelpAvailableForQuery( symbol.getValue() ) == false )
+            RBOUT("Help unavailable for \"" + symbol.getValue() + "\"");
 
-        const std::vector<RbFunction*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol );
+        const std::vector<RbFunction*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol.getValue() );
         if ( functions.size() != 0 ) {
             RBOUT( "Usage:" );
             for ( std::vector<RbFunction*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {

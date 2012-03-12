@@ -95,6 +95,11 @@ protected:
 
     // We store internally pointers to our objects. This is necessary because elements can be also of the derived type and we need to be able to make proper copies of the Vector and all its elements
     std::vector<valueType* >                        elements;
+
+    private:
+    struct comparator {
+        bool operator() (valueType* A, valueType* B) const { return ( *A < *B);}
+    } myComparator;
 };
 
 #include "Ellipsis.h"
@@ -392,6 +397,11 @@ const RbLanguageObject& RbVector<valueType>::executeOperationSimple(std::string 
         
         return RbNullObject::getInstance();
     }
+    else if ( name == "unique" ) {
+        unique();
+        
+        return RbNullObject::getInstance();
+    }
     
     return Container::executeOperationSimple(name, args);
 }
@@ -505,6 +515,10 @@ const MethodTable& RbVector<valueType>::getMethods(void) const {
         // add method for call "x.sort()" as a function
         ArgumentRules* sortArgRules = new ArgumentRules();
         methods.addFunction("sort",  new MemberFunction( RbVoid_name, sortArgRules) );
+        
+        // add method for call "x.unique()" as a function
+        ArgumentRules* uniqueArgRules = new ArgumentRules();
+        methods.addFunction("unique",  new MemberFunction( RbVoid_name, uniqueArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &Container::getMethods() );
@@ -665,7 +679,7 @@ size_t RbVector<valueType>::size( void ) const {
 template <typename valueType>
 void RbVector<valueType>::sort( void ) {
     
-    std::sort(elements.begin(), elements.end());
+    std::sort(elements.begin(), elements.end(), myComparator);
     
 }
 
@@ -675,11 +689,11 @@ void RbVector<valueType>::unique(void) {
     
     sort();
     std::vector<valueType* > uniqueVector;
-    uniqueVector.push_back (elements[0]);
+    uniqueVector.push_back (elements[0]->clone());
     for (size_t i = 1 ; i< elements.size() ; i++)
     {
-        if (elements[i] != elements[i-1])
-            uniqueVector.push_back(elements[i]);
+        if ( *(elements[i]) != *(elements[i-1]) )
+            uniqueVector.push_back(elements[i]->clone());
     }
     
     clear();

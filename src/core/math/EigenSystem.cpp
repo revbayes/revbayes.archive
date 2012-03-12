@@ -271,7 +271,7 @@ bool EigenSystem::checkForComplexEigenvalues(void) {
 	bool areThereComplexEigens = false;
 	for (int i=0; i<n; i++)
 		{
-		if (imaginaryEigenvalues[i] != 0.0)
+		if (imaginaryEigenvalues[i].getValue() != 0.0)
 			{
 			areThereComplexEigens = true;
 			break;

@@ -46,6 +46,7 @@ class Real : public RbLanguageObject {
         // Overloaded operators
                                     operator double(void) const { return value; }                           //!< Type conversion to double for convenience
         bool                        operator==(const Real& x) const;                                        //!< Equals operator
+        bool                        operator!=(const Real& x) const;                                        //!< Not-Equals operator
         Real&                       operator+=(const Real& A);                                              //!< operator += 
         Real&                       operator+=(double A);                                                   //!< operator += 
         Real&                       operator-=(const Real& A);                                              //!< operator -= 
@@ -54,7 +55,9 @@ class Real : public RbLanguageObject {
         Real&                       operator*=(double A);                                                   //!< operator *= 
         Real&                       operator/=(const Real& A);                                              //!< operator /= 
         Real&                       operator/=(double A);                                                   //!< operator /= 
-    
+        bool                        operator<(const Real& x) const;                                         //!< operator <
+        bool                        operator<(const double& x) const;                                         //!< operator <
+        
         // Basic utility functions
         virtual Real*               clone(void) const;                                                      //!< Clone object
         virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type

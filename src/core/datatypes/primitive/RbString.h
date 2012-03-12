@@ -37,6 +37,7 @@ class RbString : public RbLanguageObject {
         RbString                    operator+(const std::string& s) const;              //!< String concatenation
         friend std::ostream&        operator<< (std::ostream& o, RbString const& s);    //!< String output with << operator
         bool                        operator==(const RbString& x) const;                //!< Equals operator
+//        bool                        operator<(const RbString& x) const;                 //!< Smaller comparison
 
     // Basic utility functions
 	    RbString*                   clone(void) const;                                  //!< Copy

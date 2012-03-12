@@ -185,7 +185,7 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
 void SyntaxForCondition::printValue(std::ostream& o) const {
 
     o << "SyntaxForCondition:" << std::endl;
-    o << "varName      = " << std::string(*varName) << std::endl;
+    o << "varName      = " << varName->getValue() << std::endl;
     o << "inExpression = " << inExpression;
     o << std::endl;
 
