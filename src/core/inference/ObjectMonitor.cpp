@@ -135,7 +135,7 @@ const MethodTable& ObjectMonitor::getMethods( void ) const {
 /** Monitor value unconditionally */
 void ObjectMonitor::monitor(void) {
     
-    for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         
         // save the value        
         RbLanguageObject* temp = (*it)->getValue().clone();
@@ -153,7 +153,7 @@ void ObjectMonitor::monitor(int gen) {
 
     if (gen % samplingFrequency == 0) {
         
-        for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             
             // save the value
             RbLanguageObject* temp = (*it)->getValue().clone();
@@ -174,7 +174,7 @@ void ObjectMonitor::printValue(std::ostream& o) const {
 }
 
 
-void ObjectMonitor::setMemberVariable(std::string const &name, Variable* var) {
+void ObjectMonitor::setMemberVariable(std::string const &name, const Variable* var) {
     
     // catch setting of the variables 
     // We don't have any

@@ -120,14 +120,14 @@ void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
 }
 
 
-void Monitor::setMemberVariable(std::string const &name, Variable* var) {
+void Monitor::setMemberVariable(std::string const &name, const Variable* var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
         if (var->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
-            DagNodeContainer& theContainer = static_cast<DagNodeContainer&>( var->getValue() );
+            const DagNodeContainer& theContainer = static_cast<const DagNodeContainer&>( var->getValue() );
             for (size_t i = 0; i < theContainer.size(); i++) {
-                const RbVariablePtr& theVar = static_cast<VariableSlot&>( theContainer.getElement(i) ).getVariablePtr();
+                Variable* theVar = static_cast<const VariableSlot&>( theContainer.getElement(i) ).getVariablePtr();
 //                if (theVar->getDagNode()->isTypeSpec( VariableNode::getClassTypeSpec() ) ) {
                     nodes.push_back( theVar );
                     //                } else {

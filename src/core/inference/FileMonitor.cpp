@@ -100,10 +100,10 @@ const MemberRules& FileMonitor::getMemberRules( void ) const {
 /** Monitor value unconditionally */
 void FileMonitor::monitor(void) {
 
-    for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
-            outStream << static_cast<RbString&>( separator->getValue() ).getValue();
+            outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
         
         // print the value
         (*it)->printValue(outStream);
@@ -125,9 +125,9 @@ void FileMonitor::monitor(int gen) {
         // print the iteration number first
         outStream << gen;
         
-        for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element
-            outStream << static_cast<RbString&>( separator->getValue() ).getValue();
+            outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
             
             // print the value
             (*it)->printValue(outStream);
@@ -155,9 +155,9 @@ void FileMonitor::printHeader() {
     // print one column for the iteration number
     outStream << "Sample";
     
-    for (std::vector<RbVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
-        outStream << static_cast<RbString&>( separator->getValue() ).getValue();
+        outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
         
          const DAGNode* theNode = static_cast<const DAGNode*>((*it)->getDagNode());
         
@@ -182,7 +182,7 @@ void FileMonitor::printValue(std::ostream& o) const {
 }
 
 
-void FileMonitor::setMemberVariable(std::string const &name, Variable* var) {
+void FileMonitor::setMemberVariable(std::string const &name, const Variable* var) {
     
     // catch setting of the variables 
     if (name == "separator") {

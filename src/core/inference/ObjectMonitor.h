@@ -49,7 +49,7 @@ public:
     const MemberRules&                  getMemberRules( void ) const;                                                           //!< The member rules for an ObjectMonitor
     virtual const MethodTable&          getMethods(void) const;                                                                 //!< Get methods
     const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
-    void                                setMemberVariable(const std::string &name, Variable* var);                              //!< Set a member variable. We catch here setting of variable nodes
+    void                                setMemberVariable(const std::string &name, const Variable* var);                        //!< Set a member variable. We catch here setting of variable nodes
 
     // Monitor functions
     void                                monitor(void);                                                                          //!< Monitor unconditionally
