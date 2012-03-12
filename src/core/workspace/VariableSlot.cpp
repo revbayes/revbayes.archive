@@ -128,7 +128,7 @@ const TypeSpec& VariableSlot::getTypeSpec( void ) const {
 
 
 /** Get a const pointer to the dag node */
-DAGNode* VariableSlot::getDagNode( void ) const {
+const DAGNode* VariableSlot::getDagNode( void ) const {
     
     if (variable == NULL) 
         return NULL;

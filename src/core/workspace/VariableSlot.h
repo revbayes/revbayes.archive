@@ -50,7 +50,7 @@ public:
 
     const RbLanguageObject&                 getValue(void) const;                                                   //!< Get the value of the variable
     RbLanguageObject&                       getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
-    DAGNode*                                getDagNode(void) const;                                                 //!< Get the DAG node
+    const DAGNode*                          getDagNode(void) const;                                                 //!< Get the DAG node
     DAGNode*                                getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
     const std::string&                      getLabel(void) const { return label; }                                  //!< Get the label of the slot
     const Variable&                         getVariable(void) const;                                                //!< Get the variable

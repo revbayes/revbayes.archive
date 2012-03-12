@@ -317,7 +317,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             // test whether the element needs type conversion
             if (subElement.isTypeSpec( VariableSlot::getClassTypeSpec() )) {
                 theSlot = &dynamic_cast<VariableSlot&>(subElement);
-                theDagNode = theSlot->getDagNode();
+                theDagNode = theSlot->getVariable().getDagNode();
                 // TODO: Set the name of the node here!
                 theSlot->setLabel(name);
             }

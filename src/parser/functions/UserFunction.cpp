@@ -211,16 +211,16 @@ void UserFunction::printValue(std::ostream &o) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void UserFunction::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
+void UserFunction::setArgumentVariable(std::string const &name, const Variable* var) {
     
     // We actually just catch the call to the base class which would complain that the argument was not expected.
     // User functions handle their arguments in some unknown different way.
     
     if ( defineEnvironment->existsVariable( name ) ) {
-        (*defineEnvironment)[name].setVariable( var );
+        (*defineEnvironment)[name].setVariable( var->clone() );
     }
     else {
-        defineEnvironment->addVariable(name, var);
+        defineEnvironment->addVariable(name, var->clone() );
     }
 }
 

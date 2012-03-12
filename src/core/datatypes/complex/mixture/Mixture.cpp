@@ -244,7 +244,7 @@ void Mixture::printValue(std::ostream& o) const {
 
     o << "Parameter vector:\n";
     for ( size_t i = 0; i < parameters_->size(); i++ ) {
-        DAGNode* theNode = static_cast<const VariableSlot&>( parameters_->getElement(i) ).getDagNode();
+        const DAGNode* theNode = static_cast<const VariableSlot&>( parameters_->getElement(i) ).getDagNode();
         theNode->printValue(o) ;
         o << "\t";
     }
@@ -252,7 +252,7 @@ void Mixture::printValue(std::ostream& o) const {
 
     o << "Allocation vector:\n";
     for ( size_t i = 0; i < allocationVector_->size(); i++ ) {
-        DAGNode* theNode = static_cast<const VariableSlot&>( allocationVector_->getElement(i) ).getDagNode();
+        const DAGNode* theNode = static_cast<const VariableSlot&>( allocationVector_->getElement(i) ).getDagNode();
         theNode->printValue(o) ;
         o << "\t";
     }
