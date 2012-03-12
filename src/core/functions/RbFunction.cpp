@@ -665,7 +665,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
 /** Set a argument variable. This is the base class and we do not expect to set any variables! */
 void RbFunction::setArgumentVariable(const std::string& name, const Variable* var) {
     
-    throw RbException("No argument named '" + name + "' expected and therefore cannot set it.");
+    throw RbException("No argument named '" + name + "' expected in function '" + getTypeSpec().getBaseType() + "' and therefore cannot set it.");
 }
 
 
