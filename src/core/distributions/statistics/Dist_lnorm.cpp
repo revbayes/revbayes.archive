@@ -49,8 +49,8 @@ Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ), mu(
  */
 double Dist_lnorm::cdf( const RbLanguageObject& value ) {
 	
-    double m    = static_cast<      Real&   >( mu->getValue()    ).getValue();
-	double s    = static_cast<      RealPos&>( sigma->getValue() ).getValue();
+    double m    = static_cast<const Real&   >( mu->getValue()    ).getValue();
+	double s    = static_cast<const RealPos&>( sigma->getValue() ).getValue();
     double q    = static_cast<const RealPos&>( value             ).getValue();
 	
 	return RbStatistics::Lognormal::cdf(m, s, q);
@@ -197,7 +197,7 @@ const RbLanguageObject& Dist_lnorm::rv(void) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_lnorm::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_lnorm::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "mu" ) {
         mu = var;
