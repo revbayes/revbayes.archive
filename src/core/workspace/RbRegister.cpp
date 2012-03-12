@@ -442,7 +442,10 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_vector<          RealPos,                        RbVector<RealPos>               >() );
         addFunction( "v",         new Func_vector<          Complex,                        RbVector<Complex>               >() );
         addFunction( "v",         new Func_vector<          RbString,                       RbVector<RbString>              >() );
+        addFunction( "v",         new Func_vector<          RbVector<Integer>,              Matrix<Integer>                 >() );
+        addFunction( "v",         new Func_vector<          RbVector<Natural>,              Matrix<Natural>                 >() );
         addFunction( "v",         new Func_vector<          RbVector<Real>,                 Matrix<Real>                    >() );
+        addFunction( "v",         new Func_vector<          RbVector<RealPos>,              Matrix<RealPos>                 >() );
         addFunction( "v",         new Func_vector<          RbVector<Complex>,              Matrix<Complex>                 >() );
     }
     catch(RbException& rbException) {
