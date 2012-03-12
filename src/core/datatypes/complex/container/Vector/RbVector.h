@@ -65,7 +65,7 @@ public:
     // Member object function
     const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
     const MethodTable&                              getMethods(void) const;                                         //!< Get methods
-    void                                            setMemberVariable(const std::string& name, Variable* var);      //!< Vector member variable
+    void                                            setMemberVariable(const std::string& name, const Variable* var);//!< Vector member variable
     
     // Vector functions
     iterator                                        begin(void);                                                    //!< Iterator to the beginning of the Vector
@@ -618,11 +618,11 @@ void RbVector<valueType>::setElement(const size_t index, valueType* elem) {
 
 /** Vector a member variable */
 template <typename valueType>
-void RbVector<valueType>::setMemberVariable(const std::string& name, Variable* var) {
+void RbVector<valueType>::setMemberVariable(const std::string& name, const Variable* var) {
     
     if (name == "x" || name == "" ) { // the ellipsis variables
         valueType* element = static_cast<valueType*>( var->getValue().clone() );
-        insert( element);
+        push_back( element);
     }
     else {
         Container::setMemberVariable(name, var);
