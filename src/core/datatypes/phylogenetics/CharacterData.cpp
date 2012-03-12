@@ -191,6 +191,12 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
         const TaxonData& element = getTaxonData(index.getValue() - 1);
         return element;
         }
+    else if (name == "size") 
+    {
+        int n = (int)getNumberOfTaxa();
+        numTaxa.setValue( n );
+        return numTaxa;
+    }
     else if (name == "ntaxa") 
         {
         int n = (int)getNumberOfTaxa();
@@ -479,6 +485,11 @@ const MethodTable& CharacterData::getMethods(void) const {
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new MemberFunction( TaxonData::getClassTypeSpec(), squareBracketArgRules) );
+            
+            
+        // add method for call "x[]" as a function
+        ArgumentRules* sizeArgRules = new ArgumentRules();
+        methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
             
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
