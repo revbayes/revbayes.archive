@@ -50,8 +50,8 @@ Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()), min( NULL
  */
 double Dist_unif::cdf(const RbLanguageObject& value) {
 
-    double l   = static_cast<      Real&>( min->getValue() ).getValue();
-    double u   = static_cast<      Real&>( max->getValue() ).getValue();
+    double l   = static_cast<const Real&>( min->getValue() ).getValue();
+    double u   = static_cast<const Real&>( max->getValue() ).getValue();
     double q   = static_cast<const Real&>( value           ).getValue();
 
     if ( q < l )
@@ -192,8 +192,8 @@ double Dist_unif::pdf(const RbLanguageObject &value) const {
  */
 const Real& Dist_unif::quantile(const double p) {
     
-    double l = static_cast<Real&>( min->getValue() ).getValue();
-    double u = static_cast<Real&>( max->getValue() ).getValue();
+    double l = static_cast<const Real&>( min->getValue() ).getValue();
+    double u = static_cast<const Real&>( max->getValue() ).getValue();
 
     quant.setValue( l + ( u - l ) * p );
     return quant;
@@ -222,7 +222,7 @@ const RbLanguageObject& Dist_unif::rv(void) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_unif::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_unif::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "min" ) {
         min = var;

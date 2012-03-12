@@ -37,7 +37,7 @@ class Dist_unif: public DistributionContinuous {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
+        void                        setMemberVariable(const std::string& name, const Variable* var);    //!< Catching the setting of the member variables.
 
         // Real-valued distribution functions
         double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
@@ -54,8 +54,8 @@ class Dist_unif: public DistributionContinuous {
         static const TypeSpec       varTypeSpec;
 
         // parameters
-        RbVariablePtr               min;
-        RbVariablePtr               max;
+        RbConstVariablePtr          min;
+        RbConstVariablePtr          max;
     
         // memberfunction return valus
         Real                        randomVariable;
