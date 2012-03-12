@@ -39,7 +39,7 @@ class Move_mscale : public MoveSimple {
 
         // Member variable inits
         const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
-        void                            setMemberVariable(const std::string& name, Variable* var);              //!< Set member variable (ensure topologyProb is updated)
+        void                            setMemberVariable(const std::string& name, const Variable* var);        //!< Set member variable (ensure topologyProb is updated)
 
         // Return variable type
         const TypeSpec                  getVariableType(void) const;                                            //!< Get move variable type
@@ -48,7 +48,7 @@ class Move_mscale : public MoveSimple {
         double                          perform(void);                                                          //!< Perform move
 
         // parameters
-        RbVariablePtr                   lambda;
+        RbConstVariablePtr              lambda;
 };
 
 #endif

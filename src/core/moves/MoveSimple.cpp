@@ -167,11 +167,11 @@ void MoveSimple::replaceDagNodes(std::vector<StochasticNode*> &n) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void MoveSimple::setMemberVariable(std::string const &name, Variable* var) {
+void MoveSimple::setMemberVariable(std::string const &name, const Variable* var) {
     
     // test whether we want to set the variable 
     if ( name == "variable" ) {
-        node = var;
+        node = const_cast<Variable*>( var );
     }
     else {
         Move::setMemberVariable(name, var);

@@ -138,14 +138,11 @@ double Move_mslide::perform( void ) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Move_mslide::setMemberVariable(std::string const &name, Variable* var) {
+void Move_mslide::setMemberVariable(std::string const &name, const Variable* var) {
     
     // test whether we want to set the variable 
     if ( name == "delta" ) {
         delta = var;
-    } 
-    else if ( name == "variable" ) {
-        node = var;
     }
     else {
         MoveSimple::setMemberVariable(name, var);

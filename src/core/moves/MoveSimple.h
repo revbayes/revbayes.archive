@@ -42,7 +42,7 @@ public:
 
     // Member variable rules
     virtual const MemberRules&          getMemberRules(void) const;                                     //!< Get member rules
-    virtual void                        setMemberVariable(const std::string& name, Variable* var);      //!< Set member variable (ensure topologyProb is updated)
+    virtual void                        setMemberVariable(const std::string& name, const Variable* var);//!< Set member variable (ensure topologyProb is updated)
 
     // Move functions
     void                                acceptMove(void);				                                //!< Accept the move, update statistics

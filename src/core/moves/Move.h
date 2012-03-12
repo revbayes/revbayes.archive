@@ -41,7 +41,7 @@ class Move : public MemberObject {
 
         // Member methods
         virtual const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
-        void                                    setMemberVariable(const std::string& name, Variable* var);                              //!< set the member variables
+        void                                    setMemberVariable(const std::string& name, const Variable* var);                        //!< set the member variables
 
         // Move functions you have to override
         virtual void                            acceptMove(void) = 0;                                                                   //!< Accept the move
@@ -62,7 +62,7 @@ class Move : public MemberObject {
         virtual const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
 
         // parameters
-        RbVariablePtr                           weight;
+        RbConstVariablePtr                      weight;
     
         // Hidden member variables
         Natural                                 numAccepted;                                                                            //!< Number of times accepted

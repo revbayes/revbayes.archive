@@ -200,7 +200,7 @@ void Move::resetCounters(void) {
 }
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Move::setMemberVariable(std::string const &name, Variable* var) {
+void Move::setMemberVariable(std::string const &name, const Variable* var) {
     
     // test whether we want to set the variable 
     if (name == "weight") {

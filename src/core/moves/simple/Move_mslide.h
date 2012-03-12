@@ -30,7 +30,7 @@ class Move_mslide : public MoveSimple {
 
     public:
                                     Move_mslide(void);                                                      //!< Parser constructor
-    Move_mslide(const Move_mslide &ms);                                                                 //!< Copy Constructor
+                                    Move_mslide(const Move_mslide &ms);                                     //!< Copy Constructor
 
         // Basic utility functions
         Move_mslide*                clone(void) const;                                                      //!< Clone object
@@ -40,7 +40,7 @@ class Move_mslide : public MoveSimple {
 
         // Member variable inits
         const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
-        void                        setMemberVariable(const std::string& name, Variable* var);              //!< Set member variable (ensure topologyProb is updated)
+        void                        setMemberVariable(const std::string& name, const Variable* var);        //!< Set member variable (ensure topologyProb is updated)
 
         // Return variable type
         const TypeSpec              getVariableType(void) const;                                            //!< Get move variable type
@@ -51,7 +51,7 @@ class Move_mslide : public MoveSimple {
     private:
 
         // parameters
-        RbVariablePtr               delta;
+        RbConstVariablePtr          delta;
 };
 
 #endif
