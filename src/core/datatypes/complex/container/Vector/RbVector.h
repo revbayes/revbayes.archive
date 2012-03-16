@@ -128,7 +128,8 @@ template <typename valueType>
 RbVector<valueType>::RbVector(size_t n) : Container( valueType::getClassTypeSpec() ) {
     
     for (size_t i = 0; i < n; i++) {
-        this->push_back( NULL );
+//        this->push_back( NULL );
+        this->push_back( new valueType() );
     }
 }
 
@@ -185,7 +186,11 @@ RbVector<valueType>& RbVector<valueType>::operator=( const RbVector<valueType>& 
         
         typename std::vector<valueType*>::const_iterator i;
         for ( i = x.elements.begin(); i != x.elements.end(); i++ ) {
-            valueType *element = static_cast<valueType*>( (*i)->clone() );
+            
+            valueType *element = NULL;
+            if ( *i != NULL) {
+                element = static_cast<valueType*>( (*i)->clone() );
+            }
             elements.push_back( element );
         }
     }
