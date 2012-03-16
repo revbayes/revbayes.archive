@@ -564,14 +564,15 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
 
 
 /** Get taxon with index idx */
-const std::string& CharacterData::getTaxonNameWithIndex( size_t idx ) const {
+const std::string CharacterData::getTaxonNameWithIndex( size_t idx ) const {
 
-    return sequenceNames[idx];
+    return sequenceNames[idx].getValue();
 }
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& CharacterData::getTypeSpec(void) const {
+
     return typeSpec;
 }
 
@@ -580,12 +581,13 @@ const TypeSpec& CharacterData::getTypeSpec(void) const {
 size_t CharacterData::indexOfTaxonWithName( std::string& s ) const {
     
     // search through all names
-    for (size_t i=0; i<sequenceNames.size(); i++) {
-        if (s == sequenceNames[i]) {
+    for (size_t i=0; i<sequenceNames.size(); i++) 
+        {
+        if (s == sequenceNames[i]) 
+            {
             return i;
+            }
         }
-    }
-
     return -1;
 }
 
@@ -594,20 +596,20 @@ size_t CharacterData::indexOfTaxonWithName( std::string& s ) const {
 bool CharacterData::isCharacterConstant(size_t idx) const {
 
     const Character* f = NULL;
-    for ( size_t i=0; i<getNumberOfTaxa(); i++ ) {
-
-        if ( isTaxonExcluded(i) == false ) {
-            
+    for ( size_t i=0; i<getNumberOfTaxa(); i++ ) 
+        {
+        if ( isTaxonExcluded(i) == false ) 
+            {
             if ( f == NULL )
                 f = &getCharacter( i, idx );
-            else {
+            else 
+                {
                 const Character* s = &getCharacter( i , idx );
                 if ( (*f) != (*s) )
                     return false;
+                }
             }
         }
-    }
-
     return true;
 }
 

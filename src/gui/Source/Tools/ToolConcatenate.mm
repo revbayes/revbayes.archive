@@ -84,14 +84,14 @@
 
 - (void)initializeImage {
 
-    itemImage[0] = [NSImage imageNamed:@"Tool_MatrixFilter25.icns"];
-    itemImage[1] = [NSImage imageNamed:@"Tool_MatrixFilter50.icns"];
-    itemImage[2] = [NSImage imageNamed:@"Tool_MatrixFilter75.icns"];
-    itemImage[3] = [NSImage imageNamed:@"Tool_MatrixFilter100.icns"];
-    itemImage[4] = [NSImage imageNamed:@"Tool_MatrixFilter125.icns"];
-    itemImage[5] = [NSImage imageNamed:@"Tool_MatrixFilter150.icns"];
-    itemImage[6] = [NSImage imageNamed:@"Tool_MatrixFilter200.icns"];
-    itemImage[7] = [NSImage imageNamed:@"Tool_MatrixFilter400.icns"];
+    itemImage[0] = [NSImage imageNamed:@"Tool_Concatenate25.icns"];
+    itemImage[1] = [NSImage imageNamed:@"Tool_Concatenate50.icns"];
+    itemImage[2] = [NSImage imageNamed:@"Tool_Concatenate75.icns"];
+    itemImage[3] = [NSImage imageNamed:@"Tool_Concatenate100.icns"];
+    itemImage[4] = [NSImage imageNamed:@"Tool_Concatenate125.icns"];
+    itemImage[5] = [NSImage imageNamed:@"Tool_Concatenate150.icns"];
+    itemImage[6] = [NSImage imageNamed:@"Tool_Concatenate200.icns"];
+    itemImage[7] = [NSImage imageNamed:@"Tool_Concatenate400.icns"];
 
 	float s[8] = { 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 2.0, 4.0 };
 	for (int i=0; i<8; i++)

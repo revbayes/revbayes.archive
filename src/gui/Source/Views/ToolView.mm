@@ -63,7 +63,7 @@
         else if (i == TOOL_COMBINER)
             toolImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
         else if (i == TOOL_CONCATENATE)
-            toolImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
+            toolImage = [NSImage imageNamed:@"Tool_Concatenate.icns"];
         else if (i == TOOL_MATRIXFILTER)
             toolImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];
         else if (i == TOOL_BOOTSTRAP)
@@ -231,7 +231,7 @@
 	else if (whichToolSelected == TOOL_COMBINER)
 		anImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
 	else if (whichToolSelected == TOOL_CONCATENATE)
-		anImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
+		anImage = [NSImage imageNamed:@"Tool_Concatenate.icns"];
 	else if (whichToolSelected == TOOL_MATRIXFILTER)
 		anImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];
 	else if (whichToolSelected == TOOL_BOOTSTRAP)

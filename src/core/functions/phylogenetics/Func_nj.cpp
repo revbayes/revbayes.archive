@@ -231,24 +231,26 @@ Topology* Func_nj::neighborJoining(const DistanceMatrix& d) {
     
     // set the initial tree to be a start tree
     size_t nTaxa = d.getNumberOfTaxa();
-//    TopologyNode* rootNode = new TopologyNode();
-//    topo->setRoot(rootNode);
     std::vector<TopologyNode*> activeNodes;
     for (int i=0; i<nTaxa; i++)
         {
         TopologyNode* nde = new TopologyNode();
         nde->setName(d.getTaxonNameWithIndex(i));
-//        nde->setParent(rootNode);
-        //nde->setIndex(i);
-//        rootNode->addChild(nde);
         activeNodes.push_back(nde);
         }
         
     // initialize a distance matrix
-//    const std::vector<std::vector<double> >& activeDistances = d.getValue();
-        
+    std::vector<std::vector<double> > activeDistances;
+    activeDistances.resize(nTaxa);
+    for (int i=0; i<nTaxa; i++)
+        activeDistances[i].resize(nTaxa);
+    for (int i=0; i<nTaxa; i++)
+        for (int j=0; j<nTaxa; j++)
+            activeDistances[i][j] = d.getDistance(i, j);
+            
     // recursively build the neighbor-joining tree
     buildNj(d, activeNodes, (int)nTaxa);
+    
     // after the neighbor joining the matrix should only contain 1 node, which is our new root
     topo->setRoot(activeNodes[0]);
     TreePlate* tp = new TreePlate();

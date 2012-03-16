@@ -287,6 +287,12 @@ const TypeSpec& DistanceMatrix::getTypeSpec( void ) const {
     return typeSpec;
 }
 
+double DistanceMatrix::getDistance(size_t row, size_t col) {
+
+    const Real& x = elements[row][col];
+    double d = x.getValue();
+    return d;
+}
 
 const RbObject& DistanceMatrix::getElement(size_t row, size_t col) const {
 
@@ -464,6 +470,7 @@ void DistanceMatrix::showData(void) {
 
 /** The size of the matrix. */
 size_t DistanceMatrix::size( void ) const {
+
     return elements.size();
 }
 
