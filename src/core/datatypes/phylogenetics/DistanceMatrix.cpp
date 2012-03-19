@@ -28,7 +28,6 @@
 #include "StochasticNode.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "Vector.h"
 #include "Workspace.h"
 
 #include <cmath>

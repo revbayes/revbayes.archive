@@ -252,7 +252,6 @@ void DeterministicNode::getAffected( std::set<StochasticNode* >& affected ) {
             (*i)->getAffected( affected );
         }
     }
-    
 }
 
 

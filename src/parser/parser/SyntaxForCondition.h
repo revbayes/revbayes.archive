@@ -17,7 +17,6 @@
 #define SyntaxForCondition_H
 
 #include "SyntaxElement.h"
-#include "Vector.h"
 
 #include <iostream>
 #include <list>

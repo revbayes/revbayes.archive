@@ -36,6 +36,9 @@ class RbDagNodePtr;
 class DAGNode : public RbLanguageObject {
 
     public:
+        friend class DeterministicNode;                     //!< Make getAffected etc available for DeterministicNode in some compilers
+        friend class StochasticNode;                        //!< Make getAffected etc available for StochasticNode in some compilers
+
         virtual                                            ~DAGNode(void);                                                          //!< Virtual destructor
 
         // Basic utility functions you may want to override

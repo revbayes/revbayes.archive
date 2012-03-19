@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\..\src\core\datatypes\complex\mixture&quot;;&quot;$(SolutionDir)..\..\src\core\simulation&quot;;&quot;$(SolutionDir)..\..\src\parser\functions&quot;;&quot;$(SolutionDir)..\..\src\parser\parser&quot;;&quot;$(SolutionDir)..\..\src\parser&quot;;&quot;$(SolutionDir)..\..\src\Windows_specific&quot;;&quot;$(SolutionDir)..\..\src\core\Xml&quot;;&quot;$(SolutionDir)..\..\src\core\workspace&quot;;&quot;$(SolutionDir)..\..\src\core\utils&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\phylogenetics\characters&quot;;&quot;$(SolutionDir)..\..\src\core\ui&quot;;&quot;$(SolutionDir)..\..\src\core\ncl&quot;;&quot;$(SolutionDir)..\..\src\core\moves\tree&quot;;&quot;$(SolutionDir)..\..\src\core\moves\simple&quot;;&quot;$(SolutionDir)..\..\src\core\moves&quot;;&quot;$(SolutionDir)..\..\src\core\math\distributions&quot;;&quot;$(SolutionDir)..\..\src\core\math&quot;;&quot;$(SolutionDir)..\..\src\core\main&quot;;&quot;$(SolutionDir)..\..\src\core\io&quot;;&quot;$(SolutionDir)..\..\src\core\inference\mcmc&quot;;&quot;$(SolutionDir)..\..\src\core\inference&quot;;&quot;$(SolutionDir)..\..\src\core\help&quot;;&quot;$(SolutionDir)..\..\src\core\functions\phylogenetics&quot;;&quot;$(SolutionDir)..\..\src\core\functions\moves&quot;;&quot;$(SolutionDir)..\..\src\core\functions\model&quot;;&quot;$(SolutionDir)..\..\src\core\functions\math&quot;;&quot;$(SolutionDir)..\..\src\core\functions\io&quot;;&quot;$(SolutionDir)..\..\src\core\functions\builtin&quot;;&quot;$(SolutionDir)..\..\src\core\functions\basic&quot;;&quot;$(SolutionDir)..\..\src\core\functions&quot;;&quot;$(SolutionDir)..\..\src\core\distributions\statistics&quot;;&quot;$(SolutionDir)..\..\src\core\distributions\phylogenetics&quot;;&quot;$(SolutionDir)..\..\src\core\distributions&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\container\Vector\VectorCharData&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\container\Matrix&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\container\Vector&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\tree&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\memberobject&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\container&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\phylogenetics&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\model&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\primitive&quot;;&quot;$(SolutionDir)..\..\src\core\convergence&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes&quot;;&quot;$(SolutionDir)..\..\src\core\dag&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\..\src\core\functions\constructorFunctions&quot;;&quot;$(SolutionDir)..\..\src\core\inference\simulation&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\mixture&quot;;&quot;$(SolutionDir)..\..\src\core\simulation&quot;;&quot;$(SolutionDir)..\..\src\parser\functions&quot;;&quot;$(SolutionDir)..\..\src\parser\parser&quot;;&quot;$(SolutionDir)..\..\src\parser&quot;;&quot;$(SolutionDir)..\..\src\Windows_specific&quot;;&quot;$(SolutionDir)..\..\src\core\Xml&quot;;&quot;$(SolutionDir)..\..\src\core\workspace&quot;;&quot;$(SolutionDir)..\..\src\core\utils&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\phylogenetics\characters&quot;;&quot;$(SolutionDir)..\..\src\core\ui&quot;;&quot;$(SolutionDir)..\..\src\core\ncl&quot;;&quot;$(SolutionDir)..\..\src\core\moves\tree&quot;;&quot;$(SolutionDir)..\..\src\core\moves\simple&quot;;&quot;$(SolutionDir)..\..\src\core\moves&quot;;&quot;$(SolutionDir)..\..\src\core\math\distributions&quot;;&quot;$(SolutionDir)..\..\src\core\math&quot;;&quot;$(SolutionDir)..\..\src\core\main&quot;;&quot;$(SolutionDir)..\..\src\core\io&quot;;&quot;$(SolutionDir)..\..\src\core\inference\mcmc&quot;;&quot;$(SolutionDir)..\..\src\core\inference&quot;;&quot;$(SolutionDir)..\..\src\core\help&quot;;&quot;$(SolutionDir)..\..\src\core\functions\phylogenetics&quot;;&quot;$(SolutionDir)..\..\src\core\functions\moves&quot;;&quot;$(SolutionDir)..\..\src\core\functions\model&quot;;&quot;$(SolutionDir)..\..\src\core\functions\math&quot;;&quot;$(SolutionDir)..\..\src\core\functions\io&quot;;&quot;$(SolutionDir)..\..\src\core\functions\builtin&quot;;&quot;$(SolutionDir)..\..\src\core\functions\basic&quot;;&quot;$(SolutionDir)..\..\src\core\functions&quot;;&quot;$(SolutionDir)..\..\src\core\distributions\statistics&quot;;&quot;$(SolutionDir)..\..\src\core\distributions\phylogenetics&quot;;&quot;$(SolutionDir)..\..\src\core\distributions&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\container\Vector\VectorCharData&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\container\Matrix&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\container\Vector&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\tree&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\memberobject&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex\container&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\phylogenetics&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\model&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\complex&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes\primitive&quot;;&quot;$(SolutionDir)..\..\src\core\convergence&quot;;&quot;$(SolutionDir)..\..\src\core\datatypes&quot;;&quot;$(SolutionDir)..\..\src\core\moves\mixture&quot;;&quot;$(SolutionDir)..\..\src\core\dag&quot;"
 				PreprocessorDefinitions="_MS_VISUAL_STUDIO; WIN32;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -175,10 +175,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\AbstractVector.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\core\datatypes\phylogenetics\characters\AminoAcidState.h"
 				>
 			</File>
@@ -191,11 +187,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\convergence\BurninEstimatorContinuous.h"
+				RelativePath="..\..\..\src\core\functions\ArgumentRules.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\primitive\Categorical.h"
+				RelativePath="..\..\..\src\core\convergence\BurninEstimatorContinuous.h"
 				>
 			</File>
 			<File
@@ -211,19 +207,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\primitive\CharacterState.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\core\datatypes\phylogenetics\characters\CharacterStateDiscrete.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\datatypes\primitive\Complex.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\memberobject\ConstantMemberObject.h"
 				>
 			</File>
 			<File
@@ -236,6 +224,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\functions\ConstructorFunctionForSimpleObjects.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\constructorFunctions\ConstructorTaxonData.h"
 				>
 			</File>
 			<File
@@ -303,10 +295,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\distributions\phylogenetics\Dist_neutralcoalescent.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\core\distributions\statistics\Dist_norm.h"
 				>
 			</File>
@@ -316,6 +304,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\distributions\statistics\Dist_unif.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\phylogenetics\DistanceMatrix.h"
 				>
 			</File>
 			<File
@@ -415,7 +407,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\inference\mcmc\FileMonitor.h"
+				RelativePath="..\..\..\src\core\inference\FileMonitor.h"
 				>
 			</File>
 			<File
@@ -495,11 +487,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\functions\io\Func_concatenate.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\functions\math\Func_cos.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\functions\phylogenetics\Func_CtmmTransitionProbabilities.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\phylogenetics\Func_distance.h"
 				>
 			</File>
 			<File
@@ -535,7 +535,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\functions\builtin\Func_memoryAllocations.h"
+				RelativePath="..\..\..\src\core\functions\math\Func_mean.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\phylogenetics\Func_nj.h"
 				>
 			</File>
 			<File
@@ -544,6 +548,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\functions\math\Func_power.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\builtin\Func_print.h"
 				>
 			</File>
 			<File
@@ -564,10 +572,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\functions\builtin\Func_reference.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\functions\builtin\Func_resize.h"
 				>
 			</File>
 			<File
@@ -603,7 +607,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\functions\builtin\Func_sumOver.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\functions\math\Func_transpose.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\builtin\Func_type.h"
 				>
 			</File>
 			<File
@@ -655,19 +667,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Matrix\MatrixComplex.h"
+				RelativePath="..\..\..\src\core\datatypes\complex\container\Matrix\MatrixComplexOperators.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Matrix\MatrixReal.h"
+				RelativePath="..\..\..\src\core\datatypes\complex\container\Matrix\MatrixRealOperators.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\inference\mcmc\Mcmc.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\workspace\MemberEnvironment.h"
 				>
 			</File>
 			<File
@@ -691,11 +699,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\utils\Monitor.h"
+				RelativePath="..\..\..\src\core\inference\Monitor.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\moves\Move.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\moves\mixture\Move_changeClassProbabilities.h"
 				>
 			</File>
 			<File
@@ -719,7 +731,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\moves\MoveSchedule.h"
+				RelativePath="..\..\..\src\core\moves\mixture\Move_reallocate.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\moves\mixture\Move_reallocateAll.h"
 				>
 			</File>
 			<File
@@ -728,10 +744,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\moves\tree\MoveTree.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\memberobject\MutableMemberObject.h"
 				>
 			</File>
 			<File
@@ -751,7 +763,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\utils\ObjectMonitor.h"
+				RelativePath="..\..\..\src\core\inference\ObjectMonitor.h"
 				>
 			</File>
 			<File
@@ -792,6 +804,18 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\utils\RbConstants.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\RbConstDagNodePtr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\RbConstVariablePtr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\RbDagNodePtr.h"
 				>
 			</File>
 			<File
@@ -843,15 +867,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\datatypes\RbNullObject.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\datatypes\RbObject.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\utils\RbOptions.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\RbPtr.h"
 				>
 			</File>
 			<File
@@ -871,6 +895,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\datatypes\RbVariablePtr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\RbVector.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\utils\RbVersion.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\datatypes\primitive\Real.h"
 				>
 			</File>
@@ -887,6 +923,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\datatypes\complex\container\Set.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\workspace\Signals.h"
 				>
 			</File>
@@ -895,7 +935,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\simulation\Simulate.h"
+				RelativePath="..\..\..\src\core\inference\simulation\Simulate.h"
 				>
 			</File>
 			<File
@@ -1031,38 +1071,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\Vector.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorBoolean.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorComplex.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorInteger.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorNatural.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorReal.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorRealPos.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorString.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\core\workspace\Workspace.h"
 				>
 			</File>
@@ -1141,10 +1149,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\AbstractVector.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\core\datatypes\phylogenetics\characters\AminoAcidState.cpp"
 				>
 			</File>
@@ -1157,11 +1161,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\convergence\BurninEstimatorContinuous.cpp"
+				RelativePath="..\..\..\src\core\functions\ArgumentRules.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\primitive\Categorical.cpp"
+				RelativePath="..\..\..\src\core\convergence\BurninEstimatorContinuous.cpp"
 				>
 			</File>
 			<File
@@ -1177,19 +1181,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\primitive\CharacterState.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\core\datatypes\phylogenetics\characters\CharacterStateDiscrete.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\datatypes\primitive\Complex.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\memberobject\ConstantMemberObject.cpp"
 				>
 			</File>
 			<File
@@ -1202,6 +1198,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\functions\ConstructorFunctionForSimpleObjects.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\constructorFunctions\ConstructorTaxonData.cpp"
 				>
 			</File>
 			<File
@@ -1230,10 +1230,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\distributions\phylogenetics\Dist_birthdeath.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\distributions\statistics\Dist_cat.cpp"
 				>
 			</File>
 			<File
@@ -1269,10 +1265,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\distributions\phylogenetics\Dist_neutralcoalescent.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\core\distributions\statistics\Dist_norm.cpp"
 				>
 			</File>
@@ -1282,6 +1274,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\distributions\statistics\Dist_unif.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\phylogenetics\DistanceMatrix.cpp"
 				>
 			</File>
 			<File
@@ -1381,7 +1377,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\inference\mcmc\FileMonitor.cpp"
+				RelativePath="..\..\..\src\core\inference\FileMonitor.cpp"
 				>
 			</File>
 			<File
@@ -1401,11 +1397,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\functions\io\Func_concatenate.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\functions\math\Func_cos.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\functions\phylogenetics\Func_CtmmTransitionProbabilities.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\phylogenetics\Func_distance.cpp"
 				>
 			</File>
 			<File
@@ -1441,7 +1445,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\functions\builtin\Func_memoryAllocations.cpp"
+				RelativePath="..\..\..\src\core\functions\math\Func_mean.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\phylogenetics\Func_nj.cpp"
 				>
 			</File>
 			<File
@@ -1450,6 +1458,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\functions\math\Func_power.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\builtin\Func_print.cpp"
 				>
 			</File>
 			<File
@@ -1493,6 +1505,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\functions\builtin\Func_sumOver.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\functions\builtin\Func_type.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\functions\builtin\Func_unclamp.cpp"
 				>
 			</File>
@@ -1533,23 +1553,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Matrix\Matrix.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Matrix\MatrixComplex.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Matrix\MatrixReal.cpp"
+				RelativePath="..\..\..\src\core\datatypes\complex\container\Matrix\MatrixRealOperators.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\inference\mcmc\Mcmc.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\workspace\MemberEnvironment.cpp"
 				>
 			</File>
 			<File
@@ -1573,11 +1581,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\utils\Monitor.cpp"
+				RelativePath="..\..\..\src\core\inference\Monitor.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\moves\Move.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\moves\mixture\Move_changeClassProbabilities.cpp"
 				>
 			</File>
 			<File
@@ -1601,7 +1613,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\moves\MoveSchedule.cpp"
+				RelativePath="..\..\..\src\core\moves\mixture\Move_reallocate.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\moves\mixture\Move_reallocateAll.cpp"
 				>
 			</File>
 			<File
@@ -1610,10 +1626,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\moves\tree\MoveTree.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\memberobject\MutableMemberObject.cpp"
 				>
 			</File>
 			<File
@@ -1633,7 +1645,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\utils\ObjectMonitor.cpp"
+				RelativePath="..\..\..\src\core\inference\ObjectMonitor.cpp"
 				>
 			</File>
 			<File
@@ -1666,6 +1678,18 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\datatypes\primitive\RbBoolean.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\RbConstDagNodePtr.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\RbConstVariablePtr.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\RbDagNodePtr.cpp"
 				>
 			</File>
 			<File
@@ -1721,6 +1745,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\datatypes\RbNullObject.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\datatypes\RbObject.cpp"
 				>
 			</File>
@@ -1738,6 +1766,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\datatypes\primitive\RbString.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\datatypes\RbVariablePtr.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\utils\RbVersion.cpp"
 				>
 			</File>
 			<File
@@ -1765,7 +1801,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\simulation\Simulate.cpp"
+				RelativePath="..\..\..\src\core\inference\simulation\Simulate.cpp"
 				>
 			</File>
 			<File
@@ -1894,38 +1930,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\workspace\VariableSlot.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\Vector.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorBoolean.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorComplex.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorInteger.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorNatural.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorReal.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorRealPos.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\datatypes\complex\container\Vector\VectorString.cpp"
 				>
 			</File>
 			<File

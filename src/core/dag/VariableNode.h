@@ -27,6 +27,10 @@ class StochasticNode;
 class VariableNode : public DAGNode {
 
 public:
+    friend class DeterministicNode;                     //!< Make getAffected etc available for DeterministicNode in some compilers
+    friend class StochasticNode;                        //!< Make getAffected etc available for StochasticNode in some compilers
+    friend class DAGNode;                               //!< Make getAffected etc available for DAGNode in some compilers
+
     virtual                                    ~VariableNode(void);                                                             //!< Virtual destructor
 
     // Utility functions you have to override
@@ -65,7 +69,7 @@ protected:
     VariableNode( void );                                                                                                       //!< Constructor of empty node
     VariableNode(const VariableNode &v);                                                                                        //!< Copy Constructor
         
-//    virtual void                                getAffected(std::set<DAGNode*>& affected) = 0;                    //!< Mark and get affected nodes
+    virtual void                                getAffected(std::set<StochasticNode*>& affected) = 0;                                  //!< Mark and get affected nodes
 
 //    virtual void                                        keepMe(void) = 0;                                                           //!< Keep value of myself
 //    virtual void                                        restoreMe(void) = 0;                                                        //!< Restore value of this nodes

@@ -271,7 +271,7 @@ void Simulate::getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<Stochast
     else if (dagNode->getTypeSpec() ==  StochasticNode::getClassTypeSpec() || dagNode->getTypeSpec() ==  DeterministicNode::getClassTypeSpec()) { //if the node is stochastic or deterministic
         //First I have to visit my parents
         const std::set<DAGNode*>& parents = dagNode->getParents() ;
-        std::set<DAGNode*>::iterator it;
+        std::set<DAGNode*>::const_iterator it;
         for ( it=parents.begin() ; it != parents.end(); it++ ) 
             getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
         

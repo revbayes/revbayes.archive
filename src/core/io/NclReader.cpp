@@ -32,7 +32,6 @@
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "UserInterface.h"
-#include "Vector.h"
 
 
 

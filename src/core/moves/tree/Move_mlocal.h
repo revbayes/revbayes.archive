@@ -47,7 +47,7 @@ class Move_mlocal : public MoveTree {
         const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
 
         // Move function
-    std::vector<StochasticNode*>&       getDagNodes(void) {}                                              //!< Get the nodes vector
+        std::vector<StochasticNode*>&       getDagNodes(void) { static std::vector<StochasticNode*> x; return x; }            //!< Get the nodes vector
     void                                replaceDagNodes(std::vector<StochasticNode*> &n) {}                                   //!< Set the nodes vector
 
     protected:

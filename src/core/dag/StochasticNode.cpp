@@ -519,7 +519,7 @@ void StochasticNode::constructFactor( void ) {
         if ( currNode->isNotInstantiated() ) {
             // test whether this node has at most one eliminated parent
             size_t eliminatedParentCount = 0;
-            for (std::set<DAGNode*>::iterator j = currNode->getParents().begin(); j != currNode->getParents().end(); ++j) {
+            for (std::set<DAGNode*>::const_iterator j = currNode->getParents().begin(); j != currNode->getParents().end(); ++j) {
                 if ( (*j)->isNotInstantiated() ) {
                 eliminatedParentCount++;
                 }

@@ -182,23 +182,13 @@ void Natural::setValue( int x ) {
 }
 
 
-/** Set value from unsigned int */
-void Natural::setValue( unsigned int x ) {
-
-    if ( x > INT_MAX )
-        throw RbException( "Value out of range for " + getClassName() );
-
-    value = x;
-}
-
-
-/** Set value from unsigned int */
+/* Set value from size_t */
 void Natural::setValue( size_t x ) {
     
     if ( x > INT_MAX )
         throw RbException( "Value out of range for " + getClassName() );
     
-    value = (unsigned int)x;
+    value = (size_t)x;
 }
 
 

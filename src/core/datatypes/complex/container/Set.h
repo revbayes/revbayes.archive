@@ -86,7 +86,6 @@ protected:
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "Vector.h"
 
 /** Set type of elements */
 template <typename setType>
@@ -166,7 +165,7 @@ const setType& Set<setType>::operator[](size_t index) const {
         throw RbException("Index out of bounds");
     
     // get the iterator to the first element
-    typename std::set<setType*>::iterator i;
+    typename std::set<setType*>::const_iterator i;
     i = elements.begin();
     // move the iterator index elements forward
     std::advance(i, index);

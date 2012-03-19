@@ -24,6 +24,7 @@
 
 #include "Container.h"
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -115,7 +116,6 @@ protected:
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "Vector.h"
 
 /** Vector type of elements */
 template <typename valueType>

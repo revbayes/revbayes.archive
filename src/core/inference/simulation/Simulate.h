@@ -22,7 +22,6 @@
 
 #include "MemberObject.h"
 #include "RbString.h"
-#include "Vector.h"
 
 #include <set>
 #include <string>
