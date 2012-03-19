@@ -24,9 +24,7 @@
 
 class ArgumentRule;
 class DAGNode;
-class Move;
 class RandomNumberGenerator;
-class StochasticNode;
 
 class DistributionContinuous: public Distribution {
 

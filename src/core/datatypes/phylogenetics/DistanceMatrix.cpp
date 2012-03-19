@@ -287,7 +287,7 @@ const TypeSpec& DistanceMatrix::getTypeSpec( void ) const {
     return typeSpec;
 }
 
-double DistanceMatrix::getDistance(size_t row, size_t col) {
+double DistanceMatrix::getDistance(size_t row, size_t col) const {
 
     const Real& x = elements[row][col];
     double d = x.getValue();

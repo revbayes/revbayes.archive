@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the partial implementation of Distribution, the atbstract
+ * This file contains the partial implementation of Distribution, the abstract
  * base class for distributions in RevBayes.
  *
  * @brief Partial implementation of Distribution

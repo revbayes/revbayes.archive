@@ -71,7 +71,7 @@ class DistanceMatrix : public MemberObject {
         void                                addTaxonWithName(std::string s);                                            //!< Add a taxon name to the matrix
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
-        double                              getDistance(size_t row, size_t col);                                        //!< Get distance from matrix
+        double                              getDistance(size_t row, size_t col) const;                                  //!< Get distance from matrix
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
         const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded

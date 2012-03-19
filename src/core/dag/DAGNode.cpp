@@ -11,8 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
- * @interface Distribution
- * @extends RbObject
+ * @interface DAGNode
  *
  * $Id$
  */

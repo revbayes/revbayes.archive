@@ -54,7 +54,7 @@ class CharacterData : public MemberObject {
         const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules
         const std::map<std::string, const Variable*>& getMembers(void) const;                                                             //!< Get members
         std::map<std::string, const Variable*>&       getMembers(void);                                                                   //!< Get members
-        void                                        setMemberVariable(const std::string& name, Variable* var);                  //!< Catch setting of the topology
+        void                                        setMemberVariable(const std::string& name, const Variable* var);                  //!< Catch setting of the topology
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                     //!< Get methods

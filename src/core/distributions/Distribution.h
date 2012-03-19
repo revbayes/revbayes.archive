@@ -13,7 +13,6 @@
  * @version 1.0
  * @since 2009-08-27, version 1.0
  * @interface Distribution
- * @package distributions
  *
  * $Id$
  */
@@ -28,10 +27,7 @@
 #include <set>
 #include <string>
 
-class ArgumentRule;
-class DAGNode;
 class RandomNumberGenerator;
-class StochasticNode;
 
 
 class Distribution: public MemberObject {

@@ -215,8 +215,8 @@ void Mcmc::setMemberVariable(const std::string& name, const Variable* var) {
 //                
 //            }
 //        }
-//    }
-//    else if ( name == "monitors" ) {
+    }
+    else if ( name == "monitors" ) {
 //        
 ////        Vector* monitors = static_cast<Vector*>(var->getValue().convertTo(TypeSpec(Vector::getClassName(), NULL, new TypeSpec(FileMonitor::getClassTypeSpec()) ) ) );
 //        // The parser should have made sure that we get a vector of moves, even if it is only a single move.
@@ -269,8 +269,8 @@ void Mcmc::setMemberVariable(const std::string& name, const Variable* var) {
 //            }
 //        }
 //            
-//    } 
-//    else if ( name == "model" ) {
+    } 
+    else if ( name == "model" ) {
 //        model = var;
 //        
 //        // update the moves

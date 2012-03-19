@@ -30,7 +30,6 @@
 #include <string>
 
 class StochasticNode;
-class Variable;
 class VariableNode;
 class RbDagNodePtr;
 

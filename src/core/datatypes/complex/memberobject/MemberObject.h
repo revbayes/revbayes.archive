@@ -27,9 +27,7 @@
 #include <set>
 #include <string>
 
-class ArgumentFrame;
 class ArgumentRule;
-class DAGNode;
 class MethodTable;
 
 class MemberObject: public RbLanguageObject {

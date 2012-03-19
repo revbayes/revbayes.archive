@@ -25,9 +25,7 @@
 #include <string>
 
 class ArgumentRule;
-class Move;
 class Simplex;
-class StochasticNode;
 
 
 class DistributionDiscrete: public Distribution {

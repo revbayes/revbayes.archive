@@ -781,13 +781,13 @@ void CharacterData::setElement( size_t row, size_t col, RbLanguageObject* var ) 
 
 
 /** Catch setting of the mixture variable */
-void CharacterData::setMemberVariable(const std::string& name, Variable* var) {
+void CharacterData::setMemberVariable(const std::string& name, const Variable* var) {
     
     if ( name == "type" ) {
 //        elementType = TypeSpec( static_cast<RbString&>( var->getValue() ).getValue() );
     }
     else if ( name == "x" || name == "" ) {
-        TaxonData& obs = static_cast<TaxonData&>( var->getValue() );
+        const TaxonData& obs = static_cast<const TaxonData&>( var->getValue() );
         addTaxonData( obs.clone() );        
     }
     else {
