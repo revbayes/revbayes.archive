@@ -45,7 +45,7 @@ class Dist_cat: public DistributionDiscrete {
 
         // Member variable setup
         const MemberRules&                      getMemberRules(void) const;                                             //!< Get member variable rules
-        void                                    setMemberVariable(const std::string& name, Variable* var);          //!< Catching the setting of the member variables.
+        void                                    setMemberVariable(const std::string& name, const Variable* var);        //!< Catching the setting of the member variables.
 
         // Discrete distribution functions
         size_t                                  getNumberOfStates(void) const;                                          //!< Get number of states
@@ -61,8 +61,8 @@ class Dist_cat: public DistributionDiscrete {
         std::vector<RbLanguageObject*>          stateVector;
 
         // parameters
-        RbVariablePtr                           probabilities;
-        RbVariablePtr                           states;
+        RbConstVariablePtr                      probabilities;
+        RbConstVariablePtr                      states;
         
         // memberfunction return values
         RbLanguageObject*                       randomVariable;
@@ -180,7 +180,7 @@ size_t Dist_cat<setType>::getNumberOfStates( void ) const {
 template <typename setType>
 const Simplex& Dist_cat<setType>::getProbabilityMassVector( void ) {
     
-    return static_cast<Simplex&>( probabilities->getValue() );
+    return static_cast<const Simplex&>( probabilities->getValue() );
 }
 
 
@@ -288,7 +288,7 @@ const RbLanguageObject& Dist_cat<setType>::rv( void ) {
 
 /** We catch here the setting of the member variables to store our parameters. */
 template <typename setType>
-void Dist_cat<setType>::setMemberVariable(std::string const &name, Variable *var) {
+void Dist_cat<setType>::setMemberVariable(std::string const &name, const Variable *var) {
     
     if ( name == "probabilities" ) {
         probabilities = var;
@@ -298,7 +298,7 @@ void Dist_cat<setType>::setMemberVariable(std::string const &name, Variable *var
         
         // reset the state vector
         stateVector.clear();
-        Set<setType>& c = static_cast<Set<setType>& >( var->getValue() );
+        const Set<setType>& c = static_cast<const Set<setType>& >( var->getValue() );
         for (int i = 0; i < c.size(); i++) {
             RbLanguageObject* tmp = static_cast<RbLanguageObject*>( c.getElement(i).clone() );
             stateVector.push_back(tmp);
