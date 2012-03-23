@@ -380,7 +380,7 @@ void TreePlate::printValue(std::ostream& o) const {
 
 
 /** Catch setting of the topology variable */
-void TreePlate::setMemberVariable(const std::string& name, Variable* var) {
+void TreePlate::setMemberVariable(const std::string& name, const Variable* var) {
     
     if ( name == "topology" ) {
         orderingTopology = var;
