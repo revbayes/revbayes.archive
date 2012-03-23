@@ -263,5 +263,10 @@ void SyntaxFunctionCall::replaceVariableWithConstant(const std::string& name, co
     for (std::list<SyntaxLabeledExpr*>::iterator i = arguments->begin(); i != arguments->end(); i++) {
         (*i)->replaceVariableWithConstant(name, c);
     }
+    
+    // replace base variable too if this is a method
+    if ( variable != NULL ) {
+        variable->replaceVariableWithConstant(name, c);
+    }
 }
 
