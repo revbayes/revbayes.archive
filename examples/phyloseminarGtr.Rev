@@ -30,6 +30,9 @@ nucleotides <- set(dna("A"),dna("C"),dna("G"),dna("T"))
 pi <- simplex(1,2,3,4)
 exchange <- simplex(1,1,1,1,1,1)
 
+# here the prior for branch lengths
+bl <- v(0.01,0.01,0.01,0.01,0.01,0.05,0.05,0.05,0.10)
+
 lambda <- 1.0
 nodeCount <- tree.nnodes()
 
@@ -44,8 +47,6 @@ for (i in nodeCount:1) {
         parent <- node.ancestor()
         parentIndex[i] <- tree.index(parent)	
 
-# here the prior for branch lengths
-        bl[i] <- 1.0
 # adding this variable to the tree, so that we can easily access it later ...
         tree.addVariable("branchLength", bl[i], node)
 
@@ -76,10 +77,12 @@ mygtr <- model( pi )
 ################
 
 #Where we want to put the simulated alignment:
-monitors[1] <- objectMonitor(printgen=1, taxon)
-monitors[2] <- fileMonitor(filename="gtrSimulation.out", printgen=1, separator="	", taxon)
+monitors[1] <- objectMonitor(printgen=1)
+taxon.addMonitor(monitors[1])
+monitors[2] <- fileMonitor(filename="gtrSimulation.out", printgen=1, separator="	")
+taxon.addMonitor(monitors[2])
 
-mysimu <- simulate(mygtr, monitors)
+mysimu <- simulate(mygtr)
 mysimu.run(1)
 
 
@@ -109,13 +112,16 @@ nucs <- set(dna("A"),dna("C"),dna("G"),dna("T"))
 
 pi_prior <- v(1,1,1,1)
 pi_inference ~ dirichlet(pi_prior)
+#pi_inference <- simplex(1,5,1,10)
 
 r_prior <- v(1,1,1,1,1,1)
 r_inference ~ dirichlet(r_prior)
+#r_inference <- simplex(1,1,1,1,1,1)
 
 lambda <- 1.0
 nodeCount <- tree.nnodes()
 
+        Q_inference := gtr(rates=r_inference, freqs=pi_inference)
 # We need to iterate from the root to the parent. The indices of the nodes are in phylogenetic ordering, i.e. the tip are at 1,É,n.
 for (i in nodeCount:1) {
     node <- tree.node(i)
@@ -134,9 +140,8 @@ for (i in nodeCount:1) {
 #        tree.addVariable("branchLength", bl[i], node)
 
 # create the rate matrix for this node
-        Q_inference[i] := gtr(rates=r_inference, freqs=pi_inference)
 # create the transition probability matrix for this node
-        tp_inference[i] := ctmmtp(Q_inference[i],bl_inference[i])
+        tp_inference[i] := ctmmtp(Q_inference,bl_inference[i])
         if (node.isTip()) {
             for (j in 1:siteCount) {
                 dna_state_inference[i][j] ~ dtmm(tp_inference[i], dna_state_inference[parentIndex[i]][j])
@@ -173,7 +178,8 @@ j <- numMoves+1
 moves[j] <- msimplex(variable=pi_inference,tuning=10.0,num_cats=4)
 moves[j+1] <- msimplex(variable=r_inference,tuning=10.0,num_cats=6)
 
-monis[1] <- fileMonitor(filename="gtrInference.out", printgen=1, separator="	", bl_inference) 
+monis[1] <- fileMonitor(filename="gtrInference.out", printgen=1,
+separator="	", bl_inference, pi_inference, r_inference) 
 monis[2] <- objectMonitor(printgen=1, bl_inference)
 
 mymcmcgtr <- mcmc(mygtrinf, moves=moves, monitor=monis)
