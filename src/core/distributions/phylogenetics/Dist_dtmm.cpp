@@ -102,13 +102,13 @@ size_t Dist_dtmm::getNumberOfStates( void ) const {
 const Simplex& Dist_dtmm::getProbabilityMassVector( void ) {
     
     // get the information from the arguments for reading the file
-    TransitionProbabilityMatrix&  m = static_cast<TransitionProbabilityMatrix&>( transProbabilityMatrix->getValue() );
-    const CharacterStateDiscrete& c = static_cast<const CharacterStateDiscrete&>( initialState->getValue() );
+    const TransitionProbabilityMatrix&  m = static_cast<const TransitionProbabilityMatrix&>( transProbabilityMatrix->getValue() );
+    const CharacterStateDiscrete&       c = static_cast<const CharacterStateDiscrete&>( initialState->getValue() );
     
     // initialize the number of states
     const size_t stateIndex = c.getUnsignedValue();
     
-    RbVector<Real>& probs = m[stateIndex];
+    const RbVector<Real>& probs = m[stateIndex];
     
     //
     probMassVector.setValue( probs );
@@ -259,7 +259,7 @@ const RbLanguageObject& Dist_dtmm::rv( void ) {
 
 
 /** We intercept a call to set a member variable to make sure that the number of states is consistent */
-void Dist_dtmm::setMemberVariable( const std::string& name, Variable* var ) {
+void Dist_dtmm::setMemberVariable( const std::string& name, const Variable* var ) {
     
     if ( name == "m" ) {
         transProbabilityMatrix = var;
@@ -269,7 +269,7 @@ void Dist_dtmm::setMemberVariable( const std::string& name, Variable* var ) {
         
         // reset the state vector
         stateVector.clear();
-        CharacterStateDiscrete& c = static_cast<CharacterStateDiscrete&>( var->getValue() );
+        const CharacterStateDiscrete& c = static_cast<const CharacterStateDiscrete&>( var->getValue() );
         std::string states = c.getStateLabels();
         for (int i = 0; i < c.getNumberOfStates(); i++) {
             CharacterStateDiscrete* tmp = c.clone();

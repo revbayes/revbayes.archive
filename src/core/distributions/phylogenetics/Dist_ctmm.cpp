@@ -137,8 +137,8 @@ size_t Dist_ctmm::getNumberOfStates( void ) const {
 const Simplex& Dist_ctmm::getProbabilityMassVector( void ) {
 
     // get the information from the arguments for reading the file
-    RateMatrix&                q = static_cast<RateMatrix&>( rateMatrix->getValue() );
-    RealPos&                   t = static_cast<RealPos&>( time->getValue() );
+    const RateMatrix&                q = static_cast<const RateMatrix&>( rateMatrix->getValue() );
+    const RealPos&                   t = static_cast<const RealPos&>( time->getValue() );
 //    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
     
     // initialize the number of states
@@ -288,9 +288,9 @@ const RbLanguageObject& Dist_ctmm::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    RateMatrix&             Q      = static_cast<RateMatrix&            >( rateMatrix->getValue() );
-    double                  t      = static_cast<const RealPos&         >( time->getValue() ).getValue();
-    CharacterStateDiscrete& start  = static_cast<CharacterStateDiscrete&>( initialState->getValue() );
+    const RateMatrix&               Q      = static_cast<const RateMatrix&           >( rateMatrix->getValue() );
+    double                          t      = static_cast<const RealPos&              >( time->getValue() ).getValue();
+    const CharacterStateDiscrete&   start  = static_cast<const CharacterStateDiscrete&>( initialState->getValue() );
     
     // calculate the transition probability matrix
     
@@ -328,7 +328,7 @@ const RbLanguageObject& Dist_ctmm::rv( void ) {
 
 
 /** We intercept a call to set a member variable to make sure that the number of states is consistent */
-void Dist_ctmm::setMemberVariable( const std::string& name, Variable* var ) {
+void Dist_ctmm::setMemberVariable( const std::string& name, const Variable* var ) {
 
     if ( name == "Q" ) {
         rateMatrix = var;
@@ -341,7 +341,7 @@ void Dist_ctmm::setMemberVariable( const std::string& name, Variable* var ) {
         
         // reset the state vector
         stateVector.clear();
-        CharacterStateDiscrete& c = static_cast<CharacterStateDiscrete&>( var->getValue() );
+        const CharacterStateDiscrete& c = static_cast<const CharacterStateDiscrete&>( var->getValue() );
         std::string states = c.getStateLabels();
         for (int i = 0; i < c.getNumberOfStates(); i++) {
             CharacterStateDiscrete* tmp = c.clone();

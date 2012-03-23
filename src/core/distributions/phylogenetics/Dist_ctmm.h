@@ -47,7 +47,7 @@ class Dist_ctmm: public DistributionDiscrete {
 
         // Member variable setup
         const MemberRules&                      getMemberRules(void) const;                                         //!< Get member variable rules
-        void                                    setMemberVariable(const std::string& name, Variable* var);            //!< Set member variable (ensure number of states is consistent)
+        void                                    setMemberVariable(const std::string& name, const Variable* var);    //!< Set member variable (ensure number of states is consistent)
 
         // Discrete distribution functions
         size_t                                  getNumberOfStates(void) const;                                      //!< Get number of states
@@ -63,9 +63,9 @@ class Dist_ctmm: public DistributionDiscrete {
         std::vector<RbLanguageObject*>          stateVector;
         
         // parameters
-        RbVariablePtr                           rateMatrix;
-        RbVariablePtr                           time;
-        RbVariablePtr                           initialState;
+        RbConstVariablePtr                      rateMatrix;
+        RbConstVariablePtr                      time;
+        RbConstVariablePtr                      initialState;
     
         // memberfunction return values
         CharacterStateDiscrete*                 randomVariable;
