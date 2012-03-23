@@ -58,7 +58,7 @@ public:
  
     // Member object function
     const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
-    void                                            setMemberVariable(const std::string& name, Variable* var);      //!< Set member variable
+    void                                            setMemberVariable(const std::string& name, const Variable* var);//!< Set member variable
 
     // Set functions
     iterator                                        begin(void);                                                    //!< Iterator to the beginning of the set
@@ -455,7 +455,7 @@ size_t Set<setType>::size( void ) const {
 
 /** Set a member variable */
 template <typename setType>
-void Set<setType>::setMemberVariable(const std::string& name, Variable* var) {
+void Set<setType>::setMemberVariable(const std::string& name, const Variable* var) {
     
     if (name == "x" || name == "" ) { // the ellipsis variables
         setType* element = static_cast<setType*>( var->getValue().clone() );
