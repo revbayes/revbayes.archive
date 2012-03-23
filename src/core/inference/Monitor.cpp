@@ -42,7 +42,7 @@ Monitor::Monitor(const MemberRules& rules ) : MemberObject( rules ), printgen( N
 Monitor::Monitor(const Monitor &x) : MemberObject(x), printgen( x.printgen ) {
     
     // shallow copy
-    nodes = x.nodes;
+//    nodes = x.nodes;
     
 }
 

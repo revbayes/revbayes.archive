@@ -91,7 +91,6 @@ const MemberRules& FileMonitor::getMemberRules( void ) const {
         memberRules.push_back( new ValueRule( "filename"  , RbString::getClassTypeSpec()         ) );
         memberRules.push_back( new ValueRule( "printgen"  , Integer::getClassTypeSpec(),  new Integer(1)    ) );
         memberRules.push_back( new ValueRule( "separator" , RbString::getClassTypeSpec(), new RbString("\t") ) );
-        memberRules.push_back( new Ellipsis (               RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

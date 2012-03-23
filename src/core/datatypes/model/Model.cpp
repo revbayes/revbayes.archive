@@ -172,6 +172,11 @@ void Model::createModelFromDagNode(const DAGNode *source) {
                 // create a new move if necessary
                 if ( k == moveMap.end() ) {
                     clonedMove = (*j)->clone();
+                    
+                    // add the new move to the moves map
+                    moveMap.insert( std::pair<Move*, Move*>(*j, clonedMove) );
+                    
+                    // add the new move to our moves vector
                     moves.push_back( clonedMove );
                     
                 }
@@ -212,6 +217,11 @@ void Model::createModelFromDagNode(const DAGNode *source) {
             // create a new move if necessary
             if ( k == monitorMap.end() ) {
                 clonedMonitor = (*j)->clone();
+                
+                // add the new monitor to the monitors map
+                monitorMap.insert( std::pair<Monitor*, Monitor*>(*j, clonedMonitor) );
+                
+                // add the new monitor to our monitors vector
                 monitors.push_back( clonedMonitor );
             }
             else {
