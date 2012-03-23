@@ -163,6 +163,7 @@ double Dist_dtmm::lnPdf( const RbLanguageObject& value ) const {
     for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
         // test whether the state is set
         if (*itStart) {
+            indexEnd = 0;
             for (std::vector<bool>::const_iterator itStop=stopState.begin(); itStop!=stopState.end(); itStop++, indexEnd++) {
                 // test whether the state is set
                 if (*itStop) {
