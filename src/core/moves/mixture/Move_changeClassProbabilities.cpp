@@ -113,7 +113,7 @@ double Move_changeClassProbabilities::perform( void ) {
     
     // Get relevant values
     Mixture mix = static_cast< const Mixture&>( mixture->getValue() );
-    StochasticNode*        nodePtr = static_cast<StochasticNode*>( node->getDagNode() );
+    StochasticNode*        nodePtr = node;
     double                 alpha0  = static_cast<const RealPos&>( alpha->getValue()   ).getValue();
     int                    k       = (int) mix.getNumberOfClasses() ;
     

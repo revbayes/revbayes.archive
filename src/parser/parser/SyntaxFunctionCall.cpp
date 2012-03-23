@@ -16,6 +16,7 @@
 #include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
+#include "DagNodeFunction.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
 #include "MemberFunction.h"
@@ -163,16 +164,37 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
 
         RbVariablePtr theVar = variable->evaluateContent( env );
         DAGNode* theNode = theVar->getDagNode();
-        if ( theNode == NULL || !theNode->getValue().isTypeSpec( MemberObject::getClassTypeSpec() ) )
-            throw RbException( "Variable does not have member functions" );
+        if ( theNode == NULL )
+            throw RbException( "Could not find the variable" );
 
-        MemberObject& theMemberObject = dynamic_cast<MemberObject&>( theNode->getValue() );
-//        args.insert( args.begin(), new Argument( "", memberNode ) );
-        // TODO: We shouldn't allow const casts!!!
-        MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
-        MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( functionName->getValue(), args ) );
-        theMemberFunction->setMemberObject(theMemberObject);
-        func = theMemberFunction;
+        bool successful = false;
+        if ( theNode->getValue().isTypeSpec( MemberObject::getClassTypeSpec() ) ) {
+            
+            MemberObject& theMemberObject = dynamic_cast<MemberObject&>( theNode->getValue() );
+            //        args.insert( args.begin(), new Argument( "", memberNode ) );
+            // \todo: We shouldn't allow const casts!!!
+            MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
+            
+            try {
+                RbFunction* theFunction = mt.getFunction( functionName->getValue(), args );
+                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
+                theMemberFunction->setMemberObject(theMemberObject);
+                func = theMemberFunction;
+                successful = true;
+            } catch (RbException& e) {
+                // We don't do anything but try instead to find the function
+                
+            }
+        }
+        
+        // if we couldn't find the function for the value, then we try the DAG node
+        if ( !successful ) {
+            MethodTable& mt = const_cast<MethodTable&>( theNode->getMethods() );
+            RbFunction* theFunction = mt.getFunction( functionName->getValue(), args );
+            DagNodeFunction* theDagNodeFunction = static_cast<DagNodeFunction*>( theFunction );
+            theDagNodeFunction->setDagNode( *theNode );
+            func = theDagNodeFunction;
+        }
     }
 
     return RbVariablePtr( new Variable( new DeterministicNode( func ) ) );

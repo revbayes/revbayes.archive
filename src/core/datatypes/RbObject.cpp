@@ -84,7 +84,7 @@ std::string RbObject::debugInfo(void) const {
 /** Encode the object into a serializable xml-object */
 XmlElement* RbObject::encode(XmlDocument* doc, const std::string& name) {    
     
-    //! @Sebatian TODO basic implementation which should return an empty xml object with only the name
+    //! @Sebatian \TODO basic implementation which should return an empty xml object with only the name
     
     return NULL;
 }

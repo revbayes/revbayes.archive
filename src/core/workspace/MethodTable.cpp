@@ -14,6 +14,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "DagNodeFunction.h"
 #include "MemberFunction.h"
 #include "MethodTable.h"
 #include "RbException.h"
@@ -48,6 +49,9 @@ void MethodTable::addFunction( const std::string name, RbFunction* func ) {
 
     if ( func->isTypeSpec( MemberFunction::getClassTypeSpec() ) )
         static_cast<MemberFunction*>( func )->setMethodName( name );
+    
+    if ( func->isTypeSpec( DagNodeFunction::getClassTypeSpec() ) )
+        static_cast<DagNodeFunction*>( func )->setMethodName( name );
 }
 
 

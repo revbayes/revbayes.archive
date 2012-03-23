@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "DagNodeFunction.h"
 #include "RbBoolean.h"
 #include "Distribution.h"
 #include "DistributionDiscrete.h"
@@ -170,6 +171,12 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 }
 
 
+/* Add a move */
+void StochasticNode::addMove(Move *m) {
+    moves.push_back( m );
+}
+
+
 /** Are any distribution params touched? Get distribution params and check if any one is touched */
 bool StochasticNode::areDistributionParamsTouched( void ) const {
 
@@ -197,7 +204,7 @@ double StochasticNode::calculateLnProbability( void ) {
         lnProb =  factorRoot->calculateSummedLnProbability(0);
     }
     else if (needsProbabilityRecalculation) {
-        // TODO: Hack! We should make sure that the likelihood is properly calculated. (Sebastian)
+        // \TODO: Hack! We should make sure that the likelihood is properly calculated. (Sebastian)
         // I switched this test of, because we now instantiate the model from the RevLanguage
         // but do not actually sum over all possible values. This is only done in the MCMC.
         // Trying to safe some time ...
@@ -230,7 +237,7 @@ double StochasticNode::calculateEliminatedLnProbability( void ) {
             }
         }
         
-        // TODO: here we maybe could return our stored probability for this parent?
+        // \TODO: here we maybe could return our stored probability for this parent?
         return lnProb;
     }
     
@@ -333,7 +340,7 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
             theNode->value = v;
             theNode->touch();
             
-            // TODO: we need to stop somehow the recursion
+            // \TODO: we need to stop somehow the recursion
             if ( nodeIndex < sumProductSequence.size() - 1 ) {
                 double prob = calculateSummedLnProbability( nodeIndex + 1 );
                 
@@ -458,7 +465,7 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
         DAGNode* theParamClone = theParam->cloneDAG( newNodes );
         
         // set the clone of the member as the member of the clone
-        // TODO: We should check that this does destroy the dependencies of the parameters.
+        // \TODO: We should check that this does destroy the dependencies of the parameters.
         // Instead of creating a new variable we might need to get the pointer to the variable from somewhere.
         copy->distribution->setMember(i->first, new Variable( theParamClone) );
 
@@ -510,7 +517,7 @@ void StochasticNode::constructFactor( void ) {
         (*i)->setFactorRoot( sequence[0] );
     }
     
-    // TODO: We need a better algorithm to find the elimination sequence
+    // \TODO: We need a better algorithm to find the elimination sequence
     // now we try to find nodes which can eliminated
     for (std::vector<StochasticNode*>::iterator i = sequence.begin(); i != sequence.end(); ++i) {
         StochasticNode* currNode = *i;
@@ -594,6 +601,50 @@ std::string StochasticNode::debugInfo(void) const {
 }
 
 
+/**
+ * Map calls to member methods 
+ */
+const RbLanguageObject& StochasticNode::executeOperation(const std::string& name, const std::vector<Argument>& args) {
+    
+    if (name == "addMove") {
+        
+        // add the move to our set of moves
+        Move* theMove = const_cast<Move*>( static_cast<const Move*>( &args[0].getVariable().getValue() ) );
+        moves.push_back( theMove );
+        
+        return RbNullObject::getInstance();
+    } else if (name == "removeMove") {
+        
+        // remove the move to our set of moves
+        Move* theMove = const_cast<Move*>( static_cast<const Move*>( &args[0].getVariable().getValue() ) );
+        
+        for (std::vector<Move*>::iterator i = moves.begin(); i != moves.end(); ++i) {
+            if ( *i == theMove ) {
+                moves.erase( i );
+                break;
+            }
+        }
+        
+        return RbNullObject::getInstance();
+    } 
+    
+    return DAGNode::executeOperation( name, args );
+}
+
+
+/** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
+void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
+    
+    // if this node is integrated out, then we need to add the factor root, otherwise myself
+    if (factorRoot == NULL) {
+        affected.insert( this );
+    }
+    else {
+        affected.insert( factorRoot );
+    }
+}
+
+
 /** Get class name of object */
 const std::string& StochasticNode::getClassName(void) { 
     
@@ -608,27 +659,6 @@ const TypeSpec& StochasticNode::getClassTypeSpec(void) {
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( VariableNode::getClassTypeSpec() ) );
     
 	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& StochasticNode::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
-void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
-    
-    // if this node is integrated out, then we need to add the factor root, otherwise myself
-    if (factorRoot == NULL) {
-        affected.insert( this );
-    }
-    else {
-        affected.insert( factorRoot );
-    }
 }
 
 
@@ -658,6 +688,40 @@ double StochasticNode::getLnProbabilityRatio( void ) {
 }
 
 
+
+/* Get method specifications */
+const MethodTable& StochasticNode::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        // method "addMove"
+        ArgumentRules* addMoveArgRules = new ArgumentRules();
+        addMoveArgRules->push_back( new ValueRule("x", Move::getClassTypeSpec() ) );
+        methods.addFunction("addMove", new DagNodeFunction( RbVoid_name, addMoveArgRules) );
+        
+        // method "removeMove"
+        ArgumentRules* removeMoveArgRules = new ArgumentRules();
+        removeMoveArgRules->push_back( new ValueRule("x", Move::getClassTypeSpec() ) );
+        methods.addFunction("removeMove", new DagNodeFunction( RbVoid_name, removeMoveArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &DAGNode::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
+}
+
+
+/* Get the moves */
+const std::vector<Move*>& StochasticNode::getMoves( void ) const {
+    return moves;
+}
+
+
 /** Get stored value */
 const RbLanguageObject& StochasticNode::getStoredValue( void ) const {
 
@@ -665,6 +729,14 @@ const RbLanguageObject& StochasticNode::getStoredValue( void ) const {
         return *value;
 
     return *storedValue;
+}
+
+/** Get type spec */
+const TypeSpec& StochasticNode::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -902,7 +974,7 @@ void StochasticNode::setInstantiated(bool inst) {
             factorRoot = NULL;
         }
         
-        // TODO: I need to tell my children that I'm not eliminated anymore
+        // \TODO: I need to tell my children that I'm not eliminated anymore
         
         
         // flag for recalculation

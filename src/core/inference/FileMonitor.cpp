@@ -34,7 +34,10 @@ FileMonitor::FileMonitor(void) : Monitor(getMemberRules() ),
     
 }
 
-/** Copy Constructor */
+/** 
+ * Copy Constructor.
+ * Note, since we do not own the DAG nodes we do not copy them.
+ */
 FileMonitor::FileMonitor(const FileMonitor &x) : Monitor(x),
 filename( x.filename ),
 separator( x.separator ) {
@@ -88,7 +91,6 @@ const MemberRules& FileMonitor::getMemberRules( void ) const {
         memberRules.push_back( new ValueRule( "filename"  , RbString::getClassTypeSpec()         ) );
         memberRules.push_back( new ValueRule( "printgen"  , Integer::getClassTypeSpec(),  new Integer(1)    ) );
         memberRules.push_back( new ValueRule( "separator" , RbString::getClassTypeSpec(), new RbString("\t") ) );
-        memberRules.push_back( new ValueRule( "variable"  , RbLanguageObject::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis (               RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
@@ -100,7 +102,7 @@ const MemberRules& FileMonitor::getMemberRules( void ) const {
 /** Monitor value unconditionally */
 void FileMonitor::monitor(void) {
 
-    for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
             outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
@@ -125,7 +127,7 @@ void FileMonitor::monitor(int gen) {
         // print the iteration number first
         outStream << gen;
         
-        for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element
             outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
             
@@ -155,11 +157,11 @@ void FileMonitor::printHeader() {
     // print one column for the iteration number
     outStream << "Sample";
     
-    for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
         outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
         
-         const DAGNode* theNode = static_cast<const DAGNode*>((*it)->getDagNode());
+         const DAGNode* theNode = *it;
         
         // print the header
         if (theNode->getName() != "")

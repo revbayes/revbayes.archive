@@ -46,6 +46,7 @@ public:
 
     // Move functions
     void                                acceptMove(void);				                                //!< Accept the move, update statistics
+    virtual void                        addDagNode(StochasticNode* d);                                  //!< Add a DAG node to this move
     std::vector<StochasticNode*>&       getDagNodes(void);                                              //!< Get the nodes vector
     double                              performMove(double& probRatio);                                 //!< Call perform, calculate ratios
     void                                rejectMove(void);                                               //!< Reject the move
@@ -62,12 +63,7 @@ protected:
     virtual void                        accept(void) {}                                                 //!< Accept the move
     virtual void                        reject(void) {}                                                 //!< Reject the move
 
-
-    // member variables
-    RbVariablePtr                       node;
-    
-private:
-    std::vector<StochasticNode*>        nodes;
+    StochasticNode*                     node;
 
 };
 

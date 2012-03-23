@@ -135,11 +135,11 @@ const MethodTable& ObjectMonitor::getMethods( void ) const {
 /** Monitor value unconditionally */
 void ObjectMonitor::monitor(void) {
     
-    for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         
         // save the value        
         RbLanguageObject* temp = (*it)->getValue().clone();
-        values[(*it)->getDagNode()->getName()].push_back( temp );
+        values[(*it)->getName()].push_back( temp );
     }
     
 }
@@ -153,11 +153,11 @@ void ObjectMonitor::monitor(int gen) {
 
     if (gen % samplingFrequency == 0) {
         
-        for (std::vector<RbConstVariablePtr>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             
             // save the value
             RbLanguageObject* temp = (*it)->getValue().clone();
-            values[(*it)->getDagNode()->getName()].push_back( temp );
+            values[(*it)->getName()].push_back( temp );
         }
         
     }

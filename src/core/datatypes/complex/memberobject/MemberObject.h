@@ -28,7 +28,6 @@
 #include <string>
 
 class ArgumentRule;
-class MethodTable;
 
 class MemberObject: public RbLanguageObject {
 
@@ -58,7 +57,6 @@ class MemberObject: public RbLanguageObject {
         void                                                setMember(const std::string& name, const Variable* var);                            //!< Set member variable
 
         // Member method functions
-        const RbLanguageObject&                             executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
         virtual const RbLanguageObject&                     executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
         virtual const MethodTable&                          getMethods(void) const;                                                             //!< Get member methods (const)
 

@@ -243,7 +243,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
         
         /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
-        // TODO: Does this really make sense to use the general character type?! (Sebastian)
+        // \TODO: Does this really make sense to use the general character type?! (Sebastian)
         addTypeWithConstructor( "taxonData",     new TaxonData( Character::getClassName() ) );
         addTypeWithConstructor( "characterData", new CharacterData(DnaState::getClassName())   );
 

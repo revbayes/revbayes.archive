@@ -79,10 +79,8 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
-        
-        memberRules.push_back( new ValueRule( "variable", Real::getClassTypeSpec() ) );
 
-        /* Inherit weight from MoveSimple, put it after variable */
+        /* Inherit weight from MoveSimple */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
@@ -109,7 +107,7 @@ double Move_mslide::perform( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode* nodePtr = static_cast<StochasticNode*>( node->getDagNode() );
+    StochasticNode* nodePtr = node;
     const RealPos& d = static_cast<const RealPos&>( delta->getValue() );
 
     double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();

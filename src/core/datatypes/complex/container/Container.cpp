@@ -128,7 +128,7 @@ const RbLanguageObject& Container::executeOperationSimple(const std::string& nam
             throw RbException("Index out of bounds in []");
         }
         
-        // TODO: Check what happens with DAGNodeContainers
+        // \TODO: Check what happens with DAGNodeContainers
         RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index.getValue() - 1) );
         return element;
     } 

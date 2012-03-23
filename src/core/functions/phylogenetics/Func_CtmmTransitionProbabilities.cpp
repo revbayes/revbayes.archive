@@ -61,7 +61,7 @@ const RbLanguageObject& Func_CtmmTransitionProbabilities::executeFunction(void) 
         // Yes -> reset the number of states and create a new transition probability matrix with the correct dimension
         nStates = numStates;
         // construct a rate matrix of the correct dimensions
-        // TODO: we might want to resize instead
+        // \TODO: we might want to resize instead
         transProbsMatrix = TransitionProbabilityMatrix(nStates);
     }
 

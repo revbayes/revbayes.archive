@@ -233,7 +233,7 @@ size_t Topology::getNumberOfTips(void) const {
  This version assumes that the root is always the last and the tips the first in the nodes vector. */
 const TopologyNode& Topology::getInteriorNode( int indx ) const {
     
-    // TODO: Bound checking, maybe draw from downpass array instead
+    // \TODO: Bound checking, maybe draw from downpass array instead
     return *nodes[ indx + getNumberOfTips() ];
 }
 
@@ -248,7 +248,7 @@ const TopologyNode& Topology::getRoot( void ) const {
  This version assumes that the tips are first in the nodes vector. */
 const TopologyNode& Topology::getTipNode( size_t indx ) const {
     
-    // TODO: Bound checking
+    // \TODO: Bound checking
     return *nodes[ indx ];
 }
 

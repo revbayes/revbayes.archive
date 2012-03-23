@@ -75,14 +75,6 @@ MemberObject& MemberObject::operator=(const MemberObject &m) {
 }
 
 
-/** Execute member method: delegate to method table. */
-const RbLanguageObject& MemberObject::executeMethod(const std::string& name, const std::vector<Argument>& args) {
-    // TODO: We shouldn't allow const casts!!!
-    MethodTable& mt = const_cast<MethodTable&>( getMethods() );
-    return mt.executeFunction(name, args);
-}
-
-
 /* Execute method. This method just delegate the call to executeOperationSimple and wraps the return value into
  * a constant node. If you don't want this, you have to overwrite this method.
  */
@@ -161,7 +153,12 @@ const MemberRules& MemberObject::getMemberRules(void) const {
 //}
 
 
-/** Get method specifications (no methods) */
+/** 
+ * Get method specifications of all member objects. 
+ * We support two methods:
+ * 1) memberNames()
+ * 2) get("name")
+ */
 const MethodTable& MemberObject::getMethods(void) const {
 
     static MethodTable methods = MethodTable();

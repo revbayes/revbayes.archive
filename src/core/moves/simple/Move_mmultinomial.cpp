@@ -79,9 +79,7 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-            memberRules.push_back( new ValueRule( "variable", RbVector<RealPos>::getClassTypeSpec() ) );
-
-        /* Inherit weight from MoveSimple, put it after variable */
+        /* Inherit weight from MoveSimple */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 

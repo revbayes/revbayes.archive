@@ -51,6 +51,20 @@ Monitor::~Monitor() {
 }
 
 
+/* Add a DAG node */
+void Monitor::addDagNode(DAGNode *d) {
+    nodes.push_back( d );
+}
+
+
+/* Decrement the reference count. */
+size_t Monitor::decrementReferenceCount( void ) const {
+    const_cast<Monitor*>( this )->refCount--;
+    
+    return refCount;
+}
+
+
 /** Get class name of object */
 const std::string& Monitor::getClassName(void) { 
     
@@ -84,12 +98,17 @@ const MemberRules& Monitor::getMemberRules( void ) const {
     if (!rulesSet) 
     {
         memberRules.push_back( new ValueRule( "printgen"  , Integer::getClassTypeSpec()          ) );
-        memberRules.push_back( new ValueRule( "variable"  , RbLanguageObject::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis (               RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
     return memberRules;
+}
+
+
+/* Increment the reference count for this instance. */
+size_t Monitor::incrementReferenceCount( void ) const {
+    return const_cast<Monitor*>( this )->refCount++;
 }
 
 
@@ -104,46 +123,26 @@ void Monitor::printValue(std::ostream& o) const {
 
 
 
-void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
-    
-    // release all nodes
-    nodes.clear();
-    
-    // add all nodes
-    for (size_t i=0; i<n.size(); i++) {
-        VariableNode* theNode = n[i];
-        if (theNode != NULL) {
-            nodes.push_back(new Variable( theNode) );
-        }
-    }
-    
-}
+//void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
+//    
+//    // release all nodes
+//    nodes.clear();
+//    
+//    // add all nodes
+//    for (size_t i=0; i<n.size(); i++) {
+//        VariableNode* theNode = n[i];
+//        if (theNode != NULL) {
+//            nodes.push_back(new Variable( theNode) );
+//        }
+//    }
+//    
+//}
 
 
 void Monitor::setMemberVariable(std::string const &name, const Variable* var) {
     
     // catch setting of the variables 
-    if (name == "variable" || name == "") {
-        if (var->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
-            const DagNodeContainer& theContainer = static_cast<const DagNodeContainer&>( var->getValue() );
-            for (size_t i = 0; i < theContainer.size(); i++) {
-                Variable* theVar = static_cast<const VariableSlot&>( theContainer.getElement(i) ).getVariablePtr();
-//                if (theVar->getDagNode()->isTypeSpec( VariableNode::getClassTypeSpec() ) ) {
-                    nodes.push_back( theVar );
-                    //                } else {
-                    //                    throw RbException("Cannot monitor a constant node!");
-//                }
-            }
-        }
-        else {
-//            if (var->getDagNode()->isTypeSepc( VariableNode::getClassTypeSpec() ) ) {
-                nodes.push_back( var );
-                //            } else {
-                //                throw RbException("Cannot monitor a constant node!");
-//            }
-        }
-    } 
-    else if ( name == "printgen" ) {
+    if ( name == "printgen" ) {
         printgen = var;
     }
     else {
@@ -156,7 +155,7 @@ void Monitor::setMemberVariable(std::string const &name, const Variable* var) {
 /** Tell whether the variable with name is monitored by this monitor */
 bool Monitor::monitorsVariable( const RbString& varName) {
     for (size_t j=0; j<nodes.size(); j++) {
-        if (nodes[j]->getDagNode()->getName() == varName) {
+        if ( nodes[j]->getName() == varName ) {
             return( true);
         }
     }

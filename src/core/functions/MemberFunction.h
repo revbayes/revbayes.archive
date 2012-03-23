@@ -3,9 +3,7 @@
  * This file contains the declaration of MemberFunction, which is used
  * to map member function calls (member method calls) of complex objects
  * to internal functions instead of providing regular RbFunction objects
- * implementing the member functions. Note that the first argument passed
- * in a member function call is a pointer to the MemberNode of the calling
- * object (like a this pointer).
+ * implementing the member functions.
  *
  * @brief Declaration of MemberFunction
  *

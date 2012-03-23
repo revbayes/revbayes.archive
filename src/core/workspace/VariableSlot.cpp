@@ -173,7 +173,7 @@ RbLanguageObject& VariableSlot::getValue( void ) {
 //        
 //      //  variable->getDagNode()->setValue(convRetVal);
 //        
-//        //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
+//        // \TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
 //        
 //        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
 //    }

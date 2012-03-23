@@ -102,7 +102,7 @@ UserFunction& UserFunction::operator=(const UserFunction &f) {
 /** Destructor */
 UserFunction::~UserFunction() {
 
-    // defineEnvironment->destroyEnclosure();   //TODO: or something like that
+    // defineEnvironment->destroyEnclosure();   // \TODO: or something like that
 
     delete defineEnvironment;
     delete argumentRules;
@@ -136,7 +136,7 @@ const RbLanguageObject& UserFunction::executeFunction( void ) {
 
     // Create new variable frame
     Environment functionEnvironment = Environment( NULL );
-    // TODO: Check that the arguments can still be accessed
+    // \TODO: Check that the arguments can still be accessed
 //    Environment functionEnvironment = Environment( args );
 
     // Execute code

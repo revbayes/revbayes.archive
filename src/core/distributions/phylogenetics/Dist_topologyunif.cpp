@@ -47,7 +47,7 @@ Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRu
                                                 tipNames( NULL ) {
 
     // Precalculate probability of topology
-    // TODO: this will crash because we haven't set the parameter of the distribution
+    // \TODO: this will crash because we haven't set the parameter of the distribution
 //    calculateTopologyProb();
 }
 
@@ -347,7 +347,7 @@ const RbLanguageObject& Dist_topologyunif::rv( void ) {
         
         return randomVariable;
     }
-    // TODO: Draw a random multifurcating topology
+    // \TODO: Draw a random multifurcating topology
     return RbNullObject::getInstance();
 }
 

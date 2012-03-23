@@ -17,11 +17,16 @@
  */
 
 #include "DAGNode.h"
+#include "DagNodeFunction.h"
+#include "MethodTable.h"
+#include "Monitor.h"
 #include "RbException.h"
+#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "RbOptions.h"
 #include "RbString.h"
+#include "ValueRule.h"
 #include "Variable.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -88,11 +93,50 @@ void DAGNode::addChildNode(VariableNode *c) {
 }
 
 
+/* Add a monitor */
+void DAGNode::addMonitor(Monitor *m) {
+    monitors.push_back( m );
+}
+
+
 /** Decrement the reference count. */
 size_t DAGNode::decrementReferenceCount( void ) {
     refCount--;
     
     return refCount;
+}
+
+/** 
+ * All DAG node types provide the functions to add and remove monitors. 
+ *
+ * These functions are implemented here.
+ */
+const RbLanguageObject& DAGNode::executeOperation(std::string const &name, const std::vector<Argument>& args) {
+    
+    
+    if ( name == "addMonitor") {
+        
+        // add the monitor to our set of monitors
+        Monitor* theMonitor = const_cast<Monitor*>( static_cast<const Monitor*>( &args[0].getVariable().getValue() ) );
+        monitors.push_back( theMonitor );
+        
+        return RbNullObject::getInstance();
+    } else if ( name == "removeMonitor") {
+        
+        // remove the monitor from our set of monitors
+        Monitor* theMonitor = const_cast<Monitor*>( static_cast<const Monitor*>( &args[0].getVariable().getValue() ) );
+        
+        for (std::vector<Monitor*>::iterator i = monitors.begin(); i != monitors.end(); ++i) {
+            if ( *i == theMonitor ) {
+                monitors.erase( i );
+                break;
+            }
+        }
+        
+        return RbNullObject::getInstance();
+    }
+    
+    throw RbException("No method with name '" + name + "' available for DAG nodes.");
 }
 
 
@@ -156,6 +200,39 @@ RbObject& DAGNode::getElement(size_t index) {
         throw RbException( msg );
     }
     
+}
+
+/** 
+ * Get method specifications of all DAG node types.
+ * We do not support any methods (yet).
+ */
+const MethodTable& DAGNode::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    static bool        methodsSet = false;
+    
+    if ( methodsSet == false ) {
+        
+        // method "addMonitor"
+        ArgumentRules* addMonitorArgRules = new ArgumentRules();
+        addMonitorArgRules->push_back( new ValueRule("x", Monitor::getClassTypeSpec() ) );
+        methods.addFunction("addMonitor", new DagNodeFunction( RbVoid_name, addMonitorArgRules) );
+        
+        // method "removeMonitor"
+        ArgumentRules* removeMonitorArgRules = new ArgumentRules();
+        removeMonitorArgRules->push_back( new ValueRule("x", Monitor::getClassTypeSpec() ) );
+        methods.addFunction("removeMonitor", new DagNodeFunction( RbVoid_name, removeMonitorArgRules) );
+
+        methodsSet = true;
+    }   
+    
+    return methods;
+}
+
+
+/* Get the moves */
+const std::vector<Monitor*>& DAGNode::getMonitors( void ) const {
+    return monitors;
 }
 
 /** Get name of DAG node from its surrounding objects */

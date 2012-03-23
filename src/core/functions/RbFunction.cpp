@@ -120,7 +120,7 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, std::
     size_t numRegularRules;
     if (nRules > 0 && theRules[nRules-1].isTypeSpec(Ellipsis::getClassTypeSpec())) {
         numRegularRules = nRules - 1;
-        // TODO: This does not work if some rules have default values and can be ommitted!!!
+        // \TODO: This does not work if some rules have default values and can be ommitted!!!
         if ( passedArgs.size() < nRules )
             numFinalArgs = nRules - 1;
         else
@@ -367,7 +367,7 @@ const RbLanguageObject& RbFunction::execute(void) {
  */
 const RbLanguageObject& RbFunction::executeFunction(void) {
     
-    // TODO: We might want to throw an error!
+    // \TODO: We might want to throw an error!
     static RbNullObject nullReference;
     
     return nullReference;
@@ -481,7 +481,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
     size_t numRegularRules;
     if (nRules > 0 && theRules[nRules-1].isTypeSpec(Ellipsis::getClassTypeSpec())) {
         numRegularRules = nRules - 1;
-        // TODO: This does not work if some rules have default values and can be ommitted!!!
+        // \TODO: This does not work if some rules have default values and can be ommitted!!!
         if ( passedArgs.size() < nRules )
             numFinalArgs = nRules - 1;
         else

@@ -52,14 +52,14 @@ ConstructorTaxonData* ConstructorTaxonData::clone(void) const {
 /** Execute function: we reset our template object here and give out a copy */
 const RbLanguageObject& ConstructorTaxonData::executeFunction(void) {
     
-    // TODO: Maybe we want to have specialized taxondata vectors?!
+    // \TODO: Maybe we want to have specialized taxondata vectors?!
     retVal = TaxonData( Character::getClassName() );
     
     // the name of the taxon
     const std::string& n = static_cast<const RbString&>( name->getValue() ).getValue();
     retVal.setTaxonName( n );
     
-    // TODO: We should not use DAG node containers directly, but for now that has to do
+    // \TODO: We should not use DAG node containers directly, but for now that has to do
     const DAGNode* theNode = chars->getDagNode();
     if ( theNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
         const DagNodeContainer& con = static_cast<const DagNodeContainer&>( theNode->getValue() );
@@ -90,7 +90,7 @@ const ArgumentRules& ConstructorTaxonData::getArgumentRules(void) const {
    if (!rulesSet) {
        
        argRules.push_back( new ValueRule( "name", RbString::getClassTypeSpec() ) );
-       // TODO: We should specificly expect elements of type character and not DAG node containers for which we cannot guarantee what is inside.
+       // \TODO: We should specificly expect elements of type character and not DAG node containers for which we cannot guarantee what is inside.
 //       argRules.push_back( new ValueRule( "x"   , TypeSpec( Vector::getClassTypeSpec(), new TypeSpec( Character::getClassTypeSpec() ) ) ) );
        argRules.push_back( new ValueRule( "x"   , RbObject::getClassTypeSpec() ) );
        

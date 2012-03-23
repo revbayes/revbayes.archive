@@ -187,7 +187,7 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
             throw RbException("Index out of bounds in []");
         }
         
-        // TODO: Check what happens with DAGNodeContainers
+        // \TODO: Check what happens with DAGNodeContainers
         const TaxonData& element = getTaxonData(index.getValue() - 1);
         return element;
         }

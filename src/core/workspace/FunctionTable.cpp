@@ -169,7 +169,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
     
     size_t count = table.count(name);
     if (count == 0) {
-        if (parentTable != NULL) {// TODO: We shouldn't allow const casts!!!
+        if (parentTable != NULL) {// \TODO: We shouldn't allow const casts!!!
             FunctionTable* pt = const_cast<FunctionTable*>(parentTable);
             return pt->findFunction(name, args);
         }

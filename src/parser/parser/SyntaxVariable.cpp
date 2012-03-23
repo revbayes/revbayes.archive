@@ -241,7 +241,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             }
             
             // get the slot and variable
-            theSlot          = &env[ identifier->getValue() ]; // TODO: We should not allow dereferencing!!!
+            theSlot          = &env[ identifier->getValue() ]; // \TODO: We should not allow dereferencing!!!
             Variable& theVar = theSlot->getVariable();
             theDagNode       = theVar.getDagNode();
                 
@@ -318,7 +318,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             if (subElement.isTypeSpec( VariableSlot::getClassTypeSpec() )) {
                 theSlot = &dynamic_cast<VariableSlot&>(subElement);
                 theDagNode = theSlot->getVariable().getDagNode();
-                // TODO: Set the name of the node here!
+                // \TODO: Set the name of the node here!
                 theSlot->setLabel(name);
             }
 
@@ -428,7 +428,7 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
                 MemberObject& mObject = static_cast<MemberObject&>( theVar->getValue() );
             
                 // get the method table for this member object
-                // TODO: We should not allow const casts
+                // \TODO: We should not allow const casts
                 MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
             
                 // create the arguments which consist only of the single paramater inside the square brackets

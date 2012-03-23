@@ -58,7 +58,7 @@ DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode( ), need
     }
     
     /* Set value and stored value */
-    // TODO: We should not allow const casts
+    // \TODO: We should not allow const casts
     value           = const_cast<RbLanguageObject*>( &function->execute() );
     storedValue     = NULL;
     
@@ -178,11 +178,14 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& ne
     std::vector<Argument>& args      = function->getArguments();
     std::vector<Argument>& copyArgs  = ( copy->function->getArguments() );
     
+    // clear the copy arguments
+    copy->function->clear();
+    
     for ( size_t i = 0; i < args.size(); i++ ) {
         
         // clone the parameter DAG node
         DAGNode* theArgClone = args[i].getVariable().getDagNode()->cloneDAG(newNodes);
-        // TODO: I don't think that we should create a new variable. That will destroy our dependencies structure.
+        // \TODO: I don't think that we should create a new variable. That will destroy our dependencies structure.
 //        copyArgs[i].getVariable().setDagNode( theArgClone );
         copy->function->setArgument(args[i].getLabel(), Argument( RbVariablePtr( new Variable( theArgClone ) ) ) );
   
@@ -532,7 +535,7 @@ void DeterministicNode::update( void ) {
 //        storedValue     = value;
         
         // compute a new value
-        // TODO: We should not allow const casts
+        // \TODO: We should not allow const casts
         value = const_cast<RbLanguageObject*>( &function->execute() );
         
         // mark as changed

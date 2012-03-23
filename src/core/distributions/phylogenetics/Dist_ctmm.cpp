@@ -159,7 +159,7 @@ const Simplex& Dist_ctmm::getProbabilityMassVector( void ) {
     q.calculateTransitionProbabilities( t.getValue(), m );
     
     //
-    return probMassVector; // TODO Return vector
+    return probMassVector; // \TODO Return vector
 }
 
 

@@ -27,8 +27,6 @@
 /** Constructor */
 MoveSimple::MoveSimple(const MemberRules& memberRules) : Move(memberRules) {
 
-//    if ( !members.existsVariable("variable") )
-//        throw RbException( "A simple move must have a member called 'variable'" );
 }
 
 
@@ -47,7 +45,22 @@ void MoveSimple::acceptMove(void) {
     
     // tell my node to keep itself
     // this will automatically call keep for the affected nodes
-    node->getDagNode()->keep();
+    node->keep();
+}
+
+
+/* Add a DAG node */
+void MoveSimple::addDagNode(StochasticNode *d) {
+    
+    // test if we already have a node
+    if ( nodes.size() > 0) {
+        throw RbException("A simple move received a second node although simple moves only work on a single node!");
+    }
+    
+    nodes.push_back( d );
+    
+    // set the short cut access
+    node = d;
 }
 
 
@@ -71,15 +84,8 @@ const TypeSpec& MoveSimple::getClassTypeSpec(void) {
 
 /**
  * Get the DAG nodes.
- * We reset here the vector of nodes because the DAG node variable might have changed its pointer
- * and now points to another DAG node.
  */
 std::vector<StochasticNode*>& MoveSimple::getDagNodes(void) {
-    // we empty the vector first
-    nodes.clear();
-    
-    // and then insert the only node
-    nodes.push_back( static_cast<StochasticNode*>(node->getDagNode() ) );
     
     return nodes;
 }
@@ -114,10 +120,10 @@ double MoveSimple::performMove( double& lnProbabilityRatio) {
     // call the derived class' perform operation
     double lnHastingsRatio  = perform();
     
-    lnProbabilityRatio = static_cast<StochasticNode*>( node->getDagNode() )->getLnProbabilityRatio();
+    lnProbabilityRatio = node->getLnProbabilityRatio();
     
     std::set<StochasticNode* > affectedNodes;
-    node->getDagNode()->getAffectedNodes(affectedNodes);
+    node->getAffectedNodes(affectedNodes);
     for (std::set<StochasticNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++) {
         StochasticNode* theNode = *i;
         lnProbabilityRatio += theNode->getLnProbabilityRatio();
@@ -142,7 +148,7 @@ void MoveSimple::rejectMove(void) {
     
     // tell my node to keep itself
     // this will automatically call keep for the affected nodes
-    node->getDagNode()->restore();
+    node->restore();
 }
 
 
@@ -160,7 +166,7 @@ void MoveSimple::replaceDagNodes(std::vector<StochasticNode*> &n) {
     if (theNode != NULL) {
         nodes.push_back(theNode);
 //        node->setDagNode( theNode );
-        node = new Variable( theNode );
+        node = theNode;
     }
 	    
 }
@@ -169,12 +175,7 @@ void MoveSimple::replaceDagNodes(std::vector<StochasticNode*> &n) {
 /** We catch here the setting of the member variables to store our parameters. */
 void MoveSimple::setMemberVariable(std::string const &name, const Variable* var) {
     
-    // test whether we want to set the variable 
-    if ( name == "variable" ) {
-        node = const_cast<Variable*>( var );
-    }
-    else {
-        Move::setMemberVariable(name, var);
-    }
+    Move::setMemberVariable(name, var);
+
 }
 

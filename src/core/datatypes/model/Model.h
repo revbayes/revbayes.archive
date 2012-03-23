@@ -26,6 +26,7 @@
 
 class ArgumentRule;
 class DAGNode;
+class Move;
 class StochasticNode;
 
 
@@ -33,7 +34,7 @@ class Model : public MemberObject {
 
     public:
                                                 Model(void);                                                //!< Default constructor for a Model object
-                                                Model(const std::vector<DAGNode*>& sinkNodes);              //!< Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. 
+//                                                Model(const std::vector<DAGNode*>& sinkNodes);              //!< Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. 
                                                 Model(const Model& x);                                      //!< Copy constructor for a Model object.
 
         // Assignment operator
@@ -50,16 +51,18 @@ class Model : public MemberObject {
         void                                    setMemberVariable(const std::string &name, const Variable* var);  //!< Set a member variable. We catch here setting of variable nodes
     
         // Model functions
-        bool                                    areDagNodesCloned(std::vector<DAGNode*> &orgNodes) const;   //!< Are these already the cloned DAG nodes?
-        std::vector<DAGNode*>                   getClonedDagNodes(std::vector<DAGNode*> &orgNodes) const;   //!< Get cloned nodes corresponding to originals
-        std::vector<RbDagNodePtr>               getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
+        const std::vector<RbDagNodePtr>&        getDAGNodes(void) const { return dagNodes; }                //!< Return the DAGNodes in the model graph.
+        const std::vector<Monitor*>&            getMonitors(void) const { return monitors; }
+        const std::vector<Move*>&               getMoves(void) const { return moves; }
 
 	private:
         int                                     findIndexInVector(const std::vector<RbDagNodePtr>& v, const DAGNode* p) const;
-
-    // Member variables
-    std::vector<RbDagNodePtr>                   dagNodes;                
-    std::map<const DAGNode*, RbDagNodePtr>      nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
+        void                                    createModelFromDagNode( const DAGNode* source );
+        
+        // Member variables
+        std::vector<RbDagNodePtr>               dagNodes;                
+        std::vector<Move*>                      moves;
+        std::vector<Monitor*>                   monitors;
 };
 
 #endif

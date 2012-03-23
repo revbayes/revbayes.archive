@@ -232,7 +232,7 @@ double Dist_birthdeath::ut(double t, double t_prime, double lambda, double mu, d
  */
 const RbLanguageObject& Dist_birthdeath::rv( void ) {
     
-    // TODO needs implementation!!!
+    // \TODO needs implementation!!!
     
     // Get the parameters
     double o = static_cast<const RealPos&    >( origin->getValue()       ).getValue();

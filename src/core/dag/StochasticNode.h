@@ -44,9 +44,7 @@
 #include "VariableNode.h"
 
 class Distribution;
-class MemberNode;
-class RbObject;
-
+class Move;
 
 class StochasticNode : public VariableNode {
 
@@ -67,19 +65,25 @@ public:
     static const std::string&           getClassName(void);                                                 //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
+//    const RbLanguageObject*             getValuePtr(void) const;                                                  //!< Get value pointer
+    void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
+
+    // DAG node function
+    const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
+    const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods (const)
     const RbLanguageObject&             getStoredValue(void) const;                                         //!< Get stored value
     const RbLanguageObject&             getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                   getValue(void);                                                     //!< Get value (non-const)
-//    const RbLanguageObject*             getValuePtr(void) const;                                                  //!< Get value pointer
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
-    void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // StochasticNode functions
+    void                                addMove(Move* m);                                                   //!< Add a move to this node
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
     void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
     const Distribution&                 getDistribution(void) const;                                        //!< Get distribution (const)
     Distribution&                       getDistribution(void);                                              //!< Get distribution (non-const)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
+    const std::vector<Move*>&           getMoves(void) const;                                               //!< Get the vector of moves
     bool                                isNotInstantiated(void) const;
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
     bool                                isEliminated() const;
@@ -121,6 +125,8 @@ private:
     RbLanguageObject*                   storedValue;                                                                    //!< Stored value
 
     VariableType                        type;
+    
+    std::vector<Move*>                  moves;
     
     // probability arrays and likelihood arrays for summed out computations
     std::vector<double>                 probabilities;

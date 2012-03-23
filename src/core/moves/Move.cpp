@@ -42,7 +42,9 @@ Move::Move( const MemberRules& memberRules ) : MemberObject( memberRules ), weig
     numTried    = 0;
 }
 
-/** Copy Constructor. We use a shallow copy of the nodes */
+/** Copy Constructor. 
+ * We don't copy the nodes and we don't own them.
+ */
 Move::Move(const Move &m) : MemberObject(m), weight( m.weight ) {
     
     numTried    = m.numTried;
@@ -53,6 +55,19 @@ Move::Move(const Move &m) : MemberObject(m), weight( m.weight ) {
 /** Destructor */
 Move::~Move() {
     
+}
+
+
+/* Add a DAG node */
+void Move::addDagNode(StochasticNode *d) {
+    nodes.push_back( d );
+}
+
+/* Decrement the reference count. */
+size_t Move::decrementReferenceCount( void ) const {
+    const_cast<Move*>( this )->refCount--;
+    
+    return refCount;
 }
 
 
@@ -186,8 +201,14 @@ double Move::getUpdateWeight( void ) const {
 }
 
 
+/* Increment the reference count for this instance. */
+size_t Move::incrementReferenceCount( void ) const {
+    return const_cast<Move*>( this )->refCount++;
+}
+
+
 void Move::printValue(std::ostream &o) const {
-   // TODO: Need some more meaningful output
+   // \TODO: Need some more meaningful output
     o << "Move";
 }
 

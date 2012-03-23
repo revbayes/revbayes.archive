@@ -23,6 +23,8 @@
 #include "Distribution.h"
 #include "StochasticNode.h"
 #include "Model.h"
+#include "Monitor.h"
+#include "Move.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "ValueRule.h"
@@ -37,50 +39,13 @@ Model::Model( void ) : MemberObject( getMemberRules() ) {
 }
 
 
-/** Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. */
-Model::Model( const std::vector<DAGNode*>& sinkNodes ) : MemberObject(getMemberRules()) {
-
-    /* Check to see that we have at least one DAG node */
-    if ( sinkNodes.empty() )
-        throw RbException( "No sink nodes specified" );
-
-    /* Make copy of DAG: pulling from first sink node is sufficient */
-    sinkNodes.front()->cloneDAG( nodesMap );
-
-    /* Check that all sink nodes are included */
-    for ( std::vector<DAGNode*>::const_iterator i = sinkNodes.begin(); i != sinkNodes.end(); i++ ) {
-        if ( nodesMap.find(*i) == nodesMap.end() ) {
-            throw RbException( "Not all sink nodes are connected to the same DAG" );
-        }
-    }
-
-}
-
 
 /** Copy constructor */
 Model::Model( const Model& x ) : MemberObject( x ) {
 
     /* Make copy of DAG by pulling from first node in x */
-    std::map<const DAGNode*, RbDagNodePtr> newNodes;
     if ( x.dagNodes.size() > 0 )
-        x.dagNodes[0]->cloneDAG( newNodes );
-   
-
-    /* insert new nodes in dagNodes member frame and direct access vector */
-    for ( std::map<const DAGNode*, RbDagNodePtr>::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
-
-        const DAGNode* theOrgNode = (*i).first;
-        const DAGNode* theOldNode = (*i).second;
-        
-        // find the new node in our temporary map
-        DAGNode* theNewNode = newNodes.find(theOldNode)->second;
-
-        // insert in direct access vector
-        dagNodes.push_back( theNewNode );
-        
-        // add the pair into the map of original nodes
-        nodesMap[theOrgNode] = theNewNode;
-    }
+        createModelFromDagNode(x.dagNodes[0]);
 }
 
 /** Assignment operator */
@@ -89,49 +54,178 @@ Model& Model::operator=( const Model& x ) {
     if ( this != &x ) {
 
         /* Free old model */
-//        dagNodeMembers.clear();
         dagNodes.clear();
-        nodesMap.clear();
-        
+    
         /* Make copy of DAG by pulling from first node in x */
-        std::map<const DAGNode*, RbDagNodePtr> newNodes;
         if ( x.dagNodes.size() > 0 )
-            x.dagNodes[0]->cloneDAG( newNodes );
-
-        /* insert new nodes in dagNodes member frame and direct access vector */
-        for ( std::map<const DAGNode*, RbDagNodePtr>::const_iterator i = x.nodesMap.begin(); i != x.nodesMap.end(); i++ ) {
-            
-            const DAGNode *theOrgNode = (*i).first;
-            DAGNode       *theOldNode = (*i).second;
-            
-            // find the new node in our temporary map
-            DAGNode       *theNewNode = newNodes.find(theOldNode)->second;
-            
-            // insert in direct access vector
-            dagNodes.push_back( theNewNode );
-            
-            // add the pair into the map of original nodes
-            nodesMap[theOrgNode] = theNewNode;
-        }
+            createModelFromDagNode(x.dagNodes[0]);
     }
 
     return (*this);
 }
 
 
-bool Model::areDagNodesCloned(std::vector<DAGNode*> &orgNodes) const {
+/**
+ * Create the model from a single source node.
+ *
+ * First we clone the entire DAG, then we clone the moves and the monitors and set the new nodes appropriately.
+ */
+void Model::createModelFromDagNode(const DAGNode *source) {
     
-    // test each original node and add it to the map
-    for (std::vector<DAGNode*>::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
-        DAGNode* theNode = *it;
-        std::map<const DAGNode*, RbDagNodePtr>::const_iterator orgClonePair = nodesMap.find(theNode);
-        if (orgClonePair != nodesMap.end()) {
-            return false;
+    
+    // if the var is not NULL we pull the DAG from it
+    std::map<const DAGNode*, RbDagNodePtr> nodesMap;
+    if (source == NULL)
+        throw RbException("Cannot instantiate a model with a NULL DAG node.");
+    
+    source->cloneDAG(nodesMap);
+    
+    
+    /* insert new nodes in dagNodes member frame and direct access vector */
+    std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
+    
+    std::cerr << "Cloned dag with now " << nodesMap.size() << " nodes." << std::endl;
+    
+    std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator> nodeNeedToBeRemoved;
+    while ( i != nodesMap.end() ) {
+        
+        DAGNode* theNewNode = (*i).second;
+        
+        // do not add myself into the list of nodes
+        if ( theNewNode->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
+            DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>((DAGNode*)theNewNode);
+            const RbFunction& theFunction = theDetNode->getFunction();
+            if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {
+                const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
+                if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
+                    // remove the dag node holding the model constructor function from the dag
+                    const std::set<DAGNode*>& parents = theDetNode->getParents();
+                    //                        for (std::set<DAGNode*>::const_iterator it=parents.begin(); it!=parents.end(); it++) {
+                    //                            DAGNode* node = *it;
+                    //                            theDetNode->removeParentNode(node);
+                    //                            node->removeChildNode( theDetNode );
+                    //                        }
+                    while ( parents.size() > 0 ) {
+                        DAGNode* node = *parents.begin();
+                        theDetNode->removeParentNode(node);
+                        node->removeChildNode( theDetNode );
+                    }
+                    
+                    // remove the dag node holding the model constructor function also from the nodes map
+                    // we do the actual remove later so that we do not disturb the loop
+                    //                        nodesMap.erase(i++);
+                    nodeNeedToBeRemoved.push_back(i);
+                    ++i;
+                    
+                }
+                else {
+                    // increment the iterator;
+                    ++i;
+                    
+                    // insert in direct access vector
+                    dagNodes.push_back( theNewNode );
+                }
+            }
+            else {
+                // increment the iterator;
+                ++i;
+                
+                // insert in direct access vector
+                dagNodes.push_back( theNewNode );
+            }
+        }
+        else {
+            // increment the iterator;
+            ++i;
+            
+            // insert in direct access vector
+            dagNodes.push_back( theNewNode );
         }
     }
     
-    // return the clones
-    return true;
+    for (std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator>::iterator i = nodeNeedToBeRemoved.begin(); i != nodeNeedToBeRemoved.end(); i++) {
+        nodesMap.erase(*i);
+    }
+    
+    /////////////////////////
+    // now we clone the moves
+    
+    // we first empty our current vector of moves
+    moves.clear();
+    
+    // first we create a map from the old moves to the new ones
+    std::map<Move*, Move*> moveMap;
+    
+    // next, we iterate over all dag nodes to collect the move
+    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
+        // get all moves for this node
+        const DAGNode* orgNode = i->first;
+        if ( orgNode->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
+            const StochasticNode* orgStochNode = static_cast<const StochasticNode*>( orgNode );
+            const std::vector<Move*>& orgMoves = orgStochNode->getMoves();
+            
+            for (std::vector<Move*>::const_iterator j = orgMoves.begin(); j != orgMoves.end(); ++j) {
+                // check if we already have this move in our list
+                std::map<Move*,Move*>::iterator k = moveMap.find( *j );
+                
+                Move* clonedMove = NULL;
+                // create a new move if necessary
+                if ( k == moveMap.end() ) {
+                    clonedMove = (*j)->clone();
+                    moves.push_back( clonedMove );
+                    
+                }
+                else {
+                    clonedMove = k->second;
+                }
+                
+                // add the clone DAG node to the cloned move
+                clonedMove->addDagNode( static_cast<StochasticNode*>( (DAGNode*)i->second ) );
+                
+                // add the cloned move to the cloned DAG node
+                static_cast<StochasticNode*>( (DAGNode*)i->second )->addMove( clonedMove );
+            }
+        }
+    }
+    
+    /////////////////////////
+    // now we clone the monitors
+    
+    // we first empty our current vector of monitors
+    monitors.clear();
+    
+    // first we create a map from the old moves to the new ones
+    std::map<Monitor*, Monitor*> monitorMap;
+    
+    // next, we iterate over all dag nodes to collect the move
+    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
+        // get all moves for this node
+        const DAGNode* orgNode = i->first;
+        
+        const std::vector<Monitor*>& orgMonitors = orgNode->getMonitors();
+        
+        for (std::vector<Monitor*>::const_iterator j = orgMonitors.begin(); j != orgMonitors.end(); ++j) {
+            // check if we already have this move in our list
+            std::map<Monitor*,Monitor*>::iterator k = monitorMap.find( *j );
+            
+            Monitor* clonedMonitor = NULL;
+            // create a new move if necessary
+            if ( k == monitorMap.end() ) {
+                clonedMonitor = (*j)->clone();
+                monitors.push_back( clonedMonitor );
+            }
+            else {
+                clonedMonitor = k->second;
+            }
+            
+            // add the clone DAG node to the cloned monitor
+            clonedMonitor->addDagNode( i->second );
+            
+            // add the cloned monitor to the cloned DAG node
+            i->second->addMonitor( clonedMonitor );
+            
+        }
+    }
 }
 
 
@@ -178,27 +272,6 @@ const TypeSpec& Model::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-std::vector<DAGNode*> Model::getClonedDagNodes(std::vector<DAGNode*> &orgNodes) const {
-
-    // create a vector for the cloned nodes
-    std::vector<DAGNode*> clones;
-    
-    // find each original node and add it to the map
-    for (std::vector<DAGNode*>::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
-        std::map<const DAGNode*, RbDagNodePtr>::const_iterator orgClonePair = nodesMap.find((*it));
-        if (orgClonePair != nodesMap.end()) {
-            clones.push_back( orgClonePair->second );
-        }
-        else {
-//            throw RbException("Could not find original DAG node in Model.");
-        }
-    }
-    
-    // return the clones
-    return clones;
 }
 
 
@@ -310,79 +383,7 @@ void Model::setMemberVariable(const std::string& name, const Variable* var) {
         }
         
         
-        // if the var is not NULL we pull the DAG from it
-        nodesMap.clear();
-        if (theNode == NULL)
-            throw RbException("Cannot instantiate a model with a NULL DAG node.");
-            
-        theNode->cloneDAG(nodesMap);
-        
-        
-        /* insert new nodes in dagNodes member frame and direct access vector */
-        std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
-        
-        std::cerr << "Cloned dag with now " << nodesMap.size() << " nodes." << std::endl;
-        
-        std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator> nodeNeedToBeRemoved;
-        while ( i != nodesMap.end() ) {
-            
-            DAGNode* theNewNode = (*i).second;
-            
-            // do not add myself into the list of nodes
-            if ( theNewNode->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
-                DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>((DAGNode*)theNewNode);
-                const RbFunction& theFunction = theDetNode->getFunction();
-                if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {
-                    const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
-                    if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
-                        // remove the dag node holding the model constructor function from the dag
-                        const std::set<DAGNode*>& parents = theDetNode->getParents();
-//                        for (std::set<DAGNode*>::const_iterator it=parents.begin(); it!=parents.end(); it++) {
-//                            DAGNode* node = *it;
-//                            theDetNode->removeParentNode(node);
-//                            node->removeChildNode( theDetNode );
-//                        }
-                        while ( parents.size() > 0 ) {
-                            DAGNode* node = *parents.begin();
-                            theDetNode->removeParentNode(node);
-                            node->removeChildNode( theDetNode );
-                        }
-                        
-                        // remove the dag node holding the model constructor function also from the nodes map
-                        // we do the actual remove later so that we do not disturb the loop
-//                        nodesMap.erase(i++);
-                        nodeNeedToBeRemoved.push_back(i);
-                        ++i;
-            
-                    }
-                    else {
-                        // increment the iterator;
-                        ++i;
-                        
-                        // insert in direct access vector
-                        dagNodes.push_back( theNewNode );
-                    }
-                }
-                else {
-                    // increment the iterator;
-                    ++i;
-                    
-                    // insert in direct access vector
-                    dagNodes.push_back( theNewNode );
-                }
-            }
-            else {
-                // increment the iterator;
-                ++i;
-                
-                // insert in direct access vector
-                dagNodes.push_back( theNewNode );
-            }
-        }
-        
-        for (std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator>::iterator i = nodeNeedToBeRemoved.begin(); i != nodeNeedToBeRemoved.end(); i++) {
-            nodesMap.erase(*i);
-        }
+        createModelFromDagNode( theNode );
         
     }
     else {

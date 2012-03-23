@@ -96,14 +96,14 @@ Variable& Variable::operator=(const Variable& x) {
 }
 
 
-/** Clone variable and variable */
+/* Clone variable and variable */
 Variable* Variable::clone( void ) const {
     
     return new Variable( *this );
 }
 
 
-/** Decrement the reference count. */
+/* Decrement the reference count. */
 size_t Variable::decrementReferenceCount( void ) const {
     const_cast<Variable*>( this )->refCount--;
     
@@ -166,7 +166,7 @@ const RbLanguageObject& Variable::getValue(void) const {
         
         //  variable->getDagNode()->setValue(convRetVal);
         
-        //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
+        // \TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
         
         return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(valueTypeSpec));
     }
@@ -184,7 +184,7 @@ RbLanguageObject& Variable::getValue(void) {
 //        
 //        //  variable->getDagNode()->setValue(convRetVal);
 //        
-//        //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
+//        // \TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
 //        
 //        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(valueTypeSpec));
 //    }
@@ -199,7 +199,7 @@ const TypeSpec& Variable::getValueTypeSpec(void) const {
 }
 
 
-/** Increment the reference count for this instance. */
+/* Increment the reference count for this instance. */
 size_t Variable::incrementReferenceCount( void ) const {
     return const_cast<Variable*>( this )->refCount++;
 }

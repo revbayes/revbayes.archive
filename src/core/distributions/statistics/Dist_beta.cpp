@@ -193,7 +193,7 @@ const RbLanguageObject& Dist_beta::rv( void ) {
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
     double rv = RbStatistics::Beta::rv(shape1, shape2, *rng);
-    //TODO implement RbMath::isFinite
+    // \TODO implement RbMath::isFinite
     randomVariable.setValue( rv );
     return randomVariable;
 }

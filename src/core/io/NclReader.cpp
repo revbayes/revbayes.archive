@@ -1138,7 +1138,7 @@ std::vector<TreePlate*>* NclReader::readTrees(const std::string fn, const std::s
 	// allocate a vector of trees
 	std::vector<TreePlate*>* trees = new std::vector<TreePlate*>();
 	
-    // TODO @Tracy: Why do we read a vector of trees, then copy every single tree into a new vector; instead of returning the vector straight away?!? (Sebastian)
+    // \TODO @Tracy: Why do we read a vector of trees, then copy every single tree into a new vector; instead of returning the vector straight away?!? (Sebastian)
     
     // read the data files
  	std::vector<TreePlate*>* f = readTrees( fn.c_str(), fileFormat);

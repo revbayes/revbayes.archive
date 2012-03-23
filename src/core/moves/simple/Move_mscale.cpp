@@ -71,9 +71,8 @@ const MemberRules& Move_mscale::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
-        memberRules.push_back( new ValueRule( "variable", RealPos::getClassTypeSpec() ) );
 
-        /* Inherit weight from MoveSimple, put it after variable */
+        /* Inherit weight from MoveSimple */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
@@ -101,7 +100,7 @@ double Move_mscale::perform( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode*        nodePtr = static_cast<StochasticNode*>( node->getDagNode() );
+    StochasticNode*        nodePtr = node;
     const RealPos&         l       = static_cast<const RealPos&>( lambda->getValue() );
     const RealPos&         curVal  = static_cast<const RealPos&>( nodePtr->getValue() );
 

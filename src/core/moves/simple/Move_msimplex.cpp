@@ -77,7 +77,6 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
 
     if (!rulesSet) 
     {
-        memberRules.push_back( new ValueRule( "variable", Simplex::getClassTypeSpec() ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
@@ -108,7 +107,7 @@ double Move_msimplex::perform( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode*        nodePtr = static_cast<StochasticNode*>( node->getDagNode() );
+    StochasticNode*        nodePtr = node;
     double                 alpha0  = static_cast<const RealPos&>( alpha->getValue()   ).getValue();
     int                    k       = static_cast<const Natural&>( numCategories->getValue() ).getValue();
 

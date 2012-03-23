@@ -32,9 +32,12 @@ class Move : public MemberObject {
 
         // Basic utility functions
         virtual Move*                           clone(void) const = 0;                                                                  //!< Clone the object
+        size_t                                  decrementReferenceCount(void) const;                                                    //!< Decrement the reference counter for this instance
         static const std::string&               getClassName(void);                                                                     //!< Get class name
         static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
+        size_t                                  incrementReferenceCount(void) const;                                                    //!< Increment the reference count for this instance
         virtual void                            printValue(std::ostream& o) const;
+        virtual bool                            supportsReferenceCounting(void) const { return true; }                                  //!< Supports reference counting for memory management
     
         // Member variable rules
         virtual const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
@@ -51,6 +54,7 @@ class Move : public MemberObject {
         virtual void                            replaceDagNodes(std::vector<StochasticNode*> &n) = 0;                                   //!< Set the nodes vector
 
         // Move functions you should not override
+        virtual void                            addDagNode(StochasticNode* d);                                                                 //!< Add a DAG node to this move
         double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
         double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
         void                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
@@ -68,6 +72,12 @@ class Move : public MemberObject {
         Natural                                 numAccepted;                                                                            //!< Number of times accepted
         Natural                                 numTried;                                                                               //!< Number of times tried
         RealPos                                 acceptanceR;
+    
+        std::vector<StochasticNode*>            nodes;
+    
+    private:
+        size_t                                  refCount;                                           //!< The reference counter
+    
 };
 
 #endif

@@ -53,7 +53,8 @@ class RbObject {
         virtual RbObject&                   getElement(size_t index);                                               //!< Get element or subcontainer
         virtual bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         virtual bool                        supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]
-      
+        virtual bool                        supportsReferenceCounting(void) const { return false; }                 //!< Supports reference counting for memory management
+    
 
         // Basic utility functions you should not have to override
         bool                                isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
