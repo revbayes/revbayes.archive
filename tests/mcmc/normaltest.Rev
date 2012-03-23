@@ -2,18 +2,30 @@
 a <- -1.0
 b <- 1.0
 mu ~ unif(a, b)
-moves[1] <- mslide(mu,weight=1.0,delta=1.0)
+moves[1] <- mslide(weight=1.0,delta=1.0)
+mu.addMove(moves[1])
 
 
 c <- 0
 d <- 1.0
 e ~ norm(c,d)
-moves[2] <- mslide(e,weight=1.0,delta=1.0)
+moves[2] <- mslide(weight=1.0,delta=1.0)
+e.addMove(moves[2])
 sigma := exp(e)
  
-monitors[1] <- fileMonitor(filename="normaltest.out",printgen=1, separator = "	" ,mu,e,sigma)
-monitors[2] <- objectMonitor(printgen=1, mu,e,sigma)
-#monitors[3] <- fileMonitor(filename="normaltest.out",printgen=1, separator = "	" ,mu,e,sigma)
+# Create a file-monitor
+monitors[1] <- fileMonitor(filename="normaltest.out",printgen=1, separator = "	")
+# monitor variables mu,e and sigma
+mu.addMonitor(monitors[1])
+e.addMonitor(monitors[1])
+sigma.addMonitor(monitors[1])
+
+# Create an object monitor
+monitors[2] <- objectMonitor(printgen=1)
+# monitor variables mu,e and sigma
+mu.addMonitor(monitors[2])
+e.addMonitor(monitors[2])
+sigma.addMonitor(monitors[2])
 
 for (i in 1:2) {
     x[i] ~ norm(mu, sigma)
@@ -22,6 +34,6 @@ for (i in 1:2) {
 
 mymodel <- model(a)
  
-mymcmc <- mcmc(mymodel, moves=moves, monitors=monitors)
+mymcmc <- mcmc(mymodel)
 
 mymcmc.run(generations=1000)
