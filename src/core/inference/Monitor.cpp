@@ -98,7 +98,6 @@ const MemberRules& Monitor::getMemberRules( void ) const {
     if (!rulesSet) 
     {
         memberRules.push_back( new ValueRule( "printgen"  , Integer::getClassTypeSpec()          ) );
-        memberRules.push_back( new Ellipsis (               RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
