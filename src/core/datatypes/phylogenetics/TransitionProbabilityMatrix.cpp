@@ -45,6 +45,12 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : MemberObject(ge
 
     numStates = 2;
     theMatrix = new Matrix<Real>(numStates.getValue(), numStates.getValue());
+    for (size_t i = 0; i < numStates.getValue(); ++i) {
+        RbVector<Real>& v = (*theMatrix)[i];
+        for (size_t j = 0; j < numStates; ++j) {
+            v.setElement(j, new Real() );
+        }
+    } 
 }
 
 
@@ -53,6 +59,12 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : MemberObjec
 
     numStates = n;
     theMatrix = new Matrix<Real>(numStates.getValue(), numStates.getValue());
+    for (size_t i = 0; i < numStates.getValue(); ++i) {
+        RbVector<Real>& v = (*theMatrix)[i];
+        for (size_t j = 0; j < numStates; ++j) {
+            v.setElement(j, new Real() );
+        }
+    }
 }
 
 

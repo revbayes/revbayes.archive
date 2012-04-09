@@ -128,8 +128,10 @@ template <typename valueType>
 RbVector<valueType>::RbVector(size_t n) : Container( valueType::getClassTypeSpec() ) {
     
     for (size_t i = 0; i < n; i++) {
-//        this->push_back( NULL );
-        this->push_back( new valueType() );
+        this->push_back( NULL );
+        // Sebastian: We cannot allocate from the specified type if we might have abstract template types.
+        // Therefore we need to instantiate with NULL by default.
+//        this->push_back( new valueType() );
     }
 }
 
@@ -823,6 +825,8 @@ void RbVector<valueType>::setElement(const size_t index, valueType* elem) {
     }
     
     // remove first the old element at the index
+    valueType* oldElement = elements[index];
+    delete oldElement;
     elements.erase(elements.begin()+index);
     
     elements.insert(elements.begin()+index, elem);

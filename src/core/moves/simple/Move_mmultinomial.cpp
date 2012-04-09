@@ -34,7 +34,7 @@
 
 
 /** Constructor for parser */
-Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()), variable( NULL ), alpha( NULL ), numCategories( NULL ) {
+Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()), alpha( NULL ), numCategories( NULL ) {
 
 }
 
@@ -231,5 +231,23 @@ double Move_mmultinomial::perform( void ) {
 	
     return lnProposalRatio;
 }
+
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void Move_mmultinomial::setMemberVariable(std::string const &name, const Variable* var) {
+    
+    // test whether we want to set the variable 
+    if ( name == "tuning" ) {
+        alpha = var;
+    } 
+    else if ( name == "num_cats" ) {
+        numCategories = var;
+    }
+    else {
+        MoveSimple::setMemberVariable(name, var);
+    }
+}
+
 
 

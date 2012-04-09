@@ -225,7 +225,7 @@ double Move_msimplex::perform( void ) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Move_msimplex::setMemberVariable(std::string const &name, Variable* var) {
+void Move_msimplex::setMemberVariable(std::string const &name, const Variable* var) {
     
     // test whether we want to set the variable 
     if ( name == "tuning" ) {

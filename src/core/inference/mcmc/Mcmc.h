@@ -21,6 +21,7 @@
 #define Mcmc_H
 
 #include "MemberObject.h"
+#include "RbVector.h"
 #include "Variable.h"
 
 #include <set>
@@ -59,11 +60,16 @@ protected:
 
  
 private:
+    void                        extractDagNodesFromModel( const Model& source );
     
     // parameters
     RbConstVariablePtr          model;
-    RbConstVariablePtr          moves;
-    RbConstVariablePtr          monitors;
+
+    // Member variables
+    std::vector<RbDagNodePtr>   dagNodes;                
+    RbVector<Move>              moves;
+    RbVector<Monitor>           monitors;
+
 };
 
 #endif

@@ -26,6 +26,7 @@
 
 class ArgumentRule;
 class DAGNode;
+class Monitor;
 class Move;
 class StochasticNode;
 
@@ -51,18 +52,22 @@ class Model : public MemberObject {
         void                                    setMemberVariable(const std::string &name, const Variable* var);  //!< Set a member variable. We catch here setting of variable nodes
     
         // Model functions
-        const std::vector<RbDagNodePtr>&        getDAGNodes(void) const { return dagNodes; }                //!< Return the DAGNodes in the model graph.
-        const std::vector<Monitor*>&            getMonitors(void) const { return monitors; }
-        const std::vector<Move*>&               getMoves(void) const { return moves; }
+        const DAGNode*                          getSourceNode(void) const;                                  // get the source node to pull copies of the model
+// Sebastian: These functions are commented out because they violate our const-correctness!
+//        const std::vector<RbDagNodePtr>&        getDAGNodes(void) const { return dagNodes; }                //!< Return the DAGNodes in the model graph.
+//        const std::vector<const Monitor*>&      getMonitors(void) const { return monitors; }
+//        const std::vector<const Move*>&         getMoves(void) const { return moves; }
 
 	private:
         int                                     findIndexInVector(const std::vector<RbDagNodePtr>& v, const DAGNode* p) const;
         void                                    createModelFromDagNode( const DAGNode* source );
         
         // Member variables
-        std::vector<RbDagNodePtr>               dagNodes;                
-        std::vector<Move*>                      moves;
-        std::vector<Monitor*>                   monitors;
+        std::vector<RbDagNodePtr>               dagNodes;                                                   //!< The DAG nodes contained in this model
+        std::vector<Move*>                      moves;                                                      //!< The modes asssociated with this model
+        std::vector<Monitor*>                   monitors;                                                   //!< The monitors associated with this model
+        const DAGNode*                          sourceNode;                                                 //!< The source node for this model
+
 };
 
 #endif

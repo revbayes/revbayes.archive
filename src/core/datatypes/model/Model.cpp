@@ -83,9 +83,7 @@ void Model::createModelFromDagNode(const DAGNode *source) {
     
     /* insert new nodes in dagNodes member frame and direct access vector */
     std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
-    
-    std::cerr << "Cloned dag with now " << nodesMap.size() << " nodes." << std::endl;
-    
+        
     std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator> nodeNeedToBeRemoved;
     while ( i != nodesMap.end() ) {
         
@@ -100,11 +98,7 @@ void Model::createModelFromDagNode(const DAGNode *source) {
                 if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
                     // remove the dag node holding the model constructor function from the dag
                     const std::set<DAGNode*>& parents = theDetNode->getParents();
-                    //                        for (std::set<DAGNode*>::const_iterator it=parents.begin(); it!=parents.end(); it++) {
-                    //                            DAGNode* node = *it;
-                    //                            theDetNode->removeParentNode(node);
-                    //                            node->removeChildNode( theDetNode );
-                    //                        }
+
                     while ( parents.size() > 0 ) {
                         DAGNode* node = *parents.begin();
                         theDetNode->removeParentNode(node);
@@ -113,7 +107,6 @@ void Model::createModelFromDagNode(const DAGNode *source) {
                     
                     // remove the dag node holding the model constructor function also from the nodes map
                     // we do the actual remove later so that we do not disturb the loop
-                    //                        nodesMap.erase(i++);
                     nodeNeedToBeRemoved.push_back(i);
                     ++i;
                     
@@ -193,7 +186,7 @@ void Model::createModelFromDagNode(const DAGNode *source) {
         }
     }
     
-    /////////////////////////
+    ////////////////////////////
     // now we clone the monitors
     
     // we first empty our current vector of monitors
@@ -236,6 +229,10 @@ void Model::createModelFromDagNode(const DAGNode *source) {
             
         }
     }
+    
+    // Finally, we just set the new source node.
+    sourceNode = nodesMap[source];
+//    sourceNode->incrementReferenceCount();
 }
 
 
@@ -266,6 +263,12 @@ const std::string& Model::getClassName(void) {
     static std::string rbClassName = "Model";
     
 	return rbClassName; 
+}
+
+
+/* Get the source node to clone the model */
+const DAGNode* Model::getSourceNode( void ) const {
+    return sourceNode;
 }
 
 /** Get class type spec describing type of object */

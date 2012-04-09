@@ -55,6 +55,9 @@ Simulate::Simulate(void) : MemberObject(getMemberRules()), model( NULL ) {
 /** Copy constructor */
 Simulate::Simulate(const Simulate &x) : MemberObject(x), model( x.model ) {
     
+    if ( model != NULL ) {
+        extractDagNodesFromModel( static_cast<const Model&>( model->getValue() ) );
+    }
 }
 
 
@@ -74,12 +77,89 @@ const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name
         run(n);
         return RbNullObject::getInstance();
     }
-//    else if ( name == "getMonitors" ) {
-//        Vector& mons = static_cast<Vector&>( monitors->getValue() );
-//        return mons;
-//    }
+    else if ( name == "getMonitors" ) {
+        return monitors;
+    }
 
     return MemberObject::executeOperationSimple( name, args );
+}
+
+
+/**
+ * Clone the model and extract the DAG nodes, moves and monitors.
+ *
+ * First we clone the entire DAG, then we clone the moves and the monitors and set the new nodes appropriately.
+ */
+void Simulate::extractDagNodesFromModel(const Model& source) {
+    
+    const DAGNode* sourceNode = source.getSourceNode();
+    
+    // if the var is not NULL we pull the DAG from it
+    std::map<const DAGNode*, RbDagNodePtr> nodesMap;
+    if (sourceNode == NULL)
+        throw RbException("Cannot instantiate a model with a NULL DAG node.");
+    
+    sourceNode->cloneDAG(nodesMap);
+    
+    
+    /* insert new nodes in dagNodes member frame and direct access vector */
+    std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
+    
+    while ( i != nodesMap.end() ) {
+        
+        DAGNode* theNewNode = (*i).second;
+        
+        // increment the iterator;
+        ++i;
+        
+        // insert in direct access vector
+        dagNodes.push_back( theNewNode );
+        
+    }
+    
+    ////////////////////////////
+    // now we clone the monitors
+    
+    // we first empty our current vector of monitors
+    monitors.clear();
+    
+    // first we create a map from the old moves to the new ones
+    std::map<Monitor*, Monitor*> monitorMap;
+    
+    // next, we iterate over all dag nodes to collect the move
+    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
+        // get all moves for this node
+        const DAGNode* orgNode = i->first;
+        
+        const std::vector<Monitor*>& orgMonitors = orgNode->getMonitors();
+        
+        for (std::vector<Monitor*>::const_iterator j = orgMonitors.begin(); j != orgMonitors.end(); ++j) {
+            // check if we already have this move in our list
+            std::map<Monitor*,Monitor*>::iterator k = monitorMap.find( *j );
+            
+            Monitor* clonedMonitor = NULL;
+            // create a new move if necessary
+            if ( k == monitorMap.end() ) {
+                clonedMonitor = (*j)->clone();
+                
+                // add the new monitor to the monitors map
+                monitorMap.insert( std::pair<Monitor*, Monitor*>(*j, clonedMonitor) );
+                
+                // add the new monitor to our monitors vector
+                monitors.push_back( clonedMonitor );
+            }
+            else {
+                clonedMonitor = k->second;
+            }
+            
+            // add the clone DAG node to the cloned monitor
+            clonedMonitor->addDagNode( i->second );
+            
+            // add the cloned monitor to the cloned DAG node
+            i->second->addMonitor( clonedMonitor );
+            
+        }
+    }
 }
 
 
@@ -116,9 +196,7 @@ const MemberRules& Simulate::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule ( "model"    , Model::getClassTypeSpec()    ) );
-//        memberRules.push_back( new ValueRule ( "monitors" , TypeSpec(Vector::getClassTypeSpec(), new TypeSpec(Monitor::getClassTypeSpec()) ) ) );
-        
+        memberRules.push_back( new ValueRule ( "model"    , Model::getClassTypeSpec()    ) );        
         
         rulesSet = true;
     }
@@ -157,15 +235,16 @@ void Simulate::setMemberVariable(const std::string& name, const Variable* var) {
     
     if ( name == "model" ) {
         model = var;
+        extractDagNodesFromModel( static_cast<const Model&>( model->getValue() ) );
     }
     else {
         MemberObject::setMemberVariable(name, var);
-        
     }
 }
 
 /** Creates a vector of stochastic nodes, starting from the source nodes to the sink nodes */
 void Simulate::getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<StochasticNode*>& orderedStochasticNodes, std::set<DAGNode*>& visitedNodes) {
+    
     if (visitedNodes.find(dagNode) != visitedNodes.end()) { //The node has been visited before
         //we do nothing
         return;
@@ -195,6 +274,7 @@ void Simulate::getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<Stochast
         for ( it2 = children.begin() ; it2 != children.end(); it2++ ) 
             getOrderedStochasticNodes(*it2, orderedStochasticNodes, visitedNodes);
         }
+    
     return; 
 }
 
@@ -203,31 +283,26 @@ void Simulate::getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<Stochast
 void Simulate::run(size_t ndata) {
     
     std::cerr << "Initializing the simulation ..." << std::endl;
-    
-    /* Get the dag nodes from the model */
-    std::vector<RbDagNodePtr> dagNodes = static_cast<const Model&>( model->getValue() ).getDAGNodes();
-    
+        
     /* Get the stochastic nodes in an ordered manner */
     std::vector<StochasticNode*> orderedStochasticNodes; 
     std::set<DAGNode*> visitedNodes;
 
     getOrderedStochasticNodes(dagNodes[0], orderedStochasticNodes, visitedNodes);
     
-    /* Get the monitors */
-    const std::vector<Monitor*>& theMonitors = static_cast<const Model&>( model->getValue() ).getMonitors();
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;
-    for (size_t i=0; i<theMonitors.size(); i++) {
+    for (size_t i=0; i<monitors.size(); i++) {
         // get the monitor
-        if (theMonitors[i]->isTypeSpec( FileMonitor::getClassTypeSpec() ) ) {
+        if (monitors[i].isTypeSpec( FileMonitor::getClassTypeSpec() ) ) {
             
-            FileMonitor* theMonitor = static_cast<FileMonitor*>( theMonitors[i] );
+            FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors[i] );
             
             // open the file stream for the monitor
-            theMonitor->openStream();
+            theMonitor.openStream();
             
             // print the header information
-            theMonitor->printHeader();
+            theMonitor.printHeader();
         }
         
     }
@@ -249,8 +324,8 @@ void Simulate::run(size_t ndata) {
         
         
         /* Monitor */
-        for (size_t i=0; i<theMonitors.size(); i++) {
-            theMonitors[i]->monitor(data);
+        for (size_t i=0; i<monitors.size(); i++) {
+            monitors[i].monitor(data);
         }
 
                 

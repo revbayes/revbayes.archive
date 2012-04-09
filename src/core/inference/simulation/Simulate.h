@@ -22,6 +22,7 @@
 
 #include "MemberObject.h"
 #include "RbString.h"
+#include "RbVector.h"
 
 #include <set>
 #include <string>
@@ -60,10 +61,16 @@ protected:
     
     
 private:
+    void                        extractDagNodesFromModel( const Model& source );
     void                        getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<StochasticNode*>& orderedStochasticNodes, std::set<DAGNode*>& visitedNodes);
 
     // parameters
     RbConstVariablePtr          model;
+
+    // Member variables
+    std::vector<RbDagNodePtr>   dagNodes;                
+    RbVector<Monitor>           monitors;
+
 };
 
 #endif

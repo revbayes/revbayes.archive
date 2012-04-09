@@ -46,18 +46,15 @@
 
 
 /** Constructor passes member rules and method inits to base class */
-Mcmc::Mcmc(void) : MemberObject(getMemberRules()),
-    model( NULL ),
-    moves( NULL ), 
-    monitors( NULL ) {
+Mcmc::Mcmc(void) : MemberObject(getMemberRules()), model( NULL ) {
 }
 
 /** Copy constructor */
-Mcmc::Mcmc(const Mcmc &x) : MemberObject(x),
-model( x.model ),
-moves( x.moves ), 
-monitors( x.monitors ) {
+Mcmc::Mcmc(const Mcmc &x) : MemberObject(x), model( x.model ) { //, dagNodes( x.dagNodes ), moves( x.moves ),  monitors( x.monitors ) {
     
+    if ( model != NULL ) {
+        extractDagNodesFromModel( static_cast<const Model&>( model->getValue() ) );
+    }
 }
 
 
@@ -78,11 +75,134 @@ const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, co
         return RbNullObject::getInstance();
     }
     else if ( name == "getMonitors" ) {
-        const RbVector<Monitor>& mons = static_cast<const RbVector<Monitor>& >( monitors->getValue() );
-        return mons;
+        return monitors;
     }
 
     return MemberObject::executeOperationSimple( name, args );
+}
+
+
+/**
+ * Clone the model and extract the DAG nodes, moves and monitors.
+ *
+ * First we clone the entire DAG, then we clone the moves and the monitors and set the new nodes appropriately.
+ */
+void Mcmc::extractDagNodesFromModel(const Model& source) {
+    
+    const DAGNode* sourceNode = source.getSourceNode();
+    
+    // if the var is not NULL we pull the DAG from it
+    std::map<const DAGNode*, RbDagNodePtr> nodesMap;
+    if (sourceNode == NULL)
+        throw RbException("Cannot instantiate a model with a NULL DAG node.");
+    
+    sourceNode->cloneDAG(nodesMap);
+    
+    
+    /* insert new nodes in dagNodes member frame and direct access vector */
+    std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
+    
+    while ( i != nodesMap.end() ) {
+        
+        DAGNode* theNewNode = (*i).second;
+        
+        // increment the iterator;
+        ++i;
+            
+        // insert in direct access vector
+        dagNodes.push_back( theNewNode );
+        
+    }
+        
+    /////////////////////////
+    // now we clone the moves
+    
+    // we first empty our current vector of moves
+    moves.clear();
+    
+    // first we create a map from the old moves to the new ones
+    std::map<Move*, Move*> moveMap;
+    
+    // next, we iterate over all dag nodes to collect the move
+    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
+        // get all moves for this node
+        const DAGNode* orgNode = i->first;
+        if ( orgNode->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
+            const StochasticNode* orgStochNode = static_cast<const StochasticNode*>( orgNode );
+            const std::vector<Move*>& orgMoves = orgStochNode->getMoves();
+            
+            for (std::vector<Move*>::const_iterator j = orgMoves.begin(); j != orgMoves.end(); ++j) {
+                // check if we already have this move in our list
+                std::map<Move*,Move*>::iterator k = moveMap.find( *j );
+                
+                Move* clonedMove = NULL;
+                // create a new move if necessary
+                if ( k == moveMap.end() ) {
+                    clonedMove = (*j)->clone();
+                    
+                    // add the new move to the moves map
+                    moveMap.insert( std::pair<Move*, Move*>(*j, clonedMove) );
+                    
+                    // add the new move to our moves vector
+                    moves.push_back( clonedMove );
+                    
+                }
+                else {
+                    clonedMove = k->second;
+                }
+                
+                // add the clone DAG node to the cloned move
+                clonedMove->addDagNode( static_cast<StochasticNode*>( (DAGNode*)i->second ) );
+                
+                // add the cloned move to the cloned DAG node
+                static_cast<StochasticNode*>( (DAGNode*)i->second )->addMove( clonedMove );
+            }
+        }
+    }
+    
+    ////////////////////////////
+    // now we clone the monitors
+    
+    // we first empty our current vector of monitors
+    monitors.clear();
+    
+    // first we create a map from the old moves to the new ones
+    std::map<Monitor*, Monitor*> monitorMap;
+    
+    // next, we iterate over all dag nodes to collect the move
+    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
+        // get all moves for this node
+        const DAGNode* orgNode = i->first;
+        
+        const std::vector<Monitor*>& orgMonitors = orgNode->getMonitors();
+        
+        for (std::vector<Monitor*>::const_iterator j = orgMonitors.begin(); j != orgMonitors.end(); ++j) {
+            // check if we already have this move in our list
+            std::map<Monitor*,Monitor*>::iterator k = monitorMap.find( *j );
+            
+            Monitor* clonedMonitor = NULL;
+            // create a new move if necessary
+            if ( k == monitorMap.end() ) {
+                clonedMonitor = (*j)->clone();
+                
+                // add the new monitor to the monitors map
+                monitorMap.insert( std::pair<Monitor*, Monitor*>(*j, clonedMonitor) );
+                
+                // add the new monitor to our monitors vector
+                monitors.push_back( clonedMonitor );
+            }
+            else {
+                clonedMonitor = k->second;
+            }
+            
+            // add the clone DAG node to the cloned monitor
+            clonedMonitor->addDagNode( i->second );
+            
+            // add the cloned monitor to the cloned DAG node
+            i->second->addMonitor( clonedMonitor );
+            
+        }
+    }
 }
 
 
@@ -158,6 +278,7 @@ void Mcmc::setMemberVariable(const std::string& name, const Variable* var) {
 
     if ( name == "model" ) {
         model = var;
+        extractDagNodesFromModel( static_cast<const Model&>( model->getValue() ) );
     }
     else {
         MemberObject::setMemberVariable(name, var);
@@ -170,13 +291,6 @@ void Mcmc::run(size_t ngen) {
 
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
-    /* Get the dag nodes from the model */
-    std::vector<RbDagNodePtr> dagNodes = (static_cast<const Model&>( model->getValue() ) ).getDAGNodes();
-
-    /* Get the moves and monitors */
-    const std::vector<Monitor*>& theMonitors = (static_cast<const Model&>( model->getValue() ) ).getMonitors();
-    const std::vector<Move*>& theMoves = (static_cast<const Model&>( model->getValue() ) ).getMoves();
-
     /* Get the chain settings */
     std::cerr << "Getting the chain settings ..." << std::endl;
 
@@ -184,17 +298,17 @@ void Mcmc::run(size_t ngen) {
 
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;
-    for (size_t i=0; i<theMonitors.size(); i++) {
+    for (size_t i=0; i<monitors.size(); i++) {
         // get the monitor
-        if (theMonitors[i]->isTypeSpec( FileMonitor::getClassTypeSpec() ) ) {
+        if (monitors[i].isTypeSpec( FileMonitor::getClassTypeSpec() ) ) {
             
-            FileMonitor* theMonitor = static_cast<FileMonitor*>( theMonitors[i] );
+            FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors[i] );
             
             // open the file stream for the monitor
-            theMonitor->openStream();
+            theMonitor.openStream();
             
             // print the header information
-            theMonitor->printHeader();
+            theMonitor.printHeader();
         }
     }
 
@@ -275,19 +389,19 @@ void Mcmc::run(size_t ngen) {
     std::cout << "Gen\tlnProbability" << std::endl;
     
     /* Monitor */
-    for (size_t i=0; i<theMonitors.size(); i++) {
-        theMonitors[i]->monitor(0);
+    for (size_t i=0; i<monitors.size(); i++) {
+        monitors[i].monitor(0);
     }
 
     for (unsigned int gen=1; gen<=ngen; gen++) {
 
-        for (size_t i=0; i<theMoves.size(); i++) {
+        for (size_t i=0; i<moves.size(); i++) {
             /* Get the move */
-            Move* theMove = theMoves[i];
+            Move& theMove = moves[i];
 
             /* Propose a new value */
             double lnProbabilityRatio;
-            double lnHastingsRatio = theMove->performMove(lnProbabilityRatio);
+            double lnHastingsRatio = theMove.performMove(lnProbabilityRatio);
             // QUESTION: How to Gibbs samplers by-pass the accept-reject?
             /* Calculate acceptance ratio */
             double lnR = lnProbabilityRatio + lnHastingsRatio;
@@ -302,11 +416,11 @@ void Mcmc::run(size_t ngen) {
             /* Accept or reject the move */
             double u = rng->uniform01(); // TODO No need to draw rng if lnR > 0.0x
             if (u < r) {
-                theMove->acceptMove();
+                theMove.acceptMove();
                 lnProbability += lnProbabilityRatio;
             }
             else {
-                theMove->rejectMove();
+                theMove.rejectMove();
             }
 
 #ifdef DEBUG_MCMC
@@ -327,8 +441,8 @@ void Mcmc::run(size_t ngen) {
         }
 
         /* Monitor */
-        for (size_t i=0; i<theMonitors.size(); i++) {
-            theMonitors[i]->monitor(gen);
+        for (size_t i=0; i<monitors.size(); i++) {
+            monitors[i].monitor(gen);
         }
 
         /* Print to screen */
