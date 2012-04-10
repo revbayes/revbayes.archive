@@ -92,8 +92,8 @@ double RbStatistics::ChiSquare::cdf(double v, double x) {
 double RbStatistics::ChiSquare::quantile(double prob, double v) {
 	
 	double 		e = 0.5e-6, aa = 0.6931471805, p = prob, g,
-	xx, c, ch, a = 0.0, q = 0.0, p1 = 0.0, p2 = 0.0, t = 0.0, 
-	x = 0.0, b = 0.0, s1, s2, s3, s4, s5, s6;
+				xx, c, ch, a = 0.0, q = 0.0, p1 = 0.0, p2 = 0.0, t = 0.0, 
+				x = 0.0, b = 0.0, s1, s2, s3, s4, s5, s6;
 	
 	if (p < 0.000002 || p > 0.999998 || v <= 0.0) 
 		return (-1.0);
@@ -102,7 +102,7 @@ double RbStatistics::ChiSquare::quantile(double prob, double v) {
 	c = xx - 1.0;
 	if (v >= -1.24*log(p)) 
 		goto l1;
-	ch = pow((p*xx*exp(g+xx*aa)), 1.0/xx);
+	ch = pow((p * xx * exp(g + xx * aa)), 1.0/xx);
 	if (ch-e < 0) 
 		return (ch);
 	goto l4;

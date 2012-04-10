@@ -9,7 +9,7 @@
 # Let's do some inference
 #####################
 
-D <- read("/Users/boussau/travail/revbayes/trunk/examples/data/primates_short.nex")
+D <- read("/Users/tracyh/Code/RevBayes_proj/revbayes/trunk/examples/data/primates_short.nex")
 
 taxaCount <- D.ntaxa()
 names <- D.names()

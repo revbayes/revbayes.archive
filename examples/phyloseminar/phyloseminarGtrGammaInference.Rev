@@ -13,9 +13,8 @@ taxaCount <- D.ntaxa()
 names <- D.names()
 
 tau ~ unifTopology( numberTaxa=taxaCount, tipNames=names, isRooted=false, isBinary=true )
-
-
 tree <- treeplate(tau)
+nodeCount <- tree.nnodes()
 
 siteCount <- D.nchar()[1]
 
@@ -27,27 +26,23 @@ pi ~ dirichlet(pi_prior)
 r_prior <- v(1,1,1,1,1,1)
 r ~ dirichlet(r_prior)
 
-lambda <- 1.0
-nodeCount <- tree.nnodes()
-
-
-num_gamm_rates <- 4
-#Prior for the rates
+num_gamma_rates <- 4
 alpha_prior <- 1.0
-
 alpha ~ exponential (alpha_prior)
 
-#Draw rate for each cluster of sites 
-rate_parameters[1] := qgamma(0.125,alpha,alpha)
-rate_parameters[2] := qgamma(0.375,alpha,alpha)
-rate_parameters[3] := qgamma(0.625,alpha,alpha)
-rate_parameters[4] := qgamma(0.875,alpha,alpha)
+for ( i in 1:num_gamma_rates ){
+	gamma_cat_ps[i] <- (1.0 / num_gamma_rates) * 0.5
+	if( i > 1 ){
+		gamma_cat_ps[i]<- (1.0 / num_gamma_rates) + gamma_cat_ps[i-1]
+	}
+	rate_parameters[i] := qgamma(gamma_cat_ps[i],alpha,alpha)
+}
+class_probabilities<-simplex(num_gamma_rates)
 
 
 
-class_probabilities<-simplex(0.25, 0.25, 0.25, 0.25)
 ## Looking for a constructer that allows you to set the class probabilities
-rateMixture <- mixture( numObservations=siteCount, parameters=rate_parameters, class_probabilities)
+rateMixture <- mixture( numObservations=siteCount, parameters=rate_parameters, classProbabilities=class_probabilities)
 
 
 # We need to iterate from the root to the parent. The indices of the nodes are in phylogenetic ordering, i.e. the tip are at 1,ƒ,n.
