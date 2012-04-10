@@ -89,15 +89,20 @@ const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, co
  */
 void Mcmc::extractDagNodesFromModel(const Model& source) {
     
-    const DAGNode* sourceNode = source.getSourceNode();
+    const std::set<const DAGNode*> sourceNodes = source.getSourceNodes();
     
     // if the var is not NULL we pull the DAG from it
     std::map<const DAGNode*, RbDagNodePtr> nodesMap;
-    if (sourceNode == NULL)
-        throw RbException("Cannot instantiate a model with a NULL DAG node.");
     
-    sourceNode->cloneDAG(nodesMap);
-    
+    for (std::set<const DAGNode*>::const_iterator it = sourceNodes.begin(); it != sourceNodes.end(); it++) {
+        const DAGNode* theSourceNode = *it;
+        
+        if (theSourceNode == NULL)
+            throw RbException("Cannot instantiate a model with a NULL DAG node.");
+        
+        theSourceNode->cloneDAG(nodesMap);
+    }
+
     
     /* insert new nodes in dagNodes member frame and direct access vector */
     std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();

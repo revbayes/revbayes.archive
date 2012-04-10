@@ -180,7 +180,7 @@ const std::string& TaxonData::getTaxonName(void) const {
 
 void TaxonData::printValue(std::ostream &o) const {
 
-    o << taxonName << ":" << std::endl;
+    o << taxonName << ": ";
     sequence.printValue(o);
 }
 

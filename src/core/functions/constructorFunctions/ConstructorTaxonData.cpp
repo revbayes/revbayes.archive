@@ -105,7 +105,7 @@ const ArgumentRules& ConstructorTaxonData::getArgumentRules(void) const {
 /** Get class name of object */
 const std::string& ConstructorTaxonData::getClassName(void) { 
     
-    static std::string rbClassName = "Constructor function";
+    static std::string rbClassName = "Constructor function for taxon data";
     
 	return rbClassName; 
 }

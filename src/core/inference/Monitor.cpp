@@ -53,7 +53,7 @@ Monitor::~Monitor() {
 
 /* Add a DAG node */
 void Monitor::addDagNode(DAGNode *d) {
-    nodes.push_back( d );
+    nodes.insert( d );
 }
 
 
@@ -153,8 +153,8 @@ void Monitor::setMemberVariable(std::string const &name, const Variable* var) {
 
 /** Tell whether the variable with name is monitored by this monitor */
 bool Monitor::monitorsVariable( const RbString& varName) {
-    for (size_t j=0; j<nodes.size(); j++) {
-        if ( nodes[j]->getName() == varName ) {
+    for (std::set<DAGNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        if ( (*it)->getName() == varName ) {
             return( true);
         }
     }

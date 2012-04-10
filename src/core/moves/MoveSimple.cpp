@@ -53,14 +53,17 @@ void MoveSimple::acceptMove(void) {
 void MoveSimple::addDagNode(StochasticNode *d) {
     
     // test if we already have a node
-    if ( nodes.size() > 0) {
-        throw RbException("A simple move received a second node although simple moves only work on a single node!");
+    if ( nodes.size() > 0 ) {
+        if ( nodes[0] != d ) {
+            throw RbException("A simple move received a second node although simple moves only work on a single node!");
+        }
     }
+    else {
+        nodes.push_back( d );
     
-    nodes.push_back( d );
-    
-    // set the short cut access
-    node = d;
+        // set the short cut access
+        node = d;
+    }
 }
 
 

@@ -81,7 +81,7 @@ DAGNode* ConstantNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNode
             DeterministicNode* theDetNode = dynamic_cast<DeterministicNode*>(theNewNode);
             const RbFunction& theFunction = theDetNode->getFunction();
             if (theFunction.isTypeSpec(ConstructorFunction::getClassTypeSpec())) {
-                const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
+                const ConstructorFunction& theConstructorFunction = static_cast<const ConstructorFunction&>( theFunction );
                 if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
                     continue;
                 }

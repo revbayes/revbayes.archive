@@ -101,7 +101,7 @@ const MemberRules& FileMonitor::getMemberRules( void ) const {
 /** Monitor value unconditionally */
 void FileMonitor::monitor(void) {
 
-    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::set<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
             outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
@@ -126,7 +126,7 @@ void FileMonitor::monitor(int gen) {
         // print the iteration number first
         outStream << gen;
         
-        for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::set<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element
             outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
             
@@ -156,7 +156,7 @@ void FileMonitor::printHeader() {
     // print one column for the iteration number
     outStream << "Sample";
     
-    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::set<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
         outStream << static_cast<const RbString&>( separator->getValue() ).getValue();
         

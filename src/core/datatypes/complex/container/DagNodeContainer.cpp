@@ -71,6 +71,15 @@ DagNodeContainer& DagNodeContainer::operator=(const DagNodeContainer &c) {
 }
 
 
+/*
+ * Do we allow variable insertion? Yes!
+ * This function is a helper function for the parser to check whether a value allows insertion of variables.
+ */
+bool DagNodeContainer::allowsVariableInsertion( void ) const {
+    return true;
+}
+
+
 /** Clear contents of value container */
 void DagNodeContainer::clear( void ) {
     
@@ -143,14 +152,6 @@ const TypeSpec& DagNodeContainer::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
-/** Get type spec */
-const TypeSpec& DagNodeContainer::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
 /** Get element */
 const RbObject& DagNodeContainer::getElement(const size_t index) const {
     
@@ -198,6 +199,14 @@ const MethodTable& DagNodeContainer::getMethods(void) const {
     }
     
     return methods;
+}
+
+/** Get type spec */
+const TypeSpec& DagNodeContainer::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 

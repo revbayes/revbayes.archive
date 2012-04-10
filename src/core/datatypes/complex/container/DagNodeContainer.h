@@ -39,7 +39,7 @@ class DagNodeContainer : public Container {
         DagNodeContainer&                   operator=(const DagNodeContainer& c);
         
         // Basic utility functions
-        bool                                allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be inserted
+        bool                                allowsVariableInsertion(void) const;                                        //!< Yes we do allow variable to be inserted
         DagNodeContainer*                   clone(void) const;                                                          //!< Clone object
         RbObject*                           convertTo(const TypeSpec& type) const;                                      //!< Convert to type
         static const std::string&           getClassName(void);                                                         //!< Get class name
@@ -63,8 +63,8 @@ class DagNodeContainer : public Container {
         void                                resize(size_t n);                                                           //!< Resize to new AbstractVector of length n
         void                                setElement(const size_t index, RbObject* elem);                             //!< Set element with type conversion
         void                                setElement(const size_t index, Variable* elem);                             //!< Set an element
-        void                                sort(void);                                                                 //!< sort the AbstractVector
         size_t                              size(void) const;                                                           //!< get the number of elements in the AbstractVector
+        void                                sort(void);                                                                 //!< sort the AbstractVector
         void                                unique(void);                                                               //!< removes consecutive duplicates
 
     private:

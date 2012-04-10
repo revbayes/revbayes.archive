@@ -135,7 +135,7 @@ const MethodTable& ObjectMonitor::getMethods( void ) const {
 /** Monitor value unconditionally */
 void ObjectMonitor::monitor(void) {
     
-    for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::set<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         
         // save the value        
         RbLanguageObject* temp = (*it)->getValue().clone();
@@ -153,7 +153,7 @@ void ObjectMonitor::monitor(int gen) {
 
     if (gen % samplingFrequency == 0) {
         
-        for (std::vector<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::set<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             
             // save the value
             RbLanguageObject* temp = (*it)->getValue().clone();

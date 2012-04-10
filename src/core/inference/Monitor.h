@@ -61,7 +61,7 @@ protected:
 
     // parameters
     RbConstVariablePtr                  printgen;
-    std::vector<DAGNode*>               nodes;
+    std::set<DAGNode*>                  nodes;
    
 private:
     size_t                              refCount;                                                           //!< The reference counter

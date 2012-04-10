@@ -21,12 +21,13 @@
 #include "DagNodeContainer.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
-#include "StochasticNode.h"
+#include "Ellipsis.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "StochasticNode.h"
 #include "ValueRule.h"
 #include "UserInterface.h"
 
@@ -44,8 +45,11 @@ Model::Model( void ) : MemberObject( getMemberRules() ) {
 Model::Model( const Model& x ) : MemberObject( x ) {
 
     /* Make copy of DAG by pulling from first node in x */
-    if ( x.dagNodes.size() > 0 )
-        createModelFromDagNode(x.dagNodes[0]);
+    if ( x.sourceNodes.size() > 0 ) {
+        for (std::set<const DAGNode*>::const_iterator it = x.sourceNodes.begin(); it != x.sourceNodes.end(); ++it) {
+            createModelFromDagNode( *it );
+        }
+    }    
 }
 
 /** Assignment operator */
@@ -54,32 +58,57 @@ Model& Model::operator=( const Model& x ) {
     if ( this != &x ) {
 
         /* Free old model */
+        monitorMap.clear();
+        moveMap.clear();
+        nodesMap.clear();
         dagNodes.clear();
-    
+        sourceNodes.clear();
+        
         /* Make copy of DAG by pulling from first node in x */
-        if ( x.dagNodes.size() > 0 )
-            createModelFromDagNode(x.dagNodes[0]);
+        if ( x.sourceNodes.size() > 0 ) {
+            for (std::set<const DAGNode*>::const_iterator it = x.sourceNodes.begin(); it != x.sourceNodes.end(); ++it) {
+                createModelFromDagNode( *it );
+            }
+        }
     }
 
     return (*this);
 }
 
 
+/*
+ * Add a source node and rebuilt the model.
+ */
+void Model::addSourceNode( const DAGNode *sourceNode ) {
+    
+    // test whether var is a DagNodeContainer
+    if ( sourceNode != NULL && sourceNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        const RbObject& objPtr = sourceNode->getValue();
+        const DagNodeContainer& container = static_cast<const DagNodeContainer&>( objPtr );
+        for (size_t i = 0; i < container.size(); ++i) {
+            const RbObject& elemPtr = container.getElement(i);
+            addSourceNode(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
+        }
+    }
+    else {
+        
+        createModelFromDagNode( sourceNode );
+    }
+}
+
 /**
  * Create the model from a single source node.
  *
  * First we clone the entire DAG, then we clone the moves and the monitors and set the new nodes appropriately.
  */
-void Model::createModelFromDagNode(const DAGNode *source) {
+void Model::createModelFromDagNode(const DAGNode *theSourceNode) {
     
-    
-    // if the var is not NULL we pull the DAG from it
-    std::map<const DAGNode*, RbDagNodePtr> nodesMap;
-    if (source == NULL)
+    if (theSourceNode == NULL)
         throw RbException("Cannot instantiate a model with a NULL DAG node.");
     
-    source->cloneDAG(nodesMap);
-    
+    theSourceNode->cloneDAG(nodesMap);
+    // add the source node to our set of sources
+    sourceNodes.insert( nodesMap[theSourceNode] );
     
     /* insert new nodes in dagNodes member frame and direct access vector */
     std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
@@ -144,11 +173,8 @@ void Model::createModelFromDagNode(const DAGNode *source) {
     // now we clone the moves
     
     // we first empty our current vector of moves
-    moves.clear();
-    
-    // first we create a map from the old moves to the new ones
-    std::map<Move*, Move*> moveMap;
-    
+//    moves.clear();
+        
     // next, we iterate over all dag nodes to collect the move
     for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
         // get all moves for this node
@@ -190,10 +216,7 @@ void Model::createModelFromDagNode(const DAGNode *source) {
     // now we clone the monitors
     
     // we first empty our current vector of monitors
-    monitors.clear();
-    
-    // first we create a map from the old moves to the new ones
-    std::map<Monitor*, Monitor*> monitorMap;
+//    monitors.clear();
     
     // next, we iterate over all dag nodes to collect the move
     for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
@@ -229,10 +252,7 @@ void Model::createModelFromDagNode(const DAGNode *source) {
             
         }
     }
-    
-    // Finally, we just set the new source node.
-    sourceNode = nodesMap[source];
-//    sourceNode->incrementReferenceCount();
+        
 }
 
 
@@ -267,8 +287,8 @@ const std::string& Model::getClassName(void) {
 
 
 /* Get the source node to clone the model */
-const DAGNode* Model::getSourceNode( void ) const {
-    return sourceNode;
+const std::set<const DAGNode*>& Model::getSourceNodes( void ) const {
+    return sourceNodes;
 }
 
 /** Get class type spec describing type of object */
@@ -296,6 +316,7 @@ const MemberRules& Model::getMemberRules(void) const {
     if (!rulesSet) {
         
         memberRules.push_back( new ValueRule( "sinknode"  , RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis( RbObject::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -384,19 +405,10 @@ void Model::printValue(std::ostream& o) const {
 /** Set a member variable */
 void Model::setMemberVariable(const std::string& name, const Variable* var) {
     
-    if (name == "sinknode") {
+    if (name == "sinknode" || name == "" ) {
         
         const DAGNode* theNode = var->getDagNode();
-        // test whether var is a DagNodeContainer
-        while ( theNode != NULL && theNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-            const RbObject& objPtr = theNode->getValue();
-            const DagNodeContainer& container = dynamic_cast<const DagNodeContainer&>( objPtr );
-            const RbObject& elemPtr = container.getElement(0);
-            theNode = static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode();
-        }
-        
-        
-        createModelFromDagNode( theNode );
+        addSourceNode( theNode );
         
     }
     else {
