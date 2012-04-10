@@ -28,7 +28,8 @@ class RbString : public RbLanguageObject {
     public:
                                     RbString(void) : RbLanguageObject(), value() {}     //!< Default: empty string
                                     RbString(int i);                                    //!< Constructor from int
-                                    RbString(double i);                                 //!< Constructor from int
+                                    RbString(long i);                                   //!< Constructor from long
+                                    RbString(double i);                                 //!< Constructor from double
                                     RbString(const std::string& v);                     //!< Constructor from string
 
         // Overloaded operators

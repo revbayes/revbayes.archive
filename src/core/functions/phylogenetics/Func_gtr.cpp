@@ -94,7 +94,9 @@ const RbLanguageObject& Func_gtr::executeFunction(void) {
     m.setStationaryFrequencies(tempFreqs);
 
     // rescale the rate matrix such that the average rate is 1.0
-    m.rescaleToAverageRate(1.0);
+    // Sebastian: If we rescale the matrix, then we have trouble estimating the branch length correctly!
+    // Instead we require the base frequencies and substitution rate to be simplices.
+    // m.rescaleToAverageRate(1.0);
 
     // we know that the GTR model is time reversible (just look at the name of the
     // model!), so we might as well set its reversibility flag directly

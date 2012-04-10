@@ -32,6 +32,15 @@ RbString::RbString(int i) : RbLanguageObject() {
 }
 
 
+/** Constructor from long */
+RbString::RbString(long i) : RbLanguageObject() {
+    
+    std::ostringstream o;
+    o << i;
+    value = o.str();
+}
+
+
 /** Constructor from string */
 RbString::RbString(double x) : RbLanguageObject() {
 
