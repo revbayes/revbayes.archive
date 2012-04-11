@@ -25,6 +25,7 @@
 #include "Workspace.h"
 
 #include <cmath>
+#include <iostream>
 
 
 /** Constructor for parser */
@@ -95,6 +96,8 @@ const TypeSpec Move_mscale::getVariableType( void ) const {
 
 /** Perform the move */
 double Move_mscale::perform( void ) {
+    
+//    std::cerr << "Performing scale move on " << node->getName() << std::endl;
 
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;

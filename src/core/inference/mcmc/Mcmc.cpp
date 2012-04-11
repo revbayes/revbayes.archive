@@ -321,9 +321,10 @@ void Mcmc::run(size_t ngen) {
     /* Get initial lnProbability of model */
     
     // first we touch all nodes so that the likelihood is dirty
-//    for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-//        (*i)->touch();
-//    }
+    for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+        (*i)->touch();
+    }
+    
     double lnProbability = 0.0;
     // just a debug counter
     size_t numSummedOver = 0;
@@ -359,7 +360,7 @@ void Mcmc::run(size_t ngen) {
             }
             else {
                 
-                // if one of my parents is eliminated, then my likelihood should be added either
+                // if one of my parents is eliminated, then my likelihood shouldn't be added either
                 bool eliminated = false;
                 for (std::set<DAGNode*>::iterator j = stochNode->getParents().begin(); j != stochNode->getParents().end(); j++) {
     
@@ -381,8 +382,13 @@ void Mcmc::run(size_t ngen) {
             }
 //            initProb.push_back(lnProb);
         }
-        node->keep();
     }
+    
+    // now we keep all nodes so that the likelihood is stored
+    for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+        (*i)->keep();
+    }
+    
     std::cerr << "Number eliminated nodes = " << numEliminated << std::endl;
     std::cerr << "Number summedOver nodes = " << numSummedOver << std::endl;
     std::cerr << "Initial lnProbability = " << lnProbability << std::endl;

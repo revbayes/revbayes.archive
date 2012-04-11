@@ -224,7 +224,7 @@ double StochasticNode::calculateLnProbability( void ) {
  * Calculate the ln-probability summed over all possible states.
  * This is the variable elimination algorithm. It only works if we can condition on only one parent being eliminated.
  */
-double StochasticNode::calculateEliminatedLnProbability( void ) {
+double StochasticNode::calculateEliminatedLnProbability( bool enforceProbabilityCalculation ) {
     
     // if this node is not eliminated, then we have reached the bottom of the elimination algorithm
     if ( type == INSTANTIATED ) {
@@ -241,7 +241,7 @@ double StochasticNode::calculateEliminatedLnProbability( void ) {
         return lnProb;
     }
     
-    if (needsProbabilityRecalculation || needsLikelihoodRecalculation) {
+    if (needsProbabilityRecalculation || needsLikelihoodRecalculation || enforceProbabilityCalculation) {
         // initialize the probability
         double prob = 0.0;
         
@@ -259,18 +259,22 @@ double StochasticNode::calculateEliminatedLnProbability( void ) {
             // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
             value = v;
             
+            // since we just set the new value we need to flag all children for recalculation
+//            markChildrenForRecalculation();
+            
             // recalculate the likelihoods if necessary    
-            if (needsLikelihoodRecalculation) {
+            if ( needsLikelihoodRecalculation ) {
+                
                 
                 likelihoods[i] = 0.0;
                 size_t j = 0;
                 
                 // I need to ask for the likelihood of my children
                 for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
-                    // only if the child has flag as changed I need to ask for the likelihood
-//                    if ( (*child)->isTouched() ) {
-                        partialLikelihoods[i][j] = (*child)->calculateEliminatedLnProbability();
-//                    }
+                    // only if the child is flagged as changed I need to ask for the likelihood
+                    if ( (*child)->isTouched() ) {
+                        partialLikelihoods[i][j] = (*child)->calculateEliminatedLnProbability(true);
+                    }
                     
                     // add the log-likelihood for this child
                     likelihoods[i] += partialLikelihoods[i][j];
@@ -278,13 +282,14 @@ double StochasticNode::calculateEliminatedLnProbability( void ) {
                     // increment the child index
                     j++;
                 }
+                
             }
             
             // only if the likelihood of this value has changed we need to update it
-            if ( needsProbabilityRecalculation ) {
+//            if ( needsProbabilityRecalculation ) {
                 // set the likelihood for this state to the probability array
                 probabilities[i] = distribution->lnPdf( *value );
-            }
+//            }
             
             // add this partial probability to the total probability
             prob += exp(probabilities[i] + likelihoods[i]);
@@ -294,9 +299,11 @@ double StochasticNode::calculateEliminatedLnProbability( void ) {
         }
         
         lnProb = log(prob);
+        
+        needsLikelihoodRecalculation    = false;
+        needsProbabilityRecalculation   = false;
     }
     
-    needsProbabilityRecalculation = needsLikelihoodRecalculation = false;
     
     return lnProb;
 }
@@ -313,13 +320,13 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
     
     // test if this node is eliminated or summed-over
     if ( theNode->type == ELIMINATED ) {
-        return theNode->calculateEliminatedLnProbability(); // + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
+        return theNode->calculateEliminatedLnProbability( false ); // + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
     }
     else if ( theNode->type == INSTANTIATED ) {
         return theNode->getDistribution().lnPdf( theNode->getValue() ) + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
     }
     
-    if (theNode->needsProbabilityRecalculation || theNode->needsLikelihoodRecalculation) {
+    if (theNode->needsProbabilityRecalculation || theNode->needsLikelihoodRecalculation || true) {
         // initialize the probability
         double sumProb = 0.0;
         
@@ -528,12 +535,15 @@ void StochasticNode::constructFactor( void ) {
             size_t eliminatedParentCount = 0;
             for (std::set<DAGNode*>::const_iterator j = currNode->getParents().begin(); j != currNode->getParents().end(); ++j) {
                 if ( (*j)->isNotInstantiated() ) {
-                eliminatedParentCount++;
+                    eliminatedParentCount++;
                 }
             }
         
             if ( eliminatedParentCount <= 1 ) {
                 currNode->setSummationType( ELIMINATED );
+            }
+            else {
+                currNode->setSummationType( SUMMED_OVER );
             }
         }
     }
@@ -640,7 +650,8 @@ void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
         affected.insert( this );
     }
     else {
-        affected.insert( factorRoot );
+        if ( affected.find( factorRoot )  == affected.end() )
+            affected.insert( factorRoot );
     }
 }
 
@@ -675,7 +686,7 @@ Distribution& StochasticNode::getDistribution(void) {
 /** Get the ln probability ratio of this node */
 double StochasticNode::getLnProbabilityRatio( void ) {
     
-    if ( !isTouched() ) {
+    if ( !probabilityRecalculated ) {
 
         return 0.0;
     }
@@ -808,6 +819,9 @@ void StochasticNode::keepMe() {
     }
 
     touched = false;
+    probabilityRecalculated         = false;
+    needsLikelihoodRecalculation    = false;
+    needsProbabilityRecalculation   = false;
 
 }
 
@@ -818,10 +832,21 @@ void StochasticNode::keepMe() {
  */
 void StochasticNode::likelihoodsNeedUpdates() {
     
-    if ( !touched ) {
-        touchMe();
+    // We need to mark this node as dirty so that the probability and likelihood are recomputed
+    if (!touched) {
+        // Store the current lnProb 
+        touched      = true;
+        
+        storedLnProb = lnProb;
+        
+        storedProbabilities         = probabilities;
+        storedLikelihoods           = likelihoods;
+        storedPartialLikelihoods    = partialLikelihoods;
+        
+        probabilityRecalculated     = true;
     }
     
+    // if we are already flagged for likelihood recalculation, then we have already told our parents about this
     if (!needsLikelihoodRecalculation) {
         
         //  I need to tell all my eliminated parents that they need to update their likelihoods
@@ -834,6 +859,25 @@ void StochasticNode::likelihoodsNeedUpdates() {
     }
     
     needsLikelihoodRecalculation = true;
+}
+
+
+/** 
+ * Mark this stochastic node for recalculation.
+ * We set the flag for probability recalculation here.
+ */
+void StochasticNode::markForRecalculation(void) {
+    needsProbabilityRecalculation = true;
+}
+
+
+/**
+ * Does the probability or likelihood of this node needs updateing?
+ * We return true if the likelihood or the probability are marked as dirty.
+ */
+bool StochasticNode::needsRecalculation() const {
+    
+    return needsLikelihoodRecalculation || needsProbabilityRecalculation;
 }
 
 
@@ -948,6 +992,7 @@ void StochasticNode::restoreMe() {
     }
 
     touched = false;
+    probabilityRecalculated     = false;
 }
 
 
@@ -1132,12 +1177,15 @@ void StochasticNode::touchMe( void ) {
     
         storedLnProb = lnProb;
         
-        if ( type != INSTANTIATED ) {
+        probabilityRecalculated     = true;
+        
+        
+        if ( isNotInstantiated() ) {
+            
             storedProbabilities         = probabilities;
             storedLikelihoods           = likelihoods;
             storedPartialLikelihoods    = partialLikelihoods;
         }
-        
     }
     
     //  I need to tell all my eliminated parents that they need to update their likelihoods

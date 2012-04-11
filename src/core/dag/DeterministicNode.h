@@ -44,7 +44,7 @@ public:
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG functions implemented here
-    double                                  calculateEliminatedLnProbability(void);                             //!< Calculate summed log conditional probability over all possible states
+    double                                  calculateEliminatedLnProbability(bool enforceProbabilityCalculation);//!< Calculate summed log conditional probability over all possible states
     DAGNode*                                cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
     void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
     const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
@@ -54,6 +54,8 @@ public:
     bool                                    isNotInstantiated(void) const;
     bool                                    isEliminated(void) const;
     void                                    likelihoodsNeedUpdates();                                           //!< Tell this node that the likelihoods need to be updated
+    void                                    markForRecalculation(void);                                         //!< Flag this node for recalculation
+    bool                                    needsRecalculation(void) const;                                     //!< Does this node need to recalculate its probability or likelihood?
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
     void                                    swapParentNode( DAGNode* oldP, DAGNode* newP);           //!< Swap a parent node
 

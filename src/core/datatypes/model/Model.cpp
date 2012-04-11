@@ -342,7 +342,7 @@ void Model::printValue(std::ostream& o) const {
 		size_t nameStrSize = nameStr.size();
 		for (size_t j=0; j<18-nameStrSize; j++)
 			nameStr += " ";
-		nameStr += (*i)->getName();
+		nameStr += (*i)->getName() + " (" + long((const DAGNode*)*i) + ")";
 		RBOUT(nameStr);
 		msg.str("");
 
@@ -379,7 +379,7 @@ void Model::printValue(std::ostream& o) const {
 		const std::set<DAGNode*> &parents = (*i)->getParents();
 		for (std::set<DAGNode*>::const_iterator j=parents.begin(); j != parents.end(); j++) {   	
 			int idx = findIndexInVector( dagNodes, (*j) );
-			msg << idx << " ";
+			msg << idx << " (" << long(*j) << ") ";
         }
 		if (parents.size() == 0)
 			msg << "No Parents";
@@ -390,7 +390,7 @@ void Model::printValue(std::ostream& o) const {
         const std::set<VariableNode*> &children = (*i)->getChildren();
 		for (std::set<VariableNode*>::const_iterator j=children.begin(); j != children.end(); j++) {   	
 			int idx = findIndexInVector( dagNodes, *j );
-			msg << idx << " ";
+			msg << idx << " (" << long(*j) << ") ";
         }
 		if (children.size() == 0)
 			msg << "No Children";

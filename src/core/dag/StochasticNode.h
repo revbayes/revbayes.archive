@@ -80,6 +80,7 @@ public:
     void                                addMove(Move* m);                                                   //!< Add a move to this node
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
     void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
+    void                                markForRecalculation(void);                                         //!< Flag this node for recalculation
     const Distribution&                 getDistribution(void) const;                                        //!< Get distribution (const)
     Distribution&                       getDistribution(void);                                              //!< Get distribution (non-const)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
@@ -89,6 +90,7 @@ public:
     bool                                isEliminated() const;
     bool                                isSummedOver() const { return type == SUMMED_OVER; }
     void                                likelihoodsNeedUpdates(void);                                       //!< Tell this node that the likelihoods need to be updated
+    bool                                needsRecalculation(void) const;                                     //!< Does this node need to recalculate its probability or likelihood?
     void                                setInstantiated(bool inst);                                         //!< Set whether the node is instantiated or summed over
     void                                setSummationType(VariableType t);  
     void                                setSumProductSequence(const std::vector<StochasticNode*> seq);      //!< Set the sum-product sequence
@@ -97,7 +99,7 @@ public:
     
     // DAG functions
     double                              calculateSummedLnProbability(size_t nodeIndex);                     //!< Calculate summed log conditional probability over all possible states
-    double                              calculateEliminatedLnProbability(void);                             //!< Calculate summed log conditional probability over all possible states
+    double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation);//!< Calculate summed log conditional probability over all possible states
     DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
     void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence); //!< Construct the sum-product sequecence
     void                                constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
@@ -118,7 +120,7 @@ protected:
     bool                                needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
     bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?
     double                              storedLnProb;                                                       //!< Stored log probability
-
+    bool                                probabilityRecalculated;                                            //!< Was the probability and/or likelihood recalculated
 private:
     static const TypeSpec               typeSpec;
     RbLanguageObject*                   value;                                                              //!< Value

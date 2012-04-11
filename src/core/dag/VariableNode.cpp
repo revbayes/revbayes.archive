@@ -81,6 +81,19 @@ StochasticNode* VariableNode::getFactorRoot(void) const {
 }
 
 
+/** 
+ * Mark all our children for recalculation. 
+ * The difference between this function and touch is that touch also results into a call of likelihood updates.
+ * Here, we only want to recalculate the probability.
+ */
+void VariableNode::markChildrenForRecalculation( void ) {
+    
+    for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
+        (*i)->markForRecalculation();
+    }
+}
+
+
 /**
  * Set the factor root. The factor root is the node which starts the likelihood elimination for the eliminated subgraph.
  */

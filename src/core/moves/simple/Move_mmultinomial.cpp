@@ -107,12 +107,10 @@ double Move_mmultinomial::perform( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-//    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
-    StochasticNode*        nodePtr = NULL;
     double                 alpha0  = static_cast<const RealPos&>( alpha->getValue()         ).getValue();
     int                    k       = static_cast<const Integer&>( numCategories->getValue() ).getValue();
 
-    const RbVector<RealPos>& valPtr = static_cast<const RbVector<RealPos> &>( nodePtr->getValue() );
+    const RbVector<RealPos>& valPtr = static_cast<const RbVector<RealPos> &>( node->getValue() );
 
     RbVector<RealPos>  curVal  = valPtr;
     int             n       = int( curVal.size() );
@@ -227,7 +225,7 @@ double Move_mmultinomial::perform( void ) {
     for ( size_t i = 0; i < valPtr.size(); i++ )
         (*newVal)[i] *= sum;
 		
-    nodePtr->setValue( newVal );
+    node->setValue( newVal );
 	
     return lnProposalRatio;
 }

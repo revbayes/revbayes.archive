@@ -35,6 +35,7 @@ MoveSimple::MoveSimple(const MemberRules& memberRules) : Move(memberRules) {
  * We need to tell that the node!
  */
 void MoveSimple::acceptMove(void) {
+//    std::cerr << "Accept move on:\t" << node->getName() << std::endl;
     
     // delegate to derived classes
     accept();
@@ -120,6 +121,7 @@ const MemberRules& MoveSimple::getMemberRules( void ) const {
  */
 double MoveSimple::performMove( double& lnProbabilityRatio) {
     
+//    std::cerr << "performing move on node:\t" << node->getName() << std::endl;
     // call the derived class' perform operation
     double lnHastingsRatio  = perform();
     
@@ -127,8 +129,10 @@ double MoveSimple::performMove( double& lnProbabilityRatio) {
     
     std::set<StochasticNode* > affectedNodes;
     node->getAffectedNodes(affectedNodes);
-    for (std::set<StochasticNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++) {
+//    std::cerr << "Number of affected nodes:\t\t" << affectedNodes.size() << std::endl;
+    for (std::set<StochasticNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
         StochasticNode* theNode = *i;
+//        std::cerr << "computing probability of affected node:\t" << theNode->getName() << std::endl;
         lnProbabilityRatio += theNode->getLnProbabilityRatio();
     }
     
@@ -145,6 +149,7 @@ double MoveSimple::performMove( double& lnProbabilityRatio) {
  * We need to tell that the node!
  */
 void MoveSimple::rejectMove(void) {
+//    std::cerr << "Reject move on:\t" << node->getName() << std::endl;
     
     // delegate to derived classes
     reject();

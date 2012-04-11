@@ -48,6 +48,7 @@ public:
     void                                        addParentNode( DAGNode* p);                                                     //!< Add parent node
     StochasticNode*                             getFactorRoot(void) const;
     bool                                        isTouched(void) const { return touched; }                                       //!< Is node touched by move or parser?
+    void                                        markChildrenForRecalculation(void);                                             //!< Mark all my children for recalculation
     void                                        removeParentNode(DAGNode* p) { parents.erase(p); }                              //!< Remove a child node
     void                                        setFactorRoot(StochasticNode* r);
     
@@ -56,13 +57,15 @@ public:
 
     // DAG functions you have to override
 //    virtual double                              calculateSummedLnProbability(size_t nodeIndex) = 0;                             //!< Calculate summed log conditional probability over all possible states
-    virtual double                              calculateEliminatedLnProbability(void) = 0;                                     //!< Calculate summed log conditional probability over all possible states
+    virtual double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation) = 0;       //!< Calculate summed log conditional probability over all possible states
 //    virtual std::vector<StochasticNode*>        constructSumProductSequence(void) = 0;                                          //!< Construct the sum-product sequence
     virtual void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
     virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone entire graph
+    virtual void                                markForRecalculation(void) = 0;
     virtual bool                                isEliminated(void) const = 0;
     virtual bool                                isNotInstantiated(void) const = 0;
     virtual void                                likelihoodsNeedUpdates() = 0;                                                   //!< Tell this node that the likelihoods need to be updated
+    virtual bool                                needsRecalculation(void) const = 0;                                             //!< Does this node need to recalculate its probability or likelihood?
     virtual void                                swapParentNode( DAGNode* oldP, DAGNode* newP) = 0;                              //!< Swap a parent node
 
 protected:

@@ -102,13 +102,13 @@ DeterministicNode* DeterministicNode::clone() const {
  *  Calculate the summed over ln-probability.
  *  We just take the product of the probability of our children.
  */
-double DeterministicNode::calculateEliminatedLnProbability(void) {
+double DeterministicNode::calculateEliminatedLnProbability( bool enforceProbabilityCalculation ) {
     // initialize the log probability
     double lnProb = 0.0;
     
     // our probability is the product of the probabilities of our children
     for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
-        lnProb += (*child)->calculateEliminatedLnProbability();
+        lnProb += (*child)->calculateEliminatedLnProbability( enforceProbabilityCalculation );
     }
     
     return lnProb;
@@ -247,6 +247,9 @@ void DeterministicNode::getAffected( std::set<StochasticNode* >& affected ) {
 
     // if this node is eliminated, then we just add the factor root and that's it
     if ( isNotInstantiated() ) {
+        if ( factorRoot == NULL ) {
+            std::cerr << "Uhh Ohhh";
+        }
         affected.insert( factorRoot );
     }
     else {
@@ -396,6 +399,13 @@ void DeterministicNode::keepMe( void ) {
  */
 void DeterministicNode::likelihoodsNeedUpdates() {
     
+    // we need to mark this node as dirty so that it will recompute its likelihood and probability
+    if (!touched) {
+        // Store the current lnProb 
+        touched      = true;
+        
+    }
+    
     //  I need to tell all my eliminated parents that they need to update their likelihoods
     for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isNotInstantiated() ) {
@@ -403,6 +413,37 @@ void DeterministicNode::likelihoodsNeedUpdates() {
             static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
         }
     }
+}
+
+
+/** 
+ * Mark this deterministic node for recalculation.
+ * We set our flag four updating the value.
+ * We delegate to all our children that they need to recalculate their probabilities.
+ */
+void DeterministicNode::markForRecalculation(void) {
+    // set our flag for update
+    needsUpdate = true;
+    
+    // tell all children to recalculate their values
+    markChildrenForRecalculation();
+}
+
+
+/**
+ * Does the probability or likelihood of this node needs updateing?
+ * We need to propagate this call to all our children.
+ */
+bool DeterministicNode::needsRecalculation() const {
+    
+    //  I need to ask all my children if they need to recalculate their probabilities or likelihoods
+    for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
+        if ( (*i)->needsRecalculation() ) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 
@@ -501,7 +542,7 @@ void DeterministicNode::touchMe( void ) {
         // flag myself as being touched
         touched     = true;
         
-//        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
+        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
         storedValue = value;
         value = NULL;
     }
