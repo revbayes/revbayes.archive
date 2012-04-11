@@ -355,7 +355,7 @@ const RbLanguageObject& Mixture::executeOperationSimple(const std::string& name,
 
 
 /** Catch setting of the mixture variable */
-void Mixture::setMemberVariable(const std::string& name, Variable* var) {
+void Mixture::setMemberVariable(const std::string& name, const Variable* var) {
     
     if ( name == "allocationVector" ) {
         allocationVector_ = static_cast<DagNodeContainer*>( var->getValue().clone() );
@@ -388,7 +388,7 @@ void Mixture::setMemberVariable(const std::string& name, Variable* var) {
         classProbabilities_ =  static_cast<Simplex*>( var->getValue().clone() );
     }
     else if ( name == "numObservations" ) {
-        int numObservations = static_cast<Integer&>( var->getValue() ).getValue();
+        int numObservations = static_cast<const Integer&>( var->getValue() ).getValue();
         if (allocationVector_ != NULL ) {
             throw RbException("Mixture already constructed. Cannot reconstruct it in Mixture::setMemberVariable.");
         }

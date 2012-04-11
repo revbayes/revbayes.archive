@@ -45,7 +45,7 @@ public:
     
     // Member variable functions
     const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
-    void                            setMemberVariable(const std::string& name, Variable* var);                //!< Catch setting of the mixture
+    void                            setMemberVariable(const std::string& name, const Variable* var);        //!< Catch setting of the mixture
     
     // Member method inits
     const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Execute method
