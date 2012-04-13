@@ -77,6 +77,7 @@
 #include "Move_reallocate.h"
 #include "Move_reallocateAll.h"
 #include "ObjectMonitor.h"
+#include "Plate.h"
 #include "Simulate.h"
 #include "TreePlate.h"
 
@@ -238,6 +239,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "mreallocate",    new Move_reallocate()       );
         addTypeWithConstructor( "mreallocateAll",    new Move_reallocateAll()       );
         addTypeWithConstructor( "mchangeClassProbabilities",    new Move_changeClassProbabilities()       );
+        addTypeWithConstructor( "plate",         new Plate()             );
         addTypeWithConstructor( "objectMonitor", new ObjectMonitor()     );
         addTypeWithConstructor( "simulate",      new Simulate()          );
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
