@@ -25,7 +25,7 @@ ValueRule::ValueRule( const std::string& argName, RbLanguageObject *defVal ) : A
 
 
 /** Construct rule without default value; use "" for no label. */
-ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp ) : ArgumentRule( argName, argTypeSp ) {
+ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, bool optional ) : ArgumentRule( argName, argTypeSp, optional ) {
 
 }
 

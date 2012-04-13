@@ -15,11 +15,15 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
+#include "DeterministicNode.h"
+#include "Distribution.h"
+#include "Ellipsis.h"
 #include "FunctionTable.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
-#include "Ellipsis.h"
+#include "StochasticNode.h"
 
 #include <sstream>
 
@@ -187,7 +191,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                 if (it != args.begin()) {
                     msg << ",";
                 }
-                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
+                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec() << " \"" << it->getLabel() << "\"";
             }
             msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
@@ -246,7 +250,19 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                 if (it != args.begin()) {
                     msg << ",";
                 }
-                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
+//                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
+                const DAGNode* theParNode = it->getVariable().getDagNode();
+                if ( theParNode->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
+                    const DeterministicNode* theDetNode = static_cast<const DeterministicNode*>( theParNode );
+                    msg << " " << theDetNode->getFunction().getReturnType();
+                }
+                else if ( theParNode->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
+                    const StochasticNode* theStochNode = static_cast<const StochasticNode*>( theParNode );
+                    msg << " " << theStochNode->getDistribution().getVariableType();
+                }
+                else {
+                    msg << " " << theParNode->getValue().getTypeSpec();
+                }
             }
             msg << " )" << std::endl;
             

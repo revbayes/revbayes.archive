@@ -50,10 +50,11 @@ class ArgumentRule : public RbInternal {
         Variable&                   getDefaultVariable(void);                                                                           //!< Get default argument (non-const to return non-const variable)
         bool                        hasDefault(void) const;                                                                             //!< Has default?
         virtual bool                isArgumentValid(const Variable* var, bool convert = false) const;                                   //!< Is var valid argument?
-
+        bool                        isOptional(void) const;                                                                             //!< Is this rule optional? If so, we do not use a default parameter when no argument is given.
+    
     protected:
                                     ArgumentRule(const std::string& argName, RbLanguageObject *defValue);                               //!< Constructor of rule from default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool optional=false);           //!< Constructor of rule without default value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue);    //!< Constructor of rule with default value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode *defVariable);          //!< Constructor of rule with default reference or default wrapped value
                                     ArgumentRule( const ArgumentRule& a);                                                               //!< Copy constructor
@@ -64,6 +65,7 @@ class ArgumentRule : public RbInternal {
         std::string                 label;                                                                                              //!< Label of argument
         Variable*                   defaultVariable;                                                                                    //!< default value
         bool                        hasDefaultVal;                                                                                      //!< Has default
+        bool                        optional;                                                                                           //!< Is optional?
 
 };
 

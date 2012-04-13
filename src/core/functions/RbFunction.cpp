@@ -282,6 +282,20 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, std::
         }
     }
     
+    
+    
+    /*********************  5. Fill with default values  **********************/
+    
+    /* Fill in empty slots using default values */
+    for(size_t i=0; i<numRegularRules; i++) {
+        
+        if ( filled[i] == true )
+            continue;
+        
+        if ( !theRules[i].hasDefault() && !theRules[i].isOptional() )
+            return false;
+    }
+    
     return true;
 }
 
@@ -643,13 +657,16 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
         if ( filled[i] == true )
             continue;
 
-        if ( !theRules[i].hasDefault() )
-            throw RbException("No argument found for parameter '" + theRules[i].getArgumentLabel() + "'.");
+        // we just leave the optional arguments empty
+        if ( !theRules[i].isOptional() ) {
+            if ( !theRules[i].hasDefault() )
+                throw RbException("No argument found for parameter '" + theRules[i].getArgumentLabel() + "'.");
 
-        const ArgumentRule& theRule = theRules[i];
-        RbVariablePtr theVar = theRule.getDefaultVariable().clone();
-        theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
-        setArgument(theRule.getArgumentLabel(), Argument("", theVar ) );
+            const ArgumentRule& theRule = theRules[i];
+            RbVariablePtr theVar = theRule.getDefaultVariable().clone();
+            theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
+            setArgument(theRule.getArgumentLabel(), Argument("", theVar ) );
+        }
     }
 
     argsProcessed = true;

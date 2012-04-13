@@ -40,14 +40,9 @@ ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal)
 
 
 /**
- * Construct rule without default value; use "" for no label. To make sure that the
- * argument rule is set to the right language type specification, we call the workspace
- * to translate from object type to language type. This is important because
- * otherwise calling the constructor with container types would result in argument
- * rules that had a container type instead of the language type of the container, which
- * would make the rule worthless.
+ * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(false), defaultVariable( NULL ) {
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool opt) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(false), defaultVariable( NULL ), optional( opt ) {
     
 }
 
@@ -75,6 +70,7 @@ ArgumentRule::ArgumentRule(const ArgumentRule& a) : RbInternal( a ), argTypeSpec
         defaultVariable->incrementReferenceCount();
     
     hasDefaultVal       = a.hasDefaultVal;
+    optional            = a.optional;
 }
 
 
@@ -103,6 +99,7 @@ ArgumentRule& ArgumentRule::operator=(const ArgumentRule &a) {
             defaultVariable->incrementReferenceCount();
         
         hasDefaultVal       = a.hasDefaultVal;
+        optional            = a.optional;
     }
     
     return *this;
@@ -255,6 +252,13 @@ bool ArgumentRule::isArgumentValid(const Variable* var, bool convert) const {
     
     return false;
 }
+
+
+/* Is optional? */
+bool ArgumentRule::isOptional(void) const {
+    return optional;
+}
+ 
 
 
 /** Print value for user (in descriptions of functions, for instance) */
