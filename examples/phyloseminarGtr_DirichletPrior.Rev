@@ -111,3 +111,4 @@ mymcmcgtr <- mcmc(mygtr, moves=moves, monitor=monitors)
 
 mymcmcgtr.run(generations=1000)
 
+
