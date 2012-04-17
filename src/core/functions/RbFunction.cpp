@@ -748,18 +748,11 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
 }
 
 
-/** Set a argument variable. This is the base class and we do not expect to set any variables! */
-void RbFunction::setArgumentVariable(const std::string& name, const Variable* var) {
-    
-    throw RbException("No argument named '" + name + "' expected in function '" + getTypeSpec().getBaseType() + "' and therefore cannot set it.");
-}
-
-
 /** Set a member variable */
 void RbFunction::setArgument(const std::string& name, const Argument& arg) {
     // calling the internal method to set the DAG node
     // the derived classes should know how to set their members
-    setArgumentVariable(name, arg.getVariablePtr() );
+//    setArgumentVariable(name, arg.getVariablePtr() );
     
     // make sure that the argument has the correct label
     Argument myArg = Argument( name, arg.getVariablePtr() );

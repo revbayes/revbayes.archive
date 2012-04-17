@@ -31,8 +31,8 @@ public:
     virtual void                setArguments(const std::vector<RbValue<void*> >& args);      //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
 
 private:
-    RbValue<double>             lambda;
-    RbValue<double>             result;
+    RbValue<double*>            lambda;
+    RbValue<double*>            result;
 };
 
 #endif

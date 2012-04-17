@@ -37,20 +37,17 @@ Func_exp* Func_exp::clone( void ) const {
 /** Execute function */
 void Func_exp::execute( void ) {
     
-//    const double d = static_cast<const Real*>( args[0] )->getValue();
-//    
-//    value.setValue( exp(d) );
-//    return value;
+    *result.value = exp( *lambda.value );
 }
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
 void Func_exp::setArguments(const std::vector<RbValue<void*> > &args) {
     
-    lambda.value    = static_cast<double*>( *args[0].value );
+    lambda.value    = ( static_cast<double*>( args[0].value ) );
     lambda.lengths  = args[0].lengths;
     
-    result.value    = static_cast<double*>( *args[1].value );
+    result.value    = static_cast<double*>( args[1].value );
     result.lengths  = args[1].lengths;
 }
 

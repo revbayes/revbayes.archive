@@ -417,9 +417,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "cos",       new Func_cos()   );
         
         ArgumentRules expFuncArgRules;
-        TypeSpec expFuncRetType = RealPos::getClassTypeSpec();
+        RbLanguageObject* expFuncRetArg = new RealPos();
         expFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
-        addFunction( "exp",       new ParserFunction( new Func_exp(), "exponential function", expFuncArgRules, expFuncRetType, false )  );
+        addFunction( "exp",       new ParserFunction( new Func_exp(), "exponential function", expFuncArgRules, expFuncRetArg, false )  );
         
         addFunction( "ln",        new Func_ln()    );
         addFunction( "log",       new Func_log()   );

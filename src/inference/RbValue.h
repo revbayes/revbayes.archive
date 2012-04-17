@@ -26,9 +26,9 @@ template<class valueType>
 class RbValue {
     
 public:
-    virtual                            ~RbValue(void);                                                         //!< Virtual destructor
+    virtual                            ~RbValue(void) {}                                                         //!< Virtual destructor
     
-    valueType*                          value;
+    valueType                           value;
     std::vector<size_t>                 lengths;
     
 };

@@ -55,7 +55,7 @@ class InferenceFunction;
 class ParserFunction : public RbFunction {
     
 public:
-    ParserFunction(InferenceFunction *func, const std::string &funcName, const ArgumentRules &argRules, const TypeSpec &returnType, bool throws = false);                                                                   //!< Basic constructor
+    ParserFunction(InferenceFunction *func, const std::string &funcName, const ArgumentRules &argRules, RbLanguageObject *returnVal, bool throws = false);                                                                   //!< Basic constructor
     ParserFunction(const ParserFunction &x);                                                    //!< Copy constuctor
     virtual                                            ~ParserFunction(void);                                                                  //!< Destructor
     
@@ -74,36 +74,19 @@ public:
     virtual const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
     virtual const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
     
-    // ParserFunction function you may want to override
-    virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
-    virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
     virtual bool                                    throws(void) const { return throwsError; }                                          //!< Does the function throw exceptions?
-    
-    
-    // ParserFunction functions you should not override
-    void                                            clear(void);                                                                        //!< Clear argument Environment "args"
-    const std::vector<Argument>&                    getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
-    std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
-    void                                            setArgument(const std::string& name, const Argument& arg);                          //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
     
 protected:
     
-    virtual void                                    clearArguments(void);                                                               //!< Clear argument Environment "args"
     virtual const RbLanguageObject&                 execute(const std::vector<const RbObject*>& args);                                  //!< Execute the function. This is the function one has to overwrite for vector type execution.
-    virtual const RbLanguageObject&                 executeFunction();                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
     virtual const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*>& args);                          //!< Execute the function. This is the function one has to overwrite for single return values.
-    
-    // Member variables
-    bool                                            argsProcessed;                                                                      //!< Are arguments processed?
-    std::vector<Argument>                           args;
-    
+        
 private:   
-    int                                             computeMatchScore(const DAGNode* arg, const ArgumentRule& rule);
     
     ArgumentRules                                   argRules;
     InferenceFunction*                              function;
     std::string                                     functionName;
-    TypeSpec                                        returnType;
+    RbLanguageObject*                               returnValue;
     bool                                            throwsError;
     
     //        RbLanguageObject*                               retVal;

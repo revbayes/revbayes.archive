@@ -130,8 +130,5 @@ void Func_clamp::setArgumentVariable(std::string const &name, const Variable* va
     else if ( name == "value" ) {
         value = var;
     }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 
