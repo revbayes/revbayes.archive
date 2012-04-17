@@ -20,21 +20,22 @@
 #ifndef InferenceFunction_H
 #define InferenceFunction_H
 
-#include <string>
+#include "RbValue.h"
+
 #include <vector>
 
 class InferenceFunction {
     
 public:
-    virtual                                        ~InferenceFunction(void) {};                         //!< Destructor
+    virtual                                        ~InferenceFunction(void) {};                                     //!< Destructor
         
     // InferenceFunction functions you have to override
-    virtual InferenceFunction*                      clone(void) const = 0;                              //!< Create a clone of the function
-    virtual void                                    execute(void) = 0;                                  //!< Execute function
-    virtual void                                    setArguments(const std::vector<void*> args) = 0;    //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+    virtual InferenceFunction*                      clone(void) const = 0;                                          //!< Create a clone of the function
+    virtual void                                    execute(void) = 0;                                              //!< Execute function
+    virtual void                                    setArguments(const std::vector<RbValue<void*> > args) = 0;      //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
     
 protected:
-    InferenceFunction(void) {};                                                                         //!< Basic constructor
+    InferenceFunction(void) {};                                                                                     //!< Basic constructor
     
 };
 
