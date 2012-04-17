@@ -19,6 +19,7 @@
 #include "DAGNode.h"
 #include "Dist_birthdeath.h"
 #include "Integer.h"
+#include "MemberFunction.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RandomNumberFactory.h"

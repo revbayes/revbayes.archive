@@ -17,6 +17,7 @@
  */
 
 #include "RbUtil.h"
+#include "MemberFunction.h"
 #include "MoveSimple.h"
 #include "RbException.h"
 #include "StochasticNode.h"

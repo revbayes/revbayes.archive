@@ -20,8 +20,8 @@
 #ifndef MemberObject_H
 #define MemberObject_H
 
-#include "Environment.h"
-#include "MethodTable.h"
+#include "Argument.h"
+//#include "MethodTable.h"
 #include "RbLanguageObject.h"
 
 #include <set>

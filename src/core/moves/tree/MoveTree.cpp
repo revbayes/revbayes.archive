@@ -17,6 +17,7 @@
 
 
 #include "ConstantNode.h"
+#include "MemberFunction.h"
 #include "MoveTree.h"
 #include "RbException.h"
 #include "RbUtil.h"

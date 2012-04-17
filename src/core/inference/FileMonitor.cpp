@@ -19,6 +19,7 @@
 #include "Ellipsis.h"
 #include "Integer.h"
 #include "FileMonitor.h"
+#include "MemberFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "ValueRule.h"

@@ -44,9 +44,9 @@ Func_exp* Func_exp::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_exp::executeFunction( void ) {
+const RbLanguageObject& Func_exp::executeFunction( const std::vector<const RbObject*> &args) {
     
-    const double d = static_cast<const Real&>( x->getValue() ).getValue();
+    const double d = static_cast<const Real*>( args[0] )->getValue();
     
     value.setValue( exp(d) );
     return value;

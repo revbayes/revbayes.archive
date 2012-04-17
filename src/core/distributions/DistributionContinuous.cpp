@@ -20,6 +20,7 @@
 #include "DAGNode.h"
 #include "DistributionContinuous.h"
 #include "MemberFunction.h"
+#include "MethodTable.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "Real.h"

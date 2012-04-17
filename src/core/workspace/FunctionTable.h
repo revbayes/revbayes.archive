@@ -19,7 +19,7 @@
 #ifndef FunctionTable_H
 #define FunctionTable_H
 
-#include "RbFunction.h"     // For typedef of ArgumentRules
+//#include "RbFunction.h"     // For typedef of ArgumentRules
 #include "RbInternal.h"
 
 #include <map>
@@ -29,6 +29,7 @@
 
 class Argument;
 class ArgumentRule;
+class RbFunction;
 
 
 class FunctionTable : public RbInternal {

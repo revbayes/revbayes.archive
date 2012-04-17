@@ -17,6 +17,7 @@
 
 #include "DAGNode.h"
 #include "Dist_exp.h"
+#include "MemberFunction.h"
 #include "Move_mscale.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"

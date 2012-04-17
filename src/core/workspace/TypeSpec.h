@@ -41,6 +41,7 @@ class TypeSpec {
         const TypeSpec*             getParentType(void) const { return parent; }
         const std::string&          getType(void) const { return type; }                                                            //!< Get object type
         bool                        isDerivedOf(const TypeSpec& x) const;                                                           //!< Test whether the type represented by this object is of the same or derived type of the argument
+        void                        setElementType(TypeSpec* et);                                                                   //!< Set the element type of this type spec
         const std::string&          toString(void) const;                                                                           //!< Express as a string
 
     private:

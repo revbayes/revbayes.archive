@@ -20,6 +20,7 @@
 #include "Integer.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
+#include "MethodTable.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNullObject.h"

@@ -19,14 +19,18 @@
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
+#include "Container.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "RbConstVariablePtr.h"
 #include "RbException.h"
+#include "RbFunction.h"
 #include "RbUtil.h"
 #include "RbObject.h"
+#include "RbVector.h"
 #include "StochasticNode.h"
+#include "TypeSpec.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -182,7 +186,7 @@ bool ArgumentRule::isArgumentValid(const Variable* var, bool convert) const {
                 // do the conversion if we are actually asked to
                 if ( convert ) {
                     // this is a safe const cast (Sebastian)
-                    const_cast<Variable*>( (const Variable*)var )->setValueTypeSpec( argTypeSpec );
+                    const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
                 }
                 
                 return true;
@@ -191,13 +195,13 @@ bool ArgumentRule::isArgumentValid(const Variable* var, bool convert) const {
                 
                 // should we do the type conversion?
                 if ( convert ) {
-                    ConstantNode* theConstNode = static_cast<ConstantNode*>( const_cast<Variable*>( (const Variable*)var )->getDagNode() );
+                    ConstantNode* theConstNode = static_cast<ConstantNode*>( const_cast<Variable*>( var )->getDagNode() );
                     // Do the type conversion
                     RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( argTypeSpec ) );
                     theConstNode->setValue( convertedObj );
                     
                     // set the new type spec of the variable
-                    const_cast<Variable*>( (const Variable*)var )->setValueTypeSpec( argTypeSpec );
+                    const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
                 }
                 return true;
             }
@@ -219,7 +223,7 @@ bool ArgumentRule::isArgumentValid(const Variable* var, bool convert) const {
                     
                     // do the conversion if we are actually asked to
                     if ( convert ) {
-                        const_cast<Variable*>( (const Variable*)var )->setValueTypeSpec( argTypeSpec );
+                        const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
                     }
                     
                     return true;
@@ -236,7 +240,7 @@ bool ArgumentRule::isArgumentValid(const Variable* var, bool convert) const {
                     
                     // do the conversion if we are actually asked to
                     if ( convert ) {
-                        const_cast<Variable*>( (const Variable*)var )->setValueTypeSpec( argTypeSpec );
+                        const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
                     }
                     
                     return true;
@@ -247,7 +251,63 @@ bool ArgumentRule::isArgumentValid(const Variable* var, bool convert) const {
         
         
     }
+    
+    // Finally, we test if this is a vector of types which we accept
+    if ( var->getValue().getTypeSpec().isDerivedOf( Container::getClassTypeSpec() ) ) {
+        const Container& c = static_cast<const Container&>( var->getValue() );
+        bool constant = var->getDagNode()->isTypeSpec( ConstantNode::getClassTypeSpec() );
+        bool valid = true;
+        bool conversionNeeded = false;
+        TypeSpec conversionType = TypeSpec( RbVector<RbObject>::getClassName() );
+        for (size_t i = 0; i < c.size(); i++) {
+            valid &= isArgumentValid( c.getElement(i), conversionNeeded, conversionType );
+        }
+        if ( constant && conversionNeeded && convert ) {
+            
+            ConstantNode* theConstNode = static_cast<ConstantNode*>( const_cast<Variable*>( var )->getDagNode() );
+            // Do the type conversion
+            RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( conversionType ) );
+            theConstNode->setValue( convertedObj );
+                
+            // set the new type spec of the variable
+            const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
+            
+        }
+        
+        return valid && ( constant == conversionNeeded );
+    }
 
+    
+    
+    return false;
+}
+
+
+/** Test if argument is valid */
+bool ArgumentRule::isArgumentValid(const RbObject& var, bool &conversionNeeded, TypeSpec &conversionType) const {
+    
+    // first we check if the type we want is already guaranteed by the variable
+    if ( var.getTypeSpec().isDerivedOf( argTypeSpec ) ) {
+        return true;
+    }
+    
+    if ( var.isConvertibleTo( argTypeSpec ) ) {
+        // Yes, we can and have to convert
+        // should we do the type conversion?
+        conversionNeeded = true;
+        conversionType.setElementType( new TypeSpec( argTypeSpec ) );
+        
+        return true;
+    }
+    
+    
+    // Finally, we test if this is a vector of types which we accept
+    if ( var.getTypeSpec().isDerivedOf( Container::getClassTypeSpec() ) ) {
+        TypeSpec* et = new TypeSpec( RbVector<RbObject>::getClassName() );
+        conversionType.setElementType( et );
+        return isArgumentValid( static_cast<const Container&>( var ).getElement(0), conversionNeeded, *et );
+    }
+    
     
     
     return false;

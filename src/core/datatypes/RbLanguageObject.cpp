@@ -17,6 +17,7 @@
  */
 
 #include "ConstantNode.h"
+#include "MemberFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbLanguageObject.h"
@@ -28,7 +29,6 @@
 
 /** Convert to type and dim. The caller manages the returned object. */
 RbObject* RbLanguageObject::convertTo(const TypeSpec& type) const {
-    
     
     return RbObject::convertTo(type);
 }

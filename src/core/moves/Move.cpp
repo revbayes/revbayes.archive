@@ -19,6 +19,7 @@
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
 #include "MemberFunction.h"
+#include "MethodTable.h"
 #include "Move.h"
 #include "Natural.h"
 #include "RealPos.h"

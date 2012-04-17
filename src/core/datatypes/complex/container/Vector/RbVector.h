@@ -106,6 +106,7 @@ protected:
 #include "Complex.h"
 #include "Ellipsis.h"
 #include "MemberFunction.h"
+#include "MethodTable.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "Probability.h"
@@ -652,7 +653,7 @@ const RbObject& RbVector<valueType>::getElement(size_t index) const {
 template <typename valueType>
 RbObject& RbVector<valueType>::getElement(size_t index) {
     
-    return operator[](index);
+    return this->operator[](index);
 }
 
 

@@ -17,6 +17,7 @@
 
 #include "DAGNode.h"
 #include "Dist_beta.h"
+#include "MemberFunction.h"
 #include "Move_mscale.h"
 #include "Probability.h"
 #include "RealPos.h"

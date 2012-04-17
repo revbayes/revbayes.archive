@@ -59,6 +59,8 @@ class ArgumentRule : public RbInternal {
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode *defVariable);          //!< Constructor of rule with default reference or default wrapped value
                                     ArgumentRule( const ArgumentRule& a);                                                               //!< Copy constructor
 
+        bool                        isArgumentValid(const RbObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;
+    
         ArgumentRule&               operator=(const ArgumentRule& a);
         
         TypeSpec                    argTypeSpec;

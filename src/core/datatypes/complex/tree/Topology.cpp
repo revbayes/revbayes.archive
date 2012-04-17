@@ -19,6 +19,7 @@
 #include "ConstantNode.h"
 #include "MemberObject.h"
 #include "MemberFunction.h"
+#include "MethodTable.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"

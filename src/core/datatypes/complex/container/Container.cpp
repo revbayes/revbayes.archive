@@ -18,6 +18,7 @@
 
 #include "Container.h"
 #include "MemberFunction.h"
+#include "MethodTable.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbObject.h"

@@ -17,6 +17,7 @@
 
 #include "ConstantNode.h"
 #include "DistributionContinuous.h"
+#include "MemberFunction.h"
 #include "Move_mslide.h"
 #include "RandomNumberGenerator.h"
 #include "RbUtil.h"

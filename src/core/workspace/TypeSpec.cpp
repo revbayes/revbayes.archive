@@ -171,6 +171,15 @@ bool TypeSpec::isDerivedOf(const TypeSpec &x) const {
 }
 
 
+
+/*
+ * Set the element type for this type spec.
+ */
+void TypeSpec::setElementType(TypeSpec *et) {
+    elementType = et;
+}
+
+
 /** Convert to string */
 const std::string& TypeSpec::toString(void) const {
 

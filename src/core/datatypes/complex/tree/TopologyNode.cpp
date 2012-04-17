@@ -20,6 +20,7 @@
 #include "ConstantNode.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
+#include "MethodTable.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"

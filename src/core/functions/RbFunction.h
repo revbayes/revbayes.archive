@@ -89,7 +89,9 @@ class RbFunction :  public RbInternal {
                                                         RbFunction(void);                                                                   //!< Basic constructor
 
         virtual void                                    clearArguments(void);                                                               //!< Clear argument Environment "args"
-        virtual const RbLanguageObject&                 executeFunction(void);                                                              //!< Execute the function. This is the function one has to overwrite for simple return values.
+        virtual const RbLanguageObject&                 execute(const std::vector<const RbObject*>& args);                                  //!< Execute the function. This is the function one has to overwrite for vector type execution.
+        virtual const RbLanguageObject&                 executeFunction();                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        virtual const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*>& args);                          //!< Execute the function. This is the function one has to overwrite for single return values.
         virtual void                                    setArgumentVariable(const std::string& name, const Variable* var);                  //!< Set the private member variable here (for derived classes)!
     
         // Member variables
@@ -98,6 +100,8 @@ class RbFunction :  public RbInternal {
 
     private:   
         int                                             computeMatchScore(const DAGNode* arg, const ArgumentRule& rule);
+    
+//        RbLanguageObject*                               retVal;
 };
 
 #endif

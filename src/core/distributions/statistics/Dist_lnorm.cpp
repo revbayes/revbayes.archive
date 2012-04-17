@@ -18,6 +18,7 @@
 #include "DAGNode.h"
 #include "Dist_lnorm.h"
 #include "DistributionLognormal.h"
+#include "MemberFunction.h"
 #include "Move_mslide.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"

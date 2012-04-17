@@ -16,6 +16,7 @@
  */
 
 #include "ConstantNode.h"
+#include "MemberFunction.h"
 #include "Move_mscale.h"
 #include "RandomNumberGenerator.h"
 #include "RbUtil.h"

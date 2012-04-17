@@ -17,6 +17,7 @@
 #ifndef TreePlate_H
 #define TreePlate_H
 
+#include "Environment.h"
 #include "MemberObject.h"
 #include "Topology.h"
 #include <set>

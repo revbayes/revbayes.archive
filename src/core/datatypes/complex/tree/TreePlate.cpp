@@ -20,6 +20,7 @@
 #include "ConstantNode.h"
 #include "DagNodeContainer.h"
 #include "MemberFunction.h"
+#include "MethodTable.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbNullObject.h"
