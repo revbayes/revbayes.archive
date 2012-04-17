@@ -32,7 +32,7 @@ public:
     // InferenceFunction functions you have to override
     virtual InferenceFunction*                      clone(void) const = 0;                                          //!< Create a clone of the function
     virtual void                                    execute(void) = 0;                                              //!< Execute function
-    virtual void                                    setArguments(const std::vector<RbValue<void*> > args) = 0;      //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+    virtual void                                    setArguments(const std::vector<RbValue<void*> > &args) = 0;     //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
     
 protected:
     InferenceFunction(void) {};                                                                                     //!< Basic constructor

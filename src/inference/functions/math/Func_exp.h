@@ -17,42 +17,22 @@
 #ifndef Func_exp_H
 #define Func_exp_H
 
-#include "RbFunction.h"
-#include "RealPos.h"
+#include "InferenceFunction.h"
+#include "RbValue.h"
 
-#include <map>
-#include <string>
-#include <vector>
-
-class DAGNode;
-
-const std::string Func_exp_name = "Exponential function";
-
-class Func_exp :  public RbFunction {
+class Func_exp : public InferenceFunction {
     
 public:
     Func_exp(void);                                                                         //!< default constructor
     
     // Basic utility functions
     Func_exp*                   clone(void) const;                                          //!< Clone the object
-    static const std::string&   getClassName(void);                                         //!< Get class name
-    static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-    const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
-    
-    // Regular functions
-    const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-    const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-
-protected:
-    const RbLanguageObject&     executeFunction(const std::vector<const RbObject*> &args);  //!< Execute function
-    void                        setArgumentVariable(const std::string& name, const Variable* var);
+    virtual void                execute(void);                                              //!< Execute function
+    virtual void                setArguments(const std::vector<RbValue<void*> >& args);      //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
 
 private:
-    RealPos                     value;
-    
-    // Arguments
-    RbConstVariablePtr          x;
-    
+    RbValue<double>             lambda;
+    RbValue<double>             result;
 };
 
 #endif

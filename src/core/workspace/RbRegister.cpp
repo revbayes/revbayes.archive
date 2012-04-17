@@ -25,6 +25,7 @@
 #include "DistributionFunction.h"
 #include "DistributionContinuous.h"
 #include "FunctionTable.h"
+#include "ParserFunction.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbAbstract.h"
@@ -414,7 +415,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add math functions (alphabetical order) */
         addFunction( "abs",       new Func_abs()   );
         addFunction( "cos",       new Func_cos()   );
-        addFunction( "exp",       new Func_exp()   );
+        
+        ArgumentRules expFuncArgRules;
+        TypeSpec expFuncRetType = RealPos::getClassTypeSpec();
+        expFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+        addFunction( "exp",       new ParserFunction( new Func_exp(), "exponential function", expFuncArgRules, expFuncRetType, false )  );
+        
         addFunction( "ln",        new Func_ln()    );
         addFunction( "log",       new Func_log()   );
         addFunction( "mean",      new Func_mean()  );
