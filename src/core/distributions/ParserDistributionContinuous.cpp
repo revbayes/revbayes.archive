@@ -159,7 +159,7 @@ const TypeSpec& ParserDistributionContinuous::getVariableType( void ) const {
 double ParserDistributionContinuous::lnPdf(const RbLanguageObject &value) const {
     
     std::vector<RbValue<void*> > newArgs;
-    for (std::map<std::string, const Variable*>::iterator it = members.begin(); it != members.end(); ++it) {
+    for (std::map<std::string, const Variable*>::const_iterator it = members.begin(); it != members.end(); ++it) {
         RbValue<void*> arg;
         arg.value = it->second->getValue().getValue(arg.lengths);
         newArgs.push_back( arg );
@@ -180,7 +180,7 @@ double ParserDistributionContinuous::lnPdf(const RbLanguageObject &value) const 
 double ParserDistributionContinuous::pdf(const RbLanguageObject &value) const {
     
     std::vector<RbValue<void*> > newArgs;
-    for (std::map<std::string, const Variable*>::iterator it = members.begin(); it != members.end(); ++it) {
+    for (std::map<std::string, const Variable*>::const_iterator it = members.begin(); it != members.end(); ++it) {
         RbValue<void*> arg;
         arg.value = it->second->getValue().getValue(arg.lengths);
         newArgs.push_back( arg );
