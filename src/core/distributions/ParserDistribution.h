@@ -58,9 +58,7 @@ protected:
     
     virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
     virtual void                        setMemberVariable(const std::string& name, const Variable* var);          //!< Set member variable
-    
-    std::vector<const Variable*>        parameters;
-    
+        
 private:
     
     Real                                functionValueLnPdf;

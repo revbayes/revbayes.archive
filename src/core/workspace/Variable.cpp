@@ -161,16 +161,6 @@ const RbLanguageObject& Variable::getValue(void) const {
     
     RbLanguageObject& retVal = node->getValue();
     
-//    // check the type and if we need conversion
-//    if (!retVal.isTypeSpec(valueTypeSpec)) {
-//        
-//        //  variable->getDagNode()->setValue(convRetVal);
-//        
-//        // \TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
-//        
-//        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(valueTypeSpec));
-//    }
-    
     return retVal;
 }
 
@@ -178,16 +168,6 @@ const RbLanguageObject& Variable::getValue(void) const {
 RbLanguageObject& Variable::getValue(void) {
     
     RbLanguageObject& retVal = node->getValue();
-    
-//    // check the type and if we need conversion
-//    if (!retVal.isTypeSpec(valueTypeSpec)) {
-//        
-//        //  variable->getDagNode()->setValue(convRetVal);
-//        
-//        // \TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
-//        
-//        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(valueTypeSpec));
-//    }
     
     return retVal;
 }

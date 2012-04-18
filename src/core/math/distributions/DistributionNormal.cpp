@@ -62,7 +62,7 @@ double RbStatistics::Normal::pdf(double mu, double sigma, double x) {
  */
 double RbStatistics::Normal::lnPdf(double x) {
     
-	return -0.5 * RbConstants::LN_SQRT_2PI - 0.5 * x * x;
+	return - RbConstants::LN_SQRT_2PI - 0.5 * x * x;
 }
 
 /*!
@@ -78,7 +78,7 @@ double RbStatistics::Normal::lnPdf(double x) {
  */
 double RbStatistics::Normal::lnPdf(double mu, double sigma, double x) {
     
-	return -0.5 * RbConstants::LN_SQRT_2PI - std::log(sigma) - 0.5 * (x - mu) * (x - mu) / (sigma * sigma);
+	return - RbConstants::LN_SQRT_2PI - std::log(sigma) - 0.5 * (x - mu) * (x - mu) / (sigma * sigma);
 }
 
 /*!

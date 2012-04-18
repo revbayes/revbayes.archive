@@ -40,7 +40,7 @@ Func_structure* Func_structure::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_structure::executeFunction( void ) {
 
-    variable->getDagNode()->printStruct( std::cout );
+    args[0].getVariable().getDagNode()->printStruct( std::cout );
 
     return RbNullObject::getInstance();
 }
@@ -92,17 +92,5 @@ const TypeSpec& Func_structure::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_structure::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "variable" ) {
-        variable = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

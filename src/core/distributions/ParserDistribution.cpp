@@ -101,7 +101,7 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
 
 
 void ParserDistribution::setMemberVariable(std::string const &name, const Variable *var) {
-    parameters.push_back( var );
+//    parameters.push_back( var );
     
 }
 

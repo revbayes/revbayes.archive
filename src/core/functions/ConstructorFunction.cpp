@@ -85,9 +85,8 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 /** Execute function: we reset our template object here and give out a copy */
 const RbLanguageObject& ConstructorFunction::executeFunction(void) {
 
-    if (copyObject != NULL) {
-        delete copyObject;
-    }
+    delete copyObject;
+    
     copyObject = templateObject->clone();
 
     

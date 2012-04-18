@@ -52,15 +52,23 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
     // copy the members.
     // Note, this is a shallow copy because the members are pointers to variables which itself are pointers to DAG nodes.
     members = m.members;
-//    for (std::map<std::string, RbVariablePtr>::const_iterator i = m.members.begin(); i != m.members.end(); i++) {
-//        setMember(i->first, i->second);
-//    }
+    
+    // We need to increment the reference count for the member variables
+    for (std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++) {
+        i->second->incrementReferenceCount();
+    }
 }
 
 
 /** Destructor. */
 MemberObject::~MemberObject(void) {
-
+    
+    for (std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++) {
+        const Variable *var = i->second;
+        if (var->decrementReferenceCount() == 0) {
+            delete var;
+        }
+    }
 }
 
 
@@ -70,6 +78,11 @@ MemberObject& MemberObject::operator=(const MemberObject &m) {
     if (this != &m) {
           
         members = m.members;
+        // We need to increment the reference count for the member variables
+        for (std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++) {
+            i->second->incrementReferenceCount();
+        }
+
     }
     
     return (*this);
@@ -233,11 +246,11 @@ bool MemberObject::isConstant( void ) const {
 /** Print value for user */
 void MemberObject::printValue(std::ostream& o) const {
     
-    o << "Printing members of MemberObject:" << std::endl;
+    o << "Printing members of MemberObject with " << members.size() << " members:" << std::endl;
 
     for ( std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++ ) {
-
-        o << "   ." << i->first << ":\t\t";
+        const std::string &name = i->first;
+        o << "   ." << name << ":\t\t";
         i->second->getValue().printValue(o);
         o << std::endl;
     }
