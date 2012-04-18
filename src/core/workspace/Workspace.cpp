@@ -25,6 +25,7 @@
 #include "DistributionFunction.h"
 #include "DistributionContinuous.h"
 #include "FunctionTable.h"
+#include "ParserDistributionContinuous.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -103,6 +104,26 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
     functionTable->addFunction("d" + name, new DistributionFunction(dist->clone(), DistributionFunction::DENSITY));
     functionTable->addFunction("r" + name, new DistributionFunction((dist->clone()), DistributionFunction::RVALUE));
 
+    return true;
+}
+
+
+/** Add real-valued distribution to the workspace */
+bool Workspace::addDistribution(const std::string& name, ParserDistributionContinuous* dist) {
+    
+    PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
+    
+    if (typeTable.find(name) != typeTable.end())
+        throw RbException("There is already a type named '" + name + "' in the workspace");
+    
+    typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
+    
+    functionTable->addFunction(name      , new ConstructorFunction ( dist ));
+    functionTable->addFunction("d" + name, new DistributionFunction( dist->clone() , DistributionFunction::DENSITY));
+    functionTable->addFunction("r" + name, new DistributionFunction(dist->clone(), DistributionFunction::RVALUE));
+    functionTable->addFunction("p" + name, new DistributionFunction(dist->clone(), DistributionFunction::PROB));
+    functionTable->addFunction("q" + name, new DistributionFunction(dist->clone(), DistributionFunction::QUANTILE));
+    
     return true;
 }
 

@@ -35,6 +35,7 @@ class DAGNode;
 class Distribution;
 class DistributionContinuous;
 class MemberObject;
+class ParserDistributionContinuous;
 class RandomNumberGenerator;
 class RbFunction;
 class RbObject;
@@ -86,6 +87,7 @@ class Workspace : public Environment {
 
         bool                        addDistribution(const std::string& name, Distribution* dist);                       //!< Add distribution
         bool                        addDistribution(const std::string& name, DistributionContinuous* dist);             //!< Add distribution on continuous variable
+        bool                        addDistribution(const std::string& name, ParserDistributionContinuous* dist);       //!< Add distribution on continuous variable
         bool                        addFunction(const std::string& name, RbFunction* func);                             //!< Add function
         bool                        addType(RbObject* exampleObj);                                                      //!< Add type
         bool                        addType(const std::string& name, RbObject* exampleObj);                             //!< Add special abstract type (synonym)

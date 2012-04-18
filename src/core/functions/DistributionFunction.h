@@ -74,7 +74,7 @@ class DistributionFunction :  public RbFunction {
         // memberfunction return values;
         RealPos                     cd;
         Real                        density;
-
+        Real                        quant;
 };
 
 #endif

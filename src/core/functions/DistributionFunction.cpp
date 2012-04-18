@@ -22,6 +22,7 @@
 #include "Distribution.h"
 #include "DistributionContinuous.h"
 #include "DistributionFunction.h"
+#include "ParserDistributionContinuous.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RealPos.h"
@@ -196,9 +197,9 @@ const RbLanguageObject& DistributionFunction::executeFunction( void ) {
     if ( functionType == DENSITY ) {
 
         if ( static_cast<const RbBoolean&>( args[args.size()-1].getVariable().getValue() ).getValue() == false )
-            density.setValue( distribution->pdf  ( args[args.size()-2].getVariable().getValue() ) );
+            density.setValue( distribution->pdf  ( args[0].getVariable().getValue() ) );
         else
-            density.setValue( distribution->lnPdf( args[args.size()-2].getVariable().getValue() ) );
+            density.setValue( distribution->lnPdf( args[0].getVariable().getValue() ) );
         return density;
     }
     else if (functionType == RVALUE) {
@@ -208,13 +209,13 @@ const RbLanguageObject& DistributionFunction::executeFunction( void ) {
         return draw;
     }
     else if (functionType == PROB) {
-        cd.setValue( static_cast<DistributionContinuous*>( distribution )->cdf( args[args.size()-1].getVariable().getValue() ) );
+        cd.setValue( static_cast<DistributionContinuous*>( distribution )->cdf( args[0].getVariable().getValue() ) );
         return cd;
     }
     else if (functionType == QUANTILE) {
 
-        double    prob  = static_cast<const RealPos&>( args[args.size()-1].getVariable().getValue() ).getValue();
-        const RbLanguageObject& quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
+        double    prob  = static_cast<const RealPos&>( args[0].getVariable().getValue() ).getValue();
+        quant.setValue( static_cast<ParserDistributionContinuous*>( distribution )->quantile( prob ) );
         
         return quant;
     }
