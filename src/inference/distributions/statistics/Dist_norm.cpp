@@ -15,26 +15,16 @@
  * $Id$
  */
 
-#include "DAGNode.h"
 #include "Dist_norm.h"
-#include "MemberFunction.h"
-#include "RealPos.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "Real.h"
-#include "RbConstants.h"
-#include "RbException.h"
-#include "RbUtil.h"
-#include "StochasticNode.h"
-#include "ValueRule.h"
-#include "Workspace.h"
 #include "DistributionNormal.h"
 
 #include <cmath>
 
 
 /** Constructor for parser use */
-Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ), mu( NULL ), sigma( NULL ) {
+Dist_norm::Dist_norm( void ) : InferenceDistributionContinuous() {
 
 }
 
@@ -50,12 +40,9 @@ Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ), mu( N
  *
  * @see Adams, A. G. 1969. Areas under the normal curve. Computer J. 12:197-198.
  */
-double Dist_norm::cdf( const RbLanguageObject& value ) {
+double Dist_norm::cdf(double q) {
 
-	double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-    double q = static_cast<const Real&   >( value            ).getValue();
-	return RbStatistics::Normal::cdf(m, s, q);
+	return RbStatistics::Normal::cdf(*mu.value, *sigma.value, q);
 
 }
 
@@ -67,57 +54,6 @@ Dist_norm* Dist_norm::clone( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Dist_norm::getClassName(void) { 
-    
-    static std::string rbClassName = "Normal distribution";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& Dist_norm::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& Dist_norm::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/** Get member variable rules */
-const MemberRules& Dist_norm::getMemberRules( void ) const {
-
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-
-    if ( !rulesSet ) {
-
-        memberRules.push_back( new ValueRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
-        memberRules.push_back( new ValueRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-
-        rulesSet = true;
-    }
-
-    return memberRules;
-}
-
-
-/** Get random variable type */
-const TypeSpec& Dist_norm::getVariableType( void ) const {
-
-    static TypeSpec varTypeSpec = Real::getClassTypeSpec();
-    
-    return varTypeSpec;
-}
-
 
 /**
  * This function calculates the natural log of the probability
@@ -128,15 +64,9 @@ const TypeSpec& Dist_norm::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_norm::lnPdf(const RbLanguageObject& value) const {
-    
-    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-    double x = static_cast<const Real&   >( value            ).getValue();
+double Dist_norm::lnPdf( void ) const {
 
-
-    return RbStatistics::Normal::lnPdf(m, s, x);
-
+    return RbStatistics::Normal::lnPdf(*mu.value, *sigma.value, *randomVariable.value);
 }
 
 
@@ -149,14 +79,9 @@ double Dist_norm::lnPdf(const RbLanguageObject& value) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_norm::pdf( const RbLanguageObject& value ) const {
+double Dist_norm::pdf( void ) const {
     
-    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-    double x = static_cast<const Real&   >( value            ).getValue();
-
-    return RbStatistics::Normal::pdf(m, s, x);
-
+    return RbStatistics::Normal::pdf(*mu.value, *sigma.value, *randomVariable.value);
 }
 
 
@@ -176,14 +101,9 @@ double Dist_norm::pdf( const RbLanguageObject& value ) const {
  * @see Beasley, JD & S. G. Springer. 1977. Algorithm AS 111: The percentage
  *      points of the normal distribution. 26:118-121.
  */
-const Real& Dist_norm::quantile( const double p) {
+double Dist_norm::quantile( double p ) {
     
-    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-	
-    quant.setValue( RbStatistics::Normal::quantile(m, s, p) );
-    
-    return quant;
+    return RbStatistics::Normal::quantile(*mu.value, *sigma.value, p);
 }
 
 
@@ -199,39 +119,35 @@ const Real& Dist_norm::quantile( const double p) {
  *
  * @return      Random draw
  */
-const RbLanguageObject& Dist_norm::rv(void) {
+void Dist_norm::rv(void) {
 
     static bool   availableNormalRv = false;
     static double extraNormalRv;
 
     if ( availableNormalRv ) {
         availableNormalRv = false;
-        randomVariable.setValue( extraNormalRv );
-        return randomVariable;
+        *randomVariable.value = extraNormalRv;
     }
-    
-    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
+    else {
 
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-    randomVariable.setValue( RbStatistics::Normal::rv(m, s, *rng) );
-    
-	return randomVariable;
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        *randomVariable.value = RbStatistics::Normal::rv(*mu.value, *sigma.value, *rng);
+    }
 
 }
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_norm::setMemberVariable(std::string const &name, const Variable *var) {
+void Dist_norm::setParameters(const std::vector<RbValue<void *> > &p) {
     
-    if ( name == "mean" ) {
-        mu = var;
-    }
-    else if ( name == "sd" ) {
-        sigma = var;
-    }
-    else {
-        DistributionContinuous::setMemberVariable(name, var);
-    }
+    mu.value                = ( static_cast<double*>( p[0].value ) );
+    mu.lengths              = p[0].lengths;
+    
+    sigma.value             = ( static_cast<double*>( p[1].value ) );
+    sigma.lengths           = p[1].lengths;
+    
+    randomVariable.value    = static_cast<double*>( p[2].value );
+    randomVariable.lengths  = p[2].lengths;
+    
 }
 

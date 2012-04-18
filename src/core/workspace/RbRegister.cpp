@@ -25,6 +25,8 @@
 #include "DistributionFunction.h"
 #include "DistributionContinuous.h"
 #include "FunctionTable.h"
+#include "ParserDistribution.h"
+#include "ParserDistributionContinuous.h"
 #include "ParserFunction.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -266,10 +268,14 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "gamma",        new Dist_gamma()       );
         addDistribution( "logis",        new Dist_logis()       );
         addDistribution( "multinomial",  new Dist_multinomial() );
-        addDistribution( "norm",         new Dist_norm()        );
         addDistribution( "lnorm",        new Dist_lnorm()       );
         addDistribution( "unifTopology", new Dist_topologyunif());
         addDistribution( "unif",         new Dist_unif()        );
+        
+        MemberRules distNormMemberRules;
+        distNormMemberRules.push_back( new ValueRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
+        distNormMemberRules.push_back( new ValueRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        addDistribution( "norm",         new ParserDistributionContinuous( new Dist_norm(), distNormMemberRules, new Real() ) );
 
         /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace().typesInitialized = true;

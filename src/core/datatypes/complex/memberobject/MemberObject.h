@@ -72,7 +72,6 @@ class MemberObject: public RbLanguageObject {
         virtual void                                        setMemberVariable(const std::string& name, const Variable* var);          //!< Set member variable
         virtual const RbLanguageObject&                     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Override to map member methods to internal functions
 
-    private:
         // Members is the variable frame that stores member variables
         std::map<std::string, const Variable*>              members;                                                                            //!< Member variables
 };

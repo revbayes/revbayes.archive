@@ -195,10 +195,10 @@ const RbLanguageObject& DistributionFunction::executeFunction( void ) {
 
     if ( functionType == DENSITY ) {
 
-        if ( static_cast<const RbBoolean&>( log->getValue() ).getValue() == false )
-            density.setValue( distribution->pdf  ( x->getValue() ) );
+        if ( static_cast<const RbBoolean&>( args[args.size()-1].getVariable().getValue() ).getValue() == false )
+            density.setValue( distribution->pdf  ( args[args.size()-2].getVariable().getValue() ) );
         else
-            density.setValue( distribution->lnPdf( x->getValue() ) );
+            density.setValue( distribution->lnPdf( args[args.size()-2].getVariable().getValue() ) );
         return density;
     }
     else if (functionType == RVALUE) {
@@ -208,12 +208,12 @@ const RbLanguageObject& DistributionFunction::executeFunction( void ) {
         return draw;
     }
     else if (functionType == PROB) {
-        cd.setValue( static_cast<DistributionContinuous*>( distribution )->cdf( q->getValue() ) );
+        cd.setValue( static_cast<DistributionContinuous*>( distribution )->cdf( args[args.size()-1].getVariable().getValue() ) );
         return cd;
     }
     else if (functionType == QUANTILE) {
 
-        double    prob  = static_cast<const RealPos&>( p->getValue() ).getValue();
+        double    prob  = static_cast<const RealPos&>( args[args.size()-1].getVariable().getValue() ).getValue();
         const RbLanguageObject& quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
         
         return quant;

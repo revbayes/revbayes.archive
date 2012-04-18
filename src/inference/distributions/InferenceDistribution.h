@@ -20,7 +20,7 @@
 #ifndef InferenceDistribution_H
 #define InferenceDistribution_H
 
-
+#include "RbValue.h"
 #include <set>
 #include <string>
 #include <vector>
@@ -31,18 +31,18 @@ class RandomNumberGenerator;
 class InferenceDistribution {
     
 public:
-    virtual                            ~InferenceDistribution(void) {}                                      //!< Destructor
+    virtual                            ~InferenceDistribution(void) {}                              //!< Destructor
     
     
     // InferenceDistribution functions you have to override
-    virtual InferenceDistribution*      clone(void) const = 0;                                              //!< Create a clone of the function
-    virtual double                      setParameters(const std::vector<void*> &p) const = 0;               //!< Set the pointers to the variables of the distribution. The last one is always the random value.
-    virtual double                      lnPdf(void) const = 0;                                              //!< Ln probability density
-    virtual double                      pdf(void) const = 0;                                                //!< Probability density function
-    virtual const void*                 rv(void) = 0;                                                       //!< Generate a random draw
+    virtual InferenceDistribution*      clone(void) const = 0;                                      //!< Create a clone of the function
+    virtual void                        setParameters(const std::vector<RbValue<void*> > &p) = 0;   //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    virtual double                      lnPdf(void) const = 0;                                      //!< Ln probability density
+    virtual double                      pdf(void) const = 0;                                        //!< Probability density function
+    virtual void                        rv(void) = 0;                                               //!< Generate a random draw
     
 protected:
-    InferenceDistribution( void ) {};                                                                       //!< Simple constructor
+    InferenceDistribution( void ) {};                                                               //!< Simple constructor
     
     
 private:
