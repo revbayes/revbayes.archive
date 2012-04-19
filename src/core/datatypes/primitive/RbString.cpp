@@ -116,6 +116,12 @@ const TypeSpec& RbString::getTypeSpec( void ) const {
 }
 
 
+/* Get a pointer to the elementary value. */
+void* RbString::getValue(std::vector<size_t> &length) const {
+    return static_cast<void*>( &const_cast<std::string&>( value ) );
+}
+
+
 /** Print value */
 void RbString::printValue(std::ostream& o) const {
 

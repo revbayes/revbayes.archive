@@ -47,6 +47,7 @@ public:
     static const std::string&   getClassName(void);                                                     //!< Get class name
     static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
     virtual const TypeSpec&     getTypeSpec(void) const;                                                //!< Get language type of the object
+    virtual void*               getValue(std::vector<size_t> &length) const;                            //!< Transform the object into a basic element pointer for fast access.
     int&                        getValueReference(void) { return value; }                               //!< Get value reference for VectorInteger
     virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
     virtual void                printValue(std::ostream& o) const;                                      //!< Print value (for user)

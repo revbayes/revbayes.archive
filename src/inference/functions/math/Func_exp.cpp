@@ -22,7 +22,7 @@
 #include <cmath>
 
 
-Func_exp::Func_exp(void) : InferenceFunction() {
+Func_exp::Func_exp(void) : AbstractInferenceFunction() {
     
 }
 
@@ -34,15 +34,14 @@ Func_exp* Func_exp::clone( void ) const {
 }
 
 
-/** Execute function */
-void Func_exp::execute( void ) {
+void Func_exp::executeSimple( std::vector<size_t> &offset ) {
     
-    *result.value = exp( *lambda.value );
+    result.value[offset[1]] = exp( lambda.value[offset[0]] );
+    
 }
 
-
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_exp::setArguments(const std::vector<RbValue<void*> > &args) {
+void Func_exp::setInternalArguments(const std::vector<RbValue<void*> > &args) {
     
     lambda.value    = ( static_cast<double*>( args[0].value ) );
     lambda.lengths  = args[0].lengths;

@@ -137,6 +137,12 @@ const TypeSpec& Integer::getTypeSpec( void ) const {
 }
 
 
+/* Get a pointer to the elementary value. */
+void* Integer::getValue(std::vector<size_t> &length) const {
+    return static_cast<void*>( &const_cast<int&>( value ) );
+}
+
+
 /** Is convertible to language object of type? */
 bool Integer::isConvertibleTo( const TypeSpec& type ) const {
 

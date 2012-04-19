@@ -34,6 +34,10 @@ public:
     virtual void                                    execute(void) = 0;                                              //!< Execute function
     virtual void                                    setArguments(const std::vector<RbValue<void*> > &args) = 0;     //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
     
+    // functions you may want to overwrite
+    virtual void                                    touch(void) {};                                                 //!< This function will be called if one of the parameters has changed. One can now store the old parameter and return values for more efficient computations.
+    virtual void                                    keep(void) {};                                                  //!< We keep the new value of the function and hence all flags or members which were set by touch() should be cleaned.
+
 protected:
     InferenceFunction(void) {};                                                                                     //!< Basic constructor
     

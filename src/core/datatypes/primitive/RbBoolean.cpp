@@ -96,6 +96,12 @@ const TypeSpec& RbBoolean::getTypeSpec( void ) const {
 }
 
 
+/* Get a pointer to the elementary value. */
+void* RbBoolean::getValue(std::vector<size_t> &length) const {
+    return static_cast<void*>( &const_cast<bool&>( value ) );
+}
+
+
 /** Is convertible to type? */
 bool RbBoolean::isConvertibleTo(const TypeSpec& type) const {
 

@@ -17,20 +17,23 @@
 #ifndef Func_exp_H
 #define Func_exp_H
 
-#include "InferenceFunction.h"
+#include "AbstractInferenceFunction.h"
 #include "RbValue.h"
 
-class Func_exp : public InferenceFunction {
+class Func_exp : public AbstractInferenceFunction {
     
 public:
-    Func_exp(void);                                                                         //!< default constructor
+    Func_exp(void);                                                                                     //!< default constructor
     
     // Basic utility functions
-    Func_exp*                   clone(void) const;                                          //!< Clone the object
-    virtual void                execute(void);                                              //!< Execute function
-    virtual void                setArguments(const std::vector<RbValue<void*> >& args);      //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+    Func_exp*                   clone(void) const;                                                      //!< Clone the object
+
+protected:
+    void                        setInternalArguments(const std::vector<RbValue<void*> >& args);         //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+    void                        executeSimple(std::vector<size_t> &result_offsets);                     //!< Execute function
 
 private:
+    
     RbValue<double*>            lambda;
     RbValue<double*>            result;
 };
