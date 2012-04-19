@@ -325,6 +325,30 @@ void Workspace::initializeGlobalWorkspace(void) {
         addStringFuncArgRules.push_back( new ValueRule("second", RbString::getClassTypeSpec() ) );
         RbString* funcAddStringRetVar = new RbString();
         addFunction( "_add",      new ParserFunction( new Func__add<std::string, std::string, std::string>(), "+", addStringFuncArgRules, funcAddStringRetVar ) );
+
+        ArgumentRules subNaturalFuncArgRules;
+        subNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        subNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        Natural* funcSubNaturalRetVar = new Natural();
+        addFunction( "_sub",      new ParserFunction( new Func__sub<int, int, int>(), "-", subNaturalFuncArgRules, funcSubNaturalRetVar ) );
+        
+        ArgumentRules subIntFuncArgRules;
+        subIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        subIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        Integer* funcSubIntRetVar = new Integer();
+        addFunction( "_sub",      new ParserFunction( new Func__sub<int, int, int>(), "-", subIntFuncArgRules, funcSubIntRetVar ) );
+        
+        ArgumentRules subRealPosFuncArgRules;
+        subRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        subRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RealPos* funcSubRealPosRetVar = new RealPos();
+        addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealPosFuncArgRules, funcSubRealPosRetVar ) );
+        
+        ArgumentRules subRealFuncArgRules;
+        subRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        subRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        Real* funcSubRealRetVar = new Real();
+        addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealFuncArgRules, funcSubRealRetVar ) );
         
 //        addFunction( "_add",      new Func__add<            Integer,           Real,         Real >() );
 //        addFunction( "_add",      new Func__add<               Real,        Integer,         Real >() );
@@ -348,11 +372,11 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_mul",      new Func__mul<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
         addFunction( "_mul",      new Func__mul<       Matrix<Real>,           Real, Matrix<Real> >() );
         addFunction( "_mul",      new Func__mul<               Real,   Matrix<Real>, Matrix<Real> >() );
-        addFunction( "_sub",      new Func__sub<            Integer,        Integer,      Integer >() );
-        addFunction( "_sub",      new Func__sub<               Real,           Real,         Real >() );
-        addFunction( "_sub",      new Func__sub<            Integer,           Real,         Real >() );
-        addFunction( "_sub",      new Func__sub<               Real,        Integer,         Real >() );
-        addFunction( "_sub",      new Func__sub<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
+//        addFunction( "_sub",      new Func__sub<            Integer,        Integer,      Integer >() );
+//        addFunction( "_sub",      new Func__sub<               Real,           Real,         Real >() );
+//        addFunction( "_sub",      new Func__sub<            Integer,           Real,         Real >() );
+//        addFunction( "_sub",      new Func__sub<               Real,        Integer,         Real >() );
+//        addFunction( "_sub",      new Func__sub<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
 
         /* Add basic logic templated functions */
         addFunction( "_and",      new Func__and<            Integer,        Integer >()             );
