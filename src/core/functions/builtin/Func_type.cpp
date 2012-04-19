@@ -37,7 +37,7 @@ Func_type* Func_type::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_type::executeFunction( void ) {
     
-    retValue.setValue( variable->getDagNode()->getValue().getTypeSpec().getType() );
+    retValue.setValue( args[0].getVariable().getValue().getTypeSpec().getType() );
     
     return retValue;
 }
@@ -90,17 +90,5 @@ const TypeSpec& Func_type::getReturnType( void ) const {
     static TypeSpec returnTypeSpec = RbString::getClassTypeSpec();
     
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_type::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "variable" ) {
-        variable = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

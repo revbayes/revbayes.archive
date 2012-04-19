@@ -41,17 +41,12 @@ class Func_simplex :  public RbFunction {
         bool                        throws(void) const;                                         //!< One variant needs to throw
 
     protected:
-        void                        clearArguments(void);                                       //!< Clear the arguments of this class
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
     
         // memberfunction return value
         Simplex                     s;
-    
-        // arguments
-        std::vector<RbConstVariablePtr>  values;
 };
 
 #endif
@@ -67,16 +62,6 @@ class Func_simplex :  public RbFunction {
 #include "ValueRule.h"
 
 
-
-/** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
-template <typename valType>
-void Func_simplex<valType>::clearArguments(void) {
-    // just empty the elements list, the super smart pointers will take care of the rest
-    values.clear();
-    
-}
-
-
 /** Clone the object */
 template <typename valType>
 Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
@@ -88,7 +73,7 @@ Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
 template <>
 const RbLanguageObject& Func_simplex<Integer>::executeFunction( void ) {
 
-    int size = static_cast<const Integer&>( values[0]->getValue() ).getValue();
+    int size = static_cast<const Integer&>( args[0].getVariable().getValue() ).getValue();
 
     if ( size < 2 )
         throw RbException( "Simplex size must be at least 2" );
@@ -103,7 +88,7 @@ const RbLanguageObject& Func_simplex<Integer>::executeFunction( void ) {
 template <>
 const RbLanguageObject& Func_simplex<RbVector<RealPos> >::executeFunction( void ) {
 
-    const RbVector<RealPos>& tempVec = static_cast<const RbVector<RealPos>& >( values[0]->getValue() );
+    const RbVector<RealPos>& tempVec = static_cast<const RbVector<RealPos>& >( args[0].getVariable().getValue() );
 
     s.setValue( tempVec );
 
@@ -116,8 +101,8 @@ template <>
 const RbLanguageObject& Func_simplex<RealPos>::executeFunction( void ) {
 
     RbVector<Real>  tempVec;
-    for ( size_t i = 0; i < values.size(); i++ )
-        tempVec.push_back( static_cast<const RealPos&>( values[i]->getValue() ).clone() );
+    for ( size_t i = 0; i < args.size(); i++ )
+        tempVec.push_back( static_cast<const RealPos&>( args[i].getVariable().getValue() ).clone() );
 
     // Normalization is done by the Simplex constructor
     s.setValue( tempVec );
@@ -214,18 +199,5 @@ template <>
 bool Func_simplex<Integer>::throws( void ) const {
 
     return true;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-template <typename valType>
-void Func_simplex<valType>::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "" ) {
-        values.push_back( var );
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

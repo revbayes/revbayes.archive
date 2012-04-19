@@ -43,12 +43,8 @@ public:
 
 protected:
     const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
-    void                        setArgumentVariable(const std::string& name, const Variable* var);
 
 private:
-    
-    // Arguments
-    RbConstVariablePtr          value;
     
     // function return value
     valType                     retValue;
@@ -75,7 +71,7 @@ Func_sort<valType>* Func_sort<valType>::clone( void ) const {
 template <typename valType> 
 const RbLanguageObject& Func_sort<valType>::executeFunction( void ) {
     
-    retValue = static_cast<const valType&>( value->getValue() );    
+    retValue = static_cast<const valType&>( args[0].getVariable().getValue() );    
     if(retValue.size() == 0) 
         return retValue;
     retValue.sort();
@@ -137,19 +133,6 @@ const TypeSpec& Func_sort<valType>::getReturnType( void ) const {
 	
     static TypeSpec retType = valType().getTypeSpec();
     return retType;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-template <typename firstValType>
-void Func_sort<firstValType>::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "value" ) {
-        value = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 
 

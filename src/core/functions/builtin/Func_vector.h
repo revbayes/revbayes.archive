@@ -39,15 +39,11 @@ class Func_vector :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        void                        clearArguments(void);                               //!< Clear the arguments of this class
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
         retType                     theVector;
     
-        // Arguments
-        std::vector<RbConstVariablePtr>  values;
 };
 
 #endif
@@ -56,16 +52,6 @@ class Func_vector :  public RbFunction {
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-
-
-
-/** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
-template <typename valType, typename retType>
-void Func_vector<valType, retType>::clearArguments(void) {
-    // just empty the elements list, the super smart pointers will take care of the rest
-    values.clear();
-    
-}
 
 
 /** Clone object */
@@ -79,12 +65,10 @@ Func_vector<valType, retType>* Func_vector<valType, retType>::clone( void ) cons
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType, typename retType>
 const RbLanguageObject& Func_vector<valType, retType>::executeFunction( void ) {
-
-//    delete theVector;
     
     theVector.clear();
-    for ( size_t i = 0; i < values.size(); i++ )
-        theVector.push_back( static_cast<valType*>( values[i]->getValue().clone() ) );
+    for ( size_t i = 0; i < args.size(); i++ )
+        theVector.push_back( static_cast<valType*>( args[i].getVariable().getValue().clone() ) );
 
     return theVector;
 }
@@ -143,18 +127,5 @@ template <typename valType, typename retType>
 const TypeSpec& Func_vector<valType, retType>::getReturnType( void ) const {
 
     return retType().getTypeSpec();
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-template <typename firstValType, typename retType>
-void Func_vector<firstValType, retType>::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "" ) {
-        values.push_back( var );
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 
