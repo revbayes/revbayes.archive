@@ -18,24 +18,25 @@
 #ifndef Func__add_H
 #define Func__add_H
 
-#include "InferenceFunction.h"
+#include "AbstractInferenceFunction.h"
 
 #include <map>
 #include <string>
 
 template <typename firstValType, typename secondValType, typename retType>
-class Func__add :  public InferenceFunction {
+class Func__add :  public AbstractInferenceFunction {
 
     public:
                                     Func__add( void );
     
         // Basic utility functions
-        Func__add*                  clone(void) const;                                          //!< Clone the object
-        void                        execute(void);                                              //!< Execute function
-        void                        setArguments(const std::vector<RbValue<void*> >& args);     //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+        Func__add*                  clone(void) const;                                                      //!< Clone the object
+
+protected:
+    void                            setInternalArguments(const std::vector<RbValue<void*> >& args);         //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+    void                            executeSimple(std::vector<size_t> &offset);
     
 private:
-        void                        execute(size_t result_offset, size_t first_offset, size_t second_offset, size_t level);
 
         // Arguments
         RbValue<firstValType*>      first;
@@ -50,7 +51,7 @@ private:
 
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-Func__add<firstValType, secondValType, retType>::Func__add( void ) : InferenceFunction( ) {
+Func__add<firstValType, secondValType, retType>::Func__add( void ) : AbstractInferenceFunction( ) {
 
 }
 
@@ -63,66 +64,18 @@ Func__add<firstValType, secondValType, retType>* Func__add<firstValType, secondV
 }
 
 
-/** Execute function */
 template <typename firstValType, typename secondValType, typename retType>
-void Func__add<firstValType, secondValType, retType>::execute( void ) {
+void Func__add<firstValType, secondValType, retType>::executeSimple(std::vector<size_t> &offset) {
     
-    // *result.value = exp( *lambda.value );
+    retValue.value[offset[2]] = first.value[offset[0]] + second.value[offset[1]];
     
-    execute(0,0,0,0);
-}
-
-
-template <typename firstValType, typename secondValType, typename retType>
-void Func__add<firstValType, secondValType, retType>::execute(size_t result_offset, size_t first_offset, size_t second_offset, size_t level) {
-    
-    // first, we test if we have another dimension
-    if ( retValue.lengths.size() == level ) {
-        // no, we execute the actual function here
-        retValue.value[result_offset] = first.value[first_offset] + second.value[second_offset];
-    }
-    else {
-        // next, we compute the number of elements we need to compute
-        size_t result_elements = 1;
-        for (size_t i = level+1; i < retValue.lengths.size(); ++i) {
-            result_elements *= retValue.lengths[i];
-        }
-        
-        // and for the parameters
-        size_t first_elements = 1;
-        for (size_t i = level+1; i < first.lengths.size(); ++i) {
-            first_elements *= first.lengths[i];
-        }
-        size_t second_elements = 1;
-        for (size_t i = level+1; i < second.lengths.size(); ++i) {
-            second_elements *= second.lengths[i];
-        }
-        
-        // now, we iterate over the elements in this dimension
-        for (size_t i = 0; i < retValue.lengths[level]; ++i) {
-            // we recompute the offset
-            size_t nested_offset_result = result_offset + result_elements * i;
-            
-            size_t nested_offset_first = first_offset;
-            if ( level < first.lengths.size() ) {
-                nested_offset_first += first_elements * i;
-            }
-            
-            size_t nested_offset_second = second_offset;
-            if ( level < second.lengths.size() ) {
-                nested_offset_second += second_elements * i;
-            }
-            // and call the function for one level deeper
-            execute(nested_offset_result, nested_offset_first, nested_offset_second, level+1);
-        }
-    }
 }
 
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename firstValType, typename secondValType, typename retType>
-void Func__add<firstValType, secondValType, retType>::setArguments(const std::vector<RbValue<void*> >& args) {
+void Func__add<firstValType, secondValType, retType>::setInternalArguments(const std::vector<RbValue<void*> >& args) {
     
     
     first.value         = ( static_cast<firstValType*>( args[0].value ) );
