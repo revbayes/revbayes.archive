@@ -29,65 +29,7 @@
 
 /** default constructor */
 Func__range::Func__range( void ) : RbFunction( ) {
-    first   = NULL;
-    last    = NULL;
-}
-
-/** default constructor */
-Func__range::Func__range( const Func__range& f ) : RbFunction( f ) {
     
-    first  = f.first;
-    if ( first != NULL ) {
-        first->incrementReferenceCount();
-    }
-    last = f.last;
-    if ( last != NULL ) {
-        last->incrementReferenceCount();
-    }
-}
-
-/** destructor */
-Func__range::~Func__range( void ) {
-    
-    if ( first != NULL && first->decrementReferenceCount() == 0 ) {
-        delete first;
-    }
-    
-    if ( last != NULL && last->decrementReferenceCount() == 0 ) {
-        delete last;
-    }
-}
-
-
-/** Overloaded assignment operator */
-Func__range& Func__range::operator=( Func__range const &f ) {
-    
-    if ( this != &f ) {
-        // call the base class assignment operator
-        RbFunction::operator=( f );
-        
-        // free the memory first
-        if ( first != NULL && first->decrementReferenceCount() == 0 ) {
-            delete first;
-        }
-        
-        if ( last != NULL && last->decrementReferenceCount() == 0 ) {
-            delete last;
-        }
-        
-        // reassign the member variables
-        first  = f.first;
-        if ( first != NULL ) {
-            first->incrementReferenceCount();
-        }
-        
-        last = f.last;
-        if ( last != NULL ) {
-            last->incrementReferenceCount();
-        }
-    }
-    
-    return *this;
 }
 
 
@@ -101,8 +43,8 @@ Func__range* Func__range::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func__range::executeFunction( void ) {
 
-    int f = static_cast<const Integer&>( first->getValue() ).getValue();
-    int l = static_cast<const Integer&>( last->getValue() ).getValue();
+    int f = static_cast<const Integer&>( args[0].getVariable().getValue() ).getValue();
+    int l = static_cast<const Integer&>( args[1].getVariable().getValue() ).getValue();
 
     range.clear();
     if (f < l) {
@@ -165,44 +107,5 @@ const TypeSpec& Func__range::getReturnType( void ) const {
 
     static TypeSpec returnTypeSpec = RbVector<Integer>::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func__range::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "first" ) {
-        // free the memory of the old variable
-        // Variable uses reference counting so we need to free the memory manually
-        if ( first != NULL && first->decrementReferenceCount() == 0 ) {
-            delete first;
-        }
-        
-        // set my variable to the new variable
-        first = var;
-        
-        // increment the reference count for the variable
-        if (first != NULL ) {
-            first->incrementReferenceCount();
-        }
-    }
-    else if ( name == "last" ) {
-        // free the memory of the old variable
-        // Variable uses reference counting so we need to free the memory manually
-        if ( last != NULL && last->decrementReferenceCount() == 0 ) {
-            delete last;
-        }
-        
-        // set my variable to the new variable
-        last = var;
-        
-        // increment the reference count for the variable
-        if (last != NULL ) {
-            last->incrementReferenceCount();
-        }
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

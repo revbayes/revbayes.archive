@@ -41,12 +41,7 @@ public:
 
 protected:
     const RbLanguageObject&     executeFunction(void);                              //!< Execute function
-    void                        setArgumentVariable(const std::string& name, const Variable* var);
     
-private:
-    
-    // arguments
-    RbConstVariablePtr          variable;
 
 };
 

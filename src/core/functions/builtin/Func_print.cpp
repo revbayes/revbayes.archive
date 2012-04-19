@@ -32,17 +32,6 @@
 #include <fstream>
 
 
-/** Clear the arguments. We empty the list of elements to print. Then give the call back to the base class. */
-void Func_print::clearArguments(void) {
-    // just empty the elements list, the super smart pointers will take care of the rest
-    elements.clear();
-    
-    // we can also set the other elements to NULL
-    filename = NULL;
-    append   = NULL;
-}
-
-
 /** Clone object */
 Func_print* Func_print::clone( void ) const {
     
@@ -54,11 +43,11 @@ Func_print* Func_print::clone( void ) const {
 const RbLanguageObject& Func_print::executeFunction( void ) {
     
 
-    const std::string& f = static_cast<const RbString&>( filename->getValue() ).getValue();
+    const std::string& f = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
     if ( f != "" ) {
         std::ofstream outStream;
         
-        if (static_cast<const RbBoolean&>( append->getValue() ).getValue()) {
+        if (static_cast<const RbBoolean&>( args[1].getVariable().getValue() ).getValue()) {
             
             // open the stream to the file
             outStream.open(f.c_str(), std::fstream::out | std::fstream::app);
@@ -70,8 +59,8 @@ const RbLanguageObject& Func_print::executeFunction( void ) {
         }
         
         // print the arguments
-        for (size_t i = 0; i < elements.size(); i++) {
-            elements[i]->getValue().printValue(outStream);
+        for (size_t i = 2; i < args.size(); i++) {
+            args[i].getVariable().getValue().printValue(outStream);
         }
         outStream << std::endl;
         outStream.close();
@@ -80,8 +69,8 @@ const RbLanguageObject& Func_print::executeFunction( void ) {
         
         std::ostream& o = std::cout;
         // print the arguments
-        for (size_t i = 0; i < elements.size(); i++) {
-            elements[i]->getValue().printValue(o);
+        for (size_t i = 2; i < args.size(); i++) {
+            args[i].getVariable().getValue().printValue(o);
         }
         o << std::endl;
     }
@@ -139,23 +128,5 @@ const TypeSpec& Func_print::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_print::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "filename" ) {
-        filename = var;
-    }
-    else if ( name == "append" ) {
-        append = var;
-    }
-    else if ( name == "" ) {
-        elements.push_back(var);
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

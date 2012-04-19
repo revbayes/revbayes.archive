@@ -30,11 +30,6 @@ class Func__range :  public RbFunction {
 
     public:
                                     Func__range( void );
-                                    Func__range( const Func__range& f);
-        virtual                    ~Func__range( void );
-    
-        // overloaded operators
-        Func__range&                operator=( const Func__range& f);
     
         // Basic utility functions
         Func__range*                clone(void) const;                                          //!< Clone the object
@@ -48,13 +43,8 @@ class Func__range :  public RbFunction {
 
     protected:
         const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const Variable* var);
  
     private:
-
-        // Arguments
-        const Variable*             first;
-        const Variable*             last;
 
         // memberfunction return values
         RbVector<Integer>           range;

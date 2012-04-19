@@ -43,7 +43,7 @@ Func_ls* Func_ls::clone( void ) const {
 const RbLanguageObject& Func_ls::executeFunction( void ) {
 
     /* Open file */
-    const bool printAll = static_cast<const RbBoolean&>( all->getValue() ).getValue();
+    const bool printAll = static_cast<const RbBoolean&>( args[0].getVariable().getValue() ).getValue();
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;
@@ -112,17 +112,5 @@ const TypeSpec& Func_ls::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_ls::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "all" ) {
-        all = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 
