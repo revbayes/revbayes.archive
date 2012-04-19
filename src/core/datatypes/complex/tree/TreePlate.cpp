@@ -401,6 +401,7 @@ void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &nam
 
 /** Set the variable with identifier for a node */
 void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &name, const Variable& value) {
+
     // check if a container already exists with that name
     if (!memberVariables.existsVariable( name )) 
     {

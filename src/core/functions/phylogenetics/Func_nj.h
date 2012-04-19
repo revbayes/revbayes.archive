@@ -46,7 +46,7 @@ class Func_nj :  public RbFunction {
 
     private:
         Topology*                   neighborJoining(const DistanceMatrix& d);
-        void                        buildNj(const DistanceMatrix& distances, std::vector<TopologyNode*> nodes, int nTips);
+        void                        buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips);
 
         // Arguments
         RbConstVariablePtr          d;

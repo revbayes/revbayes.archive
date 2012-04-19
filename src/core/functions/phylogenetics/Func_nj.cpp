@@ -107,7 +107,7 @@ const TypeSpec& Func_nj::getReturnType( void ) const {
     return returnTypeSpec;
 }
 
-void Func_nj::buildNj(const DistanceMatrix& distances, std::vector<TopologyNode*> nodes, int nTips) {
+void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips) {
 
     if (nTips > 2)
         {
@@ -134,15 +134,15 @@ void Func_nj::buildNj(const DistanceMatrix& distances, std::vector<TopologyNode*
             sum /= (nTips - 2);
             ui.push_back(sum);
             }
-        for (int i=0; i<ui.size(); i++)
+        for (size_t i=0; i<ui.size(); i++)
             std::cout << "u[" << i << "] = " << ui[i] << std::endl;
             
         // find i-j tip pair for which d_ij - ui - uj is smallest
         int smallestI = -1, smallestJ = -1;
         double v = 1.0e100;
-        for (int i=0; i<nTips; i++)
+        for (size_t i=0; i<nTips; i++)
             {
-            for (int j=i+1; j<nTips; j++)
+            for (size_t j=i+1; j<nTips; j++)
                 {
                 double x = distances[i][j] - ui[i] - ui[j];
                 std::cout << i << " " << j << " " << x << std::endl;
@@ -161,24 +161,15 @@ void Func_nj::buildNj(const DistanceMatrix& distances, std::vector<TopologyNode*
         // join tips i and j
         TopologyNode* ndeI = nodes[smallestI];
         TopologyNode* ndeJ = nodes[smallestJ];
-//        TopologyNode* rootNode = new TopologyNode();
-//        std::cout << "(" << ndeI << " " << ndeJ << " " << rootNode << ")" << std::endl;
-//        if (ndeJ->getParent() != rootNode)
-//            {
-//            // problem
-//            }
-//        rootNode.removeChild(ndeI);
-//        rootNode.removeChild(ndeJ);
         TopologyNode* newNode = new TopologyNode;
-//        newNode->setParent(rootNode);
-//        rootNode->addChild(newNode);
         newNode->addChild(ndeI);
         newNode->addChild(ndeJ);
         ndeI->setParent(newNode);
         ndeJ->setParent(newNode);
         
-        // construct a new distance matrix that is one row and column smaller
-        DistanceMatrix newDistances(nTips-1);
+        // construct a new distance matrix that is one row and one column smaller
+        std::vector<std::vector<double> > newDistances(nTips-1);
+        
         std::vector<TopologyNode*> newNodes;
         for (size_t i=0, k=0; i<nTips; i++)  
             {
@@ -188,17 +179,16 @@ void Func_nj::buildNj(const DistanceMatrix& distances, std::vector<TopologyNode*
                 for (size_t j=0; j<nTips; j++)
                     {
                     if (j != smallestI && j != smallestJ)
-                        newDistances[k].push_back(distances[i][j].clone());
+                        newDistances[k].push_back(distances[i][j]);
                     }
                 double x = distances[i][smallestI] + distances[i][smallestJ] - distances[smallestI][smallestJ];
-                newDistances[k].push_back(new Real(x) );
-                newDistances[nTips-2].push_back(new Real(x) );
+                newDistances[k].push_back(x);
+                newDistances[nTips-2].push_back(x);
                 k++;
                 }
             }
         newNodes.push_back(newNode);
-        newDistances[nTips-2].push_back( new Real(0.0) );
-        
+        newDistances[nTips-2].push_back( 0.0 );
         
         // recursively call function again
         buildNj(newDistances, newNodes, nTips-1);
@@ -249,7 +239,7 @@ Topology* Func_nj::neighborJoining(const DistanceMatrix& d) {
             activeDistances[i][j] = d.getDistance(i, j);
             
     // recursively build the neighbor-joining tree
-    buildNj(d, activeNodes, (int)nTaxa);
+    buildNj(activeDistances, activeNodes, (int)nTaxa);
     
     // after the neighbor joining the matrix should only contain 1 node, which is our new root
     topo->setRoot(activeNodes[0]);

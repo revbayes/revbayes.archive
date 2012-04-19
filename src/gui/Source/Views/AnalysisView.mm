@@ -12,6 +12,7 @@
 #import "ToolBootstrap.h"
 #import "ToolCombiner.h"
 #import "ToolConcatenate.h"
+#import "ToolDataEntry.h"
 #import "ToolDistanceMatrix.h"
 #import "ToolLoop.h"
 #import "ToolNumericalMcmcOutput.h"
@@ -1933,6 +1934,8 @@
         Tool* newTool;
         if (toolIdx == TOOL_LOOP)
             newTool = [[ToolLoop alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_DATAENTRY)
+            newTool = [[ToolDataEntry alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_READDATA)
             newTool = [[ToolReadData alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_ALIGN)

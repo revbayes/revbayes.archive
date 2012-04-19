@@ -58,6 +58,8 @@
             toolImage = [NSImage imageNamed:@"Tool_Loop.icns"];
         else if (i == TOOL_READDATA)
             toolImage = [NSImage imageNamed:@"Tool_ReadData.icns"];
+        else if (i == TOOL_DATAENTRY)
+            toolImage = [NSImage imageNamed:@"Tool_DataEntry.icns"];
         else if (i == TOOL_ALIGN)
             toolImage = [NSImage imageNamed:@"Tool_Align.icns"];
         else if (i == TOOL_COMBINER)
@@ -113,6 +115,8 @@
 			myTip = [NSString stringWithString:@" Loop Tool "];
         else if (toolForToolTip == TOOL_READDATA)
 			myTip = [NSString stringWithString:@" Read Data Tool "];
+        else if (toolForToolTip == TOOL_DATAENTRY)
+			myTip = [NSString stringWithString:@" Character Data Entry Tool "];
         else if (toolForToolTip == TOOL_ALIGN)
 			myTip = [NSString stringWithString:@" Sequence Alignment Tool "];
         else if (toolForToolTip == TOOL_COMBINER)
@@ -226,6 +230,8 @@
 		anImage = [NSImage imageNamed:@"Tool_Loop.icns"];
 	else if (whichToolSelected == TOOL_READDATA)
 		anImage = [NSImage imageNamed:@"Tool_ReadData.icns"];
+	else if (whichToolSelected == TOOL_DATAENTRY)
+		anImage = [NSImage imageNamed:@"Tool_DataEntry.icns"];
 	else if (whichToolSelected == TOOL_ALIGN)
 		anImage = [NSImage imageNamed:@"Tool_Align.icns"];
 	else if (whichToolSelected == TOOL_COMBINER)
