@@ -285,12 +285,20 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_range",    new Func__range()       );
 
         /* Add basic unary arithmetic and logical templated functions */
+
+        ArgumentRules uminusIntegerFuncArgRules;
+        uminusIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        Integer* funcUminusIntegerRetVar = new Integer();
+        addFunction( "_uminus",      new ParserFunction( new Func__uminus<int, int>(), "-", uminusIntegerFuncArgRules, funcUminusIntegerRetVar ) );
+
+
+
         addFunction( "_uplus",    new Func__uplus <         Integer,        Integer >() );
         addFunction( "_uplus",    new Func__uplus <            Real,           Real >() );
         addFunction( "_uplus",    new Func__uplus <    Matrix<Real>,   Matrix<Real> >() );
-        addFunction( "_uminus",   new Func__uminus<         Integer,        Integer >() );
-        addFunction( "_uminus",   new Func__uminus<            Real,           Real >() );
-        addFunction( "_uminus",   new Func__uminus<    Matrix<Real>,   Matrix<Real> >() );
+//        addFunction( "_uminus",   new Func__uminus<         Integer,        Integer >() );
+//        addFunction( "_uminus",   new Func__uminus<            Real,           Real >() );
+//        addFunction( "_uminus",   new Func__uminus<    Matrix<Real>,   Matrix<Real> >() );
         addFunction( "_unot",     new Func__unot  <       RbBoolean                 >() );
         addFunction( "_unot",     new Func__unot  <         Integer                 >() );
         addFunction( "_unot",     new Func__unot  <            Real                 >() );

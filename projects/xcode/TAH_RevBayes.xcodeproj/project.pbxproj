@@ -1107,7 +1107,6 @@
 		BF8AEBC41541F994001FC9EB /* Func__or.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__or.h; sourceTree = "<group>"; };
 		BF8AEBC51541F994001FC9EB /* Func__range.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func__range.cpp; sourceTree = "<group>"; };
 		BF8AEBC61541F994001FC9EB /* Func__range.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__range.h; sourceTree = "<group>"; };
-		BF8AEBC71541F994001FC9EB /* Func__uminus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__uminus.h; sourceTree = "<group>"; };
 		BF8AEBC81541F994001FC9EB /* Func__unot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__unot.h; sourceTree = "<group>"; };
 		BF8AEBC91541F994001FC9EB /* Func__uplus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__uplus.h; sourceTree = "<group>"; };
 		BF8AEBCB1541F994001FC9EB /* Func_clamp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_clamp.cpp; sourceTree = "<group>"; };
@@ -2016,6 +2015,7 @@
 		BF8AF1621541F9B5001FC9EB /* ProgressBarWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressBarWindow.xib; sourceTree = "<group>"; };
 		BF8AF1631541F9B5001FC9EB /* RegistrationPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RegistrationPanel.xib; sourceTree = "<group>"; };
 		BF8AF1641541F9B5001FC9EB /* TextEditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditorWindow.xib; sourceTree = "<group>"; };
+		BFE5740E15421AC0000B52D0 /* Func__uminus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__uminus.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2458,7 +2458,6 @@
 				BF8AEBC41541F994001FC9EB /* Func__or.h */,
 				BF8AEBC51541F994001FC9EB /* Func__range.cpp */,
 				BF8AEBC61541F994001FC9EB /* Func__range.h */,
-				BF8AEBC71541F994001FC9EB /* Func__uminus.h */,
 				BF8AEBC81541F994001FC9EB /* Func__unot.h */,
 				BF8AEBC91541F994001FC9EB /* Func__uplus.h */,
 			);
@@ -2931,6 +2930,7 @@
 		BF8AED011541F994001FC9EB /* basic */ = {
 			isa = PBXGroup;
 			children = (
+				BFE5740E15421AC0000B52D0 /* Func__uminus.h */,
 				BF8AED021541F994001FC9EB /* Func__add.h */,
 				BF8AED031541F994001FC9EB /* Func__lt.h */,
 				BF8AED041541F994001FC9EB /* Func__sub.h */,
