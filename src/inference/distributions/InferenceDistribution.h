@@ -31,22 +31,32 @@ class RandomNumberGenerator;
 class InferenceDistribution {
     
 public:
-    virtual                            ~InferenceDistribution(void) {}                              //!< Destructor
-    
-    
-    // InferenceDistribution functions you have to override
-    virtual InferenceDistribution*      clone(void) const = 0;                                      //!< Create a clone of the function
-    virtual void                        setParameters(const std::vector<RbValue<void*> > &p) = 0;   //!< Set the pointers to the variables of the distribution. The last one is always the random value.
-    virtual double                      lnPdf(void) const = 0;                                      //!< Ln probability density
-    virtual double                      pdf(void) const = 0;                                        //!< Probability density function
-    virtual void                        rv(void) = 0;                                               //!< Generate a random draw
-    
+    virtual                            ~InferenceDistribution(void) {}                                                  //!< Destructor
+
+    // functions you have to override
+    virtual InferenceDistribution*      clone(void) const = 0;                                                          //!< Create a clone of the function
+    virtual void                        rv(void) = 0;                                                                   //!< Generate a random draw
+ 
+    // functions you do not have yo override
+    virtual double*                     lnPdf(void) const;                                                              //!< Ln probability density
+    virtual double*                     pdf(void) const;                                                                //!< Probability density function
+    virtual void                        setParameters(const std::vector<RbValue<void*> > &p);                           //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+
 protected:
-    InferenceDistribution( void ) {};                                                               //!< Simple constructor
+    InferenceDistribution( void ) {};                                                                                   //!< Simple constructor
     
-    
+    // functions you have to override
+    virtual double                      lnPdfSingleValue(std::vector<size_t> &offsets) const = 0;                       //!< Ln probability density
+    virtual double                      pdfSingleValue(std::vector<size_t> &offsets) const = 0;                         //!< Probability density function
+    virtual void                        setInternalParameters(const std::vector<RbValue<void*> > &p) = 0;               //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+
 private:
     
+    // helper functions
+    virtual void                        lnPdf(double *val, std::vector<size_t> &offsets, size_t level) const;       //!< Ln probability density
+    virtual void                        pdf(double *val, std::vector<size_t> &offsets, size_t level) const;         //!< Probability density function
+ 
+    std::vector<RbValue<void*> > members;
 };
 
 #endif

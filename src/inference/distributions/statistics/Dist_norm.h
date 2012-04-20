@@ -31,16 +31,16 @@ class Dist_norm: public InferenceDistributionContinuous {
 
         // Basic utility functions
         Dist_norm*                  clone(void) const;                                                  //!< Clone object
-        virtual void                setParameters(const std::vector<RbValue<void*> > &p);               //!< Set the pointers to the variables of the distribution. The last one is always the random value.
 
         // Normal distribution functions
         double                      cdf(double q);                                                      //!< Cumulative density
-        double                      lnPdf(void) const;                                                  //!< Ln probability density
-        double                      pdf(void) const;                                                    //!< Probability density
         double                      quantile(double p);                                                 //!< Quantile
         void                        rv(void);                                                           //!< Generate random variable
     
     private:
+        double                      lnPdfSingleValue(std::vector<size_t> &offset) const;                //!< Ln probability density
+        double                      pdfSingleValue(std::vector<size_t> &offset) const;                  //!< Probability density
+        void                        setInternalParameters(const std::vector<RbValue<void*> > &p);       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
 
         // parameters
         RbValue<double*>            mu;

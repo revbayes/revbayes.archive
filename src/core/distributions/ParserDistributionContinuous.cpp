@@ -173,7 +173,7 @@ double ParserDistributionContinuous::lnPdf(const RbLanguageObject &value) const 
     // set the current parameter values of the function
     distribution->setParameters( newArgs );
     
-    return distribution->lnPdf(  );
+    return *distribution->lnPdf();
 }
 
 
@@ -194,7 +194,7 @@ double ParserDistributionContinuous::pdf(const RbLanguageObject &value) const {
     // set the current parameter values of the function
     distribution->setParameters( newArgs );
     
-    return distribution->pdf();
+    return *( distribution->pdf() );
 }
 
 

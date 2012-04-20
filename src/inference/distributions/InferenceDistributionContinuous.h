@@ -32,22 +32,24 @@ public:
     virtual                                     ~InferenceDistributionContinuous(void) {}                                                                 //!< Destructor
     
     // Basic utility function
-    virtual InferenceDistributionContinuous*    clone(void) const = 0;                                          //!< Clone object    
-    virtual void                                setParameters(const std::vector<RbValue<void*> > &p) = 0;       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    virtual InferenceDistributionContinuous*    clone(void) const = 0;                                              //!< Clone object    
 
     // Interval InferenceDistribution functions you probably want to override
-    virtual double                              getMax(void) const;                                             //!< Get max value of coverage
-    virtual double                              getMin(void) const;                                             //!< Get min value of coverage
+    virtual double                              getMax(void) const;                                                 //!< Get max value of coverage
+    virtual double                              getMin(void) const;                                                 //!< Get min value of coverage
     
     // Interval InferenceDistribution functions you have to override
-    virtual double                              cdf(double p) = 0;                                              //!< Cumulative probability
-    virtual double                              lnPdf(void) const = 0;                                          //!< Ln probability density
-    virtual double                              pdf(void) const = 0;                                            //!< Probability density
-    virtual double                              quantile(double p) = 0;                                         //!< Quantile
-    virtual void                                rv(void) = 0;                                                   //!< Generate a random draw
+    virtual double                              cdf(double p) = 0;                                                  //!< Cumulative probability
+    virtual double                              quantile(double p) = 0;                                             //!< Quantile
+    virtual void                                rv(void) = 0;                                                       //!< Generate a random draw
     
 protected:
     InferenceDistributionContinuous() {}                                //!< Constructor
+
+    // functions you have to override
+    virtual double                              lnPdfSingleValue(std::vector<size_t> &result_offsets) const = 0;    //!< Ln probability density
+    virtual double                              pdfSingleValue(std::vector<size_t> &result_offsets) const = 0;      //!< Probability density function
+    virtual void                                setInternalParameters(const std::vector<RbValue<void*> > &p) = 0;   //!< Set the pointers to the variables of the distribution. The last one is always the random value.
     
 };
 

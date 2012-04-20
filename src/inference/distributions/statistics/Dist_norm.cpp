@@ -64,9 +64,9 @@ Dist_norm* Dist_norm::clone( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_norm::lnPdf( void ) const {
+double Dist_norm::lnPdfSingleValue( std::vector<size_t> &offset ) const {
 
-    return RbStatistics::Normal::lnPdf(*mu.value, *sigma.value, *randomVariable.value);
+    return RbStatistics::Normal::lnPdf(mu.value[offset[0]], sigma.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -79,9 +79,9 @@ double Dist_norm::lnPdf( void ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_norm::pdf( void ) const {
+double Dist_norm::pdfSingleValue( std::vector<size_t> &offset ) const {
     
-    return RbStatistics::Normal::pdf(*mu.value, *sigma.value, *randomVariable.value);
+    return RbStatistics::Normal::pdf(mu.value[offset[0]], sigma.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -138,7 +138,7 @@ void Dist_norm::rv(void) {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_norm::setParameters(const std::vector<RbValue<void *> > &p) {
+void Dist_norm::setInternalParameters(const std::vector<RbValue<void *> > &p) {
     
     mu.value                = ( static_cast<double*>( p[0].value ) );
     mu.lengths              = p[0].lengths;

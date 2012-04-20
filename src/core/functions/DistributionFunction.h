@@ -54,8 +54,7 @@ class DistributionFunction :  public RbFunction {
         void                        processArguments(const std::vector<Argument>& passedArgs);              //!< Process args, set member variables of distribution
 
 	protected:
-        const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const Variable* var);
+        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);              //!< Execute function
 
         ArgumentRules*              argumentRules;                                                          //!< Argument rules
         TypeSpec                    returnType;                                                             //!< Return type
@@ -63,13 +62,6 @@ class DistributionFunction :  public RbFunction {
         FuncType                    functionType;                                                           //!< Function type
     
     private:
-
-    
-        // Arguments
-        RbConstVariablePtr          x;
-        RbConstVariablePtr          log;
-        RbConstVariablePtr          p;
-        RbConstVariablePtr          q;
     
         // memberfunction return values;
         RealPos                     cd;
