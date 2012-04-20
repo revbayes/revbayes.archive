@@ -1,8 +1,4 @@
-#import "AnalysisView.h"
 #import "InOutlet.h"
-#import "RbData.h"
-#import "RbDataCell.h"
-#import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolDataEntry.h"
 #import "WindowControllerDataEntry.h"
@@ -17,19 +13,14 @@
 
 - (void)closeControlPanel {
 
-    [NSApp stopModal];
-	[controlWindow close];
 }
 
 - (void)dealloc {
-
-	[controlWindow release];
 
 	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-
 
 	[super encodeWithCoder:aCoder];
 }
@@ -51,36 +42,6 @@
 		// initialize the inlet/outlet information
 		[self addOutletOfColor:[NSColor greenColor]];
         [self setOutletLocations];
-
-		// initialize the data
-        RbData* myData = [[RbData alloc] init];
-        [myData setNumTaxa:3];
-        [myData setNumCharacters:1];
-        [myData setDataType:STANDARD];
-        [myData setName:[NSString stringWithString:@"User-Entered Data Matrix"]];
-        for (int i=0; i<3; i++)
-            {
-            RbTaxonData* td = [[RbTaxonData alloc] init];
-            [td setDataType:STANDARD];
-            [td setTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
-            for (int j=0; j<1; j++)
-                {
-                RbDataCell* c = [[RbDataCell alloc] init];
-                [c setIsDiscrete:YES];
-                [c setRow:i];
-                [c setColumn:j];
-                [c setDataType:STANDARD];
-                [c setNumStates:10];
-                [c setIsAmbig:NO];
-                [c setIsGapState:NO];
-                [c setVal:[NSNumber numberWithInt:1]];
-                [td addObservation:c];
-                }
-            [myData addTaxonData:td];
-            [myData addTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
-            }
-        [self addMatrix:myData];
-        [self makeDataInspector];
 		
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
@@ -95,9 +56,6 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-		        
-		// initialize the control window
-		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -123,15 +81,8 @@
     // we check the number of connections for the inlets and outlets
     // if any inlet or outlet has 0 connections, then the tool is not fully
     // connected
-	NSEnumerator* enumerator = [inlets objectEnumerator];
+	NSEnumerator* enumerator = [outlets objectEnumerator];
 	id element;
-	while ( (element = [enumerator nextObject]) )
-        {
-        if ([element numberOfConnections] == 0)
-            return NO;
-        }
-    
-	enumerator = [outlets objectEnumerator];
 	while ( (element = [enumerator nextObject]) )
         {
         if ([element numberOfConnections] == 0)
@@ -170,16 +121,10 @@
 
 - (void)showControlPanel {
 
-    NSPoint p = [self originForControlWindow:[controlWindow window]];
-    [[controlWindow window] setFrameOrigin:p];
-	[controlWindow showWindow:self];
-	[[controlWindow window] makeKeyAndOrderFront:nil];
-    [NSApp runModalForWindow:[controlWindow window]];
 }
 
 - (void)updateForChangeInState {
 
-    NSLog(@"updateForChangeInState in %@", self);
 }
 
 @end

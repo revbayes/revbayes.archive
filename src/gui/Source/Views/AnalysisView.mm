@@ -1934,10 +1934,10 @@
         Tool* newTool;
         if (toolIdx == TOOL_LOOP)
             newTool = [[ToolLoop alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == TOOL_DATAENTRY)
-            newTool = [[ToolDataEntry alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_READDATA)
             newTool = [[ToolReadData alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_DATAENTRY)
+            newTool = [[ToolDataEntry alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_ALIGN)
             newTool = [[ToolAlign alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_COMBINER)

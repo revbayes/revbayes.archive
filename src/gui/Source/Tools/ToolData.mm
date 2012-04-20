@@ -87,6 +87,7 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
+    NSLog(@"encodeWithCoder %@", self);
 	[aCoder encodeObject:dataMatrices      forKey:@"dataMatrices"];
     [aCoder encodeObject:dataWorkspaceName forKey:@"dataWorkspaceName"];
        

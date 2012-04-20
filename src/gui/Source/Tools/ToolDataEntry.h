@@ -1,6 +1,5 @@
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #import "ToolData.h"
-@class RbData;
 @class WindowControllerDataEntry;
 
 
@@ -19,3 +18,4 @@
 - (void)showControlPanel;
 
 @end
+
