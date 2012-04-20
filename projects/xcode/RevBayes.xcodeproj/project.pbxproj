@@ -898,6 +898,7 @@
 		22388F701540954D0090D691 /* Tool_DataEntry150.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22388F671540954D0090D691 /* Tool_DataEntry150.icns */; };
 		22388F711540954D0090D691 /* Tool_DataEntry200.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22388F681540954D0090D691 /* Tool_DataEntry200.icns */; };
 		22388F721540954D0090D691 /* Tool_DataEntry400.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22388F691540954D0090D691 /* Tool_DataEntry400.icns */; };
+		22388F74154099450090D691 /* ControlWindowDataEntry.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22388F73154099450090D691 /* ControlWindowDataEntry.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -1994,6 +1995,7 @@
 		22388F671540954D0090D691 /* Tool_DataEntry150.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_DataEntry150.icns; sourceTree = "<group>"; };
 		22388F681540954D0090D691 /* Tool_DataEntry200.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_DataEntry200.icns; sourceTree = "<group>"; };
 		22388F691540954D0090D691 /* Tool_DataEntry400.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Tool_DataEntry400.icns; sourceTree = "<group>"; };
+		22388F73154099450090D691 /* ControlWindowDataEntry.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ControlWindowDataEntry.xib; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -3683,6 +3685,7 @@
 				22388DA2154092A30090D691 /* ControlWindowCombiner.xib */,
 				22388DA3154092A30090D691 /* ControlWindowConcatenate.xib */,
 				22388DA4154092A30090D691 /* ControlWindowConstant.xib */,
+				22388F73154099450090D691 /* ControlWindowDataEntry.xib */,
 				22388DA5154092A30090D691 /* ControlWindowDistanceMatrix.xib */,
 				22388DA6154092A30090D691 /* ControlWindowLoop.xib */,
 				22388DA7154092A30090D691 /* ControlWindowMatrixFilter.xib */,
@@ -4121,6 +4124,7 @@
 				22388F701540954D0090D691 /* Tool_DataEntry150.icns in Resources */,
 				22388F711540954D0090D691 /* Tool_DataEntry200.icns in Resources */,
 				22388F721540954D0090D691 /* Tool_DataEntry400.icns in Resources */,
+				22388F74154099450090D691 /* ControlWindowDataEntry.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

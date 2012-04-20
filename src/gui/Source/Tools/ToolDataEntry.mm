@@ -1,6 +1,8 @@
 #import "AnalysisView.h"
 #import "InOutlet.h"
 #import "RbData.h"
+#import "RbDataCell.h"
+#import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolDataEntry.h"
 #import "WindowControllerDataEntry.h"
@@ -8,9 +10,6 @@
 
 
 @implementation ToolDataEntry
-
-@synthesize numberOfCharacters;
-@synthesize numberOfTaxa;
 
 - (void)awakeFromNib {
 
@@ -31,8 +30,6 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-	[aCoder encodeInt:numberOfCharacters   forKey:@"numberOfCharacters"];
-	[aCoder encodeInt:numberOfTaxa         forKey:@"numberOfTaxa"];
 
 	[super encodeWithCoder:aCoder];
 }
@@ -56,8 +53,34 @@
         [self setOutletLocations];
 
 		// initialize the data
-		numberOfTaxa       = 3;
-		numberOfCharacters = 1;
+        RbData* myData = [[RbData alloc] init];
+        [myData setNumTaxa:3];
+        [myData setNumCharacters:1];
+        [myData setDataType:STANDARD];
+        [myData setName:[NSString stringWithString:@"User-Entered Data Matrix"]];
+        for (int i=0; i<3; i++)
+            {
+            RbTaxonData* td = [[RbTaxonData alloc] init];
+            [td setDataType:STANDARD];
+            [td setTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
+            for (int j=0; j<1; j++)
+                {
+                RbDataCell* c = [[RbDataCell alloc] init];
+                [c setIsDiscrete:YES];
+                [c setRow:i];
+                [c setColumn:j];
+                [c setDataType:STANDARD];
+                [c setNumStates:10];
+                [c setIsAmbig:NO];
+                [c setIsGapState:NO];
+                [c setVal:[NSNumber numberWithInt:1]];
+                [td addObservation:c];
+                }
+            [myData addTaxonData:td];
+            [myData addTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
+            }
+        [self addMatrix:myData];
+        [self makeDataInspector];
 		
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
@@ -65,18 +88,14 @@
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder*)aDecoder {
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-		
-		// read from file
-		numberOfCharacters = [aDecoder decodeIntForKey:@"numberOfCharacters"];
-		numberOfTaxa       = [aDecoder decodeIntForKey:@"numberOfTaxa"];
-        
+		        
 		// initialize the control window
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
 		}
