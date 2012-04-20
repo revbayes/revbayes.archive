@@ -119,20 +119,10 @@ double Dist_norm::quantile( double p ) {
  *
  * @return      Random draw
  */
-void Dist_norm::rv(void) {
+void Dist_norm::rvSingleValue( std::vector<size_t> &offset ) {
 
-    static bool   availableNormalRv = false;
-    static double extraNormalRv;
-
-    if ( availableNormalRv ) {
-        availableNormalRv = false;
-        *randomVariable.value = extraNormalRv;
-    }
-    else {
-
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        *randomVariable.value = RbStatistics::Normal::rv(*mu.value, *sigma.value, *rng);
-    }
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    randomVariable.value[offset[2]] = RbStatistics::Normal::rv(mu.value[offset[0]], sigma.value[offset[1]], *rng);
 
 }
 

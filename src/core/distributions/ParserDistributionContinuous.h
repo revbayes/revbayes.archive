@@ -43,19 +43,15 @@ public:
     virtual const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
     
     // Member object functions you should not have to override
+    double                                  cdf( const Real& value);                                                                //!< Cumulative probability
+    const Real&                             getMax(void) const;                                                                     //!< Get max value of coverage
     const MethodTable&                      getMethods(void) const;                                                                 //!< Get member methods
-    
-    // Interval ParserDistribution functions you probably want to override
-    virtual const Real&                     getMax(void) const;                                                                     //!< Get max value of coverage
-    virtual const Real&                     getMin(void) const;                                                                     //!< Get min value of coverage
-    
-    // Interval ParserDistribution functions you have to override
-    virtual double                          cdf( const Real& value);                                                                //!< Cumulative probability
-    virtual const TypeSpec&                 getVariableType(void) const;                                                            //!< Get random variable type spec
-    virtual double                          lnPdf( const RbLanguageObject& value) const;                                            //!< Ln probability density
-    virtual double                          pdf( const RbLanguageObject& value) const;                                              //!< Probability density
-    virtual double                          quantile(const double p);                                                               //!< Quantile
-    virtual const RbLanguageObject&         rv(void);                                                                               //!< Generate a random draw
+    const Real&                             getMin(void) const;                                                                     //!< Get min value of coverage
+    double                                  lnPdf( const RbLanguageObject& value) const;                                            //!< Ln probability density
+    double                                  pdf( const RbLanguageObject& value) const;                                              //!< Probability density
+    double                                  quantile(const double p);                                                               //!< Quantile
+    void                                    rv(void);                                                                               //!< Generate a random draw
+    void                                    setParameters(const std::vector<RbValue<void*> > &p);                                   //!< Set the pointers to the variables of the distribution. The last one is always the random value.
     
 protected:
     const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Direct call of member method
@@ -67,8 +63,6 @@ protected:
     Real                                    quant;
     
     InferenceDistributionContinuous*        distribution;
-    MemberRules                             memberRules;
-    RbLanguageObject*                       randomValue;
 };
 
 #endif

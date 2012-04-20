@@ -41,7 +41,6 @@ public:
     // Interval InferenceDistribution functions you have to override
     virtual double                              cdf(double p) = 0;                                                  //!< Cumulative probability
     virtual double                              quantile(double p) = 0;                                             //!< Quantile
-    virtual void                                rv(void) = 0;                                                       //!< Generate a random draw
     
 protected:
     InferenceDistributionContinuous() {}                                //!< Constructor
@@ -49,6 +48,7 @@ protected:
     // functions you have to override
     virtual double                              lnPdfSingleValue(std::vector<size_t> &result_offsets) const = 0;    //!< Ln probability density
     virtual double                              pdfSingleValue(std::vector<size_t> &result_offsets) const = 0;      //!< Probability density function
+    virtual void                                rvSingleValue(std::vector<size_t> &offsets) = 0;                    //!< Generate a random draw
     virtual void                                setInternalParameters(const std::vector<RbValue<void*> > &p) = 0;   //!< Set the pointers to the variables of the distribution. The last one is always the random value.
     
 };

@@ -89,23 +89,23 @@ Workspace& Workspace::operator=(const Workspace& x) {
 }
 
 
-/** Add distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
-
-    PRINTF("Adding distribution %s to workspace\n", name.c_str());
-
-    if ( typeTable.find(name) != typeTable.end())
-        throw RbException("There is already a type named '" + dist->getTypeSpec() + "' in the workspace");
-
-    PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
-    typeTable.insert(std::pair<std::string, RbObject*>(dist->getTypeSpec(),dist->clone()));
-
-    functionTable->addFunction(name, new ConstructorFunction( dist ) );
-    functionTable->addFunction("d" + name, new DistributionFunction(dist->clone(), DistributionFunction::DENSITY));
-    functionTable->addFunction("r" + name, new DistributionFunction((dist->clone()), DistributionFunction::RVALUE));
-
-    return true;
-}
+///** Add distribution to the workspace */
+//bool Workspace::addDistribution(const std::string& name, ParserDistribution* dist) {
+//
+//    PRINTF("Adding distribution %s to workspace\n", name.c_str());
+//
+//    if ( typeTable.find(name) != typeTable.end())
+//        throw RbException("There is already a type named '" + dist->getTypeSpec() + "' in the workspace");
+//
+//    PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
+//    typeTable.insert(std::pair<std::string, RbObject*>(dist->getTypeSpec(),dist->clone()));
+//
+//    functionTable->addFunction(name, new ConstructorFunction( dist ) );
+//    functionTable->addFunction("d" + name, new DistributionFunction(dist->clone(), DistributionFunction::DENSITY));
+//    functionTable->addFunction("r" + name, new DistributionFunction((dist->clone()), DistributionFunction::RVALUE));
+//
+//    return true;
+//}
 
 
 /** Add real-valued distribution to the workspace */
@@ -128,24 +128,24 @@ bool Workspace::addDistribution(const std::string& name, ParserDistributionConti
 }
 
 
-/** Add real-valued distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, DistributionContinuous* dist) {
-
-    PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
-
-    if (typeTable.find(name) != typeTable.end())
-        throw RbException("There is already a type named '" + name + "' in the workspace");
-
-    typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
-
-    functionTable->addFunction(name      , new ConstructorFunction ( dist ));
-    functionTable->addFunction("d" + name, new DistributionFunction( dist->clone() , DistributionFunction::DENSITY));
-    functionTable->addFunction("r" + name, new DistributionFunction(dist->clone(), DistributionFunction::RVALUE));
-    functionTable->addFunction("p" + name, new DistributionFunction(dist->clone(), DistributionFunction::PROB));
-    functionTable->addFunction("q" + name, new DistributionFunction(dist->clone(), DistributionFunction::QUANTILE));
-
-    return true;
-}
+///** Add real-valued distribution to the workspace */
+//bool Workspace::addDistribution(const std::string& name, DistributionContinuous* dist) {
+//
+//    PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
+//
+//    if (typeTable.find(name) != typeTable.end())
+//        throw RbException("There is already a type named '" + name + "' in the workspace");
+//
+//    typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
+//
+//    functionTable->addFunction(name      , new ConstructorFunction ( dist ));
+//    functionTable->addFunction("d" + name, new DistributionFunction( dist->clone() , DistributionFunction::DENSITY));
+//    functionTable->addFunction("r" + name, new DistributionFunction(dist->clone(), DistributionFunction::RVALUE));
+//    functionTable->addFunction("p" + name, new DistributionFunction(dist->clone(), DistributionFunction::PROB));
+//    functionTable->addFunction("q" + name, new DistributionFunction(dist->clone(), DistributionFunction::QUANTILE));
+//
+//    return true;
+//}
 
 
 /** Add function to the workspace */

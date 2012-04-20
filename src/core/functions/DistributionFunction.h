@@ -27,7 +27,7 @@
 
 class ArgumentRule;
 class DAGNode;
-class Distribution;
+class ParserDistribution;
 
 
 class DistributionFunction :  public RbFunction {
@@ -35,7 +35,7 @@ class DistributionFunction :  public RbFunction {
     public:
         enum FuncType { DENSITY, RVALUE, PROB, QUANTILE };                                                  //!< Enum specifying function type
 
-                                    DistributionFunction(Distribution* dist, FuncType funcType);            //!< Constructor
+                                    DistributionFunction(ParserDistribution* dist, FuncType funcType);            //!< Constructor
                                     DistributionFunction(const DistributionFunction& x);                    //!< Copy constructor
         virtual                    ~DistributionFunction(void);                                             //!< Destructor
 
@@ -58,7 +58,7 @@ class DistributionFunction :  public RbFunction {
 
         ArgumentRules*              argumentRules;                                                          //!< Argument rules
         TypeSpec                    returnType;                                                             //!< Return type
-        Distribution*               distribution;                                                           //!< The distribution
+        ParserDistribution*         distribution;                                                           //!< The distribution
         FuncType                    functionType;                                                           //!< Function type
     
     private:

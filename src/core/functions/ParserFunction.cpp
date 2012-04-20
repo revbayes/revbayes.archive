@@ -79,7 +79,7 @@ std::string ParserFunction::debugInfo(void) const {
  */
 const RbLanguageObject& ParserFunction::executeFunction( const std::vector<const RbObject*> &args ) {
     
-    
+    // converting the arguments into atomic data types
     std::vector<RbValue<void*> > newArgs;
     for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
         RbValue<void*> arg;

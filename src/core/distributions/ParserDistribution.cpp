@@ -29,7 +29,12 @@
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const MemberRules& memberRules ) : Distribution( memberRules ) {
+ParserDistribution::ParserDistribution( const MemberRules& mr, RbLanguageObject *rv ) : MemberObject( mr ), randomValue( rv ), memberRules( mr ) {
+}
+
+
+/** Constructor with inheritance for member rules */
+ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p.memberRules ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ) {
 }
 
 
@@ -48,7 +53,8 @@ const RbLanguageObject& ParserDistribution::executeOperationSimple( const std::s
     }
     else if ( name == "rv" ) {
         
-        return rv();
+        rv();
+        return *randomValue;
     }
     else
         return MemberObject::executeOperationSimple( name, args );
@@ -97,6 +103,16 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
     }
     
     return methods;
+}    
+
+
+const RbLanguageObject& ParserDistribution::getTemplateRandomVariable( void ) const {
+    return *randomValue;
+}   
+
+
+const TypeSpec& ParserDistribution::getVariableType( void ) const {
+    return randomValue->getTypeSpec();
 }
 
 

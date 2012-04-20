@@ -31,32 +31,16 @@
 
 
 /** Constructor passes member rules to base class */
-ParserDistributionContinuous::ParserDistributionContinuous( InferenceDistributionContinuous *d, const MemberRules& mr, RbLanguageObject *rv ) : ParserDistribution( memberRules ), distribution( d ), max( d->getMax() ), min( d->getMin() ), memberRules( mr ), randomValue( rv ) {
+ParserDistributionContinuous::ParserDistributionContinuous( InferenceDistributionContinuous *d, const MemberRules& mr, RbLanguageObject *rv ) : ParserDistribution( mr, rv ), distribution( d ), max( d->getMax() ), min( d->getMin() ) {
 
 }
 
-ParserDistributionContinuous::ParserDistributionContinuous( const ParserDistributionContinuous &d) : ParserDistribution( d ), distribution( d.distribution->clone() ), max( d.getMax() ), min( d.getMin() ), memberRules( d.memberRules ), randomValue( d.randomValue->clone() ) {
+ParserDistributionContinuous::ParserDistributionContinuous( const ParserDistributionContinuous &d) : ParserDistribution( d ), distribution( d.distribution->clone() ), max( d.getMax() ), min( d.getMin() ) {
     
 }
 
 
 double ParserDistributionContinuous::cdf(const Real &value) {
-    
-    std::vector<RbValue<void*> > newArgs;
-    for (std::map<std::string, const Variable*>::iterator it = members.begin(); it != members.end(); ++it) {
-        RbValue<void*> arg;
-        arg.value = it->second->getValue().getValue(arg.lengths);
-        newArgs.push_back( arg );
-    }
-    
-    // add te return value
-    RbLanguageObject* retVal = randomValue->clone();
-    RbValue<void*> arg;
-    arg.value = retVal->getValue(arg.lengths);
-    newArgs.push_back( arg );
-    
-    // set the current parameter values of the function
-    distribution->setParameters( newArgs );
     
     return distribution->cdf( value.getValue() );
 }
@@ -151,27 +135,7 @@ const TypeSpec& ParserDistributionContinuous::getTypeSpec(void) const {
 }
 
 
-const TypeSpec& ParserDistributionContinuous::getVariableType( void ) const {
-    return randomValue->getTypeSpec();
-}
-
-
 double ParserDistributionContinuous::lnPdf(const RbLanguageObject &value) const {
-    
-    std::vector<RbValue<void*> > newArgs;
-    for (std::map<std::string, const Variable*>::const_iterator it = members.begin(); it != members.end(); ++it) {
-        RbValue<void*> arg;
-        arg.value = it->second->getValue().getValue(arg.lengths);
-        newArgs.push_back( arg );
-    }
-    
-    // add te return value
-    RbValue<void*> arg;
-    arg.value = value.getValue(arg.lengths);
-    newArgs.push_back( arg );
-    
-    // set the current parameter values of the function
-    distribution->setParameters( newArgs );
     
     return *distribution->lnPdf();
 }
@@ -179,68 +143,24 @@ double ParserDistributionContinuous::lnPdf(const RbLanguageObject &value) const 
 
 double ParserDistributionContinuous::pdf(const RbLanguageObject &value) const {
     
-    std::vector<RbValue<void*> > newArgs;
-    for (std::map<std::string, const Variable*>::const_iterator it = members.begin(); it != members.end(); ++it) {
-        RbValue<void*> arg;
-        arg.value = it->second->getValue().getValue(arg.lengths);
-        newArgs.push_back( arg );
-    }
-    
-    // add te return value
-    RbValue<void*> arg;
-    arg.value = value.getValue(arg.lengths);
-    newArgs.push_back( arg );
-    
-    // set the current parameter values of the function
-    distribution->setParameters( newArgs );
-    
     return *( distribution->pdf() );
 }
 
 
 double ParserDistributionContinuous::quantile(const double p) {
     
-    std::vector<RbValue<void*> > newArgs;
-    for (std::map<std::string, const Variable*>::iterator it = members.begin(); it != members.end(); ++it) {
-        RbValue<void*> arg;
-        arg.value = it->second->getValue().getValue(arg.lengths);
-        newArgs.push_back( arg );
-    }
-    
-    // add te return value
-    RbLanguageObject* retVal = randomValue->clone();
-    RbValue<void*> arg;
-    arg.value = retVal->getValue(arg.lengths);
-    newArgs.push_back( arg );
-    
-    // set the current parameter values of the function
-    distribution->setParameters( newArgs );
-    
     return distribution->quantile( p );
 }
 
 
-const RbLanguageObject& ParserDistributionContinuous::rv(void) {
-    
-    std::vector<RbValue<void*> > newArgs;
-    for (std::map<std::string, const Variable*>::iterator it = members.begin(); it != members.end(); ++it) {
-        RbValue<void*> arg;
-        arg.value = it->second->getValue().getValue(arg.lengths);
-        newArgs.push_back( arg );
-    }
-    
-    // add te return value
-    RbLanguageObject* retVal = randomValue->clone();
-    RbValue<void*> arg;
-    arg.value = retVal->getValue(arg.lengths);
-    newArgs.push_back( arg );
-    
-    // set the current parameter values of the function
-    distribution->setParameters( newArgs );
+void ParserDistributionContinuous::rv(void) {
     
     distribution->rv();
-    
-    return *retVal;
+}
+
+/** We delegate the call to the inference distribution. */
+void ParserDistributionContinuous::setParameters(const std::vector<RbValue<void *> > &p) {
+    distribution->setParameters(p);
 }
 
 

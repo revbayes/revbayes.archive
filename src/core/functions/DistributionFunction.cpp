@@ -22,6 +22,7 @@
 #include "Distribution.h"
 #include "DistributionContinuous.h"
 #include "DistributionFunction.h"
+#include "InferenceDistribution.h"
 #include "ParserDistributionContinuous.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -33,7 +34,7 @@
 
 
 /** Constructor */
-DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcType ) : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real::getClassTypeSpec() : RealPos::getClassTypeSpec() ) : dist->getVariableType() ) {
+DistributionFunction::DistributionFunction( ParserDistribution* dist, FuncType funcType ) : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real::getClassTypeSpec() : RealPos::getClassTypeSpec() ) : dist->getVariableType() ) {
 
     /* Ininitalize the argument rules */
     argumentRules = new ArgumentRules();
@@ -182,27 +183,96 @@ DistributionFunction* DistributionFunction::clone( void ) const {
 
 /** Execute operation: switch based on type */
 const RbLanguageObject& DistributionFunction::executeFunction(const std::vector<const RbObject *> &args) {
-
+    
     if ( functionType == DENSITY ) {
+        // converting the arguments into atomic data types
+        std::vector<RbValue<void*> > newArgs;
+        // skip the first and the last parameter
+        for (std::vector<const RbObject*>::const_iterator i = args.begin()+1; i+1 != args.end(); ++i) {
+            RbValue<void*> arg;
+            arg.value = (*i)->getValue(arg.lengths);
+            newArgs.push_back( arg );
+        }
+        
+        // add the random value
+        RbValue<void*> arg;
+        arg.value = args[0]->getValue(arg.lengths);
+        newArgs.push_back( arg );
+        
+        // Setting the parameter of the distribution
+        distribution->setParameters( newArgs );
 
-        if ( static_cast<const RbBoolean*>( args[args.size()-1] )->getValue() == false )
+        if ( static_cast<const RbBoolean*>( args[args.size()-1] )->getValue() == false ) 
             density.setValue( distribution->pdf  ( *static_cast<const RbLanguageObject*>( args[0] ) ) );
         else
             density.setValue( distribution->lnPdf( *static_cast<const RbLanguageObject*>( args[0] ) ) );
         return density;
     }
     else if (functionType == RVALUE) {
-
-        const RbLanguageObject& draw = distribution->rv();
+        
+        // converting the arguments into atomic data types
+        std::vector<RbValue<void*> > newArgs;
+        for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
+            RbValue<void*> arg;
+            arg.value = (*i)->getValue(arg.lengths);
+            newArgs.push_back( arg );
+        }
+        
+        // add te return value
+        RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
+        RbValue<void*> arg;
+        arg.value = retVal->getValue(arg.lengths);
+        newArgs.push_back( arg );
+        
+        // Setting the parameter of the distribution
+        distribution->setParameters( newArgs );
+        const RbLanguageObject& draw = *retVal;
+        distribution->rv();
         
         return draw;
     }
     else if (functionType == PROB) {
-        cd.setValue( static_cast<DistributionContinuous*>( distribution )->cdf( *static_cast<const RbLanguageObject*>( args[0] ) ) );
+        // converting the arguments into atomic data types
+        std::vector<RbValue<void*> > newArgs;
+        // skip the first and the last parameter
+        for (std::vector<const RbObject*>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
+            RbValue<void*> arg;
+            arg.value = (*i)->getValue(arg.lengths);
+            newArgs.push_back( arg );
+        }
+        
+        // add te return value
+        RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
+        RbValue<void*> arg;
+        arg.value = retVal->getValue(arg.lengths);
+        newArgs.push_back( arg );
+        
+        // Setting the parameter of the distribution
+        distribution->setParameters( newArgs );
+        
+        cd.setValue( static_cast<ParserDistributionContinuous*>( distribution )->cdf( *static_cast<const Real*>( args[0] ) ) );
         return cd;
     }
     else if (functionType == QUANTILE) {
-
+        
+        // converting the arguments into atomic data types
+        std::vector<RbValue<void*> > newArgs;
+        // skip the first and the last parameter
+        for (std::vector<const RbObject*>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
+            RbValue<void*> arg;
+            arg.value = (*i)->getValue(arg.lengths);
+            newArgs.push_back( arg );
+        }
+        
+        // add te return value
+        RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
+        RbValue<void*> arg;
+        arg.value = retVal->getValue(arg.lengths);
+        newArgs.push_back( arg );
+        
+        // Setting the parameter of the distribution
+        distribution->setParameters( newArgs );
+        
         double    prob  = static_cast<const RealPos*>( args[0] )->getValue();
         quant.setValue( static_cast<ParserDistributionContinuous*>( distribution )->quantile( prob ) );
         
