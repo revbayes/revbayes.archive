@@ -227,4 +227,30 @@
 	return self;
 }
 
+- (void)setDiscreteStateTo:(int)x {
+
+    if ([self isDiscrete] == YES)
+        {
+        if (x == -1)
+            {
+            unsigned binaryRep = 0;
+            for (int i=0; i<10; i++)
+                {
+                unsigned mask = 1 << i ;
+                binaryRep |= mask;
+                }
+            NSNumber* n = [NSNumber numberWithUnsignedInt:binaryRep];
+            [self setVal:n];
+            [self setIsAmbig:YES];
+            }
+        else 
+            {
+            unsigned binaryRep = (unsigned)pow(2.0, (double)x);
+            NSNumber* n = [NSNumber numberWithUnsignedInt:binaryRep];
+            [self setVal:n];
+            [self setIsAmbig:NO];
+            }
+        }
+}
+
 @end

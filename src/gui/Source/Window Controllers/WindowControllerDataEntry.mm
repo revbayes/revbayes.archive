@@ -224,7 +224,6 @@
 					[aCell setTextColor:textColor];
 					[aCell setAlignment:NSCenterTextAlignment];
 					[aCell setStringValue:[NSString stringWithFormat:@"%c", state]];
-                    NSLog(@"aCell = %@", aCell);
 					}
 				}
 			}
@@ -459,7 +458,6 @@
 
 - (void)textDidBeginEditing:(NSNotification*)notification {
 
-    NSLog(@"textDidBeginEditing");
     NSArray* cells = [[notification object] selectedCells];
     NSTextFieldCell* c = [cells objectAtIndex:0];
     oldCellValue = [[c stringValue] intValue];
@@ -467,14 +465,13 @@
 
 - (void)textDidEndEditing:(NSNotification*)notification {
 
-    NSLog(@"textDidEndEditing");
     NSArray* cells = [[notification object] selectedCells];
     NSTextFieldCell* c = [cells objectAtIndex:0];
     NSString* newString = [c stringValue];
     BOOL isValidEntry = YES;
     char charVal = [newString characterAtIndex:0];
     if (charVal == '0' || charVal == '1' || charVal == '2' || charVal == '3' || charVal == '4' ||
-        charVal == '5' || charVal == '6' || charVal == '7' || charVal == '8' || charVal == '9')
+        charVal == '5' || charVal == '6' || charVal == '7' || charVal == '8' || charVal == '9' || charVal == '?')
         isValidEntry = YES;
     else
         isValidEntry = NO;
@@ -483,13 +480,51 @@
         
     if (isValidEntry == YES)
         {
-        int newVal = [[c stringValue] intValue];
-        int row = [[notification object] selectedRow] - 2;
-        int col = [[notification object] selectedColumn];
+        int row = (int)[[notification object] selectedRow] - 2;
+        int col = (int)[[notification object] selectedColumn];
         RbDataCell* dc = [[myTool dataMatrixIndexed:0] cellWithRow:row andColumn:col];
+        if (charVal == '?')
+            {
+            [dc setDiscreteStateTo:(-1)];
+            }
+        else 
+            {
+            int newVal = [[c stringValue] intValue];
+            [dc setDiscreteStateTo:newVal];
+            }
+        [myTool makeDataInspector];
+
+
+        for (int i=2; i<[[notification object] numberOfRows]; i++)
+            {
+            for (int j=0; j<[[notification object] numberOfColumns]; j++)
+                {
+                NSTextFieldCell* myCell = [[notification object] cellAtRow:i column:j];
+				RbDataCell* dataMatrixCell = [[myTool dataMatrixIndexed:0] cellWithRow:(i-2) andColumn:j];
+                char state = [dataMatrixCell getDiscreteState];
+                if ( [dataMatrixCell isGapState] == YES )
+                    state = '-';
+                NSString* stateStr = [NSString localizedStringWithFormat:@"%c", state];
+                
+                NSDictionary* colorDict = [self standardColorsDict];
+                NSColor* textColor = [NSColor blackColor];
+                NSColor* bkgrndColor = [colorDict objectForKey:stateStr];
+                if ( [[myTool dataMatrixIndexed:0] isCharacterExcluded:j] == YES || [[myTool dataMatrixIndexed:0] isTaxonExcluded:(i-2)] == YES )
+                    bkgrndColor = [NSColor grayColor];
+                bkgrndColor = [bkgrndColor colorWithAlphaComponent:0.5];
+
+                [myCell setTag:1];
+                [myCell setEditable:YES];
+                [myCell setSelectable:YES];
+                [myCell setDrawsBackground:YES];
+                [myCell setBackgroundColor:bkgrndColor];
+                [myCell setTextColor:textColor];
+                [myCell setAlignment:NSCenterTextAlignment];
+                [myCell setStringValue:[NSString stringWithFormat:@"%c", state]];
+                }
+            }
         
-
-
+        
         }
     else
         {
@@ -498,7 +533,7 @@
                                          defaultButton:@"OK" 
                                        alternateButton:nil 
                                            otherButton:nil 
-                             informativeTextWithFormat:@"Character states can only be the integers 0 to 9"];
+                             informativeTextWithFormat:@"Character states can only be the integers 0 to 9 or \"?\""];
         [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
         }
 }

@@ -35,5 +35,6 @@
 - (char)interpretAsDna:(unsigned)x;
 - (char)interpretAsStandard:(unsigned)x;
 - (id)initWithCell:(RbDataCell*)c;
+- (void)setDiscreteStateTo:(int)x; 
 
 @end
