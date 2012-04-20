@@ -47,6 +47,7 @@ class RbString : public RbLanguageObject {
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
         void*                       getValue(std::vector<size_t> &length) const;        //!< Transform the object into a basic element pointer for fast access.
         std::string&                getValueReference(void) { return value; }           //!< Get value reference
+        size_t                      memorySize() const { return sizeof( value ); }      //!< Get the size
         void                        printValue(std::ostream& o) const;                  //!< Print value (for user)
 
         // RbString functions

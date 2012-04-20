@@ -61,26 +61,21 @@ public:
     
     // Basic utility functions
     virtual ParserFunction*                         clone(void) const;                                                              //!< Clone object
-    static const std::string&                       getClassName(void);                                                                 //!< Get class name
-    static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
-    virtual std::string                             debugInfo(void) const;                                                              //!< Brief info about object
+    static const std::string&                       getClassName(void);                                                             //!< Get class name
+    static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
+    virtual std::string                             debugInfo(void) const;                                                          //!< Brief info about object
     const TypeSpec&                                 getTypeSpec(void) const;
     
     // Basic utility functions you should not have to override
-    void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
+    void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
     
     // ParserFunction functions you have to override
-    virtual const RbLanguageObject&                 execute(void);                                                                      //!< Execute function
+    virtual const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*> &args);                      //!< Execute function
     virtual const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
     virtual const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
     
-    virtual bool                                    throws(void) const { return throwsError; }                                          //!< Does the function throw exceptions?
-    
-protected:
-    
-    virtual const RbLanguageObject&                 execute(const std::vector<const RbObject*>& args);                                  //!< Execute the function. This is the function one has to overwrite for vector type execution.
-    virtual const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*>& args);                          //!< Execute the function. This is the function one has to overwrite for single return values.
-        
+    virtual bool                                    throws(void) const { return throwsError; }                                      //!< Does the function throw exceptions?
+            
 private:   
     
     ArgumentRules                                   argRules;

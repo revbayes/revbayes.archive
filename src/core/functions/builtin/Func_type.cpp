@@ -35,9 +35,9 @@ Func_type* Func_type::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_type::executeFunction( void ) {
+const RbLanguageObject& Func_type::executeFunction( const std::vector<const RbObject*>& args ) {
     
-    retValue.setValue( args[0].getVariable().getValue().getTypeSpec().getType() );
+    retValue.setValue( args[0]->getTypeSpec().getType() );
     
     return retValue;
 }

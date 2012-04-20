@@ -25,6 +25,7 @@
 #include "Integer.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RbLanguageObject.h"
 #include "RbUtil.h"

@@ -44,6 +44,7 @@ class RbObject {
         static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get language type of the object
         virtual void*                       getValue(std::vector<size_t> &length) const { return NULL; }            //!< Transform the object into a basic element pointer for fast access.
+        virtual size_t                      memorySize() const { return sizeof( *this ); }                          //!< Get the size
         virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
 
         // Basic utility functions you may want to override

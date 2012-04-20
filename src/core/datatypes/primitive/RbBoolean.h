@@ -44,6 +44,7 @@ class RbBoolean : public RbLanguageObject {
         void*                           getValue(std::vector<size_t> &length) const;                            //!< Transform the object into a basic element pointer for fast access.
         bool&                           getValueReference(void) { return value; }                               //!< Get value reference
         bool                            isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        size_t                          memorySize() const { return sizeof( bool ); }                           //!< Get the size
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
         // Getters and setters

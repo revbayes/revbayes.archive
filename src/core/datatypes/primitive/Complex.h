@@ -59,6 +59,7 @@ class Complex : public RbLanguageObject {
         void*                       getValue(std::vector<size_t> &length) const;                            //!< Transform the object into a basic element pointer for fast access.
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         std::complex<double>&       getValueReference(void) { return value; }                               //!< Get value reference
+        size_t                      memorySize() const { return sizeof( std::complex<double> ); }           //!< Get the size
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
         // Getters and setters

@@ -41,10 +41,10 @@ Func__range* Func__range::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func__range::executeFunction( void ) {
+const RbLanguageObject& Func__range::executeFunction( const std::vector<const RbObject*>& args ) {
 
-    int f = static_cast<const Integer&>( args[0].getVariable().getValue() ).getValue();
-    int l = static_cast<const Integer&>( args[1].getVariable().getValue() ).getValue();
+    int f = static_cast<const Integer*>( args[0] )->getValue();
+    int l = static_cast<const Integer*>( args[1] )->getValue();
 
     range.clear();
     if (f < l) {

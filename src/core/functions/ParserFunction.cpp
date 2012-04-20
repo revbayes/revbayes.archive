@@ -76,85 +76,9 @@ std::string ParserFunction::debugInfo(void) const {
 /* 
  * Execute the Function. 
  *
- * This is the default implementation which calls executeFunction and wraps the return value 
- * (which is of type RbLanguageObject) into a ConstantNode.
- *
- * If you do not wish to wrap the return value into a constant node, then you need to overwrite this function.
  */
-const RbLanguageObject& ParserFunction::execute(void) {
+const RbLanguageObject& ParserFunction::executeFunction( const std::vector<const RbObject*> &args ) {
     
-    
-    std::vector<const RbObject*> newArgs;
-    for (std::vector<Argument>::iterator i = args.begin(); i != args.end(); ++i) {
-        newArgs.push_back( &i->getVariable().getValue() );
-    }
-    return execute( newArgs );
-}
-
-
-/* 
- * Execute the Function. 
- *
- * This is the default implementation which calls executeFunction and wraps the return value 
- * (which is of type RbLanguageObject) into a ConstantNode.
- *
- * If you do not wish to wrap the return value into a constant node, then you need to overwrite this function.
- */
-const RbLanguageObject& ParserFunction::execute( const std::vector<const RbObject*> &args ) {
-    
-    // check each argument if it is a vector and hence the function needs repeated evaluation
-    bool repeatedExecution = false;
-    size_t size = 0;
-    for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
-        if ( (*i)->isTypeSpec( Container::getClassTypeSpec() ) ) {
-            repeatedExecution = true;
-            size = static_cast<const Container*>( *i )->size();
-            break;
-        }
-    }
-    
-    RbLanguageObject* retVal;
-    if ( repeatedExecution ) {
-        RbVector<RbLanguageObject>* retValVector = new RbVector<RbLanguageObject>();
-        for ( size_t j = 0; j < size; ++j) {
-            std::vector<const RbObject*> newArgs;
-            for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
-                if ( (*i)->isTypeSpec( Container::getClassTypeSpec() ) ) {
-                    newArgs.push_back( &static_cast<const Container*>( (*i) )->getElement(j) );
-                }
-                else {
-                    newArgs.push_back( *i );
-                    
-                }
-            }
-            // call the execute function now for the single elements
-            const RbLanguageObject& singleRetVal = execute(newArgs);
-            retValVector->push_back( singleRetVal.clone() );
-            // \TODO If the execute functions returns a pointer to the object and the caller owns the object, 
-            // then we don't need to copy each time the object.
-        }
-        
-        retVal = retValVector;
-    }
-    else {
-        
-        // get the value by executing the internal function
-        retVal = executeFunction(args).clone();
-    }
-    
-    return *retVal;
-    
-}
-
-
-/* Execute the Function. This is the default implementation which is called by calls execute. This function returns a basic RbLanguageObject
- * that is wraped into a ConstantNode by the calling execute function.
- * If you write your own execute function, you do not need to overwrite this function, otherwise you should.
- */
-const RbLanguageObject& ParserFunction::executeFunction( const std::vector<const RbObject*> &args) {
-    
-    // \TODO: We might want to throw an error!
-    //    static RbNullObject nullReference;
     
     std::vector<RbValue<void*> > newArgs;
     for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {

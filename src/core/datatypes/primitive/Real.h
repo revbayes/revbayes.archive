@@ -66,6 +66,7 @@ class Real : public RbLanguageObject {
         virtual const TypeSpec&     getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual void*               getValue(std::vector<size_t> &length) const;                            //!< Transform the object into a basic element pointer for fast access.
         virtual double&             getValueReference(void) { return value; }                               //!< Get value reference
+        size_t                      memorySize() const { return sizeof( double ); }                         //!< Get the size
         virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         virtual void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
 

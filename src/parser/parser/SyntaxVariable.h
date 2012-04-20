@@ -16,6 +16,7 @@
 #ifndef SyntaxVariable_H
 #define SyntaxVariable_H
 
+#include "Natural.h"
 #include "RbString.h"
 #include "RbVector.h"
 #include "SyntaxElement.h"

@@ -92,7 +92,7 @@ class RbFunction :  public RbInternal {
         virtual const RbLanguageObject&                 execute(const std::vector<const RbObject*>& args);                                  //!< Execute the function. This is the function one has to overwrite for vector type execution.
         virtual const RbLanguageObject&                 executeFunction();                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
         virtual const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*>& args);                          //!< Execute the function. This is the function one has to overwrite for single return values.
-    virtual void                                    setArgumentVariable(const std::string& name, const Variable* var) {}                  //!< Set the private member variable here (for derived classes)!
+        virtual void                                    setArgumentVariable(const std::string& name, const Variable* var) {}                //!< Set the private member variable here (for derived classes)!
     
         // Member variables
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?

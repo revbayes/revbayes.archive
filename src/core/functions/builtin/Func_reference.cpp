@@ -35,12 +35,12 @@ Func_reference* Func_reference::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_reference::executeFunction( void ) {
+const RbLanguageObject& Func_reference::executeFunction( const std::vector<const RbObject*>& args ) {
     
     // reference to the original variable
-    const RbLanguageObject& val = args[0].getVariable().getValue(); 
+    const RbLanguageObject* val = static_cast<const RbLanguageObject*>( args[0] ); 
     
-    return val;
+    return *val;
 }
 
 

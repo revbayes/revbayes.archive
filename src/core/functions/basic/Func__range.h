@@ -42,7 +42,7 @@ class Func__range :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
  
     private:
 

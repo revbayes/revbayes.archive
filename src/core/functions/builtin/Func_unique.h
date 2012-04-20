@@ -32,17 +32,17 @@ class Func_unique :  public RbFunction {
 	
 public:
 	// Basic utility functions
-	Func_unique*                clone(void) const;                                  //!< Clone the object
-    static const std::string&   getClassName(void);                                 //!< Get class name
-    static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
-    const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
+	Func_unique*                clone(void) const;                                              //!< Clone the object
+    static const std::string&   getClassName(void);                                             //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                         //!< Get class type spec
+    const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
 	
 	// Regular functions
-    const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
-	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
+    const ArgumentRules&        getArgumentRules(void) const;                                   //!< Get argument rules
+	const TypeSpec&             getReturnType(void) const;                                      //!< Get type of return value
 
 protected:
-	const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
+	const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);      //!< Execute operation
     
 private:
     
@@ -68,9 +68,9 @@ Func_unique<valType>* Func_unique<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-const RbLanguageObject& Func_unique<valType>::executeFunction( void ) {
+const RbLanguageObject& Func_unique<valType>::executeFunction( const std::vector<const RbObject*>& args ) {
     
-    retValue = static_cast<const valType&>( args[0].getVariable().getValue() );    
+    retValue = *static_cast<const valType*>( args[0] );    
     if(retValue.size() == 0) 
         return retValue;
     retValue.sort();

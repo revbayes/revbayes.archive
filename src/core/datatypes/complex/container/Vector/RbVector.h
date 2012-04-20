@@ -63,6 +63,11 @@ public:
     bool                                            operator==(const RbVector<valueType>& x) const;                 //!< Equality
     bool                                            operator!=(const RbVector<valueType>& x) const;                 //!< Inequality
     
+    // Overwritten RbObject functions
+    virtual void*                                   getValue(std::vector<size_t> &length) const;                    //!< Transform the object into a basic element pointer for fast access.
+    virtual size_t                                  memorySize() const;                                             //!< Get the size
+
+    
     // Member object function
     const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
     const MethodTable&                              getMethods(void) const;                                         //!< Get methods
@@ -98,6 +103,7 @@ protected:
     std::vector<valueType* >                        elements;
 
     private:
+    
     struct comparator {
         bool operator() (valueType* A, valueType* B) const { return ( *A < *B);}
     } myComparator;
@@ -720,6 +726,32 @@ const std::vector<valueType* >& RbVector<valueType>::getValue(void) const {
 }
 
 
+
+template <typename valueType>
+void* RbVector<valueType>::getValue( std::vector<size_t> &lengths ) const {
+    
+    // add the length for this dimension
+    lengths.push_back( elements.size() );
+    
+    // create the c-style array of elements
+    void* data = malloc(memorySize());
+    typename std::vector<valueType*>::const_iterator i;
+    for ( i = elements.begin(); i != elements.end(); i++ ) {
+        const valueType *x = *i;
+        void* elemVal = x->getValue( lengths );
+        memcpy(data, elemVal,(*i)->memorySize());
+//        *(data) = *(*i)->getValue(lengths);
+        char *tmp_ptr = (char*)data;
+        tmp_ptr += (*i)->memorySize();
+        data = tmp_ptr;
+    }
+    char *tmp_ptr = (char*)data;
+    tmp_ptr -= memorySize();
+    data = tmp_ptr;
+    
+    return data;
+}
+
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 template <typename valueType>
 const TypeSpec& RbVector<valueType>::getTypeSpec(void) const {
@@ -751,6 +783,20 @@ bool RbVector<valueType>::isConvertibleTo(const TypeSpec &type) const {
     }
     
     return false;
+}
+
+
+/** Print value for user */
+template <typename valueType>
+size_t RbVector<valueType>::memorySize( void ) const {
+    
+    size_t memSize = 0;
+    typename std::vector<valueType*>::const_iterator i;
+    for ( i = elements.begin(); i != elements.end(); i++ ) {
+        memSize += (*i)->memorySize();
+    }
+    
+    return memSize;
 }
 
 

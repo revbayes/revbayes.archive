@@ -146,6 +146,12 @@ const TypeSpec& Natural::getTypeSpec( void ) const {
 }
 
 
+/* Get a pointer to the elementary value. */
+void* Natural::getValue(std::vector<size_t> &length) const {
+    return static_cast<void*>( &const_cast<int&>( value ) );
+}
+
+
 /** Is convertible to type? */
 bool Natural::isConvertibleTo( const TypeSpec& type ) const {
 
@@ -188,7 +194,7 @@ void Natural::setValue( size_t x ) {
     if ( x > INT_MAX )
         throw RbException( "Value out of range for " + getClassName() );
     
-    value = (size_t)x;
+    value = int(x);
 }
 
 

@@ -52,6 +52,7 @@ class Natural : public Integer {
         static const std::string&   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
+        void*                       getValue(std::vector<size_t> &length) const;                            //!< Transform the object into a basic element pointer for fast access.
         bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
 

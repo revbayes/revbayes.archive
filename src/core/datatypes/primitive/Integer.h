@@ -50,6 +50,7 @@ public:
     virtual void*               getValue(std::vector<size_t> &length) const;                            //!< Transform the object into a basic element pointer for fast access.
     int&                        getValueReference(void) { return value; }                               //!< Get value reference for VectorInteger
     virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
+    size_t                      memorySize() const { return sizeof( int ); }                            //!< Get the size
     virtual void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
     // Getters and setters

@@ -30,17 +30,17 @@ class Func_reference :  public RbFunction {
     
 public:
     // Basic utility functions
-    Func_reference*             clone(void) const;                                  //!< Clone object
-    static const std::string&   getClassName(void);                                 //!< Get class name
-    static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
-    const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
+    Func_reference*             clone(void) const;                                          //!< Clone object
+    static const std::string&   getClassName(void);                                         //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
+    const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
     
     // Func_reference functions
-    const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
-    const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
+    const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+    const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return val
 
 protected:
-    const RbLanguageObject&     executeFunction(void);                              //!< Execute function
+    const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
     
 
 };
