@@ -431,17 +431,9 @@ const RbLanguageObject& RbFunction::execute( const std::vector<const RbObject*> 
 }
 
 
-/* Execute the Function. This is the default implementation which is called by execute(). 
- * If you write your own execute function, you do not need to overwrite this function, otherwise you should.
- */
-const RbLanguageObject& RbFunction::executeFunction(void) {
-    
-    throw RbException("Call to unimplemented function executeFunction() in " + getTypeSpec().getType() + ".");
-}
-
-
-/* Execute the Function. This is the default implementation which is called by calls execute. This function returns a basic RbLanguageObject
- * that is wraped into a ConstantNode by the calling execute function.
+/* Execute the Function. This is the default implementation which is called by execute(). It will be called 
+ * repeatedly for each single value parameter in the multidimensional parameters.
+ *
  * If you write your own execute function, you do not need to overwrite this function, otherwise you should.
  */
 const RbLanguageObject& RbFunction::executeFunction( const std::vector<const RbObject*> &args ) {

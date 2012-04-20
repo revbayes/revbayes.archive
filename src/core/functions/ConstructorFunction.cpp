@@ -83,7 +83,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-const RbLanguageObject& ConstructorFunction::executeFunction(void) {
+const RbLanguageObject& ConstructorFunction::execute( void ) {
 
     delete copyObject;
     
@@ -134,15 +134,6 @@ const TypeSpec& ConstructorFunction::getTypeSpec( void ) const {
 const TypeSpec& ConstructorFunction::getReturnType(void) const {
 
     return templateObject->getTypeSpec();
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void ConstructorFunction::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    // We do nothing here because the only thing we need is to collect the arguments in a vector.
-    // This is done by the base class alreay.
-    
 }
 
 

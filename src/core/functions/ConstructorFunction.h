@@ -44,12 +44,11 @@ class ConstructorFunction :  public RbFunction {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Regular functions
+        const RbLanguageObject&                 execute();                                                                      //!< Execute function
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
 
 	protected:
-        const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function
-        void                                    setArgumentVariable(const std::string& name, const Variable* var);
 
         const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
         MemberObject*                           templateObject;                                                                 //!< The template object
