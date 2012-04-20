@@ -80,13 +80,9 @@ class Func_readCharacterData :  public RbFunction {
   
     protected:
         const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const Variable* var);
 
     private:
         void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
-
-        // Arguments
-        RbConstVariablePtr          filename;
     
         // function return value
         DagNodeContainer            retList;

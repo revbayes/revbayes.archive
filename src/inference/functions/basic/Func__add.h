@@ -78,7 +78,7 @@ template <typename firstValType, typename secondValType, typename retType>
 void Func__add<firstValType, secondValType, retType>::setInternalArguments(const std::vector<RbValue<void*> >& args) {
     
     
-    first.value         = ( static_cast<firstValType*>( args[0].value ) );
+    first.value         = static_cast<firstValType*>( args[0].value );
     first.lengths       = args[0].lengths;
     
     second.value        = static_cast<secondValType*>( args[1].value );
