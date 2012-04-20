@@ -355,9 +355,27 @@ void Workspace::initializeGlobalWorkspace(void) {
         ArgumentRules ltNaturalFuncArgRules;
         ltNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
         ltNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
-        Natural* funcLTNaturalRetVar = new Natural();
-        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, int>(), "<", ltNaturalFuncArgRules, funcLTNaturalRetVar ) );
+        RbBoolean* funcLTNaturalRetVar = new RbBoolean();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltNaturalFuncArgRules, funcLTNaturalRetVar ) );
         
+        ArgumentRules ltIntFuncArgRules;
+        ltIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        ltIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        RbBoolean* funcLTIntRetVar = new RbBoolean();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltIntFuncArgRules, funcLTIntRetVar ) );
+        
+        ArgumentRules ltRealPosFuncArgRules;
+        ltRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        ltRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RbBoolean* funcLTRealPosRetVar = new RbBoolean();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealPosFuncArgRules, funcLTRealPosRetVar ) );
+        
+        ArgumentRules ltRealFuncArgRules;
+        ltRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        ltRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        RbBoolean* funcLTRealRetVar = new RbBoolean();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealFuncArgRules, funcLTRealRetVar ) );
+		
 //        addFunction( "_add",      new Func__add<            Integer,           Real,         Real >() );
 //        addFunction( "_add",      new Func__add<               Real,        Integer,         Real >() );
 //        addFunction( "_add",      new Func__add<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
