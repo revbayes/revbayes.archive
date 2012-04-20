@@ -254,23 +254,23 @@ void Workspace::initializeGlobalWorkspace(void) {
 
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
-        addDistribution( "beta",         new Dist_beta()        );
-        addDistribution( "birthdeath",   new Dist_birthdeath()  );
-        addDistribution( "cat",          new Dist_cat<Integer>());
-        addDistribution( "cat",          new Dist_cat<Natural>());
-        addDistribution( "cat",          new Dist_cat<NucleotideState>());
-        addDistribution( "cat",          new Dist_cat<Real>()   );
-        addDistribution( "cat",          new Dist_cat<RealPos>());
-        addDistribution( "ctmc",         new Dist_ctmm()        );
-        addDistribution( "dtmm",         new Dist_dtmm()        );
-        addDistribution( "dirichlet",    new Dist_dirichlet()   );
-        addDistribution( "exponential",  new Dist_exp()         );
-        addDistribution( "gamma",        new Dist_gamma()       );
-        addDistribution( "logis",        new Dist_logis()       );
-        addDistribution( "multinomial",  new Dist_multinomial() );
-        addDistribution( "lnorm",        new Dist_lnorm()       );
-        addDistribution( "unifTopology", new Dist_topologyunif());
-        addDistribution( "unif",         new Dist_unif()        );
+//        addDistribution( "beta",         new Dist_beta()        );
+//        addDistribution( "birthdeath",   new Dist_birthdeath()  );
+//        addDistribution( "cat",          new Dist_cat<Integer>());
+//        addDistribution( "cat",          new Dist_cat<Natural>());
+//        addDistribution( "cat",          new Dist_cat<NucleotideState>());
+//        addDistribution( "cat",          new Dist_cat<Real>()   );
+//        addDistribution( "cat",          new Dist_cat<RealPos>());
+//        addDistribution( "ctmc",         new Dist_ctmm()        );
+//        addDistribution( "dtmm",         new Dist_dtmm()        );
+//        addDistribution( "dirichlet",    new Dist_dirichlet()   );
+//        addDistribution( "exponential",  new Dist_exp()         );
+//        addDistribution( "gamma",        new Dist_gamma()       );
+//        addDistribution( "logis",        new Dist_logis()       );
+//        addDistribution( "multinomial",  new Dist_multinomial() );
+//        addDistribution( "lnorm",        new Dist_lnorm()       );
+//        addDistribution( "unifTopology", new Dist_topologyunif());
+//        addDistribution( "unif",         new Dist_unif()        );
         
         MemberRules distNormMemberRules;
         distNormMemberRules.push_back( new ValueRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
