@@ -350,6 +350,14 @@ void Workspace::initializeGlobalWorkspace(void) {
         Real* funcSubRealRetVar = new Real();
         addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealFuncArgRules, funcSubRealRetVar ) );
         
+
+
+        ArgumentRules ltNaturalFuncArgRules;
+        ltNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        ltNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        Natural* funcLTNaturalRetVar = new Natural();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, int>(), "<", ltNaturalFuncArgRules, funcLTNaturalRetVar ) );
+        
 //        addFunction( "_add",      new Func__add<            Integer,           Real,         Real >() );
 //        addFunction( "_add",      new Func__add<               Real,        Integer,         Real >() );
 //        addFunction( "_add",      new Func__add<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
@@ -403,11 +411,11 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_gt",       new Func__gt<             Integer,           Real >()             );
         addFunction( "_gt",       new Func__gt<                Real,        Integer >()             );
         addFunction( "_gt",       new Func__gt<           RbBoolean,      RbBoolean >()             );
-        addFunction( "_lt",       new Func__lt<             Integer,        Integer >()             );
-        addFunction( "_lt",       new Func__lt<                Real,           Real >()             );
-        addFunction( "_lt",       new Func__lt<             Integer,           Real >()             );
-        addFunction( "_lt",       new Func__lt<                Real,        Integer >()             );
-        addFunction( "_lt",       new Func__lt<           RbBoolean,      RbBoolean >()             );
+//        addFunction( "_lt",       new Func__lt<             Integer,        Integer >()             );
+//        addFunction( "_lt",       new Func__lt<                Real,           Real >()             );
+//        addFunction( "_lt",       new Func__lt<             Integer,           Real >()             );
+//        addFunction( "_lt",       new Func__lt<                Real,        Integer >()             );
+//        addFunction( "_lt",       new Func__lt<           RbBoolean,      RbBoolean >()             );
         addFunction( "_le",       new Func__le<             Integer,        Integer >()             );
         addFunction( "_le",       new Func__le<                Real,           Real >()             );
         addFunction( "_le",       new Func__le<             Integer,           Real >()             );
