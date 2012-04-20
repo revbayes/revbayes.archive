@@ -65,7 +65,7 @@ Func__uminus<firstValType, retType>* Func__uminus<firstValType, retType>::clone(
 template <typename firstValType, typename retType>
 void Func__uminus<firstValType, retType>::executeSimple(std::vector<size_t> &offset) {
     
-    retValue.value[offset[2]] = -(first.value[offset[0]]);
+    retValue.value[offset[1]] = -(first.value[offset[0]]);
     
 }
 
@@ -77,8 +77,8 @@ void Func__uminus<firstValType, retType>::setInternalArguments(const std::vector
     first.value         = static_cast<firstValType*>( args[0].value );
     first.lengths       = args[0].lengths;
         
-    retValue.value      = static_cast<retType*>( args[2].value );
-    retValue.lengths    = args[2].lengths;
+    retValue.value      = static_cast<retType*>( args[1].value );
+    retValue.lengths    = args[1].lengths;
 }
 
 
