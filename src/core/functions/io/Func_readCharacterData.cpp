@@ -44,10 +44,10 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_readCharacterData::executeFunction( void ) {
+const RbLanguageObject& Func_readCharacterData::executeFunction( const std::vector<const RbObject*>& args ) {
 
     // get the information from the arguments for reading the file
-    const RbString& fn = static_cast<const RbString&>( args[0].getVariable().getValue() );
+    const RbString& fn = static_cast<const RbString&>( *args[0] );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn.getValue() );
