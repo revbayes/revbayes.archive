@@ -18,9 +18,9 @@
 
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "Distribution.h"
 #include "Func_setval.h"
 #include "Integer.h"
+#include "ParserDistribution.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"

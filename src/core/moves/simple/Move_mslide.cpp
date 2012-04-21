@@ -16,9 +16,9 @@
  */
 
 #include "ConstantNode.h"
-#include "DistributionContinuous.h"
 #include "MemberFunction.h"
 #include "Move_mslide.h"
+#include "ParserDistributionContinuous.h"
 #include "RandomNumberGenerator.h"
 #include "RbUtil.h"
 #include "RealPos.h"
@@ -112,8 +112,8 @@ double Move_mslide::perform( void ) {
     const RealPos& d = static_cast<const RealPos&>( delta->getValue() );
 
     double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();
-    const Real& min = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMin();
-    const Real& max = static_cast<const DistributionContinuous&>( nodePtr->getDistribution() ).getMax();
+    const Real& min = static_cast<const ParserDistributionContinuous&>( nodePtr->getDistribution() ).getMin();
+    const Real& max = static_cast<const ParserDistributionContinuous&>( nodePtr->getDistribution() ).getMax();
     double minVal  = min.getValue();
     double maxVal  = max.getValue();
 

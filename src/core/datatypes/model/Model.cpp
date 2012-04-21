@@ -25,6 +25,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
+#include "ParserDistribution.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"

@@ -17,8 +17,8 @@
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
 #include "DeterministicNode.h"
-#include "Distribution.h"
 #include "Func_reference.h"
+#include "ParserDistribution.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -254,19 +254,10 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         
         // Make an independent copy of the distribution and delete the exprVal
 //        Distribution* distribution = (Distribution*) detNode->getFunctionPtr()->execute();
-        Distribution* distribution = dynamic_cast<Distribution*>( detNode->getValue().clone() );
-        if ( distribution == NULL )
-            throw RbException( "Function returns a NULL distribution" );
-        
-        // check if the type is valid. This is necessary for reassignments
-        if ( !distribution->getVariableType().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
-            std::ostringstream msg;
-            msg << "Cannot reassign variable '" << theSlot.getLabel() << "' with a distribution of variable type " << distribution->getVariableType() << " because the variable requires type " << theSlot.getVariable().getValueTypeSpec() << "." << std::endl;
-            throw RbException( msg );
-        }
-        
+        const ParserDistribution& dist = dynamic_cast<const ParserDistribution&>( detNode->getValue() );
+               
         // Create new stochastic node
-        DAGNode* node = new StochasticNode( distribution );
+        DAGNode* node = new StochasticNode( dist.clone() );
         
         // fill the slot with the new variable
         theSlot.getVariable().setDagNode( node );

@@ -20,7 +20,6 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "Distribution.h"
 #include "Integer.h"
 #include "Simulate.h"
 #include "MemberFunction.h"
@@ -29,6 +28,7 @@
 #include "ObjectMonitor.h"
 #include "Move.h"
 #include "Natural.h"
+#include "ParserDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -321,8 +321,9 @@ void Simulate::run(size_t ndata) {
 
         //Random draws from the ordered stochastic nodes
         for (size_t i = 0; i < orderedStochasticNodes.size() ; i++) {
-            Distribution& dist = orderedStochasticNodes[i]->getDistribution();
-            orderedStochasticNodes[i]->setValue( dist.rv().clone() );
+            ParserDistribution& dist = orderedStochasticNodes[i]->getDistribution();
+            dist.rv();
+            orderedStochasticNodes[i]->setValue( dist.getTemplateRandomVariable().clone() );
             // we need to call keep so that the values get recalculated properly
             orderedStochasticNodes[i]->keep();
         }

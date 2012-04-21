@@ -143,7 +143,7 @@ double ParserDistributionContinuous::lnPdf(const RbLanguageObject &value) const 
 
 double ParserDistributionContinuous::pdf(const RbLanguageObject &value) const {
     
-    return *( distribution->pdf() );
+    return *distribution->pdf();
 }
 
 

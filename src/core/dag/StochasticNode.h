@@ -43,7 +43,7 @@
 
 #include "VariableNode.h"
 
-class Distribution;
+class ParserDistribution;
 class Move;
 
 class StochasticNode : public VariableNode {
@@ -52,7 +52,7 @@ public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
                                         StochasticNode(void);                                               //!< Construct empty stochastic node
-                                        StochasticNode(Distribution* dist);                                 //!< Construct from distribution (raw object)
+                                        StochasticNode(ParserDistribution* dist);                           //!< Construct from distribution (raw object)
                                         StochasticNode(const StochasticNode& x);                            //!< Copy constructor
     virtual                            ~StochasticNode(void);                                               //!< Destructor
 
@@ -81,8 +81,8 @@ public:
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
     void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
     void                                markForRecalculation(void);                                         //!< Flag this node for recalculation
-    const Distribution&                 getDistribution(void) const;                                        //!< Get distribution (const)
-    Distribution&                       getDistribution(void);                                              //!< Get distribution (non-const)
+    const ParserDistribution&           getDistribution(void) const;                                        //!< Get distribution (const)
+    ParserDistribution&                 getDistribution(void);                                              //!< Get distribution (non-const)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
     const std::vector<Move*>&           getMoves(void) const;                                               //!< Get the vector of moves
     bool                                isNotInstantiated(void) const;
@@ -115,7 +115,7 @@ protected:
 
     // Member variables
     bool                                clamped;                                                            //!< Is the node clamped with data?
-    Distribution*                       distribution;                                                       //!< Distribution (density functions, random draw function)
+    ParserDistribution*                 distribution;                                                       //!< Distribution (density functions, random draw function)
     double                              lnProb;                                                             //!< Current log probability
     bool                                needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
     bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?
@@ -124,7 +124,7 @@ protected:
 private:
     static const TypeSpec               typeSpec;
     RbLanguageObject*                   value;                                                              //!< Value
-    RbLanguageObject*                   storedValue;                                                                    //!< Stored value
+    RbLanguageObject*                   storedValue;                                                        //!< Stored value
 
     VariableType                        type;
     

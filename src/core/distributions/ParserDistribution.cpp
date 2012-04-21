@@ -34,7 +34,7 @@ ParserDistribution::ParserDistribution( const MemberRules& mr, RbLanguageObject 
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p.memberRules ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ) {
+ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ) {
 }
 
 
