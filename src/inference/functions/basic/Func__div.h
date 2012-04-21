@@ -1,10 +1,10 @@
 /**
  * @file
  * This file contains the declaration and implementation
- * of the templated Func__lt, which is used to determine
- * whether the first variable is less than the second.
+ * of the templated Func__div, which is used to divide
+ * two variables.
  *
- * @brief Declaration and implementof Func__lt
+ * @brief Declaration and implementation of Func__div
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -15,8 +15,8 @@
  * $Id$
  */
 
-#ifndef Func__lt_H
-#define Func__lt_H
+#ifndef Func__div_H
+#define Func__div_H
 
 #include "AbstractInferenceFunction.h"
 
@@ -25,13 +25,13 @@
 
 
 template <typename firstValType, typename secondValType, typename retType>
-class Func__lt :  public AbstractInferenceFunction {
+class Func__div :  public AbstractInferenceFunction {
 
     public:
-                                    Func__lt( void );
-		// Basic utility functions
-		Func__lt*                  clone(void) const;                                                      //!< Clone the object
-	   
+                                    Func__div( void );
+        
+        // Basic utility functions
+        Func__div*                  clone(void) const;                                          //!< Clone the object
 protected:
     void                            setInternalArguments(const std::vector<RbValue<void*> >& args);         //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
     void                            executeSimple(std::vector<size_t> &offset);
@@ -48,31 +48,38 @@ private:
 
 #endif
 
-
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-Func__lt<firstValType, secondValType, retType>::Func__lt( void ) : AbstractInferenceFunction( ) {
+Func__div<firstValType, secondValType, retType>::Func__div( void ) : AbstractInferenceFunction( ) {
 	
 }
+
 
 /** Clone object */
 template <typename firstValType, typename secondValType, typename retType>
-Func__lt<firstValType, secondValType, retType>* Func__lt<firstValType, secondValType, retType>::clone( void ) const {
+Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondValType, retType>::clone( void ) const {
 	
-    return new Func__lt( *this );
+    return new Func__div( *this );
 }
 
 
 template <typename firstValType, typename secondValType, typename retType>
-void Func__lt<firstValType, secondValType, retType>::executeSimple(std::vector<size_t> &offset) {
+void Func__div<firstValType, secondValType, retType>::executeSimple(std::vector<size_t> &offset) {
     
-    retValue.value[offset[2]] = (first.value[offset[0]] < second.value[offset[1]]);
+    retValue.value[offset[2]] = first.value[offset[0]] / second.value[offset[1]];
+    
+}
+
+template <>
+void Func__div<int, int, double>::executeSimple(std::vector<size_t> &offset) {
+	
+    retValue.value[offset[2]] = double(first.value[offset[0]]) / double(second.value[offset[1]]);
     
 }
 
 /** We catch here the setting of the argument variables to store our parameters. */
 template <typename firstValType, typename secondValType, typename retType>
-void Func__lt<firstValType, secondValType, retType>::setInternalArguments(const std::vector<RbValue<void*> >& args) {
+void Func__div<firstValType, secondValType, retType>::setInternalArguments(const std::vector<RbValue<void*> >& args) {
     
     
     first.value         = static_cast<firstValType*>( args[0].value );
@@ -84,4 +91,5 @@ void Func__lt<firstValType, secondValType, retType>::setInternalArguments(const 
     retValue.value      = static_cast<retType*>( args[2].value );
     retValue.lengths    = args[2].lengths;
 }
+
 

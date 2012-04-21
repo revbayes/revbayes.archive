@@ -935,6 +935,8 @@
 		85CD0235133948C400318200 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		85CD0236133948C400318200 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BF1CB0C91542283200CB7C85 /* Func__mul.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__mul.h; sourceTree = "<group>"; };
+		BF479F2A15422BD30062E922 /* Func__div.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__div.h; sourceTree = "<group>"; };
 		BF8AEB091541F994001FC9EB /* BurninEstimatorContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BurninEstimatorContinuous.cpp; sourceTree = "<group>"; };
 		BF8AEB0A1541F994001FC9EB /* BurninEstimatorContinuous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BurninEstimatorContinuous.h; sourceTree = "<group>"; };
 		BF8AEB0B1541F994001FC9EB /* ConvergenceDiagnosticContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvergenceDiagnosticContinuous.cpp; sourceTree = "<group>"; };
@@ -1097,12 +1099,10 @@
 		BF8AEBB91541F994001FC9EB /* ArgumentRules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArgumentRules.cpp; sourceTree = "<group>"; };
 		BF8AEBBA1541F994001FC9EB /* ArgumentRules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArgumentRules.h; sourceTree = "<group>"; };
 		BF8AEBBC1541F994001FC9EB /* Func__and.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__and.h; sourceTree = "<group>"; };
-		BF8AEBBD1541F994001FC9EB /* Func__div.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__div.h; sourceTree = "<group>"; };
 		BF8AEBBE1541F994001FC9EB /* Func__eq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__eq.h; sourceTree = "<group>"; };
 		BF8AEBBF1541F994001FC9EB /* Func__ge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__ge.h; sourceTree = "<group>"; };
 		BF8AEBC01541F994001FC9EB /* Func__gt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__gt.h; sourceTree = "<group>"; };
 		BF8AEBC11541F994001FC9EB /* Func__le.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__le.h; sourceTree = "<group>"; };
-		BF8AEBC21541F994001FC9EB /* Func__mul.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__mul.h; sourceTree = "<group>"; };
 		BF8AEBC31541F994001FC9EB /* Func__ne.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__ne.h; sourceTree = "<group>"; };
 		BF8AEBC41541F994001FC9EB /* Func__or.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func__or.h; sourceTree = "<group>"; };
 		BF8AEBC51541F994001FC9EB /* Func__range.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func__range.cpp; sourceTree = "<group>"; };
@@ -2448,12 +2448,10 @@
 			isa = PBXGroup;
 			children = (
 				BF8AEBBC1541F994001FC9EB /* Func__and.h */,
-				BF8AEBBD1541F994001FC9EB /* Func__div.h */,
 				BF8AEBBE1541F994001FC9EB /* Func__eq.h */,
 				BF8AEBBF1541F994001FC9EB /* Func__ge.h */,
 				BF8AEBC01541F994001FC9EB /* Func__gt.h */,
 				BF8AEBC11541F994001FC9EB /* Func__le.h */,
-				BF8AEBC21541F994001FC9EB /* Func__mul.h */,
 				BF8AEBC31541F994001FC9EB /* Func__ne.h */,
 				BF8AEBC41541F994001FC9EB /* Func__or.h */,
 				BF8AEBC51541F994001FC9EB /* Func__range.cpp */,
@@ -2930,6 +2928,8 @@
 		BF8AED011541F994001FC9EB /* basic */ = {
 			isa = PBXGroup;
 			children = (
+				BF479F2A15422BD30062E922 /* Func__div.h */,
+				BF1CB0C91542283200CB7C85 /* Func__mul.h */,
 				BFE5740E15421AC0000B52D0 /* Func__uminus.h */,
 				BF8AED021541F994001FC9EB /* Func__add.h */,
 				BF8AED031541F994001FC9EB /* Func__lt.h */,

@@ -22,7 +22,6 @@
 #include <map>
 #include <string>
 
-class DAGNode;
 
 template <typename firstValType, typename retType>
 class Func__uminus :  public AbstractInferenceFunction {

@@ -338,6 +338,54 @@ void Workspace::initializeGlobalWorkspace(void) {
         RbString* funcAddStringRetVar = new RbString();
         addFunction( "_add",      new ParserFunction( new Func__add<std::string, std::string, std::string>(), "+", addStringFuncArgRules, funcAddStringRetVar ) );
 
+        ArgumentRules divNaturalFuncArgRules;
+        divNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        divNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        Real* funcDivNaturalRetVar = new Real();
+        addFunction( "_div",      new ParserFunction( new Func__div<int, int, double>(), "/", divNaturalFuncArgRules, funcDivNaturalRetVar ) );
+		
+        ArgumentRules divIntegerFuncArgRules;
+        divIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        divIntegerFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        Real* funcDivIntegerRetVar = new Real();
+        addFunction( "_div",      new ParserFunction( new Func__div<int, int, double>(), "/", divIntegerFuncArgRules, funcDivIntegerRetVar ) );
+		
+        ArgumentRules divRealPosFuncArgRules;
+        divRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        divRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RealPos* funcDivRealPosRetVar = new RealPos();
+        addFunction( "_div",      new ParserFunction( new Func__div<double, double, double>(), "/", divRealPosFuncArgRules, funcDivRealPosRetVar ) );
+		
+        ArgumentRules divRealFuncArgRules;
+        divRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        divRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        Real* funcDivRealRetVar = new Real();
+        addFunction( "_div",      new ParserFunction( new Func__div<double, double, double>(), "/", divRealFuncArgRules, funcDivRealRetVar ) );
+
+        ArgumentRules mulNaturalFuncArgRules;
+        mulNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        mulNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        Natural* funcMulNaturalRetVar = new Natural();
+        addFunction( "_mul",      new ParserFunction( new Func__mul<int, int, int>(), "*", mulNaturalFuncArgRules, funcMulNaturalRetVar ) );
+		
+        ArgumentRules mulIntegerFuncArgRules;
+        mulIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        mulIntegerFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        Integer* funcMulIntegerRetVar = new Integer();
+        addFunction( "_mul",      new ParserFunction( new Func__mul<int, int, int>(), "*", mulIntegerFuncArgRules, funcMulIntegerRetVar ) );
+		
+        ArgumentRules mulRealPosFuncArgRules;
+        mulRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        mulRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RealPos* funcMulRealPosRetVar = new RealPos();
+        addFunction( "_mul",      new ParserFunction( new Func__mul<double, double, double>(), "*", mulRealPosFuncArgRules, funcMulRealPosRetVar ) );
+		
+        ArgumentRules mulRealFuncArgRules;
+        mulRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        mulRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        Real* funcMulRealRetVar = new Real();
+        addFunction( "_mul",      new ParserFunction( new Func__mul<double, double, double>(), "*", mulRealFuncArgRules, funcMulRealRetVar ) );
+		
         ArgumentRules subNaturalFuncArgRules;
         subNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
         subNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
@@ -365,25 +413,25 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addFunction( "_add",      new Func__add<            Integer,           Real,         Real >() );
 //        addFunction( "_add",      new Func__add<               Real,        Integer,         Real >() );
 //        addFunction( "_add",      new Func__add<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
-        addFunction( "_div",      new Func__div<            Natural,        Natural,      RealPos >() );
-        addFunction( "_div",      new Func__div<            Integer,        Integer,         Real >() );
-        addFunction( "_div",      new Func__div<            RealPos,        RealPos,      RealPos >() );
-        addFunction( "_div",      new Func__div<               Real,           Real,         Real >() );
-        addFunction( "_div",      new Func__div<            Integer,           Real,         Real >() );
-        addFunction( "_div",      new Func__div<               Real,        Integer,         Real >() );
-        addFunction( "_div",      new Func__div<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
+//        addFunction( "_div",      new Func__div<            Natural,        Natural,      RealPos >() );
+//        addFunction( "_div",      new Func__div<            Integer,        Integer,         Real >() );
+//        addFunction( "_div",      new Func__div<            RealPos,        RealPos,      RealPos >() );
+//        addFunction( "_div",      new Func__div<               Real,           Real,         Real >() );
+//        addFunction( "_div",      new Func__div<            Integer,           Real,         Real >() );
+//        addFunction( "_div",      new Func__div<               Real,        Integer,         Real >() );
+//        addFunction( "_div",      new Func__div<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
         addFunction( "_exp",      new Func_power()                                                    );
-        addFunction( "_mul",      new Func__mul<            Natural,        Natural,      Natural >() );
-        addFunction( "_mul",      new Func__mul<            Integer,        Integer,      Integer >() );
-        addFunction( "_mul",      new Func__mul<            RealPos,        RealPos,      RealPos >() );
-        addFunction( "_mul",      new Func__mul<               Real,           Real,         Real >() );
-        addFunction( "_mul",      new Func__mul<            Real,           RealPos,         Real >() );
-        addFunction( "_mul",      new Func__mul<            RealPos,           Real,         Real >() );
-        addFunction( "_mul",      new Func__mul<            Integer,           Real,         Real >() );
-        addFunction( "_mul",      new Func__mul<               Real,        Integer,         Real >() );
-        addFunction( "_mul",      new Func__mul<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
-        addFunction( "_mul",      new Func__mul<       Matrix<Real>,           Real, Matrix<Real> >() );
-        addFunction( "_mul",      new Func__mul<               Real,   Matrix<Real>, Matrix<Real> >() );
+//        addFunction( "_mul",      new Func__mul<            Natural,        Natural,      Natural >() );
+//        addFunction( "_mul",      new Func__mul<            Integer,        Integer,      Integer >() );
+//        addFunction( "_mul",      new Func__mul<            RealPos,        RealPos,      RealPos >() );
+//        addFunction( "_mul",      new Func__mul<               Real,           Real,         Real >() );
+//        addFunction( "_mul",      new Func__mul<            Real,           RealPos,         Real >() );
+//        addFunction( "_mul",      new Func__mul<            RealPos,           Real,         Real >() );
+//        addFunction( "_mul",      new Func__mul<            Integer,           Real,         Real >() );
+//        addFunction( "_mul",      new Func__mul<               Real,        Integer,         Real >() );
+//        addFunction( "_mul",      new Func__mul<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
+//        addFunction( "_mul",      new Func__mul<       Matrix<Real>,           Real, Matrix<Real> >() );
+//        addFunction( "_mul",      new Func__mul<               Real,   Matrix<Real>, Matrix<Real> >() );
 //        addFunction( "_sub",      new Func__sub<            Integer,        Integer,      Integer >() );
 //        addFunction( "_sub",      new Func__sub<               Real,           Real,         Real >() );
 //        addFunction( "_sub",      new Func__sub<            Integer,           Real,         Real >() );
