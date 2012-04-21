@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "Container.h"
 #include "DagNodeFunction.h"
 #include "ParserDistribution.h"
 #include "RbBoolean.h"
@@ -31,6 +32,8 @@
 #include "MethodTable.h"
 #include "Model.h"
 #include "Move.h"
+#include "RbValue.h"
+#include "RbVector.h"
 #include "ValueRule.h"
 
 #include <algorithm>
@@ -64,27 +67,8 @@ StochasticNode::StochasticNode( ParserDistribution* dist ) : VariableNode( ), cl
         theParam->addChildNode(this);
     }
 
-    
-    // converting the arguments into atomic data types
-    std::vector<RbValue<void*> > newArgs;
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
-        RbValue<void*> arg;
-        arg.value = i->second->getValue().getValue(arg.lengths);
-        newArgs.push_back( arg );
-    }
-    
-    // add te return value
-    RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
-    RbValue<void*> arg;
-    arg.value = retVal->getValue(arg.lengths);
-    newArgs.push_back( arg );
-    
-    // Setting the parameter of the distribution
-    distribution->setParameters( newArgs );
-    
-    distribution->rv();
-    
-    value = retVal;
+    // create a new random variable
+    value = createRV();
     
     /* We use a random draw as the initial value */
     if (value == NULL) {
@@ -609,6 +593,98 @@ void StochasticNode::constructSumProductSequence( std::set<VariableNode *> &node
         }
     }
     
+}
+
+/* 
+ * Create a new rv for the node. 
+ *
+ */
+RbLanguageObject* StochasticNode::createRV(void) {
+    
+    const std::map<std::string, const Variable*> &params = distribution->getMembers();
+    
+    std::vector<const RbObject*> newArgs;
+    for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        newArgs.push_back( &i->second->getValue() );
+    }
+    return createRV( newArgs );
+    
+}
+
+
+/* 
+ * Execute the Function. 
+ *
+ */
+RbLanguageObject* StochasticNode::createRV( const std::vector<const RbObject*> &args ) {
+    
+    // check each argument if it is a vector and hence the function needs repeated evaluation
+    bool repeatedExecution = false;
+    size_t size = 0;
+    for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
+        if ( (*i)->isTypeSpec( Container::getClassTypeSpec() ) ) {
+            repeatedExecution = true;
+            size = static_cast<const Container*>( *i )->size();
+            break;
+        }
+    }
+    
+    RbLanguageObject* retVal;
+    if ( repeatedExecution ) {
+        RbVector<RbLanguageObject>* retValVector = new RbVector<RbLanguageObject>();
+        for ( size_t j = 0; j < size; ++j) {
+            std::vector<const RbObject*> newArgs;
+            for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
+                if ( (*i)->isTypeSpec( Container::getClassTypeSpec() ) ) {
+                    newArgs.push_back( &static_cast<const Container*>( (*i) )->getElement(j) );
+                }
+                else {
+                    newArgs.push_back( *i );
+                    
+                }
+            }
+            // call the execute function now for the single elements
+            RbLanguageObject* singleRetVal = createRV(newArgs);
+            retValVector->push_back( singleRetVal );
+            // \TODO If the execute functions returns a pointer to the object and the caller owns the object, 
+            // then we don't need to copy each time the object.
+        }
+        
+        retVal = retValVector;
+    }
+    else {
+        
+        // get the value by executing the internal function
+        retVal = createRVSingleValue(args);
+    }
+    
+    return retVal;
+    
+}
+
+
+RbLanguageObject* StochasticNode::createRVSingleValue(const std::vector<const RbObject *> &args) {
+    
+    // converting the arguments into atomic data types
+    std::vector<RbValue<void*> > newArgs;
+    for ( std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); i++ ) {
+        RbValue<void*> arg;
+        arg.value = (*i)->getValue(arg.lengths);
+        newArgs.push_back( arg );
+    }
+    
+    // add te return value
+    RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
+    RbValue<void*> arg;
+    arg.value = retVal->getValue(arg.lengths);
+    newArgs.push_back( arg );
+    
+    // Setting the parameter of the distribution
+    distribution->setParameters( newArgs );
+    
+    distribution->rv();
+    
+    return retVal;
 }
  
 

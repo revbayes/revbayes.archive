@@ -121,7 +121,12 @@ protected:
     bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?
     double                              storedLnProb;                                                       //!< Stored log probability
     bool                                probabilityRecalculated;                                            //!< Was the probability and/or likelihood recalculated
+
 private:
+    RbLanguageObject*                   createRV(void);
+    RbLanguageObject*                   createRV(const std::vector<const RbObject*> &args);
+    RbLanguageObject*                   createRVSingleValue(const std::vector<const RbObject*> &args);
+    
     static const TypeSpec               typeSpec;
     RbLanguageObject*                   value;                                                              //!< Value
     RbLanguageObject*                   storedValue;                                                        //!< Stored value
