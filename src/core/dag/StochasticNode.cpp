@@ -723,7 +723,20 @@ const RbLanguageObject& StochasticNode::executeOperation(const std::string& name
         moves.push_back( theMove );
         
         return RbNullObject::getInstance();
-    } else if (name == "removeMove") {
+    } else if (name == "clamp") {
+        
+        // get the observed value
+        const RbLanguageObject& observedValue = args[0].getVariable().getValue();
+        
+        // clamp the observed value to myself
+        clamp( observedValue.clone() );
+        
+        // we keep the new value
+        keep();
+        
+        return RbNullObject::getInstance();
+    } 
+    else if (name == "removeMove") {
         
         // remove the move to our set of moves
         Move* theMove = const_cast<Move*>( static_cast<const Move*>( &args[0].getVariable().getValue() ) );
@@ -812,6 +825,11 @@ const MethodTable& StochasticNode::getMethods(void) const {
         ArgumentRules* addMoveArgRules = new ArgumentRules();
         addMoveArgRules->push_back( new ValueRule("x", Move::getClassTypeSpec() ) );
         methods.addFunction("addMove", new DagNodeFunction( RbVoid_name, addMoveArgRules) );
+        
+        // method "clamp"
+        ArgumentRules* clampArgRules = new ArgumentRules();
+        clampArgRules->push_back( new ValueRule("x", RbLanguageObject::getClassTypeSpec() ) );
+        methods.addFunction("clamp", new DagNodeFunction( RbVoid_name, clampArgRules) );
         
         // method "removeMove"
         ArgumentRules* removeMoveArgRules = new ArgumentRules();

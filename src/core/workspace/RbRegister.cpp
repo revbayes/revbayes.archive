@@ -120,7 +120,6 @@
 #include "Func__uplus.h"
 
 /* Builtin functions */
-#include "Func_clamp.h"
 #include "Func_clear.h"
 #include "Func_dppConFromExpNumClusters.h"
 #include "Func_dppSeat.h"
@@ -361,7 +360,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         
         
         /* Add builtin functions (alphabetical order) */
-        addFunction( "clamp",                    new Func_clamp()                    );
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "dppConFromExpNumClusters", new Func_dppConFromExpNumClusters() );
         addFunction( "dppSeat",                  new Func_dppSeat()                  );
