@@ -533,7 +533,9 @@ void RbFunction::printValue(std::ostream& o) const {
 void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
 
     /*********************  0. Initialization  **********************/
-
+    /* Get my own copy of the argument vector */
+    std::vector<Argument> args = passedArgs;
+    
     /* Get the argument rules */
     const ArgumentRules& theRules = getArgumentRules();
 
@@ -541,7 +543,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
     size_t nRules = theRules.size();
 
     /* Clear previously processed arguments */
-    args.clear();
+    this->args.clear();
 
     /* Check the number of arguments and rules; get the final number of arguments
        we expect and the number of non-ellipsis rules we have */
@@ -584,10 +586,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
             if ( theVar == NULL )
                 throw RbException("Null argument not valid.");
             if ( !theRules[nRules-1].isArgumentValid( theVar, true ) )
-                throw RbException("Arguments do not macth.");
-            
-            // add this variable to the ellipsis argument list
-            ellipsisArgs.push_back(theArgument);
+                throw RbException("Arguments do not match.");
 
             taken[i]          = true;
             filled[i]         = true;
@@ -618,9 +617,6 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
-                    
-                    // add this variable to the argument list
-                    setArgument(passedArgs[i].getLabel(), passedArgs[i]);
                 }
                 else
                     throw RbException("Arguments do not match.");
@@ -665,9 +661,6 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
-            
-            // add this variable to the argument list
-            setArgument(theRules[matchRule].getArgumentLabel(), passedArgs[i]);
         }
         else
             throw RbException("Argument is not valid.");
@@ -691,9 +684,6 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
-                    
-                    // add this variable to the argument list
-                    setArgument(theRules[j].getArgumentLabel(), passedArgs[i]);
                     
                     break;
                 }
@@ -719,13 +709,19 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
             const ArgumentRule& theRule = theRules[i];
             RbVariablePtr theVar = theRule.getDefaultVariable().clone();
             theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
-            setArgument(theRule.getArgumentLabel(), Argument("", theVar ) );
+            passedArgIndex[passedArgs.size()] = static_cast<int>( i );
+            args.push_back( Argument("", theVar ) );
         }
     }
 
     argsProcessed = true;
     
-    /*********************  6. Insert ellipsis arguments  **********************/
+    /*********************  6. Insert arguments into argument list  **********************/
+    for (size_t j=0; j<numRegularRules; j++) {
+        setArgument(theRules[j].getArgumentLabel(), args[passedArgIndex[j]]);
+    }
+    
+    /*********************  7. Insert ellipsis arguments  **********************/
     for (std::vector<Argument>::iterator i = ellipsisArgs.begin(); i != ellipsisArgs.end(); i++) {
         setArgument(i->getLabel(), *i);
     }
