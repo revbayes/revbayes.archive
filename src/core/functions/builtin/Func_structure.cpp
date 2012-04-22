@@ -38,7 +38,7 @@ Func_structure* Func_structure::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_structure::executeFunction( void ) {
+const RbLanguageObject& Func_structure::execute( void ) {
 
     args[0].getVariable().getDagNode()->printStruct( std::cout );
 
