@@ -591,6 +591,9 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
             taken[i]          = true;
             filled[i]         = true;
             passedArgIndex[i] = static_cast<int>( i );
+            
+            // add this argument to the ellipsis arguments
+            ellipsisArgs.push_back(theArgument);
         }
     }
 
