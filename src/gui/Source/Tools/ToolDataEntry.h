@@ -1,17 +1,21 @@
 #import <Cocoa/Cocoa.h>
-#import "ToolData.h"
+#import "Tool.h"
+@class RbData;
 @class WindowControllerDataEntry;
 
 
 
 
-@interface ToolDataEntry : ToolData <NSCoding> {
+@interface ToolDataEntry : Tool <NSCoding> {
 
-    WindowControllerDataEntry*         controlWindow;
+    RbData*                        dataMatrix;
+    WindowControllerDataEntry*     controlWindow;
 }
 
 - (void)closeControlPanel;
+- (RbData*)dataMatrix;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (void)initializeDataMatrix;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (NSMutableAttributedString*)sendTip;

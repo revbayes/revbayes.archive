@@ -15,6 +15,7 @@
 
 - (void)dealloc {
 
+    NSLog(@"delete %@", self);
 	[super dealloc];
 }
 

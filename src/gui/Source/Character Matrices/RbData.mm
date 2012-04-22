@@ -26,10 +26,10 @@
 - (RbDataCell*)cellWithRow:(int)r andColumn:(int)c {
 
     if (r >= [data count])
-        NSLog(@"Error: Attempting to find RbTaxonData that is out-of-range");
+        return nil;
     RbTaxonData* td = [data objectAtIndex:r];
     if (c >= [td numCharacters])
-        NSLog(@"Error: Attempting to find RbDataCell that is out-of-range (%d)", [td numCharacters]);
+        return nil;
     return [td dataCellIndexed:c];
 }
 
@@ -45,6 +45,7 @@
 
 - (void)dealloc {
 
+    NSLog(@"delete %@", self);
 	[data release];
 	[name release];
     [alignmentMethod release];
@@ -52,6 +53,18 @@
 	[excludedTaxa release];
 	[excludedCharacters release];
 	[super dealloc];
+}
+
+- (void)deleteLastTaxon {
+
+    if ([data count] > 0)
+        {
+        NSLog(@"before = %d", [data count]);
+        [data removeLastObject];
+        [taxonNames removeLastObject];
+        NSLog(@"after = %d", [data count]);
+        numTaxa--;
+        }
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
@@ -344,6 +357,13 @@
 - (void)setCopiedFrom:(RbData*)d {
 
     copiedFrom = d;
+}
+
+- (void)setNameOfTaxonWithIndex:(int)idx to:(NSString*)newName {
+
+    if (idx < 0 || idx >= [taxonNames count])
+        NSLog(@"Error: Taxon index out of range");
+    [taxonNames replaceObjectAtIndex:idx withObject:newName];
 }
 
 - (NSString*)taxonWithIndex:(int)i {

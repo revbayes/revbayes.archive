@@ -31,6 +31,7 @@
 - (RbDataCell*)cellWithRow:(int)r andColumn:(int)c;
 - (RbData*)copiedFrom;
 - (int)dataSize;
+- (void)deleteLastTaxon;
 - (void)excludeTaxonIndexed:(int)idx;
 - (void)excludeCharacterIndexed:(int)idx;
 - (RbTaxonData*)getDataForTaxonIndexed:(int)idx;
@@ -49,6 +50,7 @@
 - (void)restoreTaxonIndexed:(int)idx;
 - (void)restoreCharacterIndexed:(int)idx;
 - (void)setCopiedFrom:(RbData*)d;
+- (void)setNameOfTaxonWithIndex:(int)idx to:(NSString*)newName;
 - (void)writeToFile:(NSString*)fn;
 - (NSString*)taxonWithIndex:(int)i;
 

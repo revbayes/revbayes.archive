@@ -20,6 +20,7 @@
 
 - (void)dealloc {
 
+    NSLog(@"delete %@", self);
 	[data release];
 	[taxonName release];
 	[super dealloc];
