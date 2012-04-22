@@ -718,7 +718,12 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
     
     /*********************  6. Insert arguments into argument list  **********************/
     for (size_t j=0; j<numRegularRules; j++) {
-        setArgument(theRules[j].getArgumentLabel(), args[passedArgIndex[j]]);
+        if ( passedArgIndex[j] >= 0 ) {
+            setArgument(theRules[j].getArgumentLabel(), args[passedArgIndex[j]]);
+        }
+        else {
+            std::cerr << "Optional argument for " << theRules[j].getArgumentLabel() << std::endl;
+        }
     }
     
     /*********************  7. Insert ellipsis arguments  **********************/

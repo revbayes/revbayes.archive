@@ -274,7 +274,7 @@ bool ArgumentRule::isArgumentValid(const Variable* var, bool convert) const {
             
         }
         
-        return valid && ( constant == conversionNeeded );
+        return valid && ( constant || !conversionNeeded );
     }
 
     
