@@ -32,11 +32,11 @@ class Func_quit :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Func_quit functions
+        const RbLanguageObject&     execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return val
 
     protected:
-        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
 
 };
 

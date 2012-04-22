@@ -41,14 +41,11 @@ public:
     const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
 
 protected:
-    const RbLanguageObject&     executeFunction(void);                                                  //!< Execute function
-    void                        setArgumentVariable(const std::string& name, const Variable* var);
+    const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);              //!< Execute function
     
 private:
     void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
 
-    // Arguments
-    RbConstVariablePtr          filename;
 };
 
 #endif

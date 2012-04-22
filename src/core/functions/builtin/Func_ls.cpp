@@ -40,10 +40,10 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_ls::executeFunction( void ) {
+const RbLanguageObject& Func_ls::executeFunction( const std::vector<const RbObject*>& args ) {
 
     /* Open file */
-    const bool printAll = static_cast<const RbBoolean&>( args[0].getVariable().getValue() ).getValue();
+    const bool printAll = static_cast<const RbBoolean*>( args[0] )->getValue();
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;

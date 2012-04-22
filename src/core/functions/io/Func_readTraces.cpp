@@ -41,9 +41,9 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_readTraces::executeFunction( void ) {
+const RbLanguageObject& Func_readTraces::executeFunction( const std::vector<const RbObject*>& args ) {
     // get the information from the arguments for reading the file
-    const RbString& fn = static_cast<const RbString&>( filename->getValue() );
+    const RbString& fn = static_cast<const RbString&>( *args[0] );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn.getValue() );
@@ -242,17 +242,6 @@ const TypeSpec& Func_readTraces::getReturnType( void ) const {
     return returnTypeSpec;
 }
 
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_readTraces::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "filename" ) {
-        filename = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
-}
 
 
 

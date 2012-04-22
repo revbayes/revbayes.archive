@@ -35,13 +35,9 @@ class Func_concatenate :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(void);                                                   //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const RbVariablePtr& var);
+        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);              //!< Execute function
 
     private:
-        // Arguments
-        RbVariablePtr               data;
-        std::vector<RbVariablePtr>  elements;
     
         // function return value
         DagNodeContainer            retList;

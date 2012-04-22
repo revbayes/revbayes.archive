@@ -40,14 +40,14 @@ Func_print* Func_print::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_print::executeFunction( void ) {
+const RbLanguageObject& Func_print::executeFunction( const std::vector<const RbObject*>& args ) {
     
 
-    const std::string& f = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
+    const std::string& f = static_cast<const RbString*>( args[0] )->getValue();
     if ( f != "" ) {
         std::ofstream outStream;
         
-        if (static_cast<const RbBoolean&>( args[1].getVariable().getValue() ).getValue()) {
+        if (static_cast<const RbBoolean*>( args[1] )->getValue()) {
             
             // open the stream to the file
             outStream.open(f.c_str(), std::fstream::out | std::fstream::app);
@@ -60,7 +60,7 @@ const RbLanguageObject& Func_print::executeFunction( void ) {
         
         // print the arguments
         for (size_t i = 2; i < args.size(); i++) {
-            args[i].getVariable().getValue().printValue(outStream);
+            args[i]->printValue(outStream);
         }
         outStream << std::endl;
         outStream.close();
@@ -70,7 +70,7 @@ const RbLanguageObject& Func_print::executeFunction( void ) {
         std::ostream& o = std::cout;
         // print the arguments
         for (size_t i = 2; i < args.size(); i++) {
-            args[i].getVariable().getValue().printValue(o);
+            args[i]->printValue(o);
         }
         o << std::endl;
     }

@@ -40,15 +40,15 @@ Func_concatenate* Func_concatenate::clone(void) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_concatenate::executeFunction(void) {
+const RbLanguageObject& Func_concatenate::executeFunction( const std::vector<const RbObject*>& args ) {
 
     // get the information from the arguments for reading the file
     //CharacterData& m = static_cast<CharacterData&>( data->getValue() );
     //m.printValue(std::cout);
-    for (size_t i = 0; i < elements.size(); i++)
-        elements[i]->getValue().printValue(std::cout);
+//    for (size_t i = 0; i < elements.size(); i++)
+//        elements[i]->getValue().printValue(std::cout);
         
-    CharacterData& m0 = static_cast<CharacterData&>( elements[0]->getValue() );
+    const CharacterData& m0 = static_cast<const CharacterData&>( *args[0] );
 
     CharacterData* concatenatedMatrix = new CharacterData( m0.getDataType() );
     
@@ -100,15 +100,4 @@ const TypeSpec& Func_concatenate::getReturnType(void) const {
     
     static TypeSpec returnTypeSpec = CharacterData::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_concatenate::setArgumentVariable(std::string const &name, const RbVariablePtr& var) {
-    
-    if ( name == "data" )
-        data = var;
-    else if ( name == "" )
-        elements.push_back(var);
-    else
-        RbFunction::setArgumentVariable(name, var);
 }
