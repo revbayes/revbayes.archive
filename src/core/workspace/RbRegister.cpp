@@ -270,13 +270,24 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addDistribution( "multinomial",  new Dist_multinomial() );
 //        addDistribution( "lnorm",        new Dist_lnorm()       );
 //        addDistribution( "unifTopology", new Dist_topologyunif());
-//        addDistribution( "unif",         new Dist_unif()        );
         
+        // exponential distribution
+        MemberRules distExpMemberRules;
+        distExpMemberRules.push_back( new ValueRule( "rate", RealPos::getClassTypeSpec()   , new RealPos(1.0)    ) );
+        addDistribution( "exponential",         new ParserDistributionContinuous( new Dist_exp(), distExpMemberRules, new RealPos() ) );
+        
+        // normal distribution
         MemberRules distNormMemberRules;
         distNormMemberRules.push_back( new ValueRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
         distNormMemberRules.push_back( new ValueRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         addDistribution( "norm",         new ParserDistributionContinuous( new Dist_norm(), distNormMemberRules, new Real() ) );
-
+        
+        // uniform distributin
+        MemberRules distUnifMemberRules;
+        distUnifMemberRules.push_back( new ValueRule( "min", Real::getClassTypeSpec()   , new Real(0.0)    ) );
+        distUnifMemberRules.push_back( new ValueRule( "max"  , Real::getClassTypeSpec(), new Real(1.0) ) );
+        addDistribution( "unif",         new ParserDistributionContinuous( new Dist_unif(), distUnifMemberRules, new Real() ) );
+        
         /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace().typesInitialized = true;
         Workspace::userWorkspace().typesInitialized   = true;
