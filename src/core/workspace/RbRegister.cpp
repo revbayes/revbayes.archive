@@ -100,23 +100,21 @@
 #include "Dist_topologyunif.h"
 #include "Dist_unif.h"
 
+/// Parser functions ///
+
 /* Basic internal functions (alphabetic order) */
 #include "Func__range.h"
 
 /* Basic arithmetic/logic templated functions */
-#include "Func__add.h"
 #include "Func__and.h"
-#include "Func__div.h"
 #include "Func__eq.h"
 #include "Func__ge.h"
 #include "Func__gt.h"
 #include "Func__le.h"
 #include "Func__lt.h"
-#include "Func__mul.h"
 #include "Func__ne.h"
 #include "Func__or.h"
 #include "Func__range.h"
-#include "Func__sub.h"
 #include "Func__uminus.h"
 #include "Func__unot.h"
 #include "Func__uplus.h"
@@ -131,6 +129,7 @@
 #include "Func_normalizeVector.h"
 #include "Func_print.h"
 #include "Func_quit.h"
+#include "Func_rep.h"
 #include "Func_setval.h"
 #include "Func_simplex.h"
 #include "Func_sumOver.h"
@@ -145,17 +144,6 @@
 #include "Func_transpose.h"
 #include "Func_vector.h"
 
-/* Math functions */
-#include "Func_abs.h"
-#include "Func_cos.h"
-#include "Func_exp.h"
-#include "Func_ln.h"
-#include "Func_log.h"
-#include "Func_mean.h"
-#include "Func_power.h"
-#include "Func_sin.h"
-#include "Func_sqrt.h"
-
 /* Constructor functions */
 #include "ConstructorTaxonData.h"
 
@@ -167,6 +155,27 @@
 #include "Func_readCharacterData.h"
 #include "Func_readTrees.h"
 #include "Func_CtmmTransitionProbabilities.h"
+
+
+/// Inference Functions ///
+
+/* Basic arithmetic/logic templated functions */
+#include "Func__add.h"
+#include "Func__div.h"
+#include "Func__mul.h"
+#include "Func__sub.h"
+
+/* Math functions */
+#include "Func_abs.h"
+#include "Func_cos.h"
+#include "Func_exp.h"
+#include "Func_ln.h"
+#include "Func_log.h"
+#include "Func_mean.h"
+#include "Func_power.h"
+#include "Func_sin.h"
+#include "Func_sqrt.h"
+
 
 #include <sstream>
 #include <vector>
@@ -292,190 +301,24 @@ void Workspace::initializeGlobalWorkspace(void) {
         Workspace::globalWorkspace().typesInitialized = true;
         Workspace::userWorkspace().typesInitialized   = true;
 
+        ///////////////////////////////
+        // Add parser functions here //
+        ///////////////////////////////
+
         /* Add basic internal functions (alphabetic order) */
         addFunction( "_range",    new Func__range()       );
 
+        
         /* Add basic unary arithmetic and logical templated functions */
-
-        ArgumentRules uminusIntegerFuncArgRules;
-        uminusIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        Integer* funcUminusIntegerRetVar = new Integer();
-        addFunction( "_uminus",      new ParserFunction( new Func__uminus<int, int>(), "-", uminusIntegerFuncArgRules, funcUminusIntegerRetVar ) );
-
-        ArgumentRules uminusRealFuncArgRules;
-        uminusRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        Real* funcUminusRealRetVar = new Real();
-        addFunction( "_uminus",      new ParserFunction( new Func__uminus<double, double>(), "-", uminusRealFuncArgRules, funcUminusRealRetVar ) );
-
-
         addFunction( "_uplus",    new Func__uplus <         Integer,        Integer >() );
         addFunction( "_uplus",    new Func__uplus <            Real,           Real >() );
         addFunction( "_uplus",    new Func__uplus <    Matrix<Real>,   Matrix<Real> >() );
-//        addFunction( "_uminus",   new Func__uminus<         Integer,        Integer >() );
-//        addFunction( "_uminus",   new Func__uminus<            Real,           Real >() );
-//        addFunction( "_uminus",   new Func__uminus<    Matrix<Real>,   Matrix<Real> >() );
         addFunction( "_unot",     new Func__unot  <       RbBoolean                 >() );
         addFunction( "_unot",     new Func__unot  <         Integer                 >() );
         addFunction( "_unot",     new Func__unot  <            Real                 >() );
-
-        /* Add basic arithmetic templated functions */
-        ArgumentRules addNaturalFuncArgRules;
-        addNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        addNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
-        Natural* funcAddNaturalRetVar = new Natural();
-        addFunction( "_add",      new ParserFunction( new Func__add<int, int, int>(), "+", addNaturalFuncArgRules, funcAddNaturalRetVar ) );
         
-        ArgumentRules addIntFuncArgRules;
-        addIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        addIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
-        Integer* funcAddIntRetVar = new Integer();
-        addFunction( "_add",      new ParserFunction( new Func__add<int, int, int>(), "+", addIntFuncArgRules, funcAddIntRetVar ) );
         
-        ArgumentRules addRealPosFuncArgRules;
-        addRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        addRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
-        RealPos* funcAddRealPosRetVar = new RealPos();
-        addFunction( "_add",      new ParserFunction( new Func__add<double, double, double>(), "+", addRealPosFuncArgRules, funcAddRealPosRetVar ) );
-        
-        ArgumentRules addRealFuncArgRules;
-        addRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        addRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
-        Real* funcAddRealRetVar = new Real();
-        addFunction( "_add",      new ParserFunction( new Func__add<double, double, double>(), "+", addRealFuncArgRules, funcAddRealRetVar ) );
-        
-        ArgumentRules addStringFuncArgRules;
-        addStringFuncArgRules.push_back( new ValueRule("first", RbString::getClassTypeSpec() ) );
-        addStringFuncArgRules.push_back( new ValueRule("second", RbString::getClassTypeSpec() ) );
-        RbString* funcAddStringRetVar = new RbString();
-        addFunction( "_add",      new ParserFunction( new Func__add<std::string, std::string, std::string>(), "+", addStringFuncArgRules, funcAddStringRetVar ) );
-
-        ArgumentRules divNaturalFuncArgRules;
-        divNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        divNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
-        Real* funcDivNaturalRetVar = new Real();
-        addFunction( "_div",      new ParserFunction( new Func__div<int, int, double>(), "/", divNaturalFuncArgRules, funcDivNaturalRetVar ) );
-		
-        ArgumentRules divIntegerFuncArgRules;
-        divIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        divIntegerFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
-        Real* funcDivIntegerRetVar = new Real();
-        addFunction( "_div",      new ParserFunction( new Func__div<int, int, double>(), "/", divIntegerFuncArgRules, funcDivIntegerRetVar ) );
-		
-        ArgumentRules divRealPosFuncArgRules;
-        divRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        divRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
-        RealPos* funcDivRealPosRetVar = new RealPos();
-        addFunction( "_div",      new ParserFunction( new Func__div<double, double, double>(), "/", divRealPosFuncArgRules, funcDivRealPosRetVar ) );
-		
-        ArgumentRules divRealFuncArgRules;
-        divRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        divRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
-        Real* funcDivRealRetVar = new Real();
-        addFunction( "_div",      new ParserFunction( new Func__div<double, double, double>(), "/", divRealFuncArgRules, funcDivRealRetVar ) );
-
-        ArgumentRules mulNaturalFuncArgRules;
-        mulNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        mulNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
-        Natural* funcMulNaturalRetVar = new Natural();
-        addFunction( "_mul",      new ParserFunction( new Func__mul<int, int, int>(), "*", mulNaturalFuncArgRules, funcMulNaturalRetVar ) );
-		
-        ArgumentRules mulIntegerFuncArgRules;
-        mulIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        mulIntegerFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
-        Integer* funcMulIntegerRetVar = new Integer();
-        addFunction( "_mul",      new ParserFunction( new Func__mul<int, int, int>(), "*", mulIntegerFuncArgRules, funcMulIntegerRetVar ) );
-		
-        ArgumentRules mulRealPosFuncArgRules;
-        mulRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        mulRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
-        RealPos* funcMulRealPosRetVar = new RealPos();
-        addFunction( "_mul",      new ParserFunction( new Func__mul<double, double, double>(), "*", mulRealPosFuncArgRules, funcMulRealPosRetVar ) );
-		
-        ArgumentRules mulRealFuncArgRules;
-        mulRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        mulRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
-        Real* funcMulRealRetVar = new Real();
-        addFunction( "_mul",      new ParserFunction( new Func__mul<double, double, double>(), "*", mulRealFuncArgRules, funcMulRealRetVar ) );
-		
-        ArgumentRules subNaturalFuncArgRules;
-        subNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        subNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
-        Natural* funcSubNaturalRetVar = new Natural();
-        addFunction( "_sub",      new ParserFunction( new Func__sub<int, int, int>(), "-", subNaturalFuncArgRules, funcSubNaturalRetVar ) );
-        
-        ArgumentRules subIntFuncArgRules;
-        subIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        subIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
-        Integer* funcSubIntRetVar = new Integer();
-        addFunction( "_sub",      new ParserFunction( new Func__sub<int, int, int>(), "-", subIntFuncArgRules, funcSubIntRetVar ) );
-        
-        ArgumentRules subRealPosFuncArgRules;
-        subRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        subRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
-        RealPos* funcSubRealPosRetVar = new RealPos();
-        addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealPosFuncArgRules, funcSubRealPosRetVar ) );
-        
-        ArgumentRules subRealFuncArgRules;
-        subRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        subRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
-        Real* funcSubRealRetVar = new Real();
-        addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealFuncArgRules, funcSubRealRetVar ) );
-
-//        addFunction( "_add",      new Func__add<            Integer,           Real,         Real >() );
-//        addFunction( "_add",      new Func__add<               Real,        Integer,         Real >() );
-//        addFunction( "_add",      new Func__add<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
-//        addFunction( "_div",      new Func__div<            Natural,        Natural,      RealPos >() );
-//        addFunction( "_div",      new Func__div<            Integer,        Integer,         Real >() );
-//        addFunction( "_div",      new Func__div<            RealPos,        RealPos,      RealPos >() );
-//        addFunction( "_div",      new Func__div<               Real,           Real,         Real >() );
-//        addFunction( "_div",      new Func__div<            Integer,           Real,         Real >() );
-//        addFunction( "_div",      new Func__div<               Real,        Integer,         Real >() );
-//        addFunction( "_div",      new Func__div<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
-        addFunction( "_exp",      new Func_power()                                                    );
-//        addFunction( "_mul",      new Func__mul<            Natural,        Natural,      Natural >() );
-//        addFunction( "_mul",      new Func__mul<            Integer,        Integer,      Integer >() );
-//        addFunction( "_mul",      new Func__mul<            RealPos,        RealPos,      RealPos >() );
-//        addFunction( "_mul",      new Func__mul<               Real,           Real,         Real >() );
-//        addFunction( "_mul",      new Func__mul<            Real,           RealPos,         Real >() );
-//        addFunction( "_mul",      new Func__mul<            RealPos,           Real,         Real >() );
-//        addFunction( "_mul",      new Func__mul<            Integer,           Real,         Real >() );
-//        addFunction( "_mul",      new Func__mul<               Real,        Integer,         Real >() );
-//        addFunction( "_mul",      new Func__mul<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
-//        addFunction( "_mul",      new Func__mul<       Matrix<Real>,           Real, Matrix<Real> >() );
-//        addFunction( "_mul",      new Func__mul<               Real,   Matrix<Real>, Matrix<Real> >() );
-//        addFunction( "_sub",      new Func__sub<            Integer,        Integer,      Integer >() );
-//        addFunction( "_sub",      new Func__sub<               Real,           Real,         Real >() );
-//        addFunction( "_sub",      new Func__sub<            Integer,           Real,         Real >() );
-//        addFunction( "_sub",      new Func__sub<               Real,        Integer,         Real >() );
-//        addFunction( "_sub",      new Func__sub<       Matrix<Real>,   Matrix<Real>, Matrix<Real> >() );
-
         /* Add basic logic templated functions */
-        ArgumentRules ltNaturalFuncArgRules;
-        ltNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        ltNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
-        RbBoolean* funcLTNaturalRetVar = new RbBoolean();
-        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltNaturalFuncArgRules, funcLTNaturalRetVar ) );
-        
-        ArgumentRules ltIntFuncArgRules;
-        ltIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        ltIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
-        RbBoolean* funcLTIntRetVar = new RbBoolean();
-        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltIntFuncArgRules, funcLTIntRetVar ) );
-        
-        ArgumentRules ltRealPosFuncArgRules;
-        ltRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        ltRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
-        RbBoolean* funcLTRealPosRetVar = new RbBoolean();
-        addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealPosFuncArgRules, funcLTRealPosRetVar ) );
-        
-        ArgumentRules ltRealFuncArgRules;
-        ltRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        ltRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
-        RbBoolean* funcLTRealRetVar = new RbBoolean();
-        addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealFuncArgRules, funcLTRealRetVar ) );
-		
-
-
         addFunction( "_and",      new Func__and<            Integer,        Integer >()             );
         addFunction( "_and",      new Func__and<               Real,           Real >()             );
         addFunction( "_and",      new Func__and<            Integer,           Real >()             );
@@ -500,11 +343,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_gt",       new Func__gt<             Integer,           Real >()             );
         addFunction( "_gt",       new Func__gt<                Real,        Integer >()             );
         addFunction( "_gt",       new Func__gt<           RbBoolean,      RbBoolean >()             );
-//        addFunction( "_lt",       new Func__lt<             Integer,        Integer >()             );
-//        addFunction( "_lt",       new Func__lt<                Real,           Real >()             );
-//        addFunction( "_lt",       new Func__lt<             Integer,           Real >()             );
-//        addFunction( "_lt",       new Func__lt<                Real,        Integer >()             );
-//        addFunction( "_lt",       new Func__lt<           RbBoolean,      RbBoolean >()             );
         addFunction( "_le",       new Func__le<             Integer,        Integer >()             );
         addFunction( "_le",       new Func__le<                Real,           Real >()             );
         addFunction( "_le",       new Func__le<             Integer,           Real >()             );
@@ -520,7 +358,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or<             Integer,           Real >()             );
         addFunction( "_or",       new Func__or<                Real,        Integer >()             );
         addFunction( "_or",       new Func__or<           RbBoolean,      RbBoolean >()             );
-
+        
+        
         /* Add builtin functions (alphabetical order) */
         addFunction( "clamp",                    new Func_clamp()                    );
         addFunction( "clear",                    new Func_clear()                    );
@@ -532,6 +371,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "print",                    new Func_print()                    );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
+        addFunction( "rep",                      new Func_rep()                      );
         addFunction( "setval",                   new Func_setval()                   );
         addFunction( "simplex",                  new Func_simplex<Integer>()         );
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
@@ -563,11 +403,175 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sort",                     new Func_sort<RbVector<Complex> >()      );
         addFunction( "sort",                     new Func_sort<RbVector<RbString> >()     );
         addFunction( "sort",                     new Func_sort<RbVector<RbLanguageObject> >());
+        
+
+        
+        
+        //////////////////////////////////
+        // Add inference functions here //
+        //////////////////////////////////
+        
+
+        /* Add basic unary arithmetic and logical templated functions */
+        
+        // uminus
+        ArgumentRules uminusIntegerFuncArgRules;
+        uminusIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        Integer* funcUminusIntegerRetVar = new Integer();
+        addFunction( "_uminus",      new ParserFunction( new Func__uminus<int, int>(), "-", uminusIntegerFuncArgRules, funcUminusIntegerRetVar ) );
+
+        ArgumentRules uminusRealFuncArgRules;
+        uminusRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        Real* funcUminusRealRetVar = new Real();
+        addFunction( "_uminus",      new ParserFunction( new Func__uminus<double, double>(), "-", uminusRealFuncArgRules, funcUminusRealRetVar ) );
+        
+        //        addFunction( "_uminus",   new Func__uminus<         Integer,        Integer >() );
+        //        addFunction( "_uminus",   new Func__uminus<            Real,           Real >() );
+        //        addFunction( "_uminus",   new Func__uminus<    Matrix<Real>,   Matrix<Real> >() );
+
+
+        /* Add basic arithmetic templated functions */
+        
+        // addition
+        ArgumentRules addNaturalFuncArgRules;
+        addNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        addNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        Natural* funcAddNaturalRetVar = new Natural();
+        addFunction( "_add",      new ParserFunction( new Func__add<int, int, int>(), "+", addNaturalFuncArgRules, funcAddNaturalRetVar ) );
+        
+        ArgumentRules addIntFuncArgRules;
+        addIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        addIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        Integer* funcAddIntRetVar = new Integer();
+        addFunction( "_add",      new ParserFunction( new Func__add<int, int, int>(), "+", addIntFuncArgRules, funcAddIntRetVar ) );
+        
+        ArgumentRules addRealPosFuncArgRules;
+        addRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        addRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RealPos* funcAddRealPosRetVar = new RealPos();
+        addFunction( "_add",      new ParserFunction( new Func__add<double, double, double>(), "+", addRealPosFuncArgRules, funcAddRealPosRetVar ) );
+        
+        ArgumentRules addRealFuncArgRules;
+        addRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        addRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        Real* funcAddRealRetVar = new Real();
+        addFunction( "_add",      new ParserFunction( new Func__add<double, double, double>(), "+", addRealFuncArgRules, funcAddRealRetVar ) );
+        
+        ArgumentRules addStringFuncArgRules;
+        addStringFuncArgRules.push_back( new ValueRule("first", RbString::getClassTypeSpec() ) );
+        addStringFuncArgRules.push_back( new ValueRule("second", RbString::getClassTypeSpec() ) );
+        RbString* funcAddStringRetVar = new RbString();
+        addFunction( "_add",      new ParserFunction( new Func__add<std::string, std::string, std::string>(), "+", addStringFuncArgRules, funcAddStringRetVar ) );
+
+        // division
+        ArgumentRules divNaturalFuncArgRules;
+        divNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        divNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        Real* funcDivNaturalRetVar = new Real();
+        addFunction( "_div",      new ParserFunction( new Func__div<int, int, double>(), "/", divNaturalFuncArgRules, funcDivNaturalRetVar ) );
+		
+        ArgumentRules divIntegerFuncArgRules;
+        divIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        divIntegerFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        Real* funcDivIntegerRetVar = new Real();
+        addFunction( "_div",      new ParserFunction( new Func__div<int, int, double>(), "/", divIntegerFuncArgRules, funcDivIntegerRetVar ) );
+		
+        ArgumentRules divRealPosFuncArgRules;
+        divRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        divRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RealPos* funcDivRealPosRetVar = new RealPos();
+        addFunction( "_div",      new ParserFunction( new Func__div<double, double, double>(), "/", divRealPosFuncArgRules, funcDivRealPosRetVar ) );
+		
+        ArgumentRules divRealFuncArgRules;
+        divRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        divRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        Real* funcDivRealRetVar = new Real();
+        addFunction( "_div",      new ParserFunction( new Func__div<double, double, double>(), "/", divRealFuncArgRules, funcDivRealRetVar ) );
+
+        // multiplication
+        ArgumentRules mulNaturalFuncArgRules;
+        mulNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        mulNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        Natural* funcMulNaturalRetVar = new Natural();
+        addFunction( "_mul",      new ParserFunction( new Func__mul<int, int, int>(), "*", mulNaturalFuncArgRules, funcMulNaturalRetVar ) );
+		
+        ArgumentRules mulIntegerFuncArgRules;
+        mulIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        mulIntegerFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        Integer* funcMulIntegerRetVar = new Integer();
+        addFunction( "_mul",      new ParserFunction( new Func__mul<int, int, int>(), "*", mulIntegerFuncArgRules, funcMulIntegerRetVar ) );
+		
+        ArgumentRules mulRealPosFuncArgRules;
+        mulRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        mulRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RealPos* funcMulRealPosRetVar = new RealPos();
+        addFunction( "_mul",      new ParserFunction( new Func__mul<double, double, double>(), "*", mulRealPosFuncArgRules, funcMulRealPosRetVar ) );
+		
+        ArgumentRules mulRealFuncArgRules;
+        mulRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        mulRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        Real* funcMulRealRetVar = new Real();
+        addFunction( "_mul",      new ParserFunction( new Func__mul<double, double, double>(), "*", mulRealFuncArgRules, funcMulRealRetVar ) );
+		
+        // subtraction
+        ArgumentRules subNaturalFuncArgRules;
+        subNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        subNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        Natural* funcSubNaturalRetVar = new Natural();
+        addFunction( "_sub",      new ParserFunction( new Func__sub<int, int, int>(), "-", subNaturalFuncArgRules, funcSubNaturalRetVar ) );
+        
+        ArgumentRules subIntFuncArgRules;
+        subIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        subIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        Integer* funcSubIntRetVar = new Integer();
+        addFunction( "_sub",      new ParserFunction( new Func__sub<int, int, int>(), "-", subIntFuncArgRules, funcSubIntRetVar ) );
+        
+        ArgumentRules subRealPosFuncArgRules;
+        subRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        subRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RealPos* funcSubRealPosRetVar = new RealPos();
+        addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealPosFuncArgRules, funcSubRealPosRetVar ) );
+        
+        ArgumentRules subRealFuncArgRules;
+        subRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        subRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        Real* funcSubRealRetVar = new Real();
+        addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealFuncArgRules, funcSubRealRetVar ) );
+
+        addFunction( "_exp",      new Func_power()                                                    );
+
+        /* Add basic logic templated functions */
+        ArgumentRules ltNaturalFuncArgRules;
+        ltNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
+        ltNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        RbBoolean* funcLTNaturalRetVar = new RbBoolean();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltNaturalFuncArgRules, funcLTNaturalRetVar ) );
+        
+        ArgumentRules ltIntFuncArgRules;
+        ltIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        ltIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        RbBoolean* funcLTIntRetVar = new RbBoolean();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltIntFuncArgRules, funcLTIntRetVar ) );
+        
+        ArgumentRules ltRealPosFuncArgRules;
+        ltRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
+        ltRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        RbBoolean* funcLTRealPosRetVar = new RbBoolean();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealPosFuncArgRules, funcLTRealPosRetVar ) );
+        
+        ArgumentRules ltRealFuncArgRules;
+        ltRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        ltRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        RbBoolean* funcLTRealRetVar = new RbBoolean();
+        addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealFuncArgRules, funcLTRealRetVar ) );
+		
+        
 
         /* Add math functions (alphabetical order) */
         addFunction( "abs",       new Func_abs()   );
         addFunction( "cos",       new Func_cos()   );
         
+        // exponential function
         ArgumentRules expFuncArgRules;
         expFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
         RbLanguageObject* expFuncRetArg = new RealPos();
