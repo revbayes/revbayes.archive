@@ -71,14 +71,14 @@ Func_source* Func_source::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_source::executeFunction( void ) {
+const RbLanguageObject& Func_source::executeFunction( const std::vector<const RbObject*>& args ) {
 
     /* Open file */
-    std::string fname = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
+    std::string fname = static_cast<const RbString*>( args[0] )->getValue();
     std::ifstream inFile( fname.c_str() );
     
     
-    bool echo_on = static_cast<const RbBoolean&>( args[1].getVariable().getValue() ).getValue();
+    bool echo_on = static_cast<const RbBoolean*>( args[1] )->getValue();
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + fname + "\"" );
