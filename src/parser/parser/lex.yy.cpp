@@ -21,7 +21,6 @@
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
-// #include <unistd.h>
 
 /* end standard C headers. */
 
@@ -538,7 +537,7 @@ char *yytext;
  *
  * @brief Lexicographical analysis using flex
  *
- * @author Fredrik Ronquist
+ * @author Fredrik Ronquist and Sebastian Hoehna
  * @date Last modified: $Date$
  *
  * $Id$
@@ -1166,7 +1165,7 @@ YY_RULE_SETUP
 #line 228 "./lex.l"
 {
                                             PRINTF("Flex found '!='\n");
-                                            return EQ;
+                                            return NE;
                                         }
 	YY_BREAK
 case 38:

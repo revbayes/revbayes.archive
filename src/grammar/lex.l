@@ -5,7 +5,7 @@
  *
  * @brief Lexicographical analysis using flex
  *
- * @author Fredrik Ronquist
+ * @author Fredrik Ronquist and Sebastian Hoehna
  * @date Last modified: $Date$
  *
  * $Id$
@@ -227,7 +227,7 @@ TRUE                                    {
                                         }
 "!="                                    {
                                             PRINTF("Flex found '!='\n");
-                                            return EQ;
+                                            return NE;
                                         }
 [ \t]+                                  {
                                             PRINTF ("Flex found white space\n");

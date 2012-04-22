@@ -165,7 +165,7 @@
  *
  * @brief Grammar specification in bison format
  *
- * @author Fredrik Ronquist
+ * @author Fredrik Ronquist and Sebastian Hoehna
  * @date Last modified: $Date$
  *
  * $Id$
