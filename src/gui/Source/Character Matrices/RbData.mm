@@ -33,6 +33,16 @@
     return [td dataCellIndexed:c];
 }
 
+- (void)clear {
+
+    [data removeAllObjects];
+    [taxonNames removeAllObjects];
+    [excludedTaxa removeAllObjects];
+    [excludedCharacters removeAllObjects];
+    numTaxa = 0;
+    numCharacters = 0;
+}
+
 - (RbData*)copiedFrom {
 
     return copiedFrom;
@@ -59,16 +69,15 @@
 
     if ([data count] > 0)
         {
-        NSLog(@"before = %d", [data count]);
         [data removeLastObject];
         [taxonNames removeLastObject];
-        NSLog(@"after = %d", [data count]);
         numTaxa--;
         }
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
+    NSLog(@"encoding RbData (%@) with %d taxa and %d characters", self, numTaxa, numCharacters);
     [aCoder encodeInt:dataType               forKey:@"dataType"];
     [aCoder encodeBool:isHomologyEstablished forKey:@"isHomologyEstablished"];
     [aCoder encodeObject:alignmentMethod     forKey:@"alignmentMethod"];
@@ -357,6 +366,36 @@
 - (void)setCopiedFrom:(RbData*)d {
 
     copiedFrom = d;
+}
+
+- (void)setStandardMatrixToHave:(int)rows andToHave:(int)columns {
+
+    [self clear];
+    
+    numTaxa               = rows;
+    numCharacters         = columns;
+    isHomologyEstablished = YES;
+    dataType              = STANDARD;
+    copiedFrom            = nil;
+    
+    for (int i=0; i<numTaxa; i++)
+        {
+        RbTaxonData* td = [[RbTaxonData alloc] init];
+        [td setDataType:STANDARD];
+        [td setTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
+        [self addTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
+        for (int j=0; j<numCharacters; j++)
+            {
+            RbDataCell* dc = [[RbDataCell alloc] init];
+            [dc setDataType:STANDARD];
+            [dc setNumStates:10];
+            [dc setIsAmbig:YES];
+            [td addObservation:dc];
+            [dc release];
+            }
+        [data addObject:td];
+        [td release];
+        }
 }
 
 - (void)setNameOfTaxonWithIndex:(int)idx to:(NSString*)newName {

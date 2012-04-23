@@ -36,6 +36,7 @@
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
     [aCoder encodeObject:dataMatrix forKey:@"dataMatrix"];
+    NSLog(@"tool is encoding RbData %@", dataMatrix);
 	[super encodeWithCoder:aCoder];
 }
 
@@ -51,11 +52,11 @@
     [dataMatrix setNumCharacters:1];
     [dataMatrix setDataType:STANDARD];
     [dataMatrix setName:[NSString stringWithString:@"User-Entered Data Matrix"]];
-    for (int i=0; i<3; i++)
+    for (int i=0; i<[dataMatrix numTaxa]; i++)
         {
         RbTaxonData* td = [[RbTaxonData alloc] init];
         [td setDataType:STANDARD];
-        for (int j=0; j<1; j++)
+        for (int j=0; j<[dataMatrix numCharacters]; j++)
             {
             RbDataCell* c = [[RbDataCell alloc] init];
             [c setIsDiscrete:YES];

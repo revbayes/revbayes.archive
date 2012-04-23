@@ -1,5 +1,5 @@
-#import "MatrixController.h"
 #import "MatrixRowInformation.h"
+#import "WindowControllerDataEntry.h"
 
 
 
@@ -9,7 +9,6 @@
 - (void)addEntryToEnd {
 
     [values addObject:@"?"];
-    NSLog(@"adding entry to end of %@", self);
 }
 
 - (void)dealloc {
@@ -28,7 +27,7 @@
     return [self initWithController:nil];
 }
 
-- (id)initWithController:(MatrixController*)c {
+- (id)initWithController:(WindowControllerDataEntry*)c {
 
     if ( (self = [super init]) ) 
         {
@@ -39,6 +38,17 @@
             [values addObject:@"?"];
         }
     return self;
+}
+
+- (int)integerRepresentationForCharacter:(int)idx {
+
+    id obj = [values objectAtIndex:(idx+1)];
+    NSString* str = [NSString stringWithString:obj];
+    char c = [str characterAtIndex:0];
+    if ( c == '?' )
+        return -1;
+    int x = [str intValue];
+    return x;
 }
 
 - (int)numberOfColumns {

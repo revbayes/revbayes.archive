@@ -1,3 +1,4 @@
+#import "MatrixRowInformation.h"
 #import "RbDataCell.h"
 #import "RbTaxonData.h"
 
@@ -78,6 +79,38 @@
 				RbDataCell* c = [d dataCellIndexed:i]; 
 				RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
 				[data addObject:newC];
+				}
+			}
+		}
+    return self;
+}
+
+- (id)initWithMatrixRowInformation:(MatrixRowInformation*)mr {
+
+    if ( (self = [super init]) ) 
+		{
+		// allocate an array holding the data
+		data      = [[NSMutableArray alloc] init];
+		taxonName = [[NSString alloc] init];
+		
+		// copy information
+		if (mr != nil)
+			{
+			dataType  = STANDARD; // the MatrixRowInformation class only deals with standard data type
+			taxonName = [NSString stringWithString:[mr valueForKey:@"Taxon Name"]];
+			for (int i=0; i<[mr numberOfColumns]-1; i++)
+				{
+                int intVal = [mr integerRepresentationForCharacter:i];
+                RbDataCell* dc = [[RbDataCell alloc] init];
+                [dc setIsDiscrete:YES];
+                [dc setDataType:STANDARD];
+                [dc setNumStates:10];
+                [dc setIsAmbig:NO];
+                [dc setIsGapState:NO];
+                [dc setDiscreteStateTo:intVal];
+                if (intVal == -1)
+                    [dc setIsDiscrete:YES];
+                [data addObject:dc];
 				}
 			}
 		}

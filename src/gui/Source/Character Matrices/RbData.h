@@ -29,6 +29,7 @@
 - (void)addTaxonData:(RbTaxonData*)td;
 - (void)addTaxonName:(NSString*)n;
 - (RbDataCell*)cellWithRow:(int)r andColumn:(int)c;
+- (void)clear;
 - (RbData*)copiedFrom;
 - (int)dataSize;
 - (void)deleteLastTaxon;
@@ -51,6 +52,7 @@
 - (void)restoreCharacterIndexed:(int)idx;
 - (void)setCopiedFrom:(RbData*)d;
 - (void)setNameOfTaxonWithIndex:(int)idx to:(NSString*)newName;
+- (void)setStandardMatrixToHave:(int)rows andToHave:(int)columns;
 - (void)writeToFile:(NSString*)fn;
 - (NSString*)taxonWithIndex:(int)i;
 

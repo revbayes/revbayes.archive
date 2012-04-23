@@ -902,7 +902,6 @@
 		228A27C81543C3A200044EBB /* RegistrationPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 228A261F1543C3A100044EBB /* RegistrationPanel.xib */; };
 		228A27C91543C3A200044EBB /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 228A26201543C3A100044EBB /* TextEditorWindow.xib */; };
 		228A27CC1543C47000044EBB /* MatrixRowInformation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 228A27CB1543C47000044EBB /* MatrixRowInformation.mm */; };
-		228A27CF1543C48300044EBB /* MatrixController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 228A27CE1543C48300044EBB /* MatrixController.mm */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -2004,8 +2003,6 @@
 		228A26201543C3A100044EBB /* TextEditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditorWindow.xib; sourceTree = "<group>"; };
 		228A27CA1543C47000044EBB /* MatrixRowInformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatrixRowInformation.h; sourceTree = "<group>"; };
 		228A27CB1543C47000044EBB /* MatrixRowInformation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MatrixRowInformation.mm; sourceTree = "<group>"; };
-		228A27CD1543C48300044EBB /* MatrixController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatrixController.h; sourceTree = "<group>"; };
-		228A27CE1543C48300044EBB /* MatrixController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MatrixController.mm; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -3381,8 +3378,6 @@
 				228A24E51543C3A100044EBB /* RbDataCell.mm */,
 				228A24E61543C3A100044EBB /* RbTaxonData.h */,
 				228A24E71543C3A100044EBB /* RbTaxonData.mm */,
-				228A27CD1543C48300044EBB /* MatrixController.h */,
-				228A27CE1543C48300044EBB /* MatrixController.mm */,
 				228A27CA1543C47000044EBB /* MatrixRowInformation.h */,
 				228A27CB1543C47000044EBB /* MatrixRowInformation.mm */,
 			);
@@ -4774,7 +4769,6 @@
 				228A27A31543C3A200044EBB /* WindowControllerRegistration.mm in Sources */,
 				228A27A41543C3A200044EBB /* YRKSpinningProgressIndicator.mm in Sources */,
 				228A27CC1543C47000044EBB /* MatrixRowInformation.mm in Sources */,
-				228A27CF1543C48300044EBB /* MatrixController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

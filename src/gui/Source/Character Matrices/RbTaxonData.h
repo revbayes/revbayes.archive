@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+@class MatrixRowInformation;
 @class RbDataCell;
 
 
@@ -15,6 +16,7 @@
 
 - (RbDataCell*)dataCellIndexed:(int)idx;
 - (id)initWithRbTaxonData:(RbTaxonData*)d;
+- (id)initWithMatrixRowInformation:(MatrixRowInformation*)mr;
 - (void)addObservation:(RbDataCell*)dc;
 - (int)numCharacters;
 
