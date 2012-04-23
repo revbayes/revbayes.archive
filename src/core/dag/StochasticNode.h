@@ -128,6 +128,7 @@ private:
     RbLanguageObject*                   createRV(size_t plateIndex);
     RbLanguageObject*                   createRV(const std::vector<const RbObject*> &args);
     RbLanguageObject*                   createRVSingleValue(const std::vector<const RbObject*> &args);
+    bool                                isValueTypeAllowed(RbLanguageObject* observed, bool &needsConversion);
     
     static const TypeSpec               typeSpec;
     RbLanguageObject*                   value;                                                              //!< Value

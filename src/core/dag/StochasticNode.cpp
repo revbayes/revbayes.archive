@@ -441,22 +441,25 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
     touch(); 
     
     // check for type conversion
-    if (observedVal->isTypeSpec(distribution->getVariableType())) {
-        if (value != NULL) {
-            delete value;
+    bool needsConversion = false;
+    if ( isValueTypeAllowed( observedVal, needsConversion ) ) {
+        
+        // delete the old value
+        delete value;
+        if ( needsConversion ) {
+            value = static_cast<RbLanguageObject*>(observedVal->convertTo(distribution->getVariableType()) );
+            if (value == NULL) {
+                std::cerr << "Ooops, observed value was NULL!\n";
+            }
+            // we own the parameter so we need to delete it
+            delete observedVal;
         }
-        value = observedVal;
-        if (value == NULL) {
-            std::cerr << "Ooops, observed value was NULL!\n";
+        else {
+            value = observedVal;
+            if (value == NULL) {
+                std::cerr << "Ooops, observed value was NULL!\n";
+            }
         }
-    }
-    else if (observedVal->isConvertibleTo(distribution->getVariableType())) {
-        value = static_cast<RbLanguageObject*>(observedVal->convertTo(distribution->getVariableType()) );
-        if (value == NULL) {
-            std::cerr << "Ooops, observed value was NULL!\n";
-        }
-        // we own the parameter so we need to delete it
-        delete observedVal;
     }
     else {
         throw RbException("Cannot clamp stochastic node with value of type \"" + observedVal->getTypeSpec() + "\" because the distribution requires a \"" + distribution->getVariableType().toString() + "\".");
@@ -985,6 +988,34 @@ bool StochasticNode::isEliminated( void ) const {
  */
 bool StochasticNode::isNotInstantiated( void ) const {
     return type != INSTANTIATED;
+}
+
+
+bool StochasticNode::isValueTypeAllowed(RbLanguageObject *observed, bool &needsConversion) {
+    
+    if ( observed->isTypeSpec( distribution->getVariableType() ) ) {
+        return true;
+    }
+    else if ( observed->isConvertibleTo( distribution->getVariableType() ) ) {
+        needsConversion = true;
+        return true;
+    }
+    else {
+        
+        if ( observed->isTypeSpec( Container::getClassTypeSpec() ) ) {
+            Container* c = static_cast<Container*>( observed );
+            
+            bool allowed = true;
+            for ( size_t i = 0; i < c->size(); ++i) {
+                allowed &= isValueTypeAllowed( static_cast<RbLanguageObject*>( &c->getElement( i ) ), needsConversion);
+            }
+            
+            return allowed;
+        }
+        else {
+            return false;
+        }
+    }
 }
 
 
