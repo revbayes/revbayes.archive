@@ -36,13 +36,13 @@ public:
     virtual void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
     
     // Member variable functions
-//    const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
     const MemberRules&                  getMemberRules(void) const;                                                                         //!< Get member rules
     void                                setMemberVariable(const std::string& name, const Variable* var);                                    //!< Catch setting of the topology
     
     // Member method inits
     const MethodTable&                  getMethods(void) const;                                                                             //!< Get methods
     
+    std::vector<size_t>                 getPlateLengths(void) const;                                                                        //!< Get the length for this plate an all parent plates
 protected:
     const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
 

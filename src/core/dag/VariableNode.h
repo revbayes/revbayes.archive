@@ -70,6 +70,7 @@ public:
 
 protected:
     VariableNode( void );                                                                                                       //!< Constructor of empty node
+    VariableNode(const std::vector<size_t> &pl);                                                                                //!< Constructor of empty node
     VariableNode(const VariableNode &v);                                                                                        //!< Copy Constructor
         
     virtual void                                getAffected(std::set<StochasticNode*>& affected) = 0;                                  //!< Mark and get affected nodes
@@ -82,6 +83,7 @@ protected:
 
     // Member variables
     bool                                        touched;                                                                        //!< Is touched by move?
+    std::vector<size_t>                         plateLengths;
 };
 
 #endif

@@ -16,11 +16,14 @@
  */
 
 #include "ConstantNode.h"
+#include "DeterministicNode.h"
 #include "Distribution.h"
 #include "Ellipsis.h"
 #include "OptionRule.h"
+#include "ParserDistribution.h"
 #include "Plate.h"
 #include "RbNullObject.h"
+#include "StochasticNode.h"
 #include "ValueRule.h"
 #include "Workspace.h"
 
@@ -98,15 +101,22 @@ const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, c
         
         if ( type == "Stochastic" ) {
             std::cerr << "Replicating a stochastic node with distribution " << fxtName << "!" << std::endl;
+            std::cerr << "Obtained " << args.size()-3 << " arguments for the distribution!" << std::endl;
             
             std::vector<Argument> distributionArgs;
             for (size_t i = 3; i<args.size(); i++) {
                 distributionArgs.push_back( args[i] );
             }
             RbFunction* fxt = Workspace::userWorkspace().getFunction( fxtName, distributionArgs );
-            const Distribution& d = static_cast<const Distribution&>( fxt->execute() );
+            const ParserDistribution& d = static_cast<const ParserDistribution&>( fxt->execute() );
             
             std::cerr << "Created distribution of type " << d.getTypeSpec() << std::endl;
+            
+            // get the vector of length of this plate and all parents
+            const std::vector<size_t> lengths = getPlateLengths();
+            
+            StochasticNode* stochNode = new StochasticNode( d.clone(), lengths );
+            Workspace::userWorkspace().addVariable(varName, stochNode);
         }
         else {
             std::cerr << "Replicating a deterministic node with function " << fxtName << "!" << std::endl;
@@ -165,6 +175,23 @@ const MemberRules& Plate::getMemberRules(void) const {
     }
     
     return memberRules;
+}
+
+
+std::vector<size_t> Plate::getPlateLengths( void ) const {
+    
+    if ( parent == NULL ) {
+        std::vector<size_t> plateLengths;
+        plateLengths.push_back( size_t(static_cast<const Natural&>( size->getValue() ).getValue() ) );
+        
+        return plateLengths;
+    }
+    else  {
+        std::vector<size_t> plateLengths = static_cast<const Plate&>( parent->getValue() ).getPlateLengths();
+        plateLengths.push_back( size_t(static_cast<const Natural&>( size->getValue() ).getValue() ) );
+        
+        return plateLengths;
+    }
 }
 
 

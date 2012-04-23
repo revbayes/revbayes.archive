@@ -53,6 +53,7 @@ public:
     
                                         StochasticNode(void);                                               //!< Construct empty stochastic node
                                         StochasticNode(ParserDistribution* dist);                           //!< Construct from distribution (raw object)
+                                        StochasticNode(ParserDistribution* dist, const std::vector<size_t> &pl);    //!< Construct from distribution (raw object)
                                         StochasticNode(const StochasticNode& x);                            //!< Copy constructor
     virtual                            ~StochasticNode(void);                                               //!< Destructor
 
@@ -124,6 +125,7 @@ protected:
 
 private:
     RbLanguageObject*                   createRV(void);
+    RbLanguageObject*                   createRV(size_t plateIndex);
     RbLanguageObject*                   createRV(const std::vector<const RbObject*> &args);
     RbLanguageObject*                   createRVSingleValue(const std::vector<const RbObject*> &args);
     

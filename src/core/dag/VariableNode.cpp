@@ -26,12 +26,16 @@
 #include <algorithm>
 
 
-/** Constructor */
 VariableNode::VariableNode( void ) : DAGNode( ), touched( false ), factorRoot( NULL ) {
 }
 
-/** Copy Constructor */
-VariableNode::VariableNode(const VariableNode &v) : DAGNode(v), factorRoot( v.factorRoot ) {
+
+
+VariableNode::VariableNode( const std::vector<size_t> &pl ) : DAGNode( ), touched( false ), factorRoot( NULL ), plateLengths( pl ) {
+}
+
+
+VariableNode::VariableNode(const VariableNode &v) : DAGNode(v), factorRoot( v.factorRoot ), plateLengths( v.plateLengths ) {
     touched = false;
 }
 
