@@ -314,7 +314,7 @@ void DAGNode::printChildren( std::ostream& o ) const {
     for ( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++) {
         if ( i != children.begin() )
             o << ", ";
-        if ( getName() == "" ) {
+        if ( (*i)->getName() == "" ) {
             o << "<";
             (*i)->printValue(o);
             o << ">";
@@ -334,7 +334,7 @@ void DAGNode::printParents( std::ostream& o ) const {
     for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( i != parents.begin() )
             o << ", ";
-        if ( getName() == "" ) {
+        if ( (*i)->getName() == "" ) {
             o << "<";
             (*i)->printValue(o);
             o << ">";

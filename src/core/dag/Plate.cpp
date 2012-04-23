@@ -86,14 +86,6 @@ const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, c
     // special handling for adding a variable
     if (name == "replicate") 
     {
-        // get the parent plate
-        if ( parent == NULL ) {
-            std::cerr << "No parent plate found!" << std::endl;
-        }
-        else {
-            std::cerr << "Parent plate found!" << std::endl;
-            
-        }
         
         std::string varName = static_cast<const RbString&>( args[0].getVariable().getValue() ).getValue();
         std::string type    = static_cast<const RbString&>( args[1].getVariable().getValue() ).getValue();
@@ -101,7 +93,6 @@ const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, c
         
         if ( type == "Stochastic" ) {
             std::cerr << "Replicating a stochastic node with distribution " << fxtName << "!" << std::endl;
-            std::cerr << "Obtained " << args.size()-3 << " arguments for the distribution!" << std::endl;
             
             std::vector<Argument> distributionArgs;
             for (size_t i = 3; i<args.size(); i++) {
@@ -110,12 +101,12 @@ const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, c
             RbFunction* fxt = Workspace::userWorkspace().getFunction( fxtName, distributionArgs );
             const ParserDistribution& d = static_cast<const ParserDistribution&>( fxt->execute() );
             
-            std::cerr << "Created distribution of type " << d.getTypeSpec() << std::endl;
-            
             // get the vector of length of this plate and all parents
             const std::vector<size_t> lengths = getPlateLengths();
             
             StochasticNode* stochNode = new StochasticNode( d.clone(), lengths );
+            stochNode->setName( varName );
+            
             Workspace::userWorkspace().addVariable(varName, stochNode);
         }
         else {
