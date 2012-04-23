@@ -205,3 +205,14 @@ void InferenceDistribution::setParameters(const std::vector<RbValue<void*> > &ar
     // delegate to derived class' implementation
     setInternalParameters( args );
 }
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void InferenceDistribution::setObservedValue(const RbValue<void *> &v) {
+    
+    members[members.size()-1] = v;
+    
+    // delegate to derived class' implementation
+    setInternalObservedValue( v );
+    
+}

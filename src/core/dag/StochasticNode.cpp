@@ -69,6 +69,9 @@ StochasticNode::StochasticNode( ParserDistribution* dist ) : VariableNode( ), cl
 
     // create a new random variable
     value = createRV();
+    RbValue<void*> rvPrimitive;
+    rvPrimitive.value = value->getValue( rvPrimitive.lengths );
+    dist->setValue( rvPrimitive );
     
     /* We use a random draw as the initial value */
     if (value == NULL) {
@@ -104,6 +107,9 @@ StochasticNode::StochasticNode( ParserDistribution* dist, const std::vector<size
     
     // create a new random variable
     value = createRV();
+    RbValue<void*> rvPrimitive;
+    rvPrimitive.value = value->getValue( rvPrimitive.lengths );
+    dist->setValue( rvPrimitive );
     
     /* We use a random draw as the initial value */
     if (value == NULL) {
@@ -252,7 +258,7 @@ double StochasticNode::calculateLnProbability( void ) {
         // but do not actually sum over all possible values. This is only done in the MCMC.
         // Trying to safe some time ...
 //        if (type == INSTANTIATED) { // this should always be true
-            lnProb = distribution->lnPdf( *value );
+            lnProb = distribution->jointLnPdf( *value );
 //        }
 //        else {
 //            throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");

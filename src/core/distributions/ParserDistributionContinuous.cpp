@@ -135,6 +135,29 @@ const TypeSpec& ParserDistributionContinuous::getTypeSpec(void) const {
 }
 
 
+double ParserDistributionContinuous::jointLnPdf(const RbLanguageObject &value) const {
+    
+    std::vector<size_t> lengths;
+    value.getValue( lengths );
+    
+    double *pds = distribution->lnPdf();
+    
+    if ( lengths.size() > 0 ) {
+        double lnPd = 0.0;
+        size_t index = 0;
+        for ( size_t i = 0; i < lengths.size(); ++i) {
+            for ( size_t j = 0; j < lengths[i]; ++j, ++index) {
+                lnPd += pds[index];
+            }
+        }
+        return lnPd;
+    }
+    else {
+        return *pds;
+    }
+}
+
+
 double ParserDistributionContinuous::lnPdf(const RbLanguageObject &value) const {
     
     return *distribution->lnPdf();
@@ -161,6 +184,11 @@ void ParserDistributionContinuous::rv(void) {
 /** We delegate the call to the inference distribution. */
 void ParserDistributionContinuous::setParameters(const std::vector<RbValue<void *> > &p) {
     distribution->setParameters(p);
+}
+
+/** We delegate the call to the inference distribution. */
+void ParserDistributionContinuous::setValue(const RbValue<void *> &v) {
+    distribution->setObservedValue(v);
 }
 
 

@@ -47,8 +47,6 @@ class Dist_unif: public InferenceDistributionContinuous {
         RbValue<double*>            min;
         RbValue<double*>            max;
     
-        // return values
-        RbValue<double*>            randomVariable;
 
 };
 

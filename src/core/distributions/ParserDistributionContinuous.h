@@ -47,11 +47,13 @@ public:
     const Real&                             getMax(void) const;                                                                     //!< Get max value of coverage
     const MethodTable&                      getMethods(void) const;                                                                 //!< Get member methods
     const Real&                             getMin(void) const;                                                                     //!< Get min value of coverage
+    double                                  jointLnPdf( const RbLanguageObject& value) const;                                       //!< Ln probability density
     double                                  lnPdf( const RbLanguageObject& value) const;                                            //!< Ln probability density
     double                                  pdf( const RbLanguageObject& value) const;                                              //!< Probability density
     double                                  quantile(const double p);                                                               //!< Quantile
     void                                    rv(void);                                                                               //!< Generate a random draw
     void                                    setParameters(const std::vector<RbValue<void*> > &p);                                   //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    void                                    setValue(const RbValue<void*> &v);                                                      //!< Set the pointers to the value of the distribution.
     
 protected:
     const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Direct call of member method

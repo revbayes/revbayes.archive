@@ -36,7 +36,7 @@ class Dist_exp: public InferenceDistributionContinuous {
         // distribution functions
         double                      cdf(double q);                                                      //!< Cumulative density
         double                      quantile(double p);                                                 //!< Quantile
-    
+
     private:
         double                      lnPdfSingleValue(std::vector<size_t> &offset) const;                //!< Ln probability density
         double                      pdfSingleValue(std::vector<size_t> &offset) const;                  //!< Probability density
@@ -46,8 +46,6 @@ class Dist_exp: public InferenceDistributionContinuous {
         // parameters
         RbValue<double*>            lambda;
     
-        // return values
-        RbValue<double*>            randomVariable;
 
 };
 

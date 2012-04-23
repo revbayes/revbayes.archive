@@ -41,7 +41,8 @@ public:
     virtual double*                     pdf(void) const;                                                                //!< Probability density function
     virtual void                        rv(void);                                                                       //!< Generate a random draw
     virtual void                        setParameters(const std::vector<RbValue<void*> > &p);                           //!< Set the pointers to the variables of the distribution. The last one is always the random value.
-
+    virtual void                        setObservedValue(const RbValue<void*> &v);                                      //!< Set the pointers to the observation (random variable) of the distribution.
+    
 protected:
     InferenceDistribution( void ) {};                                                                                   //!< Simple constructor
     
@@ -50,7 +51,8 @@ protected:
     virtual double                      pdfSingleValue(std::vector<size_t> &offsets) const = 0;                         //!< Probability density function
     virtual void                        rvSingleValue(std::vector<size_t> &offsets) = 0;                                //!< Generate a random draw
     virtual void                        setInternalParameters(const std::vector<RbValue<void*> > &p) = 0;               //!< Set the pointers to the variables of the distribution. The last one is always the random value.
-
+    virtual void                        setInternalObservedValue(const RbValue<void*> &v) = 0;                          //!< Set the pointers to the observation (random variable) of the distribution.
+    
 private:
     
     // helper functions
@@ -58,7 +60,7 @@ private:
     virtual void                        pdf(double *val, std::vector<size_t> &offsets, size_t level) const;             //!< Probability density function
     virtual void                        rv(std::vector<size_t> &offsets, size_t level);                                 //!< Draw a random variable
  
-    std::vector<RbValue<void*> > members;
+    std::vector<RbValue<void*> >        members;
 };
 
 #endif

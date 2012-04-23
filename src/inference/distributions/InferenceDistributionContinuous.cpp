@@ -17,3 +17,12 @@ double InferenceDistributionContinuous::getMax(void) const {
 double InferenceDistributionContinuous::getMin(void) const {
     return -RbConstants::Double::inf;
 }
+
+
+/** We catch here the setting of the member variables to store our parameters. */
+void InferenceDistributionContinuous::setInternalObservedValue(const RbValue<void *> &v) {
+    
+    randomVariable.value    = static_cast<double*>( v.value );
+    randomVariable.lengths  = v.lengths;
+    
+}

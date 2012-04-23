@@ -51,10 +51,12 @@ public:
     virtual const RbLanguageObject&     getTemplateRandomVariable(void) const;                                              //!< Get the template ranom variable
     
     // functions you have to override
+    virtual double                      jointLnPdf( const RbLanguageObject& value) const = 0;                               //!< Ln probability density
     virtual double                      lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
     virtual double                      pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function
     virtual void                        rv(void) = 0;                                                                       //!< Generate a random draw
     virtual void                        setParameters(const std::vector<RbValue<void*> > &p) = 0;                           //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    virtual void                        setValue(const RbValue<void*> &v) = 0;                                              //!< Set the pointers to the value of the distribution.
     
 protected:
     ParserDistribution( const MemberRules& memberRules, RbLanguageObject* rv);                                              //!< Simple constructor
