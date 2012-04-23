@@ -47,15 +47,15 @@ Func_distance* Func_distance::clone(void) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_distance::executeFunction(void) {
+const RbLanguageObject& Func_distance::executeFunction( const std::vector<const RbObject*> &args ) {
 
     // get the information from the arguments for reading the file
-    const CharacterData& m      = static_cast<const CharacterData&>( data->getValue() );
-    const RbString&      dName  = static_cast<const RbString&>     ( model->getValue() );
-    const RbString&      f      = static_cast<const RbString&>     ( freqs->getValue() );
-    const RbString&      a      = static_cast<const RbString&>     ( asrv->getValue() );
-    const Real&          s      = static_cast<const Real&>         ( shape->getValue() );
-    const Real&          pi     = static_cast<const Real&>         ( pinvar->getValue() );
+    const CharacterData& m      = static_cast<const CharacterData&>( *args[0] );
+    const RbString&      dName  = static_cast<const RbString&>     ( *args[1] );
+    const RbString&      f      = static_cast<const RbString&>     ( *args[2] );
+    const RbString&      a      = static_cast<const RbString&>     ( *args[3] );
+    const Real&          s      = static_cast<const Real&>         ( *args[4] );
+    const Real&          pi     = static_cast<const Real&>         ( *args[5] );
         
     // check that the data matrix is aligned
     if ( m.getIsHomologyEstablished() == false )
@@ -226,27 +226,5 @@ const TypeSpec& Func_distance::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = DistanceMatrix::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_distance::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "data" ) {
-        data = var;
-    } else if ( name == "model" ) {
-        model = var;
-    } else if ( name == "freqs" ) {
-        freqs = var;
-    } else if ( name == "asrv" ) {
-        asrv = var;
-    } else if ( name == "shape" ) {
-        shape = var;
-    } else if ( name == "pinvar" ) {
-        pinvar = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

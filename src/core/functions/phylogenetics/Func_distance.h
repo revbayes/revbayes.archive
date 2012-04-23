@@ -39,20 +39,11 @@ class Func_distance :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(void);                                                   //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const Variable* var);
+        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*> &args);              //!< Execute function
 
     private:
         double                      distanceP(const TaxonData& td1, const TaxonData& td2);
         double                      distanceJC69(const TaxonData& td1, const TaxonData& td2);
-
-        // Arguments
-        RbConstVariablePtr          data;
-        RbConstVariablePtr          model;
-        RbConstVariablePtr          freqs;
-        RbConstVariablePtr          asrv;
-        RbConstVariablePtr          shape;
-        RbConstVariablePtr          pinvar;
     
         // function return value
         DistanceMatrix              matrix;
