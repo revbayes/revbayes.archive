@@ -122,8 +122,6 @@
 /* Builtin functions */
 #include "Func_clear.h"
 #include "Func_dppConFromExpNumClusters.h"
-#include "Func_dppSeat.h"
-#include "Func_dppServe.h"
 #include "Func_ls.h"
 #include "Func_normalizeVector.h"
 #include "Func_print.h"
@@ -363,8 +361,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add builtin functions (alphabetical order) */
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "dppConFromExpNumClusters", new Func_dppConFromExpNumClusters() );
-        addFunction( "dppSeat",                  new Func_dppSeat()                  );
-        addFunction( "dppServe",                 new Func_dppServe()                 );
         addFunction( "ls",                       new Func_ls()                       );
         addFunction( "normalize",                new Func_normalizeVector()          );
         addFunction( "print",                    new Func_print()                    );

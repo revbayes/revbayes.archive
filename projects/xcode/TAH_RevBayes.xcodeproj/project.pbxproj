@@ -589,10 +589,6 @@
 		BFC77C70154624FC007E2E95 /* ArgumentRules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A54154624FC007E2E95 /* ArgumentRules.cpp */; };
 		BFC77C71154624FC007E2E95 /* Func_dppConFromExpNumClusters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A58154624FC007E2E95 /* Func_dppConFromExpNumClusters.cpp */; };
 		BFC77C72154624FC007E2E95 /* Func_dppConFromExpNumClusters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A58154624FC007E2E95 /* Func_dppConFromExpNumClusters.cpp */; };
-		BFC77C73154624FC007E2E95 /* Func_dppSeat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A5A154624FC007E2E95 /* Func_dppSeat.cpp */; };
-		BFC77C74154624FC007E2E95 /* Func_dppSeat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A5A154624FC007E2E95 /* Func_dppSeat.cpp */; };
-		BFC77C75154624FC007E2E95 /* Func_dppServe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A5C154624FC007E2E95 /* Func_dppServe.cpp */; };
-		BFC77C76154624FC007E2E95 /* Func_dppServe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A5C154624FC007E2E95 /* Func_dppServe.cpp */; };
 		BFC77C77154624FC007E2E95 /* Func_normalizeVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A5E154624FC007E2E95 /* Func_normalizeVector.cpp */; };
 		BFC77C78154624FC007E2E95 /* Func_normalizeVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A5E154624FC007E2E95 /* Func_normalizeVector.cpp */; };
 		BFC77C79154624FC007E2E95 /* Func_setval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFC77A60154624FC007E2E95 /* Func_setval.cpp */; };
@@ -1670,10 +1666,6 @@
 		BFC77A55154624FC007E2E95 /* ArgumentRules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArgumentRules.h; sourceTree = "<group>"; };
 		BFC77A58154624FC007E2E95 /* Func_dppConFromExpNumClusters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_dppConFromExpNumClusters.cpp; sourceTree = "<group>"; };
 		BFC77A59154624FC007E2E95 /* Func_dppConFromExpNumClusters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_dppConFromExpNumClusters.h; sourceTree = "<group>"; };
-		BFC77A5A154624FC007E2E95 /* Func_dppSeat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_dppSeat.cpp; sourceTree = "<group>"; };
-		BFC77A5B154624FC007E2E95 /* Func_dppSeat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_dppSeat.h; sourceTree = "<group>"; };
-		BFC77A5C154624FC007E2E95 /* Func_dppServe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_dppServe.cpp; sourceTree = "<group>"; };
-		BFC77A5D154624FC007E2E95 /* Func_dppServe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_dppServe.h; sourceTree = "<group>"; };
 		BFC77A5E154624FC007E2E95 /* Func_normalizeVector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_normalizeVector.cpp; sourceTree = "<group>"; };
 		BFC77A5F154624FC007E2E95 /* Func_normalizeVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_normalizeVector.h; sourceTree = "<group>"; };
 		BFC77A60154624FC007E2E95 /* Func_setval.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_setval.cpp; sourceTree = "<group>"; };
@@ -3217,10 +3209,6 @@
 			children = (
 				BFC77A58154624FC007E2E95 /* Func_dppConFromExpNumClusters.cpp */,
 				BFC77A59154624FC007E2E95 /* Func_dppConFromExpNumClusters.h */,
-				BFC77A5A154624FC007E2E95 /* Func_dppSeat.cpp */,
-				BFC77A5B154624FC007E2E95 /* Func_dppSeat.h */,
-				BFC77A5C154624FC007E2E95 /* Func_dppServe.cpp */,
-				BFC77A5D154624FC007E2E95 /* Func_dppServe.h */,
 				BFC77A5E154624FC007E2E95 /* Func_normalizeVector.cpp */,
 				BFC77A5F154624FC007E2E95 /* Func_normalizeVector.h */,
 				BFC77A60154624FC007E2E95 /* Func_setval.cpp */,
@@ -4240,8 +4228,6 @@
 				BFC77C6E154624FC007E2E95 /* ArgumentRule.cpp in Sources */,
 				BFC77C70154624FC007E2E95 /* ArgumentRules.cpp in Sources */,
 				BFC77C72154624FC007E2E95 /* Func_dppConFromExpNumClusters.cpp in Sources */,
-				BFC77C74154624FC007E2E95 /* Func_dppSeat.cpp in Sources */,
-				BFC77C76154624FC007E2E95 /* Func_dppServe.cpp in Sources */,
 				BFC77C78154624FC007E2E95 /* Func_normalizeVector.cpp in Sources */,
 				BFC77C7A154624FC007E2E95 /* Func_setval.cpp in Sources */,
 				BFC77C7C154624FC007E2E95 /* Func_sumOver.cpp in Sources */,
@@ -4629,8 +4615,6 @@
 				BFC77C6D154624FC007E2E95 /* ArgumentRule.cpp in Sources */,
 				BFC77C6F154624FC007E2E95 /* ArgumentRules.cpp in Sources */,
 				BFC77C71154624FC007E2E95 /* Func_dppConFromExpNumClusters.cpp in Sources */,
-				BFC77C73154624FC007E2E95 /* Func_dppSeat.cpp in Sources */,
-				BFC77C75154624FC007E2E95 /* Func_dppServe.cpp in Sources */,
 				BFC77C77154624FC007E2E95 /* Func_normalizeVector.cpp in Sources */,
 				BFC77C79154624FC007E2E95 /* Func_setval.cpp in Sources */,
 				BFC77C7B154624FC007E2E95 /* Func_sumOver.cpp in Sources */,
