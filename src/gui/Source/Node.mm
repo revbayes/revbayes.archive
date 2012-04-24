@@ -5,6 +5,7 @@
 @implementation Node
 
 @synthesize index;
+@synthesize isLeaf;
 @synthesize branchLength;
 @synthesize name;
 
@@ -33,12 +34,14 @@
 - (void)dealloc {
 
 	[name release];
+    [descendants release];
 	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
     [aCoder encodeInt:index           forKey:@"index"];
+    [aCoder encodeBool:isLeaf         forKey:@"isLeaf"];
     [aCoder encodeDouble:branchLength forKey:@"branchLength"];
 	[aCoder encodeObject:name         forKey:@"name"];
 }
@@ -54,6 +57,7 @@
         
         // initialize some variables
 		index        = 0;
+        isLeaf       = NO;
 		branchLength = 0.0;
 		}
     return self;
@@ -64,11 +68,27 @@
     if ( (self = [super init]) ) 
 		{
         index        = [aDecoder decodeIntForKey:@"index"];
+        isLeaf       = [aDecoder decodeBoolForKey:@"isLeaf"];
         branchLength = [aDecoder decodeDoubleForKey:@"branchLength"];
 		name         = [aDecoder decodeObjectForKey:@"name"];
 		[name retain];
 		}
 	return self;
+}
+
+- (void)print {
+
+    NSString* s = [NSString stringWithFormat:@"%d %lf %x (", index, branchLength, ancestor];
+    for (int i=0; i<[descendants count]; i++)
+        {
+        s = [s stringByAppendingFormat:@"%x", [descendants objectAtIndex:i]];
+        if (i + 1 < [descendants count])
+            s = [s stringByAppendingString:@" "];
+        }
+    s = [s stringByAppendingString:@")"];
+    if (isLeaf == YES)
+        s = [s stringByAppendingFormat:@" %@", name];
+    NSLog(@"%@", s);
 }
 
 - (void)removeDescendant:(Node*)des {

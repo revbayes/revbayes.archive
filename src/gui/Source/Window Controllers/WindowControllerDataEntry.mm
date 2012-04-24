@@ -88,6 +88,19 @@
         }
 }
 
+- (BOOL)checkValidityOfCharacterState:(id)cs {
+
+    NSString* newCharVal = [NSString stringWithString:cs];
+    NSLog(@"newCharVal = %@", newCharVal);
+    if ( [newCharVal length] != 1 )
+        return NO;
+    char v = [newCharVal characterAtIndex:0];
+    if ( v != '?' && v != '0' && v != '1' && v != '2' && v != '3' && 
+         v != '4' && v != '5' && v != '6' && v != '7' && v != '8' && v != '9' )
+        return NO;
+    return YES;
+}
+
 - (ToolDataEntry*)dataEntryTool {
 
     return myTool;
@@ -139,13 +152,16 @@
 
 - (IBAction)deleteRow:(id)sender {
 
-    numTaxa--;
-    if (numTaxa < 0)
-        numTaxa = 0;
-    NSIndexSet* selectedRows = [tableView selectedRowIndexes];
-    [tableView abortEditing];
-    [rowData removeObjectsAtIndexes:selectedRows];
-    [tableView reloadData];
+    int whichRowToDelete = (int)[tableView selectedRow];
+    if (whichRowToDelete != -1)
+        {
+        numTaxa--;
+        if (numTaxa < 0)
+            numTaxa = 0;
+        [tableView abortEditing];
+        [rowData removeObjectAtIndex:whichRowToDelete];
+        [tableView reloadData];
+        }
 }
 
 - (IBAction)helpButtonAction:(id)sender {
@@ -211,6 +227,7 @@
 
 - (void)saveMatrixToTool {
 
+    NSLog(@"saveMatrixToTool %d %d", numTaxa, numCharacters);
     RbData* d = [myTool dataMatrix];
     [d setStandardMatrixToHave:numTaxa andToHave:numCharacters];
     
@@ -236,11 +253,26 @@
     return [d valueForKey:identifier];
 }
 
-- (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+- (void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row {
 
     MatrixRowInformation* d = [rowData objectAtIndex:row];
     NSString* identifier = [tableColumn identifier];
-    [d setValue:object forKey:identifier];
+    BOOL isValidCharacterEntry = YES;
+    if ( [identifier isEqualToString:@"Taxon Name"] == NO )
+        isValidCharacterEntry = [self checkValidityOfCharacterState:object];
+    if ( isValidCharacterEntry == NO )
+        {
+        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Invalid character state" 
+                                         defaultButton:@"OK" 
+                                       alternateButton:nil 
+                                           otherButton:nil 
+                             informativeTextWithFormat:@"Valid character states are the integers from 0 to 9 and \"?\""];
+        [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+        }
+    else 
+        {
+        [d setValue:object forKey:identifier];
+        }
 }
 
 @end

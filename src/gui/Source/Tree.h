@@ -14,5 +14,7 @@
 - (void)initializeDownPassSequence;
 - (int)numberOfNodes;
 - (void)passDown:(Node*)p;
+- (void)setNodesToArray:(NSMutableArray*)n;
+- (void)setRoot:(Node*)r;
 
 @end

@@ -31,6 +31,7 @@
 - (IBAction)okButtonAction:(id)sender {
     
     [myTool closeControlPanel];
+    [myTool exhaustiveSearch];
 }
 
 - (void)windowDidLoad {

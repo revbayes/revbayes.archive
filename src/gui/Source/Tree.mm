@@ -58,12 +58,23 @@
 
 - (void)passDown:(Node*)p {
 
-    if (p != nil)
+    if ([p numberOfDescendants] > 0)
         {
         for (int i=0; i<[p numberOfDescendants]; i++)
             [self passDown:[p descendantIndexed:i]];
         [downPassSequence addObject:p];
         }
+}
+
+- (void)setNodesToArray:(NSMutableArray*)n {
+
+    [nodes release];
+    nodes = n;
+}
+
+- (void)setRoot:(Node*)r {
+
+    root = r;
 }
 
 @end

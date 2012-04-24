@@ -254,4 +254,15 @@
         }
 }
 
+- (unsigned)unsignedRepresentation {
+
+    unsigned x = 0;
+	if (isDiscrete == YES)
+		{
+		NSNumber* n = [self val];
+		x = [n unsignedIntValue];
+        }
+    return x;
+}
+
 @end

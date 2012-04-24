@@ -36,5 +36,6 @@
 - (char)interpretAsStandard:(unsigned)x;
 - (id)initWithCell:(RbDataCell*)c;
 - (void)setDiscreteStateTo:(int)x; 
+- (unsigned)unsignedRepresentation;
 
 @end
