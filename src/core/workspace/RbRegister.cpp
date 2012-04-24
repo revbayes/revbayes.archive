@@ -339,14 +339,15 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_ge",       new Func__ge<           RbBoolean,      RbBoolean >()             );
         addFunction( "_gt",       new Func__gt<             Integer,        Integer >()             );
         addFunction( "_gt",       new Func__gt<                Real,           Real >()             );
-        addFunction( "_gt",       new Func__gt<             Integer,           Real >()             );
-        addFunction( "_gt",       new Func__gt<                Real,        Integer >()             );
         addFunction( "_gt",       new Func__gt<           RbBoolean,      RbBoolean >()             );
         addFunction( "_le",       new Func__le<             Integer,        Integer >()             );
         addFunction( "_le",       new Func__le<                Real,           Real >()             );
         addFunction( "_le",       new Func__le<             Integer,           Real >()             );
         addFunction( "_le",       new Func__le<                Real,        Integer >()             );
         addFunction( "_le",       new Func__le<           RbBoolean,      RbBoolean >()             );
+        addFunction( "_lt",       new Func__lt<             Integer,        Integer >()             );
+        addFunction( "_lt",       new Func__lt<                Real,           Real >()             );
+        addFunction( "_lt",       new Func__lt<           RbBoolean,      RbBoolean >()             );
         addFunction( "_ne",       new Func__ne<             Integer,        Integer >()             );
         addFunction( "_ne",       new Func__ne<                Real,           Real >()             );
         addFunction( "_ne",       new Func__ne<             Integer,           Real >()             );
@@ -539,7 +540,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_exp",      new Func_power()                                                    );
 
         /* Add basic logic templated functions */
-        ArgumentRules ltNaturalFuncArgRules;
+/*        ArgumentRules ltNaturalFuncArgRules;
         ltNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
         ltNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
         RbBoolean* funcLTNaturalRetVar = new RbBoolean();
@@ -562,7 +563,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         ltRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
         RbBoolean* funcLTRealRetVar = new RbBoolean();
         addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealFuncArgRules, funcLTRealRetVar ) );
-		
+*/		
         
 
         /* Add math functions (alphabetical order) */
