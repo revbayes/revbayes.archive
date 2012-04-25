@@ -1,28 +1,39 @@
-#include <string>
-#include <vector>
 #import "InOutlet.h"
 #import "RevBayes.h"
 #import "ToolTreeSet.h"
-#include "NclReader.h" // TAH: for ncl trees
-#include "Topology.h"
+#import "WindowControllerTreeSet.h"
+
 
 
 
 @implementation ToolTreeSet
 
+- (void)addTreeToSet:(Tree*)t {
+
+    NSLog(@"adding %@ to tree set", t);
+    [myTrees addObject:t];
+}
+
 - (void)awakeFromNib {
 
 }
 
+- (void)closeControlPanel {
+
+    [NSApp stopModal];
+	[controlWindow close];
+}
+
 - (void)dealloc {
 	
-	[trees release];
-	[source release];
+	[myTrees release];
+    [controlWindow release];
 	[super dealloc];
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder {
+- (void)encodeWithCoder:(NSCoder*)aCoder {
 
+    [aCoder encodeObject:myTrees forKey:@"myTrees"];
 	[super encodeWithCoder:aCoder];
 }
 
@@ -33,6 +44,13 @@
     [self startProgressIndicator];
     
     [self stopProgressIndicator];
+}
+
+- (Tree*)getTreeIndexed:(int)idx {
+
+    if ([myTrees count] == 0 || idx >= [myTrees count])
+        return nil;
+    return [myTrees objectAtIndex:idx];
 }
 
 - (id)init {
@@ -51,8 +69,14 @@
 
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor redColor]];
+		[self addOutletOfColor:[NSColor redColor]];
         [self setInletLocations];
         [self setOutletLocations];
+        
+        // allocate an array to hold the trees
+        myTrees = [[NSMutableArray alloc] init];
+        
+        controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
 		}
     return self;
 }
@@ -64,6 +88,12 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
+        
+        // get the set of trees
+        myTrees = [aDecoder decodeObjectForKey:@"myTrees"];
+        [myTrees retain];
+
+        controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -84,58 +114,15 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
-- (BOOL)readTreesFile {
-	
-#   if 0
-	// start the file dialog and get the file name
-    
-    // make an array containing the valid file types that can be chosen
-	NSArray* fileTypes = [NSArray arrayWithObjects: @"tre", @"t", @"txt", @"tree", @"trees", @"phy", NSFileTypeForHFSTypeCode( 'TEXT' ), nil];
-    
-    // get the open panel
-    NSOpenPanel* oPanel = [NSOpenPanel openPanel];
-    [oPanel setAllowsMultipleSelection:NO];
-    [oPanel setCanChooseDirectories:NO];
-    
-	std::vector<Topology*>* myTrees;
-	
-    // open the panel
-    NSString* fileToOpen;
-    int result = (int)[oPanel runModalForDirectory:nil file:nil types:fileTypes];
-    if ( result == NSOKButton ) 
-    {
-        // get the file path/name to the file    
-        fileToOpen = [oPanel filename];
-		std::string fileFormat = "nexus"; // this is just a default for the moment, needs to be set by user
-		std::string thisFileToOpen = [fileToOpen cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		       
-        NSLog(@"Reading file with name %@.", fileToOpen);
+- (int)numberOfTreesInSet {
 
-        // instantiate an NCL reader object
-		NclReader& myReader = NclReader::getInstance();
-		
-		try {
-			myTrees = myReader.readTrees(thisFileToOpen, fileFormat);
-			if (myTrees == NULL)
-				throw NxsException("help");
-		}
-		catch (NxsException& x){
-			NxsString m = x.msg;
-			NSString* errFile = [NSString stringWithString:fileToOpen];
-			NSAlert* alert = [NSAlert alertWithMessageText:@"Error Reading Data File" 
-			                                 defaultButton:@"OK" 
-										   alternateButton:nil 
-										       otherButton:nil 
-								 informativeTextWithFormat:@"Could not read file \"%@\". Check the settings in the control window to make certain that the file and data types are set correctly. Also, check that the data is formatted correctly in the file.", errFile];
-			[alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
-			return NO;
-		}
-	}
-#   endif
-	return NO;
-	
+    return (int)[myTrees count];
 }
 
+- (BOOL)readTreesFile {
+	
+	return NO;
+}
 
 
 - (NSMutableAttributedString*)sendTip {
@@ -159,118 +146,27 @@
     return attrString;
 }
 
-- (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem {
-    
-    // getting the new selected source (either File or MCMC)
-    source = [NSString stringWithString:[[sourceTypeTab selectedTabViewItem] label]];
-    if ( [source isEqualToString:@"MCMC"] == YES )
-        {
-        [okButton setTitle:(@"OK")];
-        NSString* msg = @"MCMC output:\nNo further information available yet. Might contain later info about mcmc and model.";
-        [mcmcTextField setStringValue:msg];
-        }
-    else if ( [source isEqualToString:@"Import"] == YES )
-        {
-        [okButton setTitle:(@"Import")];
-        
-        }
-    else if ( [source isEqualToString:@"Export"] == YES )
-        {
-        [okButton setTitle:(@"Export")];
-        
-        }
-    
-    // updating the outlets and inlets
-    //[self setInletsAndOutlets];
-    
-    // resetting the window size
-    //[self setControlWindowSize];
-}
-
 - (IBAction)okButtonAction:(id)sender {
     
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
-    
-	// remember the state of the control panel
-    
-	// perform the action
-    
-    source = [NSString stringWithString:[[sourceTypeTab selectedTabViewItem] label]];
-    if ( [source isEqualToString:@"MCMC"] == YES )
-        {
-        [self closeControlPanel];
-        [self updateForChangeInState];
-        [self setIsResolved:YES];
-        }
-    else if ( [source isEqualToString:@"Import"] == YES )
-        {
-        // user selected "OK" for a number set to be written to the memory from the mcmc output)
-        //		[myTool removeAllDataMatrices];
-		BOOL isSuccessful = [self readTreesFile];
-		
-		if (isSuccessful == YES)
-        {
-            [self setHasInspectorInfo:YES];
-			[self closeControlPanel];
-			[self updateForChangeInState];
-            [self setIsResolved:YES];
-        }
-		else 
-        {
-            NSLog(@"D'oh! Couldn't read tree file.");
-            
-        }
-        
-    }
-    else if ( [source isEqualToString:@"Export"] == YES )
-    {
-        BOOL isSuccessful = [self writeTreesFile];
-        
-        if (isSuccessful == YES)
-        {
-            [self closeControlPanel];
-            [self updateForChangeInState];
-            [self setIsResolved:YES];
-        }
-        else 
-        {
-            NSLog(@"D'oh! Couldn't write tree file.");
-            
-        }
-    } 
+}
+
+- (void)removeAllTreesFromSet {
+
+    [myTrees removeAllObjects];
+}
+
+- (void)showControlPanel {
+
+    NSPoint p = [self originForControlWindow:[controlWindow window]];
+    [[controlWindow window] setFrameOrigin:p];
+	[controlWindow showWindow:self];    
+	[[controlWindow window] makeKeyAndOrderFront:nil];
+    [NSApp runModalForWindow:[controlWindow window]];
 }
 
 - (BOOL)writeTreesFile {
     
-    NSSavePanel *sp = [NSSavePanel savePanel];
-    [sp setTitle:@"Save output file as"];
-    NSArray *fileTypes = [NSArray arrayWithObjects: @"txt", @"text", NSFileTypeForHFSTypeCode( 'TEXT' ), nil];
-    [sp setAllowedFileTypes:fileTypes];
-    
-    int spInt = (int)[sp runModalForDirectory:nil file:nil];
-    if (spInt == NSOKButton)
-    {
-        NSLog(@"doSaveAs we have an OK button");	
-        
-        return YES;
-    }
-    else if (spInt == NSCancelButton) 
-    {
-        NSLog(@"doSaveAs we have a Cancel button");
-        return NO;
-    }
-    else 
-    {
-        NSLog(@"doSaveAs tvarInt not equal 1 or zero = %3d", spInt);
-        return NO;
-    }     
-    
-	
-    
 	return NO;
 }
-
-
 
 @end

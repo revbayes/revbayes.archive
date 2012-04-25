@@ -10,12 +10,16 @@
     BOOL                 isLeaf;
     Node*                ancestor;
 	NSMutableArray*      descendants;
+    float                x;
+    float                y;
 }
 
 @property (readwrite)        int       index;
 @property (readwrite)        BOOL      isLeaf;
 @property (readwrite)        double    branchLength;
 @property (readwrite,retain) NSString* name;
+@property (readwrite)        float     x;
+@property (readwrite)        float     y;
 
 - (void)addDescendant:(Node*)des;
 - (int)numberOfDescendants;

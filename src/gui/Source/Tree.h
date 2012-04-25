@@ -7,6 +7,7 @@
 
 	NSMutableArray*      nodes;
     NSMutableArray*      downPassSequence;
+    BOOL                 initializedDownPass;
     Node*                root;
 }
 
@@ -14,6 +15,7 @@
 - (void)initializeDownPassSequence;
 - (int)numberOfNodes;
 - (void)passDown:(Node*)p;
+- (void)setCoordinates;
 - (void)setNodesToArray:(NSMutableArray*)n;
 - (void)setRoot:(Node*)r;
 

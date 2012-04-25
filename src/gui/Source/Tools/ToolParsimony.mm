@@ -1,14 +1,17 @@
 #import "Connection.h"
 #import "Inlet.h"
 #import "Node.h"
+#import "Outlet.h"
 #import "RbData.h"
 #import "RbDataCell.h"
 #import "RevBayes.h"
 #import "ToolData.h"
 #import "ToolParsimony.h"
+#import "ToolTreeSet.h"
 #import "Tree.h"
 #import "WindowControllerParsimony.h"
 
+#include <iostream>
 #include <vector>
 
 
@@ -21,6 +24,12 @@
 	[controlWindow close];
 }
 
+- (void)dealloc {
+
+    [bestTrees release];
+    [super dealloc];
+}
+
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
 	[super encodeWithCoder:aCoder];
@@ -28,6 +37,7 @@
 
 - (void)execute {
 
+    [self exhaustiveSearch];
 }
 
 - (void)exhaustiveSearch {
@@ -58,18 +68,24 @@
     if ( [alignedData count] != 1)
         return;
         
+    [self startProgressIndicator];
+        
     // get a pointer to the single RbData object
     RbData* d = [alignedData objectAtIndex:0];
     
     // how many taxa/nodes/characters
     int numTaxa = [d numTaxa];
     int numNodes = 2 * numTaxa - 2;
-    int numCharacters = [d numCharacters];
+    numCharacters = [d numCharacters];
     
     // set up vectors of unsigned ints holding the data for parsimony calculations
-    stateSets.resize(numNodes);
-    for (int i=0; i<stateSets.size(); i++)
-        stateSets[i].resize(numCharacters);
+    stateSets = new unsigned*[numNodes];
+    stateSets[0] = new unsigned[numNodes*numCharacters];
+    stateSetsPtr = new unsigned*[numNodes];
+    for (int i=1; i<numNodes; i++)
+        stateSets[i] = stateSets[i-1] + numCharacters;
+    for (int i=0; i<numNodes; i++)
+        stateSetsPtr[i] = &stateSets[i][0];
     for (int i=0; i<numNodes; i++)
         for (int j=0; j<numCharacters; j++)
             stateSets[i][j] = 0;
@@ -124,24 +140,51 @@
         
     // recursively visit all of the possible trees
     numTreesVisited = 0;
+    scoreOfBestTree = 2000000000;
+    [bestTrees removeAllObjects];
     [self addTaxonFromList:availableTips toTree:currentTree usingSpareNodes:availableInts treeObject:t];
     
+    [self stopProgressIndicator];
+
+    delete [] stateSets[0];
+    delete [] stateSets;
+    delete [] stateSetsPtr;
     
-    
-    
-    
-    
-    for (int i=0; i<numNodes; i++)
+    // drop the best tree(s) into the tree set tool, if we are connected to one
+    // find the parent of this tool, which should be an instance of ToolData
+    ToolTreeSet* treeSetTool = nil;
+    for (int i=0; i<[self numOutlets]; i++)
         {
-        Node* p = [nodeContainer objectAtIndex:i];
-        [p print];
+        Outlet* o = [self outletIndexed:i];
+        for (int j=0; j<[o numberOfConnections]; j++)
+            {
+            Connection* c = [o connectionWithIndex:j];
+            Tool* daughterTool = [[c inlet] toolOwner];
+            if ( [daughterTool isKindOfClass:[ToolTreeSet class]] == YES )
+                treeSetTool = (ToolTreeSet*)daughterTool;
+            }
         }
-    
-    
+
+    NSLog(@"treeSetTool = %@", treeSetTool);
+    if ( treeSetTool == nil )
+        return;
+        
+    for (int i=0; i<[bestTrees count]; i++)
+        {
+
+        NSMutableArray* treeNodeData = [NSKeyedUnarchiver unarchiveObjectWithData:[bestTrees objectAtIndex:i]];
+        NSLog(@"treeNodeData = %@", treeNodeData);
+        Tree* newTree = [[Tree alloc] init];
+        [newTree setNodesToArray:treeNodeData];
+        [newTree setRoot:[treeNodeData objectAtIndex:numTaxa]];
+        [treeSetTool addTreeToSet:newTree];
+        }
 }
 
 - (int)parsimonyScoreForTree:(Tree*)t {
 
+    // NOTE: We assume that the tree is binary. This is a reasonable assumption, as the exhaustive search enumerates
+    //       all of the binary trees.
     int len = 0;
     
     for (int n=0; n<[t numberOfNodes]; n++)
@@ -149,17 +192,38 @@
         Node* p = [t downPassNodeIndexed:n];
         if ([p isLeaf] == NO)
             {
-            int c = 0;
-            unsigned s0 = stateSets[ [[p descendantIndexed:0] index] ][c];
-            BOOL isIntersectionEmpty = NO;
-            for (int i=1; i<[p numberOfDescendants]; i++)
+            Node* pL = [p descendantIndexed:0];
+            Node* pR = [p descendantIndexed:1];
+            unsigned* sL = stateSetsPtr[[pL index]];
+            unsigned* sR = stateSetsPtr[[pR index]];
+            unsigned* s  = stateSetsPtr[[p index]];
+            for (int c=0; c<numCharacters; c++)
                 {
-                unsigned si = stateSets[ [[p descendantIndexed:i] index] ][c];
-                if ( (s0 & si) == 0 )
+                if ( ((*sL) & (*sR)) == 0 )
                     {
                     len++;
-                    s0 |= si;
-                    isIntersectionEmpty = YES;
+                    (*s) = ((*sL) | (*sR));
+                    }
+                else 
+                    {
+                    (*s) = ((*sL) & (*sR));
+                    }
+                s++;
+                sL++;
+                sR++;
+                }
+                
+            if ( [p ancestor] == nil )
+                {
+                pR = [p descendantIndexed:2];
+                s  = stateSetsPtr[[p index]];
+                sR = stateSetsPtr[[pR index]];
+                for (int c=0; c<numCharacters; c++)
+                    {
+                    if ( ((*s) & (*sR)) == 0 )
+                        len++;
+                    s++;
+                    sR++;
                     }
                 }
             }
@@ -198,13 +262,25 @@
             [q addDescendant:b];
             [q addDescendant:p];
             [b setAncestor:q];
-            [p setAncestor:p];
+            [p setAncestor:q];
             
             if ([availableTips count] == 0)
                 {
                 [t initializeDownPassSequence];
-                //int len = [self parsimonyScoreForTree:t];
-                NSLog(@"Visiting tree %d -- %d", ++numTreesVisited, 0);
+                int len = [self parsimonyScoreForTree:t];
+                if (len < scoreOfBestTree)
+                    {
+                    [bestTrees removeAllObjects];
+                    scoreOfBestTree = len;
+                    NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:nodes];
+                    [bestTrees addObject:copiedTree];
+                    }
+                else if (len == scoreOfBestTree)
+                    {
+                    NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:nodes];
+                    [bestTrees addObject:copiedTree];
+                    }
+                NSLog(@"Visiting tree %d -- %d (%d)", ++numTreesVisited, len, scoreOfBestTree);
                 }
             
             // add next tip recursively
@@ -234,6 +310,7 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
+        bestTrees = [[NSMutableArray alloc] init];
 		
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor greenColor]];
@@ -254,6 +331,7 @@
         // initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
+        bestTrees = [[NSMutableArray alloc] init];
             
         // initialize the control window
 		controlWindow = [[WindowControllerParsimony alloc] initWithTool:self];

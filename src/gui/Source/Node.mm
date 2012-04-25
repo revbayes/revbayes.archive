@@ -8,6 +8,8 @@
 @synthesize isLeaf;
 @synthesize branchLength;
 @synthesize name;
+@synthesize x;
+@synthesize y;
 
 - (void)addDescendant:(Node*)des {
 
@@ -44,6 +46,8 @@
     [aCoder encodeBool:isLeaf         forKey:@"isLeaf"];
     [aCoder encodeDouble:branchLength forKey:@"branchLength"];
 	[aCoder encodeObject:name         forKey:@"name"];
+    [aCoder encodeObject:ancestor     forKey:@"ancestor"];
+    [aCoder encodeObject:descendants  forKey:@"descendants"];
 }
 
 - (id)init {
@@ -71,14 +75,18 @@
         isLeaf       = [aDecoder decodeBoolForKey:@"isLeaf"];
         branchLength = [aDecoder decodeDoubleForKey:@"branchLength"];
 		name         = [aDecoder decodeObjectForKey:@"name"];
+        ancestor     = [aDecoder decodeObjectForKey:@"ancestor"];
+        descendants  = [aDecoder decodeObjectForKey:@"descendants"];
 		[name retain];
+        [ancestor retain];
+        [descendants retain];
 		}
 	return self;
 }
 
 - (void)print {
 
-    NSString* s = [NSString stringWithFormat:@"%d %lf %x (", index, branchLength, ancestor];
+    NSString* s = [NSString stringWithFormat:@"%d (%x) %lf %x (", index, self, branchLength, ancestor];
     for (int i=0; i<[descendants count]; i++)
         {
         s = [s stringByAppendingFormat:@"%x", [descendants objectAtIndex:i]];

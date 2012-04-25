@@ -170,9 +170,7 @@
 	NSEnumerator* toolEnumerator = [tools objectEnumerator];
     Tool* t = nil;
 	while ( (t = [toolEnumerator nextObject]) )
-        {
         [t setIsCurrentlyExecuting:NO];
-        }
 
     // execute each tool in turn, but first get the preorder traversal of the graph
     NSMutableArray* depthFirstOrder = [NSMutableArray arrayWithCapacity:0];
@@ -182,9 +180,11 @@
     toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
     while ( (t = [toolEnumerator nextObject]) )
         {
+        NSLog(@"executing %@", t);
         [t setIsCurrentlyExecuting:YES];
         [analysisViewPtr setNeedsDisplay:YES];
         [t execute];
+        [analysisViewPtr setNeedsDisplay:YES];
         [t setIsCurrentlyExecuting:NO];
         [analysisViewPtr setNeedsDisplay:YES];
         }

@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import "Tool.h"
 #include <vector>
+@class Tree;
 @class WindowControllerParsimony;
 
 
@@ -10,9 +11,14 @@
 
     WindowControllerParsimony*          controlWindow;
     int                                 numTreesVisited;
-    std::vector<std::vector<unsigned> > stateSets;
+    unsigned**                          stateSets;
+    unsigned**                          stateSetsPtr;
+    int                                 numCharacters;
+    int                                 scoreOfBestTree;
+    NSMutableArray*                     bestTrees;
 }
 
+- (void)addTaxonFromList:(NSMutableArray*)availableTaxa toTree:(NSMutableArray*)nodes usingSpareNodes:(NSMutableArray*)spares treeObject:(Tree*)t;
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (void)execute;
