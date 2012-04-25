@@ -563,7 +563,14 @@ void Workspace::initializeGlobalWorkspace(void) {
         
 
         /* Add math functions (alphabetical order) */
-        addFunction( "abs",       new Func_abs()   );
+        //addFunction( "abs",       new Func_abs()   );
+		
+		// absolute function
+        ArgumentRules absFuncArgRules;
+        absFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+        RealPos* absFuncRetArg = new RealPos();
+        addFunction( "abs",       new ParserFunction( new Func_abs(), "absolute function", absFuncArgRules, absFuncRetArg, false )  );
+        
         addFunction( "cos",       new Func_cos()   );
         
         // exponential function

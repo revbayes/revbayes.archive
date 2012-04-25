@@ -29,19 +29,19 @@ pi ~ dirichlet(pi_prior)
 r_prior <- v(1,1,1,1,1,1)
 r ~ dirichlet(r_prior)
 
-lambda <- 1.0
+# lambda <- 1.0
 nodeCount <- tree.nnodes()
 
 #######
 # for the compound Dirichlet prior
 
-alpha_T <- 1
-beta_T  <- 1
+alpha_T <- 1.0
+ beta_T <- 1.0
 TreeL ~ gamma(alpha_T, beta_T)
-# a <- rep(1,nodeCount) 
+a_prior <- rep(1, nodeCount) 
 # parameter for the Dirichlet distribution, depending on number of taxa
-a <- v(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-part ~ dirichlet(a)
+# a_prior <- v(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+part ~ dirichlet(a_prior)
 
 ########
 
@@ -60,7 +60,7 @@ for (i in nodeCount:1) {
 # here the prior for branch lengths
 #        bl[i] ~ exponential(lambda)
         bl[i] := TreeL * part[i]
-        # this assignment doesn't work yet ...
+
 # adding this variable to the tree, so that we can easily access it later ...
         tree.addVariable("branchLength", bl[i], node)
 
@@ -92,10 +92,10 @@ mygtr <- model( pi )
 #Moves on branch lengths
 lambda <- 1.0
 for (i in tree.nnodes():1) {
-node <- tree.node(i)
-if (! node.isRoot()) {
-moves[i] <- mscale(bl[i], weight=1.0, lambda = 1.0)
-}
+    node <- tree.node(i)
+    if (! node.isRoot()) {
+        moves[i] <- mscale(bl[i], weight=1.0, lambda = 1.0)
+    }
 }
 
 
