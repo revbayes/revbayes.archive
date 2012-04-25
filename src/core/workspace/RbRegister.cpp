@@ -567,7 +567,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 		// absolute function
         ArgumentRules absFuncArgRules;
         absFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
-        RealPos* absFuncRetArg = new RealPos();
+        RealPos* absFuncRetArg =  new RealPos();
         addFunction( "abs",       new ParserFunction( new Func_abs(), "absolute function", absFuncArgRules, absFuncRetArg, false )  );
         
         addFunction( "cos",       new Func_cos()   );
@@ -575,14 +575,14 @@ void Workspace::initializeGlobalWorkspace(void) {
         // exponential function
         ArgumentRules expFuncArgRules;
         expFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
-        RealPos* expFuncRetArg = new RealPos();
+        RealPos* expFuncRetArg =  new RealPos();
         addFunction( "exp",       new ParserFunction( new Func_exp(), "exponential function", expFuncArgRules, expFuncRetArg, false )  );
         
         // natural log function
         ArgumentRules lnFuncArgRules;
         lnFuncArgRules.push_back( new ValueRule("x", RealPos::getClassTypeSpec() ) );
         Real* lnFuncRetArg = new Real();
-        addFunction( "ln",       new ParserFunction( new Func_ln(), "natural log function", lnFuncArgRules, lnFuncRetArg, false )  );
+        addFunction( "ln",        new ParserFunction( new Func_ln(), "natural log function", lnFuncArgRules, lnFuncRetArg, false )  );
         
         addFunction( "log",       new Func_log()   );
         addFunction( "mean",      new Func_mean()  );
@@ -593,7 +593,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         ArgumentRules sqrtFuncArgRules;
         sqrtFuncArgRules.push_back( new ValueRule("x", RealPos::getClassTypeSpec() ) );
         RealPos* sqrtFuncRetArg = new RealPos();
-        addFunction( "sqrt",       new ParserFunction( new Func_sqrt(), "square root function", sqrtFuncArgRules, sqrtFuncRetArg, false )  );
+        addFunction( "sqrt",      new ParserFunction( new Func_sqrt(), "square root function", sqrtFuncArgRules, sqrtFuncRetArg, false )  );
 		
         /* Add constructuor functions (alphabetical order) */
         addFunction( "taxonData", new ConstructorTaxonData() );
