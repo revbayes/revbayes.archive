@@ -588,8 +588,13 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "mean",      new Func_mean()  );
         addFunction( "power",     new Func_power() );
         addFunction( "sin",       new Func_sin()   );
-        addFunction( "sqrt",      new Func_sqrt()  );
-        
+		
+		// square root function
+        ArgumentRules sqrtFuncArgRules;
+        sqrtFuncArgRules.push_back( new ValueRule("x", RealPos::getClassTypeSpec() ) );
+        RealPos* sqrtFuncRetArg = new RealPos();
+        addFunction( "sqrt",       new ParserFunction( new Func_sqrt(), "square root function", sqrtFuncArgRules, sqrtFuncRetArg, false )  );
+		
         /* Add constructuor functions (alphabetical order) */
         addFunction( "taxonData", new ConstructorTaxonData() );
         
