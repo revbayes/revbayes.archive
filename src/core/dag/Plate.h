@@ -42,7 +42,10 @@ public:
     // Member method inits
     const MethodTable&                  getMethods(void) const;                                                                             //!< Get methods
     
-    std::vector<size_t>                 getPlateLengths(void) const;                                                                        //!< Get the length for this plate an all parent plates
+    const Plate*                        getParentPlate(void) const;                                                                         //!< Get the parent plate of this plate.
+    std::vector<size_t>                 getPlateLengths(void) const;                                                                        //!< Get the length for this plate and all parent plates
+    size_t                              getLength(void) const;                                                                             //!< Get the length for this plate
+
 protected:
     const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
 

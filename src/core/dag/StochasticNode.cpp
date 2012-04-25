@@ -32,6 +32,7 @@
 #include "MethodTable.h"
 #include "Model.h"
 #include "Move.h"
+#include "Plate.h"
 #include "RbValue.h"
 #include "RbVector.h"
 #include "ValueRule.h"
@@ -46,46 +47,9 @@ StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), dist
 }
 
 
-/** Constructor from distribution */
-StochasticNode::StochasticNode( ParserDistribution* dist ) : VariableNode( ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
-    
-    /* Get distribution parameters */
-    std::map<std::string, const Variable*>& params = dist->getMembers();
-
-    /* Check for cycles */
-    std::list<DAGNode*> done;
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
-        done.clear();
-        if ( i->second->getDagNode()->isParentInDAG( this, done ) )
-            throw RbException( "Invalid assignment: cycles in the DAG" );
-    }
-
-    /* Set parent(s) and add myself as a child to these */
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
-        DAGNode* theParam = const_cast<DAGNode*>( (const DAGNode*)i->second->getDagNode() );
-        addParentNode( theParam );
-        theParam->addChildNode(this);
-    }
-
-    // create a new random variable
-    value = createRV();
-    RbValue<void*> rvPrimitive;
-    rvPrimitive.value = value->getValue( rvPrimitive.lengths );
-    dist->setValue( rvPrimitive );
-    
-    /* We use a random draw as the initial value */
-    if (value == NULL) {
-        std::cerr << "Ooops, rv return NULL!\n";
-    }
-    
-    /* Get initial probability */
-    lnProb = calculateLnProbability();
-    
-}
-
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( ParserDistribution* dist, const std::vector<size_t> &pl ) : VariableNode( pl ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( ParserDistribution* dist, const Plate *pl ) : VariableNode( pl ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
     
     /* Get distribution parameters */
     std::map<std::string, const Variable*>& params = dist->getMembers();
@@ -646,7 +610,7 @@ void StochasticNode::constructSumProductSequence( std::set<VariableNode *> &node
  */
 RbLanguageObject* StochasticNode::createRV( void ) {
     
-    if ( plateLengths.size() == 0 ) {
+    if ( plate == NULL ) {
         
         const std::map<std::string, const Variable*> &params = distribution->getMembers();
     
@@ -654,53 +618,53 @@ RbLanguageObject* StochasticNode::createRV( void ) {
         for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
             newArgs.push_back( &i->second->getValue() );
         }
-        return createRV( newArgs );
+        return createRV( std::vector<size_t>(),newArgs );
     }
     else {
-        return createRV( 1 );
-    }
-}
-
-
-/* 
- * Create a new rv for the node. 
- *
- */
-RbLanguageObject* StochasticNode::createRV( size_t plateIndex ) {
-    
-    if ( plateLengths.size() == plateIndex ) {
+        // we need to get the arguments for checking if they live on the same plate or any parent plate of this
         const std::map<std::string, const Variable*> &params = distribution->getMembers();
         
+        // get the plates of my arguments
+        std::vector<const Plate*> argPlates;
+        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        // test whether this argument lives on the same plate as myself
+            argPlates.push_back( i->second->getDagNode()->getPlate() );
+        }
+        
+        // convert the argument into RbObjects
         std::vector<const RbObject*> newArgs;
         for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
             newArgs.push_back( &i->second->getValue() );
         }
         
-        RbVector<RbLanguageObject> *randomVariables = new RbVector<RbLanguageObject>();
-        for ( size_t i = 0; i < plateLengths[plateIndex-1]; ++i) {
-            randomVariables->push_back( createRV( newArgs ) );
+        // we create a vector of lengths telling us the length of each plate
+        // we only consider plate on which none of the arguments lives
+        std::vector<size_t> plateLengths;
+        const Plate *p = plate;
+        while (p != NULL) {
+            for ( std::vector<const Plate*>::const_iterator i = argPlates.begin(); i != argPlates.end(); i++ ) {
+                // test whether this argument lives on the same plate as myself
+                if ( p == *i ) {
+                    p = NULL;
+                    break;
+                }
+            }
+            if ( p != NULL ) {
+                plateLengths.insert( plateLengths.begin(), p->getLength() );
+                p = p->getParentPlate();
+            }
         }
-        
-        return randomVariables;
+        return createRV( plateLengths, newArgs );
     }
-    else {
-        
-        RbVector<RbLanguageObject> *randomVariables = new RbVector<RbLanguageObject>();
-        for ( size_t i = 0; i < plateLengths[plateIndex-1]; ++i) {
-            randomVariables->push_back( createRV( plateIndex+1 ) );
-        }
-        
-        return randomVariables;
-    }
-    
 }
+
 
 
 /* 
  * Execute the Function. 
  *
  */
-RbLanguageObject* StochasticNode::createRV( const std::vector<const RbObject*> &args ) {
+RbLanguageObject* StochasticNode::createRV( const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args ) {
     
     // check each argument if it is a vector and hence the function needs repeated evaluation
     bool repeatedExecution = false;
@@ -728,7 +692,7 @@ RbLanguageObject* StochasticNode::createRV( const std::vector<const RbObject*> &
                 }
             }
             // call the execute function now for the single elements
-            RbLanguageObject* singleRetVal = createRV(newArgs);
+            RbLanguageObject* singleRetVal = createRV(plateLengths, newArgs);
             retValVector->push_back( singleRetVal );
             // \TODO If the execute functions returns a pointer to the object and the caller owns the object, 
             // then we don't need to copy each time the object.
@@ -739,7 +703,7 @@ RbLanguageObject* StochasticNode::createRV( const std::vector<const RbObject*> &
     else {
         
         // get the value by executing the internal function
-        retVal = createRVSingleValue(args);
+        retVal = createRVSingleValue(0, plateLengths, args);
     }
     
     return retVal;
@@ -747,28 +711,41 @@ RbLanguageObject* StochasticNode::createRV( const std::vector<const RbObject*> &
 }
 
 
-RbLanguageObject* StochasticNode::createRVSingleValue(const std::vector<const RbObject *> &args) {
+RbLanguageObject* StochasticNode::createRVSingleValue(size_t plateIndex, const std::vector<size_t> &plateLengths, const std::vector<const RbObject *> &args) {
     
-    // converting the arguments into atomic data types
-    std::vector<RbValue<void*> > newArgs;
-    for ( std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); i++ ) {
+    if ( plateLengths.size() == plateIndex ) {
+        // converting the arguments into atomic data types
+        std::vector<RbValue<void*> > newArgs;
+        for ( std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); i++ ) {
+            RbValue<void*> arg;
+            arg.value = (*i)->getValue(arg.lengths);
+            newArgs.push_back( arg );
+        }
+    
+        // add te return value
+        RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
         RbValue<void*> arg;
-        arg.value = (*i)->getValue(arg.lengths);
+        arg.value = retVal->getValue(arg.lengths);
         newArgs.push_back( arg );
+    
+        // Setting the parameter of the distribution
+        distribution->setParameters( newArgs );
+    
+        distribution->rv();
+    
+        return retVal;
     }
-    
-    // add te return value
-    RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
-    RbValue<void*> arg;
-    arg.value = retVal->getValue(arg.lengths);
-    newArgs.push_back( arg );
-    
-    // Setting the parameter of the distribution
-    distribution->setParameters( newArgs );
-    
-    distribution->rv();
-    
-    return retVal;
+    else {
+        // create a new vector for the rv's
+        RbVector<RbLanguageObject> *rvs = new RbVector<RbLanguageObject>();
+        
+        // iterate over all indices of the current plate
+        for (size_t i = 0; i < plateLengths[plateIndex]; ++i) {
+            rvs->push_back( createRVSingleValue( plateIndex+1, plateLengths, args ) );
+        }
+        
+        return rvs;
+    }
 }
  
 

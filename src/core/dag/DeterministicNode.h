@@ -31,7 +31,7 @@ class DeterministicNode : public VariableNode {
 
 public:
                                             DeterministicNode( void );                                          //!< Constructor
-                                            DeterministicNode(RbFunction* func);                                //!< Constructor with function
+                                            DeterministicNode(RbFunction* func, const Plate *pl = NULL);        //!< Constructor with function
                                             DeterministicNode(const DeterministicNode& x);                      //!< Copy Constructor
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
 

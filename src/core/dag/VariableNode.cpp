@@ -26,16 +26,11 @@
 #include <algorithm>
 
 
-VariableNode::VariableNode( void ) : DAGNode( ), touched( false ), factorRoot( NULL ) {
+VariableNode::VariableNode( const Plate *pl ) : DAGNode( pl ), touched( false ), factorRoot( NULL ) {
 }
 
 
-
-VariableNode::VariableNode( const std::vector<size_t> &pl ) : DAGNode( ), touched( false ), factorRoot( NULL ), plateLengths( pl ) {
-}
-
-
-VariableNode::VariableNode(const VariableNode &v) : DAGNode(v), factorRoot( v.factorRoot ), plateLengths( v.plateLengths ) {
+VariableNode::VariableNode(const VariableNode &v) : DAGNode(v), factorRoot( v.factorRoot ) {
     touched = false;
 }
 

@@ -53,7 +53,7 @@ protected:
     virtual void                                setInternalObservedValue(const RbValue<void*> &v);                  //!< Set the pointers to the observation (random variable) of the distribution.
     
     // return values
-    RbValue<double*>            randomVariable;
+    RbValue<double*>                            randomVariable;
 };
 
 #endif

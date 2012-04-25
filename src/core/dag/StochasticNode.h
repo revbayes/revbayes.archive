@@ -52,8 +52,7 @@ public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
                                         StochasticNode(void);                                               //!< Construct empty stochastic node
-                                        StochasticNode(ParserDistribution* dist);                           //!< Construct from distribution (raw object)
-                                        StochasticNode(ParserDistribution* dist, const std::vector<size_t> &pl);    //!< Construct from distribution (raw object)
+                                        StochasticNode(ParserDistribution* dist, const Plate *pl = NULL);   //!< Construct from distribution (raw object) with plate holding this node
                                         StochasticNode(const StochasticNode& x);                            //!< Copy constructor
     virtual                            ~StochasticNode(void);                                               //!< Destructor
 
@@ -125,9 +124,8 @@ protected:
 
 private:
     RbLanguageObject*                   createRV(void);
-    RbLanguageObject*                   createRV(size_t plateIndex);
-    RbLanguageObject*                   createRV(const std::vector<const RbObject*> &args);
-    RbLanguageObject*                   createRVSingleValue(const std::vector<const RbObject*> &args);
+    RbLanguageObject*                   createRV(const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
+    RbLanguageObject*                   createRVSingleValue(size_t plateIndex, const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
     bool                                isValueTypeAllowed(RbLanguageObject* observed, bool &needsConversion);
     
     static const TypeSpec               typeSpec;

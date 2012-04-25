@@ -101,10 +101,7 @@ const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, c
             RbFunction* fxt = Workspace::userWorkspace().getFunction( fxtName, distributionArgs );
             const ParserDistribution& d = static_cast<const ParserDistribution&>( fxt->execute() );
             
-            // get the vector of length of this plate and all parents
-            const std::vector<size_t> lengths = getPlateLengths();
-            
-            StochasticNode* stochNode = new StochasticNode( d.clone(), lengths );
+            StochasticNode* stochNode = new StochasticNode( d.clone(), this );
             stochNode->setName( varName );
             
             Workspace::userWorkspace().addVariable(varName, stochNode);
@@ -166,6 +163,21 @@ const MemberRules& Plate::getMemberRules(void) const {
     }
     
     return memberRules;
+}
+
+
+size_t Plate::getLength( void ) const {
+    return static_cast<const Natural&>( size->getValue() );
+}
+
+
+const Plate* Plate::getParentPlate( void ) const {
+    if ( parent == NULL ) {
+        return NULL;
+    }
+    else {
+        return static_cast<const Plate*>( &parent->getValue() );
+    }
 }
 
 

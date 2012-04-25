@@ -47,7 +47,7 @@ protected:
     // helper functions
     void                                            execute(std::vector<size_t> &result_offsets, size_t level);             //!< Execute repeated for each element in this dimension
     
-    std::vector<RbValue<void*> > members;
+    std::vector<RbValue<void*> >                    members;
 };
 
 #endif

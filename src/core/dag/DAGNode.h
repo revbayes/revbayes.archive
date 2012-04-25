@@ -32,6 +32,7 @@
 class Argument;
 class MethodTable;
 class Monitor;
+class Plate;
 class RbDagNodePtr;
 class StochasticNode;
 class VariableNode;
@@ -78,6 +79,7 @@ class DAGNode : public RbLanguageObject {
         const std::vector<Monitor*>&                        getMonitors(void) const;                                                        //!< Get the vector of monitors
         const std::string&                                  getName(void) const;                                                            //!< get the name
         const std::set<DAGNode*>&                           getParents(void) const;                                                         //!< Return parents
+        const Plate*                                        getPlate(void) const;                                                           //!< Get the plate on which this DAG node sits on.
         size_t                                              getReferenceCount(void) const;
 //        const Variable&                                     getVariable(void) const;                                                      //!< Get the variable owning this node
         void                                                incrementReferenceCount(void);
@@ -94,7 +96,7 @@ class DAGNode : public RbLanguageObject {
 
 
     protected:
-                                                            DAGNode(void);                                                                  //!< Constructor of empty node
+                                                            DAGNode(const Plate *pl = NULL);                                                //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                                      //!< Copy constructor
 
         virtual void                                        getAffected(std::set<StochasticNode* >& affected) = 0;                          //!< Mark and get affected nodes
@@ -115,6 +117,7 @@ class DAGNode : public RbLanguageObject {
         
         // Member value variables
         std::string                                         name;                                                                           //!< The name/identifier of the DAG node
+        const Plate*                                        plate;
 };
 
 #endif

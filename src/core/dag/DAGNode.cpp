@@ -39,7 +39,7 @@
 
 
 /** Constructor of filled node */
-DAGNode::DAGNode(void) : children(), parents() {
+DAGNode::DAGNode( const Plate *pl ) : plate( pl ), children(), parents() {
     
     refCount = 0;
 }
@@ -53,7 +53,7 @@ DAGNode::DAGNode(void) : children(), parents() {
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode( const DAGNode& x ) : children(), parents() {
+DAGNode::DAGNode( const DAGNode& x ) : plate( x.plate ), children(), parents() {
     
     // copy the name so that we still be able to identify the variable in a cloned DAG
     name = x.name;
@@ -239,6 +239,11 @@ const std::vector<Monitor*>& DAGNode::getMonitors( void ) const {
 const std::string& DAGNode::getName( void ) const {
 
     return name;
+}
+
+
+const Plate* DAGNode::getPlate( void ) const {
+    return plate;
 }
 
 

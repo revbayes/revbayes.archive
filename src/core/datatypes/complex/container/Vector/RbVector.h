@@ -735,10 +735,21 @@ void* RbVector<valueType>::getValue( std::vector<size_t> &lengths ) const {
     
     // create the c-style array of elements
     void* data = malloc(memorySize());
+    
+    // tmp length vector
+    std::vector<size_t> tmp_lengths;
+    
+    // iterate over all elements and copy their values
     typename std::vector<valueType*>::const_iterator i;
     for ( i = elements.begin(); i != elements.end(); i++ ) {
         const valueType *x = *i;
-        void* elemVal = x->getValue( lengths );
+        void* elemVal;
+        if ( i == elements.begin() ) {
+            elemVal = x->getValue( lengths );
+        }
+        else {
+            elemVal = x->getValue( tmp_lengths );            
+        }
         memcpy(data, elemVal,(*i)->memorySize());
 //        *(data) = *(*i)->getValue(lengths);
         char *tmp_ptr = (char*)data;

@@ -40,7 +40,7 @@ DeterministicNode::DeterministicNode( void ) : VariableNode( ), needsUpdate( tru
 }
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( RbFunction* func ) : VariableNode( ), needsUpdate( true ), function( func ) {
+DeterministicNode::DeterministicNode( RbFunction* func, const Plate *pl ) : VariableNode( pl ), needsUpdate( true ), function( func ) {
     
     /* Check for cycles */
     const std::vector<Argument>& arguments = func->getArguments();
