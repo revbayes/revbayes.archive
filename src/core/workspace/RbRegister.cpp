@@ -569,7 +569,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         // exponential function
         ArgumentRules expFuncArgRules;
         expFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
-        RbLanguageObject* expFuncRetArg = new RealPos();
+        RealPos* expFuncRetArg = new RealPos();
         addFunction( "exp",       new ParserFunction( new Func_exp(), "exponential function", expFuncArgRules, expFuncRetArg, false )  );
         
         addFunction( "ln",        new Func_ln()    );
