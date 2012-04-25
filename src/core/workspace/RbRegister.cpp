@@ -563,7 +563,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         
 
         /* Add math functions (alphabetical order) */
-        //addFunction( "abs",       new Func_abs()   );
 		
 		// absolute function
         ArgumentRules absFuncArgRules;
