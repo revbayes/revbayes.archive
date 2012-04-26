@@ -37,7 +37,6 @@ Func_ln* Func_ln::clone( void ) const {
 void Func_ln::executeSimple( std::vector<size_t> &offset ) {
     
     result.value[offset[1]] = log( x.value[offset[0]] );
-    
 }
 
 /** We catch here the setting of the argument variables to store our parameters. */

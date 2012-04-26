@@ -39,76 +39,22 @@ Func_log* Func_log::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_log::executeFunction( void ) {
+void Func_log::executeSimple( std::vector<size_t> &offset ) {
     
-    const double a = static_cast<const RealPos&>( x->getValue() ).getValue();
-    const double b = static_cast<const RealPos&>( base->getValue() ).getValue();
-    value.setValue( log10(a) / log10(b) );
-    return value;
-}
-
-
-/** Get argument rules */
-const ArgumentRules& Func_log::getArgumentRules( void ) const {
-    
-    static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
-    
-    if (!rulesSet) 
-    {
-        argumentRules.push_back( new ValueRule( "x",    RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "base", RealPos::getClassTypeSpec(), new RealPos(10.0) ) );
-        rulesSet = true;
-    }
-    
-    return argumentRules;
-}
-
-
-/** Get class name of object */
-const std::string& Func_log::getClassName(void) { 
-    
-    static std::string rbClassName = "Logarithm function";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& Func_log::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& Func_log::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& Func_log::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
-    return returnTypeSpec;
+    result.value[offset[2]] = log10( x.value[offset[0]] ) / log10( base.value[offset[1]] );	
 }
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void Func_log::setArgumentVariable(std::string const &name, const Variable* var) {
+void Func_log::setInternalArguments(const std::vector<RbValue<void*> > &args) {
     
-    if ( name == "x" ) {
-        x = var;
-    }
-    else if ( name == "base" ) {
-        base = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
+    x.value         = static_cast<double*>( args[0].value );
+    x.lengths       = args[0].lengths;
+    
+	base.value		= static_cast<double*>( args[1].value );
+	base.lengths	= args[1].lengths;
+	
+    result.value    = static_cast<double*>( args[2].value );
+    result.lengths  = args[2].lengths;
 }
 

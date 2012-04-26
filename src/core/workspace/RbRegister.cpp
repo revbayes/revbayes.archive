@@ -584,7 +584,15 @@ void Workspace::initializeGlobalWorkspace(void) {
         Real* lnFuncRetArg = new Real();
         addFunction( "ln",        new ParserFunction( new Func_ln(), "natural log function", lnFuncArgRules, lnFuncRetArg, false )  );
         
-        addFunction( "log",       new Func_log()   );
+        // log function
+		ArgumentRules logFuncArgRules;
+		logFuncArgRules.push_back( new ValueRule( "x", RealPos::getClassTypeSpec() ) );
+		logFuncArgRules.push_back( new ValueRule( "base", RealPos::getClassTypeSpec(), new RealPos(10.0) ) );
+        Real* logFuncRetArg = 	   new Real();
+		addFunction( "log",        new ParserFunction( new Func_log(), "log function", logFuncArgRules, logFuncRetArg, false )  );
+		
+		
+		
         addFunction( "mean",      new Func_mean()  );
         addFunction( "power",     new Func_power() );
         addFunction( "sin",       new Func_sin()   );
