@@ -75,15 +75,41 @@
 	if (initializedDownPass == NO)
 		[self initializeDownPassSequence];
         
-    NSLog(@"nodes = %@", nodes);
+    // initialize the depth of the nodes
+	NSEnumerator *enumerator = [downPassSequence objectEnumerator];
+	Node* p;
+	while (p = [enumerator nextObject]) 
+        {
+        if ([p isLeaf] == YES)
+            {
+            [p setDepthFromTip:0];
+            }
+        else
+            {
+            int maxDepth = 0;
+            for (int i=0; i<[p numberOfDescendants]; i++)
+                {
+                if ( [[p descendantIndexed:i] depthFromTip] > maxDepth )
+                    maxDepth = [[p descendantIndexed:i] depthFromTip];
+                }
+            [p setDepthFromTip:(maxDepth+1)];
+            }
+        }
+    int depthOfRoot = [root depthFromTip];
 
+    // set depth (y values)
+	enumerator = [downPassSequence objectEnumerator];
+	while (p = [enumerator nextObject]) 
+        {
+        [p setY:(1.0 - (float)[p depthFromTip]/depthOfRoot)];
+        }
+    
 	// set x coordinates
 	double x = 0.0;
 	double maximumX = 0.0;
 	double maximumY = 0.0;
-	NSEnumerator *enumerator1 = [downPassSequence objectEnumerator];
-	Node* p;
-	while (p = [enumerator1 nextObject]) 
+	enumerator = [downPassSequence objectEnumerator];
+	while (p = [enumerator nextObject]) 
 		{
 		if ( [p isLeaf] == YES )
 			{
@@ -117,9 +143,17 @@
 		if ([p x] > maximumX)
 			maximumX = [p x];
 		}
-	
+
+	enumerator = [downPassSequence objectEnumerator];
+	while (p = [enumerator nextObject]) 
+        {
+        [p setX:([p x]/maximumX)];
+        }
+        
+        
+        
 	// set y coordinates
-	NSEnumerator *enumerator2 = [downPassSequence objectEnumerator];
+	/*NSEnumerator *enumerator2 = [downPassSequence objectEnumerator];
 	while (p = [enumerator2 nextObject]) 
 		{
 		double depth = 0.0;
@@ -132,7 +166,7 @@
 		[p setY:(depth/maximumY)];
 		[p setX:([p x]/maximumX)];
 		
-		}
+		}*/
 }
 
 - (void)setNodesToArray:(NSMutableArray*)n {

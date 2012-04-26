@@ -2,6 +2,7 @@
 #import "RevBayes.h"
 #import "ToolTreeSet.h"
 #import "WindowControllerTreeSet.h"
+#import "WindowControllerTreeViewer.h"
 
 
 
@@ -12,6 +13,7 @@
 
     NSLog(@"adding %@ to tree set", t);
     [myTrees addObject:t];
+    hasInspectorInfo = YES;
 }
 
 - (void)awakeFromNib {
@@ -24,10 +26,17 @@
 	[controlWindow close];
 }
 
+- (void)closeInspectorPanel {
+
+    [NSApp stopModal];
+	[treeInspector close];
+}
+
 - (void)dealloc {
 	
 	[myTrees release];
     [controlWindow release];
+    [treeInspector release];
 	[super dealloc];
 }
 
@@ -76,7 +85,7 @@
         // allocate an array to hold the trees
         myTrees = [[NSMutableArray alloc] init];
         
-        controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
+        treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
     return self;
 }
@@ -92,8 +101,10 @@
         // get the set of trees
         myTrees = [aDecoder decodeObjectForKey:@"myTrees"];
         [myTrees retain];
+        if ([myTrees count] > 0)
+            hasInspectorInfo = YES;
 
-        controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
+        treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -153,6 +164,7 @@
 - (void)removeAllTreesFromSet {
 
     [myTrees removeAllObjects];
+    hasInspectorInfo = NO;
 }
 
 - (void)showControlPanel {
@@ -162,6 +174,16 @@
 	[controlWindow showWindow:self];    
 	[[controlWindow window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[controlWindow window]];
+}
+
+- (void)showInspectorPanel {
+
+    [treeInspector initializeTreeInformation];
+    NSPoint p = [self originForControlWindow:[treeInspector window]];
+    [[treeInspector window] setFrameOrigin:p];
+	[treeInspector showWindow:self];    
+	[[treeInspector window] makeKeyAndOrderFront:nil];
+    [NSApp runModalForWindow:[treeInspector window]];
 }
 
 - (BOOL)writeTreesFile {

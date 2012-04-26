@@ -2,6 +2,7 @@
 #import "Tool.h"
 @class Tree;
 @class WindowControllerTreeSet;
+@class WindowControllerTreeViewer;
 
 
 
@@ -9,11 +10,13 @@
 @interface ToolTreeSet : Tool <NSCoding> {
 	    
     WindowControllerTreeSet*        controlWindow;
+    WindowControllerTreeViewer*     treeInspector;
 	NSMutableArray*                 myTrees;
 }
 
 - (void)addTreeToSet:(Tree*)t;
 - (void)closeControlPanel;
+- (void)closeInspectorPanel;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
 - (void)execute;
 - (Tree*)getTreeIndexed:(int)idx;

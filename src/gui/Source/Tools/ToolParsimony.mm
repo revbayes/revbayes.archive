@@ -123,6 +123,8 @@
     // set up a simple three species tree
     NSMutableArray* currentTree = [NSMutableArray arrayWithCapacity:3];
     Node* r = [nodeContainer objectAtIndex:numTaxa];
+    [r setIsRoot:YES];
+    [currentTree addObject:r];
     [availableInts removeObject:r];
     for (int i=0; i<3; i++)
         {
@@ -164,8 +166,6 @@
                 treeSetTool = (ToolTreeSet*)daughterTool;
             }
         }
-
-    NSLog(@"treeSetTool = %@", treeSetTool);
     if ( treeSetTool == nil )
         return;
         
@@ -173,10 +173,18 @@
         {
 
         NSMutableArray* treeNodeData = [NSKeyedUnarchiver unarchiveObjectWithData:[bestTrees objectAtIndex:i]];
-        NSLog(@"treeNodeData = %@", treeNodeData);
+        [treeNodeData retain];
         Tree* newTree = [[Tree alloc] init];
         [newTree setNodesToArray:treeNodeData];
-        [newTree setRoot:[treeNodeData objectAtIndex:numTaxa]];
+        Node* newRoot = nil;
+        for (int j=0; j<[treeNodeData count]; j++)
+            {
+            if ( [[treeNodeData objectAtIndex:j] isRoot] == YES )
+                newRoot = [treeNodeData objectAtIndex:j];
+            }
+        if (newRoot == nil)
+            NSLog(@"problem finding root!");
+        [newTree setRoot:newRoot];
         [treeSetTool addTreeToSet:newTree];
         }
 }
@@ -253,45 +261,50 @@
         for (int i=0; i<[nodes count]; i++)
             {
             Node* b = [nodes objectAtIndex:i];
-            Node* a = [b ancestor];
-            
-            // add p and q to b
-            [a removeDescendant:b];
-            [a addDescendant:q];
-            [q setAncestor:a];
-            [q addDescendant:b];
-            [q addDescendant:p];
-            [b setAncestor:q];
-            [p setAncestor:q];
-            
-            if ([availableTips count] == 0)
+            if ( [b isRoot] == NO )
                 {
-                [t initializeDownPassSequence];
-                int len = [self parsimonyScoreForTree:t];
-                if (len < scoreOfBestTree)
+                Node* a = [b ancestor];
+                
+                // add p and q to b
+                [a removeDescendant:b];
+                [a addDescendant:q];
+                [q setAncestor:a];
+                [q addDescendant:b];
+                [q addDescendant:p];
+                [b setAncestor:q];
+                [p setAncestor:q];
+                
+                if ([availableTips count] == 0)
                     {
-                    [bestTrees removeAllObjects];
-                    scoreOfBestTree = len;
-                    NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:nodes];
-                    [bestTrees addObject:copiedTree];
+                    [t initializeDownPassSequence];
+                    int len = [self parsimonyScoreForTree:t];
+                    if (len < scoreOfBestTree)
+                        {
+                        //[bestTrees removeAllObjects];
+                        scoreOfBestTree = len;
+                        NSLog(@"******** ARCHIVING *********");
+                        NSLog(@"nodes = %@", nodes);
+                        NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:currentTree];
+                        [bestTrees addObject:copiedTree];
+                        }
+                    else if (len == scoreOfBestTree)
+                        {
+                        NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:currentTree];
+                        [bestTrees addObject:copiedTree];
+                        }
+                    NSLog(@"Visiting tree %d -- %d (%d)", ++numTreesVisited, len, scoreOfBestTree);
                     }
-                else if (len == scoreOfBestTree)
-                    {
-                    NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:nodes];
-                    [bestTrees addObject:copiedTree];
-                    }
-                NSLog(@"Visiting tree %d -- %d (%d)", ++numTreesVisited, len, scoreOfBestTree);
+                
+                // add next tip recursively
+                [self addTaxonFromList:availableTips toTree:currentTree usingSpareNodes:availableInts treeObject:t];
+                
+                // undo addition of p and q to b
+                [a removeDescendant:q];
+                [a addDescendant:b];
+                [b setAncestor:a];
+                [q removeDescendant:b];
+                [q removeDescendant:p];
                 }
-            
-            // add next tip recursively
-            [self addTaxonFromList:availableTips toTree:currentTree usingSpareNodes:availableInts treeObject:t];
-            
-            // undo addition of p and q to b
-            [a removeDescendant:q];
-            [a addDescendant:b];
-            [b setAncestor:a];
-            [q removeDescendant:b];
-            [q removeDescendant:p];
             }
         }
 }

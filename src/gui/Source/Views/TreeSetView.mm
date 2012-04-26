@@ -1,7 +1,7 @@
 #import "Node.h"
 #import "Tree.h"
 #import "TreeSetView.h"
-#import "WindowControllerTreeSet.h"
+#import "WindowControllerTreeViewer.h"
 
 
 
@@ -30,17 +30,42 @@
     if (t != nil)
         {
         [t initializeDownPassSequence];
-        NSLog(@"drawing tree %@", t);
         
+        float fs = [myWindowController fontSize];
+
+        // find the maximum size of a name
+        NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:fs], [[NSColor blackColor] colorWithAlphaComponent:1.0], nil]
+                                                  forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]];
+        NSRect biggestNameRect = NSZeroRect;
+        for (int i=0; i<[t numberOfNodes]; i++)
+            {
+            Node* p = [t downPassNodeIndexed:i];
+            if ([p isLeaf] == YES)
+                {
+                NSString* taxonName = [p name];
+                NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];
+                NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+                [attrString release];
+                if (textSize.size.width > biggestNameRect.size.width)
+                    biggestNameRect.size.width = textSize.size.width;
+                if (textSize.size.height > biggestNameRect.size.height)
+                    biggestNameRect.size.height = textSize.size.height;
+                }
+            }
+			        
         // initialize coordinates
         [t setCoordinates];
 
         // draw the tree
-		[NSBezierPath setDefaultLineWidth:1.0];
+        //float oldDefaultLineWidth = [NSBezierPath defaultLineWidth];
+		[NSBezierPath setDefaultLineWidth:2.0];
         [[NSColor blackColor] set];
 		double factor = 0.95;
 		double xOffset = bounds.size.width * 0.025;
 		double yOffset = bounds.size.height * 0.025;
+        double xStart = xOffset;
+        double xEnd   = bounds.size.height * factor - biggestNameRect.size.width;
+        double h      = xEnd - xStart;
 
         NSLog(@"[t numberOfNodes] = %d", [t numberOfNodes]);
         for (int n=0; n<[t numberOfNodes]; n++)
@@ -48,11 +73,11 @@
             Node* p = [t downPassNodeIndexed:n];
             NSLog(@"p = %@ (%f %f)", p, [p x], [p y]);
             
-			/*NSPoint a, b;
+			NSPoint a, b;
 			a.x = xOffset + bounds.size.width * factor * [p x];
-			a.y = yOffset + bounds.size.height * factor * [p y];
+			a.y = yOffset + h * [p y];
 			b.x = xOffset + bounds.size.width * factor * [p x];
-			b.y = yOffset + bounds.size.height * factor * [[p ancestor] y];
+			b.y = yOffset + h * [[p ancestor] y];
 			[NSBezierPath strokeLineFromPoint:a toPoint:b];
 			if ([p isLeaf] == NO)
 				{
@@ -68,18 +93,33 @@
 				[NSBezierPath strokeLineFromPoint:l toPoint:m];
 				[NSBezierPath strokeLineFromPoint:r toPoint:m];
 				}
-			else 
-				{
-				NSPoint w, z;
-				w.x = xOffset + bounds.size.width * factor * [p x];
-				z.x = w.x;
-				w.y = bounds.size.height;
-				z.y = (bounds.size.height - 10.0);
-				[NSBezierPath strokeLineFromPoint:w toPoint:z];
-				}*/
+            else    
+                {
+                // draw the taxon name
+                NSPoint drawPt = NSZeroPoint;
+                drawPt.x = xOffset + bounds.size.width * factor * [p x];
+                drawPt.y = yOffset + bounds.size.height * factor * [p y];
+                drawPt.x += biggestNameRect.size.height * 0.5;
+                drawPt.y -= biggestNameRect.size.width;
+
+                [NSGraphicsContext saveGraphicsState];
+                NSString* taxonName = [p name];
+                NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];
+                NSAffineTransform* xform = [NSAffineTransform transform];
+
+                [xform translateXBy:drawPt.x yBy:drawPt.y];
+                [xform rotateByDegrees:90.0];
+                [xform translateXBy:-drawPt.x yBy:-drawPt.y];
+                [xform concat];
+                
+                [attrString drawAtPoint:drawPt];
+                [attrString release];
+
+                [NSGraphicsContext restoreGraphicsState];
+                }
 			}
 		
-
+		[NSBezierPath setDefaultLineWidth:1.0];
 
         }
 }

@@ -1,24 +1,25 @@
 #import <Cocoa/Cocoa.h>
-@class Tree;
 @class ToolTreeSet;
 
 
 
 @interface WindowControllerTreeSet : NSWindowController {
 
-    IBOutlet NSTextField*           treeCounter;
-    IBOutlet NSStepper*             treeStepper;
-    IBOutlet NSButton*              closeButton;
+	IBOutlet NSTabView*             treeSourceTab;
+    IBOutlet NSButton*              okButton;
+    IBOutlet NSButton*              cancelButton;
+    IBOutlet NSButton*              exportButton;
+    IBOutlet NSButton*              helpButton;
+    IBOutlet NSPopUpButton*         numberOfInletsSelector;
     ToolTreeSet*                    myTool;
-    int                             selectedTree;
 }
 
-@property (readwrite) int selectedTree;
-
-- (IBAction)closeButtonAction:(id)sender;
-- (IBAction)helpButtonAction:(id)sender;
-- (Tree*)activeTree;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)changeTreeSource:(id)sender;
+- (IBAction)changeNumberOfInlets:(id)sender;
+- (IBAction)exportAction:(id)sender;
+- (IBAction)helpAction:(id)sender;
 - (id)initWithTool:(ToolTreeSet*)t;
-- (IBAction)stepAction:(id)sender;
+- (IBAction)okAction:(id)sender;
 
 @end

@@ -6,10 +6,12 @@
 
 @synthesize index;
 @synthesize isLeaf;
+@synthesize isRoot;
 @synthesize branchLength;
 @synthesize name;
 @synthesize x;
 @synthesize y;
+@synthesize depthFromTip;
 
 - (void)addDescendant:(Node*)des {
 
@@ -44,6 +46,7 @@
 
     [aCoder encodeInt:index           forKey:@"index"];
     [aCoder encodeBool:isLeaf         forKey:@"isLeaf"];
+    [aCoder encodeBool:isRoot         forKey:@"isRoot"];
     [aCoder encodeDouble:branchLength forKey:@"branchLength"];
 	[aCoder encodeObject:name         forKey:@"name"];
     [aCoder encodeObject:ancestor     forKey:@"ancestor"];
@@ -62,6 +65,7 @@
         // initialize some variables
 		index        = 0;
         isLeaf       = NO;
+        isRoot       = NO;
 		branchLength = 0.0;
 		}
     return self;
@@ -73,6 +77,7 @@
 		{
         index        = [aDecoder decodeIntForKey:@"index"];
         isLeaf       = [aDecoder decodeBoolForKey:@"isLeaf"];
+        isRoot       = [aDecoder decodeBoolForKey:@"isRoot"];
         branchLength = [aDecoder decodeDoubleForKey:@"branchLength"];
 		name         = [aDecoder decodeObjectForKey:@"name"];
         ancestor     = [aDecoder decodeObjectForKey:@"ancestor"];

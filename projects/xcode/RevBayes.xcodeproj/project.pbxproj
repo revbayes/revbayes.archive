@@ -898,9 +898,11 @@
 		22F1D50E154715BF006D9ECA /* ProgressBarWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F1D364154715BF006D9ECA /* ProgressBarWindow.xib */; };
 		22F1D50F154715BF006D9ECA /* RegistrationPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F1D365154715BF006D9ECA /* RegistrationPanel.xib */; };
 		22F1D510154715BF006D9ECA /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F1D366154715BF006D9ECA /* TextEditorWindow.xib */; };
-		22F1D51315475F7C006D9ECA /* WindowControllerTreeSet.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22F1D51215475F7C006D9ECA /* WindowControllerTreeSet.mm */; };
-		22F1D51515476056006D9ECA /* ControlWindowTreeSet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F1D51415476056006D9ECA /* ControlWindowTreeSet.xib */; };
+		22F1D51315475F7C006D9ECA /* WindowControllerTreeViewer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22F1D51215475F7C006D9ECA /* WindowControllerTreeViewer.mm */; };
+		22F1D51515476056006D9ECA /* TreeViewer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F1D51415476056006D9ECA /* TreeViewer.xib */; };
 		22F1D518154772B5006D9ECA /* TreeSetView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22F1D517154772B5006D9ECA /* TreeSetView.mm */; };
+		22FF16E81548EEDD00BBDB57 /* ControlWindowTreeSet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22FF16E71548EEDD00BBDB57 /* ControlWindowTreeSet.xib */; };
+		22FF16EB1548EF1500BBDB57 /* WindowControllerTreeSet.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22FF16EA1548EF1400BBDB57 /* WindowControllerTreeSet.mm */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -1998,11 +2000,14 @@
 		22F1D364154715BF006D9ECA /* ProgressBarWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressBarWindow.xib; sourceTree = "<group>"; };
 		22F1D365154715BF006D9ECA /* RegistrationPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RegistrationPanel.xib; sourceTree = "<group>"; };
 		22F1D366154715BF006D9ECA /* TextEditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditorWindow.xib; sourceTree = "<group>"; };
-		22F1D51115475F7C006D9ECA /* WindowControllerTreeSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerTreeSet.h; sourceTree = "<group>"; };
-		22F1D51215475F7C006D9ECA /* WindowControllerTreeSet.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerTreeSet.mm; sourceTree = "<group>"; };
-		22F1D51415476056006D9ECA /* ControlWindowTreeSet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ControlWindowTreeSet.xib; sourceTree = "<group>"; };
+		22F1D51115475F7C006D9ECA /* WindowControllerTreeViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerTreeViewer.h; sourceTree = "<group>"; };
+		22F1D51215475F7C006D9ECA /* WindowControllerTreeViewer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerTreeViewer.mm; sourceTree = "<group>"; };
+		22F1D51415476056006D9ECA /* TreeViewer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TreeViewer.xib; sourceTree = "<group>"; };
 		22F1D516154772B5006D9ECA /* TreeSetView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeSetView.h; sourceTree = "<group>"; };
 		22F1D517154772B5006D9ECA /* TreeSetView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TreeSetView.mm; sourceTree = "<group>"; };
+		22FF16E71548EEDD00BBDB57 /* ControlWindowTreeSet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ControlWindowTreeSet.xib; sourceTree = "<group>"; };
+		22FF16E91548EF1400BBDB57 /* WindowControllerTreeSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerTreeSet.h; sourceTree = "<group>"; };
+		22FF16EA1548EF1400BBDB57 /* WindowControllerTreeSet.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerTreeSet.mm; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -3696,8 +3701,10 @@
 				22F1D33C154715BF006D9ECA /* WindowControllerReadData.mm */,
 				22F1D33D154715BF006D9ECA /* WindowControllerRegistration.h */,
 				22F1D33E154715BF006D9ECA /* WindowControllerRegistration.mm */,
-				22F1D51115475F7C006D9ECA /* WindowControllerTreeSet.h */,
-				22F1D51215475F7C006D9ECA /* WindowControllerTreeSet.mm */,
+				22FF16E91548EF1400BBDB57 /* WindowControllerTreeSet.h */,
+				22FF16EA1548EF1400BBDB57 /* WindowControllerTreeSet.mm */,
+				22F1D51115475F7C006D9ECA /* WindowControllerTreeViewer.h */,
+				22F1D51215475F7C006D9ECA /* WindowControllerTreeViewer.mm */,
 			);
 			path = "Window Controllers";
 			sourceTree = "<group>";
@@ -3731,7 +3738,8 @@
 				22F1D359154715BF006D9ECA /* ControlWindowRV.xib */,
 				22F1D35A154715BF006D9ECA /* ControlWindowTree.xib */,
 				22F1D35B154715BF006D9ECA /* ControlWindowTreePlate.xib */,
-				22F1D51415476056006D9ECA /* ControlWindowTreeSet.xib */,
+				22FF16E71548EEDD00BBDB57 /* ControlWindowTreeSet.xib */,
+				22F1D51415476056006D9ECA /* TreeViewer.xib */,
 				22F1D35C154715BF006D9ECA /* DistanceMatrix.xib */,
 				22F1D35D154715BF006D9ECA /* MainMenu.xib */,
 				22F1D35E154715BF006D9ECA /* ModelBrowser.xib */,
@@ -4153,7 +4161,8 @@
 				22F1D50E154715BF006D9ECA /* ProgressBarWindow.xib in Resources */,
 				22F1D50F154715BF006D9ECA /* RegistrationPanel.xib in Resources */,
 				22F1D510154715BF006D9ECA /* TextEditorWindow.xib in Resources */,
-				22F1D51515476056006D9ECA /* ControlWindowTreeSet.xib in Resources */,
+				22F1D51515476056006D9ECA /* TreeViewer.xib in Resources */,
+				22FF16E81548EEDD00BBDB57 /* ControlWindowTreeSet.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4783,8 +4792,9 @@
 				22F1D4E9154715BF006D9ECA /* WindowControllerReadData.mm in Sources */,
 				22F1D4EA154715BF006D9ECA /* WindowControllerRegistration.mm in Sources */,
 				22F1D4EB154715BF006D9ECA /* YRKSpinningProgressIndicator.mm in Sources */,
-				22F1D51315475F7C006D9ECA /* WindowControllerTreeSet.mm in Sources */,
+				22F1D51315475F7C006D9ECA /* WindowControllerTreeViewer.mm in Sources */,
 				22F1D518154772B5006D9ECA /* TreeSetView.mm in Sources */,
+				22FF16EB1548EF1500BBDB57 /* WindowControllerTreeSet.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

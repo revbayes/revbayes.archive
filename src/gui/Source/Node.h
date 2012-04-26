@@ -8,18 +8,23 @@
 	NSString*            name;
 	int                  index;
     BOOL                 isLeaf;
+    BOOL                 isRoot;
     Node*                ancestor;
 	NSMutableArray*      descendants;
     float                x;
     float                y;
+    int                  depthFromTip;
 }
 
 @property (readwrite)        int       index;
 @property (readwrite)        BOOL      isLeaf;
+@property (readwrite)        BOOL      isRoot;
 @property (readwrite)        double    branchLength;
 @property (readwrite,retain) NSString* name;
 @property (readwrite)        float     x;
 @property (readwrite)        float     y;
+@property (readwrite)        int       depthFromTip;
+@property (readwrite)        int       maximumDepthAlongPath;
 
 - (void)addDescendant:(Node*)des;
 - (int)numberOfDescendants;

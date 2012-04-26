@@ -1,11 +1,11 @@
 #import <Cocoa/Cocoa.h>
-@class WindowControllerTreeSet;
+@class WindowControllerTreeViewer;
 
 
 
 @interface TreeSetView : NSView {
 
-    IBOutlet WindowControllerTreeSet*    myWindowController;
+    IBOutlet WindowControllerTreeViewer*    myWindowController;
 }
 
 @end

@@ -3,49 +3,27 @@
 
 
 
-
 @implementation WindowControllerTreeSet
 
-@synthesize selectedTree;
-
-- (Tree*)activeTree {
-
-    return [myTool getTreeIndexed:selectedTree];
-}
-
-- (void)awakeFromNib {
-
-    int n = [myTool numberOfTreesInSet];
-    if (n == 0)
-        {
-        [[self window] setTitle:[NSString stringWithString:@"Tree Set (Contains No Trees)"]];
-        [treeCounter setStringValue:@"Tree: xxx"];
-        [treeCounter setHidden:YES];
-        [treeStepper setHidden:YES];
-        }
-    else
-        {
-        [[self window] setTitle:[NSString stringWithFormat:@"Tree Set (Contains %d Trees)", n]];
-        [treeCounter setStringValue:[NSString stringWithFormat:@"Tree: %d", n]];
-        if (n == 1)
-            {
-            [treeCounter setHidden:YES];
-            [treeStepper setHidden:YES];
-            }
-        else 
-            {
-            [treeCounter setHidden:NO];
-            [treeStepper setHidden:NO];
-            }
-        }
-}
-
-- (IBAction)closeButtonAction:(id)sender {
+- (IBAction)cancelAction:(id)sender {
 
     [myTool closeControlPanel];
 }
 
-- (IBAction)helpButtonAction:(id)sender {
+- (IBAction)changeTreeSource:(id)sender {
+
+}
+
+- (IBAction)changeNumberOfInlets:(id)sender {
+
+}
+
+- (IBAction)exportAction:(id)sender {
+
+    [myTool closeControlPanel];
+}
+
+- (IBAction)helpAction:(id)sender {
 
 }
 
@@ -59,18 +37,13 @@
 	if ( (self = [super initWithWindowNibName:@"ControlWindowTreeSet"]) )
         {
         myTool = t;
-        selectedTree = 0;
         }
 	return self;
 }
 
-- (IBAction)stepAction:(id)sender {
+- (IBAction)okAction:(id)sender {
 
-}
-
-- (void)windowDidLoad {
-
-    [super windowDidLoad];
+    [myTool closeControlPanel];
 }
 
 @end
