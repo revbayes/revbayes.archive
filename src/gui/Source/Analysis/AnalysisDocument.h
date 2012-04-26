@@ -9,6 +9,7 @@
 @interface AnalysisDocument : NSDocument {
 
     IBOutlet NSButton*                    helpButton;            // a pointer to the help button
+    IBOutlet NSButton*                    executeButton;
 	IBOutlet AnalysisView*                analysisViewPtr;       // a pointer to the view for the window
 	IBOutlet NSScrollView*                toolScrollView;        // a pointer to the scroll view containing the tools
     IBOutlet NSPopUpButton*               analysisActionButton;

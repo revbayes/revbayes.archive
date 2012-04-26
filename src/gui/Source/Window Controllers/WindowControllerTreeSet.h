@@ -3,7 +3,7 @@
 
 
 
-@interface WindowControllerTreeSet : NSWindowController {
+@interface WindowControllerTreeSet : NSWindowController <NSTabViewDelegate> {
 
 	IBOutlet NSTabView*             treeSourceTab;
     IBOutlet NSButton*              okButton;
@@ -12,7 +12,10 @@
     IBOutlet NSButton*              helpButton;
     IBOutlet NSPopUpButton*         numberOfInletsSelector;
     ToolTreeSet*                    myTool;
+    int                             numberOfInlets;
 }
+
+@property (readwrite) int numberOfInlets;
 
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)changeTreeSource:(id)sender;
@@ -21,5 +24,6 @@
 - (IBAction)helpAction:(id)sender;
 - (id)initWithTool:(ToolTreeSet*)t;
 - (IBAction)okAction:(id)sender;
+- (void)setButtonTitles;
 
 @end

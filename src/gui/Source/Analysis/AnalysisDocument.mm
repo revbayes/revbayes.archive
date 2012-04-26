@@ -166,6 +166,13 @@
         }
 #   endif
 
+
+    [NSThread detachNewThreadSelector:@selector(executeAnalysis) toTarget:self withObject:nil];
+}
+
+- (void)executeAnalysis {
+
+    [executeButton setEnabled:NO];
     // set the isCurrentlyExecuting flag for each tool to "NO"
 	NSEnumerator* toolEnumerator = [tools objectEnumerator];
     Tool* t = nil;
@@ -180,7 +187,6 @@
     toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
     while ( (t = [toolEnumerator nextObject]) )
         {
-        NSLog(@"executing %@", t);
         [t setIsCurrentlyExecuting:YES];
         [analysisViewPtr setNeedsDisplay:YES];
         [t execute];
@@ -188,7 +194,7 @@
         [t setIsCurrentlyExecuting:NO];
         [analysisViewPtr setNeedsDisplay:YES];
         }
-
+    [executeButton setEnabled:YES];
 }
 
 - (NSFileWrapper*)fileWrapperOfType:(NSString*)typeName error:(NSError**)outError {

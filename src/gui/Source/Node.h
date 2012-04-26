@@ -24,7 +24,6 @@
 @property (readwrite)        float     x;
 @property (readwrite)        float     y;
 @property (readwrite)        int       depthFromTip;
-@property (readwrite)        int       maximumDepthAlongPath;
 
 - (void)addDescendant:(Node*)des;
 - (int)numberOfDescendants;

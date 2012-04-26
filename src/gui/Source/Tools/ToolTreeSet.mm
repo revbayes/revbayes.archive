@@ -77,6 +77,7 @@
         [self setImageWithSize:itemSize];
 
 		// initialize the inlet/outlet information
+        numberOfInlets = 1;
 		[self addInletOfColor:[NSColor redColor]];
 		[self addOutletOfColor:[NSColor redColor]];
         [self setInletLocations];
@@ -85,6 +86,7 @@
         // allocate an array to hold the trees
         myTrees = [[NSMutableArray alloc] init];
         
+        controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
         treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
     return self;
@@ -104,6 +106,7 @@
         if ([myTrees count] > 0)
             hasInspectorInfo = YES;
 
+        controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
         treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
 	return self;
@@ -165,6 +168,25 @@
 
     [myTrees removeAllObjects];
     hasInspectorInfo = NO;
+}
+
+- (int)numberOfInlets {
+
+    return numberOfInlets;
+}
+
+- (void)setNumberOfInlets:(int)x {
+
+    if (numberOfInlets != x)
+        {
+        numberOfInlets = x;
+        [self removeAllInlets];
+        for (int i=0; i<[self numberOfInlets]; i++)
+            {
+            [self addInletOfColor:[NSColor redColor]];
+            [self setInletLocations];
+            }
+        }
 }
 
 - (void)showControlPanel {
