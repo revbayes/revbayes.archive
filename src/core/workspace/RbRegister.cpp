@@ -570,8 +570,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         RealPos* absFuncRetArg =  new RealPos();
         addFunction( "abs",       new ParserFunction( new Func_abs(), "absolute function", absFuncArgRules, absFuncRetArg, false )  );
         
-        addFunction( "cos",       new Func_cos()   );
-        
+        // cos function
+        ArgumentRules cosFuncArgRules;
+        cosFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+        Real* cosFuncRetArg =     new Real();
+        addFunction( "cos",       new ParserFunction( new Func_cos(), "cos function", cosFuncArgRules, cosFuncRetArg, false )  );
+		
         // exponential function
         ArgumentRules expFuncArgRules;
         expFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
@@ -581,7 +585,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         // natural log function
         ArgumentRules lnFuncArgRules;
         lnFuncArgRules.push_back( new ValueRule("x", RealPos::getClassTypeSpec() ) );
-        Real* lnFuncRetArg = new Real();
+        Real* lnFuncRetArg =      new Real();
         addFunction( "ln",        new ParserFunction( new Func_ln(), "natural log function", lnFuncArgRules, lnFuncRetArg, false )  );
         
         // log function
@@ -589,14 +593,19 @@ void Workspace::initializeGlobalWorkspace(void) {
 		logFuncArgRules.push_back( new ValueRule( "x", RealPos::getClassTypeSpec() ) );
 		logFuncArgRules.push_back( new ValueRule( "base", RealPos::getClassTypeSpec(), new RealPos(10.0) ) );
         Real* logFuncRetArg = 	   new Real();
-		addFunction( "log",        new ParserFunction( new Func_log(), "log function", logFuncArgRules, logFuncRetArg, false )  );
-		
+		addFunction( "log",        new ParserFunction( new Func_log(), "log function", logFuncArgRules, logFuncRetArg, false )  );		
 		
 		
         addFunction( "mean",      new Func_mean()  );
         addFunction( "power",     new Func_power() );
-        addFunction( "sin",       new Func_sin()   );
-		
+
+
+        // sin function
+        ArgumentRules sinFuncArgRules;
+        sinFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+        Real* sinFuncRetArg =     new Real();
+        addFunction( "sin",       new ParserFunction( new Func_sin(), "sin function", sinFuncArgRules, sinFuncRetArg, false )  );
+
 		// square root function
         ArgumentRules sqrtFuncArgRules;
         sqrtFuncArgRules.push_back( new ValueRule("x", RealPos::getClassTypeSpec() ) );
