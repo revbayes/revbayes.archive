@@ -82,6 +82,7 @@ private:
     ArgumentRules                                   argRules;
     InferenceFunction*                              function;
     std::string                                     functionName;
+    TypeSpec                                        typeSpec;
     RbLanguageObject*                               returnValue;
     bool                                            throwsError;
     

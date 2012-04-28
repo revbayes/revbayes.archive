@@ -32,13 +32,13 @@
 
 
 /** Basic constructor. */
-ParserFunction::ParserFunction(InferenceFunction *f, const std::string &fn, const ArgumentRules &ar, RbLanguageObject *rv, bool t ) : RbFunction(), function( f ), functionName( fn), argRules( ar ), returnValue( rv ), throwsError( t ) {
+ParserFunction::ParserFunction(InferenceFunction *f, const std::string &fn, const ArgumentRules &ar, RbLanguageObject *rv, bool t ) : RbFunction(), function( f ), functionName( fn), argRules( ar ), returnValue( rv ), throwsError( t ), typeSpec( getClassName() + " (" + fn + ")", new TypeSpec( RbFunction::getClassTypeSpec() )) {
     
     argsProcessed = false;
 }
 
 /** Copy constructor. */
-ParserFunction::ParserFunction(const ParserFunction &x) : RbFunction(x), function( x.function->clone() ), functionName( x.functionName ), argRules( x.argRules ), throwsError( x.throwsError ), returnValue( x.returnValue ) {
+ParserFunction::ParserFunction(const ParserFunction &x) : RbFunction(x), function( x.function->clone() ), functionName( x.functionName ), argRules( x.argRules ), throwsError( x.throwsError ), returnValue( x.returnValue ), typeSpec( x.typeSpec ) {
     
 }
 
@@ -132,7 +132,7 @@ InferenceFunction* ParserFunction::getLeanFunction( void ) const {
 
 /* Get the type spec for this function */
 const TypeSpec& ParserFunction::getTypeSpec(void) const {
-    return getClassTypeSpec();
+    return typeSpec;
 }
 
 /** Get the return type of the function */
