@@ -29,12 +29,12 @@
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const MemberRules& mr, RbLanguageObject *rv ) : MemberObject( mr ), randomValue( rv ), memberRules( mr ) {
+ParserDistribution::ParserDistribution( const std::string &n, const MemberRules& mr, RbLanguageObject *rv ) : MemberObject( mr ), randomValue( rv ), memberRules( mr ), name( n ) {
 }
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ) {
+ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ), name( p.name ) {
 }
 
 

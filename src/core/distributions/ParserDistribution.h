@@ -61,12 +61,13 @@ public:
     virtual void                        setValue(const RbValue<void*> &v) = 0;                                              //!< Set the pointers to the value of the distribution.
     
 protected:
-    ParserDistribution( const MemberRules& memberRules, RbLanguageObject* rv);                                              //!< Simple constructor
+    ParserDistribution( const std::string &n, const MemberRules& memberRules, RbLanguageObject* rv);                        //!< Simple constructor
     ParserDistribution( const ParserDistribution &p);                                                                       //!< Copy constructor
     
     virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
     virtual void                        setMemberVariable(const std::string& name, const Variable* var);                    //!< Set member variable
     
+    std::string                         name;
     MemberRules                         memberRules;
     RbLanguageObject*                   randomValue;
 private:

@@ -31,11 +31,11 @@
 
 
 /** Constructor passes member rules to base class */
-ParserDistributionContinuous::ParserDistributionContinuous( InferenceDistributionContinuous *d, const MemberRules& mr, RbLanguageObject *rv ) : ParserDistribution( mr, rv ), distribution( d ), max( d->getMax() ), min( d->getMin() ) {
+ParserDistributionContinuous::ParserDistributionContinuous( InferenceDistributionContinuous *d, const std::string &n, const MemberRules& mr, RbLanguageObject *rv ) : ParserDistribution( n, mr, rv ), distribution( d ), max( d->getMax() ), min( d->getMin() ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( ParserDistribution::getClassTypeSpec() )) {
 
 }
 
-ParserDistributionContinuous::ParserDistributionContinuous( const ParserDistributionContinuous &d) : ParserDistribution( d ), distribution( d.distribution->clone() ), max( d.getMax() ), min( d.getMin() ) {
+ParserDistributionContinuous::ParserDistributionContinuous( const ParserDistributionContinuous &d) : ParserDistribution( d ), distribution( d.distribution->clone() ), max( d.getMax() ), min( d.getMin() ), typeSpec( d.typeSpec ) {
     
 }
 
@@ -136,7 +136,7 @@ const MethodTable& ParserDistributionContinuous::getMethods( void ) const {
 
 
 const TypeSpec& ParserDistributionContinuous::getTypeSpec(void) const {
-    return getClassTypeSpec();
+    return typeSpec;
 }
 
 

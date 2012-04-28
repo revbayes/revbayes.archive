@@ -29,7 +29,7 @@ class ArgumentRule;
 class ParserDistributionContinuous: public ParserDistribution {
     
 public:
-    ParserDistributionContinuous(InferenceDistributionContinuous* d, const MemberRules& memberRules, RbLanguageObject* rv);
+    ParserDistributionContinuous(InferenceDistributionContinuous* d, const std::string &n, const MemberRules& memberRules, RbLanguageObject* rv);
     ParserDistributionContinuous(const ParserDistributionContinuous &p);
     virtual                                ~ParserDistributionContinuous(void) {}                                                   //!< Destructor
     
@@ -56,6 +56,8 @@ public:
     
 protected:
     const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Direct call of member method
+    
+    TypeSpec                                typeSpec;
     
     // memberfunction return values
     Real                                    min;
