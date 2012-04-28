@@ -43,16 +43,14 @@
 
 #include "VariableInferenceNode.h"
 
-class Distribution;
+class InferenceDistribution;
 
-template<valueType>
 class StochasticInferenceNode : public VariableInferenceNode {
     
 public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
-    StochasticInferenceNode(void);                                                                          //!< Construct empty stochastic node
-    StochasticInferenceNode(Distribution* dist);                                                            //!< Construct from distribution (raw object)
+    StochasticInferenceNode(const RbValue<void*> &v, InferenceDistribution* dist);                          //!< Construct from distribution (raw object)
     StochasticInferenceNode(const StochasticInferenceNode& x);                                              //!< Copy constructor
     virtual                            ~StochasticInferenceNode(void);                                      //!< Destructor
     
@@ -64,7 +62,6 @@ public:
         
     // StochasticInferenceNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
-    void                                clamp(valueType* observedVal);                                      //!< Clamp the node with an observed value
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
 //    void                                setValue(valueType* value);                                         //!< Set value but do not clamp; get affected nodes
@@ -74,7 +71,7 @@ public:
     double                              calculateSummedLnProbability(size_t nodeIndex);                     //!< Calculate summed log conditional probability over all possible states
     double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation);//!< Calculate summed log conditional probability over all possible states
 //    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
-    void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticInferenceNode*>& sequence); //!< Construct the sum-product sequecence
+    void                                constructSumProductSequence(std::set<VariableInferenceNode*>& nodes, std::vector<StochasticInferenceNode*>& sequence); //!< Construct the sum-product sequecence
     void                                constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
     bool                                isEliminated() const;
     bool                                isNotInstantiated(void) const;
@@ -95,7 +92,6 @@ protected:
     void                                touchMe(void);                                                      //!< Tell affected nodes value is reset
     
 private:
-    valueType*                          value;                                                              //!< Value
     
     VariableType                        type;
     
@@ -103,7 +99,7 @@ private:
 
     // Member variables
     bool                                clamped;                                                            //!< Is the node clamped with data?
-    Distribution*                       distribution;                                                       //!< Distribution (density functions, random draw function)
+    InferenceDistribution*              distribution;                                                       //!< Distribution (density functions, random draw function)
     double                              lnProb;                                                             //!< Current log probability
     bool                                needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
     bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?

@@ -86,6 +86,11 @@ const TypeSpec& ParserDistributionContinuous::getClassTypeSpec(void) {
 }
 
 
+InferenceDistributionContinuous* ParserDistributionContinuous::getLeanDistribution( void ) const {
+    return distribution;
+}
+
+
 /** Get max value of ParserDistribution */
 const Real& ParserDistributionContinuous::getMax( void ) const {
     
@@ -138,7 +143,7 @@ const TypeSpec& ParserDistributionContinuous::getTypeSpec(void) const {
 double ParserDistributionContinuous::jointLnPdf(const RbLanguageObject &value) const {
     
     std::vector<size_t> lengths;
-    value.getValue( lengths );
+    value.getLeanValue( lengths );
     
     double *pds = distribution->lnPdf();
     

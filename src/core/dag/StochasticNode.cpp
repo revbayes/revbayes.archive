@@ -19,16 +19,19 @@
 
 #include "Container.h"
 #include "DagNodeFunction.h"
+#include "DeterministicNode.h"
+#include "InferenceDagNode.h"
+#include "InferenceDistribution.h"
 #include "ParserDistribution.h"
 #include "RbBoolean.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
+#include "StochasticInferenceNode.h"
 #include "UserInterface.h"
 #include "Workspace.h"
 #include "ConstructorFunction.h"
-#include "DeterministicNode.h"
 #include "MethodTable.h"
 #include "Model.h"
 #include "Move.h"
@@ -72,7 +75,7 @@ StochasticNode::StochasticNode( ParserDistribution* dist, const Plate *pl ) : Va
     // create a new random variable
     value = createRV();
     RbValue<void*> rvPrimitive;
-    rvPrimitive.value = value->getValue( rvPrimitive.lengths );
+    rvPrimitive.value = value->getLeanValue( rvPrimitive.lengths );
     dist->setValue( rvPrimitive );
     
     /* We use a random draw as the initial value */
@@ -603,6 +606,59 @@ void StochasticNode::constructSumProductSequence( std::set<VariableNode *> &node
     
 }
 
+/**
+ * A deterministic node create a lean constant DAG node and sets the value. 
+ * Additionally we call the create lean DAG for all children and all parents.
+ * If we already have a lean copy of this deterministic node, we will just return that copy
+ * and not call our children and parents.
+ */
+InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, InferenceDagNode *> &newNodes) const {
+    
+    if ( newNodes.find( this ) != newNodes.end() )
+        return ( newNodes[ this ] );
+    
+    // create a copy of the inference function
+    InferenceDistribution* leanDistribution = distribution->getLeanDistribution()->clone();
+    
+    // make a copy of the current value
+    RbValue<void*> leanValue;
+    leanValue.value = value->getLeanValue( leanValue.lengths );
+    
+    /* Create a lean DAG node */
+    StochasticInferenceNode* copy = new StochasticInferenceNode(leanValue, leanDistribution);
+    newNodes[ this ] = copy;
+    
+    /* Set the copy params to their matches in the new DAG */
+    std::map<std::string, const Variable*>& params     = distribution->getMembers();
+    
+    std::vector<RbValue<void*> > leanArgs;
+    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
+        
+        // clone the i-th member and get the clone back
+        const DAGNode* theParam = i->second->getDagNode();
+        
+        // if we already have cloned this parent (parameter), then we will get the previously created clone
+        InferenceDagNode* theParamClone = theParam->createLeanDag( newNodes );
+        leanArgs.push_back( theParamClone->getValue() );
+        
+        copy->addParentNode( theParamClone );
+        theParamClone->addChildNode( copy );
+    }
+    
+    // set the value of the function to the args
+    leanArgs.push_back( leanValue );
+    
+    // link lean args with inference function
+    leanDistribution->setParameters( leanArgs );
+    
+    /* Make sure the children create a lean copy of themselves too */
+    for( std::set<VariableNode* >::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        (*i)->createLeanDag( newNodes );
+    }
+    
+    return copy;
+}
+
 
 /* 
  * Create a new rv for the node. 
@@ -718,14 +774,14 @@ RbLanguageObject* StochasticNode::createRVSingleValue(size_t plateIndex, const s
         std::vector<RbValue<void*> > newArgs;
         for ( std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); i++ ) {
             RbValue<void*> arg;
-            arg.value = (*i)->getValue(arg.lengths);
+            arg.value = (*i)->getLeanValue(arg.lengths);
             newArgs.push_back( arg );
         }
     
         // add te return value
         RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
         RbValue<void*> arg;
-        arg.value = retVal->getValue(arg.lengths);
+        arg.value = retVal->getLeanValue(arg.lengths);
         newArgs.push_back( arg );
     
         // Setting the parameter of the distribution

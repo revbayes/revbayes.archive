@@ -30,6 +30,7 @@
 #include <string>
 
 class Argument;
+class InferenceDagNode;
 class MethodTable;
 class Monitor;
 class Plate;
@@ -62,6 +63,7 @@ class DAGNode : public RbLanguageObject {
     
         // DAG function you have to override
         virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone graph
+        virtual InferenceDagNode*                           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0; //!< Create a lean DAG from this "fat" DAG
         virtual const RbLanguageObject&                     executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
         virtual const MethodTable&                          getMethods(void) const;                                                         //!< Get member methods (const)
         virtual bool                                        isEliminated(void) const = 0;

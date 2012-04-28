@@ -138,7 +138,7 @@ const TypeSpec& Integer::getTypeSpec( void ) const {
 
 
 /* Get a pointer to the elementary value. */
-void* Integer::getValue(std::vector<size_t> &length) const {
+void* Integer::getLeanValue(std::vector<size_t> &length) const {
     return static_cast<void*>( &const_cast<int&>( value ) );
 }
 

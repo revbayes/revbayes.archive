@@ -62,6 +62,7 @@ public:
 //    virtual std::vector<StochasticNode*>        constructSumProductSequence(void) = 0;                                          //!< Construct the sum-product sequence
     virtual void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
     virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone entire graph
+    virtual InferenceDagNode*                   createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0; //!< Create a lean DAG from this "fat" DAG
     virtual void                                markForRecalculation(void) = 0;
     virtual bool                                isEliminated(void) const = 0;
     virtual bool                                isNotInstantiated(void) const = 0;

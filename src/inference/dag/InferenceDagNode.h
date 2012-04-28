@@ -19,8 +19,11 @@
 #ifndef InferenceDagNode_H
 #define InferenceDagNode_H
 
+#include "RbValue.h"
+
 #include <set>
 #include <string>
+#include <list>
 
 class StochasticInferenceNode;
 class VariableInferenceNode;
@@ -36,14 +39,19 @@ public:
     // Basic utility functions you have to override
     
     // DAG function you have to override    
+    virtual void                                        getAffected(std::set<StochasticInferenceNode* >& affected) = 0;                 //!< get affected nodes
+    virtual bool                                        isEliminated(void) const = 0;
+    virtual bool                                        isNotInstantiated(void) const = 0;
     
+      
     // DAG functions you should not have to override
     void                                                addChildNode(VariableInferenceNode *c);                                         //!< Add child node
-    void                                                getAffectedNodes(std::set<VariableInferenceNode* >& affected);                //!< get affected nodes
+    void                                                getAffectedNodes(std::set<StochasticInferenceNode* >& affected);                //!< get affected nodes
     const std::set<VariableInferenceNode*>&             getChildren(void) const { return children; }                                    //!< Return children
     const std::string&                                  getName(void) const;                                                            //!< get the name
     const std::set<InferenceDagNode*>&                  getParents(void) const;                                                         //!< Return parents
-//    bool                                                isParentInDAG(const InferenceDagNode* x, std::list<InferenceDagNode*>& done) const;//!< Is node x a parent of the caller in the DAG?
+    const RbValue<void*>&                               getValue(void) const;                                                           //!< Get the value
+    bool                                                isParentInDAG(const InferenceDagNode* x, std::list<InferenceDagNode*>& done) const;//!< Is node x a parent of the caller in the DAG?
     void                                                keep(void);                                                                     //!< Keep current state of this node and all affected nodes
     size_t                                              numberOfChildren(void) const { return children.size(); }                        //!< Number of children
     size_t                                              numberOfParents(void) const { return parents.size(); }                          //!< Number of parents
@@ -56,10 +64,9 @@ public:
     
     
 protected:
-    InferenceDagNode(void);                                                                                                             //!< Constructor of empty node
+    InferenceDagNode(const RbValue<void*> &val);                                                                                        //!< Constructor of empty node
     InferenceDagNode(const InferenceDagNode& x);                                                                                        //!< Copy constructor
     
-    virtual void                                        getAffected(std::set<VariableInferenceNode* >& affected) = 0;                 //!< get affected nodes
     virtual void                                        keepAffected(void);                                                             //!< Keep value of affected nodes
     virtual void                                        keepMe(void) = 0;                                                               //!< Keep value of myself
     virtual void                                        restoreAffected(void);                                                          //!< Restore value of affected nodes recursively
@@ -74,6 +81,8 @@ protected:
         
     // Member value variables
     std::string                                         name;                                                                           //!< The name/identifier of the DAG node
+    RbValue<void*>                                      value;                                                                          //!< Value
+
 };
 
 #endif

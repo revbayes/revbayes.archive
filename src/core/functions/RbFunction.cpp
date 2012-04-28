@@ -469,6 +469,11 @@ const TypeSpec& RbFunction::getClassTypeSpec(void) {
 }
 
 
+InferenceFunction* RbFunction::getLeanFunction( void ) const {
+    throw RbException(getTypeSpec().getType() + " cannot be used for deterministic nodes in a model.");
+}
+
+
 /** Print value for user */
 void RbFunction::printValue(std::ostream& o) const {
 

@@ -154,6 +154,11 @@ bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 }
 
 
+/* @TODO: Temporary default implementation. (Sebastian: Needs removal and shuld be pure virtual!) */
+void RbObject::setLeanValue(const RbValue<void *> &val) {
+    
+}
+
 
 
 /** Make sure we can print the value of the object easily */

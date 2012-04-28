@@ -35,13 +35,13 @@ public:
     bool                                        isTouched(void) const { return touched; }                                       //!< Is node touched by move or parser?
     void                                        markChildrenForRecalculation(void);                                             //!< Mark all my children for recalculation
     void                                        removeParentNode(InferenceDagNode* p) { parents.erase(p); }                              //!< Remove a child node
-//    void                                        setFactorRoot(StochasticNode* r);
-        
+    void                                        setFactorRoot(StochasticInferenceNode* r);
+    
     // DAG functions you have to override
     //    virtual double                              calculateSummedLnProbability(size_t nodeIndex) = 0;                             //!< Calculate summed log conditional probability over all possible states
     virtual double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation) = 0;       //!< Calculate summed log conditional probability over all possible states
-    //    virtual std::vector<StochasticNode*>        constructSumProductSequence(void) = 0;                                          //!< Construct the sum-product sequence
-//    virtual void                                constructSumProductSequence(std::set<VariableInferenceNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
+    virtual void                                constructSumProductSequence(std::set<VariableInferenceNode*>& nodes, std::vector<StochasticInferenceNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
+    virtual void                                getAffected(std::set<StochasticInferenceNode*>& affected) = 0;                            //!< get affected nodes
     virtual void                                markForRecalculation(void) = 0;
     virtual bool                                isEliminated(void) const = 0;
     virtual bool                                isNotInstantiated(void) const = 0;
@@ -50,16 +50,15 @@ public:
 //    virtual void                                swapParentNode( DAGNode* oldP, DAGNode* newP) = 0;                              //!< Swap a parent node
     
 protected:
-    VariableInferenceNode( void );                                                                                                       //!< Constructor of empty node
-    VariableInferenceNode(const VariableInferenceNode &v);                                                                                        //!< Copy Constructor
+    VariableInferenceNode(const RbValue<void*> &v);                                                                                         //!< Constructor of empty node
+    VariableInferenceNode(const VariableInferenceNode &v);                                                                                  //!< Copy Constructor
     
-    virtual void                                getAffected(std::set<VariableInferenceNode*>& affected) = 0;                            //!< get affected nodes
     
     //    virtual void                                        keepMe(void) = 0;                                                           //!< Keep value of myself
     //    virtual void                                        restoreMe(void) = 0;                                                        //!< Restore value of this nodes
     //    virtual void                                        touchMe(void) = 0;                                                          //!< Touch myself (flag for recalculation)
     
-//    StochasticInferenceNode*                    factorRoot;
+    StochasticInferenceNode*                    factorRoot;
     
     // Member variables
     bool                                        touched;                                                                        //!< Is touched by move?

@@ -190,13 +190,13 @@ const RbLanguageObject& DistributionFunction::executeFunction(const std::vector<
         // skip the first and the last parameter
         for (std::vector<const RbObject*>::const_iterator i = args.begin()+1; i+1 != args.end(); ++i) {
             RbValue<void*> arg;
-            arg.value = (*i)->getValue(arg.lengths);
+            arg.value = (*i)->getLeanValue(arg.lengths);
             newArgs.push_back( arg );
         }
         
         // add the random value
         RbValue<void*> arg;
-        arg.value = args[0]->getValue(arg.lengths);
+        arg.value = args[0]->getLeanValue(arg.lengths);
         newArgs.push_back( arg );
         
         // Setting the parameter of the distribution
@@ -214,14 +214,14 @@ const RbLanguageObject& DistributionFunction::executeFunction(const std::vector<
         std::vector<RbValue<void*> > newArgs;
         for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
             RbValue<void*> arg;
-            arg.value = (*i)->getValue(arg.lengths);
+            arg.value = (*i)->getLeanValue(arg.lengths);
             newArgs.push_back( arg );
         }
         
         // add te return value
         RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
         RbValue<void*> arg;
-        arg.value = retVal->getValue(arg.lengths);
+        arg.value = retVal->getLeanValue(arg.lengths);
         newArgs.push_back( arg );
         
         // Setting the parameter of the distribution
@@ -237,14 +237,14 @@ const RbLanguageObject& DistributionFunction::executeFunction(const std::vector<
         // skip the first and the last parameter
         for (std::vector<const RbObject*>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
             RbValue<void*> arg;
-            arg.value = (*i)->getValue(arg.lengths);
+            arg.value = (*i)->getLeanValue(arg.lengths);
             newArgs.push_back( arg );
         }
         
         // add te return value
         RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
         RbValue<void*> arg;
-        arg.value = retVal->getValue(arg.lengths);
+        arg.value = retVal->getLeanValue(arg.lengths);
         newArgs.push_back( arg );
         
         // Setting the parameter of the distribution
@@ -260,14 +260,14 @@ const RbLanguageObject& DistributionFunction::executeFunction(const std::vector<
         // skip the first and the last parameter
         for (std::vector<const RbObject*>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
             RbValue<void*> arg;
-            arg.value = (*i)->getValue(arg.lengths);
+            arg.value = (*i)->getLeanValue(arg.lengths);
             newArgs.push_back( arg );
         }
         
         // add te return value
         RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
         RbValue<void*> arg;
-        arg.value = retVal->getValue(arg.lengths);
+        arg.value = retVal->getLeanValue(arg.lengths);
         newArgs.push_back( arg );
         
         // Setting the parameter of the distribution

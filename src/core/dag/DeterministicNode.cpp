@@ -18,18 +18,20 @@
  */
 
 #include "ArgumentRule.h"
-#include "RbBoolean.h"
+#include "ConstructorFunction.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
+#include "DeterministicInferenceNode.h"
+#include "InferenceDagNode.h"
+#include "InferenceFunction.h"
+#include "Model.h"
+#include "RbBoolean.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbMemoryManager.h"
 #include "RbUtil.h"
 #include "UserInterface.h"
 #include "Workspace.h"
-#include "ConstructorFunction.h"
-#include "DeterministicNode.h"
-#include "Model.h"
 
 #include <algorithm>
 #include <cassert>
@@ -209,6 +211,58 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& ne
             }
         }
         (*i)->cloneDAG( newNodes );
+    }
+    
+    return copy;
+}
+
+
+/**
+ * A deterministic node create a lean constant DAG node and sets the value. 
+ * Additionally we call the create lean DAG for all children and all parents.
+ * If we already have a lean copy of this deterministic node, we will just return that copy
+ * and not call our children and parents.
+ */
+InferenceDagNode* DeterministicNode::createLeanDag(std::map<const DAGNode *, InferenceDagNode *> &newNodes) const {
+    
+    if ( newNodes.find( this ) != newNodes.end() )
+        return ( newNodes[ this ] );
+    
+    // create a copy of the inference function
+    InferenceFunction* leanFunction = function->getLeanFunction()->clone();
+    
+    // make a copy of the current value
+    RbValue<void*> leanValue;
+    leanValue.value = value->getLeanValue( leanValue.lengths );
+    
+    /* Create a lean DAG node */
+    DeterministicInferenceNode* copy = new DeterministicInferenceNode( leanValue, leanFunction);
+    newNodes[ this ] = copy;
+    
+    /* Set the copy arguments to their matches in the new DAG */
+    std::vector<Argument>& args      = function->getArguments();
+    
+    std::vector<RbValue<void*> > leanArgs;
+    for ( size_t i = 0; i < args.size(); i++ ) {
+        
+        // clone the parameter DAG node
+        InferenceDagNode* theArgClone = args[i].getVariable().getDagNode()->createLeanDag(newNodes);
+        leanArgs.push_back( theArgClone->getValue() );
+        
+        // this is perhaps not necessary because we already set the parent child relationship automatically
+        copy->addParentNode( theArgClone );
+        theArgClone->addChildNode( copy );
+    }
+    
+    // set the value of the function to the args
+    leanArgs.push_back( leanValue );
+    
+    // link lean args with inference function
+    leanFunction->setArguments( leanArgs );
+    
+    /* Make sure the children create a lean copy of themselves too */
+    for( std::set<VariableNode* >::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        (*i)->createLeanDag( newNodes );
     }
     
     return copy;

@@ -30,6 +30,7 @@
 #include <string>
 
 class RandomNumberGenerator;
+class InferenceDistribution;
 
 
 class ParserDistribution : public MemberObject  {
@@ -51,6 +52,7 @@ public:
     virtual const RbLanguageObject&     getTemplateRandomVariable(void) const;                                              //!< Get the template ranom variable
     
     // functions you have to override
+    virtual InferenceDistribution*      getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
     virtual double                      jointLnPdf( const RbLanguageObject& value) const = 0;                               //!< Ln probability density
     virtual double                      lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
     virtual double                      pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function

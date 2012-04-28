@@ -68,6 +68,7 @@ public:
     
     // Basic utility functions you should not have to override
     void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
+    InferenceFunction*                              getLeanFunction(void) const;                                                    //!< Get the lean version of this function
     
     // ParserFunction functions you have to override
     virtual const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*> &args);                      //!< Execute function

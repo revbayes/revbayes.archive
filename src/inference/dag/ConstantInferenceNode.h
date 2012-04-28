@@ -26,18 +26,13 @@
 #include "InferenceDagNode.h"
 
 
-template <valueType>
 class ConstantInferenceNode : public InferenceDagNode {
     
 public:
-    ConstantInferenceNode( void );                                                                                  //!< Constructor
-//    ConstantInferenceNode(valueType* val);                                                                          //!< Constructor from value
+    ConstantInferenceNode(const RbValue<void*> &val);                                                               //!< Constructor
     ConstantInferenceNode(const ConstantInferenceNode &x);                                                          //!< Copy constructor
     virtual                             ~ConstantInferenceNode(void);                                               //!< Destructor
-    
-    // Basic utility functions
-    void                                printValue(std::ostream& o) const;                                          //!< Print value for user
-    
+        
     
     // DAG functions
 //    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;           //!< Clone entire graph
@@ -45,17 +40,16 @@ public:
     bool                                isEliminated(void) const;
     bool                                isNotInstantiated(void) const;
     
+    // temporary stuff
+//    void                                printStruct(std::ostream &o) const;
     
 protected:
     
-    void                                getAffected(std::set<VariableInferenceNode* >& affected);                          //!< Mark and get affected nodes
+    void                                getAffected(std::set<StochasticInferenceNode* >& affected);                  //!< Mark and get affected nodes
     void                                keepMe(void);                                                               //!< Keep value of this and affected nodes
     void                                restoreMe(void);                                                            //!< Restore value of this nodes
     void                                touchMe(void);                                                              //!< Tell affected nodes value is reset
-    
-private:
-    valueType*                          value;                                                                      //!< Value
-    
+        
 };
 
 

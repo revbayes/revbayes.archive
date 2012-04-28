@@ -9,6 +9,33 @@
 #include "InferenceDistribution.h"
 
 
+/**
+ * Compute the joind ln pdf.
+ *
+ * This is the default implementation which just computes the sum of all single lnPdf's.
+ */
+double InferenceDistribution::jointLnPdf( void ) const {
+
+    double jlnpd = 0;
+    
+    double* singlePds = lnPdf();
+    
+    // compute the number of values
+    const std::vector<size_t> &lengths = members[members.size()-1].lengths;
+    size_t elements = 1;
+    for ( size_t i = 0; i < lengths.size(); ++i) {
+        elements *= lengths[i];
+    }
+    
+    // sum up all single lnpdfs
+    for ( size_t i = 0; i < elements; ++i) {
+        jlnpd += singlePds[i];
+    }
+    
+    return jlnpd;
+}
+
+
 /** Execute function */
 double* InferenceDistribution::lnPdf( void ) const {
     

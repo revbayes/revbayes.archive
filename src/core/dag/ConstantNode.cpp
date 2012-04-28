@@ -2,8 +2,7 @@
  * @file
  * This file contains the implementation of ConstantNode, which is derived
  * from DAGNode. ConstantNode is used for DAG nodes holding constant
- * values other than containers or member objects (which may or may not
- * be constant).
+ * values other.
  *
  * @brief Implementation of ConstantNode
  *
@@ -19,9 +18,11 @@
  */
 
 
+#include "ConstantInferenceNode.h"
 #include "ConstantNode.h"
 #include "ConstructorFunction.h"
 #include "DeterministicNode.h"
+#include "InferenceDagNode.h"
 #include "Model.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -90,6 +91,34 @@ DAGNode* ConstantNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNode
         (*i)->cloneDAG( newNodes );
     }
  
+    return copy;
+}
+
+
+/**
+ * A constant node only create a lean constant DAG node and sets the value. 
+ * Additionally we call the create lean DAG for all children.
+ * If we already have a lean copy of this constant node, we will just return that copy
+ * and not call our children.
+ */
+InferenceDagNode* ConstantNode::createLeanDag(std::map<const DAGNode *, InferenceDagNode *> &newNodes) const {
+    
+    if ( newNodes.find( this ) != newNodes.end() )
+        return ( newNodes[ this ] );
+    
+    // make a copy of the current value
+    RbValue<void*> leanValue;
+    leanValue.value = value->getLeanValue( leanValue.lengths );
+    
+    /* Create a lean DAG node */
+    ConstantInferenceNode* copy = new ConstantInferenceNode( leanValue );
+    newNodes[ this ] = copy;
+    
+    /* Make sure the children create a lean copy of themselves too */
+    for( std::set<VariableNode* >::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        (*i)->createLeanDag( newNodes );
+    }
+    
     return copy;
 }
 

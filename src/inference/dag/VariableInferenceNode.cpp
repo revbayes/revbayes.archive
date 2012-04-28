@@ -7,3 +7,39 @@
 //
 
 #include "VariableInferenceNode.h"
+
+
+VariableInferenceNode::VariableInferenceNode( const RbValue<void*> &v) : InferenceDagNode( v ) {
+    
+}
+
+VariableInferenceNode::VariableInferenceNode( const VariableInferenceNode &v) : InferenceDagNode( v ) {
+    
+}
+
+VariableInferenceNode::~VariableInferenceNode() {
+    
+}
+
+
+void VariableInferenceNode::addParentNode(InferenceDagNode *p) {
+    parents.insert( p );
+}
+
+
+/** 
+ * Mark all our children for recalculation. 
+ * The difference between this function and touch is that touch also results into a call of likelihood updates.
+ * Here, we only want to recalculate the probability.
+ */
+void VariableInferenceNode::markChildrenForRecalculation( void ) {
+    
+    for (std::set<VariableInferenceNode*>::iterator i = children.begin(); i != children.end(); i++) {
+        (*i)->markForRecalculation();
+    }
+}
+
+
+void VariableInferenceNode::setFactorRoot(StochasticInferenceNode *r) {
+    factorRoot = r;
+}

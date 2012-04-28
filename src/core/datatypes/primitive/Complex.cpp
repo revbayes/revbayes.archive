@@ -174,7 +174,7 @@ const TypeSpec& Complex::getTypeSpec( void ) const {
 
 
 /* Get a pointer to the elementary value. */
-void* Complex::getValue(std::vector<size_t> &length) const {
+void* Complex::getLeanValue(std::vector<size_t> &length) const {
     return static_cast<void*>( &const_cast<std::complex<double>& >( value ) );
 }
 

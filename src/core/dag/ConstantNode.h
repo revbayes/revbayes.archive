@@ -23,48 +23,50 @@
 #include "DAGNode.h"
 #include "RbLanguageObject.h"
 
+class InferenceDagNode;
 class RbObject;
 
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode( void );                                                                                           //!< Constructor
-    ConstantNode(RbLanguageObject* val);                                                                            //!< Constructor from value
-    ConstantNode(const ConstantNode &x);                                                                            //!< Copy constructor
-    virtual                             ~ConstantNode(void);                                                        //!< Destructor
+    ConstantNode( void );                                                                                               //!< Constructor
+    ConstantNode(RbLanguageObject* val);                                                                                //!< Constructor from value
+    ConstantNode(const ConstantNode &x);                                                                                //!< Copy constructor
+    virtual                             ~ConstantNode(void);                                                            //!< Destructor
 
     // Basic utility functions
-    ConstantNode*                       clone(void) const;                                                          //!< Clone this object
-    static const std::string&           getClassName(void);                                                         //!< Get class name
-    static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
-    const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
-    void                                printStruct(std::ostream& o) const;                                         //!< Print struct for user
-    void                                printValue(std::ostream& o) const;                                          //!< Print value for user
+    ConstantNode*                       clone(void) const;                                                              //!< Clone this object
+    static const std::string&           getClassName(void);                                                             //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                         //!< Get class type spec
+    const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
+    void                                printStruct(std::ostream& o) const;                                             //!< Print struct for user
+    void                                printValue(std::ostream& o) const;                                              //!< Print value for user
 
     // ConstantNode functions
-    const RbLanguageObject&             getStoredValue(void) const;                                                 //!< Get stored value
-    const RbLanguageObject&             getValue(void) const;                                                       //!< Get value 
-    RbLanguageObject&                   getValue(void);                                                             //!< Get value 
-    void                                setValue(RbLanguageObject* val);                                            //!< Set the value of the constant node
-//    const RbLanguageObject*             getValuePtr(void) const;                                                    //!< Get value 
+    const RbLanguageObject&             getStoredValue(void) const;                                                     //!< Get stored value
+    const RbLanguageObject&             getValue(void) const;                                                           //!< Get value 
+    RbLanguageObject&                   getValue(void);                                                                 //!< Get value 
+    void                                setValue(RbLanguageObject* val);                                                //!< Set the value of the constant node
+//    const RbLanguageObject*             getValuePtr(void) const;                                                      //!< Get value 
 
     // DAG functions
-    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;           //!< Clone entire graph
-    bool                                isTouched (void) const { return false; }                                    //!< Touched by a move?
+    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;               //!< Clone entire graph
+    InferenceDagNode*                   createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
+    bool                                isTouched (void) const { return false; }                                        //!< Touched by a move?
     bool                                isEliminated(void) const;
     bool                                isNotInstantiated(void) const;
 
 
 protected:
 
-    void                                getAffected(std::set<StochasticNode* >& affected);                          //!< Mark and get affected nodes
-    void                                keepMe(void);                                                               //!< Keep value of this and affected nodes
-    void                                restoreMe(void);                                                            //!< Restore value of this nodes
-    void                                touchMe(void);                                                              //!< Tell affected nodes value is reset
+    void                                getAffected(std::set<StochasticNode* >& affected);                              //!< Mark and get affected nodes
+    void                                keepMe(void);                                                                   //!< Keep value of this and affected nodes
+    void                                restoreMe(void);                                                                //!< Restore value of this nodes
+    void                                touchMe(void);                                                                  //!< Tell affected nodes value is reset
 
 private:
-    static const TypeSpec               typeSpec;
-    RbLanguageObject*                   value;                                                                      //!< Value
+
+    RbLanguageObject*                   value;                                                                          //!< Value
 
 };
 

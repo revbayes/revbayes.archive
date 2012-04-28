@@ -64,7 +64,7 @@ public:
     bool                                            operator!=(const RbVector<valueType>& x) const;                 //!< Inequality
     
     // Overwritten RbObject functions
-    virtual void*                                   getValue(std::vector<size_t> &length) const;                    //!< Transform the object into a basic element pointer for fast access.
+    virtual void*                                   getLeanValue(std::vector<size_t> &length) const;                //!< Transform the object into a basic element pointer for fast access.
     virtual size_t                                  memorySize() const;                                             //!< Get the size
 
     
@@ -728,7 +728,7 @@ const std::vector<valueType* >& RbVector<valueType>::getValue(void) const {
 
 
 template <typename valueType>
-void* RbVector<valueType>::getValue( std::vector<size_t> &lengths ) const {
+void* RbVector<valueType>::getLeanValue( std::vector<size_t> &lengths ) const {
     
     // add the length for this dimension
     lengths.push_back( elements.size() );
@@ -745,10 +745,10 @@ void* RbVector<valueType>::getValue( std::vector<size_t> &lengths ) const {
         const valueType *x = *i;
         void* elemVal;
         if ( i == elements.begin() ) {
-            elemVal = x->getValue( lengths );
+            elemVal = x->getLeanValue( lengths );
         }
         else {
-            elemVal = x->getValue( tmp_lengths );            
+            elemVal = x->getLeanValue( tmp_lengths );            
         }
         memcpy(data, elemVal,(*i)->memorySize());
 //        *(data) = *(*i)->getValue(lengths);

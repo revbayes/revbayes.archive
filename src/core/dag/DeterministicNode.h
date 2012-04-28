@@ -46,6 +46,7 @@ public:
     // DAG functions implemented here
     double                                  calculateEliminatedLnProbability(bool enforceProbabilityCalculation);//!< Calculate summed log conditional probability over all possible states
     DAGNode*                                cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
+    virtual InferenceDagNode*               createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const; //!< Create a lean DAG from this "fat" DAG
     void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
     const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
     const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)

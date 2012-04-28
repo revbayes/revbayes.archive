@@ -37,6 +37,7 @@ public:
     virtual InferenceDistribution*      clone(void) const = 0;                                                          //!< Create a clone of the function
  
     // functions you do not have yo override
+    virtual double                      jointLnPdf(void) const;                                                         //!< Ln probability density
     virtual double*                     lnPdf(void) const;                                                              //!< Ln probability density
     virtual double*                     pdf(void) const;                                                                //!< Probability density function
     virtual void                        rv(void);                                                                       //!< Generate a random draw

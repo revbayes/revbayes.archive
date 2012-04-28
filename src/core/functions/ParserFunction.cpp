@@ -83,14 +83,14 @@ const RbLanguageObject& ParserFunction::executeFunction( const std::vector<const
     std::vector<RbValue<void*> > newArgs;
     for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
         RbValue<void*> arg;
-        arg.value = (*i)->getValue(arg.lengths);
+        arg.value = (*i)->getLeanValue(arg.lengths);
         newArgs.push_back( arg );
     }
     
     // add te return value
     RbLanguageObject* retVal = returnValue->clone();
     RbValue<void*> arg;
-    arg.value = retVal->getValue(arg.lengths);
+    arg.value = retVal->getLeanValue(arg.lengths);
     newArgs.push_back( arg );
     
     // set the current parameter values of the function
@@ -122,6 +122,11 @@ const TypeSpec& ParserFunction::getClassTypeSpec(void) {
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
     
 	return rbClass; 
+}
+
+
+InferenceFunction* ParserFunction::getLeanFunction( void ) const {
+    return function;
 }
 
 

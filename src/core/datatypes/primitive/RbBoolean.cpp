@@ -97,7 +97,7 @@ const TypeSpec& RbBoolean::getTypeSpec( void ) const {
 
 
 /* Get a pointer to the elementary value. */
-void* RbBoolean::getValue(std::vector<size_t> &length) const {
+void* RbBoolean::getLeanValue(std::vector<size_t> &length) const {
     return static_cast<void*>( &const_cast<bool&>( value ) );
 }
 

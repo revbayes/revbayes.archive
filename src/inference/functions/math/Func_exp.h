@@ -30,7 +30,7 @@ public:
 
 protected:
     void                        setInternalArguments(const std::vector<RbValue<void*> >& args);         //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
-    void                        executeSimple(std::vector<size_t> &result_offsets);                     //!< Execute function
+    void                        executeSimple(std::vector<size_t> &offsets);                            //!< Execute function
 
 private:
     

@@ -52,15 +52,13 @@ class Natural : public Integer {
         static const std::string&   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
-        void*                       getValue(std::vector<size_t> &length) const;                            //!< Transform the object into a basic element pointer for fast access.
         bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
         // Getters and setters
         unsigned int                getUnsignedValue(void) const { return value; }                          //!< Get value (unsigned int)
-        int                         getValue(void) const { return value; }                                  //!< Get value (int)
         void                        setValue(int x);                                                        //!< Set value from int (after checking)
-        void                        setValue(size_t x);                                               //!< Set value from unsigned int
+        void                        setValue(size_t x);                                                     //!< Set value from unsigned int
 
 };
 

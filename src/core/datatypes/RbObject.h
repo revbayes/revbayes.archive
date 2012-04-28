@@ -17,6 +17,7 @@
 #ifndef RbObject_H
 #define RbObject_H
 
+#include "RbValue.h"
 #include "TypeSpec.h"
 #include "XmlDocument.h"
 #include "XmlElement.h"
@@ -25,7 +26,6 @@
 #include <string>
 
 
-class DAGNode;
 
 class RbObject {
 
@@ -43,8 +43,9 @@ class RbObject {
         static const std::string&           getClassName(void);                                                     //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get language type of the object
-        virtual void*                       getValue(std::vector<size_t> &length) const { return NULL; }            //!< Transform the object into a basic element pointer for fast access.
+        virtual void*                       getLeanValue(std::vector<size_t> &length) const { return NULL; }        //!< Transform the object into a basic element pointer for fast access.
         virtual size_t                      memorySize() const { return sizeof( *this ); }                          //!< Get the size
+        virtual void                        setLeanValue(const RbValue<void*> &val);                                //!< Set the value of the object from a basic (lean) element pointer.
         virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
 
         // Basic utility functions you may want to override
@@ -62,7 +63,7 @@ class RbObject {
         bool                                isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
 
 protected:
-    RbObject(void);                                                                                     //!< No objects of this class
+        RbObject(void);                                                                                     //!< No objects of this class
 
 };
 

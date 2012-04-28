@@ -16,6 +16,7 @@
 #ifndef ParserDistributionContinuous_H
 #define ParserDistributionContinuous_H
 
+#include "InferenceDistributionContinuous.h"
 #include "MemberFunction.h"
 #include "ParserDistribution.h"
 #include "Real.h"
@@ -24,7 +25,6 @@
 #include <string>
 
 class ArgumentRule;
-class InferenceDistributionContinuous;
 
 class ParserDistributionContinuous: public ParserDistribution {
     
@@ -39,12 +39,11 @@ public:
     static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
     const TypeSpec&                         getTypeSpec(void) const;    
     
-    // Member object function you have to override
-    virtual const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
-    
-    // Member object functions you should not have to override
+    // Member object functions
     double                                  cdf( const Real& value);                                                                //!< Cumulative probability
+    InferenceDistributionContinuous*        getLeanDistribution(void) const;                                                        //!< Get the lean distribution
     const Real&                             getMax(void) const;                                                                     //!< Get max value of coverage
+    const MemberRules&                      getMemberRules(void) const;                                                             //!< Get member rules
     const MethodTable&                      getMethods(void) const;                                                                 //!< Get member methods
     const Real&                             getMin(void) const;                                                                     //!< Get min value of coverage
     double                                  jointLnPdf( const RbLanguageObject& value) const;                                       //!< Ln probability density

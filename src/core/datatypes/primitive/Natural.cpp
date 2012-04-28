@@ -146,12 +146,6 @@ const TypeSpec& Natural::getTypeSpec( void ) const {
 }
 
 
-/* Get a pointer to the elementary value. */
-void* Natural::getValue(std::vector<size_t> &length) const {
-    return static_cast<void*>( &const_cast<int&>( value ) );
-}
-
-
 /** Is convertible to type? */
 bool Natural::isConvertibleTo( const TypeSpec& type ) const {
 

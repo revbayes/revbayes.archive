@@ -31,6 +31,7 @@
 #include "Environment.h"
 #include "RbInternal.h"
 
+class InferenceFunction;
 class DAGNode;
 
 /**
@@ -75,6 +76,7 @@ class RbFunction :  public RbInternal {
 
         // RbFunction function you may want to override
         virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
+        virtual InferenceFunction*                      getLeanFunction(void) const;                                                        //!< Get the lean version of this function
         virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
     
