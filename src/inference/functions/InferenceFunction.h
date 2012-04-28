@@ -38,9 +38,13 @@ public:
     virtual void                                    touch(void) {};                                                 //!< This function will be called if one of the parameters has changed. One can now store the old parameter and return values for more efficient computations.
     virtual void                                    keep(void) {};                                                  //!< We keep the new value of the function and hence all flags or members which were set by touch() should be cleaned.
 
+    // temporary stuff
+    std::string                                     toString(void) const;
+    
 protected:
     InferenceFunction(void) {};                                                                                     //!< Basic constructor
-    
+    std::vector<RbValue<void*> >                    members;
+   
 };
 
 #endif

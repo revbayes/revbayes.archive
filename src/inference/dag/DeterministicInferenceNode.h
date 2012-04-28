@@ -39,7 +39,7 @@ public:
     
     // Utility functions implemented here
 //    void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
-//    const RbFunction&                       getFunction(void) const;
+    InferenceFunction*                      getFunction(void) const;
 
     // DAG functions implemented here
     double                                  calculateEliminatedLnProbability(bool enforceProbabilityCalculation);//!< Calculate summed log conditional probability over all possible states

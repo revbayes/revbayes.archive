@@ -41,6 +41,11 @@ void InferenceDagNode::getAffectedNodes(std::set<StochasticInferenceNode* > &aff
 }
 
 
+const std::string& InferenceDagNode::getName( void ) const {
+    return name;
+}
+
+
 const std::set<InferenceDagNode*>& InferenceDagNode::getParents( void ) const {
     return parents;
 }

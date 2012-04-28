@@ -337,6 +337,11 @@ void StochasticInferenceNode::getAffected( std::set<StochasticInferenceNode* >& 
 }
 
 
+InferenceDistribution* StochasticInferenceNode::getDistribution( void ) const {
+    return distribution;
+}
+
+
 /** Get the ln probability ratio of this node */
 double StochasticInferenceNode::getLnProbabilityRatio( void ) {
     

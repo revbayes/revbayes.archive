@@ -43,7 +43,10 @@ public:
     virtual void                        rv(void);                                                                       //!< Generate a random draw
     virtual void                        setParameters(const std::vector<RbValue<void*> > &p);                           //!< Set the pointers to the variables of the distribution. The last one is always the random value.
     virtual void                        setObservedValue(const RbValue<void*> &v);                                      //!< Set the pointers to the observation (random variable) of the distribution.
-    
+
+    // temporary stuff
+    std::string                         toString(void) const;
+
 protected:
     InferenceDistribution( void ) {};                                                                                   //!< Simple constructor
     

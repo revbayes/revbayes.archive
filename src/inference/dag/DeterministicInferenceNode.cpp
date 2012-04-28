@@ -119,10 +119,10 @@ void DeterministicInferenceNode::getAffected( std::set<StochasticInferenceNode* 
 }
 
 
-//
-//const RbFunction& DeterministicInferenceNode::getFunction(void) const {
-//    return *function;
-//}
+
+InferenceFunction* DeterministicInferenceNode::getFunction( void ) const {
+    return function;
+}
 
 
 /** 

@@ -20,8 +20,12 @@
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
 #include "DeterministicNode.h"
+#include "DeterministicInferenceNode.h"
 #include "Distribution.h"
 #include "Ellipsis.h"
+#include "InferenceDagNode.h"
+#include "InferenceDistribution.h"
+#include "InferenceFunction.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -29,7 +33,9 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
+#include "StochasticInferenceNode.h"
 #include "ValueRule.h"
+#include "VariableInferenceNode.h"
 #include "UserInterface.h"
 
 #include <algorithm>
@@ -49,6 +55,7 @@ Model::Model( const Model& x ) : MemberObject( x ) {
     if ( x.sourceNodes.size() > 0 ) {
         for (std::set<const DAGNode*>::const_iterator it = x.sourceNodes.begin(); it != x.sourceNodes.end(); ++it) {
             createModelFromDagNode( *it );
+            createLeanDag( nodesMap[*it] );
         }
     }    
 }
@@ -61,6 +68,7 @@ Model& Model::operator=( const Model& x ) {
         /* Free old model */
         monitorMap.clear();
         moveMap.clear();
+        leanNodesMap.clear();
         nodesMap.clear();
         dagNodes.clear();
         sourceNodes.clear();
@@ -69,6 +77,7 @@ Model& Model::operator=( const Model& x ) {
         if ( x.sourceNodes.size() > 0 ) {
             for (std::set<const DAGNode*>::const_iterator it = x.sourceNodes.begin(); it != x.sourceNodes.end(); ++it) {
                 createModelFromDagNode( *it );
+                createLeanDag( nodesMap[*it] );
             }
         }
     }
@@ -94,7 +103,26 @@ void Model::addSourceNode( const DAGNode *sourceNode ) {
     else {
         
         createModelFromDagNode( sourceNode );
+        createLeanDag( nodesMap[sourceNode] );
     }
+}
+
+
+void Model::createLeanDag(const DAGNode *fatDagNode) {
+    fatDagNode->createLeanDag( leanNodesMap );
+    
+    /* insert new nodes in dagNodes member frame and direct access vector */
+    std::map<const DAGNode*, InferenceDagNode*>::iterator i = leanNodesMap.begin();
+    
+    while ( i != leanNodesMap.end() ) {
+        
+        InferenceDagNode* theNewNode = (*i).second;
+        ++i;
+            
+        // insert in direct access vector
+        leanDagNodes.push_back( theNewNode );
+    }
+    
 }
 
 /**
@@ -278,6 +306,20 @@ int Model::findIndexInVector(const std::vector<RbDagNodePtr>& v, const DAGNode* 
 }
 
 
+/** Find the offset of the node p in the vector v. */
+int Model::findIndexInVector(const std::vector<InferenceDagNode*>& v, const InferenceDagNode* p) const {
+    
+	int cnt = 0;
+    for (std::vector<InferenceDagNode*>::const_iterator i=v.begin(); i!=v.end(); i++) 
+    {
+		cnt++;
+		if ( (*i) == p )
+			return cnt;
+    }
+	return -1;
+}
+
+
 /** Get class name of object */
 const std::string& Model::getClassName(void) { 
     
@@ -391,6 +433,81 @@ void Model::printValue(std::ostream& o) const {
         const std::set<VariableNode*> &children = (*i)->getChildren();
 		for (std::set<VariableNode*>::const_iterator j=children.begin(); j != children.end(); j++) {   	
 			int idx = findIndexInVector( dagNodes, *j );
+			msg << idx << " (" << long(*j) << ") ";
+        }
+		if (children.size() == 0)
+			msg << "No Children";
+		RBOUT(msg.str());
+		msg.str("");
+    }
+	
+    RBOUT("-------------------------------------");
+    
+    printLeanValue(o);
+}
+
+
+
+/** Print value for user */
+void Model::printLeanValue(std::ostream& o) const {
+    
+	/* print the information on the model */
+	std::ostringstream msg;
+	RBOUT("\n");
+    msg << "Model with " << leanDagNodes.size() << " vertices";
+	RBOUT(msg.str());
+	msg.str("");
+	RBOUT("-------------------------------------");
+	int cnt = 0;
+    for (std::vector<InferenceDagNode*>::const_iterator i=leanDagNodes.begin(); i!=leanDagNodes.end(); i++) {   	
+		msg << "Vertex " << ++cnt;
+		std::string nameStr = msg.str();
+		size_t nameStrSize = nameStr.size();
+		for (size_t j=0; j<18-nameStrSize; j++)
+			nameStr += " ";
+		nameStr += (*i)->getName() + " (" + long((const DAGNode*)*i) + ")";
+		RBOUT(nameStr);
+		msg.str("");
+        
+		msg << "   Type         = " << typeid(*(*i)).name();
+        
+		RBOUT(msg.str());
+		msg.str("");
+		
+        if ( typeid(**i) == typeid(DeterministicInferenceNode) ) {
+            InferenceDagNode* dnode = *i;
+            DeterministicInferenceNode* node = static_cast<DeterministicInferenceNode*>( dnode );
+            msg << "   Function     = " << node->getFunction()->toString();
+        } else if ( typeid(**i) == typeid(StochasticInferenceNode) ) {
+            InferenceDagNode* dnode = *i;
+            StochasticInferenceNode* node = static_cast<StochasticInferenceNode*>( dnode );
+            msg << "   Distribution     = " << node->getDistribution()->toString();
+        }
+		if ( msg.str() != "" )
+			RBOUT(msg.str());
+		msg.str("");
+        
+        msg << "   Value        = " << long( (*i)->getValue().value );
+        
+		if ( msg.str() != "" )
+			RBOUT(msg.str());
+		msg.str("");
+		
+		msg << "   Parents      = ";
+		const std::set<InferenceDagNode*> &parents = (*i)->getParents();
+		for (std::set<InferenceDagNode*>::const_iterator j=parents.begin(); j != parents.end(); j++) {   	
+			int idx = findIndexInVector( leanDagNodes, (*j) );
+			msg << idx << " (" << long(*j) << ") ";
+        }
+		if (parents.size() == 0)
+			msg << "No Parents";
+		RBOUT(msg.str());
+		msg.str("");
+		
+		msg << "   Children     = ";
+        const std::set<VariableInferenceNode*> &children = (*i)->getChildren();
+		for (std::set<VariableInferenceNode*>::const_iterator j=children.begin(); j != children.end(); j++) {   	
+			int idx = findIndexInVector( leanDagNodes, *j );
 			msg << idx << " (" << long(*j) << ") ";
         }
 		if (children.size() == 0)

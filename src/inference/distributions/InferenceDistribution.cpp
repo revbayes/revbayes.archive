@@ -8,6 +8,9 @@
 
 #include "InferenceDistribution.h"
 
+#include <typeinfo>
+#include <string>
+
 
 /**
  * Compute the joind ln pdf.
@@ -242,4 +245,20 @@ void InferenceDistribution::setObservedValue(const RbValue<void *> &v) {
     // delegate to derived class' implementation
     setInternalObservedValue( v );
     
+}
+
+
+std::string InferenceDistribution::toString( void ) const {
+    std::string name = typeid(*this).name();
+    name += " (";
+    
+    for (std::vector<RbValue<void*> >::const_iterator i = members.begin(); i != members.end(); ++i) {
+        if ( i != members.begin() ) {
+            name += ", ";
+        }
+        name += long( i->value );
+    }
+    name += ")";
+    
+    return name;
 }

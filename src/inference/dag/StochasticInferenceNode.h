@@ -58,8 +58,8 @@ public:
     StochasticInferenceNode&            operator=(const StochasticInferenceNode& x);                        //!< Assignment operator
     
     // Basic utility functions
-    void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
-        
+    InferenceDistribution*              getDistribution(void) const;
+    
     // StochasticInferenceNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
