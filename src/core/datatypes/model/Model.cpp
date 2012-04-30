@@ -477,11 +477,15 @@ void Model::printLeanValue(std::ostream& o) const {
         if ( typeid(**i) == typeid(DeterministicInferenceNode) ) {
             InferenceDagNode* dnode = *i;
             DeterministicInferenceNode* node = static_cast<DeterministicInferenceNode*>( dnode );
-            msg << "   Function     = " << node->getFunction()->toString();
+            msg << "   Function     = ";
+            std::string func = node->getFunction()->toString();
+            msg << func;
         } else if ( typeid(**i) == typeid(StochasticInferenceNode) ) {
             InferenceDagNode* dnode = *i;
             StochasticInferenceNode* node = static_cast<StochasticInferenceNode*>( dnode );
-            msg << "   Distribution     = " << node->getDistribution()->toString();
+            msg << "   Distribution     = ";
+            std::string dist =  node->getDistribution()->toString();
+            msg << dist;
         }
 		if ( msg.str() != "" )
 			RBOUT(msg.str());

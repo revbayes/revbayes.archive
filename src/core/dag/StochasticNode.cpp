@@ -478,22 +478,22 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
     copy->needsLikelihoodRecalculation  = needsLikelihoodRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
-    std::map<std::string, const Variable*>& params     = distribution->getMembers();
+    const std::vector<const Variable*>& params     = distribution->getParameters();
     
     // first we need to remove the copied params
-//    copy->distribution->clear();
+    copy->distribution->clear();
     
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::vector<const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
         
         // clone the i-th member and get the clone back
-        const DAGNode* theParam = i->second->getDagNode();
+        const DAGNode* theParam = (*i)->getDagNode();
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         DAGNode* theParamClone = theParam->cloneDAG( newNodes );
         
         // set the clone of the member as the member of the clone
         // \TODO: We should check that this does destroy the dependencies of the parameters.
         // Instead of creating a new variable we might need to get the pointer to the variable from somewhere.
-        copy->distribution->setMember(i->first, new Variable( theParamClone) );
+        copy->distribution->setMember("", new Variable( theParamClone) );
 
         copy->addParentNode( theParamClone );
         theParamClone->addChildNode( copy );
@@ -625,17 +625,17 @@ InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, Infere
     leanValue.value = value->getLeanValue( leanValue.lengths );
     
     /* Create a lean DAG node */
-    StochasticInferenceNode* copy = new StochasticInferenceNode(leanValue, leanDistribution);
+    StochasticInferenceNode* copy = new StochasticInferenceNode(leanValue, leanDistribution, name);
     newNodes[ this ] = copy;
     
     /* Set the copy params to their matches in the new DAG */
-    std::map<std::string, const Variable*>& params     = distribution->getMembers();
+    const std::vector<const Variable*>& params     = distribution->getParameters();
     
     std::vector<RbValue<void*> > leanArgs;
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::vector<const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
         
         // clone the i-th member and get the clone back
-        const DAGNode* theParam = i->second->getDagNode();
+        const DAGNode* theParam = (*i)->getDagNode();
         
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         InferenceDagNode* theParamClone = theParam->createLeanDag( newNodes );

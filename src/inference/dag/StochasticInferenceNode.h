@@ -50,7 +50,7 @@ class StochasticInferenceNode : public VariableInferenceNode {
 public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
-    StochasticInferenceNode(const RbValue<void*> &v, InferenceDistribution* dist);                          //!< Construct from distribution (raw object)
+    StochasticInferenceNode(const RbValue<void*> &v, InferenceDistribution* dist, const std::string &n);    //!< Construct from distribution (raw object)
     StochasticInferenceNode(const StochasticInferenceNode& x);                                              //!< Copy constructor
     virtual                            ~StochasticInferenceNode(void);                                      //!< Destructor
     

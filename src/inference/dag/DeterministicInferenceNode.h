@@ -33,7 +33,7 @@ class InferenceFunction;
 class DeterministicInferenceNode : public VariableInferenceNode {
     
 public:
-    DeterministicInferenceNode(const RbValue<void*> &bal, InferenceFunction* func);                               //!< Constructor with function
+    DeterministicInferenceNode(const RbValue<void*> &bal, InferenceFunction* func, const std::string &n);     //!< Constructor with function
     DeterministicInferenceNode(const DeterministicInferenceNode& x);                      //!< Copy Constructor
     virtual                                ~DeterministicInferenceNode(void);                                            //!< Destructor
     

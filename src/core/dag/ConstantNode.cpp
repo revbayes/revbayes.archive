@@ -111,7 +111,7 @@ InferenceDagNode* ConstantNode::createLeanDag(std::map<const DAGNode *, Inferenc
     leanValue.value = value->getLeanValue( leanValue.lengths );
     
     /* Create a lean DAG node */
-    ConstantInferenceNode* copy = new ConstantInferenceNode( leanValue );
+    ConstantInferenceNode* copy = new ConstantInferenceNode( leanValue, name );
     newNodes[ this ] = copy;
     
     /* Make sure the children create a lean copy of themselves too */

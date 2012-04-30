@@ -7,20 +7,31 @@
 //
 
 #include "InferenceFunction.h"
-#include <typeinfo>
+#include <sstream>
 #include <string>
+#include <typeinfo>
 
 std::string InferenceFunction::toString( void ) const {
-    std::string name = typeid(*this).name();
-    name += " (";
+    std::string name = "";
+    std::stringstream o;
+    o << typeid(*this).name();
+    o << " (";
     
     for (std::vector<RbValue<void*> >::const_iterator i = members.begin(); i != members.end(); ++i) {
         if ( i != members.begin() ) {
-            name += ", ";
+            o << ", ";
         }
-        name += long( i->value );
+        const RbValue<void*>& val = *i;
+        if ( val.value == NULL ) {
+            o << "NULL";
+        }
+        else {
+            o << long( val.value );
+        }
     }
-    name += ")";
+    o << ")";
+    
+    name = o.str();
     
     return name;
 }

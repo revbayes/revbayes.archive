@@ -22,19 +22,8 @@
 
 
 /** Constructor from value class */
-ConstantInferenceNode::ConstantInferenceNode( const RbValue<void*> &val ) : InferenceDagNode( val ) {
+ConstantInferenceNode::ConstantInferenceNode( const RbValue<void*> &val, const std::string &n ) : InferenceDagNode( val, n ) {
     
-}
-
-/** Copy constructor */
-ConstantInferenceNode::ConstantInferenceNode( const ConstantInferenceNode &x ) : InferenceDagNode( x ) {
-    value = x.value;
-}
-
-
-/** Destructor. We own the object, so we will delete it. */
-ConstantInferenceNode::~ConstantInferenceNode(void) {
-//    delete value;
 }
 
 

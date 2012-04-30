@@ -34,7 +34,13 @@ ParserDistribution::ParserDistribution( const std::string &n, const MemberRules&
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ), name( p.name ) {
+ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ), name( p.name ), params( p.params ) {
+}
+
+
+
+void ParserDistribution::clear( void ) {
+    params.clear();
 }
 
 
@@ -105,6 +111,10 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
     return methods;
 }    
 
+const std::vector<const Variable*>& ParserDistribution::getParameters( void ) const {
+    return params;
+}
+
 
 const RbLanguageObject& ParserDistribution::getTemplateRandomVariable( void ) const {
     return *randomValue;
@@ -117,7 +127,7 @@ const TypeSpec& ParserDistribution::getVariableType( void ) const {
 
 
 void ParserDistribution::setMemberVariable(std::string const &name, const Variable *var) {
-//    parameters.push_back( var );
+    params.push_back( var );
     
 }
 

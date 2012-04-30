@@ -64,7 +64,7 @@ public:
     
     
 protected:
-    InferenceDagNode(const RbValue<void*> &val);                                                                                        //!< Constructor of empty node
+    InferenceDagNode(const RbValue<void*> &val, const std::string &n);                                                                  //!< Constructor of filled node
     InferenceDagNode(const InferenceDagNode& x);                                                                                        //!< Copy constructor
     
     virtual void                                        keepAffected(void);                                                             //!< Keep value of affected nodes

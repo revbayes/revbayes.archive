@@ -30,7 +30,7 @@
 
 
 /** Constructor from distribution */
-StochasticInferenceNode::StochasticInferenceNode( const RbValue<void*> &v, InferenceDistribution* dist ) : VariableInferenceNode( v ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
+StochasticInferenceNode::StochasticInferenceNode( const RbValue<void*> &v, InferenceDistribution* dist, const std::string &n ) : VariableInferenceNode( v, n ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
     
 }
 
@@ -47,6 +47,7 @@ StochasticInferenceNode::StochasticInferenceNode( const StochasticInferenceNode&
 /** Destructor */
 StochasticInferenceNode::~StochasticInferenceNode( void ) {
     
+    delete distribution;
 }
 
 

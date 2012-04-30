@@ -38,6 +38,8 @@ class ParserDistribution : public MemberObject  {
 public:
     virtual                            ~ParserDistribution(void) {}                                                                       //!< Destructor
     
+//    ParserDistribution&                 operator=(const ParserDistribution& p);
+    
     // Basic utility functions
     virtual ParserDistribution*         clone(void) const = 0;                                                              //!< Clone object
     static const std::string&           getClassName(void);                                                                 //!< Get class name
@@ -47,7 +49,9 @@ public:
     virtual const MemberRules&          getMemberRules(void) const = 0;                                                     //!< Get member rules
     
     // Member object functions you may want to override
+    virtual void                        clear(void);                                                                        //!< Clear the arguments
     virtual const MethodTable&          getMethods(void) const;                                                             //!< Get member methods
+    const std::vector<const Variable*>& getParameters() const;
     virtual const TypeSpec&             getVariableType(void) const;                                                        //!< Get random variable type
     virtual const RbLanguageObject&     getTemplateRandomVariable(void) const;                                              //!< Get the template ranom variable
     
@@ -69,7 +73,9 @@ protected:
     
     std::string                         name;
     MemberRules                         memberRules;
+    std::vector<const Variable*>        params;
     RbLanguageObject*                   randomValue;
+
 private:
     
     Real                                functionValueLnPdf;

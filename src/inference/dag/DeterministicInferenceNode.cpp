@@ -24,7 +24,7 @@
 #include <iostream>
 
 /** Constructor of empty deterministic node */
-DeterministicInferenceNode::DeterministicInferenceNode( const RbValue<void*> &v, InferenceFunction* func ) : VariableInferenceNode( v ), needsUpdate( true ), function( func ) {
+DeterministicInferenceNode::DeterministicInferenceNode( const RbValue<void*> &v, InferenceFunction* func, const std::string &n ) : VariableInferenceNode( v, n ), needsUpdate( true ), function( func ) {
     
     
     
@@ -33,7 +33,7 @@ DeterministicInferenceNode::DeterministicInferenceNode( const RbValue<void*> &v,
 
 /** Copy constructor */
 DeterministicInferenceNode::DeterministicInferenceNode( const DeterministicInferenceNode& x ) : VariableInferenceNode( x ) {
-    
+    function = x.function->clone();
     
 }
 

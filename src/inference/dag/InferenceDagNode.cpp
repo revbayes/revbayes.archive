@@ -10,12 +10,12 @@
 #include "VariableInferenceNode.h"
 
 
-InferenceDagNode::InferenceDagNode(const RbValue<void*> &v) : value( v ) {
+InferenceDagNode::InferenceDagNode(const RbValue<void*> &v, const std::string &n) : value( v ), name( n ) {
     
 }
 
 
-InferenceDagNode::InferenceDagNode(const InferenceDagNode &d) : value( d.value ) {
+InferenceDagNode::InferenceDagNode(const InferenceDagNode &d) : value( d.value ), name( d.name ) {
     
 }
 

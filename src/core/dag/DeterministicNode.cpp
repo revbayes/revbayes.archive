@@ -178,7 +178,6 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& ne
     
     /* Set the copy arguments to their matches in the new DAG */
     std::vector<Argument>& args      = function->getArguments();
-    std::vector<Argument>& copyArgs  = ( copy->function->getArguments() );
     
     // clear the copy arguments
     copy->function->clear();
@@ -236,7 +235,7 @@ InferenceDagNode* DeterministicNode::createLeanDag(std::map<const DAGNode *, Inf
     leanValue.value = value->getLeanValue( leanValue.lengths );
     
     /* Create a lean DAG node */
-    DeterministicInferenceNode* copy = new DeterministicInferenceNode( leanValue, leanFunction);
+    DeterministicInferenceNode* copy = new DeterministicInferenceNode( leanValue, leanFunction, name);
     newNodes[ this ] = copy;
     
     /* Set the copy arguments to their matches in the new DAG */

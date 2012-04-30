@@ -29,9 +29,7 @@
 class ConstantInferenceNode : public InferenceDagNode {
     
 public:
-    ConstantInferenceNode(const RbValue<void*> &val);                                                               //!< Constructor
-    ConstantInferenceNode(const ConstantInferenceNode &x);                                                          //!< Copy constructor
-    virtual                             ~ConstantInferenceNode(void);                                               //!< Destructor
+    ConstantInferenceNode(const RbValue<void*> &val, const std::string &n);                                         //!< Constructor
         
     
     // DAG functions
