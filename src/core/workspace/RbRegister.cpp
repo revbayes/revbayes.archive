@@ -72,14 +72,8 @@
 #include "FileMonitor.h"
 #include "Mcmc.h"
 #include "Mixture.h"
-#include "Move_changeClassProbabilities.h"
-#include "Move_mmultinomial.h"
-#include "Move_mscale.h"
-#include "Move_msimplex.h"
-#include "Move_mslide.h"
-#include "Move_reallocate.h"
-#include "Move_reallocateAll.h"
 #include "ObjectMonitor.h"
+#include "ParserMove.h"
 #include "Plate.h"
 #include "Simulate.h"
 #include "TreePlate.h"
@@ -99,6 +93,9 @@
 #include "Dist_lnorm.h"
 #include "Dist_topologyunif.h"
 #include "Dist_unif.h"
+
+/* Moves */
+#include "Move_scale.h"
 
 /// Parser functions ///
 
@@ -240,18 +237,18 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "mcmc",          new Mcmc()              );
         addTypeWithConstructor( "fileMonitor",   new FileMonitor()       );
         addTypeWithConstructor( "mixture",       new Mixture()           );
-        addTypeWithConstructor( "mmultinomial",  new Move_mmultinomial() );
         addTypeWithConstructor( "model",         new Model()             );
-        addTypeWithConstructor( "msimplex",      new Move_msimplex()     );
-        addTypeWithConstructor( "mslide",        new Move_mslide()       );
-        addTypeWithConstructor( "mscale",        new Move_mscale()       );
-        addTypeWithConstructor( "mreallocate",    new Move_reallocate()       );
-        addTypeWithConstructor( "mreallocateAll",    new Move_reallocateAll()       );
-        addTypeWithConstructor( "mchangeClassProbabilities",    new Move_changeClassProbabilities()       );
         addTypeWithConstructor( "plate",         new Plate()             );
         addTypeWithConstructor( "objectMonitor", new ObjectMonitor()     );
         addTypeWithConstructor( "simulate",      new Simulate()          );
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
+
+        /* Add moves */
+        MemberRules mScaleMemberRules;
+        mScaleMemberRules.push_back( new ValueRule("var", RealPos::getClassTypeSpec() ) );
+        mScaleMemberRules.push_back( new ValueRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        addTypeWithConstructor("mscale",    new ParserMove( new Move_scale(), "Scale", mScaleMemberRules ) );
+
         
         /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
         // \TODO: Does this really make sense to use the general character type?! (Sebastian)
