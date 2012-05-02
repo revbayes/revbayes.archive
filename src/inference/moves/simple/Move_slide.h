@@ -32,7 +32,8 @@ class Move_slide : public InferenceMoveSimple {
 
         // Basic utility functions
         Move_slide*                 clone(void) const;                                                      //!< Clone object
-
+        void                        setArguments(const std::vector<InferenceDagNode*> & args);
+    
 	protected:
         double                      performSimpleMove(void);                                                          //!< Perform move
         void                        rejectSimpleMove(void);

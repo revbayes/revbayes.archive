@@ -93,12 +93,6 @@ void DAGNode::addChildNode(VariableNode *c) {
 }
 
 
-/* Add a monitor */
-void DAGNode::addMonitor(Monitor *m) {
-    monitors.push_back( m );
-}
-
-
 /** Decrement the reference count. */
 size_t DAGNode::decrementReferenceCount( void ) {
     refCount--;
@@ -112,29 +106,6 @@ size_t DAGNode::decrementReferenceCount( void ) {
  * These functions are implemented here.
  */
 const RbLanguageObject& DAGNode::executeOperation(std::string const &name, const std::vector<Argument>& args) {
-    
-    
-    if ( name == "addMonitor") {
-        
-        // add the monitor to our set of monitors
-        Monitor* theMonitor = const_cast<Monitor*>( static_cast<const Monitor*>( &args[0].getVariable().getValue() ) );
-        monitors.push_back( theMonitor );
-        
-        return RbNullObject::getInstance();
-    } else if ( name == "removeMonitor") {
-        
-        // remove the monitor from our set of monitors
-        Monitor* theMonitor = const_cast<Monitor*>( static_cast<const Monitor*>( &args[0].getVariable().getValue() ) );
-        
-        for (std::vector<Monitor*>::iterator i = monitors.begin(); i != monitors.end(); ++i) {
-            if ( *i == theMonitor ) {
-                monitors.erase( i );
-                break;
-            }
-        }
-        
-        return RbNullObject::getInstance();
-    }
     
     throw RbException("No method with name '" + name + "' available for DAG nodes.");
 }
@@ -212,27 +183,11 @@ const MethodTable& DAGNode::getMethods(void) const {
     static bool        methodsSet = false;
     
     if ( methodsSet == false ) {
-        
-        // method "addMonitor"
-        ArgumentRules* addMonitorArgRules = new ArgumentRules();
-        addMonitorArgRules->push_back( new ValueRule("x", Monitor::getClassTypeSpec() ) );
-        methods.addFunction("addMonitor", new DagNodeFunction( RbVoid_name, addMonitorArgRules) );
-        
-        // method "removeMonitor"
-        ArgumentRules* removeMonitorArgRules = new ArgumentRules();
-        removeMonitorArgRules->push_back( new ValueRule("x", Monitor::getClassTypeSpec() ) );
-        methods.addFunction("removeMonitor", new DagNodeFunction( RbVoid_name, removeMonitorArgRules) );
 
         methodsSet = true;
     }   
     
     return methods;
-}
-
-
-/* Get the moves */
-const std::vector<Monitor*>& DAGNode::getMonitors( void ) const {
-    return monitors;
 }
 
 /** Get name of DAG node from its surrounding objects */

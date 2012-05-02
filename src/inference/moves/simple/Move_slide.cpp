@@ -74,3 +74,9 @@ void Move_slide::rejectSimpleMove( void ) {
     
 }
 
+
+void Move_slide::setArguments(const std::vector<InferenceDagNode *> &args) {
+    
+}
+
+

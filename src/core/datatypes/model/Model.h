@@ -26,8 +26,6 @@
 
 class ArgumentRule;
 class DAGNode;
-class Monitor;
-class Move;
 class StochasticNode;
 
 
@@ -35,7 +33,6 @@ class Model : public MemberObject {
 
     public:
                                                 Model(void);                                                //!< Default constructor for a Model object
-//                                                Model(const std::vector<DAGNode*>& sinkNodes);              //!< Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. 
                                                 Model(const Model& x);                                      //!< Copy constructor for a Model object.
 
         // Assignment operator
@@ -54,6 +51,7 @@ class Model : public MemberObject {
     
         // Model functions
         const std::set<const DAGNode*>&         getSourceNodes(void) const;                                 // get the source node to pull copies of the model
+        const std::map<const DAGNode*, InferenceDagNode*>&  getNodesMap(void) const;
 // Sebastian: These functions are commented out because they violate our const-correctness!
 //        const std::vector<RbDagNodePtr>&        getDAGNodes(void) const { return dagNodes; }                //!< Return the DAGNodes in the model graph.
 //        const std::vector<const Monitor*>&      getMonitors(void) const { return monitors; }
@@ -69,14 +67,10 @@ class Model : public MemberObject {
         // Member variables
         std::vector<RbDagNodePtr>               dagNodes;                                                   //!< The DAG nodes contained in this model
         std::vector<InferenceDagNode*>          leanDagNodes;
-        std::vector<Move*>                      moves;                                                      //!< The modes asssociated with this model
-        std::vector<Monitor*>                   monitors;                                                   //!< The monitors associated with this model
         std::set<const DAGNode*>                sourceNodes;                                                //!< The source node for this model
     
         std::map<const DAGNode*, RbDagNodePtr>  nodesMap;
         std::map<const DAGNode*, InferenceDagNode*>  leanNodesMap;
-        std::map<Monitor*, Monitor*>            monitorMap;    
-        std::map<Move*, Move*>                  moveMap;
 };
 
 #endif

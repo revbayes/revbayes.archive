@@ -63,3 +63,9 @@ void Move_scale::rejectSimpleMove( void ) {
     value.value[0] = storedValue.value[0];
 }
 
+
+void Move_scale::setArguments(const std::vector<InferenceDagNode *> &args) {
+    
+}
+
+

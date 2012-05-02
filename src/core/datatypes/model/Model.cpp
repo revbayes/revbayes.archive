@@ -30,6 +30,7 @@
 #include "Monitor.h"
 #include "Move.h"
 #include "ParserDistribution.h"
+#include "ParserMove.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
@@ -66,8 +67,6 @@ Model& Model::operator=( const Model& x ) {
     if ( this != &x ) {
 
         /* Free old model */
-        monitorMap.clear();
-        moveMap.clear();
         leanNodesMap.clear();
         nodesMap.clear();
         dagNodes.clear();
@@ -197,91 +196,7 @@ void Model::createModelFromDagNode(const DAGNode *theSourceNode) {
     for (std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator>::iterator i = nodeNeedToBeRemoved.begin(); i != nodeNeedToBeRemoved.end(); i++) {
         nodesMap.erase(*i);
     }
-    
-    /////////////////////////
-    // now we clone the moves
-    
-    // we first empty our current vector of moves
-//    moves.clear();
-        
-    // next, we iterate over all dag nodes to collect the move
-    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
-        // get all moves for this node
-        const DAGNode* orgNode = i->first;
-        if ( orgNode->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
-            const StochasticNode* orgStochNode = static_cast<const StochasticNode*>( orgNode );
-            const std::vector<Move*>& orgMoves = orgStochNode->getMoves();
             
-            for (std::vector<Move*>::const_iterator j = orgMoves.begin(); j != orgMoves.end(); ++j) {
-                // check if we already have this move in our list
-                std::map<Move*,Move*>::iterator k = moveMap.find( *j );
-                
-                Move* clonedMove = NULL;
-                // create a new move if necessary
-                if ( k == moveMap.end() ) {
-                    clonedMove = (*j)->clone();
-                    
-                    // add the new move to the moves map
-                    moveMap.insert( std::pair<Move*, Move*>(*j, clonedMove) );
-                    
-                    // add the new move to our moves vector
-                    moves.push_back( clonedMove );
-                    
-                }
-                else {
-                    clonedMove = k->second;
-                }
-                
-                // add the clone DAG node to the cloned move
-                clonedMove->addDagNode( static_cast<StochasticNode*>( (DAGNode*)i->second ) );
-                
-                // add the cloned move to the cloned DAG node
-                static_cast<StochasticNode*>( (DAGNode*)i->second )->addMove( clonedMove );
-            }
-        }
-    }
-    
-    ////////////////////////////
-    // now we clone the monitors
-    
-    // we first empty our current vector of monitors
-//    monitors.clear();
-    
-    // next, we iterate over all dag nodes to collect the move
-    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
-        // get all moves for this node
-        const DAGNode* orgNode = i->first;
-        
-        const std::vector<Monitor*>& orgMonitors = orgNode->getMonitors();
-        
-        for (std::vector<Monitor*>::const_iterator j = orgMonitors.begin(); j != orgMonitors.end(); ++j) {
-            // check if we already have this move in our list
-            std::map<Monitor*,Monitor*>::iterator k = monitorMap.find( *j );
-            
-            Monitor* clonedMonitor = NULL;
-            // create a new move if necessary
-            if ( k == monitorMap.end() ) {
-                clonedMonitor = (*j)->clone();
-                
-                // add the new monitor to the monitors map
-                monitorMap.insert( std::pair<Monitor*, Monitor*>(*j, clonedMonitor) );
-                
-                // add the new monitor to our monitors vector
-                monitors.push_back( clonedMonitor );
-            }
-            else {
-                clonedMonitor = k->second;
-            }
-            
-            // add the clone DAG node to the cloned monitor
-            clonedMonitor->addDagNode( i->second );
-            
-            // add the cloned monitor to the cloned DAG node
-            i->second->addMonitor( clonedMonitor );
-            
-        }
-    }
-        
 }
 
 
@@ -340,6 +255,11 @@ const TypeSpec& Model::getClassTypeSpec(void) {
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
+}
+
+
+const std::map<const DAGNode*, InferenceDagNode*>& Model::getNodesMap( void ) const {
+    return leanNodesMap;
 }
 
 /** Get type spec */
@@ -527,7 +447,7 @@ void Model::printLeanValue(std::ostream& o) const {
 /** Set a member variable */
 void Model::setMemberVariable(const std::string& name, const Variable* var) {
     
-    if (name == "sinknode" || name == "" ) {
+    if ( name == "sinknode" || name == "" ) {
         
         const DAGNode* theNode = var->getDagNode();
         addSourceNode( theNode );

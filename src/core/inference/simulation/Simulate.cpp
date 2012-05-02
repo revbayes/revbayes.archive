@@ -131,39 +131,39 @@ void Simulate::extractDagNodesFromModel(const Model& source) {
     std::map<Monitor*, Monitor*> monitorMap;
     
     // next, we iterate over all dag nodes to collect the move
-    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
-        // get all moves for this node
-        const DAGNode* orgNode = i->first;
-        
-        const std::vector<Monitor*>& orgMonitors = orgNode->getMonitors();
-        
-        for (std::vector<Monitor*>::const_iterator j = orgMonitors.begin(); j != orgMonitors.end(); ++j) {
-            // check if we already have this move in our list
-            std::map<Monitor*,Monitor*>::iterator k = monitorMap.find( *j );
-            
-            Monitor* clonedMonitor = NULL;
-            // create a new move if necessary
-            if ( k == monitorMap.end() ) {
-                clonedMonitor = (*j)->clone();
-                
-                // add the new monitor to the monitors map
-                monitorMap.insert( std::pair<Monitor*, Monitor*>(*j, clonedMonitor) );
-                
-                // add the new monitor to our monitors vector
-                monitors.push_back( clonedMonitor );
-            }
-            else {
-                clonedMonitor = k->second;
-            }
-            
-            // add the clone DAG node to the cloned monitor
-            clonedMonitor->addDagNode( i->second );
-            
-            // add the cloned monitor to the cloned DAG node
-            i->second->addMonitor( clonedMonitor );
-            
-        }
-    }
+//    for (std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin(); i != nodesMap.end(); ++i) {
+//        // get all moves for this node
+//        const DAGNode* orgNode = i->first;
+//        
+//        const std::vector<Monitor*>& orgMonitors = orgNode->getMonitors();
+//        
+//        for (std::vector<Monitor*>::const_iterator j = orgMonitors.begin(); j != orgMonitors.end(); ++j) {
+//            // check if we already have this move in our list
+//            std::map<Monitor*,Monitor*>::iterator k = monitorMap.find( *j );
+//            
+//            Monitor* clonedMonitor = NULL;
+//            // create a new move if necessary
+//            if ( k == monitorMap.end() ) {
+//                clonedMonitor = (*j)->clone();
+//                
+//                // add the new monitor to the monitors map
+//                monitorMap.insert( std::pair<Monitor*, Monitor*>(*j, clonedMonitor) );
+//                
+//                // add the new monitor to our monitors vector
+//                monitors.push_back( clonedMonitor );
+//            }
+//            else {
+//                clonedMonitor = k->second;
+//            }
+//            
+//            // add the clone DAG node to the cloned monitor
+//            clonedMonitor->addDagNode( i->second );
+//            
+//            // add the cloned monitor to the cloned DAG node
+//            i->second->addMonitor( clonedMonitor );
+//            
+//        }
+//    }
     
 }
 

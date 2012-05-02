@@ -20,6 +20,7 @@
 
 #include <vector>
 
+class InferenceDagNode;
 class StochasticInferenceNode;
 
 class InferenceMove {
@@ -29,6 +30,7 @@ public:
      
     // functions you have to override
     virtual InferenceMove*                  clone(void) const = 0;                                                                //!< Clone the move to get an independent copy
+    virtual void                            setArguments(const std::vector<InferenceDagNode*>& args) = 0;
 //    virtual std::vector<StochasticNode*>&   getDagNodes(void) = 0;                                                                  //!< Get the nodes vector
     
     // functions you should not override

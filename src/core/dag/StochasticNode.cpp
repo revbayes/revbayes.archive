@@ -187,12 +187,6 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 }
 
 
-/* Add a move */
-void StochasticNode::addMove(Move *m) {
-    moves.push_back( m );
-}
-
-
 /** Are any distribution params touched? Get distribution params and check if any one is touched */
 bool StochasticNode::areDistributionParamsTouched( void ) const {
 
@@ -833,14 +827,7 @@ std::string StochasticNode::debugInfo(void) const {
  */
 const RbLanguageObject& StochasticNode::executeOperation(const std::string& name, const std::vector<Argument>& args) {
     
-    if (name == "addMove") {
-        
-        // add the move to our set of moves
-        Move* theMove = const_cast<Move*>( static_cast<const Move*>( &args[0].getVariable().getValue() ) );
-        moves.push_back( theMove );
-        
-        return RbNullObject::getInstance();
-    } else if (name == "clamp") {
+    if (name == "clamp") {
         
         // get the observed value
         const RbLanguageObject& observedValue = args[0].getVariable().getValue();
@@ -850,20 +837,6 @@ const RbLanguageObject& StochasticNode::executeOperation(const std::string& name
         
         // we keep the new value
         keep();
-        
-        return RbNullObject::getInstance();
-    } 
-    else if (name == "removeMove") {
-        
-        // remove the move to our set of moves
-        Move* theMove = const_cast<Move*>( static_cast<const Move*>( &args[0].getVariable().getValue() ) );
-        
-        for (std::vector<Move*>::iterator i = moves.begin(); i != moves.end(); ++i) {
-            if ( *i == theMove ) {
-                moves.erase( i );
-                break;
-            }
-        }
         
         return RbNullObject::getInstance();
     } 
@@ -938,20 +911,11 @@ const MethodTable& StochasticNode::getMethods(void) const {
     
     if ( methodsSet == false ) 
     {
-        // method "addMove"
-        ArgumentRules* addMoveArgRules = new ArgumentRules();
-        addMoveArgRules->push_back( new ValueRule("x", Move::getClassTypeSpec() ) );
-        methods.addFunction("addMove", new DagNodeFunction( RbVoid_name, addMoveArgRules) );
         
         // method "clamp"
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ValueRule("x", RbLanguageObject::getClassTypeSpec() ) );
         methods.addFunction("clamp", new DagNodeFunction( RbVoid_name, clampArgRules) );
-        
-        // method "removeMove"
-        ArgumentRules* removeMoveArgRules = new ArgumentRules();
-        removeMoveArgRules->push_back( new ValueRule("x", Move::getClassTypeSpec() ) );
-        methods.addFunction("removeMove", new DagNodeFunction( RbVoid_name, removeMoveArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &DAGNode::getMethods() );
@@ -959,12 +923,6 @@ const MethodTable& StochasticNode::getMethods(void) const {
     }
     
     return methods;
-}
-
-
-/* Get the moves */
-const std::vector<Move*>& StochasticNode::getMoves( void ) const {
-    return moves;
 }
 
 

@@ -21,6 +21,7 @@
 #define Mcmc_H
 
 #include "MemberObject.h"
+#include "Model.h"
 #include "RbVector.h"
 #include "Variable.h"
 
@@ -29,7 +30,8 @@
 
 class ArgumentRule;
 class DAGNode;
-class Model;
+class InferenceMonitor;
+class InferenceMove;
 
 
 class Mcmc: public MemberObject {
@@ -40,35 +42,36 @@ public:
     virtual                    ~Mcmc(void) {}                                                                           //!< Destructor
 
     // Basic utility functions
-    Mcmc*                       clone(void) const;                                                                      //!< Clone object
-    static const std::string&   getClassName(void);                                                                     //!< Get class name
-    static const TypeSpec&      getClassTypeSpec(void);                                                                 //!< Get class type spec
-    const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object 
+    Mcmc*                           clone(void) const;                                                                      //!< Clone object
+    static const std::string&       getClassName(void);                                                                     //!< Get class name
+    static const TypeSpec&          getClassTypeSpec(void);                                                                 //!< Get class type spec
+    const TypeSpec&                 getTypeSpec(void) const;                                                                //!< Get language type of the object 
 
     // Member variable rules
-    const MemberRules&          getMemberRules(void) const;                                                             //!< Get member rules
-    void                        setMemberVariable(const std::string& name, const Variable* var);                              //!< Only constants allowed
+    const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
+    void                            setMemberVariable(const std::string& name, const Variable* var);                              //!< Only constants allowed
 
     // Member method inits
-    const MethodTable&          getMethods(void) const;                                                                 //!< Get methods
+    const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
         
     // Mcmc functions
-    void                        run(size_t ngen);                                                                       //!< Update the chain
+    void                            run(size_t ngen);                                                                       //!< Update the chain
 
 protected:
-    const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
+    const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
 
  
 private:
-    void                        extractDagNodesFromModel( const Model& source );
+    void                            addMove(const DAGNode* m);
+    void                            extractDagNodesFromModel( const Model& source );
     
     // parameters
-    RbConstVariablePtr          model;
+    Model                           model;
 
     // Member variables
-    std::vector<RbDagNodePtr>   dagNodes;                
-    RbVector<Move>              moves;
-    RbVector<Monitor>           monitors;
+    std::vector<RbDagNodePtr>       dagNodes;                
+    std::vector<InferenceMove*>     moves;
+    std::vector<InferenceMonitor*>  monitors;
 
 };
 

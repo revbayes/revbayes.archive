@@ -72,13 +72,11 @@ class DAGNode : public RbLanguageObject {
 
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                                  //!< Add child node
-        void                                                addMonitor(Monitor* m);                                                         //!< Add a monitor to this node
         size_t                                              decrementReferenceCount(void);
         void                                                getAffectedNodes(std::set<StochasticNode* >& affected);                         //!< Mark and get affected nodes
         const std::set<VariableNode*>&                      getChildren(void) const { return children; }                                    //!< Return children
         const RbObject&                                     getElement(size_t index) const;                                                 //!< Get element at index (container function)
         RbObject&                                           getElement(size_t index);                                                       //!< Get element at index (container function)
-        const std::vector<Monitor*>&                        getMonitors(void) const;                                                        //!< Get the vector of monitors
         const std::string&                                  getName(void) const;                                                            //!< get the name
         const std::set<DAGNode*>&                           getParents(void) const;                                                         //!< Return parents
         const Plate*                                        getPlate(void) const;                                                           //!< Get the plate on which this DAG node sits on.
@@ -114,9 +112,7 @@ class DAGNode : public RbLanguageObject {
         std::set<VariableNode* >                            children;                                                                       //!< Set of children nodes
         std::set<DAGNode*>                                  parents;                                                                        //!< Set of parent nodes
         size_t                                              refCount;
-    
-        std::vector<Monitor*>                               monitors;
-        
+            
         // Member value variables
         std::string                                         name;                                                                           //!< The name/identifier of the DAG node
         const Plate*                                        plate;

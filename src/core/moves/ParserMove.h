@@ -44,40 +44,34 @@ public:
     virtual const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
     
     // Member methods
-    virtual const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
+//    virtual const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
     void                                    setMemberVariable(const std::string& name, const Variable* var);                        //!< set the member variables
     
     // Move functions you have to override
-    void                                    acceptMove(void);                                                                   //!< Accept the move
-    std::vector<StochasticNode*>&           getDagNodes(void);                                                                  //!< Get the nodes vector
-    double                                  performMove(double& probRatio);                                                     //!< Perform the move
-    void                                    rejectMove(void);                                                                   //!< Reject the move
-//    void                            replaceDagNodes(std::vector<StochasticNode*> &n) = 0;                                   //!< Set the nodes vector
+//    void                                    acceptMove(void);                                                                       //!< Accept the move
+//    std::vector<StochasticNode*>&           getDagNodes(void);                                                                      //!< Get the nodes vector
+//    double                                  performMove(double& probRatio);                                                         //!< Perform the move
+//    void                                    rejectMove(void);                                                                       //!< Reject the move
+//    void                                    replaceDagNode(const StochasticNode *oldNode, StochasticNode *newNode);                 //!< Set the nodes vector
     
-    // Move functions you should not override
-    virtual void                            addDagNode(StochasticNode* d);                                                                 //!< Add a DAG node to this move
-    double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
-    double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
-    void                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
+    // functions you should not override
+    InferenceMove*                          getLeanMove(void) const;
+    const std::vector<const DAGNode*>&      getMoveArgumgents(void) const;
+//    virtual void                            addDagNode(StochasticNode* d);                                                                 //!< Add a DAG node to this move
+//    double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
+//    double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
+//    void                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
     
 protected:
     
-    virtual const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
-    
-    // parameters
-    RbConstVariablePtr                      weight;
-    
-    // Hidden member variables
-    Natural                                 numAccepted;                                                                            //!< Number of times accepted
-    Natural                                 numTried;                                                                               //!< Number of times tried
-    RealPos                                 acceptanceR;
-    
-    std::vector<StochasticNode*>            nodes;
+//    virtual const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
     
 private:
     InferenceMove*                          move;
     TypeSpec                                typeSpec;
 
+    std::vector<const DAGNode*>             args;
+    MemberRules                             memberRules;
 };
 
 #endif

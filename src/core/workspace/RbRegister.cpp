@@ -96,6 +96,7 @@
 
 /* Moves */
 #include "Move_scale.h"
+#include "Move_slide.h"
 
 /// Parser functions ///
 
@@ -243,13 +244,23 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "simulate",      new Simulate()          );
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
 
+        ///////////////
         /* Add moves */
+        ///////////////
+        
+        /* Scaling move */
         MemberRules mScaleMemberRules;
         mScaleMemberRules.push_back( new ValueRule("var", RealPos::getClassTypeSpec() ) );
         mScaleMemberRules.push_back( new ValueRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         addTypeWithConstructor("mscale",    new ParserMove( new Move_scale(), "Scale", mScaleMemberRules ) );
 
-        
+        /* Sliding move */
+        MemberRules mSlideMemberRules;
+        mSlideMemberRules.push_back( new ValueRule("var", Real::getClassTypeSpec() ) );
+        mSlideMemberRules.push_back( new ValueRule("delta", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        mSlideMemberRules.push_back( new ValueRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        addTypeWithConstructor("mslide",    new ParserMove( new Move_slide(), "Slide", mSlideMemberRules ) );
+
         /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
         // \TODO: Does this really make sense to use the general character type?! (Sebastian)
         addTypeWithConstructor( "taxonData",     new TaxonData( Character::getClassName() ) );

@@ -77,14 +77,12 @@ public:
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
 
     // StochasticNode functions
-    void                                addMove(Move* m);                                                   //!< Add a move to this node
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
     void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
     void                                markForRecalculation(void);                                         //!< Flag this node for recalculation
     const ParserDistribution&           getDistribution(void) const;                                        //!< Get distribution (const)
     ParserDistribution&                 getDistribution(void);                                              //!< Get distribution (non-const)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
-    const std::vector<Move*>&           getMoves(void) const;                                               //!< Get the vector of moves
     bool                                isNotInstantiated(void) const;
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
     bool                                isEliminated() const;
@@ -134,9 +132,7 @@ private:
     RbLanguageObject*                   storedValue;                                                        //!< Stored value
 
     VariableType                        type;
-    
-    std::vector<Move*>                  moves;
-    
+        
     // probability arrays and likelihood arrays for summed out computations
     std::vector<double>                 probabilities;
     std::vector<double>                 likelihoods;
