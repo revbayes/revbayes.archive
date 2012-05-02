@@ -37,14 +37,14 @@
 
 
 /** Constructor */
-ParserMove::ParserMove( InferenceMove* m, const std::string &n, const MemberRules& mr ) : MemberObject( mr ), move( m ), memberRules( mr ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( MemberObject::getClassTypeSpec() ) ) {
+ParserMove::ParserMove( InferenceMove* m, const std::string &n, const MemberRules& mr, const std::set<std::string> &attrNames ) : MemberObject( mr ), move( m ), memberRules( mr ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( MemberObject::getClassTypeSpec() ) ), attributeNames( attrNames ) {
 
 }
 
 /** Copy Constructor. 
  * We don't copy the nodes and we don't own them.
  */
-ParserMove::ParserMove(const ParserMove &m) : MemberObject(m), move( m.move->clone() ), memberRules( m.memberRules ), typeSpec( m.typeSpec ), args( m.args ) {
+ParserMove::ParserMove(const ParserMove &m) : MemberObject(m), move( m.move->clone() ), memberRules( m.memberRules ), typeSpec( m.typeSpec ), args( m.args ), attributeNames( m.attributeNames ) {
     
 }
 
@@ -172,7 +172,7 @@ const MemberRules& ParserMove::getMemberRules( void ) const {
 //}
 
 
-const std::vector<const DAGNode*>& ParserMove::getMoveArgumgents( void ) const {
+const std::vector<RbConstDagNodePtr>& ParserMove::getMoveArgumgents( void ) const {
     return args;
 }
 
@@ -191,8 +191,14 @@ void ParserMove::printValue(std::ostream &o) const {
 /** We catch here the setting of the member variables to store our parameters. */
 void ParserMove::setMemberVariable(std::string const &name, const Variable* var) {
     
-    args.push_back( var->getDagNode() );
-    
+    if ( attributeNames.find( name ) != attributeNames.end() ) {
+        RbValue<void*> lValue;
+        lValue.value = var->getValue().getLeanValue( lValue.lengths );
+        move->setAttribute( name, lValue );
+    }
+    else {
+        args.push_back( var->getDagNode() );
+    }
 }
 
 

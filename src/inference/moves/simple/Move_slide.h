@@ -23,6 +23,7 @@
 #include <string>
 
 #include "InferenceMoveSimple.h"
+#include "RbValue.h"
 
 
 class Move_slide : public InferenceMoveSimple {
@@ -32,16 +33,18 @@ class Move_slide : public InferenceMoveSimple {
 
         // Basic utility functions
         Move_slide*                 clone(void) const;                                                      //!< Clone object
-        void                        setArguments(const std::vector<InferenceDagNode*> & args);
+        void                        setAttribute(const std::string &name, const RbValue<void*> &a);
     
 	protected:
         double                      performSimpleMove(void);                                                          //!< Perform move
         void                        rejectSimpleMove(void);
+        void                        setInternalArguments(const std::vector<StochasticInferenceNode*> & args);
     
     private:
 
         // parameters
         double                      delta;
+        RbValue<double*>            value;
 };
 
 #endif

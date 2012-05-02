@@ -74,3 +74,11 @@ void InferenceMove::resetCounters( void ) {
     numTried = 0;
     numAccepted = 0;
 }
+
+
+void InferenceMove::setArguments(const std::vector<StochasticInferenceNode *> &args) {
+    nodes = args;
+    
+    // delegate
+    setInternalArguments( args );
+}

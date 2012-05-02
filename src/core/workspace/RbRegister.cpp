@@ -174,6 +174,7 @@
 
 #include <sstream>
 #include <vector>
+#include <set>
 #include <cstdlib>
 
 /** Initialize global workspace */
@@ -251,15 +252,22 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Scaling move */
         MemberRules mScaleMemberRules;
         mScaleMemberRules.push_back( new ValueRule("var", RealPos::getClassTypeSpec() ) );
+        mScaleMemberRules.push_back( new ValueRule("rate", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         mScaleMemberRules.push_back( new ValueRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        addTypeWithConstructor("mscale",    new ParserMove( new Move_scale(), "Scale", mScaleMemberRules ) );
+        std::set<std::string> mScaleAttributeNames;
+        mScaleAttributeNames.insert("rate");
+        mScaleAttributeNames.insert("weight");
+        addTypeWithConstructor("mscale",    new ParserMove( new Move_scale(), "Scale", mScaleMemberRules, mScaleAttributeNames ) );
 
         /* Sliding move */
         MemberRules mSlideMemberRules;
         mSlideMemberRules.push_back( new ValueRule("var", Real::getClassTypeSpec() ) );
         mSlideMemberRules.push_back( new ValueRule("delta", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         mSlideMemberRules.push_back( new ValueRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        addTypeWithConstructor("mslide",    new ParserMove( new Move_slide(), "Slide", mSlideMemberRules ) );
+        std::set<std::string> mSlideAttributeNames;
+        mSlideAttributeNames.insert("delta");
+        mSlideAttributeNames.insert("weight");
+        addTypeWithConstructor("mslide",    new ParserMove( new Move_slide(), "Slide", mSlideMemberRules, mSlideAttributeNames ) );
 
         /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
         // \TODO: Does this really make sense to use the general character type?! (Sebastian)

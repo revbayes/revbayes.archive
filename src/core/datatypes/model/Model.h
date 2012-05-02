@@ -19,6 +19,7 @@
 #define Model_H
 
 #include "MemberObject.h"
+#include "RbConstDagNodePtr.h"
 
 #include <ostream>
 #include <string>
@@ -53,7 +54,7 @@ class Model : public MemberObject {
         const std::set<const DAGNode*>&         getSourceNodes(void) const;                                 // get the source node to pull copies of the model
         const std::map<const DAGNode*, InferenceDagNode*>&  getNodesMap(void) const;
 // Sebastian: These functions are commented out because they violate our const-correctness!
-//        const std::vector<RbDagNodePtr>&        getDAGNodes(void) const { return dagNodes; }                //!< Return the DAGNodes in the model graph.
+        const std::vector<InferenceDagNode*>&   getLeanDagNodes(void) const { return leanDagNodes; }        //!< Return the DAGNodes in the model graph.
 //        const std::vector<const Monitor*>&      getMonitors(void) const { return monitors; }
 //        const std::vector<const Move*>&         getMoves(void) const { return moves; }
 
@@ -71,6 +72,7 @@ class Model : public MemberObject {
     
         std::map<const DAGNode*, RbDagNodePtr>  nodesMap;
         std::map<const DAGNode*, InferenceDagNode*>  leanNodesMap;
+        std::map<const DAGNode*, InferenceDagNode*> orgNodesMap;
 };
 
 #endif

@@ -31,7 +31,7 @@ public:
         
     // DAG function you should not override
     void                                        addParentNode( InferenceDagNode* p);                                                        //!< Add parent node
-//    StochasticNode*                             getFactorRoot(void) const;
+    StochasticInferenceNode*                    getFactorRoot(void) const;
     bool                                        isTouched(void) const { return touched; }                                                   //!< Is node touched by move or parser?
     void                                        markChildrenForRecalculation(void);                                                         //!< Mark all my children for recalculation
     void                                        removeParentNode(InferenceDagNode* p) { parents.erase(p); }                                 //!< Remove a child node

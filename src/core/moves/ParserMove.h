@@ -21,6 +21,7 @@
 #include "InferenceMove.h"
 #include "MemberObject.h"
 #include "Natural.h"
+#include "RbConstDagNodePtr.h"
 #include "RealPos.h"
 
 class RandomNumberGenerator;
@@ -29,7 +30,7 @@ class RandomNumberGenerator;
 class ParserMove : public MemberObject {
     
 public:
-    ParserMove(InferenceMove* m, const std::string &n, const MemberRules& mr);                                                                                           //!< Default constructor
+    ParserMove(InferenceMove* m, const std::string &n, const MemberRules& mr, const std::set<std::string> &attrNames);       //!< Constructor
     ParserMove(const ParserMove& m);                                                                                                            //!< Copy constructor
     virtual                                 ~ParserMove(void);                                                                             //!< Destructor
     
@@ -56,7 +57,7 @@ public:
     
     // functions you should not override
     InferenceMove*                          getLeanMove(void) const;
-    const std::vector<const DAGNode*>&      getMoveArgumgents(void) const;
+    const std::vector<RbConstDagNodePtr>&   getMoveArgumgents(void) const;
 //    virtual void                            addDagNode(StochasticNode* d);                                                                 //!< Add a DAG node to this move
 //    double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
 //    double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
@@ -70,7 +71,8 @@ private:
     InferenceMove*                          move;
     TypeSpec                                typeSpec;
 
-    std::vector<const DAGNode*>             args;
+    std::set<std::string>                   attributeNames;
+    std::vector<RbConstDagNodePtr>          args;
     MemberRules                             memberRules;
 };
 

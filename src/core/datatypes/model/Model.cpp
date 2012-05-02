@@ -258,7 +258,7 @@ const TypeSpec& Model::getClassTypeSpec(void) {
 }
 
 
-const std::map<const DAGNode*, InferenceDagNode*>& Model::getNodesMap( void ) const {
+const std::map<const DAGNode *, InferenceDagNode *>& Model::getNodesMap( void ) const {
     return leanNodesMap;
 }
 

@@ -69,7 +69,7 @@ private:
     Model                           model;
 
     // Member variables
-    std::vector<RbDagNodePtr>       dagNodes;                
+    std::vector<InferenceDagNode*>  dagNodes;                
     std::vector<InferenceMove*>     moves;
     std::vector<InferenceMonitor*>  monitors;
 

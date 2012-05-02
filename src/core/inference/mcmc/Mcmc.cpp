@@ -17,9 +17,10 @@
  * $Id$
  */
 
-#include "ConstantNode.h"
+#include "ConstantInferenceNode.h"
 #include "DagNodeContainer.h"
 #include "Integer.h"
+#include "InferenceDagNode.h"
 #include "InferenceMove.h"
 #include "InferenceMonitor.h"
 #include "Mcmc.h"
@@ -38,7 +39,7 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "RbVector.h"
-#include "StochasticNode.h"
+#include "StochasticInferenceNode.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -47,6 +48,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <typeinfo>
 
 
 
@@ -83,18 +85,31 @@ void Mcmc::addMove( const DAGNode *m ) {
         // we need to extract the lean move
         InferenceMove* leanMove = move.getLeanMove()->clone();
         
+        // create a named DAG node map
+        std::map<std::string, InferenceDagNode *> nodesMap;
+        for (std::vector<InferenceDagNode *>::iterator i = dagNodes.begin(); i != dagNodes.end(); ++i) {
+            const std::string n = (*i)->getName();
+            if ( n != "" ) {
+                nodesMap.insert( std::pair<std::string, InferenceDagNode *>(n, *i) );
+            }
+        }
+        
         // replace the DAG nodes of the move to point to our cloned DAG nodes
-        const std::vector<const DAGNode*> orgNodes = move.getMoveArgumgents();
-        const std::map<const DAGNode*, InferenceDagNode*>& nodesMap = model.getNodesMap();
-        std::vector<InferenceDagNode*> clonedNodes;
-        for (std::vector<const DAGNode*>::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
-            const DAGNode* orgNode = *i;
-            const std::map<const DAGNode*, InferenceDagNode*>::const_iterator& it = nodesMap.find( orgNode );
+        const std::vector<RbConstDagNodePtr> orgNodes = move.getMoveArgumgents();
+        std::vector<StochasticInferenceNode*> clonedNodes;
+        for (std::vector<RbConstDagNodePtr>::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
+            const DAGNode *orgNode = *i;
+            const std::map<std::string, InferenceDagNode*>::const_iterator& it = nodesMap.find( orgNode->getName() );
             if ( it == nodesMap.end() ) {
                 std::cerr << "Could not find the DAG node with name \"" << orgNode->getName() << "\" in the cloned model." << std::endl;
             }
-            InferenceDagNode* clonedNode = it->second;
-            clonedNodes.push_back( clonedNode );
+            else {
+                InferenceDagNode* clonedNode = it->second;
+                if ( typeid( *clonedNode ) != typeid( StochasticInferenceNode ) ) {
+                    throw RbException("We do not support moves on non-stochastic nodes.");
+                }
+                clonedNodes.push_back( static_cast<StochasticInferenceNode *>( clonedNode ) );
+            }
         }
         leanMove->setArguments( clonedNodes );
         
@@ -133,7 +148,7 @@ const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, co
  * First we clone the entire DAG, then we clone the moves and the monitors and set the new nodes appropriately.
  */
 void Mcmc::extractDagNodesFromModel(const Model& source) {
-    
+    dagNodes = source.getLeanDagNodes();
     
 }
 
@@ -264,7 +279,7 @@ void Mcmc::run(size_t ngen) {
     /* Get initial lnProbability of model */
     
     // first we touch all nodes so that the likelihood is dirty
-    for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+    for (std::vector<InferenceDagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
         (*i)->touch();
     }
     
@@ -273,10 +288,10 @@ void Mcmc::run(size_t ngen) {
     size_t numSummedOver = 0;
     size_t numEliminated = 0;
     std::vector<double> initProb;
-    for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-        DAGNode* node = (*i);
-        if (node->isTypeSpec(StochasticNode::getClassTypeSpec())) {
-            StochasticNode* stochNode = dynamic_cast<StochasticNode*>( node );
+    for (std::vector<InferenceDagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+        InferenceDagNode* node = (*i);
+        if ( typeid(*node) == typeid(StochasticInferenceNode) ) {
+            StochasticInferenceNode* stochNode = dynamic_cast<StochasticInferenceNode*>( node );
             // if this node is eliminated, then we do not need to add its log-likelihood
             if ( stochNode->isNotInstantiated() ) {
                 
@@ -305,7 +320,7 @@ void Mcmc::run(size_t ngen) {
                 
                 // if one of my parents is eliminated, then my likelihood shouldn't be added either
                 bool eliminated = false;
-                for (std::set<DAGNode*>::iterator j = stochNode->getParents().begin(); j != stochNode->getParents().end(); j++) {
+                for (std::set<InferenceDagNode *>::iterator j = stochNode->getParents().begin(); j != stochNode->getParents().end(); j++) {
     
                     if ( (*j)->isNotInstantiated() ) {
                         eliminated = true;
@@ -328,7 +343,7 @@ void Mcmc::run(size_t ngen) {
     }
     
     // now we keep all nodes so that the likelihood is stored
-    for (std::vector<RbDagNodePtr>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+    for (std::vector<InferenceDagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
         (*i)->keep();
     }
     

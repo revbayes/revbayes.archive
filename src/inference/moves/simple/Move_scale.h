@@ -33,11 +33,12 @@ class Move_scale : public InferenceMoveSimple {
 
         // Basic utility functions
         Move_scale*                     clone(void) const;                                                      //!< Clone object
-        void                            setArguments(const std::vector<InferenceDagNode*> & args);
-
+        void                            setAttribute(const std::string &name, const RbValue<void*> &a);
+    
 	protected:
         double                          performSimpleMove(void);                                                //!< Perform move
         void                            rejectSimpleMove(void);
+        void                            setInternalArguments(const std::vector<StochasticInferenceNode*> & args);
     
         // parameters
         double                          lambda;

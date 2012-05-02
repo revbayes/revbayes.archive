@@ -18,6 +18,8 @@
 #include "Move_scale.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbException.h"
+#include "StochasticInferenceNode.h"
 
 #include <cmath>
 #include <iostream>
@@ -64,8 +66,26 @@ void Move_scale::rejectSimpleMove( void ) {
 }
 
 
-void Move_scale::setArguments(const std::vector<InferenceDagNode *> &args) {
+void Move_scale::setInternalArguments(const std::vector<StochasticInferenceNode *> &args) {
     
+    if ( args.size() > 1 ) {
+        throw RbException("Scaling move was initiated with too many DAG nodes.");
+    }
+    
+    const RbValue<void*> v = args[0]->getValue();
+    value.value     = static_cast<double *>( v.value );
+    value.lengths   = v.lengths;
+}
+
+
+void Move_scale::setAttribute(std::string const &name, const RbValue<void*> &a) {
+    
+    if ( name == "rate" ) {
+        lambda = static_cast<double*>( a.value )[0];
+    }
+    else if ( name == "weight" ) {
+        weight = static_cast<double*>( a.value )[0];
+    }
 }
 
 

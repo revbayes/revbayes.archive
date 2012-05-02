@@ -27,6 +27,12 @@ void VariableInferenceNode::addParentNode(InferenceDagNode *p) {
 }
 
 
+
+StochasticInferenceNode* VariableInferenceNode::getFactorRoot( void ) const {
+    return factorRoot;
+}
+
+
 /** 
  * Mark all our children for recalculation. 
  * The difference between this function and touch is that touch also results into a call of likelihood updates.
