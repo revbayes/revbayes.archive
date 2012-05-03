@@ -130,6 +130,11 @@ void RbString::printValue(std::ostream& o) const {
 }
 
 
+void RbString::setLeanValue(const RbValue<void *> &val) {
+    value = *static_cast<std::string *>( val.value );
+}
+
+
 /** Global operator for appending to std::string */
 std::string operator+( const std::string& A, const RbString& B ) {
 

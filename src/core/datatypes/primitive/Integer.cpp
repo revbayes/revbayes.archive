@@ -172,6 +172,11 @@ void Integer::printValue(std::ostream &o) const {
 }
 
 
+void Integer::setLeanValue(const RbValue<void *> &val) {
+    value = *static_cast<int *>( val.value );
+}
+
+
 
 ////////////////////////////////// Global Integer operators ///////////////////////////////////
 

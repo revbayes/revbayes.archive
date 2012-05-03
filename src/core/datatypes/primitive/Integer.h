@@ -52,6 +52,7 @@ public:
     virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
     size_t                      memorySize() const { return sizeof( int ); }                            //!< Get the size
     virtual void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+    void                        setLeanValue(const RbValue<void*> &val);                                //!< Set the value of the object from a basic (lean) element pointer.
 
     // Getters and setters
     virtual void                setValue(int x) { value = x; }                                          //!< Set value

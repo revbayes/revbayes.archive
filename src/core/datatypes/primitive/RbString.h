@@ -49,6 +49,7 @@ class RbString : public RbLanguageObject {
         std::string&                getValueReference(void) { return value; }           //!< Get value reference
         size_t                      memorySize() const { return sizeof( value ); }      //!< Get the size
         void                        printValue(std::ostream& o) const;                  //!< Print value (for user)
+        void                        setLeanValue(const RbValue<void*> &val);            //!< Set the value of the object from a basic (lean) element pointer.
 
         // RbString functions
         void                        append(const RbString& s) { value += s.value; }     //!< Append string

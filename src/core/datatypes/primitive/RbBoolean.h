@@ -46,6 +46,7 @@ class RbBoolean : public RbLanguageObject {
         bool                            isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         size_t                          memorySize() const { return sizeof( bool ); }                           //!< Get the size
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        void                            setLeanValue(const RbValue<void*> &val);                                //!< Set the value of the object from a basic (lean) element pointer.
 
         // Getters and setters
         void                            setValue(bool x) { value = x; }                                         //!< Set value

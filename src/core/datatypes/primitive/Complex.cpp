@@ -195,6 +195,11 @@ void Complex::printValue(std::ostream &o) const {
 }
 
 
+void Complex::setLeanValue(const RbValue<void *> &val) {
+    value = *static_cast<std::complex<double> *>( val.value );
+}
+
+
 ////////////////////////////////// Global Complex operators ///////////////////////////////////
 
 

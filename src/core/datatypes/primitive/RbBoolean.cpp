@@ -120,3 +120,8 @@ void RbBoolean::printValue(std::ostream &o) const {
     o << (value ? "true" : "false");
 }
 
+
+void RbBoolean::setLeanValue(const RbValue<void *> &val) {
+    value = *static_cast<bool *>( val.value );
+}
+

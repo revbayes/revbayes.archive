@@ -59,6 +59,7 @@ class Complex : public RbLanguageObject {
         std::complex<double>&       getValueReference(void) { return value; }                               //!< Get value reference
         size_t                      memorySize() const { return sizeof( std::complex<double> ); }           //!< Get the size
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        void                        setLeanValue(const RbValue<void*> &val);                                //!< Set the value of the object from a basic (lean) element pointer.
 
         // Getters and setters
         void                        setValue(std::complex<double> x) { value = x; }                         //!< Set value
