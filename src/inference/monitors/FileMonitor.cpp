@@ -31,7 +31,7 @@ FileMonitor::FileMonitor(void) : InferenceMonitor(), outStream() {
 }
 
 
-FileMonitor::FileMonitor(const FileMonitor &f) : InferenceMonitor( f ), outStream(f.filename.c_str()) {
+FileMonitor::FileMonitor(const FileMonitor &f) : InferenceMonitor( f ), outStream() {
     
     filename = f.filename;
     separator = f.separator;
@@ -42,6 +42,11 @@ FileMonitor::FileMonitor(const FileMonitor &f) : InferenceMonitor( f ), outStrea
 FileMonitor* FileMonitor::clone(void) const {
 
     return new FileMonitor(*this);
+}
+
+
+void FileMonitor::closeStream() {
+    outStream.close();
 }
 
 
@@ -100,7 +105,7 @@ void FileMonitor::monitor(long gen) {
             tmpObject->printValue(outStream);
         }
 
-	outStream << std::endl;
+        outStream << std::endl;
     
     }
 }
@@ -110,7 +115,7 @@ void FileMonitor::monitor(long gen) {
 void FileMonitor::openStream(void) {
     
     // open the stream to the file
-    outStream.open(filename.c_str());
+    outStream.open( filename.c_str(), std::fstream::out );
     
 }
 

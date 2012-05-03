@@ -605,6 +605,20 @@ void Mcmc::run(size_t ngen) {
     }
 
     std::cerr << "Finished chain" << std::endl;
+    
+    
+    /* Open the output file and print headers */
+    std::cerr << "Closing files ..." << std::endl;
+    for (size_t i=0; i<monitors.size(); i++) {
+        // get the monitor
+        if ( typeid(*monitors[i]) == typeid(FileMonitor) ) {
+            
+            FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors[i] );
+            
+            // open the file stream for the monitor
+            theMonitor->closeStream();
+        }
+    }
 
     std::cout << std::endl;
 }

@@ -37,6 +37,10 @@ double InferenceMoveSimple::performMove( double &probRatio ) {
     
     double hr = performSimpleMove();
     
+    // touch the node
+    nodes[0]->touch();
+    
+    // calculate the probability ratio for the node we just changed
     probRatio = nodes[0]->getLnProbabilityRatio();
     
     std::set<StochasticInferenceNode* > affectedNodes;

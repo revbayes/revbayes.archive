@@ -224,6 +224,11 @@ void Real::printValue(std::ostream &o) const {
 }
 
 
+void Real::setLeanValue(const RbValue<void *> &val) {
+    value = *static_cast<double *>( val.value );
+}
+
+
 ////////////////////////////////// Global Real operators ///////////////////////////////////
 
 

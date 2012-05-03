@@ -49,7 +49,7 @@ public:
     void                                printHeader(void);                                                  //!< Print header
     
 private:
-    std::ofstream                       outStream;
+    std::fstream                        outStream;
 
     // parameters
     std::string                         filename;

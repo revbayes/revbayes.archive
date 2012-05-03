@@ -69,6 +69,7 @@ class Real : public RbLanguageObject {
         size_t                      memorySize() const { return sizeof( double ); }                         //!< Get the size
         virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         virtual void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        void                        setLeanValue(const RbValue<void*> &val);                                //!< Set the value of the object from a basic (lean) element pointer.
 
         // Getters and setters
         virtual void                setValue(double x) { value = x; }                                       //!< Set value

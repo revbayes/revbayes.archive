@@ -157,6 +157,14 @@ bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 /* @TODO: Temporary default implementation. (Sebastian: Needs removal and shuld be pure virtual!) */
 void RbObject::setLeanValue(const RbValue<void *> &val) {
     
+    RbValue<void *> oldVal;
+    oldVal.value = getLeanValue( oldVal.lengths );
+    if ( val.value == oldVal.value ) {
+        std::cerr << "Assignment to same memory address.\n";
+    }
+    else {
+        std::cerr << "Assignment to new memory address.\n";
+    }
 }
 
 
