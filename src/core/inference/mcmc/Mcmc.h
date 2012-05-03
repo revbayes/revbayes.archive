@@ -41,11 +41,15 @@ public:
     Mcmc(const Mcmc &x);                                                                                                //!< Copy Constructor
     virtual                    ~Mcmc(void) {}                                                                           //!< Destructor
 
+    // operator overloading
+    Mcmc&                           operator=(const Mcmc &m);
+    
     // Basic utility functions
     Mcmc*                           clone(void) const;                                                                      //!< Clone object
     static const std::string&       getClassName(void);                                                                     //!< Get class name
     static const TypeSpec&          getClassTypeSpec(void);                                                                 //!< Get class type spec
     const TypeSpec&                 getTypeSpec(void) const;                                                                //!< Get language type of the object 
+    void                            printValue(std::ostream& o) const;                                                      //!< Print value for user
 
     // Member variable rules
     const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
@@ -63,6 +67,9 @@ protected:
  
 private:
     void                            addMove(const DAGNode* m);
+    void                            addMove(const InferenceMove* m);
+    void                            addMonitor(const DAGNode* m);
+    void                            addMonitor(const InferenceMonitor* m);
     void                            extractDagNodesFromModel( const Model& source );
     
     // parameters

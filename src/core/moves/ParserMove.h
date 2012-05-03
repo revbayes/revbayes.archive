@@ -56,7 +56,7 @@ public:
 //    void                                    replaceDagNode(const StochasticNode *oldNode, StochasticNode *newNode);                 //!< Set the nodes vector
     
     // functions you should not override
-    InferenceMove*                          getLeanMove(void) const;
+    const InferenceMove*                    getLeanMove(void) const;
     const std::vector<RbConstDagNodePtr>&   getMoveArgumgents(void) const;
 //    virtual void                            addDagNode(StochasticNode* d);                                                                 //!< Add a DAG node to this move
 //    double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio

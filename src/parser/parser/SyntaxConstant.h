@@ -20,8 +20,6 @@
 
 #include <iostream>
 
-class VectorString;
-
 
 /**
  * This is the class used to hold constants in the syntax tree.

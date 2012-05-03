@@ -15,6 +15,7 @@
  * $Id$
  */
 
+#include "InferenceDistributionContinuous.h"
 #include "Move_slide.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -42,30 +43,27 @@ double Move_slide::performSimpleMove( void ) {
 
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
+    
+    // copy all value
+    storedValue.value[0] = value.value[0];
 
-    // Get relevant values
-//    StochasticNode* nodePtr = node;
-//    const RealPos& d = static_cast<const RealPos&>( delta->getValue() );
-//
-//    double curVal  =  static_cast<const Real&>( nodePtr->getValue() ).getValue();
-//    const Real& min = static_cast<const ParserDistributionContinuous&>( nodePtr->getDistribution() ).getMin();
-//    const Real& max = static_cast<const ParserDistributionContinuous&>( nodePtr->getDistribution() ).getMax();
-//    double minVal  = min.getValue();
-//    double maxVal  = max.getValue();
-//
-//    Real u      = rng->uniform01();
-//    Real newVal = curVal + ( d.getValue() * ( u - 0.5 ) );
-//
-//    /* reflect the new value */
-//    do {
-//        if ( newVal < minVal )
-//            newVal = 2.0 * minVal - newVal;
-//        else if ( newVal > maxVal )
-//            newVal = 2.0 * maxVal - newVal;
-//    } while ( newVal < minVal || newVal > maxVal );
-//
-//    // FIXME: not the most efficient way of handling multiple reflections :-P
-//
+    double min = static_cast<const InferenceDistributionContinuous&>( nodes[0]->getDistribution() ).getMin();
+    double max = static_cast<const InferenceDistributionContinuous&>( nodes[0]->getDistribution() ).getMax();
+
+    double u      = rng->uniform01();
+    double newVal = value.value[0] + ( delta * ( u - 0.5 ) );
+
+    /* reflect the new value */
+    do {
+        if ( newVal < min )
+            newVal = 2.0 * min - newVal;
+        else if ( newVal > max )
+            newVal = 2.0 * max - newVal;
+    } while ( newVal < min || newVal > max );
+
+    // FIXME: not the most efficient way of handling multiple reflections :-P
+
+    value.value[0] = newVal;
 //    nodePtr->setValue( newVal.clone() );
 	
     return 0.0;
@@ -74,6 +72,7 @@ double Move_slide::performSimpleMove( void ) {
 
 void Move_slide::rejectSimpleMove( void ) {
     
+    value.value[0] = storedValue.value[0];
 }
 
 
@@ -86,6 +85,13 @@ void Move_slide::setInternalArguments(const std::vector<StochasticInferenceNode 
     const RbValue<void*> v = args[0]->getValue();
     value.value     = static_cast<double *>( v.value );
     value.lengths   = v.lengths;
+    
+    size_t elements = 1;
+    for (size_t i = 0; i < value.lengths.size(); ++i) {
+        elements *= value.lengths[i];
+    }
+    storedValue.value = new double[elements];
+    storedValue.lengths = value.lengths;
 }
 
 

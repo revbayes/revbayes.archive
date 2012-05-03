@@ -338,8 +338,8 @@ void StochasticInferenceNode::getAffected( std::set<StochasticInferenceNode* >& 
 }
 
 
-InferenceDistribution* StochasticInferenceNode::getDistribution( void ) const {
-    return distribution;
+const InferenceDistribution& StochasticInferenceNode::getDistribution( void ) const {
+    return *distribution;
 }
 
 

@@ -26,8 +26,6 @@
 #include <ostream>
 #include <string>
 
-class VectorString;
-
 
 class Complex : public RbLanguageObject {
 

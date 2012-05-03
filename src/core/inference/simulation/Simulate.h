@@ -30,6 +30,7 @@
 class ArgumentRule;
 class DAGNode;
 class Model;
+class InferenceMonitor;
 
 
 class Simulate: public MemberObject {
@@ -69,7 +70,7 @@ private:
 
     // Member variables
     std::vector<RbDagNodePtr>   dagNodes;                
-    RbVector<Monitor>           monitors;
+    std::vector<InferenceMonitor*>  monitors;
 
 };
 

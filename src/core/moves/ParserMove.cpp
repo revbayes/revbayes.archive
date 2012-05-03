@@ -122,7 +122,7 @@ const TypeSpec& ParserMove::getClassTypeSpec(void) {
 }
 
 
-InferenceMove* ParserMove::getLeanMove( void ) const {
+const InferenceMove* ParserMove::getLeanMove( void ) const {
     return move;
 }
 

@@ -73,6 +73,7 @@
 #include "Mcmc.h"
 #include "Mixture.h"
 #include "ObjectMonitor.h"
+#include "ParserMonitor.h"
 #include "ParserMove.h"
 #include "Plate.h"
 #include "Simulate.h"
@@ -237,14 +238,30 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",          new Mcmc()              );
-        addTypeWithConstructor( "fileMonitor",   new FileMonitor()       );
         addTypeWithConstructor( "mixture",       new Mixture()           );
         addTypeWithConstructor( "model",         new Model()             );
         addTypeWithConstructor( "plate",         new Plate()             );
-        addTypeWithConstructor( "objectMonitor", new ObjectMonitor()     );
         addTypeWithConstructor( "simulate",      new Simulate()          );
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
 
+        //////////////////
+        /* Add monitors */
+        //////////////////
+        
+        /* File monitor */
+        MemberRules filemonitorMemberRules;
+        filemonitorMemberRules.push_back( new ValueRule("printgen", Natural::getClassTypeSpec(), new Natural(1) ) );
+        filemonitorMemberRules.push_back( new ValueRule("filename", RbString::getClassTypeSpec() ) );
+        filemonitorMemberRules.push_back( new ValueRule("separator", RbString::getClassTypeSpec(), new RbString(" ") ) );
+        filemonitorMemberRules.push_back( new Ellipsis( RbObject::getClassTypeSpec() ) );
+        std::set<std::string> filemonitorAttributeNames;
+        filemonitorAttributeNames.insert("printgen");
+        filemonitorAttributeNames.insert("separator");
+        filemonitorAttributeNames.insert("filename");
+        addTypeWithConstructor("filemonitor",    new ParserMonitor( new FileMonitor(), "filemonitor", filemonitorMemberRules, filemonitorAttributeNames ) );
+        
+        
+        
         ///////////////
         /* Add moves */
         ///////////////

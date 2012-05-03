@@ -42,7 +42,7 @@ double Move_scale::performSimpleMove( void ) {
     
 //    std::cerr << "Performing scale move on " << node->getName() << std::endl;
     
-    // copy all value
+    // copy all values
     storedValue.value[0] = value.value[0];
 
     // Get random number generator    

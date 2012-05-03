@@ -9,6 +9,8 @@
 #include "InferenceMove.h"
 #include "StochasticInferenceNode.h"
 
+#include <sstream>
+
 InferenceMove::InferenceMove( void ) {
     
 }
@@ -39,6 +41,11 @@ double InferenceMove::getAcceptanceRatio( void ) const {
 }
 
 
+const std::vector<StochasticInferenceNode *>& InferenceMove::getDagNodes( void ) const {
+    return nodes;
+}
+
+
 double InferenceMove::getUpdateWeight( void ) const {
     return weight;
 }
@@ -55,6 +62,16 @@ double InferenceMove::perform(double &probRatio) {
     
     // delegate the call to the derived class
     return performMove(probRatio);
+}
+
+
+void InferenceMove::printValue(std::ostream &o) const {
+    for (std::vector<StochasticInferenceNode *>::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
+        if ( i != nodes.begin() ) {
+            o << ", ";
+        }
+        o << long( (*i)->getValue().value );
+    }
 }
 
 

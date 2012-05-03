@@ -32,7 +32,6 @@ class Environment;
 class RbObject;
 class RbString;
 class TypeSpec;
-class VectorString;
 class SyntaxElement;
 
 class UserFunction :  public RbFunction {

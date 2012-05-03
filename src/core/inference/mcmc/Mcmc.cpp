@@ -61,6 +61,42 @@ Mcmc::Mcmc(const Mcmc &x) : MemberObject(x), model( x.model ) {
     
     extractDagNodesFromModel( model );
     
+    // add the moves
+    for (std::vector<InferenceMove *>::const_iterator i = x.moves.begin(); i != x.moves.end(); ++i) {
+        addMove( *i );
+    }
+    
+    // add the monitors
+    for (std::vector<InferenceMonitor *>::const_iterator i = x.monitors.begin(); i != x.monitors.end(); ++i) {
+        addMonitor( *i );
+    }
+}
+
+
+Mcmc& Mcmc::operator=(const Mcmc &m) {
+    // check for self-assignment
+    if ( &m != this ) {
+        
+        // clear all elements
+        dagNodes.clear();
+        moves.clear();
+        monitors.clear();
+        
+        // set the model first
+        model = m.model;
+        
+        // add the moves
+        for (std::vector<InferenceMove *>::const_iterator i = m.moves.begin(); i != m.moves.end(); ++i) {
+            addMove( *i );
+        }
+        
+        // add the monitors
+        for (std::vector<InferenceMonitor *>::const_iterator i = m.monitors.begin(); i != m.monitors.end(); ++i) {
+            addMonitor( *i );
+        }
+    }
+    
+    return *this;
 }
 
 
@@ -116,6 +152,132 @@ void Mcmc::addMove( const DAGNode *m ) {
         // finally, add the move to our moves list
         moves.push_back( leanMove );
     }
+}
+
+
+void Mcmc::addMove(const InferenceMove *m) {
+    // we need to extract the lean move
+    InferenceMove* leanMove = m->clone();
+    
+    // create a named DAG node map
+    std::map<std::string, InferenceDagNode *> nodesMap;
+    for (std::vector<InferenceDagNode *>::iterator i = dagNodes.begin(); i != dagNodes.end(); ++i) {
+        const std::string n = (*i)->getName();
+        if ( n != "" ) {
+            nodesMap.insert( std::pair<std::string, InferenceDagNode *>(n, *i) );
+        }
+    }
+    
+    // replace the DAG nodes of the move to point to our cloned DAG nodes
+    const std::vector<StochasticInferenceNode *>& orgNodes = m->getDagNodes();
+    std::vector<StochasticInferenceNode*> clonedNodes;
+    for (std::vector<StochasticInferenceNode *>::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
+        const StochasticInferenceNode *orgNode = *i;
+        const std::map<std::string, InferenceDagNode*>::const_iterator& it = nodesMap.find( orgNode->getName() );
+        if ( it == nodesMap.end() ) {
+            std::cerr << "Could not find the DAG node with name \"" << orgNode->getName() << "\" in the cloned model." << std::endl;
+        }
+        else {
+            InferenceDagNode* clonedNode = it->second;
+            if ( typeid( *clonedNode ) != typeid( StochasticInferenceNode ) ) {
+                throw RbException("We do not support moves on non-stochastic nodes.");
+            }
+            clonedNodes.push_back( static_cast<StochasticInferenceNode *>( clonedNode ) );
+        }
+    }
+    leanMove->setArguments( clonedNodes );
+    
+    // finally, add the move to our moves list
+    moves.push_back( leanMove );
+}
+
+
+/*
+ * Add a monitor and exchange the DAG nodes.
+ */
+void Mcmc::addMonitor( const DAGNode *m ) {
+    
+    // test whether var is a DagNodeContainer
+    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        const RbObject& objPtr = m->getValue();
+        const DagNodeContainer& container = static_cast<const DagNodeContainer&>( objPtr );
+        for (size_t i = 0; i < container.size(); ++i) {
+            const RbObject& elemPtr = container.getElement(i);
+            addMonitor(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
+        }
+    }
+    else {
+        // first, we cast the value to a parser monitor
+        const ParserMonitor &monitor = static_cast<const ParserMonitor&>( m->getValue() );
+        
+        // we need to extract the lean move
+        InferenceMonitor* leanMonitor = monitor.getLeanMonitor()->clone();
+        
+        // create a named DAG node map
+        std::map<std::string, InferenceDagNode *> nodesMap;
+        for (std::vector<InferenceDagNode *>::iterator i = dagNodes.begin(); i != dagNodes.end(); ++i) {
+            const std::string n = (*i)->getName();
+            if ( n != "" ) {
+                nodesMap.insert( std::pair<std::string, InferenceDagNode *>(n, *i) );
+            }
+        }
+        
+        // replace the DAG nodes of the monitor to point to our cloned DAG nodes
+        const std::vector<const DAGNode *> orgNodes = monitor.getMonitorArgumgents();
+        std::vector<InferenceDagNode *> clonedNodes;
+        std::vector<RbLanguageObject *> templateObjects;
+        for (std::vector<const DAGNode *>::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
+            const DAGNode *orgNode = *i;
+            const std::map<std::string, InferenceDagNode*>::const_iterator& it = nodesMap.find( orgNode->getName() );
+            if ( it == nodesMap.end() ) {
+                std::cerr << "Could not find the DAG node with name \"" << orgNode->getName() << "\" in the cloned model." << std::endl;
+            }
+            else {
+                InferenceDagNode* clonedNode = it->second;
+                clonedNodes.push_back( clonedNode );
+                templateObjects.push_back( orgNode->getValue().clone() );
+            }
+        }
+        leanMonitor->setArguments( clonedNodes );
+        leanMonitor->setTemplateObjects( templateObjects );
+        
+        // finally, add the move to our moves list
+        monitors.push_back( leanMonitor );
+    }
+}
+
+
+void Mcmc::addMonitor(const InferenceMonitor *m) {
+    // we need to extract the lean move
+    InferenceMonitor* leanMonitor = m->clone();
+    
+    // create a named DAG node map
+    std::map<std::string, InferenceDagNode *> nodesMap;
+    for (std::vector<InferenceDagNode *>::iterator i = dagNodes.begin(); i != dagNodes.end(); ++i) {
+        const std::string n = (*i)->getName();
+        if ( n != "" ) {
+            nodesMap.insert( std::pair<std::string, InferenceDagNode *>(n, *i) );
+        }
+    }
+    
+    // replace the DAG nodes of the move to point to our cloned DAG nodes
+    const std::vector<InferenceDagNode *>& orgNodes = m->getDagNodes();
+    std::vector<InferenceDagNode *> clonedNodes;
+    for (std::vector<InferenceDagNode *>::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
+        const InferenceDagNode *orgNode = *i;
+        const std::map<std::string, InferenceDagNode*>::const_iterator& it = nodesMap.find( orgNode->getName() );
+        if ( it == nodesMap.end() ) {
+            std::cerr << "Could not find the DAG node with name \"" << orgNode->getName() << "\" in the cloned model." << std::endl;
+        }
+        else {
+            InferenceDagNode* clonedNode = it->second;
+            clonedNodes.push_back( clonedNode );
+        }
+    }
+    leanMonitor->setArguments( clonedNodes );
+    
+    // finally, add the move to our moves list
+    monitors.push_back( leanMonitor );
 }
 
 /** Clone object */
@@ -186,9 +348,9 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back( new ValueRule ( "model"    , Model::getClassTypeSpec()    ) );
-        memberRules.push_back( new ValueRule( "moves"     , RbObject::getClassTypeSpec() ) );
-        //        memberRules.push_back( new ValueRule( "monitors"  , ParserMonitor::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "model"    , Model::getClassTypeSpec()    ) );
+        memberRules.push_back( new ValueRule( "moves"    , RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ValueRule( "monitors" , RbObject::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -222,6 +384,35 @@ const MethodTable& Mcmc::getMethods(void) const {
 }
 
 
+void Mcmc::printValue( std::ostream &o ) const  {
+    model.printValue( o );
+    
+    o << std::endl;
+    o << "Moves" <<  std::endl;
+    o << "-------------------------------------" << std::endl;
+    size_t move_index = 1;
+    for (std::vector<InferenceMove *>::const_iterator i = moves.begin(); i != moves.end(); ++i) {
+        o << move_index << ". Move" << std::endl;
+        o << typeid( *(*i) ).name() << " (";
+        (*i)->printValue(o);
+        o << ")" << std::endl;
+        move_index++;
+    }
+    
+    o << std::endl;
+    o << "Monitors" <<  std::endl;
+    o << "-------------------------------------" << std::endl;
+    size_t monitor_index = 1;
+    for (std::vector<InferenceMonitor *>::const_iterator i = monitors.begin(); i != monitors.end(); ++i) {
+        o << monitor_index << ". Monitor" << std::endl;
+        o << typeid( *(*i) ).name() << " (";
+        (*i)->printValue(o);
+        o << ")" << std::endl;
+        monitor_index++;
+    }
+}
+
+
 /** Allow only constant member variables */
 void Mcmc::setMemberVariable(const std::string& name, const Variable* var) {
 
@@ -234,13 +425,7 @@ void Mcmc::setMemberVariable(const std::string& name, const Variable* var) {
         
     }
     else if ( name == "monitors" ) {
-        ParserMonitor* move = static_cast<ParserMonitor*>( var->getValue().clone() );
-        
-        // exchange the DAG nodes in the move to point to our copied DAG nodes
-//        monitor->exchangeDagNode();
-        
-        // add
-//        monitors.push_back( monitor->getLeanMove() );
+        addMonitor( var->getDagNode() );
         
     }
     else {
@@ -263,16 +448,16 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Opening file and printing headers ..." << std::endl;
     for (size_t i=0; i<monitors.size(); i++) {
         // get the monitor
-//        if (monitors[i].isTypeSpec( FileMonitor::getClassTypeSpec() ) ) {
-//            
-//            FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors[i] );
-//            
-//            // open the file stream for the monitor
-//            theMonitor.openStream();
-//            
-//            // print the header information
-//            theMonitor.printHeader();
-//        }
+        if ( typeid(*monitors[i]) == typeid(FileMonitor) ) {
+            
+            FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors[i] );
+            
+            // open the file stream for the monitor
+            theMonitor->openStream();
+            
+            // print the header information
+            theMonitor->printHeader();
+        }
     }
 
 

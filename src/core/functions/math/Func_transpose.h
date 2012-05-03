@@ -23,9 +23,6 @@
 #include <string>
 #include <vector>
 
-class DAGNode;
-class VectorString;
-
 template <typename matrixType>
 class Func_transpose :  public RbFunction {
 

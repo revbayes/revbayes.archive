@@ -28,40 +28,42 @@ class StochasticInferenceNode;
 class InferenceMove {
     
 public:
-    virtual                                    ~InferenceMove(void);                                                              //!< Destructor
+    virtual                                                ~InferenceMove(void);                                                              //!< Destructor
      
     // functions you have to override
-    virtual InferenceMove*                  clone(void) const = 0;                                                                //!< Clone the move to get an independent copy
-    virtual void                            setAttribute(const std::string &name, const RbValue<void*> &a) = 0;
-    //    virtual std::vector<StochasticNode*>&   getDagNodes(void) = 0;                                                                  //!< Get the nodes vector
+    virtual InferenceMove*                                  clone(void) const = 0;                                                                //!< Clone the move to get an independent copy
+    virtual void                                            setAttribute(const std::string &name, const RbValue<void*> &a) = 0;
     
     // functions you should not override
 //    virtual void                            addDagNode(StochasticNode* d);                                                                 //!< Add a DAG node to this InferenceMove
-    void                                    accept(void);                                                                           //!< Accept the InferenceMove
-    double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
-    double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
-    double                                  perform(double& probRatio);                                                             //!< Perform the InferenceMove
-    void                                    reject(void);                                                                           //!< Reject the InferenceMove
-    void                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
-    void                                    setArguments(const std::vector<StochasticInferenceNode*>& args);
+    void                                                    accept(void);                                                                           //!< Accept the InferenceMove
+    double                                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
+    virtual const std::vector<StochasticInferenceNode*>&    getDagNodes(void) const;                                                                  //!< Get the nodes vector
+    double                                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
+    double                                                  perform(double& probRatio);                                                             //!< Perform the InferenceMove
+    void                                                    reject(void);                                                                           //!< Reject the InferenceMove
+    void                                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
+    void                                                    setArguments(const std::vector<StochasticInferenceNode*>& args);
     
+    // temporary stuff
+    void                                                    printValue(std::ostream &o) const;
 protected:
     InferenceMove();                                                                                           //!< Default constructor
     
-    virtual void                            acceptMove(void) = 0;
-    virtual double                          performMove(double &probRatio) = 0;
-    virtual void                            rejectMove(void) = 0;
-    virtual void                            setInternalArguments(const std::vector<StochasticInferenceNode*>& args) = 0;
+    virtual void                                            acceptMove(void) = 0;
+    virtual double                                          performMove(double &probRatio) = 0;
+    virtual void                                            rejectMove(void) = 0;
+    virtual void                                            setInternalArguments(const std::vector<StochasticInferenceNode*>& args) = 0;
     
     
     // parameters
-    double                                  weight;
+    double                                                  weight;
     
     // Hidden member variables
-    size_t                                  numAccepted;                                                                            //!< Number of times accepted
-    size_t                                  numTried;                                                                               //!< Number of times tried
+    size_t                                                  numAccepted;                                                                            //!< Number of times accepted
+    size_t                                                  numTried;                                                                               //!< Number of times tried
     
-    std::vector<StochasticInferenceNode*>   nodes;
+    std::vector<StochasticInferenceNode*>                   nodes;
         
 };
 

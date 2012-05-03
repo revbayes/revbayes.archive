@@ -21,8 +21,6 @@
 #include <ostream>
 #include <string>
 
-class VectorString;
-
 class Probability : public RealPos {
     
 public:

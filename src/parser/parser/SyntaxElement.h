@@ -27,7 +27,6 @@
 
 /* Forward declarations */
 class Environment;
-class VectorString;
 
 /**
  *  @brief Interface for syntax elements

@@ -27,7 +27,6 @@
 class Container;
 class RandomNumberGenerator;
 class StochasticNode;
-class VectorString;
 
 
 class MoveTree : public Move {

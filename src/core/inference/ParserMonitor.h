@@ -19,49 +19,57 @@
 #define ParserMonitor_H
 
 #include "MemberObject.h"
+#include "MemberFunction.h"
 #include "RbString.h"
 
 #include <fstream>
 #include <ostream>
+#include <set>
 #include <string>
 #include <vector>
+
+class InferenceMonitor;
 
 
 class ParserMonitor : public MemberObject {
     
 public:
     // Constructors and Destructors
-    ParserMonitor();                                                                                              //!< Default Constructor
-    ParserMonitor(const MemberRules& rules ) ;                                                                    //!< Constructor
+    ParserMonitor(InferenceMonitor* m, const std::string &n, const MemberRules &mr, const std::set<std::string> &a);    //!< Default Constructor
     ParserMonitor(const ParserMonitor &x);                                                                              //!< Copy Constructor
     virtual ~ParserMonitor(void);                                                                                 //!< Destructor
+ 
+    // overloaded operators
+    ParserMonitor&                          operator=(const ParserMonitor& m);
     
     // Basic utility functions
-    virtual ParserMonitor*              clone(void) const = 0;                                              //!< Clone object
-    static const std::string&           getClassName(void);                                                 //!< Get class name
-    static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
-    virtual const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
-    virtual void                        printValue(std::ostream& o) const;                                  //!< Print value (for user)
+    ParserMonitor*                          clone(void) const;                                                  //!< Clone object
+    static const std::string&               getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                             //!< Get class type spec
+    const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
+    void                                    printValue(std::ostream& o) const;                                  //!< Print value (for user)
     
     // Member Object Functions
-    virtual const MemberRules&          getMemberRules( void ) const;                                       //!< The member rules for a ParserMonitor
-    virtual void                        setMemberVariable(const std::string &name, const Variable* var);    //!< Set a member variable. We catch here setting of variable nodes
+    const MemberRules&                      getMemberRules(void) const;                                         //!< The member rules for a ParserMonitor
+    void                                    setMemberVariable(const std::string &name, const Variable* var);    //!< Set a member variable. We catch here setting of variable nodes
     
-    void                                addDagNode(DAGNode* d);                                             //!< Add a DAG node to this ParserMonitor
+    // access functions
+    const InferenceMonitor*                 getLeanMonitor(void) const;
+    const std::vector<const DAGNode *>&     getMonitorArgumgents(void) const;
+//    void                                addDagNode(DAGNode* d);                                             //!< Add a DAG node to this ParserMonitor
     //    std::vector<RbConstVariablePtr>&    getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
-    virtual void                        monitor(void) = 0;                                                  //!< ParserMonitor unconditionally
-    virtual void                        monitor(int gen) = 0;                                               //!< ParserMonitor at generation gen
+//    virtual void                        monitor(void) = 0;                                                  //!< ParserMonitor unconditionally
+//    virtual void                        monitor(int gen) = 0;                                               //!< ParserMonitor at generation gen
     //    void                                replaceDagNodes(std::vector<VariableNode*> &n);                     //!< Set the nodes vector
-    bool                                monitorsVariable(const RbString& varName);                          //!< Tell whether the variable with name is ParserMonitored by this ParserMonitor
-    
-protected:
-    
-    // parameters
-    RbConstVariablePtr                  printgen;
-    std::set<DAGNode*>                  nodes;
-    
+//    bool                                monitorsVariable(const RbString& varName);                          //!< Tell whether the variable with name is ParserMonitored by this ParserMonitor
+        
 private:
-    
+    std::set<std::string>                   attributeNames;
+    std::vector<const DAGNode*>             nodes;
+    MemberRules                             memberRules;
+    InferenceMonitor*                       monitor;
+    std::string                             name;
+    TypeSpec                                typeSpec;
 };
 
 #endif

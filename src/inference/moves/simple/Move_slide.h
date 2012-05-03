@@ -45,6 +45,7 @@ class Move_slide : public InferenceMoveSimple {
         // parameters
         double                      delta;
         RbValue<double*>            value;
+        RbValue<double*>            storedValue;
 };
 
 #endif

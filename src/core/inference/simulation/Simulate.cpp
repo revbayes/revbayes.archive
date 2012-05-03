@@ -77,9 +77,9 @@ const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name
         run(n);
         return RbNullObject::getInstance();
     }
-    else if ( name == "getMonitors" ) {
-        return monitors;
-    }
+//    else if ( name == "getMonitors" ) {
+//        return monitors;
+//    }
 
     return MemberObject::executeOperationSimple( name, args );
 }
@@ -299,15 +299,15 @@ void Simulate::run(size_t ndata) {
     std::cerr << "Opening file and printing headers ..." << std::endl;
     for (size_t i=0; i<monitors.size(); i++) {
         // get the monitor
-        if (monitors[i].isTypeSpec( FileMonitor::getClassTypeSpec() ) ) {
+        if ( typeid(*monitors[i]) == typeid(FileMonitor) ) {
             
-            FileMonitor& theMonitor = static_cast<FileMonitor&>( monitors[i] );
+            FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors[i] );
             
             // open the file stream for the monitor
-            theMonitor.openStream();
+            theMonitor->openStream();
             
             // print the header information
-            theMonitor.printHeader();
+            theMonitor->printHeader();
         }
         
     }
@@ -331,7 +331,7 @@ void Simulate::run(size_t ndata) {
         
         /* Monitor */
         for (size_t i=0; i<monitors.size(); i++) {
-            monitors[i].monitor(data);
+            monitors[i]->monitor(data);
         }
 
                 

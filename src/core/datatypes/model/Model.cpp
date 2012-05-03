@@ -68,6 +68,7 @@ Model& Model::operator=( const Model& x ) {
 
         /* Free old model */
         leanNodesMap.clear();
+        leanDagNodes.clear();
         nodesMap.clear();
         dagNodes.clear();
         sourceNodes.clear();
@@ -243,31 +244,12 @@ const std::string& Model::getClassName(void) {
 	return rbClassName; 
 }
 
-
-/* Get the source node to clone the model */
-const std::set<const DAGNode*>& Model::getSourceNodes( void ) const {
-    return sourceNodes;
-}
-
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
-}
-
-
-const std::map<const DAGNode *, InferenceDagNode *>& Model::getNodesMap( void ) const {
-    return leanNodesMap;
-}
-
-/** Get type spec */
-const TypeSpec& Model::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
 }
 
 
@@ -285,6 +267,25 @@ const MemberRules& Model::getMemberRules(void) const {
     }
     
     return memberRules;
+}
+
+
+const std::map<const DAGNode *, InferenceDagNode *>& Model::getNodesMap( void ) const {
+    return leanNodesMap;
+}
+
+
+/* Get the source node to clone the model */
+const std::set<const DAGNode*>& Model::getSourceNodes( void ) const {
+    return sourceNodes;
+}
+
+/** Get type spec */
+const TypeSpec& Model::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -404,7 +405,7 @@ void Model::printLeanValue(std::ostream& o) const {
             InferenceDagNode* dnode = *i;
             StochasticInferenceNode* node = static_cast<StochasticInferenceNode*>( dnode );
             msg << "   Distribution     = ";
-            std::string dist =  node->getDistribution()->toString();
+            std::string dist =  node->getDistribution().toString();
             msg << dist;
         }
 		if ( msg.str() != "" )

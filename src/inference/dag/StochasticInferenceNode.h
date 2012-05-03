@@ -58,7 +58,7 @@ public:
     StochasticInferenceNode&            operator=(const StochasticInferenceNode& x);                        //!< Assignment operator
     
     // Basic utility functions
-    InferenceDistribution*              getDistribution(void) const;
+    const InferenceDistribution&        getDistribution(void) const;
     
     // StochasticInferenceNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
