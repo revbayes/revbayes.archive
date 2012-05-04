@@ -41,16 +41,18 @@ Func_plate* Func_plate::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_plate::executeFunction(const std::vector<const RbObject *> &args) {
+const RbLanguageObject& Func_plate::execute( void ) {
     
     // get the command string
-    std::string command = static_cast<const RbString*>( args[0] )->getValue();
+    std::string command = static_cast<const RbString &>( args[0].getVariable().getValue() ).getValue();
     
     std::cerr << command << std::endl;
     
     std::vector<const Container *> ranges;
-    for (std::vector<const RbObject *>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
-        ranges.push_back( static_cast<const Container *>( *i ) );
+    for (std::vector<Argument>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
+        ranges.push_back( static_cast<const Container *>( i->getVariable().getValue().clone() ) );
+        ranges[ranges.size()-1]->printValue( std::cerr );
+        std::cerr << std::endl;
     }
     
     

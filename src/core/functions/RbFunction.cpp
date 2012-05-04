@@ -360,10 +360,9 @@ std::string RbFunction::debugInfo(void) const {
 /* 
  * Execute the Function. 
  *
- * This is the default implementation which calls executeFunction and wraps the return value 
- * (which is of type RbLanguageObject) into a ConstantNode.
+ * This is the default implementation which calls execute with an stl vector of RbObjects. The arguments are converted
+ * from DAG nodes to RbObjects.
  *
- * If you do not wish to wrap the return value into a constant node, then you need to overwrite this function.
  */
 const RbLanguageObject& RbFunction::execute(void) {
     
@@ -379,10 +378,9 @@ const RbLanguageObject& RbFunction::execute(void) {
 /* 
  * Execute the Function. 
  *
- * This is the default implementation which calls executeFunction and wraps the return value 
- * (which is of type RbLanguageObject) into a ConstantNode.
+ * This is the default implementation which calls executeFunction repeatedly for each element of the arguments
+ * if one or more arguments are containers.
  *
- * If you do not wish to wrap the return value into a constant node, then you need to overwrite this function.
  */
 const RbLanguageObject& RbFunction::execute( const std::vector<const RbObject*> &args ) {
     
