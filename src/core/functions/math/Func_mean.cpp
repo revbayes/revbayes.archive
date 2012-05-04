@@ -81,7 +81,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_mean::getClassName(void) { 
     
-    static std::string rbClassName = "meanonential function";
+    static std::string rbClassName = "mean function";
     
 	return rbClassName; 
 }

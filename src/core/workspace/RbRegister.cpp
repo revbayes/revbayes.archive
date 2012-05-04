@@ -123,15 +123,13 @@
 #include "Func_dppConFromExpNumClusters.h"
 #include "Func_ls.h"
 #include "Func_normalizeVector.h"
+#include "Func_plate.h"
 #include "Func_print.h"
 #include "Func_quit.h"
 #include "Func_rep.h"
-#include "Func_setval.h"
 #include "Func_simplex.h"
-#include "Func_sumOver.h"
 #include "Func_structure.h"
 #include "Func_type.h"
-#include "Func_unclamp.h"
 #include "Func_unique.h"
 #include "Func_size.h"
 #include "Func_sort.h"
@@ -396,18 +394,16 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "dppConFromExpNumClusters", new Func_dppConFromExpNumClusters() );
         addFunction( "ls",                       new Func_ls()                       );
         addFunction( "normalize",                new Func_normalizeVector()          );
+        addFunction( "plate",                    new Func_plate()                    );
         addFunction( "print",                    new Func_print()                    );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "rep",                      new Func_rep()                      );
-        addFunction( "setval",                   new Func_setval()                   );
         addFunction( "simplex",                  new Func_simplex<Integer>()         );
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
         addFunction( "simplex",                  new Func_simplex<RbVector<RealPos> >() );
-        addFunction( "sumOver",                  new Func_sumOver()                  );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
-        addFunction( "unclamp",                  new Func_unclamp()                  );
         addFunction( "unique",                   new Func_unique<RbVector<RbBoolean> >()  );
         addFunction( "unique",                   new Func_unique<RbVector<Integer> >()    );
         addFunction( "unique",                   new Func_unique<RbVector<Natural> >()    );
