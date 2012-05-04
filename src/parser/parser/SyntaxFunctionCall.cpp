@@ -155,7 +155,10 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
     RbFunction* func;
     if (variable == NULL) {
 
-        func = Workspace::userWorkspace().getFunction(functionName->getValue(), args);
+        // \TODO: This doesn't work if the function is declared inside a function (or something equivalent)
+        func = Workspace::userWorkspace().getFunction(functionName->getValue(), args).clone();
+        func->processArguments( args );
+        func->setExecutionEnviroment( &env );
         if (func == NULL)
             throw(RbException("Could not find function called '" + functionName->getValue() +
                 "' taking specified arguments"));
@@ -176,7 +179,8 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
             MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
             
             try {
-                RbFunction* theFunction = mt.getFunction( functionName->getValue(), args );
+                RbFunction* theFunction = mt.getFunction( functionName->getValue(), args ).clone();
+                theFunction->processArguments(args);
                 MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
                 theMemberFunction->setMemberObject(theMemberObject);
                 func = theMemberFunction;
@@ -190,7 +194,8 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
         // if we couldn't find the function for the value, then we try the DAG node
         if ( !successful ) {
             MethodTable& mt = const_cast<MethodTable&>( theNode->getMethods() );
-            RbFunction* theFunction = mt.getFunction( functionName->getValue(), args );
+            RbFunction* theFunction = mt.getFunction( functionName->getValue(), args ).clone();
+            theFunction->processArguments( args );
             DagNodeFunction* theDagNodeFunction = static_cast<DagNodeFunction*>( theFunction );
             theDagNodeFunction->setDagNode( *theNode );
             func = theDagNodeFunction;

@@ -48,6 +48,8 @@ const RbLanguageObject& Func_plate::execute( void ) {
     
     std::cerr << command << std::endl;
     
+    plate.clear();
+    
     std::vector<const Container *> ranges;
     for (std::vector<Argument>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
         ranges.push_back( static_cast<const Container *>( i->getVariable().getValue().clone() ) );
@@ -55,9 +57,20 @@ const RbLanguageObject& Func_plate::execute( void ) {
         std::cerr << std::endl;
     }
     
-    
+    fillPlate(command, ranges, 0);
     
     return RbNullObject::getInstance();
+}
+
+
+void Func_plate::fillPlate(std::string const &c, const std::vector<const Container *> &ranges, size_t level) {
+    
+    // get the container for this level
+    const Container *con = ranges[level];
+    
+    for (size_t i = 0; i < con->size(); ++i) {
+        
+    }
 }
 
 

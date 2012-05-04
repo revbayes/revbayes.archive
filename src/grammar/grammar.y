@@ -43,6 +43,7 @@
 #include "SyntaxStatement.h"
 #include "SyntaxUnaryExpr.h"
 #include "SyntaxVariable.h"
+#include "Workspace.h"
 
 #include <iostream>
 #include <list>
@@ -217,25 +218,25 @@ prog    :       END_OF_INPUT
         |       stmt_or_expr '\n'
                 {
                     PRINTF("Bison trying to execute statement or expression\n");
-                    int rv = parser.execute($1);
+                    int rv = parser.execute($1, Workspace::userWorkspace());
                     return rv;
                 }
         |       stmt_or_expr ';'
                 {
                     PRINTF("Bison trying to execute statement or expression\n");
-                    int rv =  parser.execute($1);
+                    int rv =  parser.execute($1, Workspace::userWorkspace());
                     return rv;
                 }
         |       declaration '\n'
                 {
                     PRINTF("Bison trying to execute declaration\n");
-                    int rv =  parser.execute($1);
+                    int rv =  parser.execute($1, Workspace::userWorkspace());
                     return rv;
                 }
         |       declaration ';'
                 {
                     PRINTF("Bison trying to execute declaration\n");
-                    int rv =  parser.execute($1);
+                    int rv =  parser.execute($1, Workspace::userWorkspace());
                     return rv;
                 }
         |       '?' identifier '\n'

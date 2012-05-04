@@ -19,6 +19,7 @@
 #include "DeterministicNode.h"
 #include "Environment.h"
 #include "RbException.h"
+#include "RbFunction.h"
 #include "RbUtil.h"
 #include "SyntaxUnaryExpr.h"
 #include "Workspace.h"
@@ -110,7 +111,8 @@ RbVariablePtr SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Find the function
     std::string funcName = "_" + opCode[operation];
-    RbFunction* func = Workspace::globalWorkspace().getFunction(funcName, arg);
+    RbFunction* func = Workspace::globalWorkspace().getFunction(funcName, arg).clone();
+    func->processArguments( arg );
 
     // Return new function node
     return RbVariablePtr( new Variable( new DeterministicNode(func) ) );

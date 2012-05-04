@@ -101,7 +101,7 @@ class Workspace : public Environment {
         const TypeSpec&             getClassTypeSpecOfType(const std::string& type) const;                              //!< Get reference to class vector of type
         const FunctionTable&        getFunctionTable(void) const { return *functionTable; }                             //!< Get function table (const)
         FunctionTable&              getFunctionTable(void) { return *functionTable; }                                   //!< Get function table (non-const)
-        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
+        const RbFunction&           getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                         {

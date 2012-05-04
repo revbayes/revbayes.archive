@@ -16,7 +16,7 @@
 #ifndef Parser_H
 #define Parser_H
 
-
+#include "Environment.h"
 #include "RbOptions.h"
 #include "RbString.h"
 
@@ -78,7 +78,7 @@ class Parser {
 
     public:
         // Regular functions
-        int                 execute(SyntaxElement* root) const;                     //!< Execute the syntax tree
+        int                 execute(SyntaxElement* root, Environment &env) const;   //!< Execute the syntax tree
         void                getline(char* buf, size_t maxsize);                     //!< Give flex one line to process
         int                 help(const RbString& symbol) const;                     //!< Get help for a symbol
         int                 help(const SyntaxFunctionCall& root) const;             //!< Get help for a function call

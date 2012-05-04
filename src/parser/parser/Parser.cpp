@@ -123,7 +123,7 @@ void Parser::breakIntoLines( const std::string& cmd, std::list<std::string>& lin
 
 
 /** This function causes recursive execution of a syntax tree by calling the root to get its value */
-int Parser::execute(SyntaxElement* root) const {
+int Parser::execute(SyntaxElement* root, Environment &env) const {
 
 #	ifdef DEBUG_PARSER
     // Print syntax tree
@@ -139,7 +139,7 @@ int Parser::execute(SyntaxElement* root) const {
     //! Execute syntax tree
     try {
         PRINTF("Parser getting the semantic value of the syntax tree...\n");
-        result = root->evaluateContent(Workspace::userWorkspace());
+        result = root->evaluateContent(env);
     }
     catch(RbException& rbException) {
 

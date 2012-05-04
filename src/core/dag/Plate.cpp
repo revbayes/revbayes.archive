@@ -98,7 +98,8 @@ const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, c
             for (size_t i = 3; i<args.size(); i++) {
                 distributionArgs.push_back( args[i] );
             }
-            RbFunction* fxt = Workspace::userWorkspace().getFunction( fxtName, distributionArgs );
+            RbFunction* fxt = Workspace::userWorkspace().getFunction( fxtName, distributionArgs ).clone();
+            fxt->processArguments( distributionArgs );
             const ParserDistribution& d = static_cast<const ParserDistribution&>( fxt->execute() );
             
             StochasticNode* stochNode = new StochasticNode( d.clone(), this );

@@ -46,8 +46,8 @@ class FunctionTable : public RbInternal {
         virtual std::string                     debugInfo(void) const;                                                                  //!< Brief info to string
         virtual FunctionTable*                  clone(void) const { return new FunctionTable(*this); }                                  //!< Clone object
         virtual const TypeSpec&                 getTypeSpec(void) const;                                                                //!< Get language type of the object
-        static const std::string&               getClassName(void);                                                                 //!< Get class name
-        static const TypeSpec&                  getClassTypeSpec(void);                                                             //!< Get class type spec
+        static const std::string&               getClassName(void);                                                                     //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
         void                                    printValue(std::ostream& o) const;                                                      //!< Print table for user
 
         // FunctionTable functions
@@ -57,7 +57,7 @@ class FunctionTable : public RbInternal {
                                                                 const std::vector<Argument>& args);                                     //!< Evaluate function (once)
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<RbFunction* >               findFunctions(const std::string& name) const;                                           //!< Return functions matching name
-        RbFunction*                             getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function (a copy)
+        const RbFunction&                       getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function (a copy)
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
         void                                    setParentTable(const FunctionTable* table) { parentTable = table; }                     //!< Set parent table
 

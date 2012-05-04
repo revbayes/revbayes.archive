@@ -437,7 +437,8 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
                 args.push_back( Argument( indexVar ) );
             
                 // get the member function with name "[]"
-                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ) )->clone(); 
+                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
+                theMemberFunction->processArguments( args );
                 // We need to clone because otherwise we overwrite all methods for this object
             
                 // set the member object for the member function

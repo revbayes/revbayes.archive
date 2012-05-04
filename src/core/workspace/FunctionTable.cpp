@@ -198,7 +198,6 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
             msg << std::endl;
             throw RbException( msg );
         }
-        retVal.first->second->processArguments(args);
         return *retVal.first->second;
     }
     else {
@@ -274,7 +273,6 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
             throw RbException( msg );
         }
         else {
-            bestMatch->processArguments(args);
             return *bestMatch;
         }
     }
@@ -307,18 +305,12 @@ const TypeSpec& FunctionTable::getTypeSpec( void ) const {
 
 
 /** Get function copy (for repeated evaluation in a DeterministicNode) */
-RbFunction* FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
+const RbFunction& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
     
     // find the template function
     RbFunction& theFunction = findFunction(name, args);
 
-    // we need a copy because we got the template function
-    RbFunction* copy = theFunction.clone();
-
-    // clear the arguments of the template function
-    theFunction.clear();
-
-    return copy;
+    return theFunction;
 }
 
 

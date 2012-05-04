@@ -17,12 +17,14 @@
 #ifndef Func_plate_H
 #define Func_plate_H
 
+#include "Environment.h"
 #include "RbFunction.h"
-#include "RealPos.h"
 
 #include <map>
 #include <string>
 #include <vector>
+
+class Container;
 
 
 class Func_plate :  public RbFunction {
@@ -41,8 +43,12 @@ public:
     const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
-protected:
+private:
     
+    void                        fillPlate(const std::string &c, const std::vector<const Container *> &i, size_t l);
+
+    // attributes
+    Environment                 plate;
     
 };
 

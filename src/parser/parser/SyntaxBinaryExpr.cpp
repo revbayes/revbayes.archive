@@ -23,6 +23,7 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "RbFunction.h"
 #include "RbUtil.h"
 #include "SyntaxBinaryExpr.h"
 #include "Workspace.h"
@@ -121,7 +122,8 @@ RbVariablePtr SyntaxBinaryExpr::evaluateContent( Environment& env) {
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];
     
-    RbFunction* theFunction = Workspace::globalWorkspace().getFunction(funcName, args);
+    RbFunction* theFunction = Workspace::globalWorkspace().getFunction(funcName, args).clone();
+    theFunction->processArguments( args );
     
     return RbVariablePtr( new Variable(new DeterministicNode( theFunction ) ) );
 }

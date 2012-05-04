@@ -68,6 +68,7 @@ class RbFunction :  public RbInternal {
 
         // Basic utility functions you should not have to override
     	void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
+        void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was executed.
 
         // RbFunction functions you have to override
         virtual const RbLanguageObject&                 execute(void);                                                                      //!< Execute function
@@ -102,6 +103,7 @@ class RbFunction :  public RbInternal {
         // Member variables
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
         std::vector<Argument>                           args;
+        Environment*                                    env;
 
     private:   
         int                                             computeMatchScore(const DAGNode* arg, const ArgumentRule& rule);

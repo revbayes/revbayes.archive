@@ -755,5 +755,11 @@ void RbFunction::setArgument(const std::string& name, const Argument& arg) {
 
 
 
+void RbFunction::setExecutionEnviroment(Environment *e) {
+    env = e;
+}
+
+
+
 
 
