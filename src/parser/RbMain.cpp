@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
             commandLine += line;
         else
             commandLine = line;
-        result = Parser::getParser().processCommand(commandLine);
+        result = Parser::getParser().processCommand(commandLine, &Workspace::userWorkspace());
 
         // We just hope for better input next time
         if ( result == 2 ) {

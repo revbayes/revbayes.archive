@@ -17,6 +17,7 @@
 
 #include "Ellipsis.h"
 #include "Func_plate.h"
+#include "Parser.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
@@ -69,6 +70,21 @@ void Func_plate::fillPlate(std::string const &c, const std::vector<const Contain
     const Container *con = ranges[level];
     
     for (size_t i = 0; i < con->size(); ++i) {
+        // get the element for this index
+        const RbObject &element = con->getElement( i );
+        
+        // replace the command string
+        std::string replaceCommand = c;
+        
+        // call the fill plate recursively if necessary
+        if ( ranges.size() > level+1 ) {
+            fillPlate(replaceCommand, ranges, level+1);
+        }
+        else {
+            Parser &p = Parser::getParser();
+            
+            p.processCommand(replaceCommand, &plate);
+        }
         
     }
 }
@@ -83,6 +99,8 @@ const ArgumentRules& Func_plate::getArgumentRules( void ) const {
     if (!rulesSet) 
     {
         argumentRules.push_back( new ValueRule( "command", RbString::getClassTypeSpec() ) );
+        // add the rule for the ranges and enforce at least one
+        argumentRules.push_back( new ValueRule( "", Container::getClassTypeSpec() ) );
         argumentRules.push_back( new Ellipsis( Container::getClassTypeSpec() ) );
         rulesSet = true;
     }

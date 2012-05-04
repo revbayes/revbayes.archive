@@ -106,7 +106,7 @@ const RbLanguageObject& Func_source::executeFunction( const std::vector<const Rb
             commandLine = line;
 
         // Process the line and record result
-        result = Parser::getParser().processCommand( commandLine );
+        result = Parser::getParser().processCommand( commandLine, &Workspace::userWorkspace() );
         if ( result == 2 ) {
             std::ostringstream msg;
             msg << "Problem processing line " << lineNumber << " in file \"" << fname << "\"";

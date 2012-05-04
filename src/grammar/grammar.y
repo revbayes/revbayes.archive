@@ -22,10 +22,11 @@
 
 /* The following statements go into the resulting C code */
 
-#include "RbBoolean.h"
+#include "Environment.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "Parser.h"
+#include "RbBoolean.h"
 #include "RbString.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -56,6 +57,7 @@
 
 extern int yylex(void);
 extern char *yytext;
+Environment *executionEnvironment;
 
 /* The function yyerror handles errors. It is defined below. */
 int yyerror(const char *);
@@ -218,25 +220,25 @@ prog    :       END_OF_INPUT
         |       stmt_or_expr '\n'
                 {
                     PRINTF("Bison trying to execute statement or expression\n");
-                    int rv = parser.execute($1, Workspace::userWorkspace());
+                    int rv = parser.execute($1, *executionEnvironment);
                     return rv;
                 }
         |       stmt_or_expr ';'
                 {
                     PRINTF("Bison trying to execute statement or expression\n");
-                    int rv =  parser.execute($1, Workspace::userWorkspace());
+                    int rv =  parser.execute($1, *executionEnvironment);
                     return rv;
                 }
         |       declaration '\n'
                 {
                     PRINTF("Bison trying to execute declaration\n");
-                    int rv =  parser.execute($1, Workspace::userWorkspace());
+                    int rv =  parser.execute($1, *executionEnvironment);
                     return rv;
                 }
         |       declaration ';'
                 {
                     PRINTF("Bison trying to execute declaration\n");
-                    int rv =  parser.execute($1, Workspace::userWorkspace());
+                    int rv =  parser.execute($1, *executionEnvironment);
                     return rv;
                 }
         |       '?' identifier '\n'

@@ -314,9 +314,12 @@ int Parser::help(const SyntaxFunctionCall& root) const {
  *       signal is set to 2. Any remaining part of the command buffer
  *       is discarded.
  */
-int Parser::processCommand(std::string& command) {
+int Parser::processCommand(std::string& command, Environment *env) {
 
     extern int yyparse(void);   // Defined in grammar.tab.cpp (from gammar.y)
+    extern Environment* executionEnvironment;
+    
+    executionEnvironment = env;
 
     // Break command into Rev lines
     std::list<std::string> lines;

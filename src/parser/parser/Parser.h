@@ -82,7 +82,7 @@ class Parser {
         void                getline(char* buf, size_t maxsize);                     //!< Give flex one line to process
         int                 help(const RbString& symbol) const;                     //!< Get help for a symbol
         int                 help(const SyntaxFunctionCall& root) const;             //!< Get help for a function call
-        int                 processCommand(std::string& command);                   //!< Process command with help from Bison
+        int                 processCommand(std::string& command, Environment *env); //!< Process command with help from Bison
 
         /** Get singleton parser */
         static Parser& getParser() {
