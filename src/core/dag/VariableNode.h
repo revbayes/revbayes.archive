@@ -63,7 +63,7 @@ public:
     virtual void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
     virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone entire graph
     virtual InferenceDagNode*                   createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0; //!< Create a lean DAG from this "fat" DAG
-    virtual void                                expand(size_t n) = 0;                                                           //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
+    virtual void                                expand(void) = 0;                                                               //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     virtual void                                markForRecalculation(void) = 0;
     virtual bool                                isEliminated(void) const = 0;
     virtual bool                                isNotInstantiated(void) const = 0;
@@ -72,7 +72,7 @@ public:
     virtual void                                swapParentNode( DAGNode* oldP, DAGNode* newP) = 0;                              //!< Swap a parent node
 
 protected:
-    VariableNode(void);                                                                                                         //!< Constructor of empty node with plate on whch this node sits
+    VariableNode(const Plate *p);                                                                                               //!< Constructor of empty node with plate on whch this node sits
     VariableNode(const VariableNode &v);                                                                                        //!< Copy Constructor
         
     virtual void                                getAffected(std::set<StochasticNode*>& affected) = 0;                                  //!< Mark and get affected nodes

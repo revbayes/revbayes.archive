@@ -29,8 +29,7 @@ class RbObject;
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode( void );                                                                                               //!< Constructor
-    ConstantNode(RbLanguageObject* val);                                                                                //!< Constructor from value
+    ConstantNode(RbLanguageObject* val, const Plate *p = NULL);                                                         //!< Constructor from value
     ConstantNode(const ConstantNode &x);                                                                                //!< Copy constructor
     virtual                             ~ConstantNode(void);                                                            //!< Destructor
 
@@ -52,7 +51,7 @@ public:
     // DAG functions
     DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;               //!< Clone entire graph
     InferenceDagNode*                   createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
-    void                                expand(size_t n);                                                               //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
+    void                                expand(void);                                                                   //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     bool                                isTouched (void) const { return false; }                                        //!< Touched by a move?
     bool                                isEliminated(void) const;
     bool                                isNotInstantiated(void) const;

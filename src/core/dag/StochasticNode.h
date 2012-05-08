@@ -51,8 +51,8 @@ class StochasticNode : public VariableNode {
 public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
-                                        StochasticNode(void);                                               //!< Construct empty stochastic node
-                                        StochasticNode(ParserDistribution* dist, size_t n = 1);             //!< Construct from distribution (raw object) with plate holding this node
+                                        StochasticNode(const Plate *p = NULL);                              //!< Construct empty stochastic node
+                                        StochasticNode(ParserDistribution* dist, const Plate *p = NULL);    //!< Construct from distribution (raw object) with plate holding this node
                                         StochasticNode(const StochasticNode& x);                            //!< Copy constructor
     virtual                            ~StochasticNode(void);                                               //!< Destructor
 
@@ -102,7 +102,7 @@ public:
     virtual InferenceDagNode*           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const; //!< Create a lean DAG from this "fat" DAG
     void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence); //!< Construct the sum-product sequecence
     void                                constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
-    void                                expand(size_t n);                                                   //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
+    void                                expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     void                                swapParentNode( DAGNode* oldP, DAGNode* newP);                      //!< Swap a parent node
 
 protected:
@@ -133,7 +133,6 @@ private:
     RbLanguageObject*                   storedValue;                                                        //!< Stored value
 
     VariableType                        type;
-    size_t                              nValues;
         
     // probability arrays and likelihood arrays for summed out computations
     std::vector<double>                 probabilities;

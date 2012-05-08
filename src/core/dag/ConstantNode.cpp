@@ -37,15 +37,10 @@
 
 
 /** Constructor from value */
-ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( ) {
+ConstantNode::ConstantNode( RbLanguageObject* val, const Plate *p ) : DAGNode( p ) {
     value = val;
 }
 
-
-/** Constructor from value class */
-ConstantNode::ConstantNode( void ) : DAGNode( ) {
-
-}
 
 /** Copy constructor */
 ConstantNode::ConstantNode( const ConstantNode &x ) : DAGNode( x ) {
@@ -124,23 +119,8 @@ InferenceDagNode* ConstantNode::createLeanDag(std::map<const DAGNode *, Inferenc
 }
 
 
-void ConstantNode::expand( size_t n ) {
-    // get the current value
-    RbLanguageObject* oldValue = value;
-    
-    // create a vector for the values
-    RbVector<RbLanguageObject>* newValue = new RbVector<RbLanguageObject>();
-    
-    // add the current value as the first value
-    newValue->push_back( oldValue );
-    
-    // add a clone of the current value n-1 times
-    for ( size_t i = 2; i <= n; ++i) {
-        newValue->push_back( oldValue->clone() );
-    }
-    
-    // store the vector into the value
-    value = newValue;
+void ConstantNode::expand( void ) {
+    throw RbException("Expansion of constant nodes not implemented. Though, you shouldn't really use this anyways!!!");
 }
 
 

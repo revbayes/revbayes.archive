@@ -39,7 +39,7 @@
 
 
 /** Constructor of filled node */
-DAGNode::DAGNode( void ) : children(), parents() {
+DAGNode::DAGNode( const Plate *p ) : children(), parents(), plate( p ) {
     
     refCount = 0;
 }
@@ -53,7 +53,7 @@ DAGNode::DAGNode( void ) : children(), parents() {
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode( const DAGNode& x ) : children(), parents() {
+DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), plate( x.plate ) {
     
     // copy the name so that we still be able to identify the variable in a cloned DAG
     name = x.name;
@@ -108,6 +108,12 @@ size_t DAGNode::decrementReferenceCount( void ) {
 const RbLanguageObject& DAGNode::executeOperation(std::string const &name, const std::vector<Argument>& args) {
     
     throw RbException("No method with name '" + name + "' available for DAG nodes.");
+}
+
+
+
+const std::set<VariableNode *>& DAGNode::getChildren( void ) const {
+    return children;
 }
 
 
@@ -197,6 +203,12 @@ const std::string& DAGNode::getName( void ) const {
 }
 
 
+const Plate* DAGNode::getPlate( void ) const {
+    return plate;
+}
+
+
+
 const std::set<DAGNode*>& DAGNode::getParents( void ) const {
     return parents;
 }
@@ -206,10 +218,6 @@ const std::set<DAGNode*>& DAGNode::getParents( void ) const {
 size_t DAGNode::getReferenceCount(void) const {
     return refCount;
 }
-
-//const Variable& DAGNode::getVariable(void) const {
-//    return *variable;
-//}
 
 
 /** Increment the reference count for this instance. */
@@ -337,6 +345,11 @@ void DAGNode::restoreAffected(void) {
     // next, restore all my children
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->restoreMe();
+}
+
+
+void DAGNode::setPlate(const Plate *p) {
+    plate = p;
 }
 
 

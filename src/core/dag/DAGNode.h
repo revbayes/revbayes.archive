@@ -56,7 +56,6 @@ class DAGNode : public RbLanguageObject {
         virtual const RbLanguageObject&                     getStoredValue(void) const = 0;                                                 //!< Get stored value
         virtual const RbLanguageObject&                     getValue(void) const = 0;                                                       //!< Get value (const)
         virtual RbLanguageObject&                           getValue(void) = 0;                                                             //!< Get value (non-const)
-//        virtual const RbLanguageObject*                     getValuePtr(void) const = 0;                                                    //!< Get value pointer
         virtual const TypeSpec&                             getTypeSpec(void) const = 0;                                                    //!< Get the type spec of the instance
         virtual void                                        printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                          //!< Print value for user
@@ -65,7 +64,7 @@ class DAGNode : public RbLanguageObject {
         virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone graph
         virtual InferenceDagNode*                           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0; //!< Create a lean DAG from this "fat" DAG
         virtual const RbLanguageObject&                     executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
-        virtual void                                        expand(size_t n) = 0;                                                           //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
+        virtual void                                        expand(void) = 0;                                                               //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
         virtual const MethodTable&                          getMethods(void) const;                                                         //!< Get member methods (const)
         virtual bool                                        isEliminated(void) const = 0;
         virtual bool                                        isNotInstantiated(void) const = 0;
@@ -74,29 +73,29 @@ class DAGNode : public RbLanguageObject {
         void                                                addChildNode(VariableNode *c);                                                  //!< Add child node
         size_t                                              decrementReferenceCount(void);
         void                                                getAffectedNodes(std::set<StochasticNode* >& affected);                         //!< Mark and get affected nodes
-        const std::set<VariableNode*>&                      getChildren(void) const { return children; }                                    //!< Return children
+        const std::set<VariableNode*>&                      getChildren(void) const;                                                        //!< Return children
         const RbObject&                                     getElement(size_t index) const;                                                 //!< Get element at index (container function)
         RbObject&                                           getElement(size_t index);                                                       //!< Get element at index (container function)
         const std::string&                                  getName(void) const;                                                            //!< get the name
         const std::set<DAGNode*>&                           getParents(void) const;                                                         //!< Return parents
         const Plate*                                        getPlate(void) const;                                                           //!< Get the plate on which this DAG node sits on.
         size_t                                              getReferenceCount(void) const;
-//        const Variable&                                     getVariable(void) const;                                                      //!< Get the variable owning this node
         void                                                incrementReferenceCount(void);
         bool                                                isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;               //!< Is node x a parent of the caller in the DAG?
         void                                                keep(void);                                                                     //!< Keep current state of this node and all affected nodes
-        size_t                                              numberOfChildren(void) const { return children.size(); }                        //!< Number of children
-        size_t                                              numberOfParents(void) const { return parents.size(); }                          //!< Number of parents
+        size_t                                              numberOfChildren(void) const;                                                   //!< Number of children
+        size_t                                              numberOfParents(void) const;                                                    //!< Number of parents
         void                                                printChildren(std::ostream& o) const;                                           //!< Print children DAG nodes
         void                                                printParents(std::ostream& o) const;                                            //!< Print children DAG nodes
         void                                                removeChildNode(VariableNode *c);                                               //!< Remove a child node
         void                                                restore(void);                                                                  //!< Restore value of this and affected nodes
         void                                                setName(const std::string &n) { name = n; }                                     //!< Replace the name of the variable
+        void                                                setPlate(const Plate *p);                                                       //!< Set the plate on which this node lives.
         void                                                touch(void);                                                                    //!< Tell affected nodes value is reset
 
 
     protected:
-                                                            DAGNode(void);                                                                  //!< Constructor of empty node
+                                                            DAGNode(const Plate *p);                                                                  //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                                      //!< Copy constructor
 
         virtual void                                        getAffected(std::set<StochasticNode* >& affected) = 0;                          //!< Mark and get affected nodes
@@ -115,6 +114,7 @@ class DAGNode : public RbLanguageObject {
             
         // Member value variables
         std::string                                         name;                                                                           //!< The name/identifier of the DAG node
+        const Plate*                                        plate;                                                                          //!< The plate on which this DAG node lives.
 };
 
 #endif

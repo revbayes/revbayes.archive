@@ -17,26 +17,26 @@
  * $Id$
  */
 
+#include "ConstructorFunction.h"
 #include "Container.h"
 #include "DagNodeFunction.h"
 #include "DeterministicNode.h"
 #include "InferenceDagNode.h"
 #include "InferenceDistribution.h"
+#include "MethodTable.h"
+#include "Model.h"
 #include "ParserDistribution.h"
+#include "Plate.h"
 #include "RbBoolean.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
+#include "RbValue.h"
+#include "RbVector.h"
 #include "StochasticNode.h"
 #include "StochasticInferenceNode.h"
 #include "UserInterface.h"
 #include "Workspace.h"
-#include "ConstructorFunction.h"
-#include "MethodTable.h"
-#include "Model.h"
-#include "Move.h"
-#include "RbValue.h"
-#include "RbVector.h"
 #include "ValueRule.h"
 
 #include <algorithm>
@@ -45,15 +45,13 @@
 
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( const Plate *p ) : VariableNode( p ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
 }
 
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( ParserDistribution* dist, size_t n ) : VariableNode(  ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
-    
-    nValues = n;
+StochasticNode::StochasticNode( ParserDistribution* dist, const Plate *p) : VariableNode( p ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
     
     /* Get distribution parameters */
     std::map<std::string, const Variable*>& params = dist->getMembers();
@@ -119,7 +117,6 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     
     lnProb                          = x.lnProb;
     storedLnProb                    = x.storedLnProb;
-    nValues                         = x.nValues;
 }
 
 
@@ -662,7 +659,7 @@ InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, Infere
  */
 RbLanguageObject* StochasticNode::createRV( void ) {
     
-//    if ( plate == NULL ) {
+    if ( plate == NULL ) {
         
         const std::map<std::string, const Variable*> &params = distribution->getMembers();
     
@@ -671,43 +668,43 @@ RbLanguageObject* StochasticNode::createRV( void ) {
             newArgs.push_back( &i->second->getValue() );
         }
         return createRV( std::vector<size_t>(), newArgs );
-//    }
-//    else {
-//        // we need to get the arguments for checking if they live on the same plate or any parent plate of this
-//        const std::map<std::string, const Variable*> &params = distribution->getMembers();
-//        
-//        // get the plates of my arguments
-//        std::vector<const Plate*> argPlates;
-//        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-//        // test whether this argument lives on the same plate as myself
-//            argPlates.push_back( i->second->getDagNode()->getPlate() );
-//        }
-//        
-//        // convert the argument into RbObjects
-//        std::vector<const RbObject*> newArgs;
-//        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-//            newArgs.push_back( &i->second->getValue() );
-//        }
-//        
-//        // we create a vector of lengths telling us the length of each plate
-//        // we only consider plate on which none of the arguments lives
-//        std::vector<size_t> plateLengths;
-//        const Plate *p = plate;
-//        while (p != NULL) {
-//            for ( std::vector<const Plate*>::const_iterator i = argPlates.begin(); i != argPlates.end(); i++ ) {
-//                // test whether this argument lives on the same plate as myself
-//                if ( p == *i ) {
-//                    p = NULL;
-//                    break;
-//                }
-//            }
-//            if ( p != NULL ) {
-//                plateLengths.insert( plateLengths.begin(), p->getLength() );
-//                p = p->getParentPlate();
-//            }
-//        }
-//        return createRV( plateLengths, newArgs );
-//    }
+    }
+    else {
+        // we need to get the arguments for checking if they live on the same plate or any parent plate of this
+        const std::map<std::string, const Variable*> &params = distribution->getMembers();
+        
+        // get the plates of my arguments
+        std::vector<const Plate*> argPlates;
+        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        // test whether this argument lives on the same plate as myself
+            argPlates.push_back( i->second->getDagNode()->getPlate() );
+        }
+        
+        // convert the argument into RbObjects
+        std::vector<const RbObject*> newArgs;
+        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+            newArgs.push_back( &i->second->getValue() );
+        }
+        
+        // we create a vector of lengths telling us the length of each plate
+        // we only consider plate on which none of the arguments lives
+        std::vector<size_t> plateLengths;
+        const Plate *p = plate;
+        while (p != NULL) {
+            for ( std::vector<const Plate*>::const_iterator i = argPlates.begin(); i != argPlates.end(); i++ ) {
+                // test whether this argument lives on the same plate as myself
+                if ( p == *i ) {
+                    p = NULL;
+                    break;
+                }
+            }
+            if ( p != NULL ) {
+                plateLengths.insert( plateLengths.begin(), p->getLength() );
+                p = p->getParentPlate();
+            }
+        }
+        return createRV( plateLengths, newArgs );
+    }
 }
 
 
@@ -847,23 +844,12 @@ const RbLanguageObject& StochasticNode::executeOperation(const std::string& name
 }
 
 
-void StochasticNode::expand( size_t n ) {
-    // get the current value
-    RbLanguageObject* oldValue = value;
+void StochasticNode::expand( void ) {
+    // free memory of the old value
+    delete value;
     
-    // create a vector for the values
-    RbVector<RbLanguageObject>* newValue = new RbVector<RbLanguageObject>();
-    
-    // add the current value as the first value
-    newValue->push_back( oldValue );
-    
-    // add a clone of the current value n-1 times
-    for ( size_t i = 2; i <= n; ++i) {
-        newValue->push_back( oldValue->clone() );
-    }
-    
-    // store the vector into the value
-    value = newValue;
+    // draw a new value
+    value = createRV();
 }
 
 

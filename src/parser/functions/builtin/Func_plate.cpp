@@ -61,7 +61,7 @@ const RbLanguageObject& Func_plate::execute( void ) {
     
     // expand the DAG node
     // \TODO: We shouldn't use const-casts.
-    const_cast<DAGNode *>( theNode )->expand( n );
+    const_cast<DAGNode *>( theNode )->expand( );
     
     
     return RbNullObject::getInstance();

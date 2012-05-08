@@ -26,7 +26,7 @@
 #include <algorithm>
 
 
-VariableNode::VariableNode( void ) : DAGNode(  ), touched( false ), factorRoot( NULL ) {
+VariableNode::VariableNode( const Plate *p ) : DAGNode( p ), touched( false ), factorRoot( NULL ) {
 }
 
 

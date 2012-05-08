@@ -63,6 +63,7 @@
 /* MemberObject types without auto-generated constructors(alphabetic order) */
 #include "CharacterData.h"
 #include "Model.h"
+#include "Plate.h"
 #include "Simplex.h"
 #include "TaxonData.h"
 #include "Topology.h"
@@ -122,7 +123,6 @@
 #include "Func_dppConFromExpNumClusters.h"
 #include "Func_ls.h"
 #include "Func_normalizeVector.h"
-#include "Func_plate.h"
 #include "Func_print.h"
 #include "Func_quit.h"
 #include "Func_rep.h"
@@ -237,6 +237,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "mcmc",          new Mcmc()              );
         addTypeWithConstructor( "mixture",       new Mixture()           );
         addTypeWithConstructor( "model",         new Model()             );
+        addTypeWithConstructor( "plate",         new Plate()             );
         addTypeWithConstructor( "simulate",      new Simulate()          );
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
 
@@ -392,7 +393,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "dppConFromExpNumClusters", new Func_dppConFromExpNumClusters() );
         addFunction( "ls",                       new Func_ls()                       );
         addFunction( "normalize",                new Func_normalizeVector()          );
-        addFunction( "plate",                    new Func_plate()                    );
         addFunction( "print",                    new Func_print()                    );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );

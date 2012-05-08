@@ -39,13 +39,11 @@
 
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( void ) : VariableNode( ), needsUpdate( true ) {
+DeterministicNode::DeterministicNode( const Plate *p ) : VariableNode( p ), needsUpdate( true ) {
 }
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( RbFunction* func, size_t n ) : VariableNode(  ), needsUpdate( true ), function( func ) {
-    
-    nValues= n;
+DeterministicNode::DeterministicNode( RbFunction* func, const Plate *p ) : VariableNode( p ), needsUpdate( true ), function( func ) {
     
     /* Check for cycles */
     const std::vector<Argument>& arguments = func->getArguments();
@@ -78,7 +76,6 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     function        = x.function->clone();
     touched         = x.touched;
     needsUpdate     = x.needsUpdate;
-    nValues         = x.nValues;
     
     // We do not own the stored value, but the function does
     storedValue     = x.storedValue;
@@ -299,23 +296,9 @@ std::string DeterministicNode::debugInfo( void ) const {
 }
 
 
-void DeterministicNode::expand( size_t n ) {
-    // get the current value
-    RbLanguageObject* oldValue = value;
-    
-    // create a vector for the values
-    RbVector<RbLanguageObject>* newValue = new RbVector<RbLanguageObject>();
-    
-    // add the current value as the first value
-    newValue->push_back( oldValue );
-    
-    // add a clone of the current value n-1 times
-    for ( size_t i = 2; i <= n; ++i) {
-        newValue->push_back( oldValue->clone() );
-    }
-    
-    // store the vector into the value
-    value = newValue;
+void DeterministicNode::expand( void ) {
+    // here we just call update
+    update();
 }
 
 
