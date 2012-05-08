@@ -43,15 +43,6 @@ public:
     const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
-private:
-    
-    void                        fillPlate(const std::string &c, const std::vector<const Container *> &i, const std::vector<std::string> &n, size_t l);
-    std::string                 replaceIndex(const std::string &c, const std::string &n, const std::string &i) const;
-    DAGNode*                    replaceVariable( const DagNodeContainer &orgNodes) const;
-
-    // attributes
-    Environment                 plate;
-    
 };
 
 #endif

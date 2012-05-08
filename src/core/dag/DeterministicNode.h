@@ -48,6 +48,7 @@ public:
     DAGNode*                                cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
     virtual InferenceDagNode*               createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const; //!< Create a lean DAG from this "fat" DAG
     void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
+    void                                    expand(size_t n);                                                   //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
     const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                       getValue(void);                                                     //!< Get value (non-const)

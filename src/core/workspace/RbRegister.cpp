@@ -75,7 +75,6 @@
 #include "ObjectMonitor.h"
 #include "ParserMonitor.h"
 #include "ParserMove.h"
-#include "Plate.h"
 #include "Simulate.h"
 #include "TreePlate.h"
 
@@ -238,7 +237,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "mcmc",          new Mcmc()              );
         addTypeWithConstructor( "mixture",       new Mixture()           );
         addTypeWithConstructor( "model",         new Model()             );
-        addTypeWithConstructor( "plate",         new Plate()             );
         addTypeWithConstructor( "simulate",      new Simulate()          );
         addTypeWithConstructor( "treeplate",     new TreePlate()         );
 

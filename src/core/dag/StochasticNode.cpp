@@ -35,7 +35,6 @@
 #include "MethodTable.h"
 #include "Model.h"
 #include "Move.h"
-#include "Plate.h"
 #include "RbValue.h"
 #include "RbVector.h"
 #include "ValueRule.h"
@@ -845,6 +844,26 @@ const RbLanguageObject& StochasticNode::executeOperation(const std::string& name
     } 
     
     return DAGNode::executeOperation( name, args );
+}
+
+
+void StochasticNode::expand( size_t n ) {
+    // get the current value
+    RbLanguageObject* oldValue = value;
+    
+    // create a vector for the values
+    RbVector<RbLanguageObject>* newValue = new RbVector<RbLanguageObject>();
+    
+    // add the current value as the first value
+    newValue->push_back( oldValue );
+    
+    // add a clone of the current value n-1 times
+    for ( size_t i = 2; i <= n; ++i) {
+        newValue->push_back( oldValue->clone() );
+    }
+    
+    // store the vector into the value
+    value = newValue;
 }
 
 

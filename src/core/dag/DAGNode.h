@@ -65,10 +65,10 @@ class DAGNode : public RbLanguageObject {
         virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone graph
         virtual InferenceDagNode*                           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0; //!< Create a lean DAG from this "fat" DAG
         virtual const RbLanguageObject&                     executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
+        virtual void                                        expand(size_t n) = 0;                                                           //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
         virtual const MethodTable&                          getMethods(void) const;                                                         //!< Get member methods (const)
         virtual bool                                        isEliminated(void) const = 0;
         virtual bool                                        isNotInstantiated(void) const = 0;
-    
 
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                                  //!< Add child node

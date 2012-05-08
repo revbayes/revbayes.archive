@@ -26,6 +26,7 @@
 #include "Model.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "StochasticNode.h"
 #include "Workspace.h"
 
@@ -123,6 +124,26 @@ InferenceDagNode* ConstantNode::createLeanDag(std::map<const DAGNode *, Inferenc
 }
 
 
+void ConstantNode::expand( size_t n ) {
+    // get the current value
+    RbLanguageObject* oldValue = value;
+    
+    // create a vector for the values
+    RbVector<RbLanguageObject>* newValue = new RbVector<RbLanguageObject>();
+    
+    // add the current value as the first value
+    newValue->push_back( oldValue );
+    
+    // add a clone of the current value n-1 times
+    for ( size_t i = 2; i <= n; ++i) {
+        newValue->push_back( oldValue->clone() );
+    }
+    
+    // store the vector into the value
+    value = newValue;
+}
+
+
 /** 
  * Get the affected nodes.
  * This call is started by the parent and since we don't have one this is a dummy implementation!
@@ -172,11 +193,6 @@ const RbLanguageObject& ConstantNode::getValue(void) const {
 RbLanguageObject& ConstantNode::getValue(void) {
     return *value;
 }
-
-
-//const RbLanguageObject* ConstantNode::getValuePtr(void) const {
-//    return value;
-//}
 
 /**
  * Is this node eliminated.

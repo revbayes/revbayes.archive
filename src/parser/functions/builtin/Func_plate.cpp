@@ -50,72 +50,23 @@ Func_plate* Func_plate::clone( void ) const {
 /** Execute function */
 const RbLanguageObject& Func_plate::execute( void ) {
     
-    // get the command string
-    std::string command = static_cast<const RbString &>( args[0].getVariable().getValue() ).getValue();
+    // get the argument
+    const Argument& theArg = args[0];
     
-    std::cerr << command << std::endl;
+    // get the DAG node
+    const DAGNode *theNode = theArg.getVariable().getDagNode();
     
-    plate.clear();
+    // get the size
+    size_t n = static_cast<const Natural&>( args[1].getVariable().getValue() ).getValue();
     
-    std::vector<const Container *> ranges;
-    std::vector<std::string> names;
-    for (std::vector<Argument>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
-        ranges.push_back( static_cast<const Container *>( i->getVariable().getValue().clone() ) );
-        names.push_back( i->getLabel() );
-        std::cerr << names[names.size() - 1] << ":\t\t";
-        ranges[ranges.size()-1]->printValue( std::cerr );
-        std::cerr << std::endl;
-    }
+    // expand the DAG node
+    // \TODO: We shouldn't use const-casts.
+    const_cast<DAGNode *>( theNode )->expand( n );
     
-    fillPlate(command, ranges, names, 0);
-    
-    // now we need to extract the DAG nodes and replace them with the merged ones
-    for ( size_t i = 0; i < plate.size(); ++i ) {
-        const std::string &varname = plate.getName( i );
-        const DAGNode *node = plate.getDagNode( varname );
-        
-        // if this is a DAG node container, then we replace it
-        if ( node->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-            std::cerr << "Merging variable:\t\t" << varname << std::endl;
-            DAGNode* newNode = replaceVariable( static_cast<const DagNodeContainer &>( node->getValue() ) );
-            
-//            plate.remove( varname );
-//            plate.addVariable( varname, newNode );
-        }
-    }
     
     return RbNullObject::getInstance();
 }
 
-
-void Func_plate::fillPlate(std::string const &c, const std::vector<const Container *> &ranges, const std::vector<std::string> &names, size_t level) {
-    
-    // get the container for this level
-    const Container *con = ranges[level];
-    
-    for (size_t i = 0; i < con->size(); ++i) {
-        // get the element for this index
-        const RbObject &element = con->getElement( i );
-        std::stringstream out;
-        element.printValue(out);
-        std::string stringValue = out.str();
-        
-        // replace the command string
-        std::string replaceCommand = replaceIndex(c,names[level], stringValue);
-        
-        // call the fill plate recursively if necessary
-        if ( ranges.size() > level+1 ) {
-            fillPlate(replaceCommand, ranges, names, level+1);
-        }
-        else {
-            Parser &p = Parser::getParser();
-            
-            std::cerr << "Executing:\t" << replaceCommand << std::endl;
-            p.processCommand(replaceCommand, &plate);
-        }
-        
-    }
-}
 
 
 /** Get argument rules */
@@ -126,10 +77,9 @@ const ArgumentRules& Func_plate::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "command", RbString::getClassTypeSpec() ) );
-        // add the rule for the ranges and enforce at least one
-//        argumentRules.push_back( new ValueRule( "", Container::getClassTypeSpec() ) );
-        argumentRules.push_back( new Ellipsis( Container::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "x",    RbObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "size", Natural::getClassTypeSpec() ) );
+        
         rulesSet = true;
     }
     
@@ -165,39 +115,6 @@ const TypeSpec& Func_plate::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_plate::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RbVoid_name;
     return returnTypeSpec;
-}
-
-
-std::string Func_plate::replaceIndex(std::string const &c, std::string const &n, std::string const &i) const {
-    std::string replacedCommand = c;
-    
-    std::cerr << "String before replacement:\t" << c << std::endl;
-    
-    std::string marker = "<" + n + ">";
-    size_t pos = 0;
-    while ( ( pos = replacedCommand.find(marker, pos) ) != std::string::npos ) {
-        replacedCommand = replacedCommand.replace(pos, marker.size(), i);
-    }
-    
-    std::cerr << "String after replacement:\t\t" << replacedCommand << std::endl;
-    
-    return replacedCommand;
-}
-
-DAGNode* Func_plate::replaceVariable(const DagNodeContainer &orgNodes) const  {
-    
-    DAGNode* newNode = NULL;
-    
-    const DAGNode& first = static_cast<const DAGNode &>( orgNodes.getElement( 0 ) );
-    
-    if ( first.isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
-        newNode = new StochasticNode( static_cast<const StochasticNode &>( first ).getDistribution().clone() );
-    }
-    else {
-        newNode = new DeterministicNode();
-    }
-    
-    return newNode;
 }

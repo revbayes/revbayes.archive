@@ -30,6 +30,7 @@
 #include "RbFunction.h"
 #include "RbMemoryManager.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "UserInterface.h"
 #include "Workspace.h"
 
@@ -295,6 +296,26 @@ std::string DeterministicNode::debugInfo( void ) const {
     o << std::endl;
     
     return o.str();
+}
+
+
+void DeterministicNode::expand( size_t n ) {
+    // get the current value
+    RbLanguageObject* oldValue = value;
+    
+    // create a vector for the values
+    RbVector<RbLanguageObject>* newValue = new RbVector<RbLanguageObject>();
+    
+    // add the current value as the first value
+    newValue->push_back( oldValue );
+    
+    // add a clone of the current value n-1 times
+    for ( size_t i = 2; i <= n; ++i) {
+        newValue->push_back( oldValue->clone() );
+    }
+    
+    // store the vector into the value
+    value = newValue;
 }
 
 
