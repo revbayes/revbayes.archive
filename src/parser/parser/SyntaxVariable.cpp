@@ -357,7 +357,18 @@ RbVariablePtr SyntaxVariable::evaluateContent( Environment& env) {
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
-            theVar = env[ identifier->getValue() ].getVariablePtr();
+            // we test whether this variable exists
+            if ( env.existsVariable( identifier->getValue() ) ) {
+                theVar = env[ identifier->getValue() ].getVariablePtr();
+            } 
+            else if ( env.existsFunction( identifier->getValue() ) ) {
+                const RbFunction& theFunction = env.getFunction( identifier->getValue() );
+                theVar = RbVariablePtr( new Variable( new ConstantNode( theFunction.clone() ) ) );
+            } 
+            else {
+                // there is no variable with that name and also no function
+                throw RbException("No variable or function with name \"" + identifier->getValue() + "\" found!");
+            }
         } else {
             theVar = functionCall->evaluateContent( env );
         }

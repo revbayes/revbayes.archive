@@ -31,7 +31,7 @@ class DeterministicNode : public VariableNode {
 
 public:
                                             DeterministicNode( void );                                          //!< Constructor
-                                            DeterministicNode(RbFunction* func, const Plate *pl = NULL);        //!< Constructor with function
+                                            DeterministicNode(RbFunction* func, size_t n = 1);                  //!< Constructor with function
                                             DeterministicNode(const DeterministicNode& x);                      //!< Copy Constructor
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
 
@@ -78,6 +78,7 @@ private:
     RbLanguageObject*                       value;                                                               //!< Value
     RbLanguageObject*                       storedValue;                                                         //!< Stored value
 
+    size_t                                  nValues;
 };
 
 #endif

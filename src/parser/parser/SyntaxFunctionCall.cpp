@@ -154,14 +154,27 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     RbFunction* func;
     if (variable == NULL) {
+        bool found = false;
+        // first, we test if the function corresponds to a user-defined variable
+        if ( env.existsVariable( functionName->getValue() ) ) {
+            const RbLanguageObject &theValue = env.getValue( functionName->getValue() );
+            if ( theValue.isTypeSpec( RbFunction::getClassTypeSpec() ) ) {
+                const RbFunction &theFunc = static_cast<const RbFunction&>( theValue );
+                func = theFunc.clone();
+                found = func->checkArguments(args, NULL);
+            }
+        }
 
-        // \TODO: This doesn't work if the function is declared inside a function (or something equivalent)
-        func = Workspace::userWorkspace().getFunction(functionName->getValue(), args).clone();
-        func->processArguments( args );
-        func->setExecutionEnviroment( &env );
+        if ( !found ) {
+            // \TODO: This doesn't work if the function is declared inside a function (or something equivalent)
+            func = env.getFunction(functionName->getValue(), args).clone();
+        }
         if (func == NULL)
             throw(RbException("Could not find function called '" + functionName->getValue() +
-                "' taking specified arguments"));
+                              "' taking specified arguments"));
+        
+        func->processArguments( args );
+        func->setExecutionEnviroment( &env );
     }
     else {
 

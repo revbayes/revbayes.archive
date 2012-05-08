@@ -33,17 +33,17 @@ Environment::~Environment() {
 
 
 /** Construct Environment with NULL parent */
-Environment::Environment(void) : RbInternal(), parentEnvironment(NULL) {
+Environment::Environment(void) : RbInternal(), parentEnvironment(NULL), functionTable(new FunctionTable()) {
 }
 
 
 /** Construct Environment with parent */
-Environment::Environment(Environment* parentFr) : RbInternal(), parentEnvironment(parentFr) {
+Environment::Environment(Environment* parentEnv) : RbInternal(), parentEnvironment(parentEnv), functionTable(new FunctionTable(&parentEnv->getFunctionTable() ) ) {
     
 }
 
 /** Copy Constructor */
-Environment::Environment(const Environment &x): RbInternal(x) {
+Environment::Environment(const Environment &x): RbInternal(x), functionTable( x.functionTable->clone() ) {
     
     // make a deep copy of the parent environment
     if (x.parentEnvironment != NULL) {
@@ -88,6 +88,8 @@ Environment& Environment::operator=(const Environment &x) {
         
         // make a deep copy of the variable names
         varNames = x.varNames;
+        
+        functionTable = x.functionTable->clone();
         
         // make a deep copy of the variable table
         for (size_t i=0; i<x.size(); i++) {
@@ -160,7 +162,22 @@ const VariableSlot& Environment::operator[]( const size_t index ) const {
     return operator[](name);
 }
 
-/** Add variable */
+
+/* Add function to the workspace */
+bool Environment::addFunction(const std::string& name, RbFunction* func) {
+    
+    PRINTF( "Adding function %s = %s to workspace\n", name.c_str(), func->debugInfo().c_str() );
+    
+    if ( existsVariable(name) )
+        throw RbException("There is already a variable named '" + name + "' in the workspace");
+    
+    functionTable->addFunction(name, func);
+    //    addVariable(name, new ConstantNode(func) );
+    
+    return true;
+}
+
+/* Add variable */
 void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
     
     std::string name = n;
@@ -267,6 +284,22 @@ void Environment::eraseVariable( const std::string& name ) {
 }
 
 
+/* Execute function to get its value (workspaces only evaluate functions once) */
+const RbLanguageObject& Environment::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+    
+    /* Using this calling convention indicates that we are only interested in
+     evaluating the function once */
+    return functionTable->executeFunction(name, args);
+}
+
+
+bool Environment::existsFunction(std::string const &name) const {
+    
+    // we delegate the query to the function table
+    return functionTable->existsFunction( name );
+}
+
+
 /** Does variable exist in the Environment (current frame and enclosing frames)? */
 bool Environment::existsVariable( const std::string& name ) const {
     
@@ -300,7 +333,7 @@ std::string Environment::generateUniqueVariableName(void) {
 }
 
 
-/** Get class name of object */
+/* Get class name of object */
 const std::string& Environment::getClassName(void) { 
     
     static std::string rbClassName = "Environment";
@@ -308,7 +341,7 @@ const std::string& Environment::getClassName(void) {
 	return rbClassName; 
 }
 
-/** Get class type spec describing type of object */
+/* Get class type spec describing type of object */
 const TypeSpec& Environment::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
@@ -316,27 +349,56 @@ const TypeSpec& Environment::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
-/** Get type spec */
-const TypeSpec& Environment::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
 
 
-
-/** Get reference, alternative method */
+/* Get reference, alternative method */
 DAGNode* Environment::getDagNode( const std::string& name ) {
     
     return operator[]( name ).getDagNode();
 }
 
 
-/** Get variable, alternative method */
+/* Get variable, alternative method */
 const DAGNode* Environment::getDagNode( const std::string& name ) const {
     
     return operator[]( name ).getDagNode();
+}
+
+
+/* Get function */
+const RbFunction& Environment::getFunction( const std::string& name ) {
+    
+    return functionTable->getFunction( name );
+}
+
+
+/* Get function */
+const RbFunction& Environment::getFunction(const std::string& name, const std::vector<Argument>& args) {
+    
+    return functionTable->getFunction(name, args);
+}
+
+
+const FunctionTable& Environment::getFunctionTable( void ) const {
+    return *functionTable;
+}
+
+
+FunctionTable& Environment::getFunctionTable( void ) {
+    return *functionTable;
+}
+
+
+const std::string& Environment::getName(size_t i) const {
+    return varNames[i];
+}
+
+/* Get type spec */
+const TypeSpec& Environment::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
@@ -429,4 +491,9 @@ void Environment::setName(size_t i, const std::string &name) {
     
     // insert the name at it's old position
     varNames.insert(varNames.begin() + i, name);
+}
+
+
+size_t Environment::size( void ) const {
+    return varNames.size();
 }

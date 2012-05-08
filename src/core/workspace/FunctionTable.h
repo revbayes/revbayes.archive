@@ -55,8 +55,10 @@ class FunctionTable : public RbInternal {
         void                                    clear(void);                                                                            //!< Clear table
         const RbLanguageObject&                 executeFunction(const std::string&           name,
                                                                 const std::vector<Argument>& args);                                     //!< Evaluate function (once)
+        bool                                    existsFunction(const std::string &name) const;                                          //!< Does this table contain a function with given name?
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<RbFunction* >               findFunctions(const std::string& name) const;                                           //!< Return functions matching name
+        const RbFunction&                       getFunction(const std::string& name);                                                   //!< Get function (a copy)
         const RbFunction&                       getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function (a copy)
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
         void                                    setParentTable(const FunctionTable* table) { parentTable = table; }                     //!< Set parent table

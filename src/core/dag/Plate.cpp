@@ -102,10 +102,10 @@ const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, c
             fxt->processArguments( distributionArgs );
             const ParserDistribution& d = static_cast<const ParserDistribution&>( fxt->execute() );
             
-            StochasticNode* stochNode = new StochasticNode( d.clone(), this );
-            stochNode->setName( varName );
-            
-            Workspace::userWorkspace().addVariable(varName, stochNode);
+//            StochasticNode* stochNode = new StochasticNode( d.clone(), this );
+//            stochNode->setName( varName );
+//            
+//            Workspace::userWorkspace().addVariable(varName, stochNode);
         }
         else {
             std::cerr << "Replicating a deterministic node with function " << fxtName << "!" << std::endl;

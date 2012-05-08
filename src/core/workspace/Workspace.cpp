@@ -41,24 +41,24 @@
 
 
 /** Constructor of global workspace */
-Workspace::Workspace() : Environment(), functionTable(new FunctionTable()), typesInitialized(false) {
+Workspace::Workspace() : Environment(), typesInitialized(false) {
 
 }
 
 
 /** Constructor of user workspace */
-Workspace::Workspace(Environment* parentSpace) : Environment(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
+Workspace::Workspace(Environment* parentSpace) : Environment(parentSpace), typesInitialized(false) {
     
 }
 
 
 /** Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), functionTable(new FunctionTable(&parentSpace->getFunctionTable())), typesInitialized(false) {
+Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), typesInitialized(false) {
 
 }
 
 /** Constructor of user workspace */
-Workspace::Workspace(const Workspace& x) : Environment(x), functionTable(x.functionTable->clone()), typesInitialized(x.typesInitialized) {
+Workspace::Workspace(const Workspace& x) : Environment(x), typesInitialized(x.typesInitialized) {
     
 }
 
@@ -81,8 +81,6 @@ Workspace& Workspace::operator=(const Workspace& x) {
     if (this != &x) {
         // first we need to delegate to the base class assignment operator
         Environment::operator=(x);
-        
-        functionTable = x.functionTable->clone();
     }
 
     return (*this);
@@ -123,40 +121,6 @@ bool Workspace::addDistribution(const std::string& name, ParserDistributionConti
     functionTable->addFunction("r" + name, new DistributionFunction(dist->clone(), DistributionFunction::RVALUE));
     functionTable->addFunction("p" + name, new DistributionFunction(dist->clone(), DistributionFunction::PROB));
     functionTable->addFunction("q" + name, new DistributionFunction(dist->clone(), DistributionFunction::QUANTILE));
-    
-    return true;
-}
-
-
-///** Add real-valued distribution to the workspace */
-//bool Workspace::addDistribution(const std::string& name, DistributionContinuous* dist) {
-//
-//    PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
-//
-//    if (typeTable.find(name) != typeTable.end())
-//        throw RbException("There is already a type named '" + name + "' in the workspace");
-//
-//    typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
-//
-//    functionTable->addFunction(name      , new ConstructorFunction ( dist ));
-//    functionTable->addFunction("d" + name, new DistributionFunction( dist->clone() , DistributionFunction::DENSITY));
-//    functionTable->addFunction("r" + name, new DistributionFunction(dist->clone(), DistributionFunction::RVALUE));
-//    functionTable->addFunction("p" + name, new DistributionFunction(dist->clone(), DistributionFunction::PROB));
-//    functionTable->addFunction("q" + name, new DistributionFunction(dist->clone(), DistributionFunction::QUANTILE));
-//
-//    return true;
-//}
-
-
-/** Add function to the workspace */
-bool Workspace::addFunction(const std::string& name, RbFunction* func) {
-
-    PRINTF( "Adding function %s = %s to workspace\n", name.c_str(), func->debugInfo().c_str() );
-    
-    if (existsVariable(name))
-        throw RbException("There is already a variable named '" + name + "' in the workspace");
-
-    functionTable->addFunction(name, func);
     
     return true;
 }
@@ -267,16 +231,7 @@ const TypeSpec& Workspace::getTypeSpec( void ) const {
 }
 
 
-/** Execute function to get its value (workspaces only evaluate functions once) */
-const RbLanguageObject& Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) {
-
-    /* Using this calling convention indicates that we are only interested in
-       evaluating the function once */
-    return functionTable->executeFunction(name, args);
-}
-
-
-/** Is the type added to the workspace? */
+/* Is the type added to the workspace? */
 bool Workspace::existsType( const TypeSpec& name ) const {
 
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
@@ -288,28 +243,6 @@ bool Workspace::existsType( const TypeSpec& name ) const {
     }
     else
         return true;
-}
-
-
-///** Find type template object */
-//RbObject* Workspace::findType( const TypeSpec& name ) const {
-//
-//    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
-//    if ( it == typeTable.end() ) {
-//        if ( parentEnvironment != NULL )
-//            return static_cast<Workspace*>( parentEnvironment )->findType( name );
-//        else
-//            throw RbException( "Type '" + name + "' does not exist in environment" );
-//    }
-//    else
-//        return it->second;
-//}
-
-
-/** Get function */
-const RbFunction& Workspace::getFunction(const std::string& name, const std::vector<Argument>& args) {
-    
-    return functionTable->getFunction(name, args);
 }
 
 

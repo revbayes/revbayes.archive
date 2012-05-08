@@ -52,7 +52,7 @@ public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
                                         StochasticNode(void);                                               //!< Construct empty stochastic node
-                                        StochasticNode(ParserDistribution* dist, const Plate *pl = NULL);   //!< Construct from distribution (raw object) with plate holding this node
+                                        StochasticNode(ParserDistribution* dist, size_t n = 1);             //!< Construct from distribution (raw object) with plate holding this node
                                         StochasticNode(const StochasticNode& x);                            //!< Copy constructor
     virtual                            ~StochasticNode(void);                                               //!< Destructor
 
@@ -132,6 +132,7 @@ private:
     RbLanguageObject*                   storedValue;                                                        //!< Stored value
 
     VariableType                        type;
+    size_t                              nValues;
         
     // probability arrays and likelihood arrays for summed out computations
     std::vector<double>                 probabilities;

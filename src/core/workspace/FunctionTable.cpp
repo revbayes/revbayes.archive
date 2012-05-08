@@ -134,6 +134,27 @@ const RbLanguageObject& FunctionTable::executeFunction(const std::string& name, 
 }
 
 
+
+bool FunctionTable::existsFunction(std::string const &name) const {
+    std::cerr << "This table contains " << table.size() << " functions." << std::endl;
+    size_t c = table.count( name );
+    std::cerr << "Found " << c << " functions with name \"" << name << "\"" << std::endl;
+    const std::map<std::string, RbFunction*>::const_iterator& it = table.find( name );
+    
+    // if this table doesn't contain the function, then we ask the parent table
+    if ( it == table.end() ) {
+        if ( parentTable != NULL ) {
+            return parentTable->existsFunction( name );
+        }
+        else {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
 /**
  * Find functions matching name
  *
@@ -287,7 +308,7 @@ const std::string& FunctionTable::getClassName(void) {
 	return rbClassName; 
 }
 
-/** Get class type spec describing type of object */
+/* Get class type spec describing type of object */
 const TypeSpec& FunctionTable::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
@@ -295,7 +316,7 @@ const TypeSpec& FunctionTable::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
-/** Get type spec */
+/* Get type spec */
 const TypeSpec& FunctionTable::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -304,7 +325,23 @@ const TypeSpec& FunctionTable::getTypeSpec( void ) const {
 }
 
 
-/** Get function copy (for repeated evaluation in a DeterministicNode) */
+/* Get function copy (for repeated evaluation in a DeterministicNode) */
+const RbFunction& FunctionTable::getFunction( const std::string& name ) {
+    
+    // find the template function
+    const std::vector<RbFunction* >& theFunctions = findFunctions(name);
+    
+    if ( theFunctions.size() > 1 ) {
+        std::ostringstream o;
+        o << "Found " << theFunctions.size() << " functions with name \"" << name + "\". Identification not possible if not types of the arguments are specified.";
+        throw RbException( o.str() );
+    }
+    
+    return *theFunctions[0];
+}
+
+
+/* Get function copy (for repeated evaluation in a DeterministicNode) */
 const RbFunction& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
     
     // find the template function

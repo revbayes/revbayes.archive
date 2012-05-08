@@ -71,7 +71,7 @@ public:
     virtual void                                swapParentNode( DAGNode* oldP, DAGNode* newP) = 0;                              //!< Swap a parent node
 
 protected:
-    VariableNode(const Plate *pl = NULL);                                                                                       //!< Constructor of empty node with plate on whch this node sits
+    VariableNode(void);                                                                                                         //!< Constructor of empty node with plate on whch this node sits
     VariableNode(const VariableNode &v);                                                                                        //!< Copy Constructor
         
     virtual void                                getAffected(std::set<StochasticNode*>& affected) = 0;                                  //!< Mark and get affected nodes

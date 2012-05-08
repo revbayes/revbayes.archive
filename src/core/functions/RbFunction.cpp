@@ -31,13 +31,13 @@
 
 
 /** Basic constructor. */
-RbFunction::RbFunction(void) : RbInternal(), args( ) {
+RbFunction::RbFunction(void) : RbLanguageObject(), args( ) {
 
     argsProcessed = false;
 }
 
 /** Copy constructor. */
-RbFunction::RbFunction(const RbFunction &x) : RbInternal(x), args(  ) {
+RbFunction::RbFunction(const RbFunction &x) : RbLanguageObject(x), args(  ) {
     
     // the arguments should be copied properly by the derived classes
 //    for (size_t i=0; i<x.args.size(); i++) {

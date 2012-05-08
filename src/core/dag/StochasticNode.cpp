@@ -52,7 +52,9 @@ StochasticNode::StochasticNode( void ) : VariableNode( ), clamped( false ), dist
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( ParserDistribution* dist, const Plate *pl ) : VariableNode( pl ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( ParserDistribution* dist, size_t n ) : VariableNode(  ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
+    
+    nValues = n;
     
     /* Get distribution parameters */
     std::map<std::string, const Variable*>& params = dist->getMembers();
@@ -118,6 +120,7 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     
     lnProb                          = x.lnProb;
     storedLnProb                    = x.storedLnProb;
+    nValues                         = x.nValues;
 }
 
 
@@ -660,7 +663,7 @@ InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, Infere
  */
 RbLanguageObject* StochasticNode::createRV( void ) {
     
-    if ( plate == NULL ) {
+//    if ( plate == NULL ) {
         
         const std::map<std::string, const Variable*> &params = distribution->getMembers();
     
@@ -668,44 +671,44 @@ RbLanguageObject* StochasticNode::createRV( void ) {
         for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
             newArgs.push_back( &i->second->getValue() );
         }
-        return createRV( std::vector<size_t>(),newArgs );
-    }
-    else {
-        // we need to get the arguments for checking if they live on the same plate or any parent plate of this
-        const std::map<std::string, const Variable*> &params = distribution->getMembers();
-        
-        // get the plates of my arguments
-        std::vector<const Plate*> argPlates;
-        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-        // test whether this argument lives on the same plate as myself
-            argPlates.push_back( i->second->getDagNode()->getPlate() );
-        }
-        
-        // convert the argument into RbObjects
-        std::vector<const RbObject*> newArgs;
-        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-            newArgs.push_back( &i->second->getValue() );
-        }
-        
-        // we create a vector of lengths telling us the length of each plate
-        // we only consider plate on which none of the arguments lives
-        std::vector<size_t> plateLengths;
-        const Plate *p = plate;
-        while (p != NULL) {
-            for ( std::vector<const Plate*>::const_iterator i = argPlates.begin(); i != argPlates.end(); i++ ) {
-                // test whether this argument lives on the same plate as myself
-                if ( p == *i ) {
-                    p = NULL;
-                    break;
-                }
-            }
-            if ( p != NULL ) {
-                plateLengths.insert( plateLengths.begin(), p->getLength() );
-                p = p->getParentPlate();
-            }
-        }
-        return createRV( plateLengths, newArgs );
-    }
+        return createRV( std::vector<size_t>(), newArgs );
+//    }
+//    else {
+//        // we need to get the arguments for checking if they live on the same plate or any parent plate of this
+//        const std::map<std::string, const Variable*> &params = distribution->getMembers();
+//        
+//        // get the plates of my arguments
+//        std::vector<const Plate*> argPlates;
+//        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+//        // test whether this argument lives on the same plate as myself
+//            argPlates.push_back( i->second->getDagNode()->getPlate() );
+//        }
+//        
+//        // convert the argument into RbObjects
+//        std::vector<const RbObject*> newArgs;
+//        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+//            newArgs.push_back( &i->second->getValue() );
+//        }
+//        
+//        // we create a vector of lengths telling us the length of each plate
+//        // we only consider plate on which none of the arguments lives
+//        std::vector<size_t> plateLengths;
+//        const Plate *p = plate;
+//        while (p != NULL) {
+//            for ( std::vector<const Plate*>::const_iterator i = argPlates.begin(); i != argPlates.end(); i++ ) {
+//                // test whether this argument lives on the same plate as myself
+//                if ( p == *i ) {
+//                    p = NULL;
+//                    break;
+//                }
+//            }
+//            if ( p != NULL ) {
+//                plateLengths.insert( plateLengths.begin(), p->getLength() );
+//                p = p->getParentPlate();
+//            }
+//        }
+//        return createRV( plateLengths, newArgs );
+//    }
 }
 
 

@@ -52,7 +52,7 @@ class DAGNode;
  *
  */
 
-class RbFunction :  public RbInternal {
+class RbFunction :  public RbLanguageObject {
 
     public:
     virtual                                            ~RbFunction(void);                                                                  //!< Destructor

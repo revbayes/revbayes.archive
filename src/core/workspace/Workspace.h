@@ -24,7 +24,6 @@
 #define Workspace_H
 
 #include "Environment.h"
-#include "FunctionTable.h"
 
 #include <map>
 #include <ostream>
@@ -54,8 +53,8 @@ typedef std::map<std::string, RbObject*> TypeTable;
  * variables defined by the user. Local variables defined by the user are kept in local
  * frames.
  *
- * The workspace has a variable table, which it inherits from Frame. In addition, it
- * keeps a function table and type table. It provides various types of functionality for
+ * The workspace has a variable table and a function table, which it inherits from Frame. In addition, it
+ * keeps a type table. It provides various types of functionality for
  * storing and retrieving functions, types and member variables and their initializers.
  *
  * The workspace ensures that symbol names are unique for functions and variables by cross-
@@ -85,23 +84,15 @@ class Workspace : public Environment {
         const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                  //!< Print table for user
 
-//        bool                        addDistribution(const std::string& name, Distribution* dist);                       //!< Add distribution
-//        bool                        addDistribution(const std::string& name, DistributionContinuous* dist);             //!< Add distribution on continuous variable
         bool                        addDistribution(const std::string& name, ParserDistributionContinuous* dist);       //!< Add distribution on continuous variable
-        bool                        addFunction(const std::string& name, RbFunction* func);                             //!< Add function
         bool                        addType(RbObject* exampleObj);                                                      //!< Add type
         bool                        addType(const std::string& name, RbObject* exampleObj);                             //!< Add special abstract type (synonym)
         bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
         bool                        addTypeWithConstructor(const std::string& name, RbLanguageObject* templ);           //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
-        const RbLanguageObject&     executeFunction(    const std::string&              name,
-                                                        const std::vector<Argument>&   args);                           //!< Execute function
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
 //        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
         const TypeSpec&             getClassTypeSpecOfType(const std::string& type) const;                              //!< Get reference to class vector of type
-        const FunctionTable&        getFunctionTable(void) const { return *functionTable; }                             //!< Get function table (const)
-        FunctionTable&              getFunctionTable(void) { return *functionTable; }                                   //!< Get function table (non-const)
-        const RbFunction&           getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                         {
@@ -121,7 +112,6 @@ class Workspace : public Environment {
                                     Workspace(const Workspace& w);                                                    //!< Prevent copy
         Workspace&                  operator=(const Workspace& w);                                                      //! Prevent assignment
 
-        FunctionTable*              functionTable;                                                                      //!< Table holding functions
         TypeTable                   typeTable;                                                                          //!< Type table
 
         bool                        typesInitialized;                                                                   //!< Is type table initialized? Before then, we can't perform type checking.

@@ -146,7 +146,7 @@ void ParserFunction::printValue(std::ostream& o) const {
     
     const ArgumentRules& argRules = getArgumentRules();
     
-    o << getReturnType() << " function (";
+    o << getReturnType() << " " << functionName << " (";
     for (size_t i=0; i<argRules.size(); i++) {
         if (i != 0)
             o << ", ";
