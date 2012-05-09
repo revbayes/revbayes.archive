@@ -83,7 +83,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-const RbLanguageObject& ConstructorFunction::execute( void ) {
+RbPtr<RbLanguageObject> ConstructorFunction::execute( void ) {
 
     delete copyObject;
     
@@ -91,10 +91,10 @@ const RbLanguageObject& ConstructorFunction::execute( void ) {
 
     
     for ( size_t i = 0; i < args.size(); i++ ) {
-        copyObject->setMember( args[i].getLabel(), args[i].getVariablePtr() );
+        copyObject->setMember( args[i].getLabel(), args[i].getVariable() );
     }
  
-    return *copyObject;
+    return RbPtr<RbLanguageObject>( copyObject );
 }
 
 

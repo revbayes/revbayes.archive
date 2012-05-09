@@ -58,15 +58,13 @@ class TaxonData : public MemberObject {
     protected:
     
         // member object functions
-        virtual const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Execute method
+        virtual RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Execute method
 
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
         RbVector                                sequence;
     
-        // memberfunction return value
-        Natural                                 returnValueSize;
 
 };
 

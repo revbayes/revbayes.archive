@@ -10,6 +10,7 @@
 
 
 #include "Complex.h"
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "MemberFunction.h"
 #include "MethodTable.h"
@@ -22,20 +23,19 @@
 #include "RbString.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 /** Vector type of elements */
 RbVector::RbVector( const TypeSpec &elemType ) : Container( elemType ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( elementType) ) {
     
     // set the member rules
-    memberRules.push_back( new ValueRule( "x"  , elementType ) );
+    memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
     memberRules.push_back( new Ellipsis( elementType ) );
     
     // set the methods
     
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+    squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
     methods.addFunction("[]",  new MemberFunction( elemType, squareBracketArgRules) );
     
     // add method for call "x.sort()" as a function
@@ -55,14 +55,14 @@ RbVector::RbVector( const TypeSpec &elemType ) : Container( elemType ), typeSpec
 RbVector::RbVector(const TypeSpec &elemType, size_t n) : Container( elemType ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( elementType) )  {
     
     // set the member rules
-    memberRules.push_back( new ValueRule( "x"  , elementType ) );
+    memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
     memberRules.push_back( new Ellipsis( elementType ) );
     
     // set the methods
     
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+    squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
     methods.addFunction("[]",  new MemberFunction( elemType, squareBracketArgRules) );
     
     // add method for call "x.sort()" as a function
@@ -86,14 +86,14 @@ RbVector::RbVector(const TypeSpec &elemType, size_t n) : Container( elemType ), 
 RbVector::RbVector(const TypeSpec &elemType, size_t n, RbObject* x) : Container( elemType ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( elementType) )  {
     
     // set the member rules
-    memberRules.push_back( new ValueRule( "x"  , elementType ) );
+    memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
     memberRules.push_back( new Ellipsis( elementType ) );
     
     // set the methods
     
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+    squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
     methods.addFunction("[]",  new MemberFunction( elemType, squareBracketArgRules) );
     
     // add method for call "x.sort()" as a function
@@ -351,17 +351,17 @@ std::vector<RbObject *>::const_iterator RbVector::end( void ) const {
 
 
 /** Execute member function. */
-const RbLanguageObject& RbVector::executeOperationSimple(std::string const &name, const std::vector<Argument> &args) {
+RbPtr<RbLanguageObject> RbVector::executeOperationSimple(std::string const &name, const std::vector<Argument> &args) {
     
     if ( name == "sort" ) {
         sort();
         
-        return RbNullObject::getInstance();
+        return NULL;
     }
     else if ( name == "unique" ) {
         unique();
         
-        return RbNullObject::getInstance();
+        return NULL;
     }
     
     return Container::executeOperationSimple(name, args);
@@ -606,11 +606,10 @@ void RbVector::setElement(const size_t index, RbObject *elem) {
 
 
 /** Vector a member variable */
-void RbVector::setMemberVariable(const std::string& name, const Variable* var) {
+void RbVector::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
     
     if (name == "x" || name == "" ) { // the ellipsis variables
-        RbObject* element = var->getValue().clone();
-        push_back( element);
+        push_back( var );
     }
     else {
         Container::setMemberVariable(name, var);

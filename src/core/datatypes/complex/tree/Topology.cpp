@@ -25,7 +25,6 @@
 #include "RbUtil.h"
 #include "Topology.h"
 #include "TopologyNode.h"
-#include "ValueRule.h"
 
 
 /* Default constructor */
@@ -115,17 +114,15 @@ const TypeSpec& Topology::getTypeSpec( void ) const {
 
 
 /* Map calls to member methods */
-const RbLanguageObject& Topology::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Topology::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     if (name == "nTips") {
     
-        numTips.setValue( getNumberOfTips() );
-        return numTips;
+        return RbPtr<RbLanguageObject>( new Natural( getNumberOfTips() ) );
     }
     else if (name == "nnodes") {
     
-        numNodes.setValue( getNumberOfNodes() );
-        return numNodes;
+        return RbPtr<RbLanguageObject>( new Natural( getNumberOfNodes() ) );
     }
 
     return MemberObject::executeOperationSimple( name, args );

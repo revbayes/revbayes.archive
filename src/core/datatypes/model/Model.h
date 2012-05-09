@@ -19,7 +19,6 @@
 #define Model_H
 
 #include "MemberObject.h"
-#include "RbConstDagNodePtr.h"
 
 #include <ostream>
 #include <string>
@@ -62,15 +61,15 @@ class Model : public MemberObject {
         void                                    addSourceNode(const DAGNode* sourceNode);
         void                                    createModelFromDagNode(const DAGNode *source );
         void                                    createLeanDag(const DAGNode* fatDagNode);
-        int                                     findIndexInVector(const std::vector<RbDagNodePtr>& v, const DAGNode* p) const;
+        int                                     findIndexInVector(const std::vector<RbPtr<DAGNode> >& v, const DAGNode* p) const;
         int                                     findIndexInVector(const std::vector<InferenceDagNode*>& v, const InferenceDagNode* p) const;
         
         // Member variables
-        std::vector<RbDagNodePtr>               dagNodes;                                                   //!< The DAG nodes contained in this model
+        std::vector<RbPtr<DAGNode> >            dagNodes;                                                   //!< The DAG nodes contained in this model
         std::vector<InferenceDagNode*>          leanDagNodes;
         std::set<const DAGNode*>                sourceNodes;                                                //!< The source node for this model
     
-        std::map<const DAGNode*, RbDagNodePtr>  nodesMap;
+        std::map<const DAGNode*, RbPtr<DAGNode> >  nodesMap;
         std::map<const DAGNode*, InferenceDagNode*>  leanNodesMap;
         std::map<const DAGNode*, InferenceDagNode*> orgNodesMap;
 };

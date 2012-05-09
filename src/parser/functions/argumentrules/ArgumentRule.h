@@ -50,7 +50,7 @@ class ArgumentRule : public RbInternal {
         bool                        isOptional(void) const;                                                                             //!< Is this rule optional? If so, we do not use a default parameter when no argument is given.
 
         // functions overwritten in derived class
-        virtual const Variable&     getDefaultVariable(void) const = 0;                                                                 //!< Get default argument
+        virtual const Variable&     getDefaultVariable(void) const;                                                                     //!< Get default argument
 
     protected:
                                     ArgumentRule(const std::string& argName);                                                           //!< Constructor of rule from default value

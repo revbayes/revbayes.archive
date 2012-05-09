@@ -17,6 +17,7 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "Integer.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
@@ -27,7 +28,6 @@
 #include "RbString.h"
 #include "RbUtil.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 
 
@@ -45,90 +45,35 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() 
 
 
 
-
-/** Copy constructor */
-MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
-    
-    // copy the members.
-    // Note, this is a shallow copy because the members are pointers to variables which itself are pointers to DAG nodes.
-    members = m.members;
-    
-    // We need to increment the reference count for the member variables
-    for (std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++) {
-        i->second->incrementReferenceCount();
-    }
-}
-
-
-/** Destructor. */
-MemberObject::~MemberObject(void) {
-    
-    for (std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++) {
-        const Variable *var = i->second;
-        if (var->decrementReferenceCount() == 0) {
-            delete var;
-        }
-    }
-}
-
-
-/** Assignment operator. We need to make a deep copy of the members */
-MemberObject& MemberObject::operator=(const MemberObject &m) {
-    
-    if (this != &m) {
-          
-        members = m.members;
-        // We need to increment the reference count for the member variables
-        for (std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++) {
-            i->second->incrementReferenceCount();
-        }
-
-    }
-    
-    return (*this);
-}
-
-
 /* Execute method. This method just delegate the call to executeOperationSimple and wraps the return value into
  * a constant node. If you don't want this, you have to overwrite this method.
  */
-const RbLanguageObject& MemberObject::executeOperation(std::string const &name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> MemberObject::executeOperation(std::string const &name, const std::vector<Argument>& args) {
     
     // get the return value
-    const RbLanguageObject& value = executeOperationSimple(name, args);
+    const RbPtr<RbLanguageObject>& value = executeOperationSimple(name, args);
   
     return value;
     
-//    // wrap into constant node
-//    DAGNode* theNode = new ConstantNode( value );
-//    
-//    return theNode;
 }
 
 
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-const RbLanguageObject& MemberObject::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> MemberObject::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
-    if (name == "memberNames") {
-        for (std::map<std::string, const Variable*>::iterator i = members.begin(); i != members.end(); ++i) {
-            RBOUT( i->first );
-        }
-        
-        return RbNullObject::getInstance();
-    } 
-    else if (name == "get") {
+    if (name == "get") {
         // get the member with give name
-        const RbString& varName = static_cast<const RbString&>( args[0].getVariable().getValue() );
+        const RbString& varName = static_cast<const RbString&>( args[0].getVariable()->getValue() );
         
         // check if a member with that name exists
-        if (hasMember(varName)) {
-            return getMember(varName)->getValue();
+        if ( hasMember(varName) ) {
+            return getMember(varName);
         }
         
         // there was no variable with the given name
-        return RbNullObject::getInstance();
+        return NULL;
         
     }
     else {
@@ -187,7 +132,7 @@ const MethodTable& MemberObject::getMethods(void) const {
         methods.addFunction("memberNames", new MemberFunction(RbVoid_name, getMemberNamesArgRules) );
         
         // add the 'memberNames()' method
-        getArgRules->push_back( new ValueRule( "name" , RbString::getClassTypeSpec() ) );
+        getArgRules->push_back( new ConstArgumentRule( "name" , RbString::getClassTypeSpec() ) );
         methods.addFunction("get", new MemberFunction(RbLanguageObject::getClassTypeSpec(), getArgRules) );
         
         methodsSet = true;
@@ -197,23 +142,8 @@ const MethodTable& MemberObject::getMethods(void) const {
 }
 
 
-const std::map<std::string, const Variable*>& MemberObject::getMembers(void) const {
-    return members;
-}
-
-
-std::map<std::string, const Variable*>& MemberObject::getMembers(void) {
-    return members;
-}
-
-
 /** Get a member variable */
-const Variable* MemberObject::getMember(const std::string& name) const {
-    
-    std::map<std::string, const Variable*>::const_iterator i = members.find( name );
-    if ( i != members.end()) {
-        return i->second;
-    }
+RbPtr<RbLanguageObject> MemberObject::getMember(const std::string& name) const {
     
     throw RbException("No Member named '" + name + "' available.");
 }
@@ -224,53 +154,27 @@ bool MemberObject::hasMember(std::string const &name) const {
 }
 
 
-/** Is the object constant? */
-bool MemberObject::isConstant( void ) const {
-
-    return true;
-}
-
-
 /** Print value for user */
 void MemberObject::printValue(std::ostream& o) const {
     
-    o << "Printing members of MemberObject with " << members.size() << " members:" << std::endl;
+    o << "Printing MemberObject:" << std::endl;
 
-    for ( std::map<std::string, const Variable*>::const_iterator i = members.begin(); i != members.end(); i++ ) {
-        const std::string &name = i->first;
-        o << "   ." << name << ":\t\t";
-        i->second->getValue().printValue(o);
-        o << std::endl;
-    }
 }
 
 
 /** Set a member DAG node */
-void MemberObject::setMemberVariable(const std::string& name, const Variable* var) {
+void MemberObject::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
 
     throw RbException("No Member named '" + name + "' expected in an object of class " + getTypeSpec().getBaseType() + " and therefore cannot set it.");
 }
 
 
 /** Set a member variable */
-void MemberObject::setMember(const std::string& name, const Variable* var) {
+void MemberObject::setMember(const std::string& name, const RbPtr<const Variable> &var) {
     // calling the internal mthod to set the DAG node
     // the derived classes should know how to set their members
-    setMemberVariable(name, var);
+    setMemberVariable(name, var->getValue().clone() );
     
-    // test whether this element already was inserted
-    std::map<std::string, const Variable*>::iterator existingElement = members.find(name);
-    if ( members.count( name ) > 0) {
-        members[name] = var;
-        var->incrementReferenceCount();
-        if ( members.count( name ) > 1) {
-            std::cerr << "Opsi dupsi" << std::endl;
-        }
-    }
-    else {
-        // just add this node to the map
-        members.insert( std::pair<std::string, const Variable*>(name,var) );
-    }
 }
 
 

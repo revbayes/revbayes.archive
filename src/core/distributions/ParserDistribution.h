@@ -68,7 +68,7 @@ protected:
     ParserDistribution( const std::string &n, const MemberRules& memberRules, RbLanguageObject* rv);                        //!< Simple constructor
     ParserDistribution( const ParserDistribution &p);                                                                       //!< Copy constructor
     
-    virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
+    virtual RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
     virtual void                        setMemberVariable(const std::string& name, const Variable* var);                    //!< Set member variable
     
     std::string                         name;

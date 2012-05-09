@@ -34,7 +34,6 @@ class InferenceDagNode;
 class MethodTable;
 class Monitor;
 class Plate;
-class RbDagNodePtr;
 class StochasticNode;
 class VariableNode;
 
@@ -53,7 +52,6 @@ class DAGNode : public RbLanguageObject {
         virtual DAGNode*                                    clone(void) const = 0;                                                          //!< Clone this node
         static const std::string&                           getClassName(void);                                                             //!< Get DAG node class name
         static const TypeSpec&                              getClassTypeSpec(void);                                                         //!< Get DAG node class type spec
-        virtual const RbLanguageObject&                     getStoredValue(void) const = 0;                                                 //!< Get stored value
         virtual const RbLanguageObject&                     getValue(void) const = 0;                                                       //!< Get value (const)
         virtual RbLanguageObject&                           getValue(void) = 0;                                                             //!< Get value (non-const)
         virtual const TypeSpec&                             getTypeSpec(void) const = 0;                                                    //!< Get the type spec of the instance
@@ -61,9 +59,9 @@ class DAGNode : public RbLanguageObject {
         virtual void                                        printValue(std::ostream& o) const = 0;                                          //!< Print value for user
     
         // DAG function you have to override
-        virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone graph
+        virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;        //!< Clone graph
         virtual InferenceDagNode*                           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0; //!< Create a lean DAG from this "fat" DAG
-        virtual const RbLanguageObject&                     executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
+        virtual RbPtr<RbLanguageObject>                     executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
         virtual void                                        expand(void) = 0;                                                               //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
         virtual const MethodTable&                          getMethods(void) const;                                                         //!< Get member methods (const)
         virtual bool                                        isEliminated(void) const = 0;
@@ -73,11 +71,9 @@ class DAGNode : public RbLanguageObject {
         void                                                addChildNode(VariableNode *c);                                                  //!< Add child node
         void                                                getAffectedNodes(std::set<StochasticNode* >& affected);                         //!< Mark and get affected nodes
         const std::set<VariableNode*>&                      getChildren(void) const;                                                        //!< Return children
-        const RbObject&                                     getElement(size_t index) const;                                                 //!< Get element at index (container function)
-        RbObject&                                           getElement(size_t index);                                                       //!< Get element at index (container function)
         const std::string&                                  getName(void) const;                                                            //!< get the name
-        const std::set<DAGNode*>&                           getParents(void) const;                                                         //!< Return parents
-        const Plate*                                        getPlate(void) const;                                                           //!< Get the plate on which this DAG node sits on.
+        const std::set<RbPtr<DAGNode> >&                    getParents(void) const;                                                         //!< Return parents
+        const RbPtr<const Plate>&                           getPlate(void) const;                                                           //!< Get the plate on which this DAG node sits on.
         bool                                                isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;               //!< Is node x a parent of the caller in the DAG?
         void                                                keep(void);                                                                     //!< Keep current state of this node and all affected nodes
         size_t                                              numberOfChildren(void) const;                                                   //!< Number of children
@@ -92,10 +88,10 @@ class DAGNode : public RbLanguageObject {
 
 
     protected:
-                                                            DAGNode(const Plate *p);                                                                  //!< Constructor of empty node
+                                                            DAGNode(const RbPtr<const Plate> p);                                            //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                                      //!< Copy constructor
 
-        virtual void                                        getAffected(std::set<StochasticNode* >& affected) = 0;                          //!< Mark and get affected nodes
+        virtual void                                        getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                    //!< Mark and get affected nodes
         virtual void                                        keepAffected(void);                                                             //!< Keep value of affected nodes
         virtual void                                        keepMe(void) = 0;                                                               //!< Keep value of myself
         virtual void                                        restoreMe(void) = 0;                                                            //!< Restore value of this nodes
@@ -106,11 +102,11 @@ class DAGNode : public RbLanguageObject {
 
         // Member variables keeping track of references
         std::set<VariableNode* >                            children;                                                                       //!< Set of children nodes
-        std::set<DAGNode*>                                  parents;                                                                        //!< Set of parent nodes
+        std::set<RbPtr<DAGNode> >                           parents;                                                                        //!< Set of parent nodes
             
         // Member value variables
         std::string                                         name;                                                                           //!< The name/identifier of the DAG node
-        const Plate*                                        plate;                                                                          //!< The plate on which this DAG node lives.
+        RbPtr<const Plate>                                  plate;                                                                          //!< The plate on which this DAG node lives.
 };
 
 #endif

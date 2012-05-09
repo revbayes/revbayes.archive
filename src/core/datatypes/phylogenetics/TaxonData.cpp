@@ -67,14 +67,11 @@ TaxonData* TaxonData::clone(void) const {
 
 
 /* Map calls to member methods */
-const RbLanguageObject& TaxonData::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> TaxonData::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     if (name == "size") {
         
-        // we set our value
-        returnValueSize.setValue( getNumberOfCharacters() );
-        
-        return returnValueSize;
+        return RbPtr<RbLanguageObject>( new Natural(getNumberOfCharacters() ) );
     } else if ( name == "[]") {
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
@@ -85,7 +82,7 @@ const RbLanguageObject& TaxonData::executeOperationSimple(const std::string& nam
         
         // we have to internally reduce the index by 1
         Character& element = operator[](index.getValue() - 1);
-        return element;
+        return RbPtr<RbLanguageObject>( element.clone() );
     } 
     
     return MemberObject::executeOperationSimple( name, args );

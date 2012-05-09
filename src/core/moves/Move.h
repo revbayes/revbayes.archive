@@ -32,12 +32,9 @@ class Move : public MemberObject {
 
         // Basic utility functions
         virtual Move*                           clone(void) const = 0;                                                                  //!< Clone the object
-        size_t                                  decrementReferenceCount(void) const;                                                    //!< Decrement the reference counter for this instance
         static const std::string&               getClassName(void);                                                                     //!< Get class name
         static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
-        size_t                                  incrementReferenceCount(void) const;                                                    //!< Increment the reference count for this instance
         virtual void                            printValue(std::ostream& o) const;
-        virtual bool                            supportsReferenceCounting(void) const { return true; }                                  //!< Supports reference counting for memory management
     
         // Member variable rules
         virtual const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
@@ -63,20 +60,11 @@ class Move : public MemberObject {
         Move(const MemberRules& memberRules);                                                                                           //!< Default constructor
         Move(const Move& m);                                                                                                            //!< Copy constructor
 
-        virtual const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
+        virtual RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
 
-        // parameters
-        RbConstVariablePtr                      weight;
-    
-        // Hidden member variables
-        Natural                                 numAccepted;                                                                            //!< Number of times accepted
-        Natural                                 numTried;                                                                               //!< Number of times tried
-        RealPos                                 acceptanceR;
-    
+        
         std::vector<StochasticNode*>            nodes;
     
-    private:
-        size_t                                  refCount;                                           //!< The reference counter
     
 };
 

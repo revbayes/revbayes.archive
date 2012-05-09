@@ -68,13 +68,13 @@ const TypeSpec& RbMatrix::getClassTypeSpec(void) {
 
 /** Get element of row and col. */
 const RbObject& RbMatrix::getElement(size_t row, size_t col) const {
-    return (this->elements[row])->getElement(col);
+    return static_cast<const RbVector *>(elements[row])->getElement(col);
 }
 
 
 /** Get element of row and col. */
 RbObject& RbMatrix::getElement(size_t row, size_t col) {
-    return (this->elements[row])->getElement(col);
+    return static_cast<RbVector *>(elements[row])->getElement(col);
 }
 
 size_t RbMatrix::getNumberOfColumns(void) const {

@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "Container.h"
 #include "MemberFunction.h"
 #include "MethodTable.h"
@@ -25,7 +26,6 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <algorithm>
 
@@ -40,17 +40,6 @@ Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) :
 }
 
 
-/** Copy Constructor */
-Container::Container(const Container &v) : MemberObject(v), elementType(v.elementType) {
-    
-}
-
-
-/** Destructor. Free the memory of the elements. */
-Container::~Container(void) {
-    
-}
-
 /** Assignment operator; make sure we get independent elements */
 Container& Container::operator=( const Container& x ) {
     
@@ -59,8 +48,6 @@ Container& Container::operator=( const Container& x ) {
         if (elementType != x.elementType) {
             throw RbException("Cannot assign a vector to another vector of different type.");
         }
-        
-        returnValueSize = x.returnValueSize;
     }
     
     return ( *this );
@@ -113,17 +100,14 @@ const MethodTable& Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-const RbLanguageObject& Container::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Container::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     if (name == "size") {
         
-        // we set our value
-        returnValueSize.setValue(size());
-        
-        return returnValueSize;
+        return RbPtr<RbLanguageObject>( new Natural( size() ) );
     } else if ( name == "[]") {
         // get the member with give index
-        const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
 
         if (size() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in []");
@@ -131,7 +115,7 @@ const RbLanguageObject& Container::executeOperationSimple(const std::string& nam
         
         // \TODO: Check what happens with DAGNodeContainers
         RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index.getValue() - 1) );
-        return element;
+        return RbPtr<RbLanguageObject>( element.clone() );
     } 
     
     return MemberObject::executeOperationSimple( name, args );

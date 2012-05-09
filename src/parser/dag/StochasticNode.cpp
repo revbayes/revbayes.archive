@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "ConstructorFunction.h"
 #include "Container.h"
 #include "DagNodeFunction.h"
@@ -37,7 +38,6 @@
 #include "StochasticInferenceNode.h"
 #include "UserInterface.h"
 #include "Workspace.h"
-#include "ValueRule.h"
 
 #include <algorithm>
 #include <cassert>

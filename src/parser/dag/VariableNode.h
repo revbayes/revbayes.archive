@@ -38,10 +38,8 @@ public:
     virtual VariableNode*                       clone(void) const = 0;                                                          //!< Clone this node
     static const std::string&                   getClassName(void);                                                             //!< Get class name
     static const TypeSpec&                      getClassTypeSpec(void);                                                         //!< Get class type spec
-    virtual const RbLanguageObject&             getStoredValue(void) const = 0;                                                 //!< Get stored value
     virtual const RbLanguageObject&             getValue(void) const = 0;                                                       //!< Get value (const)
     virtual RbLanguageObject&                   getValue(void) = 0;                                                             //!< Get value (non-const)
-//    virtual const RbLanguageObject*             getValuePtr(void) const = 0;                                                    //!< Get value pointer
     virtual void                                printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
     virtual void                                printValue(std::ostream& o) const = 0;                                          //!< Print value for user
 
@@ -61,7 +59,7 @@ public:
     virtual double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation) = 0;       //!< Calculate summed log conditional probability over all possible states
 //    virtual std::vector<StochasticNode*>        constructSumProductSequence(void) = 0;                                          //!< Construct the sum-product sequence
     virtual void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence) = 0;//!< Construct the set of all nodes which are eliminated
-    virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const = 0;           //!< Clone entire graph
+    virtual DAGNode*                            cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;        //!< Clone entire graph
     virtual InferenceDagNode*                   createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0; //!< Create a lean DAG from this "fat" DAG
     virtual void                                expand(void) = 0;                                                               //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     virtual void                                markForRecalculation(void) = 0;

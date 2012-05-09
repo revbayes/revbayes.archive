@@ -16,16 +16,16 @@
  */
 
 #include "ArgumentRule.h"
-#include "RbBoolean.h"
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
 #include "MethodTable.h"
+#include "RbBoolean.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TopologyNode.h"
-#include "ValueRule.h"
 
 #include <algorithm>
 

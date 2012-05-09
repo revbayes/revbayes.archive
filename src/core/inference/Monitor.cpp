@@ -39,30 +39,10 @@ Monitor::Monitor(const MemberRules& rules ) : MemberObject( rules ), printgen( N
     
 }
 
-/** Copy Constructor */
-Monitor::Monitor(const Monitor &x) : MemberObject(x), printgen( x.printgen ) {
-    
-    // shallow copy
-//    nodes = x.nodes;
-    
-}
-
-Monitor::~Monitor() {
-    
-}
-
 
 /* Add a DAG node */
 void Monitor::addDagNode(DAGNode *d) {
     nodes.insert( d );
-}
-
-
-/* Decrement the reference count. */
-size_t Monitor::decrementReferenceCount( void ) const {
-    const_cast<Monitor*>( this )->refCount--;
-    
-    return refCount;
 }
 
 
@@ -106,12 +86,6 @@ const MemberRules& Monitor::getMemberRules( void ) const {
 }
 
 
-/* Increment the reference count for this instance. */
-size_t Monitor::incrementReferenceCount( void ) const {
-    return const_cast<Monitor*>( this )->refCount++;
-}
-
-
 /** Print value for user */
 void Monitor::printValue(std::ostream& o) const {
     
@@ -121,22 +95,6 @@ void Monitor::printValue(std::ostream& o) const {
     o << "Monitor: interval = " << samplingFrequency;
 }
 
-
-
-//void Monitor::replaceDagNodes(std::vector<VariableNode*> &n) {
-//    
-//    // release all nodes
-//    nodes.clear();
-//    
-//    // add all nodes
-//    for (size_t i=0; i<n.size(); i++) {
-//        VariableNode* theNode = n[i];
-//        if (theNode != NULL) {
-//            nodes.push_back(new Variable( theNode) );
-//        }
-//    }
-//    
-//}
 
 
 void Monitor::setMemberVariable(std::string const &name, const Variable* var) {

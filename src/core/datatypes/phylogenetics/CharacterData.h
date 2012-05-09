@@ -21,7 +21,6 @@
 #include "RbString.h"
 #include "RbVector.h"
 #include "TaxonData.h"
-#include "ValueRule.h"
 
 #include <set>
 #include <string>
@@ -98,7 +97,7 @@ class CharacterData : public MemberObject {
         void                                showData(void);                                                             //!< Show the data in the character matrix
     
     protected:
-        const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
+        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
 
     private:
         // Utility functions

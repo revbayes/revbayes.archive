@@ -44,12 +44,11 @@ public:
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG functions implemented here
-    double                                  calculateEliminatedLnProbability(bool enforceProbabilityCalculation);//!< Calculate summed log conditional probability over all possible states
-    DAGNode*                                cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
+    double                                  calculateEliminatedLnProbability(bool enforceProbabilityCalculation);   //!< Calculate summed log conditional probability over all possible states
+    DAGNode*                                cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;    //!< Clone entire graph
     virtual InferenceDagNode*               createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const; //!< Create a lean DAG from this "fat" DAG
     void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
     void                                    expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
-    const RbLanguageObject&                 getStoredValue(void) const;                                         //!< Get stored value 
     const RbLanguageObject&                 getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                       getValue(void);                                                     //!< Get value (non-const)
     const RbFunction&                       getFunction(void) const;
@@ -70,14 +69,14 @@ protected:
     void                                    touchMe(void);                                                      //!< Tell affected nodes value is reset
     virtual void                            update(void);                                                       //!< Update value and storedValue
 
-    // Member variable
-    bool                                    needsUpdate;                                                        //!< True when value after touch but before update; if then updated set to false
-    RbFunction*                             function;
     
 private:
     static const TypeSpec                   typeSpec;
-    RbLanguageObject*                       value;                                                               //!< Value
-    RbLanguageObject*                       storedValue;                                                         //!< Stored value
+
+    // Member variable
+    bool                                    needsUpdate;                                                        //!< True when value after touch but before update; if then updated set to false
+    RbPtr<RbFunction>                       function;
+    RbPtr<RbLanguageObject>                 value;                                                               //!< Value
 
 };
 

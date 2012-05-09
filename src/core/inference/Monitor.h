@@ -33,18 +33,13 @@ public:
     // Constructors and Destructors
     Monitor();                                                                                              //!< Default Constructor
     Monitor(const MemberRules& rules ) ;                                                                    //!< Constructor
-    Monitor(const Monitor &x);                                                                              //!< Copy Constructor
-    virtual ~Monitor(void);                                                                                 //!< Destructor
     
     // Basic utility functions
     virtual Monitor*                    clone(void) const = 0;                                              //!< Clone object
-    size_t                              decrementReferenceCount(void) const;                                //!< Decrement the reference counter for this instance
     static const std::string&           getClassName(void);                                                 //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
     virtual const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
-    size_t                              incrementReferenceCount(void) const;                                //!< Increment the reference count for this instance
     virtual void                        printValue(std::ostream& o) const;                                  //!< Print value (for user)
-    virtual bool                        supportsReferenceCounting(void) const { return true; }              //!< Supports reference counting for memory management
     
     // Member Object Functions
     virtual const MemberRules&          getMemberRules( void ) const;                                       //!< The member rules for a monitor
@@ -60,12 +55,8 @@ public:
 protected:
 
     // parameters
-    RbConstVariablePtr                  printgen;
     std::set<DAGNode*>                  nodes;
    
-private:
-    size_t                              refCount;                                                           //!< The reference counter
-
 };
 
 #endif

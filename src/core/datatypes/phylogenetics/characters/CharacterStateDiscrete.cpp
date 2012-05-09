@@ -14,13 +14,13 @@
  */
 
 #include "CharacterStateDiscrete.h"
+#include "ConstArgumentRule.h"
 #include "MemberObject.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbString.h"
 #include "RbUtil.h"
 #include "RbVector.h"
-#include "ValueRule.h"
 
 
 
@@ -56,7 +56,7 @@ const MemberRules& CharacterStateDiscrete::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule( "state"  , RbString::getClassTypeSpec() ) );
+        memberRules.push_back( new ConstArgumentRule( "state"  , RbString::getClassTypeSpec() ) );
        
         rulesSet = true;
     }

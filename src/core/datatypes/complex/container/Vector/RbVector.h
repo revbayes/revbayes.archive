@@ -72,7 +72,7 @@ public:
     // Member object function
     const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
     const MethodTable&                              getMethods(void) const;                                         //!< Get methods
-    void                                            setMemberVariable(const std::string& name, const Variable* var);//!< Vector member variable
+    void                                            setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> & var);//!< Vector member variable
     
     // Vector functions
     std::vector<RbObject *>::iterator               begin(void);                                                    //!< Iterator to the beginning of the Vector
@@ -97,7 +97,7 @@ public:
 
 protected:
     
-    virtual const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Execute method
+    virtual RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Execute method
     
     // We store internally pointers to our objects. This is necessary because elements can be also of the derived type and we need to be able to make proper copies of the Vector and all its elements
     std::vector<RbObject *>                         elements;

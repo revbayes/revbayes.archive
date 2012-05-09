@@ -20,6 +20,7 @@
 #include "Character.h"
 #include "CharacterData.h"
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "DnaState.h"
 #include "Ellipsis.h"
 #include "MemberFunction.h"
@@ -30,7 +31,6 @@
 #include "RbString.h"
 #include "StochasticNode.h"
 #include "TaxonData.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 #include "Workspace.h"
 
@@ -191,7 +191,7 @@ void CharacterData::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& CharacterData::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
 
     if (name == "names") 
         {
@@ -206,7 +206,6 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
             throw RbException("Index out of bounds in []");
         }
         
-        // \TODO: Check what happens with DAGNodeContainers
         const TaxonData& element = getTaxonData(index.getValue() - 1);
         return element;
         }

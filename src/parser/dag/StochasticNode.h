@@ -69,7 +69,7 @@ public:
     void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG node function
-    const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
+    RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
     const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods (const)
     const RbLanguageObject&             getStoredValue(void) const;                                         //!< Get stored value
     const RbLanguageObject&             getValue(void) const;                                               //!< Get value (const)
@@ -96,10 +96,10 @@ public:
     void                                unclamp(void);                                                      //!< Unclamp the node
     
     // DAG functions
-    double                              calculateSummedLnProbability(size_t nodeIndex);                     //!< Calculate summed log conditional probability over all possible states
-    double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation);//!< Calculate summed log conditional probability over all possible states
-    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
-    virtual InferenceDagNode*           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const; //!< Create a lean DAG from this "fat" DAG
+    double                              calculateSummedLnProbability(size_t nodeIndex);                                 //!< Calculate summed log conditional probability over all possible states
+    double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation);           //!< Calculate summed log conditional probability over all possible states
+    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;            //!< Clone entire graph
+    virtual InferenceDagNode*           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
     void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence); //!< Construct the sum-product sequecence
     void                                constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
     void                                expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.

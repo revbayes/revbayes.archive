@@ -53,7 +53,7 @@ class DagNodeContainer : public Container {
 
         // Container functions
         void                                clear(void);                                                                //!< Clear
-        const RbLanguageObject&             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Execute a member method
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Execute a member method
         const RbObject&                     getElement(size_t index) const;                                             //!< Get element
         RbObject&                           getElement(size_t index);                                                   //!< Get element (non-const to return non-const element)
         void                                pop_back(void);                                                             //!< Drop element at back

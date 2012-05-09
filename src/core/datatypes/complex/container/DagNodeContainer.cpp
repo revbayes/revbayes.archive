@@ -16,6 +16,8 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
+#include "ConstantNode.h"
 #include "DagNodeContainer.h"
 #include "MemberFunction.h"
 #include "MethodTable.h"
@@ -26,8 +28,6 @@
 #include "RbUtil.h"
 #include "RbVector.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
-#include "ConstantNode.h"
 #include <algorithm>
 
 /** Set type of elements */
@@ -131,7 +131,7 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
 
 
 /** Execute a member method. We overwrite the executeOperation function here because we return DAG nodes directly. */
-const RbLanguageObject& DagNodeContainer::executeOperation(std::string const &name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> DagNodeContainer::executeOperation(std::string const &name, const std::vector<Argument>& args) {
     
     return MemberObject::executeOperation( name, args );
 }
@@ -191,7 +191,7 @@ const MethodTable& DagNodeContainer::getMethods(void) const {
         
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance

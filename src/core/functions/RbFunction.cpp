@@ -18,10 +18,12 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
+#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbFunction.h"
+#include "RbLanguageObject.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbVector.h"
@@ -150,7 +152,7 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, std::
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
             
             const Argument&     theArgument = passedArgs[i];
-            const Variable*     theVar      = theArgument.getVariablePtr();
+            const RbPtr<const Variable>&     theVar      = theArgument.getVariable();
             if ( theVar == NULL )
                 return false;   // This should never happen
             if ( !theRules[nRules-1].isArgumentValid( theVar ) )
@@ -161,7 +163,7 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, std::
             passedArgIndex[i] = static_cast<int>( i );
             
             if ( matchScore != NULL) {
-                int score = computeMatchScore(passedArgs[i].getVariable().getDagNode(), theRules[nRules-1]);
+                int score = computeMatchScore(passedArgs[i].getVariable()->getDagNode(), theRules[nRules-1]);
                 matchScore->push_back(score);
             }
         }
@@ -186,13 +188,13 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, std::
             
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
                 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariablePtr() ) && !filled[j] ) {
+                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable() ) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     if ( matchScore != NULL) {
-                        int score = computeMatchScore(passedArgs[i].getVariable().getDagNode(), theRules[j]);
+                        int score = computeMatchScore(passedArgs[i].getVariable()->getDagNode(), theRules[j]);
                         matchScore->push_back(score);
                     }
                 }
@@ -235,13 +237,13 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, std::
         if (nMatches != 1)
             return false;
         
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariablePtr() ) ) {
+        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable() ) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
             
             if ( matchScore != NULL) {
-                int score = computeMatchScore(passedArgs[i].getVariable().getDagNode(), theRules[matchRule]);
+                int score = computeMatchScore(passedArgs[i].getVariable()->getDagNode(), theRules[matchRule]);
                 matchScore->push_back(score);
             }
         }
@@ -263,7 +265,7 @@ bool  RbFunction::checkArguments( const std::vector<Argument>& passedArgs, std::
         for (size_t j=0; j<numRegularRules; j++) {
             
             if ( filled[j] == false ) {
-                const Variable* argVar = passedArgs[i].getVariablePtr();
+                const RbPtr<const Variable>& argVar = passedArgs[i].getVariable();
                 if ( theRules[j].isArgumentValid( argVar ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -351,7 +353,7 @@ std::string RbFunction::debugInfo(void) const {
         o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
     
     for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = " << args[i].getVariable().getValue() << std::endl;
+        o << " args[" << i << "] = " << args[i].getVariable()->getValue() << std::endl;
     }
     
     return o.str();
@@ -364,11 +366,11 @@ std::string RbFunction::debugInfo(void) const {
  * from DAG nodes to RbObjects.
  *
  */
-const RbPtr<RbLanguageObject>& RbFunction::execute(void) {
+RbPtr<RbLanguageObject> RbFunction::execute(void) {
     
     std::vector<const RbObject*> newArgs;
     for (std::vector<Argument>::iterator i = args.begin(); i != args.end(); ++i) {
-        newArgs.push_back( &i->getVariable().getValue() );
+        newArgs.push_back( &i->getVariable()->getValue() );
     }
     return execute( newArgs );
     
@@ -382,7 +384,7 @@ const RbPtr<RbLanguageObject>& RbFunction::execute(void) {
  * if one or more arguments are containers.
  *
  */
-const RbPtr<RbLanguageObject>& RbFunction::execute( const std::vector<const RbObject*> &args ) {
+RbPtr<RbLanguageObject> RbFunction::execute( const std::vector<const RbObject*> &args ) {
     
     // check each argument if it is a vector and hence the function needs repeated evaluation
     bool repeatedExecution = false;
@@ -397,7 +399,7 @@ const RbPtr<RbLanguageObject>& RbFunction::execute( const std::vector<const RbOb
     
     RbLanguageObject* retVal;
     if ( repeatedExecution ) {
-        RbVector<RbLanguageObject>* retValVector = new RbVector<RbLanguageObject>();
+        RbVector* retValVector = new RbVector( RbLanguageObject::getClassTypeSpec() );
         for ( size_t j = 0; j < size; ++j) {
             std::vector<const RbObject*> newArgs;
             for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
@@ -410,10 +412,8 @@ const RbPtr<RbLanguageObject>& RbFunction::execute( const std::vector<const RbOb
                 }
             }
             // call the execute function now for the single elements
-            const RbLanguageObject& singleRetVal = execute(newArgs);
-            retValVector->push_back( singleRetVal.clone() );
-            // \TODO If the execute functions returns a pointer to the object and the caller owns the object, 
-            // then we don't need to copy each time the object.
+            const RbPtr<RbLanguageObject>& singleRetVal = execute(newArgs);
+            retValVector->push_back( singleRetVal );
         }
         
         retVal = retValVector;
@@ -421,10 +421,10 @@ const RbPtr<RbLanguageObject>& RbFunction::execute( const std::vector<const RbOb
     else {
         
         // get the value by executing the internal function
-        retVal = executeFunction(args).clone();
+        retVal = executeFunction(args);
     }
     
-    return *retVal;
+    return retVal;
     
 }
 
@@ -435,7 +435,7 @@ const RbPtr<RbLanguageObject>& RbFunction::execute( const std::vector<const RbOb
  *
  * If you write your own execute function, you do not need to overwrite this function, otherwise you should.
  */
-const RbPtr<RbLanguageObject>& RbFunction::executeFunction( const std::vector<const RbObject*> &args ) {
+RbPtr<RbLanguageObject> RbFunction::executeFunction( const std::vector<const RbObject*> &args ) {
     
     throw RbException("Call to unimplemented function executeFunction(args) in " + getTypeSpec().getType() + ".");
 }
@@ -586,7 +586,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 
             const Argument&     theArgument     = passedArgs[i];
-            const Variable*     theVar          = theArgument.getVariablePtr();
+            const RbPtr<const Variable>&     theVar          = theArgument.getVariable();
             if ( theVar == NULL )
                 throw RbException("Null argument not valid.");
             if ( !theRules[nRules-1].isArgumentValid( theVar, true ) )
@@ -620,7 +620,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
 
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariablePtr(), true) && !filled[j] ) {
+                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable(), true) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
@@ -664,7 +664,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
         if (nMatches != 1)
             throw RbException("Argument matches mutliple parameters.");
  
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariablePtr(), true ) ) {
+        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), true ) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
@@ -687,7 +687,7 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
         for (size_t j=0; j<numRegularRules; j++) {
 
             if ( filled[j] == false ) {
-                if ( theRules[j].isArgumentValid( passedArgs[i].getVariablePtr(), true ) ) {
+                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), true ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
@@ -714,10 +714,10 @@ void RbFunction::processArguments( const std::vector<Argument>& passedArgs ) {
                 throw RbException("No argument found for parameter '" + theRules[i].getArgumentLabel() + "'.");
 
             const ArgumentRule& theRule = theRules[i];
-            RbVariablePtr theVar = theRule.getDefaultVariable().clone();
+            RbPtr<Variable> theVar = theRule.getDefaultVariable().clone();
             theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
             passedArgIndex[passedArgs.size()] = static_cast<int>( i );
-            args.push_back( Argument("", theVar ) );
+            args.push_back( ConstArgument( RbPtr<const Variable>( theVar ), "" ) );
         }
     }
 
@@ -748,7 +748,7 @@ void RbFunction::setArgument(const std::string& name, const Argument& arg) {
 //    setArgumentVariable(name, arg.getVariablePtr() );
     
     // make sure that the argument has the correct label
-    Argument myArg = Argument( name, arg.getVariablePtr() );
+    ConstArgument myArg = ConstArgument( arg.getVariable(), name );
     
     // just add this node to the vector
     args.push_back(myArg);

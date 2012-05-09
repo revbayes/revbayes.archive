@@ -22,6 +22,7 @@
 
 #include "DAGNode.h"
 #include "RbLanguageObject.h"
+#include "RbPtr.h"
 
 class InferenceDagNode;
 class RbObject;
@@ -29,7 +30,7 @@ class RbObject;
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode(RbLanguageObject* val, const Plate *p = NULL);                                                         //!< Constructor from value
+    ConstantNode(RbLanguageObject* val, const RbPtr<const Plate> &p = NULL);                                            //!< Constructor from value
     ConstantNode(const ConstantNode &x);                                                                                //!< Copy constructor
     virtual                             ~ConstantNode(void);                                                            //!< Destructor
 
@@ -42,14 +43,12 @@ public:
     void                                printValue(std::ostream& o) const;                                              //!< Print value for user
 
     // ConstantNode functions
-    const RbLanguageObject&             getStoredValue(void) const;                                                     //!< Get stored value
     const RbLanguageObject&             getValue(void) const;                                                           //!< Get value 
     RbLanguageObject&                   getValue(void);                                                                 //!< Get value 
-    void                                setValue(RbLanguageObject* val);                                                //!< Set the value of the constant node
-//    const RbLanguageObject*             getValuePtr(void) const;                                                      //!< Get value 
+    void                                setValue(const RbPtr<RbLanguageObject> &val);                                   //!< Set the value of the constant node
 
     // DAG functions
-    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;               //!< Clone entire graph
+    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;               //!< Clone entire graph
     InferenceDagNode*                   createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
     void                                expand(void);                                                                   //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     bool                                isTouched (void) const { return false; }                                        //!< Touched by a move?
@@ -59,14 +58,14 @@ public:
 
 protected:
 
-    void                                getAffected(std::set<StochasticNode* >& affected);                              //!< Mark and get affected nodes
+    void                                getAffected(std::set<RbPtr<StochasticNode> >& affected);                              //!< Mark and get affected nodes
     void                                keepMe(void);                                                                   //!< Keep value of this and affected nodes
     void                                restoreMe(void);                                                                //!< Restore value of this nodes
     void                                touchMe(void);                                                                  //!< Tell affected nodes value is reset
 
 private:
 
-    RbLanguageObject*                   value;                                                                          //!< Value
+    RbPtr<RbLanguageObject>             value;                                                                          //!< Value
 
 };
 

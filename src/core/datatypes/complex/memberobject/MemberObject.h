@@ -21,7 +21,6 @@
 #define MemberObject_H
 
 #include "Argument.h"
-//#include "MethodTable.h"
 #include "RbLanguageObject.h"
 
 #include <set>
@@ -32,7 +31,6 @@ class ArgumentRule;
 class MemberObject: public RbLanguageObject {
 
     public:
-        virtual                                            ~MemberObject(void);                                                                 //!< Destructor
 
         // Basic utility functions you have to override
         virtual MemberObject*                               clone(void) const = 0;                                                              //!< Clone object
@@ -43,26 +41,23 @@ class MemberObject: public RbLanguageObject {
         virtual void                                        printValue(std::ostream& o) const;                                                  //!< Print value for user
 
         // Member variable functions you have to override
-        virtual const RbPtr<RbLanguageObject>*              getMember(const std::string& name) const;                                           //!< Get member variable 
+        virtual RbPtr<RbLanguageObject>                     getMember(const std::string& name) const;                                           //!< Get member variable 
         virtual const MemberRules&                          getMemberRules(void) const;                                                         //!< Get member rules (const)
         virtual bool                                        hasMember(const std::string& name) const;                                           //!< Has this object a member with name
 
         // Member variable functions you do not have to override
-        void                                                setMember(const std::string& name, const Variable* var);                            //!< Set member variable
+        void                                                setMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
 
         // Member method functions
-        virtual const RbPtr<RbLanguageObject>&              executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
+        virtual RbPtr<RbLanguageObject>                     executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
         virtual const MethodTable&                          getMethods(void) const;                                                             //!< Get member methods (const)
 
     protected:
                                                             MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
                                                             MemberObject(void);                                                                 //!< Default constructor; no members or methods
-                                                            MemberObject(const MemberObject &m);                                                //!< Copy constructor
-    
-        MemberObject&                                       operator=(const MemberObject& m);
  
-        virtual void                                        setMemberVariable(const std::string& name, const Variable* var);                    //!< Set member variable
-        virtual const RbPtr<RbLanguageObject>&              executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Override to map member methods to internal functions
+        virtual void                                        setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var);     //!< Set member variable
+        virtual RbPtr<RbLanguageObject>                     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Override to map member methods to internal functions
 
 };
 

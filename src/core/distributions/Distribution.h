@@ -56,7 +56,7 @@ class Distribution: public MemberObject {
     protected:
                                                     Distribution( const MemberRules& memberRules);                                      //!< Simple constructor
 
-        virtual const RbPtr<RbLanguageObject>&      executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
+        virtual RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
   
 
 };

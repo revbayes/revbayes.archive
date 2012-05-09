@@ -44,7 +44,7 @@ class ConstructorFunction :  public RbFunction {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Regular functions
-        const RbLanguageObject&                 execute();                                                                      //!< Execute function
+        RbPtr<RbLanguageObject>                 execute();                                                                      //!< Execute function
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
 

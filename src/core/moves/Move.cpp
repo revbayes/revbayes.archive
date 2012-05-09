@@ -39,8 +39,6 @@
 /** Constructor */
 Move::Move( const MemberRules& memberRules ) : MemberObject( memberRules ), weight( NULL ) {
 
-    numAccepted = 0;
-    numTried    = 0;
 }
 
 /** Copy Constructor. 

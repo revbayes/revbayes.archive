@@ -42,7 +42,6 @@ public:
     void                            printValue(std::ostream& o) const;                                                                  //!< Print value for user
 
     // Member variable functions
-    const RbLanguageObject&         executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
     const MemberRules&              getMemberRules(void) const;                                                                         //!< Get member rules
     void                            setMemberVariable(const std::string& name, const Variable* var);                                    //!< Catch setting of the topology
 
@@ -54,7 +53,7 @@ public:
     void                            setNodeVariable(const TopologyNode& node, const std::string& name, RbLanguageObject* value);
     void                            setNodeVariable(const TopologyNode& node, const std::string& name, const Variable& value);
 protected:
-    const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
+    RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
 
 private:
     
@@ -62,17 +61,15 @@ private:
     
     std::string                     buildNewickString(const TopologyNode& node) const;                                                  //!< compute the newick string for a tree rooting at this node
     
-//    void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }                   //!< Order the topology
     size_t                          getNodeIndex(const TopologyNode& theNode) const;                                                    //!< Get the index of the node
     size_t                          getTipIndex(const TopologyNode& theNode) const;                                                     //!< Get the index of the node
 
     // parameters
-    RbConstVariablePtr              orderingTopology;                                                               //!< The topology that orders the tree plate
+    RbPtr<Topology>                 orderingTopology;                                                               //!< The topology that orders the tree plate
 
-    // memberfunction return values
-    Natural                         numNodes;
-    Natural                         nodeIndex;
-    Natural                         tipIndex;
+    size_t                          numNodes;
+    size_t                          nodeIndex;
+    size_t                          tipIndex;
 
 
     Environment                     memberVariables;

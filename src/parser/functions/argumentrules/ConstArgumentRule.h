@@ -19,16 +19,9 @@
 #ifndef ConstArgumentRule_H
 #define ConstArgumentRule_H
 
-#include "RbPtr.h"
-#include "RbInternal.h"
-#include "TypeSpec.h"
-#include "Environment.h"
-#include "VariableSlot.h"
+#include "ArgumentRule.h"
 
 #include <string>
-
-class DAGNode;
-class RbObject;
 
 class ConstArgumentRule : public ArgumentRule {
     
