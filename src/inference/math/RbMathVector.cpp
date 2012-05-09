@@ -49,54 +49,5 @@ void RbMath::normalize(std::vector<double>& x, double sum) {
 }
 
 
-/*!
- * This function normalizes a vector such that its sum is some value.
- *
- * \brief Vector normalization function.
- * \param x is the vector to be normalized (call-by-value).
- * \param sum is the desired sum for the normalized vector.
- * \return The normalized vector. 
- * \throws Does not throw an error.
- */
-RbVector<Real> RbMath::normalize(const RbVector<Real>& x, double sum) {
-    
-    RbVector<Real> retVector;
-    
-    double s = 0.0;
-    for (size_t i=0; i<x.size(); i++)
-        s += x[i];
-    double factor = sum / s;
-    for (size_t i=0; i<x.size(); i++)
-        retVector.push_back( new Real(x[i] * factor) );
-    
-    return retVector;
-}
-
-
-
-
-/*!
- * This function normalizes a vector such that its sum is some value.
- *
- * \brief Vector normalization function.
- * \param x is the vector to be normalized (call-by-value).
- * \param sum is the desired sum for the normalized vector.
- * \return The normalized vector. 
- * \throws Does not throw an error.
- */
-RbVector<RealPos> RbMath::normalize(const RbVector<RealPos>& x, double sum) {
-    
-    RbVector<RealPos> retVector;
-    
-    double s = 0.0;
-    for (size_t i=0; i<x.size(); i++)
-        s += x[i];
-    double factor = sum / s;
-    for (size_t i=0; i<x.size(); i++)
-        retVector.push_back( new RealPos(x[i] * factor) );
-    
-    return retVector;
-}
-
 
 

@@ -80,7 +80,6 @@ double RbStatistics::Logistic::lnPdf(double location, double scale, double x){
         s << "Fatal error in Logistic PDF";
         throw RbException(s);
     }
-////	ML_ERR_return_NAN;
 
     x = fabs((x - location) / scale);
     e = exp(-x);

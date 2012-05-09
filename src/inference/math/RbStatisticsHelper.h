@@ -23,8 +23,6 @@
 
 
 namespace RbStatistics {
-    	
-#pragma mark Helper Functions
     
 	namespace Helper {
         

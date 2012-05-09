@@ -26,10 +26,8 @@ namespace RbStatistics {
         double      pdf(double location,  double scale,  double x);         /*!< Logistic(x) probability density */
         double      lnPdf(double location,  double scale,  double x);       /*!< Logistic(x) log_e probability density */
         double      cdf(double location,  double scale,  double x);         /*!< Logistic(location, scale) cumulative probability */
-//
         double      quantile(double p);                                                     /*!< Logistic quantile */
         double      quantile(double location, double scale, double p);                            /*!< Logistic(location, scale) quantile */
-
         double      rv(double location, double scale, RandomNumberGenerator& rng);         /*!< Logistic(x) random variable */
 	}
 }

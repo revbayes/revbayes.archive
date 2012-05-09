@@ -14,18 +14,17 @@
  * $Id$
  */
 
-#include "Complex.h"
 #include "Matrix.h"
-#include "Real.h"
 #include <vector>
+#include <complex>
 
 
 
 namespace RbMath {
     
-    void                        backSubstitutionRow(Matrix<Complex>& u, std::vector<std::complex<double> >& b);     //!< Back substitution for Gaussian elimination 
-    void                        backSubstitutionRow(Matrix<Real>& u, std::vector<double>& b);                       //!< Back substitution for Gaussian elimination 
-    void                        forwardSubstitutionRow(Matrix<Complex>& L, std::vector<std::complex<double> >& b);  //!< Forward substitution for Gaussian elimination 
-    void                        forwardSubstitutionRow(Matrix<Real>& L, std::vector<double>& b);                    //!< Forward substitution for Gaussian elimination 
-    void                        gaussianElimination(Matrix<Real>& a, Matrix<Real>& bMat, Matrix<Real>& xMat);       //!< Perform Gaussian elimination on the matrix 
+    void                        backSubstitutionRow(Matrix<std::complex<double> >& u, std::vector<std::complex<double> >& b);       //!< Back substitution for Gaussian elimination 
+    void                        backSubstitutionRow(Matrix<double>& u, std::vector<double>& b);                                     //!< Back substitution for Gaussian elimination 
+    void                        forwardSubstitutionRow(Matrix<std::complex<double> >& L, std::vector<std::complex<double> >& b);    //!< Forward substitution for Gaussian elimination 
+    void                        forwardSubstitutionRow(Matrix<double>& L, std::vector<double>& b);                                  //!< Forward substitution for Gaussian elimination 
+    void                        gaussianElimination(Matrix<double>& a, Matrix<double>& bMat, Matrix<double>& xMat);                 //!< Perform Gaussian elimination on the matrix 
 }
