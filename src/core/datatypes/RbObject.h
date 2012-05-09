@@ -60,11 +60,17 @@ class RbObject {
     
 
         // Basic utility functions you should not have to override
+        size_t                              decrementReferenceCount(void);                                          //!< Decrement the reference count for reference counting in smart pointers
+        size_t                              getReferenceCount(void) const;                                          //!< Get the reference count for reference counting in smart pointers
+        void                                incrementReferenceCount(void);                                          //!< Increment the reference count for reference counting in smart pointers
         bool                                isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
 
-protected:
-        RbObject(void);                                                                                     //!< No objects of this class
+    protected:
+        RbObject(void);                                                                                             //!< No objects of this class
 
+    private:
+        size_t                              refCount;                                                               //!< The reference count for smart pointers
+ 
 };
 
 // Global functions using the class

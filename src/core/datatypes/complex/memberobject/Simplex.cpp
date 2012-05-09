@@ -152,38 +152,6 @@ void Simplex::setValue(const std::vector<double>& x) {
 }
 
 
-/** Set value of simplex using vector<double> */
-void Simplex::setValue(const RbVector<Real>& x) {
-    
-    for (RbVector<Real>::const_iterator i=x.begin(); i!=x.end(); i++) {
-        const Real& r = *i;
-        if ( r.getValue() < 0.0)
-            throw (RbException("Cannot set simplex with negative value"));
-    }
-    
-    double sum = 0.0;
-    for (size_t i=0; i<x.size(); i++)
-        sum += x[i];
-    
-    elements.clear();
-    for (size_t i=0; i<x.size(); i++)    
-        elements.push_back(x[i]/sum);
-}
-
-
-/** Set value of simplex using vector<double> */
-void Simplex::setValue(const RbVector<RealPos>& x) {
-    
-    double sum = 0.0;
-    for (size_t i=0; i<x.size(); i++)
-        sum += x[i];
-    
-    elements.clear();
-    for (size_t i=0; i<x.size(); i++)    
-        elements.push_back(x[i]/sum);
-}
-
-
 /** Get the size of the simplex (number of elements) */
 size_t Simplex::size( void ) const {
     return elements.size();

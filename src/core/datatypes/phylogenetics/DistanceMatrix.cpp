@@ -38,23 +38,31 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-DistanceMatrix::DistanceMatrix(const size_t nTaxa) : MemberObject( getMemberRules() ), elements(nTaxa, nTaxa), typeSpec(DistanceMatrix::getClassTypeSpec()) {
+DistanceMatrix::DistanceMatrix(const size_t nTaxa) : MemberObject( getMemberRules() ), 
+elements( nTaxa, nTaxa ), 
+typeSpec( DistanceMatrix::getClassTypeSpec() ),
+sequenceNames( RbString::getClassTypeSpec() ),
+excludedTaxa( RbString::getClassTypeSpec() ),
+includedTaxa( RbString::getClassTypeSpec() )
+{
 
 }
 
 
 /** Copy constructor */
-DistanceMatrix::DistanceMatrix(const DistanceMatrix& x) : MemberObject(x), typeSpec(DistanceMatrix::getClassTypeSpec()) {
+DistanceMatrix::DistanceMatrix(const DistanceMatrix& x) : MemberObject(x), 
+typeSpec(DistanceMatrix::getClassTypeSpec()), 
+sequenceNames( x.sequenceNames ),
+excludedTaxa( x.excludedTaxa ),
+includedTaxa( x.includedTaxa ),
+elements( x.elements )
+{
 
     deletedTaxa         = x.deletedTaxa;
-    sequenceNames       = x.sequenceNames;
-    elements            = x.elements;
     
     numTaxa             = x.numTaxa;
     numIncludedTaxa     = x.numIncludedTaxa;
     numExcludedTaxa     = x.numExcludedTaxa;
-    excludedTaxa        = x.excludedTaxa;
-    includedTaxa        = x.includedTaxa;
 }
 
 
@@ -85,18 +93,6 @@ DistanceMatrix& DistanceMatrix::operator=(const DistanceMatrix& x) {
 }
 
 
-/** Overloaded subscript operator */
-const RbVector<Real>& DistanceMatrix::operator[](size_t index) const {
-    return elements[index];
-}
-
-
-/** Overloaded subscript operator */
-RbVector<Real>& DistanceMatrix::operator[](size_t index) {
-    return elements[index];
-}
-
-
 /** clear the oblect */
 void DistanceMatrix::clear(void) {
     
@@ -114,7 +110,7 @@ void DistanceMatrix::addTaxonWithName(std::string s) {
     sequenceNames.push_back( new RbString(s) );
     
     // resize the current matrix
-    elements.RbVector<RbVector<Real> >::resize( elements.size() + 1 );
+    //elements.resize( elements.size() + 1 );
     
     
 }
@@ -140,7 +136,7 @@ void DistanceMatrix::excludeTaxon(std::string& s) {
 
     for (size_t i = 0; i < elements.size(); i++) 
         {
-        if (s == sequenceNames[i]) 
+        if (s == static_cast<const RbString &>( sequenceNames[i] ).getValue() ) 
             {
             deletedTaxa.insert( i );
             break;
@@ -233,11 +229,11 @@ const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string
             deletedTaxa.insert( n-1 );
             std::cout << "excluded e" << std::endl;
             }
-        else if ( argument.isTypeSpec( RbVector<Natural>::getClassTypeSpec() ) ) 
+        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
             {
-            const RbVector<Natural>& x = static_cast<const RbVector<Natural>& >( argument );
+            const RbVector& x = static_cast<const RbVector& >( argument );
             for ( size_t i=0; i<x.size(); i++ )
-                deletedTaxa.insert( x[i].getValue() - 1 );
+                deletedTaxa.insert( static_cast<const Natural &>( x[i] ).getValue() - 1 );
             }
         else if ( argument.isTypeSpec( RbString::getClassTypeSpec() ) ) 
             {
@@ -245,12 +241,12 @@ const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string
             size_t idx = indexOfTaxonWithName(x);
             deletedTaxa.insert(idx);
             }
-        else if ( argument.isTypeSpec( RbVector<RbString>::getClassTypeSpec() ) ) 
+        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
             {
-            const RbVector<RbString>& x = static_cast<const RbVector<RbString>& >( argument );
-            for ( RbVector<RbString>::const_iterator it = x.begin(); it != x.end(); ++it)
+            const RbVector& x = static_cast<const RbVector& >( argument );
+            for ( RbVector::const_iterator it = x.begin(); it != x.end(); ++it)
                 {
-                RbString* tmp = *it;
+                RbString* tmp = static_cast<RbString *>( *it );
                 size_t idx = indexOfTaxonWithName( tmp->getValue() );
                 deletedTaxa.insert(idx);
                 }
@@ -304,7 +300,7 @@ const RbObject& DistanceMatrix::getElement(size_t row, size_t col) const {
 RbObject& DistanceMatrix::getElement(size_t row, size_t col) {
 
     //TaxonData* sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
-    return elements[row][col];
+//    return elements[row][col];
 }
 
 
@@ -336,17 +332,17 @@ const MethodTable& DistanceMatrix::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-            excludetaxaArgRules->push_back(        new ValueRule(     "", Natural::getClassTypeSpec()       ) );
-            excludetaxaArgRules2->push_back(       new ValueRule(     "", RbVector<Natural>::getClassTypeSpec() ) );
-            excludetaxaArgRules3->push_back(       new ValueRule(     "", RbString::getClassTypeSpec()      ) );
-            excludetaxaArgRules4->push_back(       new ValueRule(     "", RbVector<RbString>::getClassTypeSpec()  ) );
+        excludetaxaArgRules->push_back(        new ValueRule(     "", Natural::getClassTypeSpec()       ) );
+        excludetaxaArgRules2->push_back(       new ValueRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ) ) );
+        excludetaxaArgRules3->push_back(       new ValueRule(     "", RbString::getClassTypeSpec()      ) );
+        excludetaxaArgRules4->push_back(       new ValueRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ) ) );
 
-            methods.addFunction("names",         new MemberFunction(RbVector<RbString>::getClassTypeSpec(),  namesArgRules              ) );
-            methods.addFunction("ntaxa",         new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
-            methods.addFunction("nexcludedtaxa", new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
-            methods.addFunction("nincludedtaxa", new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
-            methods.addFunction("excludedtaxa",  new MemberFunction(RbVector<Natural>::getClassTypeSpec(), excludedtaxaArgRules       ) );
-            methods.addFunction("includedtaxa",  new MemberFunction(RbVector<Natural>::getClassTypeSpec(), includedtaxaArgRules       ) );
+        methods.addFunction("names",         new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
+        methods.addFunction("ntaxa",         new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
+        methods.addFunction("nexcludedtaxa", new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
+        methods.addFunction("nincludedtaxa", new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
+        methods.addFunction("excludedtaxa",  new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
+        methods.addFunction("includedtaxa",  new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
         methods.addFunction("show",          new MemberFunction(RbVoid_name,        showdataArgRules           ) );
         methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules        ) );
         methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules2       ) );

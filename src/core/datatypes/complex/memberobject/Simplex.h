@@ -42,11 +42,8 @@ public:
 
     // Vector functions, including STL-like functions
     const std::vector<double>&  getValue( void ) const;
-//    void                        push_back( double x );
     void                        setElement(size_t index, double x);                         //!< Set the value of position
     void                        setValue(const std::vector<double>& x);                     //!< Set the value using STL vector of double
-    void                        setValue(const RbVector<Real>& x);                          //!< Set the value using Rb vector of real
-    void                        setValue(const RbVector<RealPos>& x);                       //!< Set the value using Rb vector of +real
     size_t                      size(void) const;
     
 private:

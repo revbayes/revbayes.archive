@@ -41,20 +41,34 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-CharacterData::CharacterData( const std::string& charType ) : MemberObject( getMemberRules() ), typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec(charType) ) {
+CharacterData::CharacterData( const std::string& charType ) : MemberObject( getMemberRules() ), 
+typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec(charType) ), 
+sequenceNames( RbString::getClassTypeSpec() ),
+excludedChars( Natural::getClassTypeSpec() ),
+excludedTaxa( RbString::getClassTypeSpec() ),
+includedTaxa( RbString::getClassTypeSpec() ),
+includedChars( Natural::getClassTypeSpec() ),
+numChar( Natural::getClassTypeSpec() )
+{
 
     characterType = charType;
 }
 
 
 /** Copy constructor */
-CharacterData::CharacterData(const CharacterData& x) : MemberObject( x ), typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec(characterType) ) {
+CharacterData::CharacterData(const CharacterData& x) : MemberObject( x ), typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec(characterType) ),
+sequenceNames( x.sequenceNames ),
+excludedChars( x.excludedChars ),
+excludedTaxa( x.excludedTaxa ),
+includedTaxa( x.includedTaxa ),
+includedChars( x.includedChars ),
+numChar( x.numChar )
+{
 
     characterType           = x.characterType;
     deletedTaxa             = x.deletedTaxa;
     deletedCharacters       = x.deletedCharacters;
     fileName                = x.fileName;
-    sequenceNames           = x.sequenceNames;
     isHomologyEstablished   = x.isHomologyEstablished;
     taxonMap                = x.taxonMap;
 }
@@ -80,9 +94,14 @@ CharacterData& CharacterData::operator=( const CharacterData& x ) {
         deletedTaxa             = x.deletedTaxa;
         deletedCharacters       = x.deletedCharacters;
         fileName                = x.fileName;
-        sequenceNames           = x.sequenceNames;
         isHomologyEstablished   = x.isHomologyEstablished;
         taxonMap                = x.taxonMap;
+        sequenceNames           = x.sequenceNames;
+        excludedChars           = x.excludedChars;
+        excludedTaxa            = x.excludedTaxa;
+        includedTaxa            = x.includedTaxa;
+        includedChars           = x.includedChars;
+        numChar                 = x.numChar;
         }
     return (*this);
 }
@@ -162,7 +181,7 @@ void CharacterData::excludeTaxon(std::string& s) {
 
     for (size_t i = 0; i < size(); i++) 
         {
-        if (s == sequenceNames[i]) 
+        if (s == static_cast<RbString &>( sequenceNames[i] ).getValue() ) 
             {
             deletedTaxa.insert( i );
             break;
@@ -304,11 +323,11 @@ const RbLanguageObject& CharacterData::executeOperationSimple(const std::string&
             int n = static_cast<const Natural&>( argument ).getValue();
             deletedCharacters.insert( n );
             }
-        else if ( argument.isTypeSpec( RbVector<Natural>::getClassTypeSpec() ) ) 
+        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
             {
-            const std::vector<Natural*>& x = static_cast<const RbVector<Natural>&>( argument ).getValue();
+            const RbVector& x = static_cast<const RbVector&>( argument );
             for ( size_t i=0; i<x.size(); i++ )
-                deletedCharacters.insert( x[i]->getValue() );
+                deletedCharacters.insert( static_cast<const Natural &>( x[i] ).getValue() );
             }
         return RbNullObject::getInstance();
         }
@@ -460,20 +479,20 @@ const MethodTable& CharacterData::getMethods(void) const {
         {
 
         excludecharArgRules->push_back(        new ValueRule(     "", Natural::getClassTypeSpec()       ) );
-        excludecharArgRules2->push_back(       new ValueRule(     "", RbVector<Natural>::getClassTypeSpec() ) );
+        excludecharArgRules2->push_back(       new ValueRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
         
-        methods.addFunction("names",               new MemberFunction(RbVector<RbString>::getClassTypeSpec(),  namesArgRules              ) );
-        methods.addFunction("nchar",               new MemberFunction(RbVector<Natural>::getClassTypeSpec(), ncharArgRules              ) );
+        methods.addFunction("names",               new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
+        methods.addFunction("nchar",               new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
         methods.addFunction("ntaxa",               new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
         methods.addFunction("chartype",            new MemberFunction(RbString::getClassTypeSpec(),      chartypeArgRules           ) );
         methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
         methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
         methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
         methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
-        methods.addFunction("excludedtaxa",        new MemberFunction(RbVector<Natural>::getClassTypeSpec(), excludedtaxaArgRules       ) );
-        methods.addFunction("excludedchars",       new MemberFunction(RbVector<Natural>::getClassTypeSpec(), excludedcharsArgRules      ) );
-        methods.addFunction("includedtaxa",        new MemberFunction(RbVector<Natural>::getClassTypeSpec(), includedtaxaArgRules       ) );
-        methods.addFunction("includedchars",       new MemberFunction(RbVector<Natural>::getClassTypeSpec(), includedcharsArgRules      ) );
+        methods.addFunction("excludedtaxa",        new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
+        methods.addFunction("excludedchars",       new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
+        methods.addFunction("includedtaxa",        new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
+        methods.addFunction("includedchars",       new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
         methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
         methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
         methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules        ) );
@@ -550,7 +569,7 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
     if ( tn >= getNumberOfTaxa() )
         throw RbException( "Taxon index out of range" );
 
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = static_cast<const RbString &>( sequenceNames[tn] ).getValue();
     const std::map<std::string, const Variable*>::const_iterator& i = taxonMap.find(name); 
     
     if (i != taxonMap.end() ) {
@@ -566,7 +585,7 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
 /** Get taxon with index idx */
 const std::string CharacterData::getTaxonNameWithIndex( size_t idx ) const {
 
-    return sequenceNames[idx].getValue();
+    return static_cast<const RbString &>( sequenceNames[idx] ).getValue();
 }
 
 
@@ -583,7 +602,7 @@ size_t CharacterData::indexOfTaxonWithName( std::string& s ) const {
     // search through all names
     for (size_t i=0; i<sequenceNames.size(); i++) 
         {
-        if (s == sequenceNames[i]) 
+        if (s == static_cast<const RbString &>( sequenceNames[i] ).getValue() ) 
             {
             return i;
             }
@@ -662,7 +681,7 @@ bool CharacterData::isTaxonExcluded(std::string& s) const {
 
 
 /** Make copy of site column with index cn */
-RbVector<Character>* CharacterData::makeSiteColumn( size_t cn ) const {
+RbVector* CharacterData::makeSiteColumn( size_t cn ) const {
 
     if ( cn >= getNumberOfCharacters() )
         throw RbException( "Site index out of range" );
@@ -670,7 +689,7 @@ RbVector<Character>* CharacterData::makeSiteColumn( size_t cn ) const {
     if ( getNumberOfTaxa() == 0 )
         throw RbException( "Character matrix is empty" );
 
-    const std::string& name = sequenceNames[0];
+    const std::string& name = static_cast<const RbString &>( sequenceNames[0] ).getValue();
     const std::map<std::string, const Variable*>::const_iterator& it = taxonMap.find(name);
     TaxonData* temp = static_cast<TaxonData*>( ( it->second->getValue() ).clone() );
     // @John: Not sure if this code works. Seems strange to me (Sebastian)
@@ -763,7 +782,7 @@ void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
         
 //        sequenceNames.erase(sequenceNames.begin() + index);
 //        sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());        
-        sequenceNames[index] = seq->getTaxonName();
+        static_cast<RbString &>( sequenceNames[index] ) = seq->getTaxonName();
         
         // add the sequence also as a member so that we can access it by name
         DAGNode* variable = new ConstantNode(var );

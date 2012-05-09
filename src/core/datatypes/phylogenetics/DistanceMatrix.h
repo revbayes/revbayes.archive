@@ -39,8 +39,6 @@ class DistanceMatrix : public MemberObject {
 
         // Overloaded operators
         DistanceMatrix&                     operator=(const DistanceMatrix& x);                                         //!< Assignment operator
-        const RbVector<Real>&               operator[](size_t index) const;
-        RbVector<Real>&                     operator[](size_t index);
     
         // Basic utility functions
         DistanceMatrix*                     clone(void) const;                                                          //!< Clone object
@@ -89,16 +87,16 @@ class DistanceMatrix : public MemberObject {
 
         // Member variables
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
-        Matrix<Real>                        elements;
-        RbVector<RbString>                  sequenceNames;                                                              //!< names of the sequences
+        Matrix<double>                      elements;
+        RbVector                            sequenceNames;                                                              //!< names of the sequences
         TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
 
         // memberfunction return values
         Natural                             numTaxa;
         Natural                             numIncludedTaxa;
         Natural                             numExcludedTaxa;
-        RbVector<RbString>                  excludedTaxa;
-        RbVector<RbString>                  includedTaxa;
+        RbVector                            excludedTaxa;
+        RbVector                            includedTaxa;
 };
 
 #endif

@@ -42,9 +42,9 @@ RbObject::~RbObject() {
     Here we just convert from scalar types to vectors and overwritten function do more fancy stuff. */
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
-    // test if we need to convert this into an object
-    if (typeSpec.getBaseType() == RbVector<RbObject>::getClassName()) {
-        RbVector<RbObject> *v = new RbVector<RbObject>();
+    // test if we need to convert this object into an vector
+    if ( typeSpec.getBaseType() == RbVector::getClassName() ) {
+        RbVector *v = new RbVector( typeSpec.getElementType() );
         v->push_back( this->clone() );
         
         // we rely on the implemented conversion functions inside the vector class
@@ -59,6 +59,14 @@ RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
     throw RbException("Failed conversion from " + getTypeSpec() + " to " + typeSpec);
     
     return NULL;
+}
+
+
+/* Decrement the reference count. */
+size_t RbObject::decrementReferenceCount( void ) {
+    refCount--;
+    
+    return refCount;
 }
 
 
@@ -136,10 +144,23 @@ RbObject& RbObject::getElement(size_t index) {
 }
 
 
-/** Is convertible to type? */
+
+/* Get the reference count for this instance. */
+size_t RbObject::getReferenceCount(void) const {
+    return refCount;
+}
+
+
+/* Increment the reference count for this instance. */
+void RbObject::incrementReferenceCount( void ) {
+    refCount++;
+}
+
+
+/* Is convertible to type? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
     
-    if (typeSpec.getBaseType() == RbVector<RbObject>::getClassName() && isTypeSpec(typeSpec.getElementType())) {
+    if (typeSpec.getBaseType() == RbVector::getClassName() && isTypeSpec(typeSpec.getElementType())) {
         return true;
     }
 
@@ -147,14 +168,14 @@ bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
 }
 
 
-/** Are we of specified language type? */
+/* Are we of specified language type? */
 bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
     
     return getTypeSpec().isDerivedOf( typeSpec );
 }
 
 
-/* @TODO: Temporary default implementation. (Sebastian: Needs removal and shuld be pure virtual!) */
+/* @TODO: Temporary default implementation. (Sebastian: Needs removal and should be pure virtual!) */
 void RbObject::setLeanValue(const RbValue<void *> &val) {
     
     RbValue<void *> oldVal;

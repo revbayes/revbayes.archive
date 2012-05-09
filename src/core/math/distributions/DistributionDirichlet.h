@@ -24,11 +24,7 @@ namespace RbStatistics {
     
 	namespace Dirichlet {
         double                      pdf(const std::vector<double>& a, const std::vector<double>& z);        /*!< Dirichlet(a[]) probability density */
-        double                      pdf(const RbVector<RealPos>& a, const std::vector<double>& z);          /*!< Dirichlet(a[]) probability density */
         double                      lnPdf(const std::vector<double>& a, const std::vector<double>& z);      /*!< Dirichlet(a[]) log_e probability density */
-        double                      lnPdf(const RbVector<RealPos>& a, const std::vector<double>& z);        /*!< Dirichlet(a[]) log_e probability density */
-        double                      lnPdf(const std::vector<double>& a, const RbVector<RealPos>& z);        /*!< Dirichlet(a[]) log_e probability density */
         std::vector<double>         rv(const std::vector<double>& a, RandomNumberGenerator& rng);           /*!< Dirichlet(a[]) random variable */
-        std::vector<double>         rv(const RbVector<RealPos>& a, RandomNumberGenerator& rng);             /*!< Dirichlet(a[]) random variable */
 	}
 }

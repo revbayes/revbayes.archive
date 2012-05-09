@@ -63,7 +63,7 @@ class TaxonData : public MemberObject {
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
-        RbVector<Character>                     sequence;
+        RbVector                                sequence;
     
         // memberfunction return value
         Natural                                 returnValueSize;

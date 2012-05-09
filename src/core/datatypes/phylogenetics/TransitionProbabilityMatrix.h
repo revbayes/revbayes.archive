@@ -17,15 +17,11 @@
 #define TransitionProbabilityMatrix_H
 
 #include "Matrix.h"
-#include "MemberObject.h"
-#include "Natural.h"
-#include "RbVector.h"
 
-class ArgumentRule;
-class DAGNode;
+#include <vector>
 
 
-class TransitionProbabilityMatrix : public MemberObject {
+class TransitionProbabilityMatrix {
 
     public:
                                             TransitionProbabilityMatrix(void);                                 //!< Default constructor (never call this except from the workspace once)
@@ -35,28 +31,15 @@ class TransitionProbabilityMatrix : public MemberObject {
 
         // overloaded operators
         TransitionProbabilityMatrix&        operator=(const TransitionProbabilityMatrix& m);
-        RbVector<Real>&                     operator[](size_t i);                                              //!< Subscript operator
-        const RbVector<Real>&               operator[](size_t i) const;                                        //!< Subscript operator (const)
+        std::vector<double>&                operator[](size_t i);                                              //!< Subscript operator
+        const std::vector<double>&          operator[](size_t i) const;                                        //!< Subscript operator (const)
     
         // Basic utility functions
         TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object
-        static const std::string&           getClassName(void);                                                         //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                           //!< Get language type of the object
-        void                                printValue(std::ostream& o) const;                                 //!< Print value for user
-
-        // Member variable rules
-        const MemberRules&                  getMemberRules(void) const;                                        //!< Get member rules
-
-        // Member method inits
-        const MethodTable&                  getMethods(void) const;                                            //!< Get methods
-
-    protected:
-        const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Map method call to internal functions
-
+ 
     private:
-        Natural                             numStates;                                                         //!< The number of character states
-        Matrix<Real>*                       theMatrix;                                                         //!< Holds the transition probability matrix
+        size_t                              numStates;                                                         //!< The number of character states
+        Matrix<double>                      theMatrix;                                                         //!< Holds the transition probability matrix
     
 };
 

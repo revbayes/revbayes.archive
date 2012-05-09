@@ -18,6 +18,7 @@
 
 #include "DagNodeContainer.h"
 #include "MemberFunction.h"
+#include "MethodTable.h"
 #include "Natural.h"
 #include "Move.h"
 #include "Monitor.h"
@@ -100,9 +101,9 @@ DagNodeContainer* DagNodeContainer::clone(void) const {
 
 RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
     
-    if ( type.getBaseType() == RbVector<RbLanguageObject>::getClassName() ) {
+    if ( type.getBaseType() == RbVector::getClassName() ) {
         // test whether each object in the container is actually a constant node holding a value
-        RbVector<RbLanguageObject>* valueVector = new RbVector<RbLanguageObject>;
+        RbVector* valueVector = new RbVector( type.getElementType() );
         for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             DAGNode* theNode = (*it)->getDagNode();
             if (theNode->isTypeSpec( ConstantNode::getClassTypeSpec() ) && theNode->getValue().isTypeSpec(type.getElementType())) {
@@ -213,7 +214,7 @@ const TypeSpec& DagNodeContainer::getTypeSpec( void ) const {
 /** Can we convert this DAG node container into another object? */
 bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     
-    if ( type.getBaseType() == RbVector<RbLanguageObject>::getClassName() ) {
+    if ( type.getBaseType() == RbVector::getClassName() ) {
         // test whether each object in the container is actually a constant node holding a value
         for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             DAGNode* theNode = (*it)->getDagNode();

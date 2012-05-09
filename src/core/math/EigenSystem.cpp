@@ -33,7 +33,7 @@
 
 
 /** Constructor from real matrix */
-EigenSystem::EigenSystem(Matrix<Real>* m) {
+EigenSystem::EigenSystem(Matrix<double>* m) {
 
     // set the pointer to the rate matrix for this system of eigen values and vectors
     qPtr = m;
@@ -48,12 +48,12 @@ EigenSystem::EigenSystem(Matrix<Real>* m) {
 
 	// allocate and initialize components of eigensystem
 	// assuming it is going to be real and not complex
-	eigenvectors               = Matrix<Real>(n, n, new Real(0.0) );
-	inverseEigenvectors        = Matrix<Real>(n, n, new Real(0.0) );
-	realEigenvalues            = RbVector<Real>(n, new Real(0.0) );
-	imaginaryEigenvalues       = RbVector<Real>(n, new Real(0.0) );
-	complexEigenvectors        = Matrix<Complex>(n, n);
-	complexInverseEigenvectors = Matrix<Complex>(n, n);    
+	eigenvectors               = Matrix<double>(n, n, 0.0 );
+	inverseEigenvectors        = Matrix<double>(n, n, 0.0 );
+	realEigenvalues            = std::vector<double>(n, 0.0 );
+	imaginaryEigenvalues       = std::vector<double>(n, 0.0 );
+	complexEigenvectors        = Matrix<std::complex<double> >(n, n);
+	complexInverseEigenvectors = Matrix<std::complex<double> >(n, n);    
 }
 
 

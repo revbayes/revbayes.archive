@@ -14,25 +14,23 @@
  * $Id$
  */
 
-#include "Complex.h"
 #include "Matrix.h"
-#include "Real.h"
-#include "RbVector.h"
 
+#include <complex>
 
 
 namespace RbMath {
 
-    void                        computeLandU(Matrix<Real>& aMat, Matrix<Real>& lMat, Matrix<Real>& uMat);               //!< Compute L & U decomposition of a matrix
-    void                        computeLandU(Matrix<Complex>& aMat, Matrix<Complex>& lMat, Matrix<Complex>& uMat);      //!< Compute L & U decomposition of a matrix
-    int                         expMatrixPade(Matrix<Real>& A, Matrix<Real>& F, int qValue);                            //!< Exponentiate the matrix A using the Pade method
-    int                         findPadeQValue(const double& tolerance);                                                //!< Find the pq values for controlling the tolerance of the Pade method
-    void                        matrixInverse(const Matrix<Complex>& a, Matrix<Complex>& aInv);                         //!< Compute the inverse of a matrix
-    void                        matrixInverse(const Matrix<Real>& a, Matrix<Real>& aInv);                               //!< Compute the inverse of a matrix
-    int                         transposeMatrix(const Matrix<Real>& a, Matrix<Real>& t);                                //!< Transpose a matrix
+    void                        computeLandU(Matrix<double>& aMat, Matrix<double>& lMat, Matrix<double>& uMat);                                                     //!< Compute L & U decomposition of a matrix
+    void                        computeLandU(Matrix<std::complex<double> >& aMat, Matrix<std::complex<double> >& lMat, Matrix<std::complex<double> >& uMat);        //!< Compute L & U decomposition of a matrix
+    int                         expMatrixPade(Matrix<double>& A, Matrix<double>& F, int qValue);                                                                    //!< Exponentiate the matrix A using the Pade method
+    int                         findPadeQValue(const double& tolerance);                                                                                            //!< Find the pq values for controlling the tolerance of the Pade method
+    void                        matrixInverse(const Matrix<std::complex<double> >& a, Matrix<std::complex<double> >& aInv);                                         //!< Compute the inverse of a matrix
+    void                        matrixInverse(const Matrix<double>& a, Matrix<double>& aInv);                                                                       //!< Compute the inverse of a matrix
+    int                         transposeMatrix(const Matrix<double>& a, Matrix<double>& t);                                                                        //!< Transpose a matrix
 
-    RbVector<Real>              colSumMatrix(const Matrix<Real>& a);
-    RbVector<Real>              rowSumMatrix(const Matrix<Real>& a);
-    RbVector<Real>              colMeansMatrix(const Matrix<Real>& a);
-    RbVector<Real>              rowMeansMatrix(const Matrix<Real>& a);
+    std::vector<double>         colSumMatrix(const Matrix<double>& a);
+    std::vector<double>         rowSumMatrix(const Matrix<double>& a);
+    std::vector<double>         colMeansMatrix(const Matrix<double>& a);
+    std::vector<double>         rowMeansMatrix(const Matrix<double>& a);
 }

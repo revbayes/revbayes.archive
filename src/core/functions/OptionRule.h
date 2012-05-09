@@ -30,8 +30,8 @@ class RbString;
 class OptionRule : public ValueRule {
 
     public:
-                                    OptionRule(const std::string& argName, RbVector<RbString> optVals);                       //!< Constructor of rule without default value
-                                    OptionRule(const std::string& argName, RbString* defVal, RbVector<RbString> optVals);     //!< Constructor of rule with default value
+                                    OptionRule(const std::string& argName, RbVector optVals);                           //!< Constructor of rule without default value
+                                    OptionRule(const std::string& argName, RbString* defVal, RbVector optVals);         //!< Constructor of rule with default value
 
         // Basic utility functions
         OptionRule*                 clone(void) const { return new OptionRule(*this); }                                 //!< Clone object
@@ -42,9 +42,9 @@ class OptionRule : public ValueRule {
         void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
 
     protected:
-        bool                        areOptionsUnique(const RbVector<RbString>& optVals) const;                                //!< Test if options are unique
+        bool                        areOptionsUnique(const RbVector& optVals) const;                                    //!< Test if options are unique
 
-        RbVector<RbString>          options;                                                                            //!< Permissible values
+        RbVector                    options;                                                                            //!< Permissible values
     
 };
 

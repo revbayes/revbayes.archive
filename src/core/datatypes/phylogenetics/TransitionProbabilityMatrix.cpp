@@ -11,28 +11,13 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
- * @interface Mcmc
- * @package distributions
+ * @package datatypes
  *
  * $Id$
  */
 
-#include "RbBoolean.h"
-#include "Matrix.h"
-#include "MemberFunction.h"
-#include "Natural.h"
 #include "RbException.h"
-#include "RbMathMatrix.h"
-#include "RbString.h"
-#include "RbUtil.h"
-#include "RbVector.h"
-#include "RealPos.h"
-#include "Simplex.h"
-#include "StochasticNode.h"
 #include "TransitionProbabilityMatrix.h"
-#include "ValueRule.h"
-#include "VariableNode.h"
-#include "Workspace.h"
 
 #include <cmath>
 #include <fstream>
@@ -41,57 +26,50 @@
 
 
 /** Constructor passes member rules and method inits to base class */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : MemberObject(getMemberRules()) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : theMatrix(2,2) {
 
     numStates = 2;
-    theMatrix = new Matrix<Real>(numStates.getValue(), numStates.getValue());
-    for (size_t i = 0; i < numStates.getValue(); ++i) {
-        RbVector<Real>& v = (*theMatrix)[i];
+    for (size_t i = 0; i < numStates; ++i) {
+        std::vector<double>& v = theMatrix[i];
         for (size_t j = 0; j < numStates; ++j) {
-            v.setElement(j, new Real() );
+            v.push_back( 0.0 );
         }
     } 
 }
 
 
 /** Construct rate matrix with n states */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : MemberObject(getMemberRules()) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : theMatrix(n,n) {
 
     numStates = n;
-    theMatrix = new Matrix<Real>(numStates.getValue(), numStates.getValue());
-    for (size_t i = 0; i < numStates.getValue(); ++i) {
-        RbVector<Real>& v = (*theMatrix)[i];
+    for (size_t i = 0; i < numStates; ++i) {
+        std::vector<double>& v = theMatrix[i];
         for (size_t j = 0; j < numStates; ++j) {
-            v.setElement(j, new Real() );
+            v.push_back( 0.0 );
         }
     }
 }
 
 
 /** Copy constructor */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m) : theMatrix( m.theMatrix ) {
 
     numStates = m.numStates;
-    theMatrix = m.theMatrix->clone();
 }
 
 
 /** Destructor */
 TransitionProbabilityMatrix::~TransitionProbabilityMatrix(void) {
     
-    delete theMatrix;
 }
 
 
 TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator=(const TransitionProbabilityMatrix &m) {
     
     if (this != &m) {
-        MemberObject::operator=(m);
-        
-        delete theMatrix;
         
         numStates = m.numStates;
-        theMatrix = m.theMatrix->clone();
+        theMatrix = m.theMatrix;
     }
     
     return *this;
@@ -99,20 +77,20 @@ TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator=(const Transi
 
 
 /** Index operator (const) */
-const RbVector<Real>& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
+const std::vector<double>& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
-    if ( i >= numStates.getValue() )
-        throw RbException( "Index to " + getClassName() + "[][] out of bounds" );
-    return (*theMatrix)[i];
+    if ( i >= numStates )
+        throw RbException( "Index to TransitionProbabilityMatrix[][] out of bounds" );
+    return theMatrix[i];
 }
 
 
 /** Index operator */
-RbVector<Real>& TransitionProbabilityMatrix::operator[]( const size_t i ) {
+std::vector<double>& TransitionProbabilityMatrix::operator[]( const size_t i ) {
 
-    if ( i >= numStates.getValue() )
-        throw RbException( "Index to " + getClassName() + "[][] out of bounds" );
-    return (*theMatrix)[i];
+    if ( i >= numStates )
+        throw RbException( "Index to TransitionProbabilityMatrix[][] out of bounds" );
+    return theMatrix[i];
 }
 
 
@@ -122,84 +100,4 @@ TransitionProbabilityMatrix* TransitionProbabilityMatrix::clone(void) const {
     return new TransitionProbabilityMatrix(*this);
 }
 
-
-/** Map calls to member methods */
-const RbLanguageObject& TransitionProbabilityMatrix::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
-
-    if (name == "nstates") {
-        return numStates;
-    }
-
-    return MemberObject::executeOperationSimple( name, args );
-}
-
-
-/** Get class name of object */
-const std::string& TransitionProbabilityMatrix::getClassName(void) { 
-    
-    static std::string rbClassName = "Transition probability matrix";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& TransitionProbabilityMatrix::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& TransitionProbabilityMatrix::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/** Get member rules */
-const MemberRules& TransitionProbabilityMatrix::getMemberRules(void) const {
-
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-
-    if (!rulesSet) 
-        {
-        rulesSet = true;
-        }
-
-    return memberRules;
-}
-
-
-/** Get methods */
-const MethodTable& TransitionProbabilityMatrix::getMethods(void) const {
-
-    static MethodTable methods = MethodTable();
-    static ArgumentRules* nstatesArgRules = new ArgumentRules();
-    static bool          methodsSet = false;
-
-    if ( methodsSet == false ) 
-        {
-        
-        methods.addFunction("nstates", new MemberFunction(Natural::getClassTypeSpec(), nstatesArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &MemberObject::getMethods() );
-        methodsSet = true;
-        }
-
-    return methods;
-}
-
-
-/** Print value for user */
-void TransitionProbabilityMatrix::printValue(std::ostream& o) const {
-
-    o << "Transition probability matrix:" << std::endl;
-    theMatrix->printValue( o );
-    o << std::endl;
-}
 

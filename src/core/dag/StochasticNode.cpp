@@ -728,7 +728,7 @@ RbLanguageObject* StochasticNode::createRV( const std::vector<size_t> &plateLeng
     
     RbLanguageObject* retVal;
     if ( repeatedExecution ) {
-        RbVector<RbLanguageObject>* retValVector = new RbVector<RbLanguageObject>();
+        RbVector* retValVector = new RbVector( RbLanguageObject::getClassTypeSpec() );
         for ( size_t j = 0; j < size; ++j) {
             std::vector<const RbObject*> newArgs;
             for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
@@ -786,7 +786,7 @@ RbLanguageObject* StochasticNode::createRVSingleValue(size_t plateIndex, const s
     }
     else {
         // create a new vector for the rv's
-        RbVector<RbLanguageObject> *rvs = new RbVector<RbLanguageObject>();
+        RbVector *rvs = new RbVector( distribution->getVariableType() );
         
         // iterate over all indices of the current plate
         for (size_t i = 0; i < plateLengths[plateIndex]; ++i) {

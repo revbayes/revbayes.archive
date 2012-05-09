@@ -92,14 +92,6 @@ void DAGNode::addChildNode(VariableNode *c) {
     }
 }
 
-
-/** Decrement the reference count. */
-size_t DAGNode::decrementReferenceCount( void ) {
-    refCount--;
-    
-    return refCount;
-}
-
 /** 
  * All DAG node types provide the functions to add and remove monitors. 
  *
@@ -211,18 +203,6 @@ const Plate* DAGNode::getPlate( void ) const {
 
 const std::set<DAGNode*>& DAGNode::getParents( void ) const {
     return parents;
-}
-
-
-/** Get the reference count for this instance. */
-size_t DAGNode::getReferenceCount(void) const {
-    return refCount;
-}
-
-
-/** Increment the reference count for this instance. */
-void DAGNode::incrementReferenceCount( void ) {
-    refCount++;
 }
 
 /** Is this a constant node */

@@ -71,7 +71,6 @@ class DAGNode : public RbLanguageObject {
 
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                                  //!< Add child node
-        size_t                                              decrementReferenceCount(void);
         void                                                getAffectedNodes(std::set<StochasticNode* >& affected);                         //!< Mark and get affected nodes
         const std::set<VariableNode*>&                      getChildren(void) const;                                                        //!< Return children
         const RbObject&                                     getElement(size_t index) const;                                                 //!< Get element at index (container function)
@@ -79,8 +78,6 @@ class DAGNode : public RbLanguageObject {
         const std::string&                                  getName(void) const;                                                            //!< get the name
         const std::set<DAGNode*>&                           getParents(void) const;                                                         //!< Return parents
         const Plate*                                        getPlate(void) const;                                                           //!< Get the plate on which this DAG node sits on.
-        size_t                                              getReferenceCount(void) const;
-        void                                                incrementReferenceCount(void);
         bool                                                isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;               //!< Is node x a parent of the caller in the DAG?
         void                                                keep(void);                                                                     //!< Keep current state of this node and all affected nodes
         size_t                                              numberOfChildren(void) const;                                                   //!< Number of children
@@ -110,7 +107,6 @@ class DAGNode : public RbLanguageObject {
         // Member variables keeping track of references
         std::set<VariableNode* >                            children;                                                                       //!< Set of children nodes
         std::set<DAGNode*>                                  parents;                                                                        //!< Set of parent nodes
-        size_t                                              refCount;
             
         // Member value variables
         std::string                                         name;                                                                           //!< The name/identifier of the DAG node
