@@ -22,9 +22,6 @@
 #include <set>
 #include <string>
 
-class ArgumentRule;
-class DAGNode;
-class RandomNumberGenerator;
 
 class InferenceDistributionContinuous: public InferenceDistribution {
     

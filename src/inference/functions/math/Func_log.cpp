@@ -15,17 +15,9 @@
  * $Id$
  */
 
-#include "ConstantNode.h"
-#include "DAGNode.h"
-#include "DeterministicNode.h"
 #include "Func_log.h"
-#include "RealPos.h"
-#include "Real.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "StochasticNode.h"
-#include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <cassert>
 #include <cmath>

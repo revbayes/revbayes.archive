@@ -15,19 +15,12 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
-#include "DAGNode.h"
 #include "Dist_unif.h"
-#include "MemberFunction.h"
-#include "RealPos.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "Real.h"
-#include "ValueRule.h"
-#include "Workspace.h"
 
 #include <cmath>
 #include <sstream>
