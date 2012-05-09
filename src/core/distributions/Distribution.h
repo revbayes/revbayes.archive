@@ -33,35 +33,31 @@ class RandomNumberGenerator;
 class Distribution: public MemberObject {
 
     public:
-        virtual                    ~Distribution(void) {}                                                                       //!< Destructor
+        virtual                                    ~Distribution(void) {}                                                                       //!< Destructor
 
         // Basic utility functions
-        virtual Distribution*               clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&           getClassName(void);                                                                 //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                             //!< Get class type spec
+        virtual Distribution*                       clone(void) const = 0;                                                              //!< Clone object
+        static const std::string&                   getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&                      getClassTypeSpec(void);                                                             //!< Get class type spec
 
         // Member object function you have to override
-        virtual const MemberRules&          getMemberRules(void) const = 0;                                                     //!< Get member rules
+        virtual const MemberRules&                  getMemberRules(void) const = 0;                                                     //!< Get member rules
 
         // Member object functions you may want to override
-        virtual const MethodTable&          getMethods(void) const;                                                             //!< Get member methods
+        virtual const MethodTable&                  getMethods(void) const;                                                             //!< Get member methods
 
 
         // Distribution functions you have to override
-        virtual const TypeSpec&             getVariableType(void) const = 0;                                                    //!< Get random variable type
-        virtual double                      lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
-        virtual double                      pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function
-        virtual const RbLanguageObject&     rv(void) = 0;                                                                       //!< Generate a random draw
+        virtual const TypeSpec&                     getVariableType(void) const = 0;                                                    //!< Get random variable type
+        virtual double                              lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
+        virtual double                              pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function
+        virtual const RbPtr<RbLanguageObject>&      rv(void) = 0;                                                                       //!< Generate a random draw
 
     protected:
-                                            Distribution( const MemberRules& memberRules);                                      //!< Simple constructor
+                                                    Distribution( const MemberRules& memberRules);                                      //!< Simple constructor
 
-        virtual const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
+        virtual const RbPtr<RbLanguageObject>&      executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
   
-    private:
-    
-        Real                                functionValueLnPdf;
-        RealPos                             functionValuePdf;
 
 };
 

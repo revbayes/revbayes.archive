@@ -30,6 +30,7 @@
 #include "ArgumentRules.h"
 #include "Environment.h"
 #include "RbInternal.h"
+#include "RbPtr.h"
 
 class InferenceFunction;
 class DAGNode;
@@ -71,7 +72,7 @@ class RbFunction :  public RbLanguageObject {
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was executed.
 
         // RbFunction functions you have to override
-        virtual const RbLanguageObject&                 execute(void);                                                                      //!< Execute function
+        virtual const RbPtr<RbLanguageObject>&          execute(void);                                                                      //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
@@ -94,11 +95,11 @@ class RbFunction :  public RbLanguageObject {
     
         // function you may want to override
         virtual void                                    clearArguments(void);                                                               //!< Clear argument Environment "args"
-        virtual const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*>& args);                          //!< Execute the function. This is the function one has to overwrite for single return values.
+        virtual const RbPtr<RbLanguageObject>&          executeFunction(const std::vector<const RbObject*>& args);                          //!< Execute the function. This is the function one has to overwrite for single return values.
         virtual void                                    setArgumentVariable(const std::string& name, const Variable* var) {}                //!< Set the private member variable here (for derived classes)!
 
         // helper functions
-        const RbLanguageObject&                         execute(const std::vector<const RbObject*>& args);                                  //!< Execute the function. This is the function one has to overwrite for vector type execution.
+        const RbPtr<RbLanguageObject>&                  execute(const std::vector<const RbObject*>& args);                                  //!< Execute the function. This is the function one has to overwrite for vector type execution.
 
         // Member variables
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
@@ -108,7 +109,6 @@ class RbFunction :  public RbLanguageObject {
     private:   
         int                                             computeMatchScore(const DAGNode* arg, const ArgumentRule& rule);
     
-//        RbLanguageObject*                               retVal;
 };
 
 #endif

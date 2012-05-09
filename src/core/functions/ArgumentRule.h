@@ -19,7 +19,7 @@
 #ifndef ArgumentRule_H
 #define ArgumentRule_H
 
-#include "RbConstVariablePtr.h"
+#include "RbPtr.h"
 #include "RbInternal.h"
 #include "TypeSpec.h"
 #include "Environment.h"
@@ -33,10 +33,9 @@ class RbObject;
 class ArgumentRule : public RbInternal {
 
     public:
-        virtual                    ~ArgumentRule();
         
         // Basic utility functions
-        virtual ArgumentRule*       clone(void) const { return new ArgumentRule(*this); }                                               //!< Clone object
+        virtual ArgumentRule*       clone(void) const = 0;                                                                              //!< Clone object
         static const std::string&   getClassName(void);                                                                                 //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                                                             //!< Get class type spec
         virtual const TypeSpec&     getTypeSpec(void) const;                                                                            //!< Get language type of the object
@@ -46,26 +45,21 @@ class ArgumentRule : public RbInternal {
         // ArgumentRule functions
         const std::string&          getArgumentLabel(void) const;                                                                       //!< Get label of argument
         const TypeSpec&             getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
-        const Variable&             getDefaultVariable(void) const;                                                                     //!< Get default argument
-        Variable&                   getDefaultVariable(void);                                                                           //!< Get default argument (non-const to return non-const variable)
         bool                        hasDefault(void) const;                                                                             //!< Has default?
         virtual bool                isArgumentValid(const Variable* var, bool convert = false) const;                                   //!< Is var valid argument?
         bool                        isOptional(void) const;                                                                             //!< Is this rule optional? If so, we do not use a default parameter when no argument is given.
-    
+
+        // functions overwritten in derived class
+        virtual const Variable&     getDefaultVariable(void) const = 0;                                                                     //!< Get default argument
+
     protected:
-                                    ArgumentRule(const std::string& argName, RbLanguageObject *defValue);                               //!< Constructor of rule from default value
+                                    ArgumentRule(const std::string& argName);                                                           //!< Constructor of rule from default value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool optional=false);           //!< Constructor of rule without default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue);    //!< Constructor of rule with default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode *defVariable);          //!< Constructor of rule with default reference or default wrapped value
-                                    ArgumentRule( const ArgumentRule& a);                                                               //!< Copy constructor
 
         bool                        isArgumentValid(const RbObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;
-    
-        ArgumentRule&               operator=(const ArgumentRule& a);
-        
+            
         TypeSpec                    argTypeSpec;
         std::string                 label;                                                                                              //!< Label of argument
-        Variable*                   defaultVariable;                                                                                    //!< default value
         bool                        hasDefaultVal;                                                                                      //!< Has default
         bool                        optional;                                                                                           //!< Is optional?
 

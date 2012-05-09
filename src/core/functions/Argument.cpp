@@ -24,67 +24,19 @@
 
 
 /** Construct from argument label and DAG node */
-Argument::Argument( const Variable* v) : RbInternal() {
+Argument::Argument( const RbPtr<const Variable> &v) : RbInternal() {
     
     label   = "";
     var     = v;
-    
-    // we need to increment the reference count
-    var->incrementReferenceCount();
 }
 
 
 /** Construct from argument label and DAG node */
-Argument::Argument(const std::string& argLabel, const Variable* v) : RbInternal() {
+Argument::Argument(const std::string& argLabel, const RbPtr<const Variable> &v) : RbInternal() {
 
     label   = argLabel;
     var     = v;
     
-    // we need to increment the reference count
-    var->incrementReferenceCount();
-    
-}
-
-/** Copy Constructor. We keep the same pointer to the variable stored inside this argument. */
-Argument::Argument(const Argument &x) : RbInternal(x) {
-    
-    label   = x.label;
-    var     = x.var;
-    
-    if (var != NULL)
-        var->incrementReferenceCount();
-}
-
-
-/** Destructor */
-Argument::~Argument() {
-    
-    // decrement the reference count and delete the object if it is not reference anymore
-    if ( var->decrementReferenceCount() == 0) {
-        delete var;
-    }
-}
-
-
-Argument& Argument::operator=(const Argument &x) {
-    
-    if ( &x != this ) {
-        
-        if (var != NULL && var->decrementReferenceCount() == 0) {
-            delete var;
-        }
-        // Copy the new variable
-        if (x.var == NULL) {
-            var = NULL;
-        }
-        else {
-            var     = x.var;
-            var->incrementReferenceCount();
-        }
-        label   = x.label;
-    }
-    
-    return (*this);
 }
 
 

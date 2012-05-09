@@ -36,7 +36,7 @@
 #include "DAGNode.h"
 #include "RbInternal.h"
 #include "RbLanguageObject.h"
-#include "RbDagNodePtr.h"
+#include "RbPtr.h"
 #include "TypeSpec.h"
 
 #include <string>
@@ -55,17 +55,14 @@ public:
     
     // Regular functions
     Variable*                           clone(void) const;                                  //!< Clone variable
-    size_t                              decrementReferenceCount(void) const;                //!< Decrement the reference counter for this instance
     static const std::string&           getClassName(void);                                 //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
     const DAGNode*                      getDagNode(void) const;                             //!< Get the variable 
     DAGNode*                            getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
-    size_t                              getReferenceCount(void) const;
     const RbLanguageObject&             getValue(void) const;                               //!< Get the value of the variable
     RbLanguageObject&                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
     const TypeSpec&                     getValueTypeSpec(void) const;                       //!< Get the required value type spec
-    size_t                              incrementReferenceCount(void) const;                //!< Increment the reference count for this instance
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable
     void                                setDagNode(DAGNode* newVar);                        //!< Set a variable with a variable
     void                                setValueTypeSpec(const TypeSpec& ts);               //!< set the required value type spec
@@ -75,8 +72,7 @@ private:
     void                                replaceDagNode(DAGNode* newVariable );              //!< Replace the old DAG node with the new one and set the children and parent
     
     // Member variables
-    RbDagNodePtr                        node;                                               //!< Pointer to the variable (reference or not)
-    size_t                              refCount;                                           //!< The reference counter
+    RbPtr<DAGNode>                      node;                                               //!< Pointer to the variable (reference or not)
     TypeSpec                            valueTypeSpec;
     
 };

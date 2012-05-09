@@ -30,8 +30,8 @@ class RbPtr {
 public:
     RbPtr(ptrType* inPtr = NULL);
     ~RbPtr(void);
-    RbPtr(const RbPtr& src);
-    RbPtr&                                      operator=(const RbPtr& rhs);
+    RbPtr(const RbPtr<ptrType>& src);
+    RbPtr&                                      operator=(const RbPtr<ptrType>& rhs);
     ptrType&                                    operator*(void) const;
     ptrType*                                    operator->(void) const;
     operator                                    ptrType*(void) const { return mPtr; }
@@ -45,6 +45,96 @@ private:
     
     ptrType*                                    mPtr;
 };
+
+
+template <typename ptrType>
+RbPtr<ptrType>::RbPtr(ptrType* inPtr) {
+    
+    initializePointer(inPtr);
+}
+
+template <typename ptrType>
+RbPtr<ptrType>::RbPtr(const RbPtr<ptrType>& src) {
+    
+    initializePointer(src.mPtr);
+}
+
+template <typename ptrType>
+RbPtr<ptrType>::~RbPtr(void) {
+    
+    finalizePointer();
+}
+
+template <typename ptrType>
+RbPtr<ptrType>& RbPtr<ptrType>::operator=(const RbPtr<ptrType>& rhs) {
+    
+    if (this == &rhs) {
+        return (*this);
+    }
+    finalizePointer();
+    initializePointer(rhs.mPtr);
+    return (*this);
+}
+
+
+template <typename ptrType>
+void RbPtr<ptrType>::initializePointer(ptrType* inPtr) {
+    
+    mPtr = inPtr;
+    
+    incrementCountForAddress(mPtr);
+}
+
+template <typename ptrType>
+void RbPtr<ptrType>::finalizePointer(void) {
+    
+    if ( decrementCountForAddress(mPtr) ) { 
+        delete mPtr;
+    }
+}
+
+template <typename ptrType>
+ptrType* RbPtr<ptrType>::operator->(void) const {
+    
+    return (mPtr);
+}
+
+template <typename ptrType>
+ptrType& RbPtr<ptrType>::operator*(void) const {
+    
+    return (*mPtr);
+}
+
+
+template <typename ptrType>
+size_t RbPtr<ptrType>::countForAddress(const ptrType* qPtr) {
+    
+    // check if we got the NULL pointer
+    if (qPtr == 0) return -1;
+    
+    return qPtr->getReferenceCount();
+}
+
+
+template <typename ptrType>
+void RbPtr<ptrType>::incrementCountForAddress(ptrType* qPtr) {
+    
+    // check if we got the NULL pointer
+    if (qPtr == 0) return;
+    
+    qPtr->incrementReferenceCount();
+}
+
+template <typename ptrType>
+bool RbPtr<ptrType>::decrementCountForAddress(ptrType* qPtr) {
+    
+    // check if we got the NULL pointer
+    if (qPtr == 0) return false;
+    
+    size_t refCount = qPtr->decrementReferenceCount();
+    
+    return refCount == 0;
+}
 
 
 #endif

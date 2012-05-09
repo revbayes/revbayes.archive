@@ -23,8 +23,7 @@
 #include "DAGNode.h"
 #include "RbInternal.h"
 #include "RbObject.h"
-#include "RbVariablePtr.h"
-#include "RbConstVariablePtr.h"
+#include "RbPtr.h"
 #include "Variable.h"
 
 #include <ostream>
@@ -33,33 +32,23 @@
 class Argument : public RbInternal {
 
     public:
-                                            Argument(const Variable* arg);                                      //!< Constructor 
-                                            Argument(const std::string& argLabel, const Variable* arg);         //!< Constructor 
-                                            Argument(const Argument &x);                                        //!< Copy constructor 
-    virtual                                ~Argument(void);                                                     //!< Destructor
-   
-        // Assignment operator
-        Argument&                           operator=(const Argument& x);                                       //!< Assignment
-
 
         // Basic utility functions
-        Argument*                           clone(void) const { return new Argument (*this); }                  //!< Clone object
-        static const std::string&           getClassName(void);                                                 //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
-        void                                printValue(std::ostream& o) const;                                  //!< Complete info about object
+        virtual Argument*                   clone(void) const = 0;                          //!< Clone object
+        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
 
         // Regular functions
-        const std::string&                  getLabel(void) const;                                               //!< Get label of argument
-        const Variable&                     getVariable(void) const;                                            //!< Get the variable contained in this argument
-//        Variable&                           getVariable(void);                                                  //!< Get the variable contained in this argument (non-const to return non-const variable)
-        const Variable*                     getVariablePtr(void) const;                                         //!< Get the variable contained ptr in this argument (
-//        Variable*                           getVariablePtr(void);                                               //!< Get the variable contained ptr in this argument (non-const to return non-const variable)
-        void                                setVariable(const RbVariablePtr& newVar);                           //!< set the variable of the argument
+        const std::string&                  getLabel(void) const;                                                       //!< Get label of argument
+
+
+        // functions you need to overwrite (in ConstArgument and ReferenceArgument)
+        virtual const RbPtr<const Variable>& getVariable(void) const = 0;
 
     protected:
-        std::string                         label;                                                              //!< Label of argument
-        const Variable*                     var;                                                                //!< Pointer to the variable slot containing the variable (and value)
+        Argument(const std::string& argLabel = "");    //!< Constructor 
+
+        std::string                         label;                                                                      //!< Label of argument
     
 };
 

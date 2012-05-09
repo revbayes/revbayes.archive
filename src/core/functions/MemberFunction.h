@@ -33,29 +33,29 @@ class MemberObject;
 class MemberFunction :  public RbFunction {
 
 public:
-    MemberFunction(const TypeSpec retType, ArgumentRules* argRules);                            //!< Constructor
-    virtual ~MemberFunction(void);                                                                          //!< Destructor
+    MemberFunction(const TypeSpec retType, ArgumentRules* argRules);                                                //!< Constructor
+    virtual ~MemberFunction(void);                                                                                  //!< Destructor
 
     // Basic utility functions
-    MemberFunction*             clone(void) const;                                                          //!< Clone the object
-    static const std::string&   getClassName(void);                                                         //!< Get class name
-    static const TypeSpec&      getClassTypeSpec(void);                                                     //!< Get class type spec
-    const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
+    MemberFunction*                     clone(void) const;                                                          //!< Clone the object
+    static const std::string&           getClassName(void);                                                         //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
+    const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
 
     // Regular functions   
-    const RbLanguageObject&     execute(void);                                                              //!< Execute function
-    const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
-    const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
-    void                        setArgumentVariable(const std::string& name, const Variable* var);     
-    void                        setMemberObject(MemberObject& obj);                                         //!< Set the member object to which this function belongs
-    void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
+    const RbPtr<RbLanguageObject>&      execute(void);                                                              //!< Execute function
+    const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
+    const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
+    void                                setArgumentVariable(const std::string& name, const Variable* var);     
+    void                                setMemberObject(MemberObject& obj);                                         //!< Set the member object to which this function belongs
+    void                                setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
 
 
 private:
-    const ArgumentRules*        argumentRules;                                                              //!< Argument rules (different for different member functions)
-    std::string                 funcName;                                                                   //!< Name of member method
-    MemberObject*               object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
-    const TypeSpec              returnType;                                                                 //!< Return type (different for different member functions)
+    const ArgumentRules*                argumentRules;                                                              //!< Argument rules (different for different member functions)
+    std::string                         funcName;                                                                   //!< Name of member method
+    MemberObject*                       object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
+    const TypeSpec                      returnType;                                                                 //!< Return type (different for different member functions)
     
 };
 
