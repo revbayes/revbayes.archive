@@ -25,6 +25,7 @@
 #include "DistributionFunction.h"
 #include "DistributionContinuous.h"
 #include "FunctionTable.h"
+#include "ParserDistribution.h"
 #include "ParserDistributionContinuous.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -40,42 +41,31 @@
 #include <vector>
 
 
-/** Constructor of global workspace */
+/* Constructor of global workspace */
 Workspace::Workspace() : Environment(), typesInitialized(false) {
 
 }
 
 
-/** Constructor of user workspace */
+/* Constructor of user workspace */
 Workspace::Workspace(Environment* parentSpace) : Environment(parentSpace), typesInitialized(false) {
     
 }
 
 
-/** Constructor of user workspace */
+/* Constructor of user workspace */
 Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), typesInitialized(false) {
 
 }
 
-/** Constructor of user workspace */
+/* Constructor of user workspace */
 Workspace::Workspace(const Workspace& x) : Environment(x), typesInitialized(x.typesInitialized) {
     
 }
 
 
-/** Destructor */
-Workspace::~Workspace() {
 
-    delete functionTable;
-    
-    for (TypeTable::iterator it = typeTable.begin(); it != typeTable.end(); it++) {
-        RbObject* type = it->second;
-        delete type;
-    }
-}
-
-
-/** Assignment operator */
+/* Assignment operator */
 Workspace& Workspace::operator=(const Workspace& x) {
 
     if (this != &x) {
@@ -87,27 +77,27 @@ Workspace& Workspace::operator=(const Workspace& x) {
 }
 
 
-///** Add distribution to the workspace */
-//bool Workspace::addDistribution(const std::string& name, ParserDistribution* dist) {
-//
-//    PRINTF("Adding distribution %s to workspace\n", name.c_str());
-//
-//    if ( typeTable.find(name) != typeTable.end())
-//        throw RbException("There is already a type named '" + dist->getTypeSpec() + "' in the workspace");
-//
-//    PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
-//    typeTable.insert(std::pair<std::string, RbObject*>(dist->getTypeSpec(),dist->clone()));
-//
-//    functionTable->addFunction(name, new ConstructorFunction( dist ) );
-//    functionTable->addFunction("d" + name, new DistributionFunction(dist->clone(), DistributionFunction::DENSITY));
-//    functionTable->addFunction("r" + name, new DistributionFunction((dist->clone()), DistributionFunction::RVALUE));
-//
-//    return true;
-//}
+/* Add distribution to the workspace */
+bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistribution> &dist) {
+
+    PRINTF("Adding distribution %s to workspace\n", name.c_str());
+
+    if ( typeTable.find(name) != typeTable.end())
+        throw RbException("There is already a type named '" + dist->getTypeSpec() + "' in the workspace");
+
+    PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
+    typeTable.insert(std::pair<std::string, RbPtr<RbObject> >(dist->getTypeSpec(),dist->clone()));
+
+    functionTable.addFunction(name, new ConstructorFunction( dist ) );
+    functionTable.addFunction("d" + name, new DistributionFunctionPdf( dist->clone() ));
+    functionTable.addFunction("r" + name, new DistributionFunctionRv( dist->clone() );
+
+    return true;
+}
 
 
 /** Add real-valued distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, ParserDistributionContinuous* dist) {
+bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistributionContinuous> &dist) {
     
     PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
     
@@ -116,11 +106,11 @@ bool Workspace::addDistribution(const std::string& name, ParserDistributionConti
     
     typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
     
-    functionTable->addFunction(name      , new ConstructorFunction ( dist ));
-    functionTable->addFunction("d" + name, new DistributionFunction( dist->clone() , DistributionFunction::DENSITY));
-    functionTable->addFunction("r" + name, new DistributionFunction(dist->clone(), DistributionFunction::RVALUE));
-    functionTable->addFunction("p" + name, new DistributionFunction(dist->clone(), DistributionFunction::PROB));
-    functionTable->addFunction("q" + name, new DistributionFunction(dist->clone(), DistributionFunction::QUANTILE));
+    functionTable.addFunction(name      , new ConstructorFunction ( dist ));
+    functionTable.addFunction("d" + name, new DistributionFunctionPdf( dist->clone() ));
+    functionTable.addFunction("r" + name, new DistributionFunctionRv(dist->clone() ));
+    functionTable.addFunction("p" + name, new DistributionFunctionCdf(dist->clone() ));
+    functionTable.addFunction("q" + name, new DistributionFunctionQuantile(dist->clone() ));
     
     return true;
 }

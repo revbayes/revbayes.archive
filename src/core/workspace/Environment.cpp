@@ -43,7 +43,7 @@ Environment::Environment(Environment* parentEnv) : RbInternal(), parentEnvironme
 }
 
 /** Copy Constructor */
-Environment::Environment(const Environment &x): RbInternal(x), functionTable( x.functionTable->clone() ) {
+Environment::Environment(const Environment &x): RbInternal(x), functionTable( x.functionTable ) {
     
     // make a deep copy of the parent environment
     if (x.parentEnvironment != NULL) {
@@ -89,7 +89,7 @@ Environment& Environment::operator=(const Environment &x) {
         // make a deep copy of the variable names
         varNames = x.varNames;
         
-        functionTable = x.functionTable->clone();
+        functionTable = x.functionTable;
         
         // make a deep copy of the variable table
         for (size_t i=0; i<x.size(); i++) {
@@ -171,7 +171,7 @@ bool Environment::addFunction(const std::string& name, RbFunction* func) {
     if ( existsVariable(name) )
         throw RbException("There is already a variable named '" + name + "' in the workspace");
     
-    functionTable->addFunction(name, func);
+    functionTable.addFunction(name, func);
     //    addVariable(name, new ConstantNode(func) );
     
     return true;
@@ -210,7 +210,7 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, const RbVariablePtr& theVar) {
+void Environment::addVariable(const std::string& name, const RbPtr<Variable>& theVar) {
     
     // create a new slot
     VariableSlot* theSlot = new VariableSlot(name,RbObject::getClassTypeSpec(),theVar);
@@ -222,7 +222,7 @@ void Environment::addVariable(const std::string& name, const RbVariablePtr& theV
 /** Add variable to frame */
 void Environment::addVariable( const std::string& name, DAGNode* dagNode ) {
     // create a new variable object
-    RbVariablePtr var = RbVariablePtr( new Variable(dagNode) );
+    RbPtr<Variable> var = RbPtr<Variable>( new Variable(dagNode) );
     
     // add the object to the list
     addVariable(name, var );
@@ -231,7 +231,7 @@ void Environment::addVariable( const std::string& name, DAGNode* dagNode ) {
 /** Add variable to frame */
 void Environment::addVariable( const std::string& name ) {
     // create a new variable object
-    RbVariablePtr var = RbVariablePtr( new Variable( NULL ) );
+    RbPtr<Variable> var = RbPtr<Variable>( new Variable( NULL ) );
     
     // add the object to the list
     addVariable(name, var );
@@ -289,14 +289,14 @@ const RbLanguageObject& Environment::executeFunction(const std::string& name, co
     
     /* Using this calling convention indicates that we are only interested in
      evaluating the function once */
-    return functionTable->executeFunction(name, args);
+    return functionTable.executeFunction(name, args);
 }
 
 
 bool Environment::existsFunction(std::string const &name) const {
     
     // we delegate the query to the function table
-    return functionTable->existsFunction( name );
+    return functionTable.existsFunction( name );
 }
 
 
@@ -352,14 +352,14 @@ const TypeSpec& Environment::getClassTypeSpec(void) {
 
 
 /* Get reference, alternative method */
-DAGNode* Environment::getDagNode( const std::string& name ) {
+const RbPtr<DAGNode>& Environment::getDagNode( const std::string& name ) {
     
     return operator[]( name ).getDagNode();
 }
 
 
 /* Get variable, alternative method */
-const DAGNode* Environment::getDagNode( const std::string& name ) const {
+RbPtr<const DAGNode> Environment::getDagNode( const std::string& name ) const {
     
     return operator[]( name ).getDagNode();
 }
@@ -368,24 +368,24 @@ const DAGNode* Environment::getDagNode( const std::string& name ) const {
 /* Get function */
 const RbFunction& Environment::getFunction( const std::string& name ) {
     
-    return functionTable->getFunction( name );
+    return functionTable.getFunction( name );
 }
 
 
 /* Get function */
 const RbFunction& Environment::getFunction(const std::string& name, const std::vector<Argument>& args) {
     
-    return functionTable->getFunction(name, args);
+    return functionTable.getFunction(name, args);
 }
 
 
 const FunctionTable& Environment::getFunctionTable( void ) const {
-    return *functionTable;
+    return functionTable;
 }
 
 
 FunctionTable& Environment::getFunctionTable( void ) {
-    return *functionTable;
+    return functionTable;
 }
 
 

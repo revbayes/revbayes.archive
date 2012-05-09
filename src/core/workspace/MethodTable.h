@@ -49,7 +49,7 @@ class MethodTable : public FunctionTable {
         std::string                 debugInfo(void) const;                                                      //!< Complete info to string
 
         // MethodTable function (we just set the name of MemberFunction objects here)
-        void                        addFunction(const std::string name, RbFunction* func);                      //!< Add function; set name if appropriate
+        void                        addFunction(const std::string name, const RbPtr<RbFunction> &func);         //!< Add function; set name if appropriate
     
 };
 

@@ -33,66 +33,16 @@
 /** Constructor of filled variable. */
 Variable::Variable(const TypeSpec& ts) : RbInternal(), valueTypeSpec( ts ), node( NULL ) {
     
-    if (ts.getType() == "" || ts.getBaseType() == "" || ( ts.getParentType() != NULL && ts.getParentType()->getType() == "" ) ) {
-        std::cerr << "Hullabulla" << std::endl; 
-    }
-    refCount = 0;
-    
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(DAGNode* n): valueTypeSpec( RbLanguageObject::getClassTypeSpec() ) {
+Variable::Variable(const RbPtr<DAGNode> &n): valueTypeSpec( RbLanguageObject::getClassTypeSpec() ) {
     
     // initialize the variable
     node = NULL;
     
     setDagNode( n );
     
-    // notify the variable that this is the new variable
-//    n->setVariable( this );
-    
-    refCount = 0;
-}
-
-
-/** Copy constructor. */
-Variable::Variable(const Variable& x) : node(NULL), valueTypeSpec( x.valueTypeSpec )  {
-    
-    if ( x.node != NULL ) {
-        // We do not clone the DAG node because we just create a new variable
-        // holding currently the same DAG node
-        setDagNode( x.node );
-        
-        // notify the variable that this is the new variable
-//        node->setVariable( this );
-    }
-    
-    refCount = 0;
-    
-}
-
-
-/** Call a help function to remove the variable intelligently */
-Variable::~Variable(void) {
-    
-    if (refCount > 0) {
-        std::cerr << "Uh oh, deleting variable which still is referenced to!!!\n";
-    }
-}
-
-
-/** Assignment operator */
-Variable& Variable::operator=(const Variable& x) {
-    
-    if ( &x != this ) {
-        
-        // Copy the new variable
-        node = x.node;
-        valueTypeSpec = x.valueTypeSpec;
-        refCount = x.refCount;
-    }
-    
-    return (*this);
 }
 
 
@@ -103,15 +53,7 @@ Variable* Variable::clone( void ) const {
 }
 
 
-/* Decrement the reference count. */
-size_t Variable::decrementReferenceCount( void ) const {
-    const_cast<Variable*>( this )->refCount--;
-    
-    return refCount;
-}
-
-
-/** Get class name of object */
+/* Get class name of object */
 const std::string& Variable::getClassName(void) { 
     
     static std::string rbClassName = "Variable";
@@ -119,7 +61,7 @@ const std::string& Variable::getClassName(void) {
 	return rbClassName; 
 }
 
-/** Get class type spec describing type of object */
+/* Get class type spec describing type of object */
 const TypeSpec& Variable::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbInternal::getClassTypeSpec() ) );
@@ -127,7 +69,7 @@ const TypeSpec& Variable::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
-/** Get type spec */
+/* Get type spec */
 const TypeSpec& Variable::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -136,23 +78,17 @@ const TypeSpec& Variable::getTypeSpec( void ) const {
 }
 
 
-const DAGNode* Variable::getDagNode(void) const {
+RbPtr<const DAGNode> Variable::getDagNode(void) const {
+    return RbPtr<const DAGNode>( node );
+}
+
+
+const RbPtr<DAGNode>& Variable::getDagNode(void) {
     return node;
 }
 
 
-DAGNode* Variable::getDagNode(void) {
-    return node;
-}
-
-
-/** Get the reference count for this instance. */
-size_t Variable::getReferenceCount(void) const {
-    return refCount;
-}
-
-
-/** Get the value of the variable */
+/* Get the value of the variable */
 const RbLanguageObject& Variable::getValue(void) const {
 
     if (node == NULL) {
@@ -179,11 +115,6 @@ const TypeSpec& Variable::getValueTypeSpec(void) const {
 }
 
 
-/* Increment the reference count for this instance. */
-size_t Variable::incrementReferenceCount( void ) const {
-    return const_cast<Variable*>( this )->refCount++;
-}
-
 
 /* Print value of the variable variable */
 void Variable::printValue(std::ostream& o) const {
@@ -196,7 +127,7 @@ void Variable::printValue(std::ostream& o) const {
 
 
 /** Set variable */
-void Variable::setDagNode( DAGNode *newVariable ) {
+void Variable::setDagNode( const RbPtr<DAGNode> &newVariable ) {
     
     // change the old variable with the new variable in the parent and children
     replaceDagNode( newVariable );
@@ -207,7 +138,7 @@ void Variable::setDagNode( DAGNode *newVariable ) {
 
 
 /** Replace DAG node, only keep the children */
-void Variable::replaceDagNode( DAGNode *newVariable) {
+void Variable::replaceDagNode( const RbPtr<DAGNode> &newVariable) {
     
     if (node != NULL) {
         // replace the old variable with the new variable for the parents of the old variable

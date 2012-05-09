@@ -37,9 +37,9 @@ FunctionTable::FunctionTable(FunctionTable* parent) : RbInternal(), table(), par
 /** Copy constructor */
 FunctionTable::FunctionTable(const FunctionTable& x) {
     
-    for (std::multimap<std::string, RbFunction* >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
+    for (std::multimap<std::string, RbPtr<RbFunction> >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
         {
-        table.insert(std::pair<std::string, RbFunction* >( (*i).first, ( (*i).second->clone() )));
+        table.insert(std::pair<std::string, RbPtr<RbFunction> >( (*i).first, ( (*i).second->clone() )));
         }
     parentTable = x.parentTable;
 }
@@ -58,9 +58,9 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
     if (this != &x) {
 
         clear();
-        for (std::multimap<std::string, RbFunction* >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
+        for (std::multimap<std::string, RbPtr<RbFunction> >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
             {
-            table.insert(std::pair<std::string, RbFunction* >((*i).first, ((*i).second->clone())));
+            table.insert(std::pair<std::string, RbPtr<RbFunction> >((*i).first, ( (*i).second->clone() ) ) );
             }
         parentTable = x.parentTable;
     }
@@ -70,12 +70,12 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
 
 
 /** Add function to table */
-void FunctionTable::addFunction(const std::string name, RbFunction* func) {
-    std::pair<std::multimap<std::string, RbFunction* >::iterator,
-              std::multimap<std::string, RbFunction* >::iterator> retVal;
+void FunctionTable::addFunction(const std::string name, const RbPtr<RbFunction> &func) {
+    std::pair<std::multimap<std::string, RbPtr<RbFunction> >::iterator,
+              std::multimap<std::string, RbPtr<RbFunction> >::iterator> retVal;
 
     retVal = table.equal_range(name);
-    for (std::multimap<std::string, RbFunction* >::iterator i=retVal.first; i!=retVal.second; i++) {
+    for (std::multimap<std::string, RbPtr<RbFunction> >::iterator i=retVal.first; i!=retVal.second; i++) {
         if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules())) {
             std::ostringstream msg;
             msg << name << " =  ";
@@ -96,11 +96,6 @@ void FunctionTable::addFunction(const std::string name, RbFunction* func) {
 
 /** Clear table */
 void FunctionTable::clear(void) {
-
-    for (std::multimap<std::string, RbFunction*>::iterator it = table.begin(); it != table.end(); it++) {
-        RbFunction* theFunction = it->second;
-        delete theFunction;
-    }
     
     table.clear();
 }
@@ -109,13 +104,13 @@ void FunctionTable::clear(void) {
 /** Erase function */
 void FunctionTable::eraseFunction(const std::string& name) {
 
-    std::pair<std::multimap<std::string, RbFunction* >::iterator,
-              std::multimap<std::string, RbFunction* >::iterator> retVal;
+    std::pair<std::multimap<std::string, RbPtr<RbFunction> >::iterator,
+              std::multimap<std::string, RbPtr<RbFunction> >::iterator> retVal;
 
     retVal = table.equal_range(name);
     table.erase(retVal.first, retVal.second);
     
-    for (std::multimap<std::string, RbFunction*>::iterator it=retVal.first; it!=retVal.second; it++) {
+    for (std::multimap<std::string, RbPtr<RbFunction> >::iterator it=retVal.first; it!=retVal.second; it++) {
         RbFunction* theFunction = it->second;
         delete theFunction;
     }
@@ -123,10 +118,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-const RbLanguageObject& FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+const RbPtr<RbLanguageObject>& FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
-    RbFunction&             theFunction = findFunction(name, args);
-    const RbLanguageObject& theValue    = theFunction.execute();
+    RbFunction&                     theFunction = findFunction(name, args);
+    const RbPtr<RbLanguageObject>&  theValue    = theFunction.execute();
 
     theFunction.clear();
 
@@ -136,10 +131,8 @@ const RbLanguageObject& FunctionTable::executeFunction(const std::string& name, 
 
 
 bool FunctionTable::existsFunction(std::string const &name) const {
-    std::cerr << "This table contains " << table.size() << " functions." << std::endl;
-    size_t c = table.count( name );
-    std::cerr << "Found " << c << " functions with name \"" << name << "\"" << std::endl;
-    const std::map<std::string, RbFunction*>::const_iterator& it = table.find( name );
+    
+    const std::map<std::string, RbPtr<RbFunction> >::const_iterator& it = table.find( name );
     
     // if this table doesn't contain the function, then we ask the parent table
     if ( it == table.end() ) {
@@ -162,9 +155,9 @@ bool FunctionTable::existsFunction(std::string const &name) const {
  *       are functions matching the name in the current
  *       workspace.
  */
-std::vector<RbFunction* > FunctionTable::findFunctions(const std::string& name) const {
+std::vector<RbPtr<RbFunction> > FunctionTable::findFunctions(const std::string& name) const {
 
-    std::vector<RbFunction* >  theFunctions;
+    std::vector<RbPtr<RbFunction> >  theFunctions;
 
     size_t count = table.count(name);
     if (count == 0) {
@@ -174,11 +167,11 @@ std::vector<RbFunction* > FunctionTable::findFunctions(const std::string& name) 
             return theFunctions;
     }
 
-    std::pair<std::multimap<std::string, RbFunction* >::const_iterator,
-              std::multimap<std::string, RbFunction* >::const_iterator> retVal;
+    std::pair<std::multimap<std::string, RbPtr<RbFunction> >::const_iterator,
+              std::multimap<std::string, RbPtr<RbFunction> >::const_iterator> retVal;
     retVal = table.equal_range( name );
 
-    std::multimap<std::string, RbFunction* >::const_iterator it;
+    std::multimap<std::string, RbPtr<RbFunction> >::const_iterator it;
     for ( it=retVal.first; it!=retVal.second; it++ )
         theFunctions.push_back( (*it).second->clone() );
 
@@ -189,8 +182,8 @@ std::vector<RbFunction* > FunctionTable::findFunctions(const std::string& name) 
 /** Find function (also processes arguments) */
 RbFunction& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args) {
     
-    std::pair<std::multimap<std::string, RbFunction* >::iterator,
-              std::multimap<std::string, RbFunction* >::iterator> retVal;
+    std::pair<std::multimap<std::string, RbPtr<RbFunction> >::iterator,
+              std::multimap<std::string, RbPtr<RbFunction> >::iterator> retVal;
     
     size_t count = table.count(name);
     if (count == 0) {
@@ -212,7 +205,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                 if (it != args.begin()) {
                     msg << ",";
                 }
-                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec() << " \"" << it->getLabel() << "\"";
+                msg << " " << it->getVariable()->getDagNode()->getValue().getTypeSpec() << " \"" << it->getLabel() << "\"";
             }
             msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
@@ -227,7 +220,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
         RbFunction* bestMatch = NULL;
 
         bool ambiguous = false;
-        std::multimap<std::string, RbFunction* >::iterator it;
+        std::multimap<std::string, RbPtr<RbFunction> >::iterator it;
         for (it=retVal.first; it!=retVal.second; it++) {
             matchScore->clear();
             if ( (*it).second->checkArguments(args, matchScore) == true ) {
@@ -271,7 +264,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                     msg << ",";
                 }
 //                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
-                const DAGNode* theParNode = it->getVariable().getDagNode();
+                const DAGNode* theParNode = it->getVariable()->getDagNode();
                 if ( theParNode->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
                     const DeterministicNode* theDetNode = static_cast<const DeterministicNode*>( theParNode );
                     msg << " " << theDetNode->getFunction().getReturnType();
@@ -329,7 +322,7 @@ const TypeSpec& FunctionTable::getTypeSpec( void ) const {
 const RbFunction& FunctionTable::getFunction( const std::string& name ) {
     
     // find the template function
-    const std::vector<RbFunction* >& theFunctions = findFunctions(name);
+    const std::vector<RbPtr<RbFunction> >& theFunctions = findFunctions(name);
     
     if ( theFunctions.size() > 1 ) {
         std::ostringstream o;
@@ -417,7 +410,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
 void FunctionTable::printValue(std::ostream& o) const {
 
     o << "<name> = <returnType> function (<formal arguments>)" << std::endl;
-    for (std::multimap<std::string, RbFunction* >::const_iterator i=table.begin(); i!=table.end(); i++) {
+    for (std::multimap<std::string, RbPtr<RbFunction> >::const_iterator i=table.begin(); i!=table.end(); i++) {
         o << i->first << " = ";
         i->second->printValue(o);
         o << std::endl;

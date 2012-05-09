@@ -48,9 +48,7 @@ public:
     virtual RbObject*                   convertTo(const TypeSpec& type) const;                                  //!< Convert to type
     virtual const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
     virtual void                        initialize(const std::vector<RbObject*>& attributes);                   //!< Initialize this object with the values inside the vector
-    virtual bool                        isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
-    virtual bool                        supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]
         
     
 protected:

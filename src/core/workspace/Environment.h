@@ -32,6 +32,7 @@
 #include "FunctionTable.h"
 #include "RbInternal.h"
 #include "RbLanguageObject.h"
+#include "RbPtr.h"
 #include "Variable.h"
 #include "VariableSlot.h"
 
@@ -87,7 +88,7 @@ class Environment : public RbInternal {
         // Regular functions
         bool                                    addFunction(const std::string& name, RbFunction* func);                                     //!< Add function
         void                                    addVariable(const std::string& name, VariableSlot* slot);                                   //!< Add variable
-        void                                    addVariable(const std::string& name, const RbVariablePtr& var);                             //!< Add variable
+        void                                    addVariable(const std::string& name, const RbPtr<Variable>& var);                           //!< Add variable
         void                                    addVariable(const std::string& name, DAGNode* variable);                                    //!< Add variable
         void                                    addVariable(const std::string& name);                                                       //!< Add variable
         void                                    clear(void);                                                                                //!< clears the variable table
@@ -98,8 +99,8 @@ class Environment : public RbInternal {
         bool                                    existsVariable(const std::string& name) const;                                              //!< Does variable exist?
         std::string                             generateUniqueVariableName(void);                                                           //!< Automatically generate a unique variable name
         
-        const DAGNode*                          getDagNode(const std::string& name) const;                                                  //!< Convenient alternative for [name]->getDagNode()
-        DAGNode*                                getDagNode(const std::string& name);                                                        //!< Convenient alternative for [name]->getDagNode() (non-const to return non-const node)
+        RbPtr<const DAGNode>                    getDagNode(const std::string& name) const;                                                  //!< Convenient alternative for [name]->getDagNode()
+        const RbPtr<DAGNode>&                   getDagNode(const std::string& name);                                                        //!< Convenient alternative for [name]->getDagNode() (non-const to return non-const node)
         const RbFunction&                       getFunction(const std::string& name);                                                       //!< Get function copy
         const RbFunction&                       getFunction(const std::string& name, const std::vector<Argument>& args);                    //!< Get function copy
         const FunctionTable&                    getFunctionTable(void) const;                                                               //!< Get function table (const)
@@ -114,7 +115,7 @@ class Environment : public RbInternal {
         
     protected:
         
-        FunctionTable*                          functionTable;                                                                              //!< Table holding functions
+        FunctionTable                           functionTable;                                                                              //!< Table holding functions
         Environment*                            parentEnvironment;                                                                          //!< Pointer to enclosing Environment
         VariableTable                           variableTable;                                                                              //!< Variable table
         std::vector<std::string>                varNames;

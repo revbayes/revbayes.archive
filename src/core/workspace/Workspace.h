@@ -34,12 +34,13 @@ class DAGNode;
 class Distribution;
 class DistributionContinuous;
 class MemberObject;
+class ParserDistribution;
 class ParserDistributionContinuous;
 class RandomNumberGenerator;
 class RbFunction;
 class RbObject;
 
-typedef std::map<std::string, RbObject*> TypeTable;
+typedef std::map<std::string, RbPtr<RbObject> > TypeTable;
 
 /**
  * @brief Workspace
@@ -75,46 +76,46 @@ typedef std::map<std::string, RbObject*> TypeTable;
 class Workspace : public Environment {
 
     public:
-        virtual                    ~Workspace(void);                                                                    //!< Delete function table
+        virtual                    ~Workspace(void);                                                                                //!< Delete function table
     
         // Frame functions you have to override
-        Workspace*                  clone(void) const;                                                                  //!< Clone frame
-        static const std::string&   getClassName(void);                                                                 //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
-        void                        printValue(std::ostream& o) const;                                                  //!< Print table for user
-
-        bool                        addDistribution(const std::string& name, ParserDistributionContinuous* dist);       //!< Add distribution on continuous variable
-        bool                        addType(RbObject* exampleObj);                                                      //!< Add type
-        bool                        addType(const std::string& name, RbObject* exampleObj);                             //!< Add special abstract type (synonym)
-        bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
-        bool                        addTypeWithConstructor(const std::string& name, RbLanguageObject* templ);           //!< Add type with constructor
-        bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
-        bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
-//        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
-        const TypeSpec&             getClassTypeSpecOfType(const std::string& type) const;                              //!< Get reference to class vector of type
-        void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
-        static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
+        Workspace*                  clone(void) const;                                                                              //!< Clone frame
+        static const std::string&   getClassName(void);                                                                             //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                                         //!< Get class type spec
+        const TypeSpec&             getTypeSpec(void) const;                                                                        //!< Get language type of the object
+        void                        printValue(std::ostream& o) const;                                                              //!< Print table for user
+        
+        bool                        addDistribution(const std::string& name, const RbPtr<ParserDistribution> &dist);                //!< Add distribution on continuous variable
+        bool                        addDistribution(const std::string& name, const RbPtr<ParserDistributionContinuous> &dist);      //!< Add distribution on continuous variable
+        bool                        addType(const RbPtr<RbObject> &exampleObj);                                                     //!< Add type
+        bool                        addType(const std::string& name, const RbPtr<RbObject> &exampleObj);                            //!< Add special abstract type (synonym)
+        bool                        addTypeWithConstructor(const std::string& name, const RbPtr<MemberObject> &templ);              //!< Add type with constructor
+        bool                        addTypeWithConstructor(const std::string& name, const RbPtr<RbLanguageObject> &templ);          //!< Add type with constructor
+        bool                        areTypesInitialized(void) const { return typesInitialized; }                                    //!< Is type table initialized?
+        bool                        existsType(const TypeSpec& name) const;                                                         //!< Does the type exist in the type table?
+        const TypeSpec&             getClassTypeSpecOfType(const std::string& type) const;                                          //!< Get reference to class vector of type
+        void                        initializeGlobalWorkspace(void);                                                                //!< Initialize global workspace
+        static Workspace&           globalWorkspace(void)                                                                           //!< Get global workspace
                                         {
                                         static Workspace globalSpace = Workspace();
                                         return globalSpace;
                                         }
-        static Workspace&           userWorkspace(void)                                                                 //!< Get user workspace
+        static Workspace&           userWorkspace(void)                                                                             //!< Get user workspace
                                         {
                                         static Workspace userSpace = Workspace(&globalWorkspace());
                                         return userSpace;
                                         }
  
     private:
-                                    Workspace(void);                                                                    //!< Workspace with NULL parent
-                                    Workspace(Workspace* parentSpace);                                                  //!< Workspace with parent
-                                    Workspace(Environment* parentSpace);                                                //!< Workspace with parent
-                                    Workspace(const Workspace& w);                                                    //!< Prevent copy
-        Workspace&                  operator=(const Workspace& w);                                                      //! Prevent assignment
+                                    Workspace(void);                                                                                //!< Workspace with NULL parent
+                                    Workspace(Workspace* parentSpace);                                                              //!< Workspace with parent
+                                    Workspace(Environment* parentSpace);                                                            //!< Workspace with parent
+                                    Workspace(const Workspace& w);                                                                  //!< Prevent copy
+        Workspace&                  operator=(const Workspace& w);                                                                  //!< Prevent assignment
 
-        TypeTable                   typeTable;                                                                          //!< Type table
+        TypeTable                   typeTable;                                                                                      //!< Type table
 
-        bool                        typesInitialized;                                                                   //!< Is type table initialized? Before then, we can't perform type checking.
+        bool                        typesInitialized;                                                                               //!< Is type table initialized? Before then, we can't perform type checking.
 
         static const TypeSpec       typeSpec;
 };

@@ -46,30 +46,25 @@ class Variable : public RbInternal {
     
 public:
     Variable(const TypeSpec& ts);                                           //!< Constructor of filled variable
-    Variable(DAGNode* var);                                                                 //!< Constructor of filled, unnamed variable
-    Variable(const Variable& x);                                                            //!< Copy value or reference correctly
-    virtual                ~Variable(void);                                                 //!< Manage variable (DAGNode) destruction
-    
-    // Assignment operator
-    Variable&                           operator=(const Variable& x);                       //!< Assignment
+    Variable(const RbPtr<DAGNode> &var);                                                                 //!< Constructor of filled, unnamed variable
     
     // Regular functions
     Variable*                           clone(void) const;                                  //!< Clone variable
     static const std::string&           getClassName(void);                                 //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
-    const DAGNode*                      getDagNode(void) const;                             //!< Get the variable 
-    DAGNode*                            getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
+    RbPtr<const DAGNode>                getDagNode(void) const;                             //!< Get the variable 
+    const RbPtr<DAGNode>&               getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
     const RbLanguageObject&             getValue(void) const;                               //!< Get the value of the variable
     RbLanguageObject&                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
     const TypeSpec&                     getValueTypeSpec(void) const;                       //!< Get the required value type spec
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable
-    void                                setDagNode(DAGNode* newVar);                        //!< Set a variable with a variable
+    void                                setDagNode(const RbPtr<DAGNode> &newVar);           //!< Set a variable with a variable
     void                                setValueTypeSpec(const TypeSpec& ts);               //!< set the required value type spec
     
 private:
     // Help functions
-    void                                replaceDagNode(DAGNode* newVariable );              //!< Replace the old DAG node with the new one and set the children and parent
+    void                                replaceDagNode(const RbPtr<DAGNode> &newVariable);  //!< Replace the old DAG node with the new one and set the children and parent
     
     // Member variables
     RbPtr<DAGNode>                      node;                                               //!< Pointer to the variable (reference or not)
