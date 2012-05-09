@@ -17,7 +17,7 @@
 #ifndef OptionRule_H
 #define OptionRule_H
 
-#include "ValueRule.h"
+#include "ConstArgumentRule.h"
 #include "RbVector.h"
 
 #include <string>
@@ -27,7 +27,7 @@ class RbObject;
 class RbString;
 
 
-class OptionRule : public ValueRule {
+class OptionRule : public ConstArgumentRule {
 
     public:
                                     OptionRule(const std::string& argName, RbVector optVals);                           //!< Constructor of rule without default value

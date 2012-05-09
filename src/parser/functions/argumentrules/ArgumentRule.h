@@ -39,8 +39,8 @@ class ArgumentRule : public RbInternal {
         static const std::string&   getClassName(void);                                                                                 //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                                                             //!< Get class type spec
         virtual const TypeSpec&     getTypeSpec(void) const;                                                                            //!< Get language type of the object
-        void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
-        std::string                 debugInfo(void) const;                                                                              //!< General info on object
+        virtual void                printValue(std::ostream& o) const;                                                                  //!< Print value for user
+        virtual std::string         debugInfo(void) const;                                                                              //!< General info on object
 
         // ArgumentRule functions
         const std::string&          getArgumentLabel(void) const;                                                                       //!< Get label of argument
@@ -50,7 +50,7 @@ class ArgumentRule : public RbInternal {
         bool                        isOptional(void) const;                                                                             //!< Is this rule optional? If so, we do not use a default parameter when no argument is given.
 
         // functions overwritten in derived class
-        virtual const Variable&     getDefaultVariable(void) const = 0;                                                                     //!< Get default argument
+        virtual const Variable&     getDefaultVariable(void) const = 0;                                                                 //!< Get default argument
 
     protected:
                                     ArgumentRule(const std::string& argName);                                                           //!< Constructor of rule from default value
