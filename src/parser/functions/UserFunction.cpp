@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "ValueRule.h"
+#include "ConstArgumentRule.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Signals.h"
@@ -51,10 +51,6 @@ UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules
         SyntaxElement* element = (*i)->clone();
         code->push_back(element);
     }
-    
-    if (x.retValue != NULL) {
-        retValue = x.retValue->clone();
-    }
 }
 
 
@@ -83,16 +79,6 @@ UserFunction& UserFunction::operator=(const UserFunction &f) {
             SyntaxElement* element = (*i)->clone();
             code->push_back(element);
         }
-        
-        if (retValue != NULL) {
-            delete retValue;
-        }
-        if (f.retValue != NULL) {
-            retValue = f.retValue->clone();
-        }
-        else {
-            retValue = NULL;
-        }
     }
     
     return *this;
@@ -113,7 +99,6 @@ UserFunction::~UserFunction() {
     }
     
     delete code;
-    delete retValue;
     
 }
 
@@ -126,13 +111,13 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function */
-const RbLanguageObject& UserFunction::executeFunction( void ) {
+RbPtr<RbLanguageObject> UserFunction::executeFunction( void ) {
 
     // Clear signals
     Signals::getSignals().clearFlags();
 
     // Set initial return value
-    RbVariablePtr retVar = NULL;
+    RbPtr<Variable> retVar = NULL;
 
     // Create new variable frame
     Environment functionEnvironment = Environment( NULL );
@@ -150,11 +135,8 @@ const RbLanguageObject& UserFunction::executeFunction( void ) {
     }
 
     
-    delete retValue;
-    retValue = retVar->getValue().clone();
-    
     // Return the return value
-    return *retValue;
+    return RbPtr<RbLanguageObject>( retVar->getValue().clone() );
 }
 
 
