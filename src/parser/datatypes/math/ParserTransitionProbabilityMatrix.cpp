@@ -16,10 +16,7 @@
 #ifndef ParserTransitionProbabilityMatrix_H
 #define ParserTransitionProbabilityMatrix_H
 
-#include "Matrix.h"
 #include "MemberObject.h"
-#include "Natural.h"
-#include "RbVector.h"
 #include "TransitionProbabilityMatrix.h"
 
 
@@ -47,7 +44,7 @@ public:
     const MethodTable&                  getMethods(void) const;                                                                 //!< Get methods
     
 protected:
-    const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
+    RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
     
 private:
     TransitionProbabilityMatrix         m;

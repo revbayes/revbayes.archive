@@ -30,7 +30,8 @@ class RbObject;
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode(const RbPtr<RbLanguageObject> &val, const RbPtr<const Plate> &p = NULL);                               //!< Constructor from value
+    ConstantNode(const RbPtr<RbLanguageObject> &val);                                                                   //!< Constructor from value
+    ConstantNode(const RbPtr<RbLanguageObject> &val, const RbPtr<const Plate> &p);                                      //!< Constructor from value
     ConstantNode(const ConstantNode &x);                                                                                //!< Copy constructor
 
     // overloaded operators

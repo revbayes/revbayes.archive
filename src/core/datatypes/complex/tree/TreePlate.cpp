@@ -18,6 +18,7 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "ConstArgumentRule.h"
+#include "DAGNode.h"
 #include "DagNodeContainer.h"
 #include "MemberFunction.h"
 #include "MethodTable.h"
@@ -25,6 +26,7 @@
 #include "RbBoolean.h"
 #include "RbException.h"
 #include "RbNullObject.h"
+#include "RbPtr.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Real.h"
@@ -48,23 +50,12 @@ TreePlate::TreePlate(const TreePlate& t) : MemberObject( t ), orderingTopology( 
     // for now we just do a shallow copy
     nodeVariableNames = t.nodeVariableNames;
     
-    
-//    if (t.orderingTopology != NULL)
-//        orderingTopology = t.orderingTopology->clone();
-//    else
-//        orderingTopology = NULL;
-    
-    // clear the member variables because we need to set the correct matches
-//    memberVariables.clear();
 }
 
 
 /* Destructor */
 TreePlate::~TreePlate(void) {
     
-//    if (orderingTopology != NULL) {
-//        delete orderingTopology;
-//    }
 }
 
 

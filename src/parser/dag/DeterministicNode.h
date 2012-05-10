@@ -30,15 +30,16 @@ class RbFunction;
 class DeterministicNode : public VariableNode {
 
 public:
-                                            DeterministicNode(const RbPtr<const Plate> &p = NULL);                                      //!< Constructor
-                                            DeterministicNode(const RbPtr<RbFunction> &func, const RbPtr<const Plate> &p = NULL);       //!< Constructor with function
-                                            DeterministicNode(const DeterministicNode& x);                      //!< Copy Constructor
+    DeterministicNode(void);                                                                                    //!< Constructor
+    DeterministicNode(const RbPtr<const Plate> &p);                                                             //!< Constructor
+    DeterministicNode(const RbPtr<RbFunction> &func, const RbPtr<const Plate> &p);                              //!< Constructor with function
+    DeterministicNode(const DeterministicNode& x);                                                              //!< Copy Constructor
 
     // Utility functions implemented here
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node
     std::string                             debugInfo(void) const;                                              //!< Complete info about object
-    static const std::string&               getClassName(void);                                                         //!< Get class name
-    static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
+    static const std::string&               getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
 

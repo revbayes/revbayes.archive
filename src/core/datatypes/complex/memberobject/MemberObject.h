@@ -23,6 +23,8 @@
 #include "Argument.h"
 #include "RbLanguageObject.h"
 
+class MethodTable;
+
 #include <set>
 #include <string>
 

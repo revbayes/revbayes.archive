@@ -45,6 +45,11 @@
 
 
 /** Constructor of empty StochasticNode */
+StochasticNode::StochasticNode( void ) : VariableNode( NULL ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
+}
+
+
+/** Constructor of empty StochasticNode */
 StochasticNode::StochasticNode( const RbPtr<const Plate> &p ) : VariableNode( p ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
 }
 

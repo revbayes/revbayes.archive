@@ -37,6 +37,12 @@
 
 
 /** Constructor from value */
+ConstantNode::ConstantNode( const RbPtr<RbLanguageObject> &val ) : DAGNode( NULL ) {
+    value = val;
+}
+
+
+/** Constructor from value */
 ConstantNode::ConstantNode( const RbPtr<RbLanguageObject> &val, const RbPtr<const Plate> &p ) : DAGNode( p ) {
     value = val;
 }

@@ -51,9 +51,10 @@ class StochasticNode : public VariableNode {
 public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
-                                        StochasticNode(const RbPtr<const Plate> &p = NULL);                                             //!< Construct empty stochastic node
-                                        StochasticNode(const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p = NULL);      //!< Construct from distribution (raw object) with plate holding this node
-                                        StochasticNode(const StochasticNode& x);                                                        //!< Copy constructor
+                                        StochasticNode(void);                                                                   //!< Construct empty stochastic node
+                                        StochasticNode(const RbPtr<const Plate> &p);                                            //!< Construct empty stochastic node
+                                        StochasticNode(const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p);     //!< Construct from distribution (raw object) with plate holding this node
+                                        StochasticNode(const StochasticNode& x);                                                //!< Copy constructor
 
     // Assignment operator
     StochasticNode&                     operator=(const StochasticNode& x);                                 //!< Assignment operator

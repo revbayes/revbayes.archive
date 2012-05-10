@@ -88,7 +88,7 @@ class DAGNode : public RbLanguageObject {
 
 
     protected:
-                                                            DAGNode(const RbPtr<const Plate> p);                                            //!< Constructor of empty node
+                                                            DAGNode(const RbPtr<const Plate> &p);                                           //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                                      //!< Copy constructor
 
         virtual void                                        getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                    //!< Mark and get affected nodes

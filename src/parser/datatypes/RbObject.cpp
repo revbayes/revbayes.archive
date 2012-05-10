@@ -63,8 +63,9 @@ RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
 
 /* Decrement the reference count. */
-size_t RbObject::decrementReferenceCount( void ) {
-    refCount--;
+size_t RbObject::decrementReferenceCount( void ) const {
+    // this is OK!
+    const_cast<RbObject*>( this )->refCount--;
     
     return refCount;
 }
@@ -124,27 +125,6 @@ const TypeSpec& RbObject::getTypeSpec( void ) const {
 
 
 
-/** Get element or subcontainer at index. This is a convenience function implemented here so that we don't have to cast to container. 
- If this object is not a container, we throw an excpetion */
-const RbObject& RbObject::getElement(size_t index) const {
-    
-    std::ostringstream  msg;
-    msg << "Illegal call to getElement in type \"" << getTypeSpec() << "\"";
-    throw RbException( msg );
-}
-
-
-/** Get element or subcontainer at index. This is a convenience function implemented here so that we don't have to cast to container. 
- If this object is not a container, we throw an excpetion */
-RbObject& RbObject::getElement(size_t index) {
-    
-    std::ostringstream  msg;
-    msg << "Illegal call to getElement in type \"" << getTypeSpec() << "\"";
-    throw RbException( msg );
-}
-
-
-
 /* Get the reference count for this instance. */
 size_t RbObject::getReferenceCount(void) const {
     return refCount;
@@ -152,8 +132,8 @@ size_t RbObject::getReferenceCount(void) const {
 
 
 /* Increment the reference count for this instance. */
-void RbObject::incrementReferenceCount( void ) {
-    refCount++;
+void RbObject::incrementReferenceCount( void ) const {
+    const_cast<RbObject*>( this )->refCount++;
 }
 
 

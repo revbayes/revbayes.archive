@@ -160,10 +160,6 @@ void Variable::replaceDagNode( const RbPtr<DAGNode> &newVariable) {
 /** We set here the required value type spec. */
 void Variable::setValueTypeSpec(const TypeSpec &ts) {
     valueTypeSpec = ts;
-    
-    if (ts.getType() == "" || ts.getBaseType() == "" || ( ts.getParentType() != NULL && ts.getParentType()->getType() == "" ) ) {
-        std::cerr << "Hullabulla" << std::endl; 
-    }
 }
 
 

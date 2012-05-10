@@ -38,6 +38,12 @@
 #include <cassert>
 
 
+
+/** Constructor of empty deterministic node */
+DeterministicNode::DeterministicNode( void ) : VariableNode( NULL ), needsUpdate( true ) {
+}
+
+
 /** Constructor of empty deterministic node */
 DeterministicNode::DeterministicNode( const RbPtr<const Plate> &p ) : VariableNode( p ), needsUpdate( true ) {
 }
