@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "RbBoolean.h"
 #include "DAGNode.h"
 #include "Func_ls.h"
@@ -26,7 +27,6 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 #include "Workspace.h"
 
 #include <fstream>
@@ -40,7 +40,7 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_ls::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_ls::executeFunction( const std::vector<const RbObject*>& args ) {
 
     /* Open file */
     const bool printAll = static_cast<const RbBoolean*>( args[0] )->getValue();
@@ -62,7 +62,7 @@ const RbLanguageObject& Func_ls::executeFunction( const std::vector<const RbObje
         std::cout << std::endl;
     }
 
-    return RbNullObject::getInstance();
+    return NULL;
 }
 
 
@@ -74,7 +74,7 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule( "all", new RbBoolean( false ) ) );
+        argumentRules.push_back( new ConstArgumentRule( "all", new RbBoolean( false ) ) );
         rulesSet = true;
     }
 

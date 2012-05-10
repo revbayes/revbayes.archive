@@ -35,11 +35,9 @@ Func_type* Func_type::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_type::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_type::executeFunction( const std::vector<const RbObject*>& args ) {
     
-    retValue.setValue( args[0]->getTypeSpec().getType() );
-    
-    return retValue;
+    return RbPtr<RbLanguageObject>( new RbString( args[0]->getTypeSpec().getType() ) );
 }
 
 
@@ -51,7 +49,7 @@ const ArgumentRules& Func_type::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ValueRule( "variable",   RbObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "variable",   RbObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

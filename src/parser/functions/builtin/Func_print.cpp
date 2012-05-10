@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_print.h"
 #include "RbException.h"
@@ -24,7 +25,6 @@
 #include "RbString.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 #include "Workspace.h"
 
 //#include <iostream>
@@ -40,7 +40,7 @@ Func_print* Func_print::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_print::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_print::executeFunction( const std::vector<const RbObject*>& args ) {
     
 
     const std::string& f = static_cast<const RbString*>( args[0] )->getValue();
@@ -76,7 +76,7 @@ const RbLanguageObject& Func_print::executeFunction( const std::vector<const RbO
     }
     
     
-    return RbNullObject::getInstance();
+    return NULL;
 }
 
 
@@ -88,8 +88,8 @@ const ArgumentRules& Func_print::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ValueRule( "filename", new RbString("") ) );
-        argumentRules.push_back( new ValueRule( "append", new RbBoolean(false) ) );
+        argumentRules.push_back( new ConstArgumentRule( "filename", new RbString("") ) );
+        argumentRules.push_back( new ConstArgumentRule( "append", new RbBoolean(false) ) );
         argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }

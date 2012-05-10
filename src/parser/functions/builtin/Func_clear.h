@@ -32,7 +32,7 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
     
     // Func_clear functions
-    const RbLanguageObject&     execute(void);                                      //!< Execute function
+    RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute function
     const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
 

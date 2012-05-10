@@ -16,12 +16,12 @@
  * $Id: Func_rep.cpp 1411 2012-04-20 17:23:29Z hoehna $
  */
 
+#include "ConstArgumentRule.h"
 #include "Func_rep.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 
@@ -39,17 +39,17 @@ Func_rep* Func_rep::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_rep::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_rep::executeFunction( const std::vector<const RbObject*>& args ) {
     
     const RbLanguageObject *var = static_cast<const RbLanguageObject*>( args[0] );
     int times = static_cast<const Natural*>( args[1] )->getValue();
     
-    repValues.clear();
+    RbVector *repValues = new RbVector( RbLanguageObject::getClassTypeSpec() );
     for ( int i = 0; i < times; i++ ) {
-        repValues.push_back( var->clone() );
+        repValues->push_back( var->clone() );
     }
     
-    return repValues;
+    return RbPtr<RbLanguageObject>( repValues );
 }
 
 
@@ -61,8 +61,8 @@ const ArgumentRules& Func_rep::getArgumentRules( void ) const {
     
     if (!rulesSet) {
         
-        argumentRules.push_back( new ValueRule( "x",        RbLanguageObject::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "times",    Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "x",        RbLanguageObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "times",    Natural::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -98,7 +98,7 @@ const TypeSpec& Func_rep::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_rep::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbVector<Integer>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RbVector::getClassTypeSpec();
     return returnTypeSpec;
 }
 

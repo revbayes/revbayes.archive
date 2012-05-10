@@ -17,11 +17,11 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "Func_reference.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 #include "Workspace.h"
 
 #include <fstream>
@@ -35,12 +35,12 @@ Func_reference* Func_reference::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_reference::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_reference::executeFunction( const std::vector<const RbObject*>& args ) {
     
     // reference to the original variable
     const RbLanguageObject* val = static_cast<const RbLanguageObject*>( args[0] ); 
     
-    return *val;
+    return RbPtr<RbLanguageObject>( val->clone() );
 }
 
 
@@ -52,7 +52,7 @@ const ArgumentRules& Func_reference::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ValueRule( "variable", RbLanguageObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "variable", RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
 

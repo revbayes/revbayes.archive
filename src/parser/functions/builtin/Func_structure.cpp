@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Func_structure.h"
@@ -25,7 +26,6 @@
 #include "RbUtil.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <cassert>
 
@@ -38,11 +38,11 @@ Func_structure* Func_structure::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_structure::execute( void ) {
+RbPtr<RbLanguageObject> Func_structure::execute( void ) {
 
-    args[0].getVariable().getDagNode()->printStruct( std::cout );
+    args[0].getVariable()->getDagNode()->printStruct( std::cout );
 
-    return RbNullObject::getInstance();
+    return NULL;
 }
 
 
@@ -54,7 +54,7 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule( "variable",   RbObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "variable",   RbObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
 

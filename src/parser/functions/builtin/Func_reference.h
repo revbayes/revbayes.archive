@@ -40,7 +40,7 @@ public:
     const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return val
 
 protected:
-    const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
+    RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
     
 
 };

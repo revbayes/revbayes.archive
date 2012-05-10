@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "Func_quit.h"
 #include "Model.h"
@@ -26,7 +27,6 @@
 #include "RbString.h"
 #include "TypeSpec.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 
 #include <fstream>
 
@@ -39,7 +39,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute operation */
-const RbLanguageObject& Func_quit::execute( void ) {
+RbPtr<RbLanguageObject> Func_quit::execute( void ) {
 
     /* Ask if user really wants to quit */
     //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)
@@ -48,7 +48,7 @@ const RbLanguageObject& Func_quit::execute( void ) {
     if ( wantToQuit )
         throw RbException( RbException::QUIT );
 
-    return RbNullObject::getInstance();
+    return NULL;
 }
 
 

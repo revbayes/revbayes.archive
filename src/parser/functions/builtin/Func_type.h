@@ -40,13 +40,8 @@ public:
     const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
 protected:
-    const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute operation
-    
-private:
-    
-    // Function return value
-    RbString                    retValue;
-    
+    RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute operation
+        
 };
 
 #endif
