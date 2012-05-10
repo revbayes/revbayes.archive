@@ -104,7 +104,7 @@ class RbFunction :  public RbLanguageObject {
         // Member variables
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
         std::vector<Argument>                           args;
-        Environment*                                    env;
+        RbPtr<Environment>                              env;
 
     private:   
         int                                             computeMatchScore(const DAGNode* arg, const ArgumentRule& rule);

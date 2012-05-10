@@ -126,8 +126,7 @@ const TypeSpec& ParserDistribution::getVariableType( void ) const {
 }
 
 
-void ParserDistribution::setMemberVariable(std::string const &name, const Variable *var) {
-    params.push_back( var );
-    
+void ParserDistribution::setMember(std::string const &name, const RbPtr<const Variable> &var) {
+    params.push_back( ConstArgument(name, var) );
 }
 

@@ -43,7 +43,7 @@ public:
 
     // Member variable functions
     const MemberRules&              getMemberRules(void) const;                                                                         //!< Get member rules
-    void                            setMemberVariable(const std::string& name, const Variable* var);                                    //!< Catch setting of the topology
+    void                            setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var);                     //!< Catch setting of the topology
 
     // Member method inits
     const MethodTable&              getMethods(void) const;                                                                             //!< Get methods

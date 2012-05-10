@@ -51,10 +51,9 @@ class StochasticNode : public VariableNode {
 public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
-                                        StochasticNode(const Plate *p = NULL);                              //!< Construct empty stochastic node
-                                        StochasticNode(ParserDistribution* dist, const Plate *p = NULL);    //!< Construct from distribution (raw object) with plate holding this node
-                                        StochasticNode(const StochasticNode& x);                            //!< Copy constructor
-    virtual                            ~StochasticNode(void);                                               //!< Destructor
+                                        StochasticNode(const RbPtr<const Plate> &p = NULL);                                             //!< Construct empty stochastic node
+                                        StochasticNode(const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p = NULL);      //!< Construct from distribution (raw object) with plate holding this node
+                                        StochasticNode(const StochasticNode& x);                                                        //!< Copy constructor
 
     // Assignment operator
     StochasticNode&                     operator=(const StochasticNode& x);                                 //!< Assignment operator
@@ -65,13 +64,11 @@ public:
     static const std::string&           getClassName(void);                                                 //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
-//    const RbLanguageObject*             getValuePtr(void) const;                                                  //!< Get value pointer
     void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG node function
     RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
     const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods (const)
-    const RbLanguageObject&             getStoredValue(void) const;                                         //!< Get stored value
     const RbLanguageObject&             getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                   getValue(void);                                                     //!< Get value (non-const)
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
@@ -107,15 +104,14 @@ public:
 
 protected:
     // Help function
-    virtual bool                        areDistributionParamsTouched() const;                               //!< Are any distribution params touched? Important in calculating prob ratio
-    void                                getAffected(std::set<StochasticNode* >& affected);                  //!< Mark and get affected nodes
+    void                                getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
     void                                keepMe(void);                                                       //!< Keep value of this and affected nodes
     void                                restoreMe(void);                                                    //!< Restore value of this nodes
     void                                touchMe(void);                                                      //!< Tell affected nodes value is reset
 
     // Member variables
     bool                                clamped;                                                            //!< Is the node clamped with data?
-    ParserDistribution*                 distribution;                                                       //!< Distribution (density functions, random draw function)
+    RbPtr<ParserDistribution>           distribution;                                                       //!< Distribution (density functions, random draw function)
     double                              lnProb;                                                             //!< Current log probability
     bool                                needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
     bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?
@@ -129,8 +125,7 @@ private:
     bool                                isValueTypeAllowed(RbLanguageObject* observed, bool &needsConversion);
     
     static const TypeSpec               typeSpec;
-    RbLanguageObject*                   value;                                                              //!< Value
-    RbLanguageObject*                   storedValue;                                                        //!< Stored value
+    RbPtr<RbLanguageObject>             value;                                                              //!< Value
 
     VariableType                        type;
         

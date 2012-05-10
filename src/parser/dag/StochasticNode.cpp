@@ -45,28 +45,28 @@
 
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode( const Plate *p ) : VariableNode( p ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( const RbPtr<const Plate> &p ) : VariableNode( p ), clamped( false ), distribution( NULL ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
 }
 
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( ParserDistribution* dist, const Plate *p) : VariableNode( p ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ), storedValue( NULL ) {
+StochasticNode::StochasticNode( const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p) : VariableNode( p ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
     
     /* Get distribution parameters */
-    std::map<std::string, const Variable*>& params = dist->getMembers();
+    const std::vector<Argument>& params = dist->getParameters();
     
     /* Check for cycles */
     std::list<DAGNode*> done;
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
         done.clear();
-        if ( i->second->getDagNode()->isParentInDAG( this, done ) )
+        if ( i->getVariable()->getDagNode()->isParentInDAG( this, done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
     
     /* Set parent(s) and add myself as a child to these */
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
-        DAGNode* theParam = const_cast<DAGNode*>( (const DAGNode*)i->second->getDagNode() );
+    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)i->getVariable()->getDagNode() );
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -95,11 +95,11 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     distribution = x.distribution->clone();
 
     /* Get distribution parameters */
-    std::map<std::string, const Variable*>& params = distribution->getMembers();
+    const std::vector<Argument>& params = distribution->getParameters();
 
     /* Set parent(s) and add myself as a child to these */
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
-        DAGNode* theParam = const_cast<DAGNode*>( (const DAGNode*)i->second->getDagNode() );
+    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)i->getVariable()->getDagNode() );
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -110,34 +110,11 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     needsLikelihoodRecalculation    = x.needsLikelihoodRecalculation;
     value                           = x.value->clone();
     touched                         = x.touched;
-    if ( x.touched == true ) {
-        storedValue                 = x.storedValue->clone();
-    } else
-        storedValue                 = NULL;
     
     lnProb                          = x.lnProb;
     storedLnProb                    = x.storedLnProb;
 }
 
-
-/** Destructor */
-StochasticNode::~StochasticNode( void ) {
-
-    /* Remove parents first */
-    for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
-        DAGNode* node = *i;
-        node->removeChildNode( this );
-    }
-    parents.clear();
-    
-    delete distribution;
-    
-    delete value;
-    
-    if (storedValue != NULL) {
-        delete storedValue;
-    }
-}
 
 
 /** Assignment operator */
@@ -146,21 +123,21 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
     if ( this != &x ) {
         
         /* Remove parents first */
-        for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
-            DAGNode* node = *i;
+        for ( std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++ ) {
+            const RbPtr<DAGNode>& node = *i;
             node->removeChildNode( this );
         }
         parents.clear();
 
         /* Set distribution */
         distribution = x.distribution->clone();
-
+        
         /* Get distribution parameters */
-        std::map<std::string, const Variable*>& params = distribution->getMembers();
-
+        const std::vector<Argument>& params = distribution->getParameters();
+        
         /* Set parent(s) and add myself as a child to these */
-        for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
-            DAGNode* theParam = const_cast<DAGNode*>( (const DAGNode*)i->second->getDagNode() );
+        for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+            const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)i->getVariable()->getDagNode() );
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -174,7 +151,6 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         
         value                           = x.value->clone();
         touched                         = x.touched;
-        storedValue                     = x.storedValue->clone();
         lnProb                          = x.lnProb;
         storedLnProb                    = x.storedLnProb;
         
@@ -183,26 +159,6 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
     }
 
     return ( *this );
-}
-
-
-/** Are any distribution params touched? Get distribution params and check if any one is touched */
-bool StochasticNode::areDistributionParamsTouched( void ) const {
-
-    std::map<std::string, const Variable*>& params = distribution->getMembers();
-    
-    for ( std::map<std::string, const Variable*>::iterator i = params.begin(); i != params.end(); i++ ) {
-        
-        const DAGNode* theNode  = i->second->getDagNode();
-
-        if ( !theNode->isTypeSpec( VariableNode::getClassTypeSpec() ) )
-            continue;
-
-        if ( static_cast<const VariableNode*>( theNode )->isTouched() )
-            return true;
-    }
-
-    return false;
 }
 
 
@@ -439,7 +395,7 @@ StochasticNode* StochasticNode::clone( void ) const {
 
 
 /** Clone the entire graph: clone children, swap parents */
-DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNodes ) const {
+DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes ) const {
 
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
@@ -458,11 +414,7 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
     if (value != NULL) {
         copy->value    = value->clone();
     }
-    if (storedValue == NULL)
-        copy->storedValue = NULL;
-    else {
-        copy->storedValue = storedValue->clone();
-    }
+    
     // set also the type of this node (if it is eliminated or not)
     copy->type                          = type;
     copy->lnProb                        = lnProb;
@@ -471,15 +423,15 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNo
     copy->needsLikelihoodRecalculation  = needsLikelihoodRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
-    const std::vector<const Variable*>& params     = distribution->getParameters();
+    const std::vector<Argument>& params     = distribution->getParameters();
     
     // first we need to remove the copied params
     copy->distribution->clear();
     
-    for ( std::vector<const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
         
         // clone the i-th member and get the clone back
-        const DAGNode* theParam = (*i)->getDagNode();
+        const RbPtr<const DAGNode> &theParam = i->getVariable()->getDagNode();
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         DAGNode* theParamClone = theParam->cloneDAG( newNodes );
         
@@ -545,7 +497,7 @@ void StochasticNode::constructFactor( void ) {
         if ( currNode->isNotInstantiated() ) {
             // test whether this node has at most one eliminated parent
             size_t eliminatedParentCount = 0;
-            for (std::set<DAGNode*>::const_iterator j = currNode->getParents().begin(); j != currNode->getParents().end(); ++j) {
+            for (std::set<RbPtr<DAGNode> >::const_iterator j = currNode->getParents().begin(); j != currNode->getParents().end(); ++j) {
                 if ( (*j)->isNotInstantiated() ) {
                     eliminatedParentCount++;
                 }
@@ -577,9 +529,9 @@ void StochasticNode::constructSumProductSequence( std::set<VariableNode *> &node
         nodes.insert( this );
         
         // first the parents
-        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+        for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++) {
             if ( (*i)->isNotInstantiated() ) {
-                static_cast<VariableNode*>( *i )->constructSumProductSequence(nodes,sequence);
+                static_cast<VariableNode*>( (DAGNode*) *i )->constructSumProductSequence(nodes,sequence);
             }
         }
         
@@ -622,13 +574,13 @@ InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, Infere
     newNodes[ this ] = copy;
     
     /* Set the copy params to their matches in the new DAG */
-    const std::vector<const Variable*>& params     = distribution->getParameters();
+    const std::vector<Argument>& params     = distribution->getParameters();
     
     std::vector<RbValue<void*> > leanArgs;
-    for ( std::vector<const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
         
         // clone the i-th member and get the clone back
-        const DAGNode* theParam = (*i)->getDagNode();
+        const RbPtr<const DAGNode>& theParam = i->getVariable()->getDagNode();
         
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         InferenceDagNode* theParamClone = theParam->createLeanDag( newNodes );
@@ -661,29 +613,29 @@ RbLanguageObject* StochasticNode::createRV( void ) {
     
     if ( plate == NULL ) {
         
-        const std::map<std::string, const Variable*> &params = distribution->getMembers();
+        const std::vector<Argument> &params = distribution->getParameters();
     
         std::vector<const RbObject*> newArgs;
-        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-            newArgs.push_back( &i->second->getValue() );
+        for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+            newArgs.push_back( &i->getVariable()->getValue() );
         }
         return createRV( std::vector<size_t>(), newArgs );
     }
     else {
         // we need to get the arguments for checking if they live on the same plate or any parent plate of this
-        const std::map<std::string, const Variable*> &params = distribution->getMembers();
+        const std::vector<Argument> &params = distribution->getParameters();
         
         // get the plates of my arguments
         std::vector<const Plate*> argPlates;
-        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
         // test whether this argument lives on the same plate as myself
-            argPlates.push_back( i->second->getDagNode()->getPlate() );
+            argPlates.push_back( i->getVariable()->getDagNode()->getPlate() );
         }
         
         // convert the argument into RbObjects
         std::vector<const RbObject*> newArgs;
-        for ( std::map<std::string, const Variable*>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-            newArgs.push_back( &i->second->getValue() );
+        for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+            newArgs.push_back( &i->getVariable()->getValue() );
         }
         
         // we create a vector of lengths telling us the length of each plate
@@ -811,11 +763,6 @@ std::string StochasticNode::debugInfo(void) const {
     o << "Value        = ";
     value->printValue( o );
     o << std::endl;
-    o << "Stored value = ";
-    if ( storedValue == NULL )
-        o << "NULL";
-    else
-        storedValue->printValue( o );
     
     return o.str();
 }
@@ -824,12 +771,12 @@ std::string StochasticNode::debugInfo(void) const {
 /**
  * Map calls to member methods 
  */
-const RbLanguageObject& StochasticNode::executeOperation(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> StochasticNode::executeOperation(const std::string& name, const std::vector<Argument>& args) {
     
     if (name == "clamp") {
         
         // get the observed value
-        const RbLanguageObject& observedValue = args[0].getVariable().getValue();
+        const RbLanguageObject& observedValue = args[0].getVariable()->getValue();
         
         // clamp the observed value to myself
         clamp( observedValue.clone() );
@@ -837,7 +784,7 @@ const RbLanguageObject& StochasticNode::executeOperation(const std::string& name
         // we keep the new value
         keep();
         
-        return RbNullObject::getInstance();
+        return NULL;
     } 
     
     return DAGNode::executeOperation( name, args );
@@ -854,7 +801,7 @@ void StochasticNode::expand( void ) {
 
 
 /** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
-void StochasticNode::getAffected( std::set<StochasticNode* >& affected ) {
+void StochasticNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
     
     // if this node is integrated out, then we need to add the factor root, otherwise myself
     if (factorRoot == NULL) {
@@ -902,7 +849,6 @@ double StochasticNode::getLnProbabilityRatio( void ) {
         return 0.0;
     }
     else {
-//        assert( !areDistributionParamsTouched() );
         double lnR = calculateLnProbability() - storedLnProb;
         
         return lnR;
@@ -922,7 +868,7 @@ const MethodTable& StochasticNode::getMethods(void) const {
         
         // method "clamp"
         ArgumentRules* clampArgRules = new ArgumentRules();
-        clampArgRules->push_back( new ValueRule("x", RbLanguageObject::getClassTypeSpec() ) );
+        clampArgRules->push_back( new ConstArgumentRule("x", RbLanguageObject::getClassTypeSpec() ) );
         methods.addFunction("clamp", new DagNodeFunction( RbVoid_name, clampArgRules) );
         
         // necessary call for proper inheritance
@@ -931,16 +877,6 @@ const MethodTable& StochasticNode::getMethods(void) const {
     }
     
     return methods;
-}
-
-
-/** Get stored value */
-const RbLanguageObject& StochasticNode::getStoredValue( void ) const {
-
-    if ( !touched )
-        return *value;
-
-    return *storedValue;
 }
 
 /** Get type spec */
@@ -1026,22 +962,16 @@ void StochasticNode::keepMe() {
 
     if ( touched ) {
         
-        // delete the stored value
-        if (storedValue != NULL) {
-            delete storedValue;
-        }
-        storedValue = NULL;
-        
         storedLnProb = 1.0E6;       // An almost impossible value for the density
         if (needsProbabilityRecalculation || needsLikelihoodRecalculation) {
             lnProb = calculateLnProbability();
         }
         
         // Tell all my not instantiated parents that they need keeping.
-        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); ++i) {
+        for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); ++i) {
             if ( (*i)->isNotInstantiated() ) {
                 // since only variable nodes can be eliminated
-                static_cast<VariableNode*>( *i )->keepMe();
+                static_cast<VariableNode*>( (DAGNode*) *i )->keepMe();
             }
         }
         
@@ -1079,10 +1009,10 @@ void StochasticNode::likelihoodsNeedUpdates() {
     if (!needsLikelihoodRecalculation) {
         
         //  I need to tell all my eliminated parents that they need to update their likelihoods
-        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+        for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++) {
             if ( (*i)->isNotInstantiated() ) {
                 // since only variable nodes can be eliminated
-                static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
+                static_cast<VariableNode*>( (DAGNode*) *i )->likelihoodsNeedUpdates();
             }
         }
     }
@@ -1147,11 +1077,6 @@ void StochasticNode::printStruct( std::ostream& o ) const {
     if ( factorRoot == this ) {
         o << "_lnLikelihood = " << lnProb << std::endl;
     }
-    if ( touched && storedValue != NULL) {
-        o << "_storedValue  = "; 
-        storedValue->printValue(o);
-        o << std::endl;
-    }
     if ( touched )
         o << "_storedLnProb = " << storedLnProb << std::endl;    
 
@@ -1187,17 +1112,7 @@ void StochasticNode::restoreMe() {
 
     if ( touched ) {
         
-        if (!clamped) {
-            if (storedValue != NULL) {
-                if (value != NULL) {
-                    delete value;
-                }
-                value           = storedValue;
-            
-                // delete the stored value
-                storedValue = NULL;
-            }
-        }
+//        value = distribution->restore();
         
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
@@ -1209,10 +1124,10 @@ void StochasticNode::restoreMe() {
         }
         
         //  I need to tell all my eliminated parents that they need to restore their likelihoods
-        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); ++i) {
+        for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); ++i) {
             if ( (*i)->isNotInstantiated() ) {
                 // since only variable nodes can be eliminated
-                static_cast<VariableNode*>( *i )->restoreMe();
+                static_cast<VariableNode*>( (DAGNode*) *i )->restoreMe();
             }
         }
         
@@ -1350,15 +1265,6 @@ void StochasticNode::setValue( RbLanguageObject* val ) {
         // touch the node (which will store the lnProb)
         touch();
     }
-    
-    // delete the stored value
-    if (storedValue == NULL) {
-        storedValue = value;
-    }
-    else {
-        delete value;
-    }
-    
 
     // set the value
     value = val;
@@ -1418,10 +1324,10 @@ void StochasticNode::touchMe( void ) {
     }
     
     //  I need to tell all my eliminated parents that they need to update their likelihoods
-    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+    for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
-            static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
+            static_cast<VariableNode*>( (DAGNode*) *i )->likelihoodsNeedUpdates();
         }
     }
     

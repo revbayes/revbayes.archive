@@ -16,6 +16,7 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "MethodTable.h"
@@ -26,26 +27,11 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
-#include "ValueRule.h"
 #include "Workspace.h"
 
 
 /* Default constructor */
 Plate::Plate(void) : MemberObject( getMemberRules() ) {
-    
-}
-
-
-/* Copy constructor */
-Plate::Plate(const Plate& p) : MemberObject( p ) {
-    
-    size = p.size;
-    parent = p.parent;
-}
-
-
-/* Destructor */
-Plate::~Plate(void) {
     
 }
 
@@ -83,7 +69,7 @@ const TypeSpec& Plate::getTypeSpec( void ) const {
 
 
 /* Map calls to member methods */
-const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Plate::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     // special handling for adding a variable
     if (name == "add") {
@@ -92,15 +78,15 @@ const RbLanguageObject& Plate::executeOperationSimple(const std::string& name, c
         const Argument& theArg = args[0];
         
         // get the DAG node
-        const DAGNode *theNode = theArg.getVariable().getDagNode();
+        const RbPtr<const DAGNode> &theNode = theArg.getVariable()->getDagNode();
         
         // expand the DAG node
         // \TODO: We shouldn't use const-casts.
-        const_cast<DAGNode *>( theNode )->setPlate( this );
-        const_cast<DAGNode *>( theNode )->expand();
-        const_cast<DAGNode *>( theNode )->touch();
+        const_cast<DAGNode *>( (const DAGNode*) theNode )->setPlate( this );
+        const_cast<DAGNode *>( (const DAGNode*) theNode )->expand();
+        const_cast<DAGNode *>( (const DAGNode*) theNode )->touch();
         
-        return RbNullObject::getInstance();
+        return NULL;
     }
     else {
         return MemberObject::executeOperationSimple( name, args );
@@ -118,7 +104,7 @@ const MethodTable& Plate::getMethods(void) const {
     if ( methodsSet == false ) {
         
         // add the 'addVariable()' method
-        addArgRules->push_back( new ValueRule( "var"  , RbObject::getClassTypeSpec() )     );
+        addArgRules->push_back( new ConstArgumentRule( "var"  , RbObject::getClassTypeSpec() )     );
         
         methods.addFunction("add", new MemberFunction(RbVoid_name, addArgRules) );
         
@@ -139,8 +125,8 @@ const MemberRules& Plate::getMemberRules(void) const {
     
     if (!rulesSet) 
     {
-        memberRules.push_back( new ValueRule( "size" , Natural::getClassTypeSpec() ) );
-        memberRules.push_back( new ValueRule( "parent" , Plate::getClassTypeSpec(), true ) );
+        memberRules.push_back( new ConstArgumentRule( "size" , Natural::getClassTypeSpec() ) );
+        memberRules.push_back( new ConstArgumentRule( "parent" , Plate::getClassTypeSpec(), true ) );
         
         rulesSet = true;
     }
@@ -150,17 +136,12 @@ const MemberRules& Plate::getMemberRules(void) const {
 
 
 size_t Plate::getLength( void ) const {
-    return static_cast<const Natural&>( size->getValue() );
+    return size;
 }
 
 
-const Plate* Plate::getParentPlate( void ) const {
-    if ( parent == NULL ) {
-        return NULL;
-    }
-    else {
-        return static_cast<const Plate*>( &parent->getValue() );
-    }
+const RbPtr<const Plate>& Plate::getParentPlate( void ) const {
+    return parent;
 }
 
 
@@ -168,13 +149,13 @@ std::vector<size_t> Plate::getPlateLengths( void ) const {
     
     if ( parent == NULL ) {
         std::vector<size_t> plateLengths;
-        plateLengths.push_back( size_t(static_cast<const Natural&>( size->getValue() ).getValue() ) );
+        plateLengths.push_back( size );
         
         return plateLengths;
     }
     else  {
-        std::vector<size_t> plateLengths = static_cast<const Plate&>( parent->getValue() ).getPlateLengths();
-        plateLengths.push_back( size_t(static_cast<const Natural&>( size->getValue() ).getValue() ) );
+        std::vector<size_t> plateLengths = parent->getPlateLengths();
+        plateLengths.push_back( size );
         
         return plateLengths;
     }
@@ -185,20 +166,20 @@ std::vector<size_t> Plate::getPlateLengths( void ) const {
 /* Print the tree */
 void Plate::printValue(std::ostream& o) const {
     
-    o << "Plate(i in 1:" << static_cast<const Natural&>( size->getValue() ) << ")";
+    o << "Plate(i in 1:" << size << ")";
     
 }
 
 
 
 /** Catch setting of the topology variable */
-void Plate::setMemberVariable(const std::string& name, const Variable* var) {
+void Plate::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
     
     if ( name == "size" ) {
-        size = var;
+        size = static_cast<Natural *>( (RbLanguageObject *)var )->getValue();
     }
     else if ( name == "parent" ) {
-        parent = var;
+        parent = static_cast<Plate *>( (RbLanguageObject *)var );
     }
     else {
         MemberObject::setMemberVariable(name, var);

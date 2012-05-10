@@ -44,7 +44,7 @@ class TaxonData : public MemberObject {
         // Member object methods 
         const MemberRules&                      getMemberRules(void) const;                                         //!< Get member rules
         virtual const MethodTable&              getMethods(void) const;                                             //!< Get methods
-        void                                    setMemberVariable(const std::string &name, const Variable* var);    //!< Set a member variable. We catch here setting of variable nodes
+        void                                    setMemberVariable(const std::string &name, const RbPtr<RbLanguageObject> &var);    //!< Set a member variable. We catch here setting of variable nodes
        
         // TaxonData functions
         void                                    addCharacter( Character* newChar );                                 //!< Push back a new character

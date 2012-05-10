@@ -25,8 +25,6 @@ class Plate : public MemberObject {
     
 public:
     Plate();
-    Plate(const Plate& p);
-    virtual ~Plate();
     
     // Basic utility functions you have to override (also getClassTypeSpec()!)
     virtual Plate*                      clone(void) const;                                                                                  //!< Clone object
@@ -37,22 +35,22 @@ public:
     
     // Member variable functions
     const MemberRules&                  getMemberRules(void) const;                                                                         //!< Get member rules
-    void                                setMemberVariable(const std::string& name, const Variable* var);                                    //!< Catch setting of the topology
+    void                                setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var);                     //!< Catch setting of the topology
     
     // Member method inits
     const MethodTable&                  getMethods(void) const;                                                                             //!< Get methods
     
-    const Plate*                        getParentPlate(void) const;                                                                         //!< Get the parent plate of this plate.
+    const RbPtr<const Plate>&           getParentPlate(void) const;                                                                         //!< Get the parent plate of this plate.
     std::vector<size_t>                 getPlateLengths(void) const;                                                                        //!< Get the length for this plate and all parent plates
-    size_t                              getLength(void) const;                                                                             //!< Get the length for this plate
+    size_t                              getLength(void) const;                                                                              //!< Get the length for this plate
     
 protected:
-    const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
+    RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
     
 private:
     
-    RbConstVariablePtr                  parent;
-    RbConstVariablePtr                  size;
+    RbPtr<const Plate>                  parent;
+    size_t                              size;
 };
 
 #endif

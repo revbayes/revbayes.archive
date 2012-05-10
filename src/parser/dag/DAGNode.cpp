@@ -41,7 +41,6 @@
 /** Constructor of filled node */
 DAGNode::DAGNode( const Plate *p ) : children(), parents(), plate( p ) {
     
-    refCount = 0;
 }
 
 
@@ -58,16 +57,11 @@ DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), plate( x.plate ) {
     // copy the name so that we still be able to identify the variable in a cloned DAG
     name = x.name;
     
-    refCount = 0;
 }
 
 
 /** Destructor deletes value if not NULL */
 DAGNode::~DAGNode( void ) {
-    
-    if (refCount != 0) {
-        std::cerr << "Uh oh, deleting DAG node which still is referenced to!!!";
-    }
 
     for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
         VariableNode* theNode = *i;

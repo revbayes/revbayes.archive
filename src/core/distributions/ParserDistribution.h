@@ -51,9 +51,10 @@ public:
     // Member object functions you may want to override
     virtual void                        clear(void);                                                                        //!< Clear the arguments
     virtual const MethodTable&          getMethods(void) const;                                                             //!< Get member methods
-    const std::vector<const Variable*>& getParameters() const;
+    const std::vector<Argument>&        getParameters() const;
     virtual const TypeSpec&             getVariableType(void) const;                                                        //!< Get random variable type
     virtual const RbLanguageObject&     getTemplateRandomVariable(void) const;                                              //!< Get the template ranom variable
+    virtual void                        setMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
     
     // functions you have to override
     virtual InferenceDistribution*      getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
@@ -73,13 +74,9 @@ protected:
     
     std::string                         name;
     MemberRules                         memberRules;
-    std::vector<const Variable*>        params;
-    RbLanguageObject*                   randomValue;
+    std::vector<Argument>               params;
+    RbPtr<RbLanguageObject>             randomValue;
 
-private:
-    
-    Real                                functionValueLnPdf;
-    RealPos                             functionValuePdf;
 };
 
 #endif

@@ -73,7 +73,7 @@ protected:
     VariableNode(const Plate *p);                                                                                               //!< Constructor of empty node with plate on whch this node sits
     VariableNode(const VariableNode &v);                                                                                        //!< Copy Constructor
         
-    virtual void                                getAffected(std::set<StochasticNode*>& affected) = 0;                                  //!< Mark and get affected nodes
+    virtual void                                getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                                  //!< Mark and get affected nodes
 
 //    virtual void                                        keepMe(void) = 0;                                                           //!< Keep value of myself
 //    virtual void                                        restoreMe(void) = 0;                                                        //!< Restore value of this nodes

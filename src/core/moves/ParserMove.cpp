@@ -59,52 +59,6 @@ ParserMove* ParserMove::clone( void ) const {
 }
 
 
-///** Map calls to member methods */
-//const RbLanguageObject& ParserMove::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
-//    
-//    if ( name == "accept" ) {
-//        
-//        acceptMove();
-//        return RbNullObject::getInstance();
-//    }
-//    else if ( name == "acceptanceRatio" ) {
-//        
-//        acceptanceR.setValue( getAcceptanceRatio() );
-//        return acceptanceR;
-//    }
-//    else if ( name == "numAccepted" ) {
-//        
-//        return numAccepted;
-//    }
-//    else if ( name == "numTried" ) {
-//        
-//        return numTried;
-//    }
-//    else if ( name == "propose" ) {
-//        
-//        double probRatio;
-//        Real* tmp = new Real(performMove( probRatio ) );
-//        
-//        // return the acceptance ratio
-//        return *tmp;
-//    }
-//    else if ( name == "reject" ) {
-//        
-//        rejectMove();
-//        return RbNullObject::getInstance();
-//    }
-//    else if ( name == "resetCounters" ) {
-//        
-//        resetCounters();
-//        return RbNullObject::getInstance();
-//    }
-//    
-//    // No hit yet; we hope there is a mapped function call in the base class
-//    return MemberObject::executeOperationSimple( name, args );
-//}
-
-
-
 /** Get class name of object */
 const std::string& ParserMove::getClassName(void) { 
     
@@ -134,45 +88,7 @@ const MemberRules& ParserMove::getMemberRules( void ) const {
 }
 
 
-///** Get move methods */
-//const MethodTable& ParserMove::getMethods(void) const {
-//    
-//    static MethodTable methods = MethodTable();
-//    
-//    static ArgumentRules* acceptArgRules            = new ArgumentRules();
-//    static ArgumentRules* acceptanceRatioArgRules   = new ArgumentRules();    
-//    static ArgumentRules* numAcceptedArgRules       = new ArgumentRules();    
-//    static ArgumentRules* numRejectedArgRules       = new ArgumentRules();    
-//    static ArgumentRules* numTriedArgRules          = new ArgumentRules();
-//    static ArgumentRules* proposeArgRules           = new ArgumentRules();
-//    static ArgumentRules* rejectArgRules            = new ArgumentRules();
-//    static ArgumentRules* resetCountersArgRules     = new ArgumentRules();
-//    
-//    static bool          methodsSet = false;
-//    
-//    if ( methodsSet == false ) 
-//    {
-//        
-//        // Add functions
-//        methods.addFunction( "accept",          new MemberFunction( RbVoid_name,     acceptArgRules            ) );
-//        methods.addFunction( "acceptanceRatio", new MemberFunction( Real::getClassTypeSpec(),       acceptanceRatioArgRules   ) );
-//        methods.addFunction( "numAccepted",     new MemberFunction( Natural::getClassTypeSpec(),    numAcceptedArgRules       ) );
-//        methods.addFunction( "numRejected",     new MemberFunction( Natural::getClassTypeSpec(),    numRejectedArgRules       ) );
-//        methods.addFunction( "numTried",        new MemberFunction( Natural::getClassTypeSpec(),    numTriedArgRules          ) );
-//        //        methods.addFunction( "propose",         new MemberFunction( RbVector<Real>::getClassTypeSpec(), proposeArgRules           ) );
-//        methods.addFunction( "reject",          new MemberFunction( RbVoid_name,     rejectArgRules            ) );
-//        methods.addFunction( "resetCounters",   new MemberFunction( RbVoid_name,     resetCountersArgRules     ) );
-//        
-//        // Set parent table for proper inheritance
-//        methods.setParentTable( &MemberObject::getMethods() );
-//        methodsSet = true;
-//    }
-//    
-//    return methods;
-//}
-
-
-const std::vector<RbConstDagNodePtr>& ParserMove::getMoveArgumgents( void ) const {
+const std::vector<RbPtr<const DAGNode> >& ParserMove::getMoveArgumgents( void ) const {
     return args;
 }
 

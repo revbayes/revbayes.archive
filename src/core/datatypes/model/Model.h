@@ -47,7 +47,7 @@ class Model : public MemberObject {
         void                                    printLeanValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
    
         const MemberRules&                      getMemberRules(void) const;                                 //!< Get member rules
-        void                                    setMemberVariable(const std::string &name, const Variable* var);  //!< Set a member variable. We catch here setting of variable nodes
+        void                                    setMember(const std::string &name, const RbPtr<const Variable> &var);    //!< Set a member variable. We catch here setting of variable nodes
     
         // Model functions
         const std::set<const DAGNode*>&         getSourceNodes(void) const;                                 // get the source node to pull copies of the model

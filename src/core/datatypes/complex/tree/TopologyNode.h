@@ -93,11 +93,11 @@ class TopologyNode : public MemberObject {
         
         std::vector<TopologyNode*>          children;                                                                   //!< Vector holding the node's children. Note that the parent owns the children but not the other way around. 
         TopologyNode*                       parent;                                                                     //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
-        RbString                            name;                                                                       //!< Name of the node, i.e. identifier/taxon name
+        std::string                         name;                                                                       //!< Name of the node, i.e. identifier/taxon name
         int                                 index;                                                                      //!< Node index
-        RbBoolean                           isInteriorNode;
-        RbBoolean                           isRootNode;
-        RbBoolean                           isTipNode;
+        bool                                isInteriorNode;
+        bool                                isRootNode;
+        bool                                isTipNode;
 };
 
 #endif

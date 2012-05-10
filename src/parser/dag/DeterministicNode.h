@@ -30,10 +30,9 @@ class RbFunction;
 class DeterministicNode : public VariableNode {
 
 public:
-                                            DeterministicNode(const Plate *p = NULL);                           //!< Constructor
-                                            DeterministicNode(RbFunction* func, const Plate *p = NULL);         //!< Constructor with function
+                                            DeterministicNode(const RbPtr<const Plate> &p = NULL);                                      //!< Constructor
+                                            DeterministicNode(const RbPtr<RbFunction> &func, const RbPtr<const Plate> &p = NULL);       //!< Constructor with function
                                             DeterministicNode(const DeterministicNode& x);                      //!< Copy Constructor
-    virtual                                ~DeterministicNode(void);                                            //!< Destructor
 
     // Utility functions implemented here
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node

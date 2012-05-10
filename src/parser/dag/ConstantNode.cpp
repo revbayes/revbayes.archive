@@ -37,7 +37,7 @@
 
 
 /** Constructor from value */
-ConstantNode::ConstantNode( RbLanguageObject* val, const Plate *p ) : DAGNode( p ) {
+ConstantNode::ConstantNode( const RbPtr<RbLanguageObject> &val, const RbPtr<const Plate> &p ) : DAGNode( p ) {
     value = val;
 }
 
@@ -48,9 +48,13 @@ ConstantNode::ConstantNode( const ConstantNode &x ) : DAGNode( x ) {
 }
 
 
-/** Destructor. We own the object, so we will delete it. */
-ConstantNode::~ConstantNode(void) {
-    delete value;
+ConstantNode& ConstantNode::operator=(const ConstantNode &c) {
+    // check for self assignment
+    if ( this != &c ) {
+        value = c.value->clone();
+    }
+    
+    return *this;
 }
 
 /** Clone this object */
@@ -61,7 +65,7 @@ ConstantNode* ConstantNode::clone( void ) const {
 
 
 /** Cloning the entire graph only involves children for a constant node */
-DAGNode* ConstantNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNodes ) const {
+DAGNode* ConstantNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes ) const {
 
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
@@ -128,7 +132,7 @@ void ConstantNode::expand( void ) {
  * Get the affected nodes.
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
-void ConstantNode::getAffected(std::set<StochasticNode* > &affected) {
+void ConstantNode::getAffected(std::set<RbPtr<StochasticNode> > &affected) {
     // do nothing
     throw RbException("You should never call getAffected() of a constant node!!!");
 }
@@ -157,11 +161,6 @@ const TypeSpec& ConstantNode::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-const RbLanguageObject& ConstantNode::getStoredValue(void) const {
-    return *value;
 }
 
 
@@ -230,7 +229,7 @@ void ConstantNode::restoreMe( void ) {
  * Set value: same as clamp, but do not clamp. This function will
  * also be used by moves to propose a new value.
  */
-void ConstantNode::setValue( RbLanguageObject* val ) {
+void ConstantNode::setValue( const RbPtr<RbLanguageObject> &val ) {
     
     if (val == NULL) {
         std::cerr << "Ooops ..." << std::endl;
@@ -239,10 +238,6 @@ void ConstantNode::setValue( RbLanguageObject* val ) {
     // touch the node (which will store the lnProb)
     touch();
     
-    // free the memory of the old value
-    if (value != NULL) {
-        delete value;
-    }
     // set the value
     value = val;
 }

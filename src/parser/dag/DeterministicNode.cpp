@@ -39,11 +39,11 @@
 
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( const Plate *p ) : VariableNode( p ), needsUpdate( true ) {
+DeterministicNode::DeterministicNode( const RbPtr<const Plate> &p ) : VariableNode( p ), needsUpdate( true ) {
 }
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode( RbFunction* func, const Plate *p ) : VariableNode( p ), needsUpdate( true ), function( func ) {
+DeterministicNode::DeterministicNode( const RbPtr<RbFunction> &func, const RbPtr<const Plate> &p ) : VariableNode( p ), needsUpdate( true ), function( func ) {
     
     /* Check for cycles */
     const std::vector<Argument>& arguments = func->getArguments();
@@ -61,9 +61,7 @@ DeterministicNode::DeterministicNode( RbFunction* func, const Plate *p ) : Varia
     }
     
     /* Set value and stored value */
-    // \TODO: We should not allow const casts
-    value           = const_cast<RbLanguageObject*>( &function->execute() );
-    storedValue     = NULL;
+    value           = function->execute();
     
     needsUpdate     = false;
     
@@ -76,10 +74,7 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     function        = x.function->clone();
     touched         = x.touched;
     needsUpdate     = x.needsUpdate;
-    
-    // We do not own the stored value, but the function does
-    storedValue     = x.storedValue;
-    
+        
     /* Set parents and add this node as a child node of these */
     std::vector<Argument>& args = function->getArguments();
     for ( size_t i = 0; i < args.size(); i++ ) {
@@ -90,12 +85,6 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     }
 }
 
-
-/** Destructor */
-DeterministicNode::~DeterministicNode( void ) {
-
-    delete function;
-}
 
 DeterministicNode* DeterministicNode::clone() const {
     return new DeterministicNode(*this);
@@ -353,17 +342,6 @@ const RbFunction& DeterministicNode::getFunction(void) const {
 }
 
 
-
-/** Get stored value */
-const RbLanguageObject& DeterministicNode::getStoredValue( void ) const {
-
-    if ( !touched )
-        return *value;
-    
-    return *storedValue;
-}
-
-
 /** Get value */
 const RbLanguageObject& DeterministicNode::getValue( void ) const {
     
@@ -384,16 +362,6 @@ RbLanguageObject& DeterministicNode::getValue( void ) {
     
     return *value;
 }
-
-
-///** Get value pointer */
-//const RbLanguageObject* DeterministicNode::getValuePtr( void ) const {
-//    
-//    if ( touched && needsUpdate )
-//        const_cast<DeterministicNode*>(this)->update();
-//    
-//    return value;
-//}
 
 /** 
  * Is this node eliminated?
@@ -525,11 +493,6 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
     o << "_value       = ";
     value->printValue(o);
     o << std::endl;
-    if ( touched && !needsUpdate ) {
-        o << "_storedValue = ";
-        storedValue->printValue(o);
-        o << std::endl;
-    }
     
     o << "_valueType   = " << value->getTypeSpec() << std::endl;
     o << "_function    = " << function->getTypeSpec() << std::endl;
@@ -554,14 +517,6 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
 void DeterministicNode::restoreMe( void ) {
 
     if ( touched ) {
-        if (storedValue != NULL) {
-//            delete value;
-        
-            // no matter if this node has been changed we just set it back to its stored value
-            value       = storedValue;
-        
-            storedValue = NULL;
-        }
         
         // restore all children
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
@@ -603,9 +558,6 @@ void DeterministicNode::touchMe( void ) {
         // flag myself as being touched
         touched     = true;
         
-        // store the current value; this should happen only by the first touch unless we change the stored values into a stack
-        storedValue = value;
-        value = NULL;
     }
         
     // flag myself for an update
@@ -633,12 +585,9 @@ void DeterministicNode::update( void ) {
         
 //        assert( storedValue == NULL );
         
-//        // set the stored value and release the old stored value
-//        storedValue     = value;
         
         // compute a new value
-        // \TODO: We should not allow const casts
-        value = const_cast<RbLanguageObject*>( &function->execute() );
+        value = function->execute();
         
         // mark as changed
         needsUpdate = false;

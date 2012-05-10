@@ -18,13 +18,13 @@
 
 
 #include "Character.h"
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "MemberFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "TaxonData.h"
-#include "ValueRule.h"
 
 
 /** Constructor with element type, used to properly construct vectors */
@@ -74,7 +74,7 @@ RbPtr<RbLanguageObject> TaxonData::executeOperationSimple(const std::string& nam
         return RbPtr<RbLanguageObject>( new Natural(getNumberOfCharacters() ) );
     } else if ( name == "[]") {
         // get the member with give index
-        const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
         
         if ( getNumberOfCharacters() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in [] of TaxonData.");
@@ -113,8 +113,8 @@ const MemberRules& TaxonData::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule( "name", RbString::getClassTypeSpec() ) );
-        memberRules.push_back( new ValueRule( "x"   , Character::getClassTypeSpec() ) );
+        memberRules.push_back( new ConstArgumentRule( "name", RbString::getClassTypeSpec() ) );
+        memberRules.push_back( new ConstArgumentRule( "x"   , Character::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( Character::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -137,7 +137,7 @@ const MethodTable& TaxonData::getMethods(void) const {
         
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ValueRule( "index" , Natural::getClassTypeSpec() ) );
+        squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
@@ -183,13 +183,13 @@ void TaxonData::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void TaxonData::setMemberVariable(const std::string& name, const Variable* var) {
+void TaxonData::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
     
     if ( name == "name" ) {
-        taxonName = static_cast<const RbString&>( var->getValue() ).getValue();
+        taxonName = static_cast<RbString*>( (RbLanguageObject*)var )->getValue();
     }
     else if (name == "x" || name == "" ) { // the ellipsis variables
-        Character* element = static_cast<Character*>( var->getValue().clone() );
+        Character* element = static_cast<Character*>( (RbLanguageObject*) var );
         sequence.push_back( element );
     }
     else {

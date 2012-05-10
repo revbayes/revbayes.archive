@@ -119,8 +119,8 @@ void TopologyNode::addChild(TopologyNode* c) {
     
     name = buildNewickString( *this );
     
-    isTipNode.setValue(false);
-    isInteriorNode.setValue(true);
+    isTipNode = false;
+    isInteriorNode = true;
 }
 
 
@@ -214,27 +214,27 @@ bool TopologyNode::equals(const TopologyNode& node) const {
 }
 
 
-const RbLanguageObject& TopologyNode::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> TopologyNode::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
     
     if (name == "isTip") {
-        return isTipNode;
+        return RbPtr<RbLanguageObject>( new RbBoolean( isTipNode ) );
     }
     else if (name == "isRoot") {
-        return isRootNode;
+        return RbPtr<RbLanguageObject>( new RbBoolean( isRootNode ) );
     }
     else if (name == "isInterior") {
-        return isInteriorNode;
+        return RbPtr<RbLanguageObject>( new RbBoolean( isInteriorNode ) );
     }
     else if (name == "ancestor") {
-        return *parent;
+        return RbPtr<RbLanguageObject>( parent->clone() );
     }
     else if (name == "getName") {
-        return this->name;
+        return RbPtr<RbLanguageObject>( new RbString( this->name ) );
     }
     else
         throw RbException("No member method called '" + name + "'");
     
-    return RbNullObject::getInstance();
+    return NULL;
 }
 
 
@@ -349,8 +349,8 @@ void TopologyNode::removeAllChildren(void) {
     
     name = RbString("");
     
-    isTipNode.setValue(true);
-    isInteriorNode.setValue(false);
+    isTipNode = true;
+    isInteriorNode = false;
 }
 
 /** Remove a child from the vector of children */
@@ -366,8 +366,8 @@ void TopologyNode::removeChild(TopologyNode* p) {
     
     name = buildNewickString( *this );
     
-    isTipNode.setValue(children.size() == 0);
-    isInteriorNode.setValue(children.size() > 0);
+    isTipNode = children.size() == 0;
+    isInteriorNode = children.size() > 0;
 }
 
 
@@ -391,7 +391,7 @@ void TopologyNode::setParent(TopologyNode* p) {
         parent->refreshNewickString();
     }
     
-    isRootNode.setValue(false);
+    isRootNode = false;
 }
 
 

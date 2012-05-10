@@ -19,6 +19,7 @@
 
 #include "DistanceMatrix.h"
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -26,7 +27,6 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "StochasticNode.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 #include "Workspace.h"
 
@@ -146,113 +146,113 @@ void DistanceMatrix::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& DistanceMatrix::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> DistanceMatrix::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
 
-    if (name == "names") 
-        {
-        return sequenceNames;
-        }
-    else if (name == "ntaxa") 
-        {
-        int n = (int)getNumberOfTaxa();
-        numTaxa.setValue( n );
-        return numTaxa;
-        }
-    else if (name == "nexcludedtaxa")
-        {
-        int n = (int)deletedTaxa.size();
-        numExcludedTaxa.setValue( n );
-        return numExcludedTaxa;
-        }
-    else if (name == "nincludedtaxa")
-        {
-        int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
-        numIncludedTaxa.setValue( n );
-        return numIncludedTaxa;
-        }
-    else if (name == "excludedtaxa")
-        {
-        excludedTaxa.clear();
-        for (std::set<size_t>::iterator it = deletedTaxa.begin(); it != deletedTaxa.end(); it++)
-            {
-            std::string tn = getTaxonNameWithIndex(*it);
-            excludedTaxa.push_back( new RbString( tn ) );
-            }
-        return excludedTaxa;
-        }
-    else if (name == "includedtaxa")
-        {
-        includedTaxa.clear();
-        for (size_t i=0; i<getNumberOfTaxa(); i++)
-            {
-            if ( isTaxonExcluded(i) == false )
-                includedTaxa.push_back( new RbString( getTaxonNameWithIndex(i) ) );
-            }
-        return includedTaxa;
-        }
-    else if (name == "show")
-        {
-        size_t n = getNumberOfTaxa();
-        size_t lenOfLongestName = 0;
-        for (int i=0; i<n; i++)
-            {
-            size_t x = getTaxonNameWithIndex(i).size();
-            if (x > lenOfLongestName)
-                lenOfLongestName = x;
-            }
-        for (int i=0; i<n; i++)
-            {
-            if ( isTaxonExcluded(i) == false )
-                {
-                std::cout << getTaxonNameWithIndex(i) << "   ";
-                size_t myNameLen = getTaxonNameWithIndex(i).size();
-                for (int j=0; j<lenOfLongestName-myNameLen; j++)
-                    std::cout << " ";
-                for (int j=0; j<n; j++)
-                    {
-                    if ( isTaxonExcluded(j) == false )
-                        std::cout << std::fixed << std::setprecision(4) << elements[i][j] << " ";
-                    }
-                std::cout << std::endl;
-                }
-            }
-        return RbNullObject::getInstance();
-        }
-    else if (name == "excludetaxa")
-        {
-        const RbLanguageObject& argument = args[1].getVariable().getValue();
-        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
-            {
-            std::cout << "excluded b" << std::endl;
-            int n = static_cast<const Natural&>( argument ).getValue();
-            std::cout << "n = " << n << std::endl;
-            deletedTaxa.insert( n-1 );
-            std::cout << "excluded e" << std::endl;
-            }
-        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
-            {
-            const RbVector& x = static_cast<const RbVector& >( argument );
-            for ( size_t i=0; i<x.size(); i++ )
-                deletedTaxa.insert( static_cast<const Natural &>( x[i] ).getValue() - 1 );
-            }
-        else if ( argument.isTypeSpec( RbString::getClassTypeSpec() ) ) 
-            {
-            std::string x = static_cast<const RbString&>( argument ).getValue();
-            size_t idx = indexOfTaxonWithName(x);
-            deletedTaxa.insert(idx);
-            }
-        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
-            {
-            const RbVector& x = static_cast<const RbVector& >( argument );
-            for ( RbVector::const_iterator it = x.begin(); it != x.end(); ++it)
-                {
-                RbString* tmp = static_cast<RbString *>( *it );
-                size_t idx = indexOfTaxonWithName( tmp->getValue() );
-                deletedTaxa.insert(idx);
-                }
-            }
-        return RbNullObject::getInstance();
-        }
+//    if (name == "names") 
+//        {
+//        return sequenceNames;
+//        }
+//    else if (name == "ntaxa") 
+//        {
+//        int n = (int)getNumberOfTaxa();
+//        numTaxa.setValue( n );
+//        return numTaxa;
+//        }
+//    else if (name == "nexcludedtaxa")
+//        {
+//        int n = (int)deletedTaxa.size();
+//        numExcludedTaxa.setValue( n );
+//        return numExcludedTaxa;
+//        }
+//    else if (name == "nincludedtaxa")
+//        {
+//        int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
+//        numIncludedTaxa.setValue( n );
+//        return numIncludedTaxa;
+//        }
+//    else if (name == "excludedtaxa")
+//        {
+//        excludedTaxa.clear();
+//        for (std::set<size_t>::iterator it = deletedTaxa.begin(); it != deletedTaxa.end(); it++)
+//            {
+//            std::string tn = getTaxonNameWithIndex(*it);
+//            excludedTaxa.push_back( new RbString( tn ) );
+//            }
+//        return excludedTaxa;
+//        }
+//    else if (name == "includedtaxa")
+//        {
+//        includedTaxa.clear();
+//        for (size_t i=0; i<getNumberOfTaxa(); i++)
+//            {
+//            if ( isTaxonExcluded(i) == false )
+//                includedTaxa.push_back( new RbString( getTaxonNameWithIndex(i) ) );
+//            }
+//        return includedTaxa;
+//        }
+//    else if (name == "show")
+//        {
+//        size_t n = getNumberOfTaxa();
+//        size_t lenOfLongestName = 0;
+//        for (int i=0; i<n; i++)
+//            {
+//            size_t x = getTaxonNameWithIndex(i).size();
+//            if (x > lenOfLongestName)
+//                lenOfLongestName = x;
+//            }
+//        for (int i=0; i<n; i++)
+//            {
+//            if ( isTaxonExcluded(i) == false )
+//                {
+//                std::cout << getTaxonNameWithIndex(i) << "   ";
+//                size_t myNameLen = getTaxonNameWithIndex(i).size();
+//                for (int j=0; j<lenOfLongestName-myNameLen; j++)
+//                    std::cout << " ";
+//                for (int j=0; j<n; j++)
+//                    {
+//                    if ( isTaxonExcluded(j) == false )
+//                        std::cout << std::fixed << std::setprecision(4) << elements[i][j] << " ";
+//                    }
+//                std::cout << std::endl;
+//                }
+//            }
+//        return RbNullObject::getInstance();
+//        }
+//    else if (name == "excludetaxa")
+//        {
+//        const RbLanguageObject& argument = args[1].getVariable().getValue();
+//        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
+//            {
+//            std::cout << "excluded b" << std::endl;
+//            int n = static_cast<const Natural&>( argument ).getValue();
+//            std::cout << "n = " << n << std::endl;
+//            deletedTaxa.insert( n-1 );
+//            std::cout << "excluded e" << std::endl;
+//            }
+//        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
+//            {
+//            const RbVector& x = static_cast<const RbVector& >( argument );
+//            for ( size_t i=0; i<x.size(); i++ )
+//                deletedTaxa.insert( static_cast<const Natural &>( x[i] ).getValue() - 1 );
+//            }
+//        else if ( argument.isTypeSpec( RbString::getClassTypeSpec() ) ) 
+//            {
+//            std::string x = static_cast<const RbString&>( argument ).getValue();
+//            size_t idx = indexOfTaxonWithName(x);
+//            deletedTaxa.insert(idx);
+//            }
+//        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
+//            {
+//            const RbVector& x = static_cast<const RbVector& >( argument );
+//            for ( RbVector::const_iterator it = x.begin(); it != x.end(); ++it)
+//                {
+//                RbString* tmp = static_cast<RbString *>( *it );
+//                size_t idx = indexOfTaxonWithName( tmp->getValue() );
+//                deletedTaxa.insert(idx);
+//                }
+//            }
+//        return RbNullObject::getInstance();
+//        }
 
     return MemberObject::executeOperationSimple( name, args );
 }

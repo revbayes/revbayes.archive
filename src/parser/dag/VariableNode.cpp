@@ -38,12 +38,13 @@ VariableNode::VariableNode(const VariableNode &v) : DAGNode(v), factorRoot( v.fa
 /** Destructor */
 VariableNode::~VariableNode( void ) {
 
-
-    /* Remove this node as a child node of parents and delete these if appropriate */
-    for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
+    /* Remove parents first */
+    for ( std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++ ) {
         DAGNode* node = *i;
         node->removeChildNode( this );
     }
+    
+    parents.clear();
 }
 
 /** add a child node */

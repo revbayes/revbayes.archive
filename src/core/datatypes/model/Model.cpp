@@ -16,6 +16,7 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
@@ -35,7 +36,6 @@
 #include "RbUtil.h"
 #include "StochasticNode.h"
 #include "StochasticInferenceNode.h"
-#include "ValueRule.h"
 #include "VariableInferenceNode.h"
 #include "UserInterface.h"
 
@@ -140,9 +140,9 @@ void Model::createModelFromDagNode(const DAGNode *theSourceNode) {
     sourceNodes.insert( nodesMap[theSourceNode] );
     
     /* insert new nodes in dagNodes member frame and direct access vector */
-    std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
+    std::map<const DAGNode*, RbPtr<DAGNode> >::iterator i = nodesMap.begin();
         
-    std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator> nodeNeedToBeRemoved;
+    std::vector<std::map<const DAGNode*, RbPtr<DAGNode> >::iterator> nodeNeedToBeRemoved;
     while ( i != nodesMap.end() ) {
         
         DAGNode* theNewNode = (*i).second;
@@ -155,7 +155,7 @@ void Model::createModelFromDagNode(const DAGNode *theSourceNode) {
                 const ConstructorFunction& theConstructorFunction = dynamic_cast<const ConstructorFunction&>( theFunction );
                 if ( theConstructorFunction.getReturnType() == Model::getClassTypeSpec() ) {
                     // remove the dag node holding the model constructor function from the dag
-                    const std::set<DAGNode*>& parents = theDetNode->getParents();
+                    const std::set<RbPtr<DAGNode> >& parents = theDetNode->getParents();
 
                     while ( parents.size() > 0 ) {
                         DAGNode* node = *parents.begin();
@@ -194,7 +194,7 @@ void Model::createModelFromDagNode(const DAGNode *theSourceNode) {
         }
     }
     
-    for (std::vector<std::map<const DAGNode*, RbDagNodePtr>::iterator>::iterator i = nodeNeedToBeRemoved.begin(); i != nodeNeedToBeRemoved.end(); i++) {
+    for (std::vector<std::map<const DAGNode*, RbPtr<DAGNode> >::iterator>::iterator i = nodeNeedToBeRemoved.begin(); i != nodeNeedToBeRemoved.end(); i++) {
         nodesMap.erase(*i);
     }
             
@@ -209,10 +209,10 @@ Model* Model::clone(void) const {
 
 
 /** Find the offset of the node p in the vector v. */
-int Model::findIndexInVector(const std::vector<RbDagNodePtr>& v, const DAGNode* p) const {
+int Model::findIndexInVector(const std::vector<RbPtr<DAGNode> >& v, const DAGNode* p) const {
     
 	int cnt = 0;
-    for (std::vector<RbDagNodePtr>::const_iterator i=v.begin(); i!=v.end(); i++) 
+    for (std::vector<RbPtr<DAGNode> >::const_iterator i=v.begin(); i!=v.end(); i++) 
     {
 		cnt++;
 		if ( (*i) == p )
@@ -260,7 +260,7 @@ const MemberRules& Model::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule( "sinknode"  , RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ConstArgumentRule( "sinknode"  , RbObject::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( RbObject::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -300,7 +300,7 @@ void Model::printValue(std::ostream& o) const {
 	msg.str("");
 	RBOUT("-------------------------------------");
 	int cnt = 0;
-    for (std::vector<RbDagNodePtr>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {   	
+    for (std::vector<RbPtr<DAGNode> >::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {   	
 		msg << "Vertex " << ++cnt;
 		std::string nameStr = msg.str();
 		size_t nameStrSize = nameStr.size();
@@ -340,10 +340,10 @@ void Model::printValue(std::ostream& o) const {
 		msg.str("");
 		
 		msg << "   Parents      = ";
-		const std::set<DAGNode*> &parents = (*i)->getParents();
-		for (std::set<DAGNode*>::const_iterator j=parents.begin(); j != parents.end(); j++) {   	
+		const std::set<RbPtr<DAGNode> > &parents = (*i)->getParents();
+		for (std::set<RbPtr<DAGNode> >::const_iterator j=parents.begin(); j != parents.end(); j++) {   	
 			int idx = findIndexInVector( dagNodes, (*j) );
-			msg << idx << " (" << long(*j) << ") ";
+			msg << idx;
         }
 		if (parents.size() == 0)
 			msg << "No Parents";
@@ -446,7 +446,7 @@ void Model::printLeanValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Model::setMemberVariable(const std::string& name, const Variable* var) {
+void Model::setMember(const std::string& name, const RbPtr<const Variable> &var) {
     
     if ( name == "sinknode" || name == "" ) {
         
@@ -455,7 +455,7 @@ void Model::setMemberVariable(const std::string& name, const Variable* var) {
         
     }
     else {
-        MemberObject::setMemberVariable(name, var);
+        MemberObject::setMember(name, var);
     }
 }
 

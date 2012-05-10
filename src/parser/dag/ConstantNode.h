@@ -30,10 +30,12 @@ class RbObject;
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode(RbLanguageObject* val, const RbPtr<const Plate> &p = NULL);                                            //!< Constructor from value
+    ConstantNode(const RbPtr<RbLanguageObject> &val, const RbPtr<const Plate> &p = NULL);                               //!< Constructor from value
     ConstantNode(const ConstantNode &x);                                                                                //!< Copy constructor
-    virtual                             ~ConstantNode(void);                                                            //!< Destructor
 
+    // overloaded operators
+    ConstantNode&                       operator=(const ConstantNode &c);                                               //!< Overloaded assignment operator
+    
     // Basic utility functions
     ConstantNode*                       clone(void) const;                                                              //!< Clone this object
     static const std::string&           getClassName(void);                                                             //!< Get class name

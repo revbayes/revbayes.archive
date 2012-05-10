@@ -21,7 +21,6 @@
 #include "InferenceMove.h"
 #include "MemberObject.h"
 #include "Natural.h"
-#include "RbConstDagNodePtr.h"
 #include "RealPos.h"
 
 class RandomNumberGenerator;
@@ -45,34 +44,23 @@ public:
     virtual const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
     
     // Member methods
-//    virtual const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
     void                                    setMemberVariable(const std::string& name, const Variable* var);                        //!< set the member variables
     
     // Move functions you have to override
-//    void                                    acceptMove(void);                                                                       //!< Accept the move
-//    std::vector<StochasticNode*>&           getDagNodes(void);                                                                      //!< Get the nodes vector
-//    double                                  performMove(double& probRatio);                                                         //!< Perform the move
-//    void                                    rejectMove(void);                                                                       //!< Reject the move
-//    void                                    replaceDagNode(const StochasticNode *oldNode, StochasticNode *newNode);                 //!< Set the nodes vector
     
     // functions you should not override
     const InferenceMove*                    getLeanMove(void) const;
-    const std::vector<RbConstDagNodePtr>&   getMoveArgumgents(void) const;
-//    virtual void                            addDagNode(StochasticNode* d);                                                                 //!< Add a DAG node to this move
-//    double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
-//    double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
-//    void                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
-    
+    const std::vector<RbPtr<const DAGNode> >&   getMoveArgumgents(void) const;
+
 protected:
     
-//    virtual const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
     
 private:
     InferenceMove*                          move;
     TypeSpec                                typeSpec;
 
     std::set<std::string>                   attributeNames;
-    std::vector<RbConstDagNodePtr>          args;
+    std::vector<RbPtr<const DAGNode> >      args;
     MemberRules                             memberRules;
 };
 
