@@ -41,17 +41,9 @@ class Func_normalizeVector :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
         void                        setArgumentVariable(const std::string& name, const Variable* var);
 
-    private:
-
-        // memberfunction return values
-        RbVector<RealPos>           normalizedVector;
-
-        // arguments
-        RbConstVariablePtr          vector;
-        RbConstVariablePtr          total;
 };
 
 #endif

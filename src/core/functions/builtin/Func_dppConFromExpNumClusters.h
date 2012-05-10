@@ -42,12 +42,8 @@ public:
 	const TypeSpec&                 getReturnType(void) const;                                  //!< Get type of return value
 
 protected:
-    const RbLanguageObject&         executeFunction(void);                                      //!< Execute function
+    RbPtr<RbLanguageObject>         executeFunction(void);                                      //!< Execute function
 
-private:
-
-    // memberfunction return values
-    RealPos                         concentration;
 };
 
 #endif

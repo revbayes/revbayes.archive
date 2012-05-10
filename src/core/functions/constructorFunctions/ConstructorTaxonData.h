@@ -26,10 +26,6 @@ class ConstructorTaxonData :  public RbFunction {
 public:
 
     ConstructorTaxonData(void);                                                                                             //!< Object constructor
-//    ConstructorTaxonData( const ConstructorTaxonData& c );                                                                  //!< Object constructor
-    virtual                                 ~ConstructorTaxonData();
-    
-    // overloaded operators
     
     // Basic utility functions
     ConstructorTaxonData*                   clone(void) const;                                                              //!< Clone the object
@@ -42,15 +38,8 @@ public:
     const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
     
 protected:
-    const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function
-    void                                    setArgumentVariable(const std::string& name, const Variable* var);
+    RbPtr<RbLanguageObject>                 executeFunction(void);                                                          //!< Execute function
     
-    RbConstVariablePtr                      name;
-    RbConstVariablePtr                      chars;
-    
-    // member function return object
-    TaxonData                               retVal;
-
 };
 
 #endif

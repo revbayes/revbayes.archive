@@ -80,12 +80,12 @@ protected:
     std::set<setType* >                             elements;
 };
 
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 /** Set type of elements */
 template <typename setType>
@@ -360,7 +360,7 @@ const MemberRules& Set<setType>::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule( "x"  , setType::getClassTypeSpec() ) );
+        memberRules.push_back( new ConstArgumentRule( "x"  , setType::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( setType::getClassTypeSpec() ) );
         
         rulesSet = true;

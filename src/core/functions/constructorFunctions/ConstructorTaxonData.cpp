@@ -16,6 +16,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstArgumentRule.h"
 #include "Character.h"
 #include "ConstructorTaxonData.h"
 #include "DAGNode.h"
@@ -26,18 +27,12 @@
 #include "RbUtil.h"
 #include "TaxonData.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <sstream>
 
 
 /** Constructor */
-ConstructorTaxonData::ConstructorTaxonData() : RbFunction(), name( NULL ), chars( NULL ), retVal( Character::getClassName() ) {
-    
-}
-
-
-ConstructorTaxonData::~ConstructorTaxonData() {
+ConstructorTaxonData::ConstructorTaxonData() : RbFunction() {
     
 }
 
@@ -50,34 +45,34 @@ ConstructorTaxonData* ConstructorTaxonData::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-const RbLanguageObject& ConstructorTaxonData::executeFunction(void) {
+RbPtr<RbLanguageObject> ConstructorTaxonData::executeFunction(void) {
     
     // \TODO: Maybe we want to have specialized taxondata vectors?!
-    retVal = TaxonData( Character::getClassName() );
+    TaxonData *retVal = new TaxonData( Character::getClassName() );
     
     // the name of the taxon
-    const std::string& n = static_cast<const RbString&>( name->getValue() ).getValue();
-    retVal.setTaxonName( n );
+    const std::string& n = static_cast<const RbString&>( args[0].getVariable()->getValue() ).getValue();
+    retVal->setTaxonName( n );
     
     // \TODO: We should not use DAG node containers directly, but for now that has to do
-    const DAGNode* theNode = chars->getDagNode();
+    const DAGNode* theNode = args[1].getVariable()->getDagNode();
     if ( theNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
         const DagNodeContainer& con = static_cast<const DagNodeContainer&>( theNode->getValue() );
         for (size_t i = 0; i < con.size(); i++) {
             Character* c = static_cast<Character*>( static_cast<const VariableSlot&>( con.getElement( i ) ).getValue().clone() );
-            retVal.addCharacter( c );
+            retVal->addCharacter( c );
         }
     }
     else {
         // set the vector of characters
-        const RbVector<Character>& v = static_cast<const RbVector<Character>& >( chars->getValue() );
+        const RbVector& v = static_cast<const RbVector &>( args[1].getVariable()->getValue() );
         for (size_t i = 0; i < v.size(); i++) {
             Character* c = static_cast<Character*>( v.getElement( i ).clone() );
-            retVal.addCharacter( c );
+            retVal->addCharacter( c );
         }
     }
     
-    return retVal;
+    return RbPtr<RbLanguageObject>( retVal );
 }
 
 
@@ -89,10 +84,10 @@ const ArgumentRules& ConstructorTaxonData::getArgumentRules(void) const {
    
    if (!rulesSet) {
        
-       argRules.push_back( new ValueRule( "name", RbString::getClassTypeSpec() ) );
+       argRules.push_back( new ConstArgumentRule( "name", RbString::getClassTypeSpec() ) );
        // \TODO: We should specificly expect elements of type character and not DAG node containers for which we cannot guarantee what is inside.
 //       argRules.push_back( new ValueRule( "x"   , TypeSpec( Vector::getClassTypeSpec(), new TypeSpec( Character::getClassTypeSpec() ) ) ) );
-       argRules.push_back( new ValueRule( "x"   , RbObject::getClassTypeSpec() ) );
+       argRules.push_back( new ConstArgumentRule( "x"   , RbObject::getClassTypeSpec() ) );
        
        rulesSet = true;
    }
@@ -131,22 +126,6 @@ const TypeSpec& ConstructorTaxonData::getTypeSpec( void ) const {
 const TypeSpec& ConstructorTaxonData::getReturnType(void) const {
     
     return TaxonData::getClassTypeSpec();
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void ConstructorTaxonData::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "name" ) {
-        this->name = var;
-    }
-    else if ( name == "x" ) {
-        chars = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
-    
 }
 
 

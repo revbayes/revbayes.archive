@@ -59,7 +59,7 @@ const RbLanguageObject& ConstructorFunctionForSimpleObjects::executeFunction(voi
     
     std::vector<RbObject*> params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        params.push_back( args[i].getVariable().getValue().clone() );
+        params.push_back( args[i].getVariable()->getValue().clone() );
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
     

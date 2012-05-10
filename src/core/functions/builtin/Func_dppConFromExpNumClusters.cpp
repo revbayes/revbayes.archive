@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Func_dppConFromExpNumClusters.h"
@@ -27,7 +28,6 @@
 #include "RbStatisticsHelper.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <cassert>
 #include <cmath>
@@ -41,14 +41,14 @@ Func_dppConFromExpNumClusters* Func_dppConFromExpNumClusters::clone( void ) cons
 
 
 /** Execute function */
-const RbLanguageObject& Func_dppConFromExpNumClusters::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_dppConFromExpNumClusters::executeFunction( void ) {
     
-//	const double clust  = static_cast<const RealPos&>( (*args)[0].getValue() ).getValue();
-//	const double num    = static_cast<const RealPos&>( (*args)[1].getValue() ).getValue();
+	double clust  = static_cast<const RealPos&>( args[0].getVariable()->getValue() ).getValue();
+	double num    = static_cast<const RealPos&>( args[1].getVariable()->getValue() ).getValue();
 		
-//	double p = RbStatistics::Helper::dppConcParamFromNumTables(clust, num);
-//	concentration.setValue( p );	
-	return concentration;
+	double p = RbStatistics::Helper::dppConcParamFromNumTables(clust, num);
+
+	return RbPtr<RbLanguageObject>( new Real( p ) );
 }
 
 
@@ -60,8 +60,8 @@ const ArgumentRules& Func_dppConFromExpNumClusters::getArgumentRules( void ) con
 	
     if ( !rulesSet ) {
 		
-        argumentRules.push_back( new ValueRule( "clusters", RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "number",   RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "clusters", RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "number",   RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
 	
@@ -97,7 +97,7 @@ const TypeSpec& Func_dppConFromExpNumClusters::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_dppConFromExpNumClusters::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbVoid_name;
+    static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
     return returnTypeSpec;
 }
 

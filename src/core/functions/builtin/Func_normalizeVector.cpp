@@ -18,11 +18,13 @@
 
 
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Func_normalizeVector.h"
 #include "Integer.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RbMathVector.h"
 #include "RbUtil.h"
@@ -31,7 +33,6 @@
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <cassert>
 #include <cmath>
@@ -45,16 +46,28 @@ Func_normalizeVector* Func_normalizeVector::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_normalizeVector::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_normalizeVector::executeFunction( void ) {
 
     // Get first element
-    const RbVector<RealPos>&    tempVec    = static_cast<const RbVector<RealPos>& >( vector->getValue() );
-    double                      desiredSum = static_cast<const RealPos&      >( total->getValue() ).getValue();
+    const RbVector& tempVec    = static_cast<const RbVector& >( args[0].getVariable()->getValue() );
+    double          desiredSum = static_cast<const RealPos&  >( args[1].getVariable()->getValue() ).getValue();
+    
+    // type conversion
+    std::vector<double> unnormalizedVector;
+    for (size_t i = 0; i < tempVec.size(); ++i) {
+        unnormalizedVector.push_back( static_cast<const Real &>( tempVec[i] ).getValue() );
+    }
     
     // normalize the vector
-    normalizedVector = RbMath::normalize(tempVec, desiredSum);
+    RbMath::normalize(unnormalizedVector, desiredSum);
+    RbVector *normalizedVector = new RbVector( Probability::getClassTypeSpec() );
     
-    return normalizedVector;
+    for (size_t i = 0; i < unnormalizedVector.size(); ++i) {
+        normalizedVector->push_back( new Probability(unnormalizedVector[i]) );
+    }
+    
+    
+    return RbPtr<RbLanguageObject>( normalizedVector );
 }
 
 
@@ -64,12 +77,11 @@ const ArgumentRules& Func_normalizeVector::getArgumentRules( void ) const {
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
-    if (!rulesSet)
-		{
-        argumentRules.push_back( new ValueRule( "vector", RbVector<RealPos>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "total",  new RealPos( 1.0 ) ) );
+    if (!rulesSet) {
+        argumentRules.push_back( new ConstArgumentRule( "vector", TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec() ) ) ) );
+        argumentRules.push_back( new ConstArgumentRule( "total",  new RealPos( 1.0 ) ) );
         rulesSet = true;
-		}
+    }
 
     return argumentRules;
 }
@@ -103,23 +115,8 @@ const TypeSpec& Func_normalizeVector::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_normalizeVector::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbVector<RealPos>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec( Probability::getClassTypeSpec() ) );
     
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_normalizeVector::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "vector" ) {
-        vector = var;
-    }
-    else if ( name == "total" ) {
-        total = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 
