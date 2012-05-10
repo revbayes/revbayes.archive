@@ -47,23 +47,6 @@ Dist_dirichlet* Dist_dirichlet::clone( void ) const {
 }
 
 
-/** Get member variable rules */
-const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
-
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-
-    if ( !rulesSet )
-		{
-        memberRules.push_back( new ValueRule( "alpha", RbVector<RealPos>::getClassTypeSpec() ) );
-
-        rulesSet = true;
-		}
-
-    return memberRules;
-}
-
-
 /**
  * This function calculates the natural log of the probability
  * density for a Dirichlet-distributed random variable.

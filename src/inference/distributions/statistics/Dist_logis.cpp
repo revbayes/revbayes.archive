@@ -55,22 +55,6 @@ Dist_logis* Dist_logis::clone( void ) const {
 }
 
 
-/** Get member variable rules */
-const MemberRules& Dist_logis::getMemberRules( void ) const {
-
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-
-    if ( !rulesSet ){
-        memberRules.push_back( new ValueRule( "location",  Real::getClassTypeSpec()    ) );
-        memberRules.push_back( new ValueRule( "scale",     RealPos::getClassTypeSpec() ) );
-        rulesSet = true;
-    }
-
-    return memberRules;
-}
-
-
 /**
  * This function calculates the probability density
  * for a Logistic-distributed random variable.

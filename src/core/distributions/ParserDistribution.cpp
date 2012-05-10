@@ -17,6 +17,8 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgument.h"
+#include "ConstArgumentRule.h"
 #include "ParserDistribution.h"
 #include "Environment.h"
 #include "MemberFunction.h"
@@ -24,12 +26,11 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RealPos.h"
-#include "ValueRule.h"
 #include "Workspace.h"
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const std::string &n, const MemberRules& mr, RbLanguageObject *rv ) : MemberObject( mr ), randomValue( rv ), memberRules( mr ), name( n ) {
+ParserDistribution::ParserDistribution( const std::string &n, const MemberRules& mr, const RbPtr<RbLanguageObject> &rv ) : MemberObject( mr ), randomValue( rv ), memberRules( mr ), name( n ) {
 }
 
 
@@ -45,22 +46,20 @@ void ParserDistribution::clear( void ) {
 
 
 /** Map direct method calls to internal class methods. */
-const RbLanguageObject& ParserDistribution::executeOperationSimple( const std::string& name, const std::vector<Argument>& args ) {
+RbPtr<RbLanguageObject> ParserDistribution::executeOperationSimple( const std::string& name, const std::vector<Argument>& args ) {
     
     if ( name == "lnPdf" ) {
         
-        functionValueLnPdf = Real( lnPdf( args[1].getVariable().getValue() ) );
-        return functionValueLnPdf;
+        return RbPtr<RbLanguageObject>( new Real( lnPdf( args[1].getVariable()->getValue() ) ) );
     }
     else if ( name == "pdf" ) {
         
-        functionValuePdf = RealPos( pdf( args[1].getVariable().getValue() ) );
-        return functionValuePdf;
+        return RbPtr<RbLanguageObject>( new RealPos( pdf( args[1].getVariable()->getValue() ) ) );
     }
     else if ( name == "rv" ) {
         
         rv();
-        return *randomValue;
+        return randomValue;
     }
     else
         return MemberObject::executeOperationSimple( name, args );
@@ -95,9 +94,9 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
     
     if ( !methodsSet ) {
         
-        lnPdfArgRules->push_back( new ValueRule( "x", RbObject::getClassTypeSpec() ) );
+        lnPdfArgRules->push_back( new ConstArgumentRule( "x", RbObject::getClassTypeSpec() ) );
         
-        pdfArgRules->push_back( new ValueRule( "x", RbObject::getClassTypeSpec() ) );
+        pdfArgRules->push_back( new ConstArgumentRule( "x", RbObject::getClassTypeSpec() ) );
         
         methods.addFunction( "lnPdf", new MemberFunction( Real::getClassTypeSpec()    , lnPdfArgRules ) );
         methods.addFunction( "pdf",   new MemberFunction( Real::getClassTypeSpec()    , pdfArgRules   ) );
@@ -111,7 +110,7 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
     return methods;
 }    
 
-const std::vector<const Variable*>& ParserDistribution::getParameters( void ) const {
+const std::vector<Argument>& ParserDistribution::getParameters( void ) const {
     return params;
 }
 
@@ -127,6 +126,6 @@ const TypeSpec& ParserDistribution::getVariableType( void ) const {
 
 
 void ParserDistribution::setMember(std::string const &name, const RbPtr<const Variable> &var) {
-    params.push_back( ConstArgument(name, var) );
+    params.push_back( ConstArgument(var, name) );
 }
 

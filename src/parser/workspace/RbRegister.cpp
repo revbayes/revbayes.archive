@@ -19,6 +19,7 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "ConstructorFunction.h"
 #include "ConstructorFunctionForSimpleObjects.h"
 #include "Distribution.h"
@@ -247,9 +248,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         
         /* File monitor */
         MemberRules filemonitorMemberRules;
-        filemonitorMemberRules.push_back( new ValueRule("printgen", Natural::getClassTypeSpec(), new Natural(1) ) );
-        filemonitorMemberRules.push_back( new ValueRule("filename", RbString::getClassTypeSpec() ) );
-        filemonitorMemberRules.push_back( new ValueRule("separator", RbString::getClassTypeSpec(), new RbString(" ") ) );
+        filemonitorMemberRules.push_back( new ConstArgumentRule("printgen", Natural::getClassTypeSpec(), new Natural(1) ) );
+        filemonitorMemberRules.push_back( new ConstArgumentRule("filename", RbString::getClassTypeSpec() ) );
+        filemonitorMemberRules.push_back( new ConstArgumentRule("separator", RbString::getClassTypeSpec(), new RbString(" ") ) );
         filemonitorMemberRules.push_back( new Ellipsis( RbObject::getClassTypeSpec() ) );
         std::set<std::string> filemonitorAttributeNames;
         filemonitorAttributeNames.insert("printgen");
@@ -265,9 +266,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         
         /* Scaling move */
         MemberRules mScaleMemberRules;
-        mScaleMemberRules.push_back( new ValueRule("var", RealPos::getClassTypeSpec() ) );
-        mScaleMemberRules.push_back( new ValueRule("rate", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        mScaleMemberRules.push_back( new ValueRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        mScaleMemberRules.push_back( new ConstArgumentRule("var", RealPos::getClassTypeSpec() ) );
+        mScaleMemberRules.push_back( new ConstArgumentRule("rate", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        mScaleMemberRules.push_back( new ConstArgumentRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         std::set<std::string> mScaleAttributeNames;
         mScaleAttributeNames.insert("rate");
         mScaleAttributeNames.insert("weight");
@@ -275,9 +276,9 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Sliding move */
         MemberRules mSlideMemberRules;
-        mSlideMemberRules.push_back( new ValueRule("var", Real::getClassTypeSpec() ) );
-        mSlideMemberRules.push_back( new ValueRule("delta", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        mSlideMemberRules.push_back( new ValueRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        mSlideMemberRules.push_back( new ConstArgumentRule("var", Real::getClassTypeSpec() ) );
+        mSlideMemberRules.push_back( new ConstArgumentRule("delta", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        mSlideMemberRules.push_back( new ConstArgumentRule("weight", RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         std::set<std::string> mSlideAttributeNames;
         mSlideAttributeNames.insert("delta");
         mSlideAttributeNames.insert("weight");
@@ -307,21 +308,56 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addDistribution( "lnorm",        new Dist_lnorm()       );
 //        addDistribution( "unifTopology", new Dist_topologyunif());
         
+        // beta distribution
+        MemberRules distBetaMemberRules;
+        distBetaMemberRules.push_back( new ConstArgumentRule( "alpha", RealPos::getClassTypeSpec()    ) );
+        distBetaMemberRules.push_back( new ConstArgumentRule( "beta"  , RealPos::getClassTypeSpec() ) );
+        addDistribution( "beta",         new ParserDistributionContinuous( new Dist_beta(), "beta", distBetaMemberRules, new Probability() ) );
+
+        // dirichlet distribution
+        MemberRules distDirichletMemberRules;
+        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
+        addDistribution( "dirichlet",         new ParserDistributionContinuous( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) );
+
         // exponential distribution
         MemberRules distExpMemberRules;
-        distExpMemberRules.push_back( new ValueRule( "rate", RealPos::getClassTypeSpec()   , new RealPos(1.0)    ) );
+        distExpMemberRules.push_back( new ConstArgumentRule( "rate", RealPos::getClassTypeSpec()   , new RealPos(1.0)    ) );
         addDistribution( "exponential",         new ParserDistributionContinuous( new Dist_exp(), "exponential", distExpMemberRules, new RealPos() ) );
+        
+        // gamma distribution
+        MemberRules distGammaMemberRules;
+        distGammaMemberRules.push_back( new ConstArgumentRule( "shape", RealPos::getClassTypeSpec()    ) );
+        distGammaMemberRules.push_back( new ConstArgumentRule( "rate"  , RealPos::getClassTypeSpec() ) );
+        addDistribution( "gamma",         new ParserDistributionContinuous( new Dist_gamma(), "gamma", distGammaMemberRules, new RealPos() ) );
+        
+        // log-normal distribution
+        MemberRules distlognormMemberRules;
+        distlogormMemberRules.push_back( new ConstArgumentRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
+        distlogormMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        addDistribution( "lognorm",         new ParserDistributionContinuous( new Dist_lnorm(), "lognormal", distlognormMemberRules, new RealPos() ) );
+        
+        // logistic distribution
+        MemberRules distLogisticMemberRules;
+        distLogisticMemberRules.push_back( new ConstArgumentRule( "location", Real::getClassTypeSpec()    ) );
+        distLogisticMemberRules.push_back( new ConstArgumentRule( "scale"  , RealPos::getClassTypeSpec() ) );
+        addDistribution( "logistic",         new ParserDistributionContinuous( new Dist_logis(), "logistic", distLogisticMemberRules, new Real() ) );
+        
+        // multinomial distribution
+        MemberRules distMultMemberRules;
+        distMultMemberRules.push_back( new ConstArgumentRule( "probabilities", Simplex::getClassTypeSpec()    ) );
+        distMultMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        addDistribution( "mult",         new ParserDistributionContinuous( new Dist_multinomial(), "multinomial", distMultMemberRules, new RbVector( Natural::getClassTypeSpec() ) ) );
         
         // normal distribution
         MemberRules distNormMemberRules;
-        distNormMemberRules.push_back( new ValueRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
-        distNormMemberRules.push_back( new ValueRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        distNormMemberRules.push_back( new ConstArgumentRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
+        distNormMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         addDistribution( "norm",         new ParserDistributionContinuous( new Dist_norm(), "normal", distNormMemberRules, new Real() ) );
         
         // uniform distributin
         MemberRules distUnifMemberRules;
-        distUnifMemberRules.push_back( new ValueRule( "min", Real::getClassTypeSpec()   , new Real(0.0)    ) );
-        distUnifMemberRules.push_back( new ValueRule( "max"  , Real::getClassTypeSpec(), new Real(1.0) ) );
+        distUnifMemberRules.push_back( new ConstArgumentRule( "min", Real::getClassTypeSpec()   , new Real(0.0)    ) );
+        distUnifMemberRules.push_back( new ConstArgumentRule( "max"  , Real::getClassTypeSpec(), new Real(1.0) ) );
         addDistribution( "unif",         new ParserDistributionContinuous( new Dist_unif(), "uniform", distUnifMemberRules, new Real() ) );
         
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -438,12 +474,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         
         // uminus
         ArgumentRules uminusIntegerFuncArgRules;
-        uminusIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
+        uminusIntegerFuncArgRules.push_back( new ConstArgumentRule("first", Integer::getClassTypeSpec() ) );
         Integer* funcUminusIntegerRetVar = new Integer();
         addFunction( "_uminus",      new ParserFunction( new Func__uminus<int, int>(), "-", uminusIntegerFuncArgRules, funcUminusIntegerRetVar ) );
 
         ArgumentRules uminusRealFuncArgRules;
-        uminusRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
+        uminusRealFuncArgRules.push_back( new ConstArgumentRule("first", Real::getClassTypeSpec() ) );
         Real* funcUminusRealRetVar = new Real();
         addFunction( "_uminus",      new ParserFunction( new Func__uminus<double, double>(), "-", uminusRealFuncArgRules, funcUminusRealRetVar ) );
         
@@ -456,107 +492,107 @@ void Workspace::initializeGlobalWorkspace(void) {
         
         // addition
         ArgumentRules addNaturalFuncArgRules;
-        addNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        addNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        addNaturalFuncArgRules.push_back( new ConstArgumentRule("first", Natural::getClassTypeSpec() ) );
+        addNaturalFuncArgRules.push_back( new ConstArgumentRule("second", Natural::getClassTypeSpec() ) );
         Natural* funcAddNaturalRetVar = new Natural();
         addFunction( "_add",      new ParserFunction( new Func__add<int, int, int>(), "+", addNaturalFuncArgRules, funcAddNaturalRetVar ) );
         
         ArgumentRules addIntFuncArgRules;
-        addIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        addIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        addIntFuncArgRules.push_back( new ConstArgumentRule("first", Integer::getClassTypeSpec() ) );
+        addIntFuncArgRules.push_back( new ConstArgumentRule("second", Integer::getClassTypeSpec() ) );
         Integer* funcAddIntRetVar = new Integer();
         addFunction( "_add",      new ParserFunction( new Func__add<int, int, int>(), "+", addIntFuncArgRules, funcAddIntRetVar ) );
         
         ArgumentRules addRealPosFuncArgRules;
-        addRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        addRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        addRealPosFuncArgRules.push_back( new ConstArgumentRule("first", RealPos::getClassTypeSpec() ) );
+        addRealPosFuncArgRules.push_back( new ConstArgumentRule("second", RealPos::getClassTypeSpec() ) );
         RealPos* funcAddRealPosRetVar = new RealPos();
         addFunction( "_add",      new ParserFunction( new Func__add<double, double, double>(), "+", addRealPosFuncArgRules, funcAddRealPosRetVar ) );
         
         ArgumentRules addRealFuncArgRules;
-        addRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        addRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        addRealFuncArgRules.push_back( new ConstArgumentRule("first", Real::getClassTypeSpec() ) );
+        addRealFuncArgRules.push_back( new ConstArgumentRule("second", Real::getClassTypeSpec() ) );
         Real* funcAddRealRetVar = new Real();
         addFunction( "_add",      new ParserFunction( new Func__add<double, double, double>(), "+", addRealFuncArgRules, funcAddRealRetVar ) );
         
         ArgumentRules addStringFuncArgRules;
-        addStringFuncArgRules.push_back( new ValueRule("first", RbString::getClassTypeSpec() ) );
-        addStringFuncArgRules.push_back( new ValueRule("second", RbString::getClassTypeSpec() ) );
+        addStringFuncArgRules.push_back( new ConstArgumentRule("first", RbString::getClassTypeSpec() ) );
+        addStringFuncArgRules.push_back( new ConstArgumentRule("second", RbString::getClassTypeSpec() ) );
         RbString* funcAddStringRetVar = new RbString();
         addFunction( "_add",      new ParserFunction( new Func__add<std::string, std::string, std::string>(), "+", addStringFuncArgRules, funcAddStringRetVar ) );
 
         // division
         ArgumentRules divNaturalFuncArgRules;
-        divNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        divNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        divNaturalFuncArgRules.push_back( new ConstArgumentRule("first", Natural::getClassTypeSpec() ) );
+        divNaturalFuncArgRules.push_back( new ConstArgumentRule("second", Natural::getClassTypeSpec() ) );
         Real* funcDivNaturalRetVar = new Real();
         addFunction( "_div",      new ParserFunction( new Func__div<int, int, double>(), "/", divNaturalFuncArgRules, funcDivNaturalRetVar ) );
 		
         ArgumentRules divIntegerFuncArgRules;
-        divIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        divIntegerFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        divIntegerFuncArgRules.push_back( new ConstArgumentRule("first", Integer::getClassTypeSpec() ) );
+        divIntegerFuncArgRules.push_back( new ConstArgumentRule("second", Integer::getClassTypeSpec() ) );
         Real* funcDivIntegerRetVar = new Real();
         addFunction( "_div",      new ParserFunction( new Func__div<int, int, double>(), "/", divIntegerFuncArgRules, funcDivIntegerRetVar ) );
 		
         ArgumentRules divRealPosFuncArgRules;
-        divRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        divRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        divRealPosFuncArgRules.push_back( new ConstArgumentRule("first", RealPos::getClassTypeSpec() ) );
+        divRealPosFuncArgRules.push_back( new ConstArgumentRule("second", RealPos::getClassTypeSpec() ) );
         RealPos* funcDivRealPosRetVar = new RealPos();
         addFunction( "_div",      new ParserFunction( new Func__div<double, double, double>(), "/", divRealPosFuncArgRules, funcDivRealPosRetVar ) );
 		
         ArgumentRules divRealFuncArgRules;
-        divRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        divRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        divRealFuncArgRules.push_back( new ConstArgumentRule("first", Real::getClassTypeSpec() ) );
+        divRealFuncArgRules.push_back( new ConstArgumentRule("second", Real::getClassTypeSpec() ) );
         Real* funcDivRealRetVar = new Real();
         addFunction( "_div",      new ParserFunction( new Func__div<double, double, double>(), "/", divRealFuncArgRules, funcDivRealRetVar ) );
 
         // multiplication
         ArgumentRules mulNaturalFuncArgRules;
-        mulNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        mulNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        mulNaturalFuncArgRules.push_back( new ConstArgumentRule("first", Natural::getClassTypeSpec() ) );
+        mulNaturalFuncArgRules.push_back( new ConstArgumentRule("second", Natural::getClassTypeSpec() ) );
         Natural* funcMulNaturalRetVar = new Natural();
         addFunction( "_mul",      new ParserFunction( new Func__mul<int, int, int>(), "*", mulNaturalFuncArgRules, funcMulNaturalRetVar ) );
 		
         ArgumentRules mulIntegerFuncArgRules;
-        mulIntegerFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        mulIntegerFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        mulIntegerFuncArgRules.push_back( new ConstArgumentRule("first", Integer::getClassTypeSpec() ) );
+        mulIntegerFuncArgRules.push_back( new ConstArgumentRule("second", Integer::getClassTypeSpec() ) );
         Integer* funcMulIntegerRetVar = new Integer();
         addFunction( "_mul",      new ParserFunction( new Func__mul<int, int, int>(), "*", mulIntegerFuncArgRules, funcMulIntegerRetVar ) );
 		
         ArgumentRules mulRealPosFuncArgRules;
-        mulRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        mulRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        mulRealPosFuncArgRules.push_back( new ConstArgumentRule("first", RealPos::getClassTypeSpec() ) );
+        mulRealPosFuncArgRules.push_back( new ConstArgumentRule("second", RealPos::getClassTypeSpec() ) );
         RealPos* funcMulRealPosRetVar = new RealPos();
         addFunction( "_mul",      new ParserFunction( new Func__mul<double, double, double>(), "*", mulRealPosFuncArgRules, funcMulRealPosRetVar ) );
 		
         ArgumentRules mulRealFuncArgRules;
-        mulRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        mulRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        mulRealFuncArgRules.push_back( new ConstArgumentRule("first", Real::getClassTypeSpec() ) );
+        mulRealFuncArgRules.push_back( new ConstArgumentRule("second", Real::getClassTypeSpec() ) );
         Real* funcMulRealRetVar = new Real();
         addFunction( "_mul",      new ParserFunction( new Func__mul<double, double, double>(), "*", mulRealFuncArgRules, funcMulRealRetVar ) );
 		
         // subtraction
         ArgumentRules subNaturalFuncArgRules;
-        subNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        subNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        subNaturalFuncArgRules.push_back( new ConstArgumentRule("first", Natural::getClassTypeSpec() ) );
+        subNaturalFuncArgRules.push_back( new ConstArgumentRule("second", Natural::getClassTypeSpec() ) );
         Natural* funcSubNaturalRetVar = new Natural();
         addFunction( "_sub",      new ParserFunction( new Func__sub<int, int, int>(), "-", subNaturalFuncArgRules, funcSubNaturalRetVar ) );
         
         ArgumentRules subIntFuncArgRules;
-        subIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        subIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        subIntFuncArgRules.push_back( new ConstArgumentRule("first", Integer::getClassTypeSpec() ) );
+        subIntFuncArgRules.push_back( new ConstArgumentRule("second", Integer::getClassTypeSpec() ) );
         Integer* funcSubIntRetVar = new Integer();
         addFunction( "_sub",      new ParserFunction( new Func__sub<int, int, int>(), "-", subIntFuncArgRules, funcSubIntRetVar ) );
         
         ArgumentRules subRealPosFuncArgRules;
-        subRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        subRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        subRealPosFuncArgRules.push_back( new ConstArgumentRule("first", RealPos::getClassTypeSpec() ) );
+        subRealPosFuncArgRules.push_back( new ConstArgumentRule("second", RealPos::getClassTypeSpec() ) );
         RealPos* funcSubRealPosRetVar = new RealPos();
         addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealPosFuncArgRules, funcSubRealPosRetVar ) );
         
         ArgumentRules subRealFuncArgRules;
-        subRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        subRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        subRealFuncArgRules.push_back( new ConstArgumentRule("first", Real::getClassTypeSpec() ) );
+        subRealFuncArgRules.push_back( new ConstArgumentRule("second", Real::getClassTypeSpec() ) );
         Real* funcSubRealRetVar = new Real();
         addFunction( "_sub",      new ParserFunction( new Func__sub<double, double, double>(), "-", subRealFuncArgRules, funcSubRealRetVar ) );
 
@@ -564,26 +600,26 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add basic logic templated functions */
 /*        ArgumentRules ltNaturalFuncArgRules;
-        ltNaturalFuncArgRules.push_back( new ValueRule("first", Natural::getClassTypeSpec() ) );
-        ltNaturalFuncArgRules.push_back( new ValueRule("second", Natural::getClassTypeSpec() ) );
+        ltNaturalFuncArgRules.push_back( new ConstArgumentRule("first", Natural::getClassTypeSpec() ) );
+        ltNaturalFuncArgRules.push_back( new ConstArgumentRule("second", Natural::getClassTypeSpec() ) );
         RbBoolean* funcLTNaturalRetVar = new RbBoolean();
         addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltNaturalFuncArgRules, funcLTNaturalRetVar ) );
         
         ArgumentRules ltIntFuncArgRules;
-        ltIntFuncArgRules.push_back( new ValueRule("first", Integer::getClassTypeSpec() ) );
-        ltIntFuncArgRules.push_back( new ValueRule("second", Integer::getClassTypeSpec() ) );
+        ltIntFuncArgRules.push_back( new ConstArgumentRule("first", Integer::getClassTypeSpec() ) );
+        ltIntFuncArgRules.push_back( new ConstArgumentRule("second", Integer::getClassTypeSpec() ) );
         RbBoolean* funcLTIntRetVar = new RbBoolean();
         addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltIntFuncArgRules, funcLTIntRetVar ) );
         
         ArgumentRules ltRealPosFuncArgRules;
-        ltRealPosFuncArgRules.push_back( new ValueRule("first", RealPos::getClassTypeSpec() ) );
-        ltRealPosFuncArgRules.push_back( new ValueRule("second", RealPos::getClassTypeSpec() ) );
+        ltRealPosFuncArgRules.push_back( new ConstArgumentRule("first", RealPos::getClassTypeSpec() ) );
+        ltRealPosFuncArgRules.push_back( new ConstArgumentRule("second", RealPos::getClassTypeSpec() ) );
         RbBoolean* funcLTRealPosRetVar = new RbBoolean();
         addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealPosFuncArgRules, funcLTRealPosRetVar ) );
         
         ArgumentRules ltRealFuncArgRules;
-        ltRealFuncArgRules.push_back( new ValueRule("first", Real::getClassTypeSpec() ) );
-        ltRealFuncArgRules.push_back( new ValueRule("second", Real::getClassTypeSpec() ) );
+        ltRealFuncArgRules.push_back( new ConstArgumentRule("first", Real::getClassTypeSpec() ) );
+        ltRealFuncArgRules.push_back( new ConstArgumentRule("second", Real::getClassTypeSpec() ) );
         RbBoolean* funcLTRealRetVar = new RbBoolean();
         addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealFuncArgRules, funcLTRealRetVar ) );
 */		
@@ -593,32 +629,32 @@ void Workspace::initializeGlobalWorkspace(void) {
 		
 		// absolute function
         ArgumentRules absFuncArgRules;
-        absFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+        absFuncArgRules.push_back( new ConstArgumentRule("x", Real::getClassTypeSpec() ) );
         RealPos* absFuncRetArg =  new RealPos();
         addFunction( "abs",       new ParserFunction( new Func_abs(), "absolute function", absFuncArgRules, absFuncRetArg, false )  );
         
         // cos function
         ArgumentRules cosFuncArgRules;
-        cosFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+        cosFuncArgRules.push_back( new ConstArgumentRule("x", Real::getClassTypeSpec() ) );
         Real* cosFuncRetArg =     new Real();
         addFunction( "cos",       new ParserFunction( new Func_cos(), "cos function", cosFuncArgRules, cosFuncRetArg, false )  );
 		
         // exponential function
         ArgumentRules expFuncArgRules;
-        expFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+        expFuncArgRules.push_back( new ConstArgumentRule("x", Real::getClassTypeSpec() ) );
         RealPos* expFuncRetArg =  new RealPos();
         addFunction( "exp",       new ParserFunction( new Func_exp(), "exponential function", expFuncArgRules, expFuncRetArg, false )  );
         
         // natural log function
         ArgumentRules lnFuncArgRules;
-        lnFuncArgRules.push_back( new ValueRule("x", RealPos::getClassTypeSpec() ) );
+        lnFuncArgRules.push_back( new ConstArgumentRule("x", RealPos::getClassTypeSpec() ) );
         Real* lnFuncRetArg =      new Real();
         addFunction( "ln",        new ParserFunction( new Func_ln(), "natural log function", lnFuncArgRules, lnFuncRetArg, false )  );
         
         // log function
 		ArgumentRules logFuncArgRules;
-		logFuncArgRules.push_back( new ValueRule( "x", RealPos::getClassTypeSpec() ) );
-		logFuncArgRules.push_back( new ValueRule( "base", RealPos::getClassTypeSpec(), new RealPos(10.0) ) );
+		logFuncArgRules.push_back( new ConstArgumentRule( "x", RealPos::getClassTypeSpec() ) );
+		logFuncArgRules.push_back( new ConstArgumentRule( "base", RealPos::getClassTypeSpec(), new RealPos(10.0) ) );
         Real* logFuncRetArg = 	   new Real();
 		addFunction( "log",        new ParserFunction( new Func_log(), "log function", logFuncArgRules, logFuncRetArg, false )  );		
 		
@@ -629,13 +665,13 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         // sin function
         ArgumentRules sinFuncArgRules;
-        sinFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+        sinFuncArgRules.push_back( new ConstArgumentRule("x", Real::getClassTypeSpec() ) );
         Real* sinFuncRetArg =     new Real();
         addFunction( "sin",       new ParserFunction( new Func_sin(), "sin function", sinFuncArgRules, sinFuncRetArg, false )  );
 
 		// square root function
         ArgumentRules sqrtFuncArgRules;
-        sqrtFuncArgRules.push_back( new ValueRule("x", RealPos::getClassTypeSpec() ) );
+        sqrtFuncArgRules.push_back( new ConstArgumentRule("x", RealPos::getClassTypeSpec() ) );
         RealPos* sqrtFuncRetArg = new RealPos();
         addFunction( "sqrt",      new ParserFunction( new Func_sqrt(), "square root function", sqrtFuncArgRules, sqrtFuncRetArg, false )  );
 		

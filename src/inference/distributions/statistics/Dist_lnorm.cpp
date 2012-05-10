@@ -62,24 +62,6 @@ Dist_lnorm* Dist_lnorm::clone( void ) const {
 }
 
 
-/** Get member variable rules */
-const MemberRules& Dist_lnorm::getMemberRules( void ) const {
-	
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-	
-    if ( !rulesSet ) {
-		
-        memberRules.push_back( new ValueRule( "mu",    Real::getClassTypeSpec()    ) );
-        memberRules.push_back( new ValueRule( "sigma", RealPos::getClassTypeSpec() ) );
-		
-        rulesSet = true;
-    }
-	
-    return memberRules;
-}
-
-
 /**
  * This function calculates the natural log of the probability
  * density for a lognormally-distributed random variable.

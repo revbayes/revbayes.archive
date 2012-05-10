@@ -65,24 +65,6 @@ Dist_beta* Dist_beta::clone( void ) const {
 }
 
 
-/** Get member variable rules */
-const MemberRules& Dist_beta::getMemberRules( void ) const {
-
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-
-    if ( !rulesSet ) {
-
-        memberRules.push_back( new ValueRule( "alpha", RealPos::getClassTypeSpec() ) );
-        memberRules.push_back( new ValueRule( "beta",  RealPos::getClassTypeSpec() ) );
-
-        rulesSet = true;
-    }
-
-    return memberRules;
-}
-
-
 /**
  * This function calculates the natural log of the probability
  * density for an beta-distributed random variable.

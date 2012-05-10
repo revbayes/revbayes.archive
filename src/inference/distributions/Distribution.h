@@ -31,7 +31,7 @@ class RandomNumberGenerator;
 class Distribution {
     
 public:
-    virtual                            ~InferenceDistribution(void) {}                                                  //!< Destructor
+    virtual                            ~Distribution(void) {}                                                  //!< Destructor
 
     // functions you have to override
     virtual Distribution*      clone(void) const = 0;                                                          //!< Create a clone of the function

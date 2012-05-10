@@ -16,27 +16,42 @@
  * $Id: ParserDistributionContinuous.cpp 1378 2012-04-17 00:27:08Z hoehna $
  */
 
+#include "ConstArgumentRule.h"
 #include "DistributionContinuous.h"
 #include "ParserDistributionContinuous.h"
 #include "MemberFunction.h"
 #include "MethodTable.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "Real.h"
 #include "RbConstants.h"
 #include "RbUtil.h"
-#include "ValueRule.h"
 
 #include <cfloat>
 
 
 /** Constructor passes member rules to base class */
-ParserDistributionContinuous::ParserDistributionContinuous( DistributionContinuous *d, const std::string &n, const MemberRules& mr, RbLanguageObject *rv ) : ParserDistribution( n, mr, rv ), distribution( d ), max( d->getMax() ), min( d->getMin() ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( ParserDistribution::getClassTypeSpec() )) {
+ParserDistributionContinuous::ParserDistributionContinuous( DistributionContinuous *d, const std::string &n, const MemberRules& mr, const RbPtr<RbLanguageObject> &rv ) : ParserDistribution( n, mr, rv ), distribution( d ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( ParserDistribution::getClassTypeSpec() )) {
 
 }
 
-ParserDistributionContinuous::ParserDistributionContinuous( const ParserDistributionContinuous &d) : ParserDistribution( d ), distribution( d.distribution->clone() ), max( d.getMax() ), min( d.getMin() ), typeSpec( d.typeSpec ) {
+ParserDistributionContinuous::ParserDistributionContinuous( const ParserDistributionContinuous &d) : ParserDistribution( d ), distribution( d.distribution->clone() ), typeSpec( d.typeSpec ) {
     
+}
+
+
+ParserDistributionContinuous& ParserDistributionContinuous::operator=(const ParserDistributionContinuous &d) {
+    // check for self assignment
+    if ( this != &d ) {
+        ParserDistribution::operator=( d );
+        
+        delete distribution;
+        
+        distribution = d.distribution->clone();
+    }
+    
+    return *this;
 }
 
 
@@ -52,17 +67,15 @@ ParserDistributionContinuous* ParserDistributionContinuous::clone(void) const {
 
 
 /** Map direct method calls to internal class methods. */
-const RbLanguageObject& ParserDistributionContinuous::executeOperationSimple( const std::string& name, const std::vector<Argument>& args ) {
+RbPtr<RbLanguageObject> ParserDistributionContinuous::executeOperationSimple( const std::string& name, const std::vector<Argument>& args ) {
     
     if ( name == "cdf" ) {
         
-        cd.setValue( cdf( static_cast<const Real&>( args[1].getVariable().getValue() ) ) );
-        return cd;
+        return RbPtr<RbLanguageObject>( new Probability( cdf( static_cast<const Real&>( args[1].getVariable()->getValue() ) ) ) );
     }
     else if ( name == "quantile" ) {
         
-        quant.setValue( quantile( static_cast<const Real&>( args[1].getVariable().getValue() ).getValue() ) );
-        return quant;
+        return RbPtr<RbLanguageObject>( new Real( quantile( static_cast<const Real&>( args[1].getVariable()->getValue() ).getValue() ) ) );
     }
     
     return ParserDistribution::executeOperationSimple( name, args );
@@ -92,16 +105,16 @@ DistributionContinuous* ParserDistributionContinuous::getLeanDistribution( void 
 
 
 /** Get max value of ParserDistribution */
-const Real& ParserDistributionContinuous::getMax( void ) const {
+double ParserDistributionContinuous::getMax( void ) const {
     
-    return max;
+    return distribution->getMax();
 }
 
 
 /** Get min value of ParserDistribution */
-const Real& ParserDistributionContinuous::getMin( void ) const {
+double ParserDistributionContinuous::getMin( void ) const {
     
-    return min;
+    return distribution->getMin();
 }
 
 const MemberRules& ParserDistributionContinuous::getMemberRules(void) const {
@@ -119,11 +132,11 @@ const MethodTable& ParserDistributionContinuous::getMethods( void ) const {
     
     if ( !methodsSet ) {
         
-        cdfArgRules->push_back     ( new ValueRule    ( "q", RealPos::getClassTypeSpec()      ) );
+        cdfArgRules->push_back     ( new ConstArgumentRule    ( "q", RealPos::getClassTypeSpec()      ) );
         
-        quantileArgRules->push_back( new ValueRule    ( "p", RealPos::getClassTypeSpec()      ) );
+        quantileArgRules->push_back( new ConstArgumentRule    ( "p", RealPos::getClassTypeSpec()      ) );
         
-        methods.addFunction( "cdf",      new MemberFunction( Real::getClassTypeSpec(), cdfArgRules      ) );
+        methods.addFunction( "cdf",      new MemberFunction( Probability::getClassTypeSpec(), cdfArgRules      ) );
         methods.addFunction( "quantile", new MemberFunction( Real::getClassTypeSpec(), quantileArgRules ) );
         
         methods.setParentTable( &ParserDistribution::getMethods() );

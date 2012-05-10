@@ -29,9 +29,13 @@ class ArgumentRule;
 class ParserDistributionContinuous: public ParserDistribution {
     
 public:
-    ParserDistributionContinuous(DistributionContinuous* d, const std::string &n, const MemberRules& memberRules, RbLanguageObject* rv);
+    ParserDistributionContinuous(DistributionContinuous* d, const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);
+
     ParserDistributionContinuous(const ParserDistributionContinuous &p);
     virtual                                ~ParserDistributionContinuous(void) {}                                                   //!< Destructor
+    
+    // overloaded operators
+    ParserDistributionContinuous&           operator=(const ParserDistributionContinuous& d);                                       //!< Assignment operator
     
     // Basic utility function
     virtual ParserDistributionContinuous*   clone(void) const;                                                                      //!< Clone object
@@ -41,11 +45,11 @@ public:
     
     // Member object functions
     double                                  cdf( const Real& value);                                                                //!< Cumulative probability
-    DistributionContinuous*        getLeanDistribution(void) const;                                                        //!< Get the lean distribution
-    const Real&                             getMax(void) const;                                                                     //!< Get max value of coverage
+    DistributionContinuous*                 getLeanDistribution(void) const;                                                        //!< Get the lean distribution
+    double                                  getMax(void) const;                                                                     //!< Get max value of coverage
     const MemberRules&                      getMemberRules(void) const;                                                             //!< Get member rules
     const MethodTable&                      getMethods(void) const;                                                                 //!< Get member methods
-    const Real&                             getMin(void) const;                                                                     //!< Get min value of coverage
+    double                                  getMin(void) const;                                                                     //!< Get min value of coverage
     double                                  jointLnPdf( const RbLanguageObject& value) const;                                       //!< Ln probability density
     double                                  lnPdf( const RbLanguageObject& value) const;                                            //!< Ln probability density
     double                                  pdf( const RbLanguageObject& value) const;                                              //!< Probability density
@@ -55,17 +59,11 @@ public:
     void                                    setValue(const RbValue<void*> &v);                                                      //!< Set the pointers to the value of the distribution.
     
 protected:
-    const RbLanguageObject&                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Direct call of member method
+    RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Direct call of member method
     
     TypeSpec                                typeSpec;
     
-    // memberfunction return values
-    Real                                    min;
-    Real                                    max;
-    RealPos                                 cd;
-    Real                                    quant;
-    
-    DistributionContinuous*        distribution;
+    DistributionContinuous*                 distribution;
 };
 
 #endif

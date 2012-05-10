@@ -71,23 +71,6 @@ const TypeSpec& Dist_multinomial::getTypeSpec( void ) const {
 }
 
 
-/** Get member variable rules */
-const MemberRules& Dist_multinomial::getMemberRules( void ) const {
-
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-
-    if ( !rulesSet )
-		{
-            memberRules.push_back( new ValueRule( "probabilities", Simplex::getClassTypeSpec() ) );
-
-        rulesSet = true;
-		}
-
-    return memberRules;
-}
-
-
 /** Get the number of states in the distribution */
 size_t Dist_multinomial::getNumberOfStates( void ) const {
     

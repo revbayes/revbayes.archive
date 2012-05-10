@@ -64,24 +64,6 @@ Dist_gamma* Dist_gamma::clone( void ) const {
 }
 
 
-/** Get member variable rules */
-const MemberRules& Dist_gamma::getMemberRules( void ) const {
-
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-
-    if ( !rulesSet ) {
-
-        memberRules.push_back( new ValueRule( "shape", RealPos::getClassTypeSpec() ) );
-        memberRules.push_back( new ValueRule( "rate",  RealPos::getClassTypeSpec() ) );
-
-        rulesSet = true;
-    }
-
-    return memberRules;
-}
-
-
 /**
  * This function calculates the natural log of the probability
  * density for an gamma-distributed random variable.

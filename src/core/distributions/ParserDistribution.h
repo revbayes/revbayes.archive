@@ -21,6 +21,7 @@
 #define ParserDistribution_H
 
 #include "Distribution.h"
+#include "MemberObject.h"
 #include "MemberFunction.h"
 #include "RbValue.h"
 #include "Real.h"
@@ -57,7 +58,7 @@ public:
     virtual void                        setMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
     
     // functions you have to override
-    virtual Distribution*      getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
+    virtual Distribution*               getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
     virtual double                      jointLnPdf( const RbLanguageObject& value) const = 0;                               //!< Ln probability density
     virtual double                      lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
     virtual double                      pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function
@@ -66,11 +67,10 @@ public:
     virtual void                        setValue(const RbValue<void*> &v) = 0;                                              //!< Set the pointers to the value of the distribution.
     
 protected:
-    ParserDistribution( const std::string &n, const MemberRules& memberRules, RbLanguageObject* rv);                        //!< Simple constructor
+    ParserDistribution( const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);           //!< Simple constructor
     ParserDistribution( const ParserDistribution &p);                                                                       //!< Copy constructor
     
     virtual RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
-    virtual void                        setMemberVariable(const std::string& name, const Variable* var);                    //!< Set member variable
     
     std::string                         name;
     MemberRules                         memberRules;

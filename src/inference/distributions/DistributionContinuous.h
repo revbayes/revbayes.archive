@@ -26,7 +26,7 @@
 class DistributionContinuous: public Distribution {
     
 public:
-    virtual                                     ~InferenceDistributionContinuous(void) {}                                                                 //!< Destructor
+    virtual                                     ~DistributionContinuous(void) {}                                                                 //!< Destructor
     
     // Basic utility function
     virtual DistributionContinuous*    clone(void) const = 0;                                              //!< Clone object    
