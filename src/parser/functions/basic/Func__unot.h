@@ -41,21 +41,17 @@ class Func__unot :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);   //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);   //!< Execute function
 
-    private:
-        
-        // function return value
-        RbBoolean                   retValue;
 };
 
 #endif
 
+#include "ConstArgumentRule.h"
 #include "RbBoolean.h"
 #include "DAGNode.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 
@@ -76,12 +72,11 @@ Func__unot<valType>* Func__unot<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType>
-const RbLanguageObject& Func__unot<valType>::executeFunction(const std::vector<const RbObject *> &args) {
+RbPtr<RbLanguageObject> Func__unot<valType>::executeFunction(const std::vector<const RbObject *> &args) {
 
     const valType& val = static_cast<const valType&> ( *args[0] );
-    retValue = ! (val);
 
-    return retValue;
+    return RbPtr<RbLanguageObject>( new RbBoolean( !val ) );
 }
 
 
@@ -94,7 +89,7 @@ const ArgumentRules& Func__unot<valType>::getArgumentRules( void ) const {
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "value", valType().getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "value", valType().getTypeSpec() ) );
         rulesSet = true;
         }
 

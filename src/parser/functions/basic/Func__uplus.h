@@ -40,18 +40,16 @@ public:
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);   //!< Execute function
-
-    private:
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);   //!< Execute function
     
 };
 
 #endif
 
+#include "ConstArgumentRule.h"
 #include "RbLanguageObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 
@@ -72,11 +70,11 @@ Func__uplus<valType, retType>* Func__uplus<valType, retType>::clone( void ) cons
 
 /** Execute function: We simply return a copy of the value */
 template <typename valType, typename retType>
-const RbLanguageObject& Func__uplus<valType, retType>::executeFunction(const std::vector<const RbObject *> &args) {
+RbPTr<RbLanguageObject> Func__uplus<valType, retType>::executeFunction(const std::vector<const RbObject *> &args) {
 
     const valType& val = static_cast<const valType&> ( *args[0] );
 
-    return val;
+    return RbPtr<RbLanguageObject>( val.clone() );
 }
 
 
@@ -89,7 +87,7 @@ const ArgumentRules& Func__uplus<valType, retType>::getArgumentRules( void ) con
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "value", valType().getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "value", valType().getTypeSpec() ) );
         rulesSet = true;
         }
 

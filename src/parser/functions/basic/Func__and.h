@@ -40,25 +40,21 @@ class Func__and :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);   //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);   //!< Execute function
 
-    private:
-    
-        // function return value
-        RbBoolean                   retValue;
 };
 
 #endif
 
 
-#include "RbBoolean.h"
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "Integer.h"
+#include "RbBoolean.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "Real.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 /** default constructor */
@@ -78,12 +74,12 @@ Func__and<firstValType, secondValType>* Func__and<firstValType, secondValType>::
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-const RbLanguageObject& Func__and<firstValType,secondValType>::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func__and<firstValType,secondValType>::executeFunction( const std::vector<const RbObject*>& args ) {
 
     const firstValType&  val1 = static_cast<const firstValType&> ( *args[0]  );
     const secondValType& val2 = static_cast<const secondValType&>( *args[1] );
-    retValue.setValue( val1 && val2 );
-    return retValue;
+    
+    return RbPtr<RbLanguageObject>( new RbBoolean( val1 && val2 ) );
 }
 
 
@@ -94,12 +90,11 @@ const ArgumentRules& Func__and<firstValType, secondValType>::getArgumentRules( v
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
 
-    if ( !rulesSet ) 
-        {
-        argumentRules.push_back( new ValueRule( "first", firstValType() .getTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "second", secondValType().getTypeSpec() ) );
+    if ( !rulesSet ) {
+        argumentRules.push_back( new ConstArgumentRule( "first", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "second", secondValType().getTypeSpec() ) );
         rulesSet = true;
-        }
+    }
 
     return argumentRules;
 }

@@ -17,13 +17,14 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "Func__range.h"
 #include "Integer.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RbVector.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 
@@ -41,22 +42,22 @@ Func__range* Func__range::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func__range::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func__range::executeFunction( const std::vector<const RbObject*>& args ) {
 
     int f = static_cast<const Integer*>( args[0] )->getValue();
     int l = static_cast<const Integer*>( args[1] )->getValue();
 
-    range.clear();
+    RbVector *range = new RbVector( Integer::getClassTypeSpec() );
     if (f < l) {
         for ( int i = f; i <= l; i++ )
-            range.push_back( new Integer(i) );
+            range->push_back( new Integer(i) );
     }
     else {
         for ( int i = f; i >= l; i-- )
-            range.push_back( new Integer(i) );
+            range->push_back( new Integer(i) );
     }
     
-    return range;
+    return RbPtr<RbLanguageObject>( range );
 }
 
 
@@ -68,8 +69,8 @@ const ArgumentRules& Func__range::getArgumentRules( void ) const {
 
     if (!rulesSet) {
 
-        argumentRules.push_back( new ValueRule( "first", Integer::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "last",  Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "first", Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "last",  Integer::getClassTypeSpec() ) );
         rulesSet = true;
     }
 
@@ -105,7 +106,7 @@ const TypeSpec& Func__range::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func__range::getReturnType( void ) const {
 
-    static TypeSpec returnTypeSpec = RbVector<Integer>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Integer::getClassTypeSpec() ) );
     return returnTypeSpec;
 }
 

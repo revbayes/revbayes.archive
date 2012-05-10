@@ -18,7 +18,6 @@
 #define Func__range_H
 
 #include "RbFunction.h"
-#include "RbVector.h"
 
 #include <map>
 #include <string>
@@ -42,12 +41,8 @@ class Func__range :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
  
-    private:
-
-        // memberfunction return values
-        RbVector<Integer>           range;
 };
 
 #endif
