@@ -1,10 +1,10 @@
 /**
  * @file
- * This file contains the declaration of InferenceDistribution, which specifies the
- * interface for InferenceDistributions in RevBayes. A InferenceDistribution is taken in
+ * This file contains the declaration of Distribution, which specifies the
+ * interface for Distributions in RevBayes. A Distribution is taken in
  * the statistical sense.
  *
- * @brief Declaration of InferenceDistribution
+ * @brief Declaration of Distribution
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-03-19 09:25:05 +0100 (Mon, 19 Mar 2012) $
@@ -12,13 +12,13 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2012-04-16, version 1.0
- * @interface InferenceDistribution
+ * @interface Distribution
  *
- * $Id: InferenceDistribution.h 1353 2012-03-19 08:25:05Z hoehna $
+ * $Id: Distribution.h 1353 2012-03-19 08:25:05Z hoehna $
  */
 
-#ifndef InferenceDistribution_H
-#define InferenceDistribution_H
+#ifndef Distribution_H
+#define Distribution_H
 
 #include "RbValue.h"
 #include <set>
@@ -28,13 +28,13 @@
 class RandomNumberGenerator;
 
 
-class InferenceDistribution {
+class Distribution {
     
 public:
     virtual                            ~InferenceDistribution(void) {}                                                  //!< Destructor
 
     // functions you have to override
-    virtual InferenceDistribution*      clone(void) const = 0;                                                          //!< Create a clone of the function
+    virtual Distribution*      clone(void) const = 0;                                                          //!< Create a clone of the function
  
     // functions you do not have yo override
     virtual double                      jointLnPdf(void) const;                                                         //!< Ln probability density
@@ -48,7 +48,7 @@ public:
     std::string                         toString(void) const;
 
 protected:
-    InferenceDistribution( void ) {};                                                                                   //!< Simple constructor
+    Distribution( void ) {};                                                                                   //!< Simple constructor
     
     // functions you have to override
     virtual double                      lnPdfSingleValue(std::vector<size_t> &offsets) const = 0;                       //!< Ln probability density

@@ -30,7 +30,7 @@
 #include <string>
 
 class RandomNumberGenerator;
-class InferenceDistribution;
+class Distribution;
 
 
 class ParserDistribution : public MemberObject  {
@@ -57,7 +57,7 @@ public:
     virtual void                        setMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
     
     // functions you have to override
-    virtual InferenceDistribution*      getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
+    virtual Distribution*      getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
     virtual double                      jointLnPdf( const RbLanguageObject& value) const = 0;                               //!< Ln probability density
     virtual double                      lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
     virtual double                      pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function

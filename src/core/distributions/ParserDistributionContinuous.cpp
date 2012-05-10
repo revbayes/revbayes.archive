@@ -16,7 +16,7 @@
  * $Id: ParserDistributionContinuous.cpp 1378 2012-04-17 00:27:08Z hoehna $
  */
 
-#include "InferenceDistributionContinuous.h"
+#include "DistributionContinuous.h"
 #include "ParserDistributionContinuous.h"
 #include "MemberFunction.h"
 #include "MethodTable.h"
@@ -31,7 +31,7 @@
 
 
 /** Constructor passes member rules to base class */
-ParserDistributionContinuous::ParserDistributionContinuous( InferenceDistributionContinuous *d, const std::string &n, const MemberRules& mr, RbLanguageObject *rv ) : ParserDistribution( n, mr, rv ), distribution( d ), max( d->getMax() ), min( d->getMin() ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( ParserDistribution::getClassTypeSpec() )) {
+ParserDistributionContinuous::ParserDistributionContinuous( DistributionContinuous *d, const std::string &n, const MemberRules& mr, RbLanguageObject *rv ) : ParserDistribution( n, mr, rv ), distribution( d ), max( d->getMax() ), min( d->getMin() ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( ParserDistribution::getClassTypeSpec() )) {
 
 }
 
@@ -86,7 +86,7 @@ const TypeSpec& ParserDistributionContinuous::getClassTypeSpec(void) {
 }
 
 
-InferenceDistributionContinuous* ParserDistributionContinuous::getLeanDistribution( void ) const {
+DistributionContinuous* ParserDistributionContinuous::getLeanDistribution( void ) const {
     return distribution;
 }
 

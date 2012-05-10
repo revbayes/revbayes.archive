@@ -1,12 +1,23 @@
-//
-//  InferenceDistribution.cpp
-//  RevBayes
-//
-//  Created by Sebastian Hoehna on 4/16/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
+/**
+ * @file
+ * This file contains the implementation of Distribution, which specifies the
+ * interface for Distributions in RevBayes. A Distribution is taken in
+ * the statistical sense.
+ *
+ * @brief Declaration of Distribution
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date: 2012-03-19 09:25:05 +0100 (Mon, 19 Mar 2012) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2012-04-16, version 1.0
+ * @interface Distribution
+ *
+ * $Id: Distribution.h 1353 2012-03-19 08:25:05Z hoehna $
+ */
 
-#include "InferenceDistribution.h"
+#include "Distribution.h"
 
 #include <typeinfo>
 #include <sstream>
@@ -18,7 +29,7 @@
  *
  * This is the default implementation which just computes the sum of all single lnPdf's.
  */
-double InferenceDistribution::jointLnPdf( void ) const {
+double Distribution::jointLnPdf( void ) const {
 
     double jlnpd = 0;
     
@@ -41,7 +52,7 @@ double InferenceDistribution::jointLnPdf( void ) const {
 
 
 /** Execute function */
-double* InferenceDistribution::lnPdf( void ) const {
+double* Distribution::lnPdf( void ) const {
     
     // set all the offset and the level to 0 and delegate the function call
     std::vector<size_t> offsets;
@@ -67,7 +78,7 @@ double* InferenceDistribution::lnPdf( void ) const {
 }
 
 
-void InferenceDistribution::lnPdf(double *val, std::vector<size_t> &offset, size_t level) const {
+void Distribution::lnPdf(double *val, std::vector<size_t> &offset, size_t level) const {
     
     // first, we test if we have another dimension
     if ( members[members.size()-1].lengths.size() == level ) {
@@ -109,7 +120,7 @@ void InferenceDistribution::lnPdf(double *val, std::vector<size_t> &offset, size
 
 
 /** Execute function */
-double* InferenceDistribution::pdf( void ) const {
+double* Distribution::pdf( void ) const {
     
     // set all the offset and the level to 0 and delegate the function call
     std::vector<size_t> offsets;
@@ -135,7 +146,7 @@ double* InferenceDistribution::pdf( void ) const {
 }
 
 
-void InferenceDistribution::pdf(double *val, std::vector<size_t> &offset, size_t level) const {
+void Distribution::pdf(double *val, std::vector<size_t> &offset, size_t level) const {
     
     // first, we test if we have another dimension
     if ( members[members.size()-1].lengths.size() == level ) {
@@ -177,7 +188,7 @@ void InferenceDistribution::pdf(double *val, std::vector<size_t> &offset, size_t
 
 
 /** Draw a random variable */
-void InferenceDistribution::rv( void ) {
+void Distribution::rv( void ) {
     
     // set all the offset and the level to 0 and delegate the function call
     std::vector<size_t> offsets;
@@ -191,7 +202,7 @@ void InferenceDistribution::rv( void ) {
 }
 
 
-void InferenceDistribution::rv( std::vector<size_t> &offset, size_t level ) {
+void Distribution::rv( std::vector<size_t> &offset, size_t level ) {
     
     // first, we test if we have another dimension
     if ( members[members.size()-1].lengths.size() == level ) {
@@ -229,7 +240,7 @@ void InferenceDistribution::rv( std::vector<size_t> &offset, size_t level ) {
 }
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void InferenceDistribution::setParameters(const std::vector<RbValue<void*> > &args) {
+void Distribution::setParameters(const std::vector<RbValue<void*> > &args) {
     
     members = args;
     
@@ -239,7 +250,7 @@ void InferenceDistribution::setParameters(const std::vector<RbValue<void*> > &ar
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void InferenceDistribution::setObservedValue(const RbValue<void *> &v) {
+void Distribution::setObservedValue(const RbValue<void *> &v) {
     
     members[members.size()-1] = v;
     
@@ -249,7 +260,7 @@ void InferenceDistribution::setObservedValue(const RbValue<void *> &v) {
 }
 
 
-std::string InferenceDistribution::toString( void ) const {
+std::string Distribution::toString( void ) const {
     std::string name = "";
     std::stringstream o;
     o << typeid(*this).name();

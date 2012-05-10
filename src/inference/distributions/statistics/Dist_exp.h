@@ -18,14 +18,14 @@
 #ifndef Dist_exp_H
 #define Dist_exp_H
 
-#include "InferenceDistributionContinuous.h"
+#include "DistributionContinuous.h"
 #include "RbValue.h"
 
 #include <ostream>
 #include <string>
 
 
-class Dist_exp: public InferenceDistributionContinuous {
+class Dist_exp: public DistributionContinuous {
 
     public:
                                     Dist_exp(void);                                                     //!< Parser constructor

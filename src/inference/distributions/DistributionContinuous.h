@@ -1,46 +1,46 @@
 /**
  * @file
  * This file contains the declaration of DistributiionContinuous, which specifies
- * the interface for InferenceDistributions on continuous variables.
+ * the interface for Distributions on continuous variables.
  *
- * @brief Declaration of InferenceDistributionContinuous
+ * @brief Declaration of DistributionContinuous
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-03-19 09:25:05 +0100 (Mon, 19 Mar 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: InferenceDistributionContinuous.h 1353 2012-03-19 08:25:05Z hoehna $
+ * $Id: DistributionContinuous.h 1353 2012-03-19 08:25:05Z hoehna $
  */
 
-#ifndef InferenceDistributionContinuous_H
-#define InferenceDistributionContinuous_H
+#ifndef DistributionContinuous_H
+#define DistributionContinuous_H
 
-#include "InferenceDistribution.h"
+#include "Distribution.h"
 #include "Real.h"
 
 #include <set>
 #include <string>
 
 
-class InferenceDistributionContinuous: public InferenceDistribution {
+class DistributionContinuous: public Distribution {
     
 public:
     virtual                                     ~InferenceDistributionContinuous(void) {}                                                                 //!< Destructor
     
     // Basic utility function
-    virtual InferenceDistributionContinuous*    clone(void) const = 0;                                              //!< Clone object    
+    virtual DistributionContinuous*    clone(void) const = 0;                                              //!< Clone object    
 
-    // Interval InferenceDistribution functions you probably want to override
+    // Interval Distribution functions you probably want to override
     virtual double                              getMax(void) const;                                                 //!< Get max value of coverage
     virtual double                              getMin(void) const;                                                 //!< Get min value of coverage
     
-    // Interval InferenceDistribution functions you have to override
+    // Interval Distribution functions you have to override
     virtual double                              cdf(double p) = 0;                                                  //!< Cumulative probability
     virtual double                              quantile(double p) = 0;                                             //!< Quantile
     
 protected:
-    InferenceDistributionContinuous() {}                                //!< Constructor
+    DistributionContinuous() {}                                //!< Constructor
 
     // functions you have to override
     virtual double                              lnPdfSingleValue(std::vector<size_t> &result_offsets) const = 0;    //!< Ln probability density

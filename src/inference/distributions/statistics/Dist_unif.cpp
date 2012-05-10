@@ -27,7 +27,7 @@
 
 
 /** Default constructor for parser use */
-Dist_unif::Dist_unif(void) : InferenceDistributionContinuous() {
+Dist_unif::Dist_unif(void) : DistributionContinuous() {
 
 }
 

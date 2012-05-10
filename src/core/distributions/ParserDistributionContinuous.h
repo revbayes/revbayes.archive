@@ -16,7 +16,7 @@
 #ifndef ParserDistributionContinuous_H
 #define ParserDistributionContinuous_H
 
-#include "InferenceDistributionContinuous.h"
+#include "DistributionContinuous.h"
 #include "MemberFunction.h"
 #include "ParserDistribution.h"
 #include "Real.h"
@@ -29,7 +29,7 @@ class ArgumentRule;
 class ParserDistributionContinuous: public ParserDistribution {
     
 public:
-    ParserDistributionContinuous(InferenceDistributionContinuous* d, const std::string &n, const MemberRules& memberRules, RbLanguageObject* rv);
+    ParserDistributionContinuous(DistributionContinuous* d, const std::string &n, const MemberRules& memberRules, RbLanguageObject* rv);
     ParserDistributionContinuous(const ParserDistributionContinuous &p);
     virtual                                ~ParserDistributionContinuous(void) {}                                                   //!< Destructor
     
@@ -41,7 +41,7 @@ public:
     
     // Member object functions
     double                                  cdf( const Real& value);                                                                //!< Cumulative probability
-    InferenceDistributionContinuous*        getLeanDistribution(void) const;                                                        //!< Get the lean distribution
+    DistributionContinuous*        getLeanDistribution(void) const;                                                        //!< Get the lean distribution
     const Real&                             getMax(void) const;                                                                     //!< Get max value of coverage
     const MemberRules&                      getMemberRules(void) const;                                                             //!< Get member rules
     const MethodTable&                      getMethods(void) const;                                                                 //!< Get member methods
@@ -65,7 +65,7 @@ protected:
     RealPos                                 cd;
     Real                                    quant;
     
-    InferenceDistributionContinuous*        distribution;
+    DistributionContinuous*        distribution;
 };
 
 #endif

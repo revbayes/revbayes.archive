@@ -26,7 +26,7 @@
 
 
 /** Default constructor for parser use */
-Dist_exp::Dist_exp( void ) : InferenceDistributionContinuous() {
+Dist_exp::Dist_exp( void ) : DistributionContinuous() {
 
 }
 

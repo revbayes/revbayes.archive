@@ -24,7 +24,7 @@
 
 
 /** Constructor for parser use */
-Dist_norm::Dist_norm( void ) : InferenceDistributionContinuous() {
+Dist_norm::Dist_norm( void ) : DistributionContinuous() {
 
 }
 

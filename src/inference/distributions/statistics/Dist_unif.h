@@ -18,12 +18,12 @@
 #ifndef Dist_unif_H
 #define Dist_unif_H
 
-#include "InferenceDistributionContinuous.h"
+#include "DistributionContinuous.h"
 
 #include <ostream>
 #include <string>
 
-class Dist_unif: public InferenceDistributionContinuous {
+class Dist_unif: public DistributionContinuous {
 
     public:
                                     Dist_unif(void);                                                    //!< constructor
