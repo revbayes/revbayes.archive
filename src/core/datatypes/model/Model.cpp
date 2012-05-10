@@ -25,7 +25,7 @@
 #include "Distribution.h"
 #include "Ellipsis.h"
 #include "InferenceDagNode.h"
-#include "InferenceDistribution.h"
+#include "Distribution.h"
 #include "InferenceFunction.h"
 #include "Model.h"
 #include "Monitor.h"

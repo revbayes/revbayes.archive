@@ -31,34 +31,21 @@ class Simplex;
 
 class Dist_dirichlet: public DistributionContinuous {
 
-    public:
-                                    Dist_dirichlet(void);                                               //!< Parser constructor
-
-        // Basic utility functions
-        Dist_dirichlet*             clone(void) const;                                                  //!< Clone object
-        static const std::string&   getClassName(void);                                                 //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
-
-        // Member variable setup
-        const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setMemberVariable(const std::string& name, const Variable* var);    //!< Catching the setting of the member variables.
-
-        // Real-valued distribution functions
-        double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
-        const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-        double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
-        double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
-        const Real&                 quantile(const double p);                                           //!< Quantile
-        const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
     
-    private:
-
-        // parameters
-        RbConstVariablePtr          alpha;
-
-        // memberfunction return variables
-        Simplex                     randomVariable;
+public:
+    Dist_dirichlet(void);                                                                           //!< constructor
+    
+    // Basic utility functions
+    Dist_dirichlet*             clone(void) const;                                                  //!< Clone object
+    
+private:
+    double                      lnPdfSingleValue(std::vector<size_t> &offset) const;                //!< Ln probability density
+    double                      pdfSingleValue(std::vector<size_t> &offset) const;                  //!< Probability density
+    void                        rvSingleValue(std::vector<size_t> &offset);                         //!< Generate random variable
+    void                        setInternalParameters(const std::vector<RbValue<void*> > &p);       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    
+    // parameters
+    RbValue<double*>            alpha;
 
 };
 

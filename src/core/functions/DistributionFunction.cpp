@@ -22,7 +22,7 @@
 #include "Distribution.h"
 #include "DistributionContinuous.h"
 #include "DistributionFunction.h"
-#include "InferenceDistribution.h"
+#include "Distribution.h"
 #include "ParserDistributionContinuous.h"
 #include "RbException.h"
 #include "RbUtil.h"

@@ -43,14 +43,14 @@
 
 #include "VariableInferenceNode.h"
 
-class InferenceDistribution;
+class Distribution;
 
 class StochasticInferenceNode : public VariableInferenceNode {
     
 public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
-    StochasticInferenceNode(const RbValue<void*> &v, InferenceDistribution* dist, const std::string &n);    //!< Construct from distribution (raw object)
+    StochasticInferenceNode(const RbValue<void*> &v, Distribution* dist, const std::string &n);    //!< Construct from distribution (raw object)
     StochasticInferenceNode(const StochasticInferenceNode& x);                                              //!< Copy constructor
     virtual                            ~StochasticInferenceNode(void);                                      //!< Destructor
     
@@ -58,7 +58,7 @@ public:
     StochasticInferenceNode&            operator=(const StochasticInferenceNode& x);                        //!< Assignment operator
     
     // Basic utility functions
-    const InferenceDistribution&        getDistribution(void) const;
+    const Distribution&        getDistribution(void) const;
     
     // StochasticInferenceNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
@@ -99,7 +99,7 @@ private:
 
     // Member variables
     bool                                clamped;                                                            //!< Is the node clamped with data?
-    InferenceDistribution*              distribution;                                                       //!< Distribution (density functions, random draw function)
+    Distribution*              distribution;                                                       //!< Distribution (density functions, random draw function)
     double                              lnProb;                                                             //!< Current log probability
     bool                                needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
     bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?

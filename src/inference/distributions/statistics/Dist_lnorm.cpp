@@ -33,7 +33,7 @@
 
 
 /** Constructor for parser use */
-Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ), mu( NULL ), sigma( NULL ) {
+Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous(  ) {
 	
 }
 
@@ -48,13 +48,10 @@ Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ), mu(
  * @return      Cumulative probability
  *
  */
-double Dist_lnorm::cdf( const RbLanguageObject& value ) {
-	
-    double m    = static_cast<const Real&   >( mu->getValue()    ).getValue();
-	double s    = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-    double q    = static_cast<const RealPos&>( value             ).getValue();
-	
-	return RbStatistics::Lognormal::cdf(m, s, q);
+double Dist_lnorm::cdf(double q) {
+    
+	return RbStatistics::Lognormal::cdf(*mean.value, *sd.value, q);
+    
 }
 
 
@@ -62,31 +59,6 @@ double Dist_lnorm::cdf( const RbLanguageObject& value ) {
 Dist_lnorm* Dist_lnorm::clone( void ) const {
 	
     return new Dist_lnorm( *this );
-}
-
-
-/** Get class name of object */
-const std::string& Dist_lnorm::getClassName(void) { 
-    
-    static std::string rbClassName = "Lognormal distribution";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& Dist_lnorm::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& Dist_lnorm::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
 }
 
 
@@ -108,15 +80,6 @@ const MemberRules& Dist_lnorm::getMemberRules( void ) const {
 }
 
 
-/** Get random variable type */
-const TypeSpec& Dist_lnorm::getVariableType( void ) const {
-	
-    static TypeSpec varTypeSpec = RealPos::getClassTypeSpec();
-    
-    return varTypeSpec;
-}
-
-
 /**
  * This function calculates the natural log of the probability
  * density for a lognormally-distributed random variable.
@@ -126,13 +89,9 @@ const TypeSpec& Dist_lnorm::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_lnorm::lnPdf(const RbLanguageObject& value) const {
-	
-    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-    double x = static_cast<const RealPos&>( value             ).getValue();
-	
-    return RbStatistics::Lognormal::lnPdf(m, s, x);
+double Dist_lnorm::lnPdfSingleValue( std::vector<size_t> &offset ) const {
+    
+    return RbStatistics::Lognormal::lnPdf(mean.value[offset[0]], sd.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -145,13 +104,9 @@ double Dist_lnorm::lnPdf(const RbLanguageObject& value) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_lnorm::pdf( const RbLanguageObject& value ) const {
-	
-    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-    double x = static_cast<const RealPos&>( value             ).getValue();
-	
-    return RbStatistics::Lognormal::pdf(m, s, x);
+double Dist_lnorm::pdfSingleValue( std::vector<size_t> &offset ) const {
+    
+    return RbStatistics::Lognormal::pdf(mean.value[offset[0]], sd.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -165,14 +120,9 @@ double Dist_lnorm::pdf( const RbLanguageObject& value ) const {
  * @return      Quantile
  *
  */
-const Real& Dist_lnorm::quantile( const double p) {
-    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-	
-    quant.setValue( RbStatistics::Lognormal::quantile(m, s, p) );
+double Dist_lnorm::quantile( double p ) {
     
-    return quant;
-    
+    return RbStatistics::Lognormal::quantile(*mean.value, *sd.value, p);
 }
 
 
@@ -185,30 +135,26 @@ const Real& Dist_lnorm::quantile( const double p) {
  *
  * @return      Random draw
  */
-const RbLanguageObject& Dist_lnorm::rv(void) {
-	
-    double m = static_cast<const Real&   >( mu->getValue()    ).getValue();
-    double s = static_cast<const RealPos&>( sigma->getValue() ).getValue();
-	
+void Dist_lnorm::rvSingleValue( std::vector<size_t> &offset ) {
+    
     RandomNumberGenerator* rng = GLOBAL_RNG;
-	randomVariable.setValue( RbStatistics::Lognormal::rv(m ,s, *rng ) );
-	
-	return randomVariable;
+    randomVariable.value[offset[2]] = RbStatistics::Lognormal::rv(mean.value[offset[0]], sd.value[offset[1]], *rng);
+    
 }
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_lnorm::setMemberVariable(std::string const &name, const Variable *var) {
+void Dist_lnorm::setInternalParameters(const std::vector<RbValue<void *> > &p) {
     
-    if ( name == "mu" ) {
-        mu = var;
-    }
-    else if ( name == "sigma" ){
-        sigma = var;
-    }
-    else {
-        DistributionContinuous::setMemberVariable(name, var);
-    }
+    mean.value              = static_cast<double*>( p[0].value );
+    mean.lengths            = p[0].lengths;
+    
+    sd.value                = static_cast<double*>( p[1].value );
+    sd.lengths              = p[1].lengths;
+    
+    randomVariable.value    = static_cast<double*>( p[2].value );
+    randomVariable.lengths  = p[2].lengths;
+    
 }
 
 

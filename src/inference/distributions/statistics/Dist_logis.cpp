@@ -35,41 +35,23 @@
 
 
 /** Default constructor for parser use */
-Dist_logis::Dist_logis( void ) : DistributionContinuous( getMemberRules() ), location( NULL), scale( NULL ) {
+Dist_logis::Dist_logis( void ) : DistributionContinuous(  ) {
 
 }
 
+
+
+double Dist_logis::cdf(double q) {
+    
+	return RbStatistics::Logistic::cdf(*location.value, *scale.value, q);
+    
+}
 
 
 /** Clone this object */
 Dist_logis* Dist_logis::clone( void ) const {
 
     return new Dist_logis( *this );
-}
-
-
-/** Get class name of object */
-const std::string& Dist_logis::getClassName(void) { 
-    
-    static std::string rbClassName = "Logistic distribution";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& Dist_logis::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& Dist_logis::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
 }
 
 
@@ -88,14 +70,6 @@ const MemberRules& Dist_logis::getMemberRules( void ) const {
     return memberRules;
 }
 
-
-/** Get random variable type */
-const TypeSpec& Dist_logis::getVariableType( void ) const {
-
-    static TypeSpec varTypeSpec = Real::getClassTypeSpec();
-    
-    return varTypeSpec;
-}
 
 /**
  * This function calculates the probability density
@@ -127,14 +101,9 @@ double Dist_logis::pdf( const RbLanguageObject& value ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_logis::lnPdf( const RbLanguageObject& value ) const {
-
-	// Get the value and the parameters of the Logistic
-    double l = static_cast<const Real&     >( location->getValue() ).getValue();
-    double s = static_cast<const RealPos&  >( scale->getValue()    ).getValue();
-    double x = static_cast<const Real&     >( value               ).getValue();
-
-	return RbStatistics::Logistic::lnPdf( l, s, x );
+double Dist_logis::lnPdfSingleValue( std::vector<size_t> &offset ) const {
+    
+    return RbStatistics::Logistic::lnPdf(location.value[offset[0]], scale.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -148,13 +117,9 @@ double Dist_logis::lnPdf( const RbLanguageObject& value ) const {
  * @return      Cumulative probability
  *
  */
-double Dist_logis::cdf( const RbLanguageObject& value ) {
+double Dist_logis::pdfSingleValue( std::vector<size_t> &offset ) const {
     
-    double l = static_cast<const Real&     >( location->getValue() ).getValue();
-    double s = static_cast<const RealPos&  >( scale->getValue()    ).getValue();
-    double x = static_cast<const Real&     >( value               ).getValue();
-
-	return RbStatistics::Logistic::cdf( l, s, x );
+    return RbStatistics::Logistic::pdf(location.value[offset[0]], scale.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -169,15 +134,9 @@ double Dist_logis::cdf( const RbLanguageObject& value ) {
  * @return      Quantile
  *
  */
-const Real& Dist_logis::quantile( const double p ) {
+double Dist_logis::quantile( double p ) {
     
-    double l = static_cast<const Real&     >( location->getValue() ).getValue();
-    double s = static_cast<const RealPos&  >( scale->getValue()    ).getValue();
-
-	double q = RbStatistics::Logistic::quantile(l, s, p);
-	quant.setValue( q );
-    
-    return quant;
+    return RbStatistics::Logistic::quantile(*location.value, *scale.value, p);
 }
 
 
@@ -189,32 +148,25 @@ const Real& Dist_logis::quantile( const double p ) {
  *
  * @return      Random draw from Logistic distribution
  */
-
-
-
-const RbLanguageObject& Dist_logis::rv(void) {
+void Dist_logis::rvSingleValue( std::vector<size_t> &offset ) {
     
-    double l = static_cast<const Real&     >( location->getValue() ).getValue();
-    double s = static_cast<const RealPos&  >( scale->getValue()    ).getValue();
-
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    randomVariable.setValue( RbStatistics::Logistic::rv(l, s, *rng) );
-
-	return randomVariable;
+    randomVariable.value[offset[2]] = RbStatistics::Logistic::rv(location.value[offset[0]], scale.value[offset[1]], *rng);
+    
 }
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_logis::setMemberVariable(std::string const &name, const Variable *var) {
+void Dist_logis::setInternalParameters(const std::vector<RbValue<void *> > &p) {
     
-    if ( name == "location" ) {
-        location = var;
-    }
-    else if ( name == "scale" ){
-        scale = var;
-    }
-    else {
-        DistributionContinuous::setMemberVariable(name, var);
-    }
+    location.value          = ( static_cast<double*>( p[0].value ) );
+    location.lengths        = p[0].lengths;
+    
+    scale.value             = ( static_cast<double*>( p[1].value ) );
+    scale.lengths           = p[1].lengths;
+    
+    randomVariable.value    = static_cast<double*>( p[2].value );
+    randomVariable.lengths  = p[2].lengths;
+    
 }
 

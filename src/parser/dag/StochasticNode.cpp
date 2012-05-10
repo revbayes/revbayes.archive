@@ -23,7 +23,7 @@
 #include "DagNodeFunction.h"
 #include "DeterministicNode.h"
 #include "InferenceDagNode.h"
-#include "InferenceDistribution.h"
+#include "Distribution.h"
 #include "MethodTable.h"
 #include "Model.h"
 #include "ParserDistribution.h"
@@ -568,7 +568,7 @@ InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, Infere
         return ( newNodes[ this ] );
     
     // create a copy of the inference function
-    InferenceDistribution* leanDistribution = distribution->getLeanDistribution()->clone();
+    Distribution* leanDistribution = distribution->getLeanDistribution()->clone();
     
     // make a copy of the current value
     RbValue<void*> leanValue;

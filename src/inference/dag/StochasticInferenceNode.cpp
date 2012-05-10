@@ -18,7 +18,7 @@
  */
 
 #include "InferenceDagNode.h"
-#include "InferenceDistribution.h"
+#include "Distribution.h"
 #include "RbException.h"
 #include "StochasticInferenceNode.h"
 #include "RbValue.h"
@@ -30,7 +30,7 @@
 
 
 /** Constructor from distribution */
-StochasticInferenceNode::StochasticInferenceNode( const RbValue<void*> &v, InferenceDistribution* dist, const std::string &n ) : VariableInferenceNode( v, n ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
+StochasticInferenceNode::StochasticInferenceNode( const RbValue<void*> &v, Distribution* dist, const std::string &n ) : VariableInferenceNode( v, n ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
     
 }
 
@@ -338,7 +338,7 @@ void StochasticInferenceNode::getAffected( std::set<StochasticInferenceNode* >& 
 }
 
 
-const InferenceDistribution& StochasticInferenceNode::getDistribution( void ) const {
+const Distribution& StochasticInferenceNode::getDistribution( void ) const {
     return *distribution;
 }
 

@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "InferenceDistributionContinuous.h"
+#include "DistributionContinuous.h"
 #include "Move_slide.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -47,8 +47,8 @@ double Move_slide::performSimpleMove( void ) {
     // copy all value
     storedValue.value[0] = value.value[0];
 
-    double min = static_cast<const InferenceDistributionContinuous&>( nodes[0]->getDistribution() ).getMin();
-    double max = static_cast<const InferenceDistributionContinuous&>( nodes[0]->getDistribution() ).getMax();
+    double min = static_cast<const DistributionContinuous&>( nodes[0]->getDistribution() ).getMin();
+    double max = static_cast<const DistributionContinuous&>( nodes[0]->getDistribution() ).getMax();
 
     double u      = rng->uniform01();
     double newVal = value.value[0] + ( delta * ( u - 0.5 ) );

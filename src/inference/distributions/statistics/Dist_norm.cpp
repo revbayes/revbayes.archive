@@ -42,7 +42,7 @@ Dist_norm::Dist_norm( void ) : DistributionContinuous() {
  */
 double Dist_norm::cdf(double q) {
 
-	return RbStatistics::Normal::cdf(*mu.value, *sigma.value, q);
+	return RbStatistics::Normal::cdf(*mean.value, *sd.value, q);
 
 }
 
@@ -66,7 +66,7 @@ Dist_norm* Dist_norm::clone( void ) const {
  */
 double Dist_norm::lnPdfSingleValue( std::vector<size_t> &offset ) const {
 
-    return RbStatistics::Normal::lnPdf(mu.value[offset[0]], sigma.value[offset[1]], randomVariable.value[offset[2]]);
+    return RbStatistics::Normal::lnPdf(mean.value[offset[0]], sd.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -81,7 +81,7 @@ double Dist_norm::lnPdfSingleValue( std::vector<size_t> &offset ) const {
  */
 double Dist_norm::pdfSingleValue( std::vector<size_t> &offset ) const {
     
-    return RbStatistics::Normal::pdf(mu.value[offset[0]], sigma.value[offset[1]], randomVariable.value[offset[2]]);
+    return RbStatistics::Normal::pdf(mean.value[offset[0]], sd.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -103,17 +103,13 @@ double Dist_norm::pdfSingleValue( std::vector<size_t> &offset ) const {
  */
 double Dist_norm::quantile( double p ) {
     
-    return RbStatistics::Normal::quantile(*mu.value, *sigma.value, p);
+    return RbStatistics::Normal::quantile(*mean.value, *sd.value, p);
 }
 
 
 /**
  * This function generates a normally-distributed
  * random variable.
- *
- * @todo What algorithm is this? It is not Box-Muller, not Ziggurat. It does
- *       not resemble the R code, which uses Ahrens & Dieter and Kinderman & Ramage.
- *       Code for extra normal rv based on guesswork using comments in RbStatistics.cpp.
  *
  * @brief Random draw from normal distribution
  *
@@ -122,7 +118,7 @@ double Dist_norm::quantile( double p ) {
 void Dist_norm::rvSingleValue( std::vector<size_t> &offset ) {
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    randomVariable.value[offset[2]] = RbStatistics::Normal::rv(mu.value[offset[0]], sigma.value[offset[1]], *rng);
+    randomVariable.value[offset[2]] = RbStatistics::Normal::rv(mean.value[offset[0]], sd.value[offset[1]], *rng);
 
 }
 
@@ -130,11 +126,11 @@ void Dist_norm::rvSingleValue( std::vector<size_t> &offset ) {
 /** We catch here the setting of the member variables to store our parameters. */
 void Dist_norm::setInternalParameters(const std::vector<RbValue<void *> > &p) {
     
-    mu.value                = ( static_cast<double*>( p[0].value ) );
-    mu.lengths              = p[0].lengths;
+    mean.value              = ( static_cast<double*>( p[0].value ) );
+    mean.lengths            = p[0].lengths;
     
-    sigma.value             = ( static_cast<double*>( p[1].value ) );
-    sigma.lengths           = p[1].lengths;
+    sd.value                = ( static_cast<double*>( p[1].value ) );
+    sd.lengths              = p[1].lengths;
     
     randomVariable.value    = static_cast<double*>( p[2].value );
     randomVariable.lengths  = p[2].lengths;

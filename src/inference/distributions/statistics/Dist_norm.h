@@ -43,8 +43,8 @@ class Dist_norm: public DistributionContinuous {
         void                        setInternalParameters(const std::vector<RbValue<void*> > &p);       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
   
         // parameters
-        RbValue<double*>            mu;
-        RbValue<double*>            sigma;
+        RbValue<double*>            mean;
+        RbValue<double*>            sd;
     
 };
 

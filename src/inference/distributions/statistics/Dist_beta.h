@@ -24,40 +24,28 @@
 #include <ostream>
 #include <string>
 
-class DAGNode;
-class StochasticNode;
 
 class Dist_beta: public DistributionContinuous {
 
-    public:
-                                    Dist_beta(void);                                                    //!< Parser constructor
-
-        // Basic utility functions
-        Dist_beta*                  clone(void) const;                                                  //!< Clone object
-        static const std::string&   getClassName(void);                                                 //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
-
-        // Member variable setup
-        const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setMemberVariable(const std::string& name, const Variable* var);    //!< Catching the setting of the member variables.
-
-        // Exponential distribution functions
-        double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
-        const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (RealPos)
-        double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
-        double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
-        const Real&                 quantile(const double p);                                           //!< Quantile
-        const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
+public:
+    Dist_beta(void);                                                                                //!< constructor
     
-    private:
-
-        // parameters
-        RbConstVariablePtr          alpha; 
-        RbConstVariablePtr          beta;
+    // Basic utility functions
+    Dist_beta*                  clone(void) const;                                                  //!< Clone object
     
-        // memberfunction return value
-        Probability                 randomVariable;
+    // distribution functions
+    double                      cdf(double q);                                                      //!< Cumulative density
+    double                      quantile(double p);                                                 //!< Quantile
+    
+private:
+    double                      lnPdfSingleValue(std::vector<size_t> &offset) const;                //!< Ln probability density
+    double                      pdfSingleValue(std::vector<size_t> &offset) const;                  //!< Probability density
+    void                        rvSingleValue(std::vector<size_t> &offset);                         //!< Generate random variable
+    void                        setInternalParameters(const std::vector<RbValue<void*> > &p);       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    
+    // parameters
+    RbValue<double*>            alpha;
+    RbValue<double*>            beta;
     
 };
 

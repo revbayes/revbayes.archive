@@ -282,86 +282,28 @@ double Dist_ctmm::pdf( const RbLanguageObject& value ) const {
  *
  * @return      Randomly drawn character state
  */
-const RbLanguageObject& Dist_ctmm::rv( void ) {
-
-    // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+void Dist_ctmm::rvSingleValue( std::vector<size_t> &offset ) {
     
-    // Get the parameters
-    const RateMatrix&               Q      = static_cast<const RateMatrix&           >( rateMatrix->getValue() );
-    double                          t      = static_cast<const RealPos&              >( time->getValue() ).getValue();
-    const CharacterStateDiscrete&   start  = static_cast<const CharacterStateDiscrete&>( initialState->getValue() );
+//    RandomNumberGenerator* rng = GLOBAL_RNG;
+//    randomVariable.value[offset[2]] = RbStatistics::Normal::rv(mean.value[offset[0]], sd.value[offset[1]], *rng);
     
-    // calculate the transition probability matrix
-    
-    // initialize the number of states
-    const size_t nStates = Q.getNumberOfStates();
-    
-    // construct a rate matrix of the correct dimensions
-    TransitionProbabilityMatrix m = TransitionProbabilityMatrix(nStates);
-    
-    // calculate the transition probabilities    
-    Q.calculateTransitionProbabilities( t, m );
-    
-    randomVariable = start.clone();
-    const std::vector<bool>& startState = start.getStateVector();
-    size_t indexStart=0;
-    for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
-        // test whether the state is set
-        if (*itStart) {
-            RbVector<Real>& probs = m[indexStart];
-            double u = rng->uniform01();
-            for (size_t i=0; i<probs.size(); i++) {
-                u -= probs[i];
-                if (u <= 0) {
-                    std::vector<bool> values = std::vector<bool>(start.getNumberOfStates());
-                    values[i] = true;
-                    randomVariable->setValue(values);
-                    break;
-                }
-            }
-        }
-    }
-    
-    return *randomVariable;
 }
 
 
-/** We intercept a call to set a member variable to make sure that the number of states is consistent */
-void Dist_ctmm::setMemberVariable( const std::string& name, const Variable* var ) {
-
-    if ( name == "Q" ) {
-        rateMatrix = var;
-    }
-    else if ( name == "v" ) {
-        time = var;
-    }
-    else if ( name == "a" ) {
-        initialState = var;
-        
-        // reset the state vector
-        stateVector.clear();
-        const CharacterStateDiscrete& c = static_cast<const CharacterStateDiscrete&>( var->getValue() );
-        std::string states = c.getStateLabels();
-        for (int i = 0; i < c.getNumberOfStates(); i++) {
-            CharacterStateDiscrete* tmp = c.clone();
-            tmp->setState( states[i] );
-            stateVector.push_back(tmp);
-        }
-    }
-    else {
-        DistributionDiscrete::setMemberVariable( name, var );
-    }
+/** We catch here the setting of the member variables to store our parameters. */
+void Dist_ctmm::setInternalParameters(const std::vector<RbValue<void *> > &p) {
     
-    // we cannot do the following because first only one variable is set and hence the following code crashes
-    // nevertheless a test like that might be useful
-//    if ( name == "Q" || name == "a" ) {
-//        
-//        const RateMatrix*             Q      = static_cast<const RateMatrix*            >( getMemberValue( "Q" ) );
-//        const CharacterStateDiscrete* start  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a" ) );
-//
-//        if ( start->getNumberOfStates() != Q->getNumberOfStates() )
-//            throw RbException( "Starting state and rate matrix need to have the same number of states" );
-//    }
+    rateMatrix.value        = static_cast<RateMatrix*>( p[0].value );
+    rateMatrix.lengths      = p[0].lengths;
+    
+    time.value              = static_cast<double*>( p[1].value );
+    time.lengths            = p[1].lengths;
+    
+    initialState.value      = static_cast<char*>( p[2].value );
+    initialState.lengths    = p[2].lengths;
+    
+    randomVariable.value    = static_cast<char*>( p[3].value );
+    randomVariable.lengths  = p[3].lengths;
+    
 }
 

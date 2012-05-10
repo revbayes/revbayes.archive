@@ -35,7 +35,7 @@
 
 
 /** Default constructor for parser use */
-Dist_multinomial::Dist_multinomial( void ) : DistributionDiscrete( getMemberRules() ), probabilities( NULL ) {
+Dist_multinomial::Dist_multinomial( void ) : DistributionDiscrete(  ) {
 }
 
 
@@ -126,17 +126,9 @@ const TypeSpec& Dist_multinomial::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_multinomial::lnPdf( const RbLanguageObject& value ) const {
-
-	// Get the value and the parameters of the Dirichlet
-    std::vector<double>         p = static_cast<const Simplex&           >( probabilities->getValue() ).getValue();
-    const RbVector<Natural>&    x = static_cast<const RbVector<Natural>& >( value );
-
-	// Check that the vectors are both the same size
-	if ( p.size() != x.size() )
-		throw RbException( "Inconsistent size of vectors when calculating Multinomial log probability density" );
-
-	return RbStatistics::Multinomial::lnPdf( p, x );
+double Dist_multinomial::lnPdfSingleValue( std::vector<size_t> &offset ) const {
+    
+    return RbStatistics::Multinomial::lnPdf(probabilities.value[offset[0]], randomVariable.value[offset[1]]);
 }
 
 
@@ -149,17 +141,9 @@ double Dist_multinomial::lnPdf( const RbLanguageObject& value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_multinomial::pdf( const RbLanguageObject& value ) const {
-
-	// Get the value and the parameters of the Dirichlet
-    std::vector<double>     p = static_cast<const Simplex&           >( probabilities->getValue() ).getValue();
-    const RbVector<Natural> x = static_cast<const RbVector<Natural>& >( value );
-
-	// check that the vectors are both the same size
-	if ( p.size() != x.size() )
-		throw RbException( "Inconsistent size of vectors when calculating Multinomial log probability density" );
-
-	return RbStatistics::Multinomial::pdf( p, x );
+double Dist_multinomial::pdfSingleValue( std::vector<size_t> &offset ) const {
+    
+    return RbStatistics::Multinomial::pdf(probabilities.value[offset[0]], randomVariable.value[offset[1]]);
 }
 
 
@@ -171,30 +155,22 @@ double Dist_multinomial::pdf( const RbLanguageObject& value ) const {
  *
  * @return      Random draw from multinomial distribution
  */
-const RbLanguageObject& Dist_multinomial::rv( void ) {
-
-    std::vector<double> p      = static_cast<const Simplex&>( probabilities->getValue() ).getValue();
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-	std::vector<int> r( p.size() );
-
-	r = RbStatistics::Multinomial::rv( p, *rng );
-    randomVariable.clear();
-    for (size_t i = 0; i < r.size(); i++) {
-        randomVariable.push_back( new Natural(r[i]) );
-    }
+void Dist_multinomial::rvSingleValue( std::vector<size_t> &offset ) {
     
-    return randomVariable;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    randomVariable.value[offset[1]] = RbStatistics::Multinomial::rv(probabilities.value[offset[0]], *rng);
+    
 }
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_multinomial::setMemberVariable(std::string const &name, const Variable *var) {
+void Dist_multinomial::setInternalParameters(const std::vector<RbValue<void *> > &p) {
     
-    if ( name == "probabilities" ) {
-        probabilities = var;
-    }
-    else {
-        DistributionDiscrete::setMemberVariable(name, var);
-    }
+    probabilities.value     = static_cast<double*>( p[0].value );
+    probabilities.lengths   = p[0].lengths;
+    
+    randomVariable.value    = static_cast<int*>( p[1].value );
+    randomVariable.lengths  = p[1].lengths;
+    
 }
 

@@ -23,41 +23,29 @@
 #include <ostream>
 #include <string>
 
-class DAGNode;
-class Real;
-
 class Dist_lnorm: public DistributionContinuous {
 	
+    
 public:
-								Dist_lnorm(void);                                                   //!< Parser constructor
-	
-	// Basic utility functions
-	Dist_lnorm*                 clone(void) const;                                                  //!< Clone object
-    static const std::string&   getClassName(void);                                                 //!< Get class name
-    static const TypeSpec&      getClassTypeSpec(void);                                             //!< Get class type spec
-    const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
-	
-	// Member variable setup
-    const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-    void                        setMemberVariable(const std::string& name, const Variable* var);    //!< Catching the setting of the member variables.
-	
-	// Lognormal distribution functions
-	double                      cdf(const RbLanguageObject& value);                                 //!< Cumulative density
-	const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (RealPos)
-	double                      lnPdf(const RbLanguageObject& value) const;                         //!< Ln probability density
-	double                      pdf(const RbLanguageObject& value) const;                           //!< Probability density
-	const Real&                 quantile(const double p);                                           //!< Quantile
-	const RbLanguageObject&     rv(void);                                                           //!< Generate random variable
+    Dist_lnorm(void);                                                                               //!< constructor
+    
+    // Basic utility functions
+    Dist_lnorm*                 clone(void) const;                                                  //!< Clone object
+    
+    // distribution functions
+    double                      cdf(double q);                                                      //!< Cumulative density
+    double                      quantile(double p);                                                 //!< Quantile
     
 private:
-
+    double                      lnPdfSingleValue(std::vector<size_t> &offset) const;                //!< Ln probability density
+    double                      pdfSingleValue(std::vector<size_t> &offset) const;                  //!< Probability density
+    void                        rvSingleValue(std::vector<size_t> &offset);                         //!< Generate random variable
+    void                        setInternalParameters(const std::vector<RbValue<void*> > &p);       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    
     // parameters
-    RbConstVariablePtr          mu;
-    RbConstVariablePtr          sigma;
-    
-    // memberfunction return variables
-    RealPos                     randomVariable;
-    
+    RbValue<double*>            mean;
+    RbValue<double*>            sd;
+
 };
 
 #endif

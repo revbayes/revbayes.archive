@@ -36,7 +36,7 @@
 
 
 /** Default constructor for parser use */
-Dist_beta::Dist_beta( void ) : DistributionContinuous( getMemberRules() ), alpha( NULL ), beta( NULL ) {
+Dist_beta::Dist_beta( void ) : DistributionContinuous( ) {
     // Do nothing
 }
 
@@ -51,13 +51,10 @@ Dist_beta::Dist_beta( void ) : DistributionContinuous( getMemberRules() ), alpha
  * @return      Cumulative probability
  *
  */
-double Dist_beta::cdf( const RbLanguageObject& value ) {
-
-    double shape1 = static_cast<const RealPos&>( alpha->getValue() ).getValue();
-    double shape2 = static_cast<const RealPos&>( beta->getValue()  ).getValue();
-    double x      = static_cast<const RealPos&>(value).getValue();
-
-    return RbStatistics::Beta::cdf(shape1, shape2, x);
+double Dist_beta::cdf(double q) {
+    
+	return RbStatistics::Beta::cdf(*alpha.value, *beta.value, q);
+    
 }
 
 
@@ -65,31 +62,6 @@ double Dist_beta::cdf( const RbLanguageObject& value ) {
 Dist_beta* Dist_beta::clone( void ) const {
 
     return new Dist_beta( *this );
-}
-
-
-/** Get class name of object */
-const std::string& Dist_beta::getClassName(void) { 
-    
-    static std::string rbClassName = "Beta distribution";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& Dist_beta::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( DistributionContinuous::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& Dist_beta::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
 }
 
 
@@ -111,15 +83,6 @@ const MemberRules& Dist_beta::getMemberRules( void ) const {
 }
 
 
-/** Get random variable type */
-const TypeSpec& Dist_beta::getVariableType( void ) const {
-
-    static TypeSpec varTypeSpec = Probability::getClassTypeSpec();
-    
-    return varTypeSpec;
-}
-
-
 /**
  * This function calculates the natural log of the probability
  * density for an beta-distributed random variable.
@@ -129,13 +92,9 @@ const TypeSpec& Dist_beta::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_beta::lnPdf( const RbLanguageObject& value ) const {
-
-    double shape1 = static_cast<const RealPos&    >( alpha->getValue() ).getValue();
-    double shape2 = static_cast<const RealPos&    >( beta->getValue()  ).getValue();
-    double x      = static_cast<const Probability&>( value            ).getValue();
-
-    return RbStatistics::Beta::lnPdf(shape1, shape2, x);
+double Dist_beta::lnPdfSingleValue( std::vector<size_t> &offset ) const {
+    
+    return RbStatistics::Beta::lnPdf(alpha.value[offset[0]], beta.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -148,13 +107,9 @@ double Dist_beta::lnPdf( const RbLanguageObject& value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_beta::pdf( const RbLanguageObject& value ) const {
+double Dist_beta::pdfSingleValue( std::vector<size_t> &offset ) const {
     
-    double shape1 = static_cast<const RealPos&    >( alpha->getValue() ).getValue();
-    double shape2 = static_cast<const RealPos&    >( beta->getValue()  ).getValue();
-    double x      = static_cast<const Probability&>( value            ).getValue();
-
-    return RbStatistics::Beta::pdf(shape1, shape2, x);
+    return RbStatistics::Beta::pdf(alpha.value[offset[0]], beta.value[offset[1]], randomVariable.value[offset[2]]);
 }
 
 
@@ -168,14 +123,9 @@ double Dist_beta::pdf( const RbLanguageObject& value ) const {
  * @return      Quantile
  *
  */
-const Real& Dist_beta::quantile(const double p) {
-
-    double shape1 = static_cast<const RealPos&>( alpha->getValue() ).getValue();
-    double shape2 = static_cast<const RealPos&>( beta->getValue()  ).getValue();
-
-    double quantile = RbStatistics::Beta::quantile(shape1, shape2, p);
-    quant.setValue( quantile );
-    return quant;
+double Dist_beta::quantile( double p ) {
+    
+    return RbStatistics::Beta::quantile(*alpha.value, *beta.value, p);
 }
 
 
@@ -187,31 +137,26 @@ const Real& Dist_beta::quantile(const double p) {
  *
  * @return      Random draw from beta distribution
  */
-const RbLanguageObject& Dist_beta::rv( void ) {
-
-    double shape1 = static_cast<const RealPos&>( alpha->getValue() ).getValue();
-    double shape2 = static_cast<const RealPos&>( beta->getValue()  ).getValue();
-
+void Dist_beta::rvSingleValue( std::vector<size_t> &offset ) {
+    
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    double rv = RbStatistics::Beta::rv(shape1, shape2, *rng);
-    // \TODO implement RbMath::isFinite
-    randomVariable.setValue( rv );
-    return randomVariable;
+    randomVariable.value[offset[2]] = RbStatistics::Beta::rv(alpha.value[offset[0]], beta.value[offset[1]], *rng);
+    
 }
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void Dist_beta::setMemberVariable(std::string const &name, const Variable *var) {
+void Dist_beta::setInternalParameters(const std::vector<RbValue<void *> > &p) {
     
-    if ( name == "alpha" ) {
-        alpha = var;
-    }
-    else if ( name == "beta" ){
-        beta = var;
-    }
-    else {
-        DistributionContinuous::setMemberVariable(name, var);
-    }
+    alpha.value             = ( static_cast<double*>( p[0].value ) );
+    alpha.lengths           = p[0].lengths;
+    
+    beta.value              = ( static_cast<double*>( p[1].value ) );
+    beta.lengths            = p[1].lengths;
+    
+    randomVariable.value    = static_cast<double*>( p[2].value );
+    randomVariable.lengths  = p[2].lengths;
+    
 }
 
 
