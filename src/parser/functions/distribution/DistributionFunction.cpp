@@ -18,6 +18,7 @@
 #include "ArgumentRule.h"
 #include "RbBoolean.h"
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "Distribution.h"
 #include "DistributionContinuous.h"
@@ -28,13 +29,12 @@
 #include "RbUtil.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <sstream>
 
 
 /** Constructor */
-DistributionFunction::DistributionFunction( ParserDistribution* dist, FuncType funcType ) : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real::getClassTypeSpec() : RealPos::getClassTypeSpec() ) : dist->getVariableType() ) {
+DistributionFunction::DistributionFunction( const RbPtr<ParserDistribution> &dist ) : RbFunction() {
 
     /* Ininitalize the argument rules */
     argumentRules = new ArgumentRules();
@@ -42,25 +42,22 @@ DistributionFunction::DistributionFunction( ParserDistribution* dist, FuncType f
     /* Set the distribution */
     distribution = dist;
 
-    /* Set the function type */
-    functionType = funcType;
-
     /* Get the distribution parameter rules and set type to value argument */
     const ArgumentRules& memberRules = dist->getMemberRules();
     for ( std::vector<ArgumentRule*>::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
         // check if this rule has a default value
         if ((*i)->hasDefault()) {
-            argumentRules->push_back( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), (*i)->getDefaultVariable().getValue().clone() ) );
+            argumentRules->push_back( new ConstArgumentRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), (*i)->getDefaultVariable().getValue().clone() ) );
         } else {
-            argumentRules->push_back( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
+            argumentRules->push_back( new ConstArgumentRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
         }
     }
 
     /* Modify argument rules based on function type */
     if (functionType == DENSITY) {
 
-        argumentRules->insert( argumentRules->begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
-        argumentRules->push_back(                      new ValueRule( "log", new RbBoolean(false)            ) );
+        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "x"  , distribution->getVariableType() ) );
+        argumentRules->push_back(                      new ConstArgumentRule( "log", new RbBoolean(false)            ) );
     }
     else if (functionType == RVALUE) {
 
@@ -68,11 +65,11 @@ DistributionFunction::DistributionFunction( ParserDistribution* dist, FuncType f
     }
     else if (functionType == PROB) {
 
-        argumentRules->insert( argumentRules->begin(), new ValueRule( "q"  , distribution->getVariableType() ) );
+        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "q"  , distribution->getVariableType() ) );
     }
     else if (functionType == QUANTILE) {
 
-        argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos::getClassTypeSpec()     ) );
+        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "p"  , RealPos::getClassTypeSpec()     ) );
     }
 }
 
@@ -87,13 +84,12 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
     }
     
     distribution  = x.distribution->clone();
-    functionType  = x.functionType;
 
     /* Modify argument rules based on function type */
     if (functionType == DENSITY) {
         
-        argumentRules->insert( argumentRules->begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
-        argumentRules->push_back(                      new ValueRule( "log", new RbBoolean(false)            ) );
+        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "x"  , distribution->getVariableType() ) );
+        argumentRules->push_back(                      new ConstArgumentRule( "log", new RbBoolean(false)            ) );
     }
     else if (functionType == RVALUE) {
         
@@ -101,22 +97,12 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
     }
     else if (functionType == PROB) {
         
-        argumentRules->insert( argumentRules->begin(), new ValueRule( "q"  , distribution->getVariableType() ) );
+        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "q"  , distribution->getVariableType() ) );
     }
     else if (functionType == QUANTILE) {
         
-        argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos::getClassTypeSpec()     ) );
+        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "p"  , RealPos::getClassTypeSpec()     ) );
     }
-}
-
-
-/** Destructor */
-DistributionFunction::~DistributionFunction(void) {
-    delete distribution;
-    if (argumentRules != NULL) {
-        delete argumentRules;
-    }
-    
 }
 
 
@@ -131,10 +117,6 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
         if ( returnType != x.returnType )
             throw RbException( "Invalid assignment involving distributions on different types of random variables" );
         
-        // free memory
-        if (argumentRules != NULL) {
-            delete argumentRules;
-        }
         
         // copy the argument rules
         argumentRules = new ArgumentRules();
@@ -142,18 +124,13 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
             argumentRules->push_back( (*it)->clone() );
         }
         
-        // free memory
-        if (distribution != NULL) {
-            delete distribution;
-        }
         distribution  = x.distribution->clone();
-        functionType  = x.functionType;
 
         /* Modify argument rules based on function type */
         if (functionType == DENSITY) {
             
-            argumentRules->insert( argumentRules->begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
-            argumentRules->push_back(                      new ValueRule( "log", new RbBoolean(false)            ) );
+            argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "x"  , distribution->getVariableType() ) );
+            argumentRules->push_back(                      new ConstArgumentRule( "log", new RbBoolean(false)            ) );
         }
         else if (functionType == RVALUE) {
             
@@ -161,11 +138,11 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
         }
         else if (functionType == PROB) {
             
-            argumentRules->insert( argumentRules->begin(), new ValueRule( "q"  , distribution->getVariableType() ) );
+            argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "q"  , distribution->getVariableType() ) );
         }
         else if (functionType == QUANTILE) {
             
-            argumentRules->insert( argumentRules->begin(), new ValueRule( "p"  , RealPos::getClassTypeSpec()     ) );
+            argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "p"  , RealPos::getClassTypeSpec()     ) );
         }
     
     }
@@ -182,7 +159,7 @@ DistributionFunction* DistributionFunction::clone( void ) const {
 
 
 /** Execute operation: switch based on type */
-const RbLanguageObject& DistributionFunction::executeFunction(const std::vector<const RbObject *> &args) {
+RbPtr<RbLanguageObject> DistributionFunction::executeFunction(const std::vector<const RbObject *> &args) {
     
     if ( functionType == DENSITY ) {
         // converting the arguments into atomic data types
@@ -234,6 +211,7 @@ const RbLanguageObject& DistributionFunction::executeFunction(const std::vector<
     else if (functionType == PROB) {
         // converting the arguments into atomic data types
         std::vector<RbValue<void*> > newArgs;
+        
         // skip the first and the last parameter
         for (std::vector<const RbObject*>::const_iterator i = args.begin()+1; i != args.end(); ++i) {
             RbValue<void*> arg;

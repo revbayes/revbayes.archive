@@ -17,27 +17,20 @@
 #ifndef DistributionFunction_H
 #define DistributionFunction_H
 
-#include "Real.h"
 #include "RbFunction.h"
 
-#include <map>
-#include <set>
 #include <string>
 #include <vector>
 
-class ArgumentRule;
-class DAGNode;
 class ParserDistribution;
 
 
 class DistributionFunction :  public RbFunction {
 
     public:
-        enum FuncType { DENSITY, RVALUE, PROB, QUANTILE };                                                  //!< Enum specifying function type
 
-                                    DistributionFunction(ParserDistribution* dist, FuncType funcType);            //!< Constructor
+                                    DistributionFunction(const RbPtr<ParserDistribution> &dist);            //!< Constructor
                                     DistributionFunction(const DistributionFunction& x);                    //!< Copy constructor
-        virtual                    ~DistributionFunction(void);                                             //!< Destructor
 
         // Assignment operator
         DistributionFunction&       operator=(const DistributionFunction& x);                               //!< Assignment operator
@@ -54,19 +47,12 @@ class DistributionFunction :  public RbFunction {
         void                        processArguments(const std::vector<Argument>& passedArgs);              //!< Process args, set member variables of distribution
 
 	protected:
-        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);              //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);              //!< Execute function
 
-        ArgumentRules*              argumentRules;                                                          //!< Argument rules
+        RbPtr<ArgumentRules>        argumentRules;                                                          //!< Argument rules
         TypeSpec                    returnType;                                                             //!< Return type
-        ParserDistribution*         distribution;                                                           //!< The distribution
-        FuncType                    functionType;                                                           //!< Function type
+        RbPtr<ParserDistribution>   distribution;                                                           //!< The distribution
     
-    private:
-    
-        // memberfunction return values;
-        RealPos                     cd;
-        Real                        density;
-        Real                        quant;
 };
 
 #endif
