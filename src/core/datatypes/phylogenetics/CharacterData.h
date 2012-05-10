@@ -97,7 +97,7 @@ class CharacterData : public MemberObject {
         void                                showData(void);                                                             //!< Show the data in the character matrix
     
     protected:
-        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
+        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);         //!< Execute method
 
     private:
         // Utility functions

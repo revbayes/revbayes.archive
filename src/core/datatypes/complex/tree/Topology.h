@@ -65,7 +65,7 @@ class Topology: public MemberObject {
         void                                        setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the tree from it
 
     protected:
-        RbPtr<RbLanguageObject>                     executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
+        RbPtr<RbLanguageObject>                     executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Execute method
     
     private:
         void                                        fillNodesByPreorderTraversal(const TopologyNode* node);                 //!< fill the nodes vector by a preorder traversal recursively starting with this node.

@@ -35,31 +35,31 @@ class MemberObject: public RbLanguageObject {
     public:
 
         // Basic utility functions you have to override
-        virtual MemberObject*                               clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                           getClassName(void);                                                                 //!< Get class name
-        static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
+        virtual MemberObject*                               clone(void) const = 0;                                                                          //!< Clone object
+        static const std::string&                           getClassName(void);                                                                             //!< Get class name
+        static const TypeSpec&                              getClassTypeSpec(void);                                                                         //!< Get class type spec
         
         // Basic utility functions you may want to override
-        virtual void                                        printValue(std::ostream& o) const;                                                  //!< Print value for user
+        virtual void                                        printValue(std::ostream& o) const;                                                              //!< Print value for user
 
         // Member variable functions you have to override
-        virtual RbPtr<RbLanguageObject>                     getMember(const std::string& name) const;                                           //!< Get member variable 
-        virtual const MemberRules&                          getMemberRules(void) const;                                                         //!< Get member rules (const)
-        virtual bool                                        hasMember(const std::string& name) const;                                           //!< Has this object a member with name
+        virtual RbPtr<RbLanguageObject>                     getMember(const std::string& name) const;                                                       //!< Get member variable 
+        virtual const MemberRules&                          getMemberRules(void) const;                                                                     //!< Get member rules (const)
+        virtual bool                                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
 
         // Member variable functions you may want to override
-        virtual void                                        setMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
+        virtual void                                        setMember(const std::string& name, const RbPtr<const Variable> &var);                           //!< Set member variable
 
         // Member method functions
-        virtual RbPtr<RbLanguageObject>                     executeOperation(const std::string& name, const std::vector<Argument>& args);                       //!< Override to map member methods to internal functions
-        virtual const MethodTable&                          getMethods(void) const;                                                             //!< Get member methods (const)
+        virtual RbPtr<RbLanguageObject>                     executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args);           //!< Override to map member methods to internal functions
+        virtual const MethodTable&                          getMethods(void) const;                                                                         //!< Get member methods (const)
 
     protected:
-                                                            MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
-                                                            MemberObject(void);                                                                 //!< Default constructor; no members or methods
+                                                            MemberObject(const MemberRules& memberRules);                                                   //!< Standard constructor
+                                                            MemberObject(void);                                                                             //!< Default constructor; no members or methods
  
-        virtual void                                        setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var);     //!< Set member variable
-        virtual RbPtr<RbLanguageObject>                     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Override to map member methods to internal functions
+        virtual void                                        setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var);                 //!< Set member variable
+        virtual RbPtr<RbLanguageObject>                     executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Override to map member methods to internal functions
 
 };
 

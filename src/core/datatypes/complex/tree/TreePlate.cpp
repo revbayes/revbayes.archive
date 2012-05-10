@@ -152,7 +152,7 @@ const TypeSpec& TreePlate::getTypeSpec( void ) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> TreePlate::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> TreePlate::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     return MemberObject::executeOperationSimple( name, args );
 

@@ -114,7 +114,7 @@ const TypeSpec& Topology::getTypeSpec( void ) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Topology::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Topology::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     if (name == "nTips") {
     

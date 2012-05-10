@@ -77,16 +77,16 @@ class RbFunction :  public RbLanguageObject {
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
+        virtual bool                                    checkArguments(const std::vector<RbPtr<Argument> >& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
         virtual InferenceFunction*                      getLeanFunction(void) const;                                                        //!< Get the lean version of this function
-        virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
+        virtual void                                    processArguments(const std::vector<RbPtr<Argument> >& passedArgs);                  //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
     
 
         // RbFunction functions you should not override
         void                                            clear(void);                                                                        //!< Clear argument Environment "args"
-        const std::vector<Argument>&                    getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
-        std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
+        const std::vector<RbPtr<Argument> >&            getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
+        std::vector<RbPtr<Argument> >&                  getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
         void                                            setArgument(const std::string& name, const Argument& arg);                          //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
     
 	protected:
@@ -96,14 +96,14 @@ class RbFunction :  public RbLanguageObject {
         // function you may want to override
         virtual void                                    clearArguments(void);                                                               //!< Clear argument Environment "args"
         virtual RbPtr<RbLanguageObject>                 executeFunction(const std::vector<const RbObject*>& args);                          //!< Execute the function. This is the function one has to overwrite for single return values.
-        virtual void                                    setArgumentVariable(const std::string& name, const Variable* var) {}                //!< Set the private member variable here (for derived classes)!
+        virtual void                                    setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var) {}   //!< Set the private member variable here (for derived classes)!
 
         // helper functions
         RbPtr<RbLanguageObject>                         execute(const std::vector<const RbObject*>& args);                                  //!< Execute the function. This is the function one has to overwrite for vector type execution.
 
         // Member variables
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
-        std::vector<Argument>                           args;
+        std::vector<RbPtr<Argument> >                   args;
         RbPtr<Environment>                              env;
 
     private:   

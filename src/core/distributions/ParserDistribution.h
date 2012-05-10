@@ -37,44 +37,44 @@ class Distribution;
 class ParserDistribution : public MemberObject  {
     
 public:
-    virtual                            ~ParserDistribution(void) {}                                                                       //!< Destructor
+    virtual                                ~ParserDistribution(void) {}                                                                       //!< Destructor
     
 //    ParserDistribution&                 operator=(const ParserDistribution& p);
     
     // Basic utility functions
-    virtual ParserDistribution*         clone(void) const = 0;                                                              //!< Clone object
-    static const std::string&           getClassName(void);                                                                 //!< Get class name
-    static const TypeSpec&              getClassTypeSpec(void);                                                             //!< Get class type spec
+    virtual ParserDistribution*             clone(void) const = 0;                                                              //!< Clone object
+    static const std::string&               getClassName(void);                                                                 //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                                             //!< Get class type spec
     
     // Member object function you have to override
-    virtual const MemberRules&          getMemberRules(void) const = 0;                                                     //!< Get member rules
+    virtual const MemberRules&              getMemberRules(void) const = 0;                                                     //!< Get member rules
     
     // Member object functions you may want to override
-    virtual void                        clear(void);                                                                        //!< Clear the arguments
-    virtual const MethodTable&          getMethods(void) const;                                                             //!< Get member methods
-    const std::vector<Argument>&        getParameters() const;
-    virtual const TypeSpec&             getVariableType(void) const;                                                        //!< Get random variable type
-    virtual const RbLanguageObject&     getTemplateRandomVariable(void) const;                                              //!< Get the template ranom variable
-    virtual void                        setMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
+    virtual void                            clear(void);                                                                        //!< Clear the arguments
+    virtual const MethodTable&              getMethods(void) const;                                                             //!< Get member methods
+    const std::vector<RbPtr< Argument> >&   getParameters() const;
+    virtual const TypeSpec&                 getVariableType(void) const;                                                        //!< Get random variable type
+    virtual const RbLanguageObject&         getTemplateRandomVariable(void) const;                                              //!< Get the template ranom variable
+    virtual void                            setMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
     
     // functions you have to override
-    virtual Distribution*               getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
-    virtual double                      jointLnPdf( const RbLanguageObject& value) const = 0;                               //!< Ln probability density
-    virtual double                      lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
-    virtual double                      pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function
-    virtual void                        rv(void) = 0;                                                                       //!< Generate a random draw
-    virtual void                        setParameters(const std::vector<RbValue<void*> > &p) = 0;                           //!< Set the pointers to the variables of the distribution. The last one is always the random value.
-    virtual void                        setValue(const RbValue<void*> &v) = 0;                                              //!< Set the pointers to the value of the distribution.
+    virtual Distribution*                   getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
+    virtual double                          jointLnPdf( const RbLanguageObject& value) const = 0;                               //!< Ln probability density
+    virtual double                          lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
+    virtual double                          pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function
+    virtual void                            rv(void) = 0;                                                                       //!< Generate a random draw
+    virtual void                            setParameters(const std::vector<RbValue<void*> > &p) = 0;                           //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    virtual void                            setValue(const RbValue<void*> &v) = 0;                                              //!< Set the pointers to the value of the distribution.
     
 protected:
-    ParserDistribution( const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);           //!< Simple constructor
-    ParserDistribution( const ParserDistribution &p);                                                                       //!< Copy constructor
+    ParserDistribution( const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);               //!< Simple constructor
+    ParserDistribution( const ParserDistribution &p);                                                                           //!< Copy constructor
     
-    virtual RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const std::vector<Argument>& args); //!< Map member methods to internal functions
+    virtual RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args); //!< Map member methods to internal functions
     
     std::string                         name;
     MemberRules                         memberRules;
-    std::vector<Argument>               params;
+    std::vector<RbPtr<Argument> >       params;
     RbPtr<RbLanguageObject>             randomValue;
 
 };

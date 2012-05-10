@@ -53,7 +53,7 @@ public:
     void                            setNodeVariable(const TopologyNode& node, const std::string& name, RbLanguageObject* value);
     void                            setNodeVariable(const TopologyNode& node, const std::string& name, const Variable& value);
 protected:
-    RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
+    RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);                 //!< Execute method
 
 private:
     

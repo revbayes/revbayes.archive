@@ -51,11 +51,11 @@ RbPtr<RbLanguageObject> ConstructorTaxonData::executeFunction(void) {
     TaxonData *retVal = new TaxonData( Character::getClassName() );
     
     // the name of the taxon
-    const std::string& n = static_cast<const RbString&>( args[0].getVariable()->getValue() ).getValue();
+    const std::string& n = static_cast<const RbString&>( args[0]->getVariable()->getValue() ).getValue();
     retVal->setTaxonName( n );
     
     // \TODO: We should not use DAG node containers directly, but for now that has to do
-    const DAGNode* theNode = args[1].getVariable()->getDagNode();
+    const DAGNode* theNode = args[1]->getVariable()->getDagNode();
     if ( theNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
         const DagNodeContainer& con = static_cast<const DagNodeContainer&>( theNode->getValue() );
         for (size_t i = 0; i < con.size(); i++) {
@@ -65,7 +65,7 @@ RbPtr<RbLanguageObject> ConstructorTaxonData::executeFunction(void) {
     }
     else {
         // set the vector of characters
-        const RbVector& v = static_cast<const RbVector &>( args[1].getVariable()->getValue() );
+        const RbVector& v = static_cast<const RbVector &>( args[1]->getVariable()->getValue() );
         for (size_t i = 0; i < v.size(); i++) {
             Character* c = static_cast<Character*>( v.getElement( i ).clone() );
             retVal->addCharacter( c );

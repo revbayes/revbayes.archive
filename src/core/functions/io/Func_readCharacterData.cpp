@@ -17,6 +17,7 @@
 
 #include "CharacterData.h"
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_readCharacterData.h"
 #include "DagNodeContainer.h"
@@ -29,7 +30,6 @@
 #include "RbString.h"
 #include "StringUtilities.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 
 #include <map>
 #include <set>
@@ -44,7 +44,7 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_readCharacterData::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vector<const RbObject*>& args ) {
 
     // get the information from the arguments for reading the file
     const RbString& fn = static_cast<const RbString&>( *args[0] );
@@ -187,15 +187,16 @@ const RbLanguageObject& Func_readCharacterData::executeFunction( const std::vect
             }
         }
     
+    RbVector *retList;
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-        retList = DagNodeContainer( m.size() );
+            retList = new RbVector( CharacterData::getClassTypeSpec(), m.size() );
         size_t index = 0;
         for (std::vector<CharacterData*>::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList.setElement( index, new Variable( new ConstantNode( *it ) ) );
+            retList->setElement( index, *it );
             index++;
             }
         return retList;
@@ -203,12 +204,12 @@ const RbLanguageObject& Func_readCharacterData::executeFunction( const std::vect
         }
     else if ( m.size() == 1 ) 
         {
-        return *m[0];
+        return RbPtr<RbLanguageObject>( m[0] );
         }
     else
         {
         // Return null object
-            return RbNullObject::getInstance();
+            return NULL;
         }
 }
 
@@ -243,7 +244,7 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
     
     if (!rulesSet) 
         {
-        argumentRules.push_back( new ValueRule( "file",    RbString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "file",    RbString::getClassTypeSpec() ) );
         rulesSet = true;
         }
             

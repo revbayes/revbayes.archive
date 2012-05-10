@@ -59,7 +59,7 @@ public:
     void                                    setValue(const RbValue<void*> &v);                                                      //!< Set the pointers to the value of the distribution.
     
 protected:
-    RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Direct call of member method
+    RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Direct call of member method
     
     TypeSpec                                typeSpec;
     

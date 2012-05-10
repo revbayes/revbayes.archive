@@ -15,6 +15,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "Func_readTraces.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -24,7 +25,6 @@
 #include "StringUtilities.h"
 #include "Trace.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 #include "RbVector.h"
 
 #include <map>
@@ -41,7 +41,7 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_readTraces::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_readTraces::executeFunction( const std::vector<const RbObject*>& args ) {
     // get the information from the arguments for reading the file
     const RbString& fn = static_cast<const RbString&>( *args[0] );
     
@@ -81,7 +81,7 @@ const RbLanguageObject& Func_readTraces::executeFunction( const std::vector<cons
         RBOUT(o1.str());
     }
     
-    RbVector<Trace>* data = new RbVector<Trace>;
+    RbVector* data = new RbVector( Trace::getClassTypeSpec() );
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -165,7 +165,7 @@ const RbLanguageObject& Func_readTraces::executeFunction( const std::vector<cons
     }
     
     
-    return RbNullObject::getInstance();
+    return NULL;
     
 
 }
@@ -201,7 +201,7 @@ const ArgumentRules& Func_readTraces::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "filename", RbString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "filename", RbString::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

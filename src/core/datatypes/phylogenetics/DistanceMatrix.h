@@ -33,11 +33,6 @@ class DistanceMatrix : public MemberObject {
 
     public:
                                             DistanceMatrix(const size_t nTaxa);                                         //!< Constructor requires character type
-                                            DistanceMatrix(const DistanceMatrix& x);                                    //!< Copy constructor to deal with sequenceTypeRule
-        virtual                            ~DistanceMatrix(void);                                                       //!< Destructor to deal with sequenceTypeRule
-
-        // Overloaded operators
-        DistanceMatrix&                     operator=(const DistanceMatrix& x);                                         //!< Assignment operator
     
         // Basic utility functions
         DistanceMatrix*                     clone(void) const;                                                          //!< Clone object
@@ -87,15 +82,9 @@ class DistanceMatrix : public MemberObject {
         // Member variables
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
         Matrix<double>                      elements;
-        RbVector                            sequenceNames;                                                              //!< names of the sequences
+        std::vector<std::string>            sequenceNames;                                                              //!< names of the sequences
         TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
 
-        // memberfunction return values
-        Natural                             numTaxa;
-        Natural                             numIncludedTaxa;
-        Natural                             numExcludedTaxa;
-        RbVector                            excludedTaxa;
-        RbVector                            includedTaxa;
 };
 
 #endif

@@ -191,7 +191,7 @@ void CharacterData::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
 //    if (name == "names") 
 //        {

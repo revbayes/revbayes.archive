@@ -16,6 +16,7 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "Func_readTrees.h"
 #include "NclReader.h"
 #include "RbException.h"
@@ -27,7 +28,6 @@
 #include "StringUtilities.h"
 #include "TreePlate.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 
 #include <map>
 #include <set>
@@ -43,7 +43,7 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_readTrees::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_readTrees::executeFunction( const std::vector<const RbObject*>& args ) {
     
     // get the information from the arguments for reading the file
     const RbString& fn = static_cast<const RbString&>( *args[0] );
@@ -92,7 +92,7 @@ const RbLanguageObject& Func_readTrees::executeFunction( const std::vector<const
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    RbVector<TreePlate>* trees = new RbVector<TreePlate>();
+    RbVector* trees = new RbVector( TreePlate::getClassTypeSpec() );
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
         // we should check here the file type first and make sure it is valid
         
@@ -155,14 +155,14 @@ const RbLanguageObject& Func_readTrees::executeFunction( const std::vector<const
     
     // return either a list of trees or a single tree wrapped up in a DAG node
     if ( trees->size() > 1 ) {
-        return *trees;
+        return RbPtr<RbLanguageObject>( trees );
     }
     else if ( trees->size() == 1 ) {
-        return (*trees)[0];
+        return RbPtr<RbLanguageObject>( trees );
     }
     else {
         // Return null object
-        return RbNullObject::getInstance();
+        return NULL;
     }
 }
 

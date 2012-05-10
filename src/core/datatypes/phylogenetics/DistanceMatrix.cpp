@@ -40,57 +40,11 @@
 /** Constructor requires character type; passes member rules to base class */
 DistanceMatrix::DistanceMatrix(const size_t nTaxa) : MemberObject( getMemberRules() ), 
 elements( nTaxa, nTaxa ), 
-typeSpec( DistanceMatrix::getClassTypeSpec() ),
-sequenceNames( RbString::getClassTypeSpec() ),
-excludedTaxa( RbString::getClassTypeSpec() ),
-includedTaxa( RbString::getClassTypeSpec() )
+typeSpec( DistanceMatrix::getClassTypeSpec() )
 {
 
 }
 
-
-/** Copy constructor */
-DistanceMatrix::DistanceMatrix(const DistanceMatrix& x) : MemberObject(x), 
-typeSpec(DistanceMatrix::getClassTypeSpec()), 
-sequenceNames( x.sequenceNames ),
-excludedTaxa( x.excludedTaxa ),
-includedTaxa( x.includedTaxa ),
-elements( x.elements )
-{
-
-    deletedTaxa         = x.deletedTaxa;
-    
-    numTaxa             = x.numTaxa;
-    numIncludedTaxa     = x.numIncludedTaxa;
-    numExcludedTaxa     = x.numExcludedTaxa;
-}
-
-
-/** Destructor */
-DistanceMatrix::~DistanceMatrix(void) {
-
-}
-
-
-/** Assignment operator */
-DistanceMatrix& DistanceMatrix::operator=(const DistanceMatrix& x) {
-
-    if ( this != &x ) 
-        {
-        MemberObject::operator=( x );
-            
-        deletedTaxa         = x.deletedTaxa;
-        sequenceNames       = x.sequenceNames;
-        elements            = x.elements;
-        
-        numTaxa             = x.numTaxa;
-        numIncludedTaxa     = x.numIncludedTaxa;
-        numExcludedTaxa     = x.numExcludedTaxa;
-        excludedTaxa        = x.excludedTaxa;
-        includedTaxa        = x.includedTaxa;
-        }
-    return (*this);
-}
 
 
 /** clear the oblect */
@@ -107,7 +61,7 @@ void DistanceMatrix::addTaxonWithName(std::string s) {
     // Here is a possibility.
     
     // add the name to our names list
-    sequenceNames.push_back( new RbString(s) );
+    sequenceNames.push_back( s );
     
     // resize the current matrix
     //elements.resize( elements.size() + 1 );

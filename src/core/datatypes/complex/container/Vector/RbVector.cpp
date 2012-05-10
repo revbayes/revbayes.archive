@@ -353,7 +353,7 @@ std::vector<RbObject *>::const_iterator RbVector::end( void ) const {
 
 
 /** Execute member function. */
-RbPtr<RbLanguageObject> RbVector::executeOperationSimple(std::string const &name, const std::vector<Argument> &args) {
+RbPtr<RbLanguageObject> RbVector::executeOperationSimple(std::string const &name, const std::vector<RbPtr<Argument> > &args) {
     
     if ( name == "sort" ) {
         sort();

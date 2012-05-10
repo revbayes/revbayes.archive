@@ -46,15 +46,15 @@ void ParserDistribution::clear( void ) {
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> ParserDistribution::executeOperationSimple( const std::string& name, const std::vector<Argument>& args ) {
+RbPtr<RbLanguageObject> ParserDistribution::executeOperationSimple( const std::string& name, const std::vector<RbPtr<Argument> >& args ) {
     
     if ( name == "lnPdf" ) {
         
-        return RbPtr<RbLanguageObject>( new Real( lnPdf( args[1].getVariable()->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new Real( lnPdf( args[1]->getVariable()->getValue() ) ) );
     }
     else if ( name == "pdf" ) {
         
-        return RbPtr<RbLanguageObject>( new RealPos( pdf( args[1].getVariable()->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( pdf( args[1]->getVariable()->getValue() ) ) );
     }
     else if ( name == "rv" ) {
         
@@ -110,7 +110,7 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
     return methods;
 }    
 
-const std::vector<Argument>& ParserDistribution::getParameters( void ) const {
+const std::vector<RbPtr<Argument> >& ParserDistribution::getParameters( void ) const {
     return params;
 }
 
@@ -126,6 +126,6 @@ const TypeSpec& ParserDistribution::getVariableType( void ) const {
 
 
 void ParserDistribution::setMember(std::string const &name, const RbPtr<const Variable> &var) {
-    params.push_back( ConstArgument(var, name) );
+    params.push_back( new ConstArgument(var, name) );
 }
 

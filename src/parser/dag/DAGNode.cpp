@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DagNodeFunction.h"
 #include "MethodTable.h"
@@ -26,7 +27,6 @@
 #include "RbObject.h"
 #include "RbOptions.h"
 #include "RbString.h"
-#include "ValueRule.h"
 #include "Variable.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -39,7 +39,7 @@
 
 
 /** Constructor of filled node */
-DAGNode::DAGNode( const Plate *p ) : children(), parents(), plate( p ) {
+DAGNode::DAGNode( const RbPtr<const Plate> &p ) : children(), parents(), plate( p ) {
     
 }
 
@@ -91,7 +91,7 @@ void DAGNode::addChildNode(VariableNode *c) {
  *
  * These functions are implemented here.
  */
-const RbLanguageObject& DAGNode::executeOperation(std::string const &name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> DAGNode::executeOperation(std::string const &name, const std::vector<RbPtr<Argument> >& args) {
     
     throw RbException("No method with name '" + name + "' available for DAG nodes.");
 }
@@ -124,45 +124,11 @@ const TypeSpec& DAGNode::getClassTypeSpec(void) {
  * Get all affected nodes this DAGNode.
  * This means we call getAffected() of all children. getAffected() is pure virtual.
  */
-void DAGNode::getAffectedNodes(std::set<StochasticNode* > &affected) {
+void DAGNode::getAffectedNodes(std::set<RbPtr<StochasticNode> > &affected) {
     
     // get all my affected children
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->getAffected(affected);
-}
-
-
-const RbObject& DAGNode::getElement(size_t index) const {
-    
-    // test whether the value supports indexing, i.e. is a container
-    if (getValue().supportsIndex()) {
-        
-        return getValue().getElement(index);
-    
-    } else {
-        
-        std::ostringstream  msg;
-        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << getValue().getTypeSpec() << "\"";
-        throw RbException( msg );
-    }
-    
-}
-
-
-RbObject& DAGNode::getElement(size_t index) {
-    
-    // test whether the value supports indexing, i.e. is a container
-    if (getValue().supportsIndex()) {
-        
-        return getValue().getElement(index);
-        
-    } else {
-        
-        std::ostringstream  msg;
-        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << getValue().getTypeSpec() << "\"";
-        throw RbException( msg );
-    }
-    
 }
 
 /** 
@@ -189,13 +155,13 @@ const std::string& DAGNode::getName( void ) const {
 }
 
 
-const Plate* DAGNode::getPlate( void ) const {
+const RbPtr<const Plate>& DAGNode::getPlate( void ) const {
     return plate;
 }
 
 
 
-const std::set<DAGNode*>& DAGNode::getParents( void ) const {
+const std::set<RbPtr<DAGNode> >& DAGNode::getParents( void ) const {
     return parents;
 }
 
@@ -209,7 +175,7 @@ bool DAGNode::isConst( void ) const {
 /** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
 bool DAGNode::isParentInDAG( const DAGNode* x, std::list<DAGNode*>& done ) const {
 
-    for( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
+    for( std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
 
         if ( std::find( done.begin(), done.end(), (*i) ) == done.end() ) {
             if ( (*i)->isParentInDAG( x, done ) )
@@ -268,7 +234,7 @@ void DAGNode::printParents( std::ostream& o ) const {
 
     o << "[ ";
 
-    for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
+    for ( std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( i != parents.begin() )
             o << ", ";
         if ( (*i)->getName() == "" ) {

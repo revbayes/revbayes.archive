@@ -18,6 +18,7 @@
 
 #include "CharacterData.h"
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_concatenate.h"
 #include "RbException.h"
@@ -25,7 +26,7 @@
 #include "RbString.h"
 #include "StringUtilities.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
+
 #include <cmath>
 #include <iomanip>
 #include <sstream>
@@ -40,7 +41,7 @@ Func_concatenate* Func_concatenate::clone(void) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_concatenate::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_concatenate::executeFunction( const std::vector<const RbObject*>& args ) {
 
     // get the information from the arguments for reading the file
     //CharacterData& m = static_cast<CharacterData&>( data->getValue() );
@@ -52,7 +53,7 @@ const RbLanguageObject& Func_concatenate::executeFunction( const std::vector<con
 
     CharacterData* concatenatedMatrix = new CharacterData( m0.getDataType() );
     
-    return *concatenatedMatrix;
+    return RbPtr<RbLanguageObject>( concatenatedMatrix );
 }
 
 

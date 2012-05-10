@@ -91,7 +91,7 @@ RbPtr<RbLanguageObject> ConstructorFunction::execute( void ) {
 
     
     for ( size_t i = 0; i < args.size(); i++ ) {
-        copyObject->setMember( args[i].getLabel(), args[i].getVariable() );
+        copyObject->setMember( args[i]->getLabel(), args[i]->getVariable() );
     }
  
     return RbPtr<RbLanguageObject>( copyObject );

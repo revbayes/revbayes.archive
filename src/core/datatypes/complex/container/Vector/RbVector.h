@@ -96,7 +96,7 @@ public:
 
 protected:
     
-    virtual RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const std::vector<Argument>& args);//!< Execute method
+    virtual RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);//!< Execute method
     
     // We store internally pointers to our objects. This is necessary because elements can be also of the derived type and we need to be able to make proper copies of the Vector and all its elements
     std::vector<RbObject *>                         elements;
