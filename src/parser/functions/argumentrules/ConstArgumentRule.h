@@ -26,11 +26,13 @@
 class ConstArgumentRule : public ArgumentRule {
     
 public:
-    ConstArgumentRule(const std::string& argName);                                                           //!< Constructor of rule from default value
-    ConstArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool optional=false);           //!< Constructor of rule without default value
+    ConstArgumentRule(const std::string& argName);                                                                                  //!< Constructor of rule from default value
+    ConstArgumentRule(const std::string& argName, const RbPtr<RbLanguageObject> &defVal);                                           //!< Constructor of rule from default value
+    ConstArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool optional=false);                                  //!< Constructor of rule without default value
+    ConstArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const RbPtr<RbLanguageObject> &defVal);                //!< Constructor of rule without default value
     
     // Basic utility functions
-    virtual ConstArgumentRule*  clone(void) const;                                                                              //!< Clone object
+    virtual ConstArgumentRule*  clone(void) const;                                                                                  //!< Clone object
     static const std::string&   getClassName(void);                                                                                 //!< Get class name
     static const TypeSpec&      getClassTypeSpec(void);                                                                             //!< Get class type spec
     virtual const TypeSpec&     getTypeSpec(void) const;                                                                            //!< Get language type of the object
@@ -39,7 +41,7 @@ public:
     // functions overwritten in derived class
     virtual const Variable&     getDefaultVariable(void) const;                                                                     //!< Get default ConstArgument
     
-private:
+protected:
     Variable                    defaultVar;
 };
 

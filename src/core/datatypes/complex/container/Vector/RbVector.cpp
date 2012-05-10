@@ -24,6 +24,8 @@
 #include "RbUtil.h"
 #include "TypeSpec.h"
 
+#include <algorithm>
+
 /** Vector type of elements */
 RbVector::RbVector( const TypeSpec &elemType ) : Container( elemType ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( elementType) ) {
     

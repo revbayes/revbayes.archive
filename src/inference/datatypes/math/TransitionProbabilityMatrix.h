@@ -24,22 +24,18 @@
 class TransitionProbabilityMatrix {
 
     public:
-                                            TransitionProbabilityMatrix(void);                                 //!< Default constructor (never call this except from the workspace once)
-                                            TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m); //!< Copy constructor
-                                            TransitionProbabilityMatrix(size_t n);                             //!< Construct rate matrix with n states
-                                           ~TransitionProbabilityMatrix(void);                                 //!< Destructor
+                                            TransitionProbabilityMatrix(void);                                  //!< Default constructor (never call this except from the workspace once)
+                                            TransitionProbabilityMatrix(size_t n);                              //!< Constructor
 
         // overloaded operators
-        TransitionProbabilityMatrix&        operator=(const TransitionProbabilityMatrix& m);
-        std::vector<double>&                operator[](size_t i);                                              //!< Subscript operator
-        const std::vector<double>&          operator[](size_t i) const;                                        //!< Subscript operator (const)
+        std::vector<double>&                operator[](size_t i);                                               //!< Subscript operator
+        const std::vector<double>&          operator[](size_t i) const;                                         //!< Subscript operator (const)
     
-        // Basic utility functions
-        TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object
+        size_t                              size(void) const;
  
     private:
-        size_t                              numStates;                                                         //!< The number of character states
-        Matrix<double>                      theMatrix;                                                         //!< Holds the transition probability matrix
+        size_t                              numStates;                                                          //!< The number of character states
+        Matrix<double>                      theMatrix;                                                          //!< Holds the transition probability matrix
     
 };
 

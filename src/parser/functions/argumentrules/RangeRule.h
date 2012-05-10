@@ -17,14 +17,14 @@
 #ifndef RangeRule_H
 #define RangeRule_H
 
-#include "ArgumentRule.h"
+#include "ConstArgumentRule.h"
 #include "RbUtil.h"
 
 #include <string>
 
 
 template <typename valType>
-class RangeRule : public ArgumentRule {
+class RangeRule : public ConstArgumentRule {
 
     public:
                                     RangeRule(const std::string& argName, valType min, valType max);                    //!< Constructor of rule without default value
@@ -39,7 +39,7 @@ class RangeRule : public ArgumentRule {
         std::string                 debugInfo(void) const;                                                              //!< General info on object
 
         // MinmaxRule functions
-        bool                        isArgumentValid(const RbVariablePtr& var, bool convert = false) const;              //!< Is var valid argument?
+        bool                        isArgumentValid(const RbPtr<const Variable>& var, bool convert = false) const;              //!< Is var valid argument?
 
     protected:
         valType                     minVal;                                                                             //!< Min value
@@ -56,7 +56,7 @@ class RangeRule : public ArgumentRule {
 /** Construct rule without default value; use "" for no label. */
 template <typename valType>
 RangeRule<valType>::RangeRule( const std::string& argName, valType min, valType max)
-    : ArgumentRule( argName, min.getTypeSpec() ), minVal( min ), maxVal( max ) {
+    : ConstArgumentRule( argName, min.getTypeSpec() ), minVal( min ), maxVal( max ) {
 
     if ( min > max )
         throw RbException( "Min larger than max in range rule" );
@@ -66,7 +66,7 @@ RangeRule<valType>::RangeRule( const std::string& argName, valType min, valType 
 /** Construct rule with default value; use "" for no label. */
 template <typename valType>
 RangeRule<valType>::RangeRule( const std::string& argName, valType* defVal, valType min, valType max )
-    : ArgumentRule( argName, defVal ), minVal( min ), maxVal( max ) {
+    : ConstArgumentRule( argName, defVal ), minVal( min ), maxVal( max ) {
 
     if ( min > max )
         throw RbException( "Min larger than max in range rule" );
@@ -103,12 +103,12 @@ const TypeSpec& RangeRule<valType>::getTypeSpec( void ) const {
 
 /** Check whether argument is constant and within the permissible range */
 template <typename valType>
-bool RangeRule<valType>::isArgumentValid( const RbVariablePtr& var, bool convert ) const {
+bool RangeRule<valType>::isArgumentValid( const RbPtr<const Variable>& var, bool convert ) const {
 
     if ( !var->isTypeSpec( ConstantNode::getClassTypeSpec() ) )
         return false;
 
-    const valType* val = static_cast<valType*> ( var->getValue() );
+    const valType* val = static_cast<const valType*> ( var->getValue() );
 
     if ( *val >= minVal && *val <= maxVal )
         return true;
@@ -137,8 +137,8 @@ std::string RangeRule<valType>::debugInfo(void) const {
     o << "label         = " << label << std::endl;
     o << "hasDefaultVal = " << hasDefaultVal << std::endl;
     o << "defaultVaribale   = ";
-    if ( defaultVariable != NULL && defaultVariable->getDagNode() != NULL ) {
-        defaultVariable->getValue().printValue(o);
+    if ( defaultVar.getDagNode() != NULL ) {
+        defaultVar.getValue().printValue(o);
     } 
     else {
         o << "NULL";

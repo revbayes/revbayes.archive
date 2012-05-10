@@ -161,7 +161,7 @@ bool ArgumentRule::hasDefault(void) const {
 
 
 /** Test if argument is valid */
-bool ArgumentRule::isArgumentValid(const Variable* var, bool convert) const {
+bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool convert) const {
     
     if ( var == NULL )
         return false;

@@ -31,7 +31,7 @@
 
 
 /** Construct rule without default value; use "" for no label. */
-OptionRule::OptionRule( const std::string& argName, RbVector<RbString> optVals ) : ValueRule( argName, RbString::getClassTypeSpec() ), options( optVals ) {
+OptionRule::OptionRule( const std::string& argName, const RbVector &optVals ) : ConstArgumentRule( argName, RbString::getClassTypeSpec() ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -39,7 +39,7 @@ OptionRule::OptionRule( const std::string& argName, RbVector<RbString> optVals )
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, RbString* defVal, RbVector<RbString> optVals ) : ValueRule( argName, defVal ), options( optVals ) {
+OptionRule::OptionRule(const std::string& argName, const RbPtr<RbString> &defVal, const RbVector &optVals ) : ConstArgumentRule( argName, RbPtr<RbLanguageObject>( (RbString*) defVal ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );

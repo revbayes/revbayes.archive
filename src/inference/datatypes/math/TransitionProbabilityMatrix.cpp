@@ -51,31 +51,6 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : theMatrix(n
 }
 
 
-/** Copy constructor */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m) : theMatrix( m.theMatrix ) {
-
-    numStates = m.numStates;
-}
-
-
-/** Destructor */
-TransitionProbabilityMatrix::~TransitionProbabilityMatrix(void) {
-    
-}
-
-
-TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator=(const TransitionProbabilityMatrix &m) {
-    
-    if (this != &m) {
-        
-        numStates = m.numStates;
-        theMatrix = m.theMatrix;
-    }
-    
-    return *this;
-}
-
-
 /** Index operator (const) */
 const std::vector<double>& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
@@ -94,10 +69,8 @@ std::vector<double>& TransitionProbabilityMatrix::operator[]( const size_t i ) {
 }
 
 
-/** Clone object */
-TransitionProbabilityMatrix* TransitionProbabilityMatrix::clone(void) const {
-
-    return new TransitionProbabilityMatrix(*this);
+size_t TransitionProbabilityMatrix::size(void) const {
+    return theMatrix.size();
 }
 
 

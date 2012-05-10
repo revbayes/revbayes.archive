@@ -30,21 +30,21 @@ class RbString;
 class OptionRule : public ConstArgumentRule {
 
     public:
-                                    OptionRule(const std::string& argName, RbVector optVals);                           //!< Constructor of rule without default value
-                                    OptionRule(const std::string& argName, RbString* defVal, RbVector optVals);         //!< Constructor of rule with default value
+                                    OptionRule(const std::string& argName, const RbVector &optVals);                                    //!< Constructor of rule without default value
+                                    OptionRule(const std::string& argName, const RbPtr<RbString> &defVal, const RbVector& optVals);     //!< Constructor of rule with default value
 
         // Basic utility functions
-        OptionRule*                 clone(void) const { return new OptionRule(*this); }                                 //!< Clone object
-        std::string                 debugInfo(void) const;                                                              //!< General info on object
-        static const std::string&   getClassName(void);                                                                 //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                                             //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
-        void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
+        OptionRule*                 clone(void) const { return new OptionRule(*this); }                                                 //!< Clone object
+        std::string                 debugInfo(void) const;                                                                              //!< General info on object
+        static const std::string&   getClassName(void);                                                                                 //!< Get class name
+        static const TypeSpec&      getClassTypeSpec(void);                                                                             //!< Get class type spec
+        const TypeSpec&             getTypeSpec(void) const;                                                                            //!< Get language type of the object
+        void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
 
     protected:
-        bool                        areOptionsUnique(const RbVector& optVals) const;                                    //!< Test if options are unique
+        bool                        areOptionsUnique(const RbVector& optVals) const;                                                    //!< Test if options are unique
 
-        RbVector                    options;                                                                            //!< Permissible values
+        RbVector                    options;                                                                                            //!< Permissible values
     
 };
 

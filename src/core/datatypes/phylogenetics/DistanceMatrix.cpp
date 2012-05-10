@@ -332,10 +332,10 @@ const MethodTable& DistanceMatrix::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-        excludetaxaArgRules->push_back(        new ValueRule(     "", Natural::getClassTypeSpec()       ) );
-        excludetaxaArgRules2->push_back(       new ValueRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ) ) );
-        excludetaxaArgRules3->push_back(       new ValueRule(     "", RbString::getClassTypeSpec()      ) );
-        excludetaxaArgRules4->push_back(       new ValueRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ) ) );
+        excludetaxaArgRules->push_back(        new ConstArgumentRule(     "", Natural::getClassTypeSpec()       ) );
+        excludetaxaArgRules2->push_back(       new ConstArgumentRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ) ) );
+        excludetaxaArgRules3->push_back(       new ConstArgumentRule(     "", RbString::getClassTypeSpec()      ) );
+        excludetaxaArgRules4->push_back(       new ConstArgumentRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ) ) );
 
         methods.addFunction("names",         new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
         methods.addFunction("ntaxa",         new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );

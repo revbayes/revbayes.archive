@@ -26,7 +26,6 @@
 #include "MemberFunction.h"
 #include "MethodTable.h"
 
-#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -109,7 +108,7 @@ private:
     TypeSpec                                        typeSpec;
     
     struct comparator {
-        bool operator() (RbLanguageObject* A, RbLanguageObject* B) const { return ( *A < *B);}
+        bool operator() (RbObject* A, RbObject* B) const { return ( *A < *B);}
     } myComparator;
 };
 

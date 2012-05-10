@@ -46,7 +46,7 @@ class ArgumentRule : public RbInternal {
         const std::string&          getArgumentLabel(void) const;                                                                       //!< Get label of argument
         const TypeSpec&             getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
         bool                        hasDefault(void) const;                                                                             //!< Has default?
-        virtual bool                isArgumentValid(const Variable* var, bool convert = false) const;                                   //!< Is var valid argument?
+        virtual bool                isArgumentValid(const RbPtr<const Variable> &var, bool convert = false) const;                      //!< Is var valid argument?
         bool                        isOptional(void) const;                                                                             //!< Is this rule optional? If so, we do not use a default parameter when no argument is given.
 
         // functions overwritten in derived class
