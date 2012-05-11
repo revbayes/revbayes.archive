@@ -45,7 +45,7 @@ class SyntaxLabeledExpr : public SyntaxElement {
         const SyntaxElement&        getExpression(void) const { return *expression; }                               //!< Return expression
         SyntaxElement&              getExpression(void) { return *expression; }                                     //!< Return expression
         const RbString&             getLabel() const { return *label; }                                             //!< Return label    
-        RbVariablePtr               evaluateContent( Environment& env );                                            //!< Get semantic value
+        RbPtr<Variable>             evaluateContent( Environment& env );                                            //!< Get semantic value
         bool                        isConstExpression(void) const;                                                  //!< Is the expression constant?
         void                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 

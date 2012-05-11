@@ -41,17 +41,14 @@ class Func_simplex :  public RbFunction {
         bool                        throws(void) const;                                         //!< One variant needs to throw
 
     protected:
-        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
 
-    private:
-    
-        // memberfunction return value
-        Simplex                     s;
 };
 
 #endif
 
 
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "Integer.h"
 #include "RbUtil.h"
@@ -59,7 +56,6 @@ class Func_simplex :  public RbFunction {
 #include "RbVector.h"
 #include "Simplex.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 /** Clone the object */
@@ -71,42 +67,37 @@ Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
 
 /** Execute function: Simplex <- ( Integer ) */
 template <>
-const RbLanguageObject& Func_simplex<Integer>::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_simplex<Integer>::executeFunction( void ) {
 
-    int size = static_cast<const Integer&>( args[0].getVariable().getValue() ).getValue();
+    int size = static_cast<const Integer&>( args[0]->getVariable()->getValue() ).getValue();
 
     if ( size < 2 )
         throw RbException( "Simplex size must be at least 2" );
 
-    s = Simplex( size );
-
-    return s;
+    return RbPtr<RbLanguageObject>( new Simplex( size ) );
 }
 
 
 /** Execute function: Simplex <- ( VectorRealPos ) */
 template <>
-const RbLanguageObject& Func_simplex<RbVector<RealPos> >::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_simplex<RbVector>::executeFunction( void ) {
 
-    const RbVector<RealPos>& tempVec = static_cast<const RbVector<RealPos>& >( args[0].getVariable().getValue() );
+    const RbVector& tempVec = static_cast<const RbVector& >( args[0]->getVariable()->getValue() );
 
-    s.setValue( tempVec );
-
-    return s;
+    return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );
 }
 
 
 /** Execute function: Simplex <- ( RealPos, RealPos, ... ) */
 template <>
-const RbLanguageObject& Func_simplex<RealPos>::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_simplex<RealPos>::executeFunction( void ) {
 
-    RbVector<Real>  tempVec;
+    RbVector  tempVec( RealPos::getClassTypeSpec() );
     for ( size_t i = 0; i < args.size(); i++ )
-        tempVec.push_back( static_cast<const RealPos&>( args[i].getVariable().getValue() ).clone() );
+        tempVec.push_back( static_cast<const RealPos&>( args[i]->getVariable()->getValue() ).clone() );
 
     // Normalization is done by the Simplex constructor
-    s.setValue( tempVec );
-    return s;
+    return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );
 }
 
 
@@ -119,7 +110,7 @@ const ArgumentRules& Func_simplex<valType>::getArgumentRules( void ) const {
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", valType().getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "", valType().getTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -136,8 +127,8 @@ const ArgumentRules& Func_simplex<RealPos>::getArgumentRules( void ) const {
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "", RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "", RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "", RealPos::getClassTypeSpec() ) );
         argumentRules.push_back( new Ellipsis (     RealPos::getClassTypeSpec() ) );
         rulesSet = true;
         }

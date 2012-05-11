@@ -16,13 +16,13 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Func_type.h"
 #include "Integer.h"
 #include "RbException.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <cassert>
 

@@ -18,10 +18,11 @@
 #include <sstream>
 #include <vector>
 
-#include "Argument.h"
+#include "ConstArgument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
+#include "Plate.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
@@ -110,14 +111,14 @@ const TypeSpec& SyntaxBinaryExpr::getTypeSpec( void ) const {
  * We simply look up the function and calculate the value.
  *
  */
-RbVariablePtr SyntaxBinaryExpr::evaluateContent( Environment& env) {
+RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
 
     // Package the arguments
-    std::vector<Argument> args;
-    RbVariablePtr left = leftOperand->evaluateContent(env);
-    args.push_back( Argument("", left ) );
-    RbVariablePtr right = rightOperand->evaluateContent(env);
-    args.push_back( Argument("", right ) );
+    std::vector<RbPtr<Argument> > args;
+    RbPtr<const Variable> left( (Variable *) leftOperand->evaluateContent(env) );
+    args.push_back( new ConstArgument(left, "") );
+    RbPtr<const Variable> right( (Variable *) rightOperand->evaluateContent(env) );
+    args.push_back( new ConstArgument(right, "") );
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];
@@ -125,7 +126,7 @@ RbVariablePtr SyntaxBinaryExpr::evaluateContent( Environment& env) {
     RbFunction* theFunction = Workspace::globalWorkspace().getFunction(funcName, args).clone();
     theFunction->processArguments( args );
     
-    return RbVariablePtr( new Variable(new DeterministicNode( theFunction ) ) );
+    return RbPtr<Variable>( new Variable(new DeterministicNode( theFunction, NULL ) ) );
 }
 
 

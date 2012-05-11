@@ -21,11 +21,7 @@
 
 
 /** Construct rule based on default value; use "" for no label. */
-ConstArgumentRule::ConstArgumentRule( const std::string& argName ) : ArgumentRule( argName ), defaultVar( NULL ) {
-}
-
-/** Construct rule based on default value; use "" for no label. */
-ConstArgumentRule::ConstArgumentRule( const std::string& argName, const RbPtr<RbLanguageObject> &defVal ) : ArgumentRule( argName ), defaultVar( new ConstantNode( defVal ) ) {
+ConstArgumentRule::ConstArgumentRule( const std::string& argName, const RbPtr<RbLanguageObject> &defVal ) : ArgumentRule( argName, defVal->getTypeSpec(), true ), defaultVar( new ConstantNode( defVal ) ) {
     defaultVar = Variable( new ConstantNode( defVal ) );
 }
 

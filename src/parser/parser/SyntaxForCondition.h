@@ -44,7 +44,7 @@ class SyntaxForCondition : public SyntaxElement {
         void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RbVariablePtr               evaluateContent( Environment& env );                                            //!< Get semantic value
+        RbPtr<Variable>             evaluateContent( Environment& env );                                            //!< Get semantic value
         void                        finalizeLoop(void);                                                             //!< Finalize loop
         const RbString&             getIndexVarName(void) const;                                                    //!< Get the name of the index variable
         RbLanguageObject&           getNextLoopState(void);                                                         //!< Get next state of loop

@@ -70,7 +70,7 @@ Func__uplus<valType, retType>* Func__uplus<valType, retType>::clone( void ) cons
 
 /** Execute function: We simply return a copy of the value */
 template <typename valType, typename retType>
-RbPTr<RbLanguageObject> Func__uplus<valType, retType>::executeFunction(const std::vector<const RbObject *> &args) {
+RbPtr<RbLanguageObject> Func__uplus<valType, retType>::executeFunction(const std::vector<const RbObject *> &args) {
 
     const valType& val = static_cast<const valType&> ( *args[0] );
 

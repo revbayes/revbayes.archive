@@ -15,9 +15,11 @@
 
 #include "Argument.h"
 #include "ConstantNode.h"
+#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
+#include "Plate.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
@@ -103,11 +105,11 @@ const TypeSpec& SyntaxUnaryExpr::getTypeSpec( void ) const {
 
 
 /** Convert element to DAG node expression */
-RbVariablePtr SyntaxUnaryExpr::evaluateContent(Environment& env) {
+RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Package the argument
-    std::vector<Argument> arg;
-    arg.push_back( Argument("", expression->evaluateContent(env) ) );
+    std::vector<RbPtr<Argument> > arg;
+    arg.push_back( new ConstArgument( RbPtr<const Variable>( (Variable *)expression->evaluateContent(env)) , "" ) );
 
     // Find the function
     std::string funcName = "_" + opCode[operation];
@@ -115,7 +117,7 @@ RbVariablePtr SyntaxUnaryExpr::evaluateContent(Environment& env) {
     func->processArguments( arg );
 
     // Return new function node
-    return RbVariablePtr( new Variable( new DeterministicNode(func) ) );
+    return RbPtr<Variable>( new Variable( new DeterministicNode(func, NULL) ) );
 }
 
 

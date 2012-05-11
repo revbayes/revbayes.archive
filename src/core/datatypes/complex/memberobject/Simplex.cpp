@@ -43,6 +43,24 @@ Simplex::Simplex(const std::vector<double>& x) : MemberObject() {
 }
 
 
+
+
+/** Construct simplex from STL vector */
+Simplex::Simplex(const RbVector& x) : MemberObject() {
+    
+    std::vector<double> tmp;
+    
+    for (size_t i = 0; i < x.size(); ++i) {
+        tmp.push_back( static_cast<const Real &>( x.getElement( i ) ).getValue() );
+    }
+    
+    elements = tmp;
+    
+    // rescale so that the elements sum to 1
+    rescale();
+}
+
+
 /** Const subscript operator allowing caller to see value but not to modify it */
 double Simplex::operator[](size_t i) {
     

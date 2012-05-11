@@ -15,12 +15,14 @@
 
 #include "Argument.h"
 #include "ConstantNode.h"
+#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "DagNodeFunction.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
+#include "Plate.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbObject.h"
@@ -133,14 +135,14 @@ const TypeSpec& SyntaxFunctionCall::getTypeSpec( void ) const {
 
 
 /** Convert element to a deterministic function node. */
-RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
+RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     // Package arguments
-    std::vector<Argument> args;
+    std::vector<RbPtr<Argument> > args;
     for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++) {
         PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel().getValue().c_str() );
         const RbString& theLabel = (*i)->getLabel();
-        RbVariablePtr theVar = (*i)->getExpression().evaluateContent(env);
+        RbPtr<Variable> theVar = (*i)->getExpression().evaluateContent(env);
         
         // We need here to replace the constant expression by constant variables
         // Constant variables are faster and can be converted safely!
@@ -148,7 +150,7 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
             theVar->setDagNode( new ConstantNode( theVar->getValue().clone() ) );
         }
         
-        Argument theArg = Argument( theLabel.getValue(), theVar );
+        RbPtr<Argument> theArg( new ConstArgument( RbPtr<const Variable>( (Variable *) theVar), theLabel.getValue() ) );
         args.push_back( theArg );
     }
 
@@ -178,7 +180,7 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
     }
     else {
 
-        RbVariablePtr theVar = variable->evaluateContent( env );
+        RbPtr<Variable> theVar = variable->evaluateContent( env );
         DAGNode* theNode = theVar->getDagNode();
         if ( theNode == NULL )
             throw RbException( "Could not find the variable" );
@@ -215,7 +217,7 @@ RbVariablePtr SyntaxFunctionCall::evaluateContent(Environment& env) {
         }
     }
 
-    return RbVariablePtr( new Variable( new DeterministicNode( func ) ) );
+    return RbPtr<Variable>( new Variable( new DeterministicNode( func, NULL ) ) );
 }
 
 

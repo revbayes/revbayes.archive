@@ -42,20 +42,16 @@ public:
 	const TypeSpec&             getReturnType(void) const;                                      //!< Get type of return value
 
 protected:
-	const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);      //!< Execute operation
+    RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);      //!< Execute operation
     
-private:
-    
-    // member function return variable
-    valType                     retValue;
 };
 
 #endif
 
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 /** Clone object */
@@ -68,14 +64,16 @@ Func_unique<valType>* Func_unique<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-const RbLanguageObject& Func_unique<valType>::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_unique<valType>::executeFunction( const std::vector<const RbObject*>& args ) {
     
-    retValue = *static_cast<const valType*>( args[0] );    
-    if(retValue.size() == 0) 
-        return retValue;
-    retValue.sort();
-    retValue.unique();
-    return retValue;
+    valType *retValue = static_cast<const valType*>( args[0] )->clone();    
+    if(retValue->size() == 0) 
+        return RbPtr<RbLanguageObject>( retValue );
+    
+    retValue->sort();
+    retValue->unique();
+    
+    return RbPtr<RbLanguageObject>( retValue );
 
 }
 
@@ -89,7 +87,7 @@ const ArgumentRules& Func_unique<valType>::getArgumentRules( void ) const {
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ValueRule( "value", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "value", valType() .getTypeSpec() ) );
         rulesSet = true;
     }
     

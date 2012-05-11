@@ -88,13 +88,13 @@ const TypeSpec& SyntaxConstant::getTypeSpec( void ) const {
 
 
 /** Get semantic value of element */
-RbVariablePtr SyntaxConstant::evaluateContent( Environment& env ) {
+RbPtr<Variable> SyntaxConstant::evaluateContent( Environment& env ) {
 
     // We return a clone in case this function is called repeatedly.
     if (value == NULL)
-        return RbVariablePtr( new Variable(new ConstantNode( NULL ) ) );
+        return RbPtr<Variable>( new Variable(new ConstantNode( NULL ) ) );
     else
-        return RbVariablePtr( new Variable(new ConstantNode( value->clone() ) ) );
+        return RbPtr<Variable>( new Variable(new ConstantNode( value->clone() ) ) );
 }
 
 

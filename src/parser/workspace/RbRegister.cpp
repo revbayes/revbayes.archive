@@ -23,7 +23,6 @@
 #include "ConstructorFunction.h"
 #include "ConstructorFunctionForSimpleObjects.h"
 #include "Distribution.h"
-#include "DistributionFunction.h"
 #include "DistributionContinuous.h"
 #include "FunctionTable.h"
 #include "ParserDistribution.h"
@@ -73,7 +72,6 @@
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "FileMonitor.h"
 #include "Mcmc.h"
-#include "Mixture.h"
 #include "ObjectMonitor.h"
 #include "ParserMonitor.h"
 #include "ParserMove.h"
@@ -190,8 +188,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( RbLanguageObject::getClassTypeSpec() ) );
         addType( new RbAbstract( RbInternal::getClassTypeSpec() ) );
         addType( new RbAbstract( MemberObject::getClassTypeSpec() ) );
-        addType( new RbAbstract( Move::getClassTypeSpec() ) );
-        addType( new RbAbstract( Distribution::getClassTypeSpec() ) );
+//        addType( new RbAbstract( Move::getClassTypeSpec() ) );
+//        addType( new RbAbstract( Distribution::getClassTypeSpec() ) );
 
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
@@ -201,33 +199,33 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new Integer()                        );
         addType( new Natural()                        );
         addType( new Probability()                    );
-        addType( new RateMatrix()                     );
+//        addType( new RateMatrix()                     );
         addType( new RbString()                       );
         addType( new Real()                           );
         addType( new RealPos()                        );
         addType( new RnaState()                       );
         addType( new StandardState()                  );
-        addType( new TransitionProbabilityMatrix()    );
+//        addType( new TransitionProbabilityMatrix()    );
         
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "dna",         new DnaState()              );
 
         /* Add container types (alphabetic order) */
         addType( new DagNodeContainer()             );
-        addType( new Matrix<Complex>()              );
-        addType( new Matrix<Real>()                 );
-        addTypeWithConstructor( "set",         new Set<Integer>()          );
-        addTypeWithConstructor( "set",         new Set<Natural>()          );
-        addTypeWithConstructor( "set",         new Set<NucleotideState>()  );
-        addTypeWithConstructor( "set",         new Set<Real>()             );
-        addTypeWithConstructor( "set",         new Set<RealPos>()          );
-        addType( new RbVector<RbLanguageObject>()   );
-        addType( new RbVector<RbBoolean>()          );
-        addType( new RbVector<Integer>()            );
-        addType( new RbVector<Natural>()            );
-        addType( new RbVector<Real>()               );
-        addType( new RbVector<RealPos>()            );
-        addType( new RbVector<RbString>()           );
+//        addType( new Matrix<Complex>()              );
+//        addType( new Matrix<Real>()                 );
+//        addTypeWithConstructor( "set",         new Set<Integer>()          );
+//        addTypeWithConstructor( "set",         new Set<Natural>()          );
+//        addTypeWithConstructor( "set",         new Set<NucleotideState>()  );
+//        addTypeWithConstructor( "set",         new Set<Real>()             );
+//        addTypeWithConstructor( "set",         new Set<RealPos>()          );
+//        addType( RbPtr<MemberObject>( new RbVector( RbObject::getClassTypeSpec() ) )  );
+//        addType( new RbVector<RbBoolean>()          );
+//        addType( new RbVector<Integer>()            );
+//        addType( new RbVector<Natural>()            );
+//        addType( new RbVector<Real>()               );
+//        addType( new RbVector<RealPos>()            );
+//        addType( new RbVector<RbString>()           );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
         addType( new Simplex()                      );
@@ -235,12 +233,11 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new TopologyNode()                 );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
-        addTypeWithConstructor( "mcmc",          new Mcmc()              );
-        addTypeWithConstructor( "mixture",       new Mixture()           );
-        addTypeWithConstructor( "model",         new Model()             );
-        addTypeWithConstructor( "plate",         new Plate()             );
-        addTypeWithConstructor( "simulate",      new Simulate()          );
-        addTypeWithConstructor( "treeplate",     new TreePlate()         );
+        addTypeWithConstructor( "mcmc",          RbPtr<MemberObject>( new Mcmc() )             );
+        addTypeWithConstructor( "model",         RbPtr<MemberObject>( new Model() )            );
+        addTypeWithConstructor( "plate",         RbPtr<MemberObject>( new Plate() )            );
+        addTypeWithConstructor( "simulate",      RbPtr<MemberObject>( new Simulate() )         );
+        addTypeWithConstructor( "treeplate",     RbPtr<MemberObject>( new TreePlate() )        );
 
         //////////////////
         /* Add monitors */
@@ -256,7 +253,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         filemonitorAttributeNames.insert("printgen");
         filemonitorAttributeNames.insert("separator");
         filemonitorAttributeNames.insert("filename");
-        addTypeWithConstructor("filemonitor",    new ParserMonitor( new FileMonitor(), "filemonitor", filemonitorMemberRules, filemonitorAttributeNames ) );
+        addTypeWithConstructor("filemonitor",    RbPtr<MemberObject>( new ParserMonitor( new FileMonitor(), "filemonitor", filemonitorMemberRules, filemonitorAttributeNames ) ) );
         
         
         
@@ -272,7 +269,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         std::set<std::string> mScaleAttributeNames;
         mScaleAttributeNames.insert("rate");
         mScaleAttributeNames.insert("weight");
-        addTypeWithConstructor("mscale",    new ParserMove( new Move_scale(), "Scale", mScaleMemberRules, mScaleAttributeNames ) );
+        addTypeWithConstructor("mscale",    RbPtr<MemberObject>( new ParserMove( new Move_scale(), "Scale", mScaleMemberRules, mScaleAttributeNames ) ) );
 
         /* Sliding move */
         MemberRules mSlideMemberRules;
@@ -282,12 +279,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         std::set<std::string> mSlideAttributeNames;
         mSlideAttributeNames.insert("delta");
         mSlideAttributeNames.insert("weight");
-        addTypeWithConstructor("mslide",    new ParserMove( new Move_slide(), "Slide", mSlideMemberRules, mSlideAttributeNames ) );
+        addTypeWithConstructor("mslide",    RbPtr<MemberObject>( new ParserMove( new Move_slide(), "Slide", mSlideMemberRules, mSlideAttributeNames ) ) );
 
         /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
         // \TODO: Does this really make sense to use the general character type?! (Sebastian)
-        addTypeWithConstructor( "taxonData",     new TaxonData( Character::getClassName() ) );
-        addTypeWithConstructor( "characterData", new CharacterData(DnaState::getClassName())   );
+        addTypeWithConstructor( "taxonData",     RbPtr<MemberObject>( new TaxonData( Character::getClassName() ) ) );
+        addTypeWithConstructor( "characterData", RbPtr<MemberObject>( new CharacterData(DnaState::getClassName()) ) );
 
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
@@ -312,53 +309,53 @@ void Workspace::initializeGlobalWorkspace(void) {
         MemberRules distBetaMemberRules;
         distBetaMemberRules.push_back( new ConstArgumentRule( "alpha", RealPos::getClassTypeSpec()    ) );
         distBetaMemberRules.push_back( new ConstArgumentRule( "beta"  , RealPos::getClassTypeSpec() ) );
-        addDistribution( "beta",         new ParserDistributionContinuous( new Dist_beta(), "beta", distBetaMemberRules, new Probability() ) );
+        addDistribution( "beta",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_beta(), "beta", distBetaMemberRules, new Probability() ) ) );
 
         // dirichlet distribution
-        MemberRules distDirichletMemberRules;
-        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
-        addDistribution( "dirichlet",         new ParserDistributionContinuous( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) );
+//        MemberRules distDirichletMemberRules;
+//        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
+//        addDistribution( "dirichlet",        RbPtr<ParserDistribution>(  new ParserDistributionContinuous( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) ) );
 
         // exponential distribution
         MemberRules distExpMemberRules;
         distExpMemberRules.push_back( new ConstArgumentRule( "rate", RealPos::getClassTypeSpec()   , new RealPos(1.0)    ) );
-        addDistribution( "exponential",         new ParserDistributionContinuous( new Dist_exp(), "exponential", distExpMemberRules, new RealPos() ) );
+        addDistribution( "exponential",        RbPtr<ParserDistributionContinuous>(  new ParserDistributionContinuous( new Dist_exp(), "exponential", distExpMemberRules, new RealPos() ) ) );
         
         // gamma distribution
         MemberRules distGammaMemberRules;
         distGammaMemberRules.push_back( new ConstArgumentRule( "shape", RealPos::getClassTypeSpec()    ) );
         distGammaMemberRules.push_back( new ConstArgumentRule( "rate"  , RealPos::getClassTypeSpec() ) );
-        addDistribution( "gamma",         new ParserDistributionContinuous( new Dist_gamma(), "gamma", distGammaMemberRules, new RealPos() ) );
+        addDistribution( "gamma",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_gamma(), "gamma", distGammaMemberRules, new RealPos() ) ) );
         
         // log-normal distribution
         MemberRules distlognormMemberRules;
-        distlogormMemberRules.push_back( new ConstArgumentRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
-        distlogormMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        addDistribution( "lognorm",         new ParserDistributionContinuous( new Dist_lnorm(), "lognormal", distlognormMemberRules, new RealPos() ) );
+        distlognormMemberRules.push_back( new ConstArgumentRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
+        distlognormMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        addDistribution( "lognorm",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_lnorm(), "lognormal", distlognormMemberRules, new RealPos() ) ) );
         
         // logistic distribution
         MemberRules distLogisticMemberRules;
         distLogisticMemberRules.push_back( new ConstArgumentRule( "location", Real::getClassTypeSpec()    ) );
         distLogisticMemberRules.push_back( new ConstArgumentRule( "scale"  , RealPos::getClassTypeSpec() ) );
-        addDistribution( "logistic",         new ParserDistributionContinuous( new Dist_logis(), "logistic", distLogisticMemberRules, new Real() ) );
+        addDistribution( "logistic",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_logis(), "logistic", distLogisticMemberRules, new Real() ) ) );
         
         // multinomial distribution
-        MemberRules distMultMemberRules;
-        distMultMemberRules.push_back( new ConstArgumentRule( "probabilities", Simplex::getClassTypeSpec()    ) );
-        distMultMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        addDistribution( "mult",         new ParserDistributionContinuous( new Dist_multinomial(), "multinomial", distMultMemberRules, new RbVector( Natural::getClassTypeSpec() ) ) );
+//        MemberRules distMultMemberRules;
+//        distMultMemberRules.push_back( new ConstArgumentRule( "probabilities", Simplex::getClassTypeSpec()    ) );
+//        distMultMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+//        addDistribution( "mult",         RbPtr<ParserDistribution>( new ParserDistributionContinuous( new Dist_multinomial(), "multinomial", distMultMemberRules, new RbVector( Natural::getClassTypeSpec() ) ) ) );
         
         // normal distribution
         MemberRules distNormMemberRules;
         distNormMemberRules.push_back( new ConstArgumentRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
         distNormMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        addDistribution( "norm",         new ParserDistributionContinuous( new Dist_norm(), "normal", distNormMemberRules, new Real() ) );
+        addDistribution( "norm",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_norm(), "normal", distNormMemberRules, new Real() ) ) );
         
         // uniform distributin
         MemberRules distUnifMemberRules;
         distUnifMemberRules.push_back( new ConstArgumentRule( "min", Real::getClassTypeSpec()   , new Real(0.0)    ) );
         distUnifMemberRules.push_back( new ConstArgumentRule( "max"  , Real::getClassTypeSpec(), new Real(1.0) ) );
-        addDistribution( "unif",         new ParserDistributionContinuous( new Dist_unif(), "uniform", distUnifMemberRules, new Real() ) );
+        addDistribution( "unif",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_unif(), "uniform", distUnifMemberRules, new Real() ) ) );
         
         /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace().typesInitialized = true;
@@ -375,7 +372,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add basic unary arithmetic and logical templated functions */
         addFunction( "_uplus",    new Func__uplus <         Integer,        Integer >() );
         addFunction( "_uplus",    new Func__uplus <            Real,           Real >() );
-        addFunction( "_uplus",    new Func__uplus <    Matrix<Real>,   Matrix<Real> >() );
+//        addFunction( "_uplus",    new Func__uplus <    Matrix<Real>,   Matrix<Real> >() );
         addFunction( "_unot",     new Func__unot  <       RbBoolean                 >() );
         addFunction( "_unot",     new Func__unot  <         Integer                 >() );
         addFunction( "_unot",     new Func__unot  <            Real                 >() );
@@ -435,32 +432,13 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "rep",                      new Func_rep()                      );
         addFunction( "simplex",                  new Func_simplex<Integer>()         );
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
-        addFunction( "simplex",                  new Func_simplex<RbVector<RealPos> >() );
+//        addFunction( "simplex",                  new Func_simplex<RbVector>() );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
-        addFunction( "unique",                   new Func_unique<RbVector<RbBoolean> >()  );
-        addFunction( "unique",                   new Func_unique<RbVector<Integer> >()    );
-        addFunction( "unique",                   new Func_unique<RbVector<Natural> >()    );
-        addFunction( "unique",                   new Func_unique<RbVector<Real> >()       );
-        addFunction( "unique",                   new Func_unique<RbVector<RealPos> >()    );
-        addFunction( "unique",                   new Func_unique<RbVector<Complex> >()    );
-        addFunction( "unique",                   new Func_unique<RbVector<RbString> >()   );
-        addFunction( "size",                     new Func_size<DagNodeContainer>()   );
-        addFunction( "size",                     new Func_size<RbVector<RbBoolean> >()    );
-        addFunction( "size",                     new Func_size<RbVector<Integer> >()      );
-        addFunction( "size",                     new Func_size<RbVector<Natural> >()      );
-        addFunction( "size",                     new Func_size<RbVector<Real> >()         );
-        addFunction( "size",                     new Func_size<RbVector<RealPos> >()      );
-        addFunction( "size",                     new Func_size<RbVector<Complex> >()      );
-        addFunction( "size",                     new Func_size<RbVector<RbString> >()     );
-        addFunction( "sort",                     new Func_sort<RbVector<RbBoolean> >()    );
-        addFunction( "sort",                     new Func_sort<RbVector<Integer> >()      );
-        addFunction( "sort",                     new Func_sort<RbVector<Natural> >()      );
-        addFunction( "sort",                     new Func_sort<RbVector<Real> >()         );
-        addFunction( "sort",                     new Func_sort<RbVector<RealPos> >()      );
-        addFunction( "sort",                     new Func_sort<RbVector<Complex> >()      );
-        addFunction( "sort",                     new Func_sort<RbVector<RbString> >()     );
-        addFunction( "sort",                     new Func_sort<RbVector<RbLanguageObject> >());
+//        addFunction( "unique",                   new Func_unique<RbVector>()  );
+//        addFunction( "size",                     new Func_size<DagNodeContainer>()   );
+//        addFunction( "size",                     new Func_size<RbVector>()    );
+//        addFunction( "sort",                     new Func_sort<RbVector>()    );
         
 
         
@@ -689,19 +667,19 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "ctmmTransitionProbabilities", new Func_CtmmTransitionProbabilities() );
 
         /* Add builtin templated functions */
-        addFunction( "transpose", new Func_transpose<       Matrix<Real>                                                    >() );
-        addFunction( "v",         new Func_vector<          RbBoolean,                      RbVector<RbBoolean>             >() );
-        addFunction( "v",         new Func_vector<          Integer,                        RbVector<Integer>               >() );
-        addFunction( "v",         new Func_vector<          Natural,                        RbVector<Natural>               >() );
-        addFunction( "v",         new Func_vector<          Real,                           RbVector<Real>                  >() );
-        addFunction( "v",         new Func_vector<          RealPos,                        RbVector<RealPos>               >() );
-        addFunction( "v",         new Func_vector<          Complex,                        RbVector<Complex>               >() );
-        addFunction( "v",         new Func_vector<          RbString,                       RbVector<RbString>              >() );
-        addFunction( "v",         new Func_vector<          RbVector<Integer>,              Matrix<Integer>                 >() );
-        addFunction( "v",         new Func_vector<          RbVector<Natural>,              Matrix<Natural>                 >() );
-        addFunction( "v",         new Func_vector<          RbVector<Real>,                 Matrix<Real>                    >() );
-        addFunction( "v",         new Func_vector<          RbVector<RealPos>,              Matrix<RealPos>                 >() );
-        addFunction( "v",         new Func_vector<          RbVector<Complex>,              Matrix<Complex>                 >() );
+//        addFunction( "transpose", new Func_transpose<       Matrix<Real>                                                    >() );
+//        addFunction( "v",         new Func_vector<          RbBoolean,                      RbVector             >() );
+//        addFunction( "v",         new Func_vector<          Integer,                        RbVector               >() );
+//        addFunction( "v",         new Func_vector<          Natural,                        RbVector               >() );
+//        addFunction( "v",         new Func_vector<          Real,                           RbVector               >() );
+//        addFunction( "v",         new Func_vector<          RealPos,                        RbVector               >() );
+//        addFunction( "v",         new Func_vector<          Complex,                        RbVector               >() );
+//        addFunction( "v",         new Func_vector<          RbString,                       RbVector               >() );
+//        addFunction( "v",         new Func_vector<          RbVector,              Matrix<Integer>                 >() );
+//        addFunction( "v",         new Func_vector<          RbVector<Natural>,              Matrix<Natural>                 >() );
+//        addFunction( "v",         new Func_vector<          RbVector<Real>,                 Matrix<Real>                    >() );
+//        addFunction( "v",         new Func_vector<          RbVector<RealPos>,              Matrix<RealPos>                 >() );
+//        addFunction( "v",         new Func_vector<          RbVector<Complex>,              Matrix<Complex>                 >() );
     }
     catch(RbException& rbException) {
 

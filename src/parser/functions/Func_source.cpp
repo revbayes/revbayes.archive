@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "Func_source.h"
 #include "Model.h"
@@ -27,7 +28,6 @@
 #include "RbString.h"
 #include "TypeSpec.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 #include "Workspace.h"
 
 #include <fstream>
@@ -71,7 +71,7 @@ Func_source* Func_source::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_source::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_source::executeFunction( const std::vector<const RbObject*>& args ) {
 
     /* Open file */
     std::string fname = static_cast<const RbString*>( args[0] )->getValue();
@@ -117,7 +117,7 @@ const RbLanguageObject& Func_source::executeFunction( const std::vector<const Rb
     /* Return control */
     RBOUT("Processing of file \"" + fname + "\" completed");
 
-    return RbNullObject::getInstance();
+    return NULL;
 }
 
 
@@ -129,8 +129,8 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule( "file", RbString::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "echo.on", RbBoolean::getClassTypeSpec(), new RbBoolean(false) ) );
+        argumentRules.push_back( new ConstArgumentRule( "file", RbString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "echo.on", RbBoolean::getClassTypeSpec(), new RbBoolean(false) ) );
         rulesSet = true;
     }
 

@@ -118,7 +118,7 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-const RbPtr<RbLanguageObject>& FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+const RbPtr<RbLanguageObject>& FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     RbFunction&                     theFunction = findFunction(name, args);
     const RbPtr<RbLanguageObject>&  theValue    = theFunction.execute();
@@ -180,7 +180,7 @@ std::vector<RbPtr<RbFunction> > FunctionTable::findFunctions(const std::string& 
 
 
 /** Find function (also processes arguments) */
-RbFunction& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args) {
+RbFunction& FunctionTable::findFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     std::pair<std::multimap<std::string, RbPtr<RbFunction> >::iterator,
               std::multimap<std::string, RbPtr<RbFunction> >::iterator> retVal;
@@ -201,11 +201,11 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
             std::ostringstream msg;
             msg << "Argument mismatch for call to function '" << name << "'(";
             // print the passed arguments
-            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) {
+            for (std::vector<RbPtr<Argument> >::const_iterator it = args.begin(); it != args.end(); it++) {
                 if (it != args.begin()) {
                     msg << ",";
                 }
-                msg << " " << it->getVariable()->getDagNode()->getValue().getTypeSpec() << " \"" << it->getLabel() << "\"";
+                msg << " " << (*it)->getVariable()->getDagNode()->getValue().getTypeSpec() << " \"" << (*it)->getLabel() << "\"";
             }
             msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
@@ -259,12 +259,12 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
             else
                 msg << "Ambiguous call to function '" << name << "' with arguments (";
             // print the passed arguments
-            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) {
+            for (std::vector<RbPtr<Argument> >::const_iterator it = args.begin(); it != args.end(); it++) {
                 if (it != args.begin()) {
                     msg << ",";
                 }
 //                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
-                const DAGNode* theParNode = it->getVariable()->getDagNode();
+                const DAGNode* theParNode = (*it)->getVariable()->getDagNode();
                 if ( theParNode->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
                     const DeterministicNode* theDetNode = static_cast<const DeterministicNode*>( theParNode );
                     msg << " " << theDetNode->getFunction().getReturnType();
@@ -335,7 +335,7 @@ const RbFunction& FunctionTable::getFunction( const std::string& name ) {
 
 
 /* Get function copy (for repeated evaluation in a DeterministicNode) */
-const RbFunction& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
+const RbFunction& FunctionTable::getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     // find the template function
     RbFunction& theFunction = findFunction(name, args);

@@ -93,9 +93,9 @@ const TypeSpec& SyntaxLabeledExpr::getTypeSpec( void ) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbVariablePtr SyntaxLabeledExpr::evaluateContent( Environment& env ) {
+RbPtr<Variable> SyntaxLabeledExpr::evaluateContent( Environment& env ) {
 
-    return RbVariablePtr( NULL );
+    return NULL;
 }
 
 

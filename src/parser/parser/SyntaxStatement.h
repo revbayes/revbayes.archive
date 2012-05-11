@@ -54,7 +54,7 @@ class SyntaxStatement : public SyntaxElement {
         void                                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RbVariablePtr                               evaluateContent(Environment& env);                                              //!< Get semantic value
+        RbPtr<Variable>                             evaluateContent(Environment& env);                                              //!< Get semantic value
         void                                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:

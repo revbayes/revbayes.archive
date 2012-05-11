@@ -17,6 +17,7 @@
 
 #include "Environment.h"
 #include "RbException.h"
+#include "RbFunction.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "Variable.h"
@@ -285,7 +286,7 @@ void Environment::eraseVariable( const std::string& name ) {
 
 
 /* Execute function to get its value (workspaces only evaluate functions once) */
-const RbLanguageObject& Environment::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Environment::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     /* Using this calling convention indicates that we are only interested in
      evaluating the function once */
@@ -373,7 +374,7 @@ const RbFunction& Environment::getFunction( const std::string& name ) {
 
 
 /* Get function */
-const RbFunction& Environment::getFunction(const std::string& name, const std::vector<Argument>& args) {
+const RbFunction& Environment::getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     return functionTable.getFunction(name, args);
 }

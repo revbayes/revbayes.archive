@@ -13,7 +13,6 @@
  * $Id$
  */
 
-#include "ValueRule.h"
 #include "DAGNode.h"
 #include "Environment.h"
 #include "RbException.h"
@@ -147,7 +146,7 @@ const TypeSpec& SyntaxFunctionDef::getTypeSpec( void ) const {
 
 
 /** Get semantic value: insert a user-defined function in the user workspace */
-RbVariablePtr SyntaxFunctionDef::evaluateContent(Environment& env) {
+RbPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
 
     // Get argument rules from the formals
     ArgumentRules* argRules = new ArgumentRules();
@@ -170,7 +169,7 @@ RbVariablePtr SyntaxFunctionDef::evaluateContent(Environment& env) {
     Workspace::userWorkspace().addFunction(functionName->getValue(), theFunction);
 
     // No return value 
-    return RbVariablePtr( NULL );
+    return NULL;
 }
 
 

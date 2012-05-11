@@ -14,11 +14,13 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
 #include "DeterministicNode.h"
 #include "Func_reference.h"
 #include "ParserDistribution.h"
+#include "Plate.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -137,7 +139,7 @@ const TypeSpec& SyntaxAssignExpr::getTypeSpec( void ) const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
+RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
     
     PRINTF( "Evaluating assign expression\n" );
     
@@ -145,7 +147,7 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
     VariableSlot& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
-    RbVariablePtr theVariable = NULL;
+    RbPtr<Variable> theVariable = NULL;
     
     // Deal with arrow assignments
     if ( opType == ArrowAssign ) {
@@ -210,13 +212,13 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         if ( !theVariable->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) || rhs != NULL && !rhs->hasFunctionCall() ) {
             
             RbFunction* func = new Func_reference();
-            std::vector<Argument> args;
-            args.push_back( Argument( theVariable ) );
+            std::vector<RbPtr<Argument> > args;
+            args.push_back( new ConstArgument( RbPtr<const Variable>( (Variable *)theVariable ) ) );
             func->processArguments(args);
-            theVariable = RbVariablePtr( new Variable( new DeterministicNode( func ) ) );
+            theVariable = RbPtr<Variable>( new Variable( new DeterministicNode( func, NULL ) ) );
         }
         
-        const DeterministicNode* detNode = static_cast<const DeterministicNode*>( theVariable->getDagNode() );
+        const DeterministicNode* detNode = static_cast<const DeterministicNode*>( (DAGNode *) theVariable->getDagNode() );
         const RbFunction& theFunction = detNode->getFunction();
         // check if the type is valid. This is necessary for reassignments
         if ( !theFunction.getReturnType().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
@@ -257,7 +259,7 @@ RbVariablePtr SyntaxAssignExpr::evaluateContent( Environment& env ) {
         const ParserDistribution& dist = dynamic_cast<const ParserDistribution&>( detNode->getValue() );
                
         // Create new stochastic node
-        DAGNode* node = new StochasticNode( dist.clone() );
+        DAGNode* node = new StochasticNode( dist.clone(), NULL );
         
         // fill the slot with the new variable
         theSlot.getVariable().setDagNode( node );

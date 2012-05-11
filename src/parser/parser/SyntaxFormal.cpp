@@ -13,13 +13,13 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "Environment.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "SyntaxFormal.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -30,10 +30,10 @@ SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElem
     
     // Make argument rule from element
     if (defaultExpr == NULL)
-        argRule = new ValueRule(label->getValue(), *argType);
+        argRule = new ConstArgumentRule(label->getValue(), *argType);
     else {
         Environment env = Environment();
-        argRule = new ValueRule(label->getValue(), *argType, defaultExpr->evaluateContent( env )->getDagNode() );
+        argRule = new ConstArgumentRule(label->getValue(), *argType, defaultExpr->evaluateContent( env )->getDagNode() );
     }
 }
 
@@ -59,10 +59,10 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
     
     // Make argument rule from element
     if (defaultExpr == NULL)
-        argRule = new ValueRule(label->getValue(), *argType);
+        argRule = new ConstArgumentRule(label->getValue(), *argType);
     else {
         Environment env = Environment();
-        argRule = new ValueRule(label->getValue(), *argType, defaultExpr->evaluateContent(env)->getDagNode());
+        argRule = new ConstArgumentRule(label->getValue(), *argType, defaultExpr->evaluateContent(env)->getDagNode());
     }
 }
 
@@ -159,9 +159,9 @@ const TypeSpec& SyntaxFormal::getTypeSpec( void ) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbVariablePtr SyntaxFormal::evaluateContent( Environment& env ) {
+RbPtr<Variable> SyntaxFormal::evaluateContent( Environment& env ) {
 
-    return RbVariablePtr( NULL );
+    return NULL;
 }
 
 

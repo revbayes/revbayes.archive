@@ -39,19 +39,16 @@ class Func_vector :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
-
-    private:
-        retType                     theVector;
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
     
 };
 
 #endif
 
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 /** Clone object */
@@ -64,11 +61,11 @@ Func_vector<valType, retType>* Func_vector<valType, retType>::clone( void ) cons
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType, typename retType>
-const RbLanguageObject& Func_vector<valType, retType>::executeFunction( const std::vector<const RbObject*>& args ) {
+RbPtr<RbLanguageObject> Func_vector<valType, retType>::executeFunction( const std::vector<const RbObject*>& args ) {
     
-    theVector.clear();
+    RbVector *theVector = new RbVector( valType::getClassTypeSpec() );
     for ( size_t i = 0; i < args.size(); i++ )
-        theVector.push_back( static_cast<valType*>( args[i]->clone() ) );
+        theVector->push_back( static_cast<valType*>( args[i]->clone() ) );
 
     return theVector;
 }
@@ -83,7 +80,7 @@ const ArgumentRules& Func_vector<valType, retType>::getArgumentRules( void ) con
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", valType().getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "", valType().getTypeSpec() ) );
         argumentRules.push_back( new Ellipsis (     valType().getTypeSpec() ) );
         rulesSet = true;
         }

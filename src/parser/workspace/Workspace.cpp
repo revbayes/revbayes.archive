@@ -22,7 +22,10 @@
 #include "ConstructorFunction.h"
 #include "ConstructorFunctionForSimpleObjects.h"
 #include "Distribution.h"
-#include "DistributionFunction.h"
+#include "DistributionFunctionCdf.h"
+#include "DistributionFunctionPdf.h"
+#include "DistributionFunctionQuantile.h"
+#include "DistributionFunctionRv.h"
 #include "DistributionContinuous.h"
 #include "FunctionTable.h"
 #include "ParserDistribution.h"
@@ -89,8 +92,8 @@ bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistr
     typeTable.insert(std::pair<std::string, RbPtr<RbObject> >(dist->getTypeSpec(),dist->clone()));
 
     functionTable.addFunction(name, new ConstructorFunction( dist ) );
-    functionTable.addFunction("d" + name, new DistributionFunctionPdf( dist->clone() ));
-    functionTable.addFunction("r" + name, new DistributionFunctionRv( dist->clone() );
+    functionTable.addFunction("d" + name, new DistributionFunctionPdf( dist->clone() ) );
+    functionTable.addFunction("r" + name, new DistributionFunctionRv( dist->clone() ) );
 
     return true;
 }
@@ -117,7 +120,7 @@ bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistr
 
 
 /** Add type to the workspace */
-bool Workspace::addType(RbObject* exampleObj) {
+bool Workspace::addType(const RbPtr<RbObject> &exampleObj) {
 
     std::string name = exampleObj->getTypeSpec();
 
@@ -133,7 +136,7 @@ bool Workspace::addType(RbObject* exampleObj) {
 
 
 /** Add abstract type to the workspace */
-bool Workspace::addType(const std::string& name, RbObject* exampleObj) {
+bool Workspace::addType(const std::string& name, const RbPtr<RbObject> &exampleObj) {
 
     PRINTF("Adding special abstract type %s to workspace\n", name.c_str());
 
@@ -147,7 +150,7 @@ bool Workspace::addType(const std::string& name, RbObject* exampleObj) {
 
 
 /** Add type with constructor to the workspace */
-bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* templ) {
+bool Workspace::addTypeWithConstructor(const std::string& name, const RbPtr<MemberObject> &templ) {
 
     PRINTF("Adding type %s with constructor to workspace\n", name.c_str());
 
@@ -156,13 +159,13 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
 
     typeTable.insert(std::pair<std::string, RbObject*>(templ->getTypeSpec(), templ->clone()));
 
-    functionTable->addFunction(name, new ConstructorFunction(templ));
+    functionTable.addFunction(name, new ConstructorFunction(templ));
 
     return true;
 }
 
 /** Add type with constructor to the workspace */
-bool Workspace::addTypeWithConstructor(const std::string& name, RbLanguageObject* templ) {
+bool Workspace::addTypeWithConstructor(const std::string& name, const RbPtr<RbLanguageObject> &templ) {
     
     PRINTF("Adding simple type %s with constructor to workspace\n", name.c_str());
     
@@ -171,7 +174,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RbLanguageObject
     
     typeTable.insert(std::pair<std::string, RbObject*>(templ->getTypeSpec(), templ->clone()));
     
-    functionTable->addFunction(name, new ConstructorFunctionForSimpleObjects(templ));
+    functionTable.addFunction(name, new ConstructorFunctionForSimpleObjects(templ));
     
     return true;
 }
@@ -201,7 +204,7 @@ const TypeSpec& Workspace::getClassTypeSpec(void) {
 
 const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const {
     
-    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( type );
+    std::map<std::string, RbPtr<RbObject> >::const_iterator it = typeTable.find( type );
     if ( it == typeTable.end() ) {
         if ( parentEnvironment != NULL )
             return static_cast<Workspace*>( parentEnvironment )->getClassTypeSpecOfType( type );
@@ -224,7 +227,7 @@ const TypeSpec& Workspace::getTypeSpec( void ) const {
 /* Is the type added to the workspace? */
 bool Workspace::existsType( const TypeSpec& name ) const {
 
-    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
+    std::map<std::string, RbPtr<RbObject> >::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
         if ( parentEnvironment != NULL )
             return static_cast<Workspace*>( (Environment*)parentEnvironment )->existsType( name );
@@ -250,11 +253,11 @@ void Workspace::printValue(std::ostream& o) const {
     o << std::endl;
 
     o << "Function table:" << std::endl;
-    functionTable->printValue(o);
+    functionTable.printValue(o);
     o << std::endl;
 
     o << "Type table:" << std::endl;
-    std::map<std::string, RbObject*>::const_iterator i;
+    std::map<std::string, RbPtr<RbObject> >::const_iterator i;
     for (i=typeTable.begin(); i!=typeTable.end(); i++) {
         if ( (*i).second != NULL )
             o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;

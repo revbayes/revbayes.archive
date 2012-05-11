@@ -180,17 +180,17 @@ const TypeSpec& DistributionFunctionPdf::getReturnType(void) const {
 
 
 /** Process arguments */
-void DistributionFunctionPdf::processArguments( const std::vector<Argument>& args ) {
+void DistributionFunctionPdf::processArguments( const std::vector<RbPtr<Argument> >& args ) {
     
     // delegate first to the base class
     RbFunction::processArguments( args );
     
     // Set member variables of the distribution
-    for (std::vector<Argument>::iterator i = this->args.begin(); i != this->args.end(); i++) {
-        Argument& theArg = *i;
-        std::string label = theArg.getLabel();
+    for (std::vector<RbPtr<Argument> >::iterator i = this->args.begin(); i != this->args.end(); i++) {
+        const RbPtr<Argument>& theArg = *i;
+        std::string label = theArg->getLabel();
         if ( label != "x" && label != "log" ) {
-            distribution->setMember( label, theArg.getVariable() );
+            distribution->setMember( label, theArg->getVariable() );
         }
     }
 }

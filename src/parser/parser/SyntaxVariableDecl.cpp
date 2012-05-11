@@ -115,7 +115,7 @@ const TypeSpec& SyntaxVariableDecl::getTypeSpec( void ) const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
+RbPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
     
     PRINTF( "Evaluating variable declaration\n" );
     
@@ -176,7 +176,7 @@ RbVariablePtr SyntaxVariableDecl::evaluateContent( Environment& env ) {
         env.addVariable( variableName->getValue() );
     }
     
-    return RbVariablePtr( NULL );
+    return NULL;
 }
 
 

@@ -57,7 +57,6 @@ class Func__le :  public RbFunction {
 #include "RbUtil.h"
 #include "Real.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 

@@ -93,8 +93,8 @@ class Environment : public RbInternal {
         void                                    addVariable(const std::string& name);                                                       //!< Add variable
         void                                    clear(void);                                                                                //!< clears the variable table
         void                                    eraseVariable(const std::string& name);                                                     //!< Erase a variable
-        const RbLanguageObject&                 executeFunction(    const std::string&              name,
-                                                const std::vector<Argument>&   args);                                                       //!< Execute function
+        RbPtr<RbLanguageObject>                 executeFunction(    const std::string&              name,
+                                                const std::vector<RbPtr<Argument> >&   args);                                                       //!< Execute function
         bool                                    existsFunction(const std::string &name) const;                                              //!< Does a function exists with given name?
         bool                                    existsVariable(const std::string& name) const;                                              //!< Does variable exist?
         std::string                             generateUniqueVariableName(void);                                                           //!< Automatically generate a unique variable name
@@ -102,7 +102,7 @@ class Environment : public RbInternal {
         RbPtr<const DAGNode>                    getDagNode(const std::string& name) const;                                                  //!< Convenient alternative for [name]->getDagNode()
         const RbPtr<DAGNode>&                   getDagNode(const std::string& name);                                                        //!< Convenient alternative for [name]->getDagNode() (non-const to return non-const node)
         const RbFunction&                       getFunction(const std::string& name);                                                       //!< Get function copy
-        const RbFunction&                       getFunction(const std::string& name, const std::vector<Argument>& args);                    //!< Get function copy
+        const RbFunction&                       getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args);            //!< Get function copy
         const FunctionTable&                    getFunctionTable(void) const;                                                               //!< Get function table (const)
         FunctionTable&                          getFunctionTable(void);                                                                     //!< Get function table (non-const)
         const std::string&                      getName(size_t i) const;                                                                    //!< Get name at position i.

@@ -134,7 +134,7 @@ int Parser::execute(SyntaxElement* root, Environment &env) const {
 #	endif
 
     // Declare a variable for the result
-    RbVariablePtr result = NULL;
+    RbPtr<Variable> result = NULL;
     
     //! Execute syntax tree
     try {
@@ -147,7 +147,6 @@ int Parser::execute(SyntaxElement* root, Environment &env) const {
 
         // Catch a quit request
         if (rbException.getExceptionType() == RbException::QUIT) {
-            delete root;
             exit(0);
         }
 
@@ -158,15 +157,12 @@ int Parser::execute(SyntaxElement* root, Environment &env) const {
         if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
 
             RbString& fxnName = theVariable->getIdentifier();
-            const std::vector<RbFunction*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( fxnName.getValue() );
+            const std::vector<RbPtr<RbFunction> >& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( fxnName.getValue() );
             if ( functions.size() != 0 ) {
                 RBOUT( "Usage:" );
-                for ( std::vector<RbFunction*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
+                for ( std::vector<RbPtr<RbFunction> >::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
                     RBOUT( (*i)->debugInfo() );
-                    RbFunction* theFunction = *i;
-                    delete theFunction;
                 }
-                delete root;
                 return 0;
             }
         }
@@ -178,7 +174,6 @@ int Parser::execute(SyntaxElement* root, Environment &env) const {
         RBOUT( msg.str() );
 
         // Return signal indicating problem
-        delete root;
         return 2;
     }
 
@@ -188,9 +183,6 @@ int Parser::execute(SyntaxElement* root, Environment &env) const {
         result->getDagNode()->printValue(msg);
         RBOUT( msg.str() );
     }
-    
-    // free the memory
-    delete root;
 
     // Return success
     return 0;
@@ -256,13 +248,11 @@ int Parser::help(const RbString& symbol) const {
         else if ( userHelp.isHelpAvailableForQuery( symbol.getValue() ) == false )
             RBOUT("Help unavailable for \"" + symbol.getValue() + "\"");
 
-        const std::vector<RbFunction*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol.getValue() );
+        const std::vector<RbPtr<RbFunction> >& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol.getValue() );
         if ( functions.size() != 0 ) {
             RBOUT( "Usage:" );
-            for ( std::vector<RbFunction*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
+            for ( std::vector<RbPtr<RbFunction> >::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
                 RBOUT( (*i)->debugInfo() );
-                RbFunction* theFunction = *i;
-                delete theFunction;
             }
         }
     }

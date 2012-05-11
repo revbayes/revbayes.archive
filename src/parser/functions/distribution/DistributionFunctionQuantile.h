@@ -44,7 +44,7 @@ public:
     // DistributionFunction functions
     const ArgumentRules&                    getArgumentRules(void) const;                                           //!< Get argument rules
     const TypeSpec&                         getReturnType(void) const;                                              //!< Get type spec of return value
-    void                                    processArguments(const std::vector<Argument>& passedArgs);              //!< Process args, set member variables of distribution
+    void                                    processArguments(const std::vector<RbPtr<Argument> >& passedArgs);      //!< Process args, set member variables of distribution
     
 protected:
     RbPtr<RbLanguageObject>                 executeFunction(const std::vector<const RbObject*>& args);              //!< Execute function

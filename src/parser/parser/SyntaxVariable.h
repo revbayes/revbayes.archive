@@ -59,9 +59,9 @@ class SyntaxVariable : public SyntaxElement {
         void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
 
         // Regular functions
-        RbVector<Natural>                   computeIndex(Environment& env);                                                         //!< Evaluate index
+        RbVector                            computeIndex(Environment& env);                                                         //!< Evaluate index
         VariableSlot&                       createVariable(Environment& env);                                                       //!< Get semantic value
-        RbVariablePtr                       evaluateContent(Environment& env);                                                      //!< Get semantic value
+        RbPtr<Variable>                     evaluateContent(Environment& env);                                                      //!< Get semantic value
         RbString&                           getIdentifier(void) { return *identifier; }                                             //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         bool                                hasFunctionCall(void) const;                                                            //!< Does this variable have a function call (e.g. a.xxx() )

@@ -34,13 +34,13 @@ UserFunction::UserFunction( const ArgumentRules*  argRules,
                             const TypeSpec&             retType,
                             std::list<SyntaxElement*>*  stmts,
                             Environment*                defineEnv)
-: RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv), retValue( NULL ) {
+: RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
     
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules( x.argumentRules->clone() ), returnType( x.returnType ), code( NULL ), defineEnvironment( NULL ), retValue( NULL ) {
+UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules( x.argumentRules->clone() ), returnType( x.returnType ), code( NULL ), defineEnvironment( NULL ) {
 
     // clone the environment
     defineEnvironment   = x.defineEnvironment->clone();

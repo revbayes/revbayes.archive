@@ -169,9 +169,9 @@ const TypeSpec& SyntaxStatement::getTypeSpec( void ) const {
 
 
 /** Get semantic value: it is here that we execute the statement */
-RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
+RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
 
-    RbVariablePtr result = NULL;
+    RbPtr<Variable> result = NULL;
     
     if (statementType == For) {
 
@@ -367,7 +367,7 @@ RbVariablePtr SyntaxStatement::evaluateContent(Environment& env) {
  */
 bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment& env ) const {
     
-    RbVariablePtr temp = expression->evaluateContent( env );
+    RbPtr<Variable> temp = expression->evaluateContent( env );
     
     if ( temp == NULL )
         return false;

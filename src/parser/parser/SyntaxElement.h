@@ -20,7 +20,8 @@
 
 #include "RbInternal.h"
 #include "RbLanguageObject.h"
-#include "RbVariablePtr.h"
+#include "RbPtr.h"
+#include "Variable.h"
 
 #include <iostream>
 #include <string>
@@ -75,7 +76,7 @@ class SyntaxElement : public RbInternal {
         virtual void                    printValue(std::ostream& o) const = 0;                                              //!< Print info about object
 
         // Regular functions
-        virtual RbVariablePtr           evaluateContent(Environment& env) = 0;                                              //!< Get semantic value
+        virtual RbPtr<Variable>         evaluateContent(Environment& env) = 0;                                              //!< Get semantic value
         virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?
         virtual void                    replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) = 0;//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 

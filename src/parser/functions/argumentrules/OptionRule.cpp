@@ -47,7 +47,7 @@ OptionRule::OptionRule(const std::string& argName, const RbPtr<RbString> &defVal
 
 
 /** Help function to test whether a vector of string contains unique string values */
-bool OptionRule::areOptionsUnique( const RbVector<RbString>& optVals ) const {
+bool OptionRule::areOptionsUnique( const RbVector& optVals ) const {
 
     for ( size_t i = 0; i < optVals.size(); i++ )
         for ( size_t j = i + 1; j < optVals.size(); j++ )
@@ -66,14 +66,6 @@ std::string OptionRule::debugInfo(void) const {
     o << "OptionRule:" << std::endl;
     o << "label         = " << label << std::endl;
     o << "hasDefaultVal = " << hasDefaultVal << std::endl;
-    o << "defaultVaribale   = ";
-    if ( defaultVariable != NULL && defaultVariable->getDagNode() != NULL ) {
-        defaultVariable->getValue().printValue(o);
-    } 
-    else {
-        o << "NULL";
-    }
-    o << std::endl;
     o << "options       = " << options << std::endl;
     
     return o.str();
@@ -91,7 +83,7 @@ const std::string& OptionRule::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& OptionRule::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ValueRule::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstArgumentRule::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

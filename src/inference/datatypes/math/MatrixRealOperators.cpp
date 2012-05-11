@@ -8,6 +8,7 @@
 
 #include "MatrixRealOperators.h"
 #include "RbMathMatrix.h"
+#include "RbException.h"
 
 
 /**
@@ -33,8 +34,7 @@ Matrix<double> operator+(const Matrix<double>& A) {
  */
 Matrix<double> operator-(const Matrix<double>& A) {
     
-	Matrix<double> B;
-    B = A;
+	Matrix<double> B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = -B[i][j];
@@ -54,8 +54,7 @@ Matrix<double> operator-(const Matrix<double>& A) {
  */
 Matrix<double> operator-(const Matrix<double>& A, const double& b) {
     
-	Matrix<double> B;
-    B = A;
+	Matrix<double> B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] - b;
@@ -74,8 +73,7 @@ Matrix<double> operator-(const Matrix<double>& A, const double& b) {
  */
 Matrix<double> operator*(const Matrix<double>& A, const double& b) {
     
-	Matrix<double> B;
-    B = A;
+	Matrix<double> B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] * b;
@@ -94,8 +92,7 @@ Matrix<double> operator*(const Matrix<double>& A, const double& b) {
  */
 Matrix<double> operator/(const Matrix<double>& A, const double& b) {
     
-	Matrix<double> B;
-    B = A;
+	Matrix<double> B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] / b;
@@ -114,8 +111,7 @@ Matrix<double> operator/(const Matrix<double>& A, const double& b) {
  */
 Matrix<double> operator+(const double& a, const Matrix<double>& B) {
     
-	Matrix<double> A;
-    A = B;
+	Matrix<double> A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a + B[i][j];
@@ -134,8 +130,7 @@ Matrix<double> operator+(const double& a, const Matrix<double>& B) {
  */
 Matrix<double> operator-(const double& a, const Matrix<double>& B) {
     
-	Matrix<double> A;
-    A = B;
+	Matrix<double> A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a - B[i][j];
@@ -154,8 +149,7 @@ Matrix<double> operator-(const double& a, const Matrix<double>& B) {
  */
 Matrix<double> operator*(const double& a, const Matrix<double>& B) {
     
-	Matrix<double> A;
-    A = B;
+	Matrix<double> A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a * B[i][j];
@@ -174,8 +168,7 @@ Matrix<double> operator*(const double& a, const Matrix<double>& B) {
  */
 Matrix<double> operator/(const double& a, const Matrix<double>& B) {
     
-	Matrix<double> A;
-    A = B;
+	Matrix<double> A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a / B[i][j];
@@ -200,10 +193,10 @@ Matrix<double> operator/(const Matrix<double>& A, const Matrix<double>& B) {
         throw RbException("Cannot divide matrices of differing dimension");
     
 	size_t N = A.getNumberOfColumns();
-	Matrix<double> invB(N, N, new double( 0.0 ) );
+	Matrix<double> invB(N, N, double( 0.0 ) );
     RbMath::matrixInverse(B, invB);
     
-	Matrix<double> C(N, N, new double( 0.0 ) );
+	Matrix<double> C(N, N, double( 0.0 ) );
 	for (size_t i=0; i<N; i++) 
     {
 		for (size_t j=0; j<N; j++) 
@@ -307,7 +300,7 @@ Matrix<double> operator+(const Matrix<double>& A, const Matrix<double>& B) {
         throw RbException("Cannot add matrices A and B: the matrices are not of the same dimension");
 	else 
     {
-		Matrix<double> C(m, n, new double( 0.0 ) );
+		Matrix<double> C(m, n, double( 0.0 ) );
 		for (size_t i=0; i<m; i++) 
         {
 			for (size_t j=0; j<n; j++)
@@ -335,7 +328,7 @@ Matrix<double> operator-(const Matrix<double>& A, const Matrix<double>& B) {
         throw RbException("Cannot subtract matrices A and B: the matrices are not of the same dimension");
 	else 
     {
-		Matrix<double> C(m, n, new double( 0.0 ) );
+		Matrix<double> C(m, n, double( 0.0 ) );
 		for (size_t i=0; i<m; i++) 
         {
 			for (size_t j=0; j<n; j++)
@@ -366,7 +359,7 @@ Matrix<double> operator*(const Matrix<double>& A, const Matrix<double>& B) {
 	size_t M = A.getNumberOfRows();
 	size_t N = A.getNumberOfColumns();
 	size_t K = B.getNumberOfColumns();
-	Matrix<double> C(M, K, new double( 0.0 ) );
+	Matrix<double> C(M, K, double( 0.0 ) );
 	for (size_t i=0; i<M; i++) {
 		for (size_t j=0; j<K; j++) {
 			double sum = 0.0;
@@ -448,7 +441,7 @@ Matrix<double> &operator*=(Matrix<double>& A, const Matrix<double>& B) {
 	if ( A.getNumberOfRows() == A.getNumberOfColumns() && B.getNumberOfRows() == B.getNumberOfColumns() && A.getNumberOfRows() == B.getNumberOfRows() ) 
     {
 		size_t N = A.getNumberOfRows();
-		Matrix<double> C(N, N, new double( 0.0 ) );
+		Matrix<double> C(N, N, double( 0.0 ) );
 		for (size_t i=0; i<N; i++) 
         {
 			for (size_t j=0; j<N; j++) 

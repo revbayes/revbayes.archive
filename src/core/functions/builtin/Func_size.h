@@ -43,20 +43,16 @@ public:
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 
 protected:
-    const RbLanguageObject&     executeFunction(void);                              //!< Execute operation
+    RbPtr<RbLanguageObject>     executeFunction(void);                              //!< Execute operation
 
-private:
-    
-    // function return value
-    Natural                     retValue;
 };
 
 #endif
 
+#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 
@@ -70,12 +66,11 @@ Func_size<valType>* Func_size<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-const RbLanguageObject& Func_size<valType>::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_size<valType>::executeFunction( void ) {
     
-    const valType& val = static_cast<const valType&> ( args[0].getVariable().getValue() ) ;
-    retValue.setValue( val.size() ); 
+    const valType& val = static_cast<const valType&> ( args[0]->getVariable()->getValue() ) ;
     
-    return retValue;
+    return RbPtr<RbLanguageObject>( new Natural( val.size() ) );
 }
 
 
@@ -88,7 +83,7 @@ const ArgumentRules& Func_size<valType>::getArgumentRules( void ) const {
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ValueRule( "value", valType() .getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "value", valType() .getTypeSpec() ) );
         rulesSet = true;
     }
     

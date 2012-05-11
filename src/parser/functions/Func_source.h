@@ -45,7 +45,7 @@ class Func_source :  public RbFunction {
         bool                                    throws(void) const { return true; }                                         //!< Function may throw exceptions
     
     protected:
-        const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*>& args);                  //!< Execute function
+        RbPtr<RbLanguageObject>                 executeFunction(const std::vector<const RbObject*>& args);                  //!< Execute function
     
 };
 

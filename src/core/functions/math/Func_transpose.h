@@ -38,22 +38,14 @@ class Func_transpose :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(void);                                      //!< Execute function
-        void                        setArgumentVariable(const std::string& name, const Variable* var);
+        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
 
-    private:
-    
-        // Arguments
-        RbConstVariablePtr          x;
-
-        // function return value
-        matrixType                  retValue;
 };
 
 #endif
 
+#include "ConstArgumentRule.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 
 
@@ -67,11 +59,11 @@ Func_transpose<matrixType>* Func_transpose<matrixType>::clone( void ) const {
 
 /** Execute function by simply rearranging elements in new matrix of same type */
 template <typename matrixType>
-const RbLanguageObject& Func_transpose<matrixType>::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_transpose<matrixType>::executeFunction( void ) {
 
-    const matrixType& mat = static_cast<const matrixType&>( x->getValue() );
+    const matrixType& mat = static_cast<const matrixType&>( args[0]->getVariable()->getValue() );
 
-    retValue = matrixType( mat.getNumberOfColumns(), mat.getNumberOfRows() );
+    matrixType *retValue = new matrixType( mat.getNumberOfColumns(), mat.getNumberOfRows() );
     
     for ( size_t i = 0; i < mat.getNumberOfRows(); i++ )
         for ( size_t j = 0; j < mat.getNumberOfColumns(); j++ )
@@ -90,7 +82,7 @@ const ArgumentRules& Func_transpose<matrixType>::getArgumentRules( void ) const 
 
     if (!rulesSet) {
 
-        argumentRules.push_back( new ValueRule( "x", matrixType().getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "x", matrixType().getTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -134,19 +126,5 @@ template <typename matrixType>
 const TypeSpec& Func_transpose<matrixType>::getReturnType( void ) const {
 
     return matrixType().getTypeSpec();
-}
-
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-template <typename matrixType>
-void Func_transpose<matrixType>::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "x" ) {
-        x = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

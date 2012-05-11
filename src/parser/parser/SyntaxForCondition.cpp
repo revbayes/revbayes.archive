@@ -74,9 +74,9 @@ SyntaxElement* SyntaxForCondition::clone () const {
 }
 
 /** Get semantic value (not applicable so return NULL) */
-RbVariablePtr SyntaxForCondition::evaluateContent( Environment& env ) {
+RbPtr<Variable> SyntaxForCondition::evaluateContent( Environment& env ) {
     
-    return RbVariablePtr( NULL );
+    return NULL;
 }
 
 
@@ -160,7 +160,7 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    RbDagNodePtr  theNode  = inExpression->evaluateContent(env)->getDagNode();
+    RbPtr<DAGNode>  theNode  = inExpression->evaluateContent(env)->getDagNode();
     const RbObject& theValue = theNode->getValue();
 
     // Check that it is a vector
