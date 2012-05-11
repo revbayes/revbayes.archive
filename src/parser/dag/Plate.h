@@ -45,7 +45,7 @@ public:
     size_t                              getLength(void) const;                                                                              //!< Get the length for this plate
     
 protected:
-    RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);                 //!< Execute method
+    RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);         //!< Execute method
     
 private:
     

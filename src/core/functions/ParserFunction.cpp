@@ -32,7 +32,7 @@
 
 
 /** Basic constructor. */
-ParserFunction::ParserFunction(InferenceFunction *f, const std::string &fn, const ArgumentRules &ar, RbLanguageObject *rv, bool t ) : RbFunction(), function( f ), functionName( fn), argRules( ar ), returnValue( rv ), throwsError( t ), typeSpec( getClassName() + " (" + fn + ")", new TypeSpec( RbFunction::getClassTypeSpec() )) {
+ParserFunction::ParserFunction(InferenceFunction *f, const std::string &fn, const ArgumentRules &ar, const RbPtr<RbLanguageObject> &rv, bool t ) : RbFunction(), function( f ), functionName( fn), argRules( ar ), returnValue( rv ), throwsError( t ), typeSpec( getClassName() + " (" + fn + ")", new TypeSpec( RbFunction::getClassTypeSpec() )) {
     
     argsProcessed = false;
 }
@@ -67,7 +67,7 @@ std::string ParserFunction::debugInfo(void) const {
         o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
     
     for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = " << args[i].getVariable().getValue() << std::endl;
+        o << " args[" << i << "] = " << args[i]->getVariable()->getValue() << std::endl;
     }
     
     return o.str();
@@ -77,7 +77,7 @@ std::string ParserFunction::debugInfo(void) const {
  * Execute the Function. 
  *
  */
-const RbLanguageObject& ParserFunction::executeFunction( const std::vector<const RbObject*> &args ) {
+RbPtr<RbLanguageObject> ParserFunction::executeFunction( const std::vector<const RbObject*> &args ) {
     
     // converting the arguments into atomic data types
     std::vector<RbValue<void*> > newArgs;
@@ -98,7 +98,7 @@ const RbLanguageObject& ParserFunction::executeFunction( const std::vector<const
     
     function->execute();
     
-    return *retVal;
+    return RbPtr<RbLanguageObject>( retVal );
 }
 
 

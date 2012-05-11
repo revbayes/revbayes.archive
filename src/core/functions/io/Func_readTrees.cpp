@@ -197,7 +197,7 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "file", RbString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "file", RbString::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -233,7 +233,7 @@ const TypeSpec& Func_readTrees::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTrees::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbVector<TreePlate>::getClassName();
+    static TypeSpec returnTypeSpec = TypeSpec( RbVector::getClassName(), new TypeSpec( TreePlate::getClassTypeSpec() ) );
     return returnTypeSpec;
 }
 

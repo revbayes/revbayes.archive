@@ -237,7 +237,7 @@ const TypeSpec& Func_readTraces::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTraces::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbVector<Trace>::getClassName();
+    static TypeSpec returnTypeSpec = TypeSpec(RbVector::getClassName(), new TypeSpec( Trace::getClassTypeSpec() ) );
 
     return returnTypeSpec;
 }

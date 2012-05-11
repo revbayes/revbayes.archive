@@ -100,7 +100,7 @@ void DistanceMatrix::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> DistanceMatrix::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> DistanceMatrix::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
 //    if (name == "names") 
 //        {

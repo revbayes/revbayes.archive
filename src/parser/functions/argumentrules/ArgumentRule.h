@@ -53,7 +53,6 @@ class ArgumentRule : public RbInternal {
         virtual const Variable&     getDefaultVariable(void) const;                                                                     //!< Get default argument
 
     protected:
-                                    ArgumentRule(const std::string& argName);                                                           //!< Constructor of rule from default value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool optional=false);           //!< Constructor of rule without default value
 
         bool                        isArgumentValid(const RbObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;

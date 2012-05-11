@@ -15,17 +15,10 @@
  * $Id$
  */
 
-#include "DAGNode.h"
 #include "Dist_beta.h"
-#include "MemberFunction.h"
-#include "Probability.h"
-#include "RealPos.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbUtil.h"
-#include "Real.h"
-#include "ValueRule.h"
-#include "Workspace.h"
 #include "RbException.h"
 #include "RbMathFunctions.h"
 #include "DistributionBeta.h"

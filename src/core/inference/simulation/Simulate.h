@@ -37,8 +37,6 @@ class Simulate: public MemberObject {
     
 public:
     Simulate(void);                                                                                                     //!< Default constructor
-    Simulate(const Simulate &x);                                                                                        //!< Copy Constructor
-    virtual                    ~Simulate(void) {}                                                                       //!< Destructor
     
     // Basic utility functions
     Simulate*                   clone(void) const;                                                                      //!< Clone object
@@ -48,7 +46,6 @@ public:
     
     // Member variable rules
     const MemberRules&          getMemberRules(void) const;                                                             //!< Get member rules
-    void                        setMemberVariable(const std::string& name, const Variable* var);                              //!< Only constants allowed
     
     // Member method inits
     const MethodTable&          getMethods(void) const;                                                                 //!< Get methods
@@ -58,20 +55,15 @@ public:
     
     
 protected:
-    const RbLanguageObject&     executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
+    RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args); //!< Execute method
     
     
 private:
     void                        extractDagNodesFromModel( const Model& source );
     void                        getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<StochasticNode*>& orderedStochasticNodes, std::set<DAGNode*>& visitedNodes);
 
-    // parameters
-    RbConstVariablePtr          model;
-
-    // Member variables
-    std::vector<RbDagNodePtr>   dagNodes;                
-    std::vector<InferenceMonitor*>  monitors;
-
+    std::vector<RbPtr<DAGNode> > dagNodes;
+    std::vector<Monitor*>       monitors;
 };
 
 #endif

@@ -19,15 +19,16 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "Func_CtmmTransitionProbabilities.h"
 #include "RateMatrix.h"
 #include "RbException.h"
+#include "RbMatrix.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "RealPos.h"
 #include "TransitionProbabilityMatrix.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 #include <sstream>
 #include <vector>
 
@@ -40,36 +41,39 @@ Func_CtmmTransitionProbabilities* Func_CtmmTransitionProbabilities::clone(void) 
 
 
 /** Execute function */
-const RbLanguageObject& Func_CtmmTransitionProbabilities::executeFunction(void) {
+RbPtr<RbLanguageObject> Func_CtmmTransitionProbabilities::executeFunction(void) {
 
-    // get the information from the arguments for reading the file
-    const RateMatrix& q = static_cast<const RateMatrix&>( rateMatrix->getValue() );
-    const RealPos&    t = static_cast<const RealPos&>(    time->getValue() );
-
-    // initialize the number of states
-    const size_t numStates = q.getNumberOfStates();
-
-    // check that the number of states isn't 1
-    if ( numStates < 2 ) {
-        std::stringstream o;
-        o << "Too few states for the rate matrix";
-        throw( RbException(o.str()) );
-    }
+//    // get the information from the arguments for reading the file
+//    const RateMatrix& q = static_cast<const RateMatrix&>( args[0]->getVariable()->getValue() );
+//    const RealPos&    t = static_cast<const RealPos&>(    args[1]->getVariable()->getValue() );
+//
+//    // initialize the number of states
+//    const size_t numStates = q.getNumberOfStates();
+//
+//    // check that the number of states isn't 1
+//    if ( numStates < 2 ) {
+//        std::stringstream o;
+//        o << "Too few states for the rate matrix";
+//        throw( RbException(o.str()) );
+//    }
+//    
+//    // check if the number of states has changed since the last call
+//    if (numStates != nStates) {
+//        // Yes -> reset the number of states and create a new transition probability matrix with the correct dimension
+//        nStates = numStates;
+//        // construct a rate matrix of the correct dimensions
+//        // \TODO: we might want to resize instead
+//        transProbsMatrix = TransitionProbabilityMatrix(nStates);
+//    }
+//    
+//
+//    // calculate the transition probabilities
+//    q.calculateTransitionProbabilities( t.getValue(), transProbsMatrix );
+//
+//    // wrap up the rate matrix object and send it on its way to parser-ville
+//    return RbPtr<RbLanguageObject>( transProbsMatrix.clone() );
     
-    // check if the number of states has changed since the last call
-    if (numStates != nStates) {
-        // Yes -> reset the number of states and create a new transition probability matrix with the correct dimension
-        nStates = numStates;
-        // construct a rate matrix of the correct dimensions
-        // \TODO: we might want to resize instead
-        transProbsMatrix = TransitionProbabilityMatrix(nStates);
-    }
-
-    // calculate the transition probabilities
-    q.calculateTransitionProbabilities( t.getValue(), transProbsMatrix );
-
-    // wrap up the rate matrix object and send it on its way to parser-ville
-    return transProbsMatrix;
+    return NULL;
 }
 
 
@@ -81,8 +85,8 @@ const ArgumentRules& Func_CtmmTransitionProbabilities::getArgumentRules(void) co
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "q", RateMatrix::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "t", RealPos::getClassTypeSpec()    ) );
+//        argumentRules.push_back( new ConstArgumentRule( "q", RateMatrix::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "t", RealPos::getClassTypeSpec()    ) );
         rulesSet = true;
         }
 
@@ -118,22 +122,7 @@ const TypeSpec& Func_CtmmTransitionProbabilities::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_CtmmTransitionProbabilities::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = TransitionProbabilityMatrix::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RbMatrix::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_CtmmTransitionProbabilities::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "q" ) {
-        rateMatrix = var;
-    }
-    else if ( name == "t" ) {
-        time = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

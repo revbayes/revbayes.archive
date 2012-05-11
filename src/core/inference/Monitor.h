@@ -43,7 +43,6 @@ public:
     
     // Member Object Functions
     virtual const MemberRules&          getMemberRules( void ) const;                                       //!< The member rules for a monitor
-    virtual void                        setMemberVariable(const std::string &name, const Variable* var);    //!< Set a member variable. We catch here setting of variable nodes
     
     void                                addDagNode(DAGNode* d);                                             //!< Add a DAG node to this monitor
 //    std::vector<RbConstVariablePtr>&    getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector

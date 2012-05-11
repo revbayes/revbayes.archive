@@ -34,6 +34,10 @@ class DistanceMatrix : public MemberObject {
     public:
                                             DistanceMatrix(const size_t nTaxa);                                         //!< Constructor requires character type
     
+        // overloaded operators
+        const std::vector<double>&          operator[](size_t i) const;
+        std::vector<double>&                operator[](size_t i);
+    
         // Basic utility functions
         DistanceMatrix*                     clone(void) const;                                                          //!< Clone object
         static const std::string&           getClassName(void);                                                         //!< Get class name
@@ -73,7 +77,7 @@ class DistanceMatrix : public MemberObject {
         void                                showData(void);                                                             //!< Show the data in the character matrix
 
     protected:
-        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
+        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);         //!< Execute method
 
     private:
         // Utility functions

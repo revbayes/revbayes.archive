@@ -16,18 +16,19 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
 #include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Move.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "RealPos.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 #include "Workspace.h"
 
@@ -37,23 +38,8 @@
 
 
 /** Constructor */
-Move::Move( const MemberRules& memberRules ) : MemberObject( memberRules ), weight( NULL ) {
+Move::Move( const MemberRules& memberRules ) : MemberObject( memberRules ) {
 
-}
-
-/** Copy Constructor. 
- * We don't copy the nodes and we don't own them.
- */
-Move::Move(const Move &m) : MemberObject(m), weight( m.weight ) {
-    
-    numTried    = m.numTried;
-    numAccepted = m.numAccepted;
-    
-}
-
-/** Destructor */
-Move::~Move() {
-    
 }
 
 
@@ -62,63 +48,48 @@ void Move::addDagNode(StochasticNode *d) {
     nodes.push_back( d );
 }
 
-/* Decrement the reference count. */
-size_t Move::decrementReferenceCount( void ) const {
-    const_cast<Move*>( this )->refCount--;
-    
-    return refCount;
-}
-
 
 /** Map calls to member methods */
-const RbLanguageObject& Move::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Move::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     if ( name == "accept" ) {
 
         acceptMove();
-        return RbNullObject::getInstance();
+        return NULL;
     }
     else if ( name == "acceptanceRatio" ) {
 
-        acceptanceR.setValue( getAcceptanceRatio() );
-        return acceptanceR;
+        return RbPtr<RbLanguageObject>( new Probability( getAcceptanceRatio() ) );
     }
-    else if ( name == "numAccepted" ) {
-
-        return numAccepted;
-    }
-    else if ( name == "numTried" ) {
-
-        return numTried;
-    }
-    else if ( name == "propose" ) {
-
-        double probRatio;
-        Real* tmp = new Real(performMove( probRatio ) );
-        
-        // return the acceptance ratio
-        return *tmp;
-    }
-    else if ( name == "reject" ) {
-
-        rejectMove();
-        return RbNullObject::getInstance();
-    }
-    else if ( name == "resetCounters" ) {
-
-        resetCounters();
-        return RbNullObject::getInstance();
-    }
+//    else if ( name == "numAccepted" ) {
+//
+//        return RbPtr<RbLanguageObject>( new Natural( numAccepted ) ) );
+//    }
+//    else if ( name == "numTried" ) {
+//
+//        return numTried;
+//    }
+//    else if ( name == "propose" ) {
+//
+//        double probRatio;
+//        Real* tmp = new Real(performMove( probRatio ) );
+//        
+//        // return the acceptance ratio
+//        return *tmp;
+//    }
+//    else if ( name == "reject" ) {
+//
+//        rejectMove();
+//        return RbNullObject::getInstance();
+//    }
+//    else if ( name == "resetCounters" ) {
+//
+//        resetCounters();
+//        return RbNullObject::getInstance();
+//    }
 
     // No hit yet; we hope there is a mapped function call in the base class
     return MemberObject::executeOperationSimple( name, args );
-}
-
-
-/** Calculate acceptance probability */
-double Move::getAcceptanceRatio( void ) const {
-
-    return double( numAccepted.getValue() ) / double( numTried.getValue() );
 }
 
 
@@ -146,7 +117,7 @@ const MemberRules& Move::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if (!rulesSet) {
-        memberRules.push_back( new ValueRule( "weight"  , new RealPos(1.0) ) );
+        memberRules.push_back( new ConstArgumentRule( "weight"  , new RealPos(1.0) ) );
         rulesSet = true;
     }
 
@@ -192,43 +163,9 @@ const MethodTable& Move::getMethods(void) const {
 }
 
 
-/** We provide a convenience function for getting the update weight of the move
- *  from its member variable "weight". */
-double Move::getUpdateWeight( void ) const {
-
-    return static_cast<const RealPos&>( weight->getValue() ).getValue();
-}
-
-
-/* Increment the reference count for this instance. */
-size_t Move::incrementReferenceCount( void ) const {
-    return const_cast<Move*>( this )->refCount++;
-}
-
-
 void Move::printValue(std::ostream &o) const {
    // \TODO: Need some more meaningful output
     o << "Move";
-}
-
-
-/** Reset counters (numTried, numAccepted) */
-void Move::resetCounters(void) {
-
-    numAccepted = 0;
-    numTried    = 0;
-}
-
-/** We catch here the setting of the member variables to store our parameters. */
-void Move::setMemberVariable(std::string const &name, const Variable* var) {
-    
-    // test whether we want to set the variable 
-    if (name == "weight") {
-        weight = var;
-    } 
-    else {
-        MemberObject::setMemberVariable(name, var);
-    }
 }
 
 

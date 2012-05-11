@@ -15,9 +15,7 @@
  * $Id$
  */
 
-#include "ConstantNode.h"
-#include "DAGNode.h"
-#include "DeterministicNode.h"
+#include "ConstArgumentRule.h"
 #include "Func_power.h"
 #include "RealPos.h"
 #include "Real.h"
@@ -25,7 +23,6 @@
 #include "RbUtil.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <cassert>
 #include <cmath>
@@ -39,14 +36,12 @@ Func_power* Func_power::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_power::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_power::executeFunction( void ) {
     
-    const double a = static_cast<const Real&>( base->getValue() ).getValue();
-    const double b = static_cast<const Real&>( exponent->getValue() ).getValue();
-    
-    value.setValue( pow(a,b) );
+    const double a = static_cast<const Real&>( args[0]->getVariable()->getValue() ).getValue();
+    const double b = static_cast<const Real&>( args[1]->getVariable()->getValue() ).getValue();
 
-    return value;
+    return RbPtr<RbLanguageObject>( new Real( pow(a,b) ) );
 }
 
 
@@ -58,8 +53,8 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "base",     Real::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "exponent", Real::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "base",     Real::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "exponent", Real::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -97,20 +92,5 @@ const TypeSpec& Func_power::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_power::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "base" ) {
-        base = var;
-    }
-    else if ( name == "exponent" ) {
-        exponent = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

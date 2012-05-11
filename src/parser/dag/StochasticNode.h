@@ -68,7 +68,7 @@ public:
     void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG node function
-    RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const std::vector<Argument>& args);   //!< Override to map member methods to internal functions
+    RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args);   //!< Override to map member methods to internal functions
     const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods (const)
     const RbLanguageObject&             getValue(void) const;                                               //!< Get value (const)
     RbLanguageObject&                   getValue(void);                                                     //!< Get value (non-const)

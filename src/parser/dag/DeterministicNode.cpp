@@ -18,6 +18,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstArgument.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
@@ -28,7 +29,6 @@
 #include "RbBoolean.h"
 #include "RbException.h"
 #include "RbFunction.h"
-#include "RbMemoryManager.h"
 #include "RbUtil.h"
 #include "RbVector.h"
 #include "UserInterface.h"
@@ -52,16 +52,16 @@ DeterministicNode::DeterministicNode( const RbPtr<const Plate> &p ) : VariableNo
 DeterministicNode::DeterministicNode( const RbPtr<RbFunction> &func, const RbPtr<const Plate> &p ) : VariableNode( p ), needsUpdate( true ), function( func ) {
     
     /* Check for cycles */
-    const std::vector<Argument>& arguments = func->getArguments();
+    const std::vector<RbPtr<Argument> >& arguments = func->getArguments();
     std::list<DAGNode*> done;
     for ( size_t i = 0; i < arguments.size(); i++ ) {
-        if ( arguments[i].getVariable().getDagNode() != NULL && arguments[i].getVariable().getDagNode()->isParentInDAG( this, done ) )
+        if ( arguments[i]->getVariable()->getDagNode() != NULL && arguments[i]->getVariable()->getDagNode()->isParentInDAG( this, done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
     
     /* Set parents and add this node as a child node of these */
     for ( size_t i = 0; i < arguments.size(); i++ ) {
-        DAGNode* theArgument = const_cast<Variable*>( (const Variable*)arguments[i].getVariablePtr())->getDagNode();
+        DAGNode* theArgument = const_cast<Variable*>( (const Variable*)arguments[i]->getVariable() )->getDagNode();
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -82,10 +82,10 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     needsUpdate     = x.needsUpdate;
         
     /* Set parents and add this node as a child node of these */
-    std::vector<Argument>& args = function->getArguments();
+    std::vector<RbPtr<Argument> >& args = function->getArguments();
     for ( size_t i = 0; i < args.size(); i++ ) {
         
-        DAGNode* theArgument = const_cast<DAGNode*>( args[i].getVariable().getDagNode() );
+        DAGNode* theArgument = const_cast<DAGNode *>( (const DAGNode *) args[i]->getVariable()->getDagNode() );
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -131,9 +131,9 @@ void DeterministicNode::constructSumProductSequence(std::set<VariableNode *> &no
             // if so, add my parents
             
             // first the parents
-            for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+            for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++) {
                 if ( (*i)->isNotInstantiated() ) {
-                    static_cast<VariableNode*>( *i )->constructSumProductSequence(nodes,sequence);
+                    static_cast<VariableNode*>( (DAGNode *)*i )->constructSumProductSequence(nodes,sequence);
                 }
             }
         }
@@ -153,7 +153,7 @@ void DeterministicNode::constructSumProductSequence(std::set<VariableNode *> &no
 
 
 /** Clone the entire graph: clone children, swap parents */
-DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& newNodes ) const {
+DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes ) const {
     
     if ( newNodes.find( this ) != newNodes.end() )
         return newNodes[ this ];
@@ -171,10 +171,9 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& ne
     copy->needsUpdate   = needsUpdate;
     // We do not own the value so we do not need to clone it
     copy->value         = value;
-    copy->storedValue   = storedValue;
     
     /* Set the copy arguments to their matches in the new DAG */
-    std::vector<Argument>& args      = function->getArguments();
+    std::vector<RbPtr<Argument> >& args      = function->getArguments();
     
     // clear the copy arguments
     copy->function->clear();
@@ -182,10 +181,10 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbDagNodePtr>& ne
     for ( size_t i = 0; i < args.size(); i++ ) {
         
         // clone the parameter DAG node
-        DAGNode* theArgClone = args[i].getVariable().getDagNode()->cloneDAG(newNodes);
+        DAGNode* theArgClone = args[i]->getVariable()->getDagNode()->cloneDAG(newNodes);
         // \TODO: I don't think that we should create a new variable. That will destroy our dependencies structure.
 //        copyArgs[i].getVariable().setDagNode( theArgClone );
-        copy->function->setArgument(args[i].getLabel(), Argument( RbVariablePtr( new Variable( theArgClone ) ) ) );
+        copy->function->setArgument(args[i]->getLabel(), new ConstArgument( RbPtr<const Variable>( new Variable( theArgClone ) ) ) );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
         copy->addParentNode( theArgClone );
@@ -236,13 +235,13 @@ InferenceDagNode* DeterministicNode::createLeanDag(std::map<const DAGNode *, Inf
     newNodes[ this ] = copy;
     
     /* Set the copy arguments to their matches in the new DAG */
-    std::vector<Argument>& args      = function->getArguments();
+    std::vector<RbPtr<Argument> >& args      = function->getArguments();
     
     std::vector<RbValue<void*> > leanArgs;
     for ( size_t i = 0; i < args.size(); i++ ) {
         
         // clone the parameter DAG node
-        InferenceDagNode* theArgClone = args[i].getVariable().getDagNode()->createLeanDag(newNodes);
+        InferenceDagNode* theArgClone = args[i]->getVariable()->getDagNode()->createLeanDag(newNodes);
         leanArgs.push_back( theArgClone->getValue() );
         
         // this is perhaps not necessary because we already set the parent child relationship automatically
@@ -283,10 +282,6 @@ std::string DeterministicNode::debugInfo( void ) const {
     value->printValue(o);
     o << std::endl;
     
-    o << "storedValue = ";
-    storedValue->printValue(o);
-    o << std::endl;
-    
     return o.str();
 }
 
@@ -299,7 +294,7 @@ void DeterministicNode::expand( void ) {
 
 
 /** Get affected nodes: pass through to next stochastic node */
-void DeterministicNode::getAffected( std::set<StochasticNode* >& affected ) {
+void DeterministicNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
 
     // if this node is eliminated, then we just add the factor root and that's it
     if ( isNotInstantiated() ) {
@@ -375,7 +370,7 @@ RbLanguageObject& DeterministicNode::getValue( void ) {
  */
 bool DeterministicNode::isEliminated( void ) const {
     // ask all parents
-    for (std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
+    for (std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isEliminated() ) {
             return true;
         }
@@ -391,7 +386,7 @@ bool DeterministicNode::isEliminated( void ) const {
  */
 bool DeterministicNode::isNotInstantiated( void ) const {
     // ask all parents
-    for (std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
+    for (std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isNotInstantiated() ) {
             return true;
         }
@@ -407,16 +402,14 @@ void DeterministicNode::keepMe( void ) {
     
     if ( touched ) {
         
-        storedValue = NULL;
-        
         if ( needsUpdate )
             update();
         
         //  I need to tell all my eliminated parents that they need to restore their likelihoods
-        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); ++i) {
+        for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); ++i) {
             if ( (*i)->isNotInstantiated() ) {
                 // since only variable nodes can be eliminated
-                static_cast<VariableNode*>( *i )->keepMe();
+                static_cast<VariableNode*>( (DAGNode *) *i )->keepMe();
             }
         }
         
@@ -442,10 +435,10 @@ void DeterministicNode::likelihoodsNeedUpdates() {
     }
     
     //  I need to tell all my eliminated parents that they need to update their likelihoods
-    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+    for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
-            static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
+            static_cast<VariableNode*>( (DAGNode *) *i )->likelihoodsNeedUpdates();
         }
     }
 }
@@ -530,10 +523,10 @@ void DeterministicNode::restoreMe( void ) {
         }
         
         //  I need to tell all my eliminated parents that they need to restore their likelihoods
-        for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); ++i) {
+        for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); ++i) {
             if ( (*i)->isNotInstantiated() ) {
                 // since only variable nodes can be eliminated
-                static_cast<VariableNode*>( *i )->restoreMe();
+                static_cast<VariableNode*>( (DAGNode *) *i )->restoreMe();
             }
         }
     }
@@ -575,10 +568,10 @@ void DeterministicNode::touchMe( void ) {
     
     
     //  I need to tell all my eliminated parents that they need to update their likelihoods
-    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+    for (std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
-            static_cast<VariableNode*>( *i )->likelihoodsNeedUpdates();
+            static_cast<VariableNode*>( (DAGNode *) *i )->likelihoodsNeedUpdates();
         }
     }
     

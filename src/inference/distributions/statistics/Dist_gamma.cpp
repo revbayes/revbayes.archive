@@ -15,16 +15,10 @@
  * $Id$
  */
 
-#include "DAGNode.h"
 #include "Dist_gamma.h"
-#include "MemberFunction.h"
-#include "RealPos.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbUtil.h"
-#include "Real.h"
-#include "ValueRule.h"
-#include "Workspace.h"
 #include "RbException.h"
 #include "RbMathFunctions.h"
 #include "DistributionGamma.h"

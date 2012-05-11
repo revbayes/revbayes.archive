@@ -18,6 +18,7 @@
  */
 
 #include "ConstantInferenceNode.h"
+#include "ConstArgumentRule.h"
 #include "DagNodeContainer.h"
 #include "Integer.h"
 #include "InferenceDagNode.h"
@@ -40,7 +41,6 @@
 #include "RbString.h"
 #include "RbVector.h"
 #include "StochasticInferenceNode.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 #include "Workspace.h"
 
@@ -131,9 +131,9 @@ void Mcmc::addMove( const DAGNode *m ) {
         }
         
         // replace the DAG nodes of the move to point to our cloned DAG nodes
-        const std::vector<RbConstDagNodePtr> orgNodes = move.getMoveArgumgents();
+        const std::vector<RbPtr<const DAGNode> >& orgNodes = move.getMoveArgumgents();
         std::vector<StochasticInferenceNode*> clonedNodes;
-        for (std::vector<RbConstDagNodePtr>::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
+        for (std::vector<RbPtr<const DAGNode> >::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
             const DAGNode *orgNode = *i;
             const std::map<std::string, InferenceDagNode*>::const_iterator& it = nodesMap.find( orgNode->getName() );
             if ( it == nodesMap.end() ) {
@@ -288,13 +288,13 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& Mcmc::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Mcmc::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     if (name == "run") {
-        const RbLanguageObject& argument = args[0].getVariable().getValue();
+        const RbLanguageObject& argument = args[0]->getVariable()->getValue();
         int n = static_cast<const Natural&>( argument ).getValue();
         run(n);
-        return RbNullObject::getInstance();
+        return NULL;
     }
 //    else if ( name == "getMonitors" ) {
 //        return monitors;
@@ -348,9 +348,9 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back( new ValueRule( "model"    , Model::getClassTypeSpec()    ) );
-        memberRules.push_back( new ValueRule( "moves"    , RbObject::getClassTypeSpec() ) );
-        memberRules.push_back( new ValueRule( "monitors" , RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ConstArgumentRule( "model"    , Model::getClassTypeSpec()    ) );
+        memberRules.push_back( new ConstArgumentRule( "moves"    , RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ConstArgumentRule( "monitors" , RbObject::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -369,7 +369,7 @@ const MethodTable& Mcmc::getMethods(void) const {
         
         // method "run" for "n" generations
         ArgumentRules* updateArgRules = new ArgumentRules();
-        updateArgRules->push_back( new ValueRule( "generations", Natural::getClassTypeSpec()     ) );
+        updateArgRules->push_back( new ConstArgumentRule( "generations", Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules) );
         
 //        // get Monitors
@@ -409,27 +409,6 @@ void Mcmc::printValue( std::ostream &o ) const  {
         (*i)->printValue(o);
         o << ")" << std::endl;
         monitor_index++;
-    }
-}
-
-
-/** Allow only constant member variables */
-void Mcmc::setMemberVariable(const std::string& name, const Variable* var) {
-
-    if ( name == "model" ) {
-        model = static_cast<const Model&>( var->getValue() );
-        extractDagNodesFromModel( model );
-    }
-    else if ( name == "moves" ) {
-        addMove( var->getDagNode() );
-        
-    }
-    else if ( name == "monitors" ) {
-        addMonitor( var->getDagNode() );
-        
-    }
-    else {
-        MemberObject::setMemberVariable(name, var);
     }
 }
 

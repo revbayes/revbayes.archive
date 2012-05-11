@@ -15,6 +15,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DagNodeContainer.h"
 #include "Ellipsis.h"
 #include "Integer.h"
@@ -22,20 +23,19 @@
 #include "Monitor.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 
 #include <sstream>
 
 
 /** Constructor */
-Monitor::Monitor(void) : MemberObject(getMemberRules()), printgen( NULL )
+Monitor::Monitor(void) : MemberObject(getMemberRules())
 {
     
 }
 
 /** Constructor */
-Monitor::Monitor(const MemberRules& rules ) : MemberObject( rules ), printgen( NULL ) {
+Monitor::Monitor(const MemberRules& rules ) : MemberObject( rules ) {
     
 }
 
@@ -78,7 +78,7 @@ const MemberRules& Monitor::getMemberRules( void ) const {
     
     if (!rulesSet) 
     {
-        memberRules.push_back( new ValueRule( "printgen"  , Integer::getClassTypeSpec()          ) );
+        memberRules.push_back( new ConstArgumentRule( "printgen"  , Integer::getClassTypeSpec()          ) );
         rulesSet = true;
     }
     
@@ -89,24 +89,8 @@ const MemberRules& Monitor::getMemberRules( void ) const {
 /** Print value for user */
 void Monitor::printValue(std::ostream& o) const {
     
-    // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Natural&>( printgen->getValue() ).getValue();
     
-    o << "Monitor: interval = " << samplingFrequency;
-}
-
-
-
-void Monitor::setMemberVariable(std::string const &name, const Variable* var) {
-    
-    // catch setting of the variables 
-    if ( name == "printgen" ) {
-        printgen = var;
-    }
-    else {
-        // call parent class to set member variable
-        MemberObject::setMemberVariable( name, var );
-    }
+    o << "Monitor:\n";
 }
 
 

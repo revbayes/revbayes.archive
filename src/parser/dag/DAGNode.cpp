@@ -21,6 +21,7 @@
 #include "DagNodeFunction.h"
 #include "MethodTable.h"
 #include "Monitor.h"
+#include "Plate.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"

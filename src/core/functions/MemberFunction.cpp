@@ -54,7 +54,7 @@ MemberFunction* MemberFunction::clone(void) const {
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbLanguageObject MemberFunction::execute( void ) {
+RbPtr<RbLanguageObject> MemberFunction::execute( void ) {
 
     return object->executeOperation( funcName, args );
 

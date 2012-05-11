@@ -59,19 +59,19 @@ StochasticNode::StochasticNode( const RbPtr<const Plate> &p ) : VariableNode( p 
 StochasticNode::StochasticNode( const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p) : VariableNode( p ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
     
     /* Get distribution parameters */
-    const std::vector<Argument>& params = dist->getParameters();
+    const std::vector<RbPtr<Argument> >& params = dist->getParameters();
     
     /* Check for cycles */
     std::list<DAGNode*> done;
-    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
         done.clear();
-        if ( i->getVariable()->getDagNode()->isParentInDAG( this, done ) )
+        if ( (*i)->getVariable()->getDagNode()->isParentInDAG( this, done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
     
     /* Set parent(s) and add myself as a child to these */
-    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-        const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)i->getVariable()->getDagNode() );
+    for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)(*i)->getVariable()->getDagNode() );
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -100,11 +100,11 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     distribution = x.distribution->clone();
 
     /* Get distribution parameters */
-    const std::vector<Argument>& params = distribution->getParameters();
+    const std::vector<RbPtr<Argument> >& params = distribution->getParameters();
 
     /* Set parent(s) and add myself as a child to these */
-    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-        const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)i->getVariable()->getDagNode() );
+    for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)(*i)->getVariable()->getDagNode() );
         addParentNode( theParam );
         theParam->addChildNode(this);
     }
@@ -138,11 +138,11 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         distribution = x.distribution->clone();
         
         /* Get distribution parameters */
-        const std::vector<Argument>& params = distribution->getParameters();
+        const std::vector<RbPtr<Argument> >& params = distribution->getParameters();
         
         /* Set parent(s) and add myself as a child to these */
-        for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-            const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)i->getVariable()->getDagNode() );
+        for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
+            const RbPtr<DAGNode>& theParam = const_cast<DAGNode*>( (const DAGNode*)(*i)->getVariable()->getDagNode() );
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -428,15 +428,15 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& ne
     copy->needsLikelihoodRecalculation  = needsLikelihoodRecalculation;
 
     /* Set the copy params to their matches in the new DAG */
-    const std::vector<Argument>& params     = distribution->getParameters();
+    const std::vector<RbPtr<Argument> >& params     = distribution->getParameters();
     
     // first we need to remove the copied params
     copy->distribution->clear();
     
-    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
         
         // clone the i-th member and get the clone back
-        const RbPtr<const DAGNode> &theParam = i->getVariable()->getDagNode();
+        const RbPtr<const DAGNode> &theParam = (*i)->getVariable()->getDagNode();
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         DAGNode* theParamClone = theParam->cloneDAG( newNodes );
         
@@ -579,13 +579,13 @@ InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, Infere
     newNodes[ this ] = copy;
     
     /* Set the copy params to their matches in the new DAG */
-    const std::vector<Argument>& params     = distribution->getParameters();
+    const std::vector<RbPtr<Argument> >& params     = distribution->getParameters();
     
     std::vector<RbValue<void*> > leanArgs;
-    for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+    for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
         
         // clone the i-th member and get the clone back
-        const RbPtr<const DAGNode>& theParam = i->getVariable()->getDagNode();
+        const RbPtr<const DAGNode>& theParam = (*i)->getVariable()->getDagNode();
         
         // if we already have cloned this parent (parameter), then we will get the previously created clone
         InferenceDagNode* theParamClone = theParam->createLeanDag( newNodes );
@@ -618,29 +618,29 @@ RbLanguageObject* StochasticNode::createRV( void ) {
     
     if ( plate == NULL ) {
         
-        const std::vector<Argument> &params = distribution->getParameters();
+        const std::vector<RbPtr<Argument> > &params = distribution->getParameters();
     
         std::vector<const RbObject*> newArgs;
-        for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-            newArgs.push_back( &i->getVariable()->getValue() );
+        for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
+            newArgs.push_back( &(*i)->getVariable()->getValue() );
         }
         return createRV( std::vector<size_t>(), newArgs );
     }
     else {
         // we need to get the arguments for checking if they live on the same plate or any parent plate of this
-        const std::vector<Argument> &params = distribution->getParameters();
+        const std::vector<RbPtr<Argument> > &params = distribution->getParameters();
         
         // get the plates of my arguments
         std::vector<const Plate*> argPlates;
-        for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
+        for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
         // test whether this argument lives on the same plate as myself
-            argPlates.push_back( i->getVariable()->getDagNode()->getPlate() );
+            argPlates.push_back( (*i)->getVariable()->getDagNode()->getPlate() );
         }
         
         // convert the argument into RbObjects
         std::vector<const RbObject*> newArgs;
-        for ( std::vector<Argument>::const_iterator i = params.begin(); i != params.end(); i++ ) {
-            newArgs.push_back( &i->getVariable()->getValue() );
+        for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
+            newArgs.push_back( &(*i)->getVariable()->getValue() );
         }
         
         // we create a vector of lengths telling us the length of each plate
@@ -776,12 +776,12 @@ std::string StochasticNode::debugInfo(void) const {
 /**
  * Map calls to member methods 
  */
-RbPtr<RbLanguageObject> StochasticNode::executeOperation(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> StochasticNode::executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     if (name == "clamp") {
         
         // get the observed value
-        const RbLanguageObject& observedValue = args[0].getVariable()->getValue();
+        const RbLanguageObject& observedValue = args[0]->getVariable()->getValue();
         
         // clamp the observed value to myself
         clamp( observedValue.clone() );

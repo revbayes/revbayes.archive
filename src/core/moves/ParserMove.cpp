@@ -27,7 +27,6 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "StochasticNode.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 #include "Workspace.h"
 

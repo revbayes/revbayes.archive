@@ -55,7 +55,7 @@ class InferenceFunction;
 class ParserFunction : public RbFunction {
     
 public:
-    ParserFunction(InferenceFunction *func, const std::string &funcName, const ArgumentRules &argRules, RbLanguageObject *returnVal, bool throws = false);                                                                   //!< Basic constructor
+    ParserFunction(InferenceFunction *func, const std::string &funcName, const ArgumentRules &argRules, const RbPtr<RbLanguageObject> &returnVal, bool throws = false);                                                                   //!< Basic constructor
     ParserFunction(const ParserFunction &x);                                                    //!< Copy constuctor
     virtual                                            ~ParserFunction(void);                                                                  //!< Destructor
     
@@ -71,7 +71,7 @@ public:
     InferenceFunction*                              getLeanFunction(void) const;                                                    //!< Get the lean version of this function
     
     // ParserFunction functions you have to override
-    virtual const RbLanguageObject&                 executeFunction(const std::vector<const RbObject*> &args);                      //!< Execute function
+    virtual RbPtr<RbLanguageObject>                 executeFunction(const std::vector<const RbObject*> &args);                      //!< Execute function
     virtual const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
     virtual const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
     
@@ -83,10 +83,9 @@ private:
     InferenceFunction*                              function;
     std::string                                     functionName;
     TypeSpec                                        typeSpec;
-    RbLanguageObject*                               returnValue;
+    RbPtr<RbLanguageObject>                         returnValue;
     bool                                            throwsError;
     
-    //        RbLanguageObject*                               retVal;
 };
 
 #endif

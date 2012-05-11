@@ -27,8 +27,6 @@ class EigenSystem {
 
     public:
                                                 EigenSystem(Matrix<double>* m);                                                                                     //!< Constructor from rate matrix
-                                                EigenSystem(const EigenSystem& e);                                                                                  //!< Copy constructor
-                                               ~EigenSystem(void);                                                                                                  //!< Destructor
     
         double                                  getDeterminant(void);                                                                                               //!< Return determinant
         const Matrix<double>&                   getEigenvectors(void) const { return eigenvectors; }                                                                //!< Return the eigenvector matrix
@@ -58,7 +56,7 @@ class EigenSystem {
         void                                    luBackSubstitution (Matrix<double>& a, int *indx, double *b);                                                       //!< back-substitutes an LU-decomposed matrix
         int                                     luDecompose(Matrix<double>& a, double *vv, int *indx, double *pd);                                                  //!< calculates the LU-decomposition of a matrix
 
-        int                                     n;                                                                                                                  //!< Row and column dimension (square matrix)
+        size_t                                  n;                                                                                                                  //!< Row and column dimension (square matrix)
         Matrix<double>*                         qPtr;                                                                                                               //!< A pointer to the rate matrix for this system of eigen values and vectors
         Matrix<double>                          eigenvectors;                                                                                                       //!< Matrix for internal storage of eigenvectors
         Matrix<double>                          inverseEigenvectors;                                                                                                //!< Matrix for internal storage of the inverse eigenvectors

@@ -24,6 +24,7 @@
 #include "DeterministicNode.h"
 #include "InferenceDagNode.h"
 #include "Model.h"
+#include "Plate.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbVector.h"

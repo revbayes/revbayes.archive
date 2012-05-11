@@ -18,6 +18,7 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Integer.h"
@@ -38,7 +39,6 @@
 #include "RbString.h"
 #include "RbVector.h"
 #include "StochasticNode.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 #include "Workspace.h"
 
@@ -49,15 +49,7 @@
 
 
 /** Constructor passes member rules and method inits to base class */
-Simulate::Simulate(void) : MemberObject(getMemberRules()), model( NULL ) {
-}
-
-/** Copy constructor */
-Simulate::Simulate(const Simulate &x) : MemberObject(x), model( x.model ) {
-    
-    if ( model != NULL ) {
-        extractDagNodesFromModel( static_cast<const Model&>( model->getValue() ) );
-    }
+Simulate::Simulate(void) : MemberObject(getMemberRules()) {
 }
 
 
@@ -69,13 +61,13 @@ Simulate* Simulate::clone(void) const {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Simulate::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     if (name == "run") {
-        const RbLanguageObject& argument = args[0].getVariable().getValue();
+        const RbLanguageObject& argument = args[0]->getVariable()->getValue();
         int n = static_cast<const Natural&>( argument ).getValue();
         run(n);
-        return RbNullObject::getInstance();
+        return NULL;
     }
 //    else if ( name == "getMonitors" ) {
 //        return monitors;
@@ -92,12 +84,12 @@ const RbLanguageObject& Simulate::executeOperationSimple(const std::string& name
  */
 void Simulate::extractDagNodesFromModel(const Model& source) {
     
-    const std::set<const DAGNode*> sourceNodes = source.getSourceNodes();
+    const std::set<RbPtr<const DAGNode> >& sourceNodes = source.getSourceNodes();
     
     // if the var is not NULL we pull the DAG from it
-    std::map<const DAGNode*, RbDagNodePtr> nodesMap;
+    std::map<const DAGNode*, RbPtr<DAGNode> > nodesMap;
     
-    for (std::set<const DAGNode*>::const_iterator it = sourceNodes.begin(); it != sourceNodes.end(); it++) {
+    for (std::set<RbPtr<const DAGNode> >::const_iterator it = sourceNodes.begin(); it != sourceNodes.end(); it++) {
         const DAGNode* theSourceNode = *it;
         
         if (theSourceNode == NULL)
@@ -107,11 +99,11 @@ void Simulate::extractDagNodesFromModel(const Model& source) {
     }
     
     /* insert new nodes in dagNodes member frame and direct access vector */
-    std::map<const DAGNode*, RbDagNodePtr>::iterator i = nodesMap.begin();
+    std::map<const DAGNode*, RbPtr<DAGNode> >::iterator i = nodesMap.begin();
     
     while ( i != nodesMap.end() ) {
         
-        DAGNode* theNewNode = (*i).second;
+        const RbPtr<DAGNode>& theNewNode = (*i).second;
         
         // increment the iterator;
         ++i;
@@ -201,7 +193,7 @@ const MemberRules& Simulate::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ValueRule ( "model"    , Model::getClassTypeSpec()    ) );        
+        memberRules.push_back( new ConstArgumentRule( "model"    , Model::getClassTypeSpec()    ) );        
         
         rulesSet = true;
     }
@@ -220,31 +212,18 @@ const MethodTable& Simulate::getMethods(void) const {
     if (!methodsSet) {
         
         ArgumentRules* updateArgRules = new ArgumentRules();
-        updateArgRules->push_back( new ValueRule( "dataElements", Natural::getClassTypeSpec()     ) );
+        updateArgRules->push_back( new ConstArgumentRule( "dataElements", Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules ) );
         
         // get Monitors
         ArgumentRules* getMonitorsRules = new ArgumentRules();
-        methods.addFunction("getMonitors", new MemberFunction( RbVector<Monitor>::getClassTypeSpec(), getMonitorsRules) );
+        methods.addFunction("getMonitors", new MemberFunction( TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec( Monitor::getClassTypeSpec() ) ), getMonitorsRules) );
         
         methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
     }
     
     return methods;
-}
-
-
-/** Allow only constant member variables */
-void Simulate::setMemberVariable(const std::string& name, const Variable* var) {
-    
-    if ( name == "model" ) {
-        model = var;
-        extractDagNodesFromModel( static_cast<const Model&>( model->getValue() ) );
-    }
-    else {
-        MemberObject::setMemberVariable(name, var);
-    }
 }
 
 /** Creates a vector of stochastic nodes, starting from the source nodes to the sink nodes */
@@ -263,8 +242,8 @@ void Simulate::getOrderedStochasticNodes(DAGNode* dagNode,  std::vector<Stochast
     }
     else if (dagNode->getTypeSpec() ==  StochasticNode::getClassTypeSpec() || dagNode->getTypeSpec() ==  DeterministicNode::getClassTypeSpec()) { //if the node is stochastic or deterministic
         //First I have to visit my parents
-        const std::set<DAGNode*>& parents = dagNode->getParents() ;
-        std::set<DAGNode*>::const_iterator it;
+        const std::set<RbPtr<DAGNode> >& parents = dagNode->getParents() ;
+        std::set<RbPtr<DAGNode> >::const_iterator it;
         for ( it=parents.begin() ; it != parents.end(); it++ ) 
             getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
         
@@ -301,13 +280,13 @@ void Simulate::run(size_t ndata) {
         // get the monitor
         if ( typeid(*monitors[i]) == typeid(FileMonitor) ) {
             
-            FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors[i] );
-            
-            // open the file stream for the monitor
-            theMonitor->openStream();
-            
-            // print the header information
-            theMonitor->printHeader();
+//            FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors[i] );
+//            
+//            // open the file stream for the monitor
+//            theMonitor->openStream();
+//            
+//            // print the header information
+//            theMonitor->printHeader();
         }
         
     }

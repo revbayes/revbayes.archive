@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "ConstantNode.h"
 #include "DistanceMatrix.h"
 #include "Func_nj.h"
@@ -27,7 +28,6 @@
 #include "TopologyNode.h"
 #include "TreePlate.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 #include <cmath>
 #include <iomanip>
 #include <sstream>
@@ -42,7 +42,7 @@ Func_nj* Func_nj::clone(void) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_nj::executeFunction( const std::vector<const RbObject*> &args ) {
+RbPtr<RbLanguageObject> Func_nj::executeFunction( const std::vector<const RbObject*> &args ) {
 
     // get the information from the arguments for reading the file
     const DistanceMatrix& dm          = static_cast<const DistanceMatrix&>( *args[0] );
@@ -51,9 +51,10 @@ const RbLanguageObject& Func_nj::executeFunction( const std::vector<const RbObje
         
     Topology* top = neighborJoining(dm);
     
-    tree.setMember("topology", new Variable( new ConstantNode(top) ) );
+    TreePlate *tree = new TreePlate();
+    tree->setMember("topology", new Variable( new ConstantNode(top) ) );
     
-    return tree;
+    return RbPtr<RbLanguageObject>( tree );
 }
 
 
@@ -65,9 +66,9 @@ const ArgumentRules& Func_nj::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "d",     DistanceMatrix::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "bionj", RbString::getClassTypeSpec()       ) );
-        argumentRules.push_back( new ValueRule( "ties",  RbString::getClassTypeSpec()       ) );
+        argumentRules.push_back( new ConstArgumentRule( "d",     DistanceMatrix::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "bionj", RbString::getClassTypeSpec()       ) );
+        argumentRules.push_back( new ConstArgumentRule( "ties",  RbString::getClassTypeSpec()       ) );
         rulesSet = true;
         }
 

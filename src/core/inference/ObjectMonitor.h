@@ -48,18 +48,17 @@ public:
     // Member Object Functions
     const MemberRules&                  getMemberRules( void ) const;                                                           //!< The member rules for an ObjectMonitor
     virtual const MethodTable&          getMethods(void) const;                                                                 //!< Get methods
-    const RbLanguageObject&             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
-    void                                setMemberVariable(const std::string &name, const Variable* var);                        //!< Set a member variable. We catch here setting of variable nodes
+    RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Execute method
 
     // Monitor functions
     void                                monitor(void);                                                                          //!< Monitor unconditionally
     void                                monitor(int gen);                                                                       //!< Monitor at generation gen
 
     // ObjectMonitor function
-    RbVector<RbLanguageObject>&         getValues(const RbString& varName);                                                     //!< returns the values contained in the values vector for variable with name varName
+    RbVector&                           getValues(const RbString& varName);                                                     //!< returns the values contained in the values vector for variable with name varName
     
 private:
-    std::map<RbString, RbVector<RbLanguageObject> > values;                                                                                 //!< Vector of values from the monitored node
+    std::map<RbString, RbVector> values;                                                                                 //!< Vector of values from the monitored node
     
 };
 

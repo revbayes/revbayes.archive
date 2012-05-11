@@ -16,6 +16,7 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
@@ -27,7 +28,6 @@
 #include "RbVector.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
-#include "ValueRule.h"
 
 #include <cassert>
 #include <cmath>
@@ -46,18 +46,17 @@ Func_mean* Func_mean::clone( void ) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_mean::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_mean::executeFunction( void ) {
     
     double m = 0.0;
-    const RbVector<Real>& v = static_cast<const RbVector<Real>&>( x->getValue() );
+    const RbVector& v = static_cast<const RbVector&>( args[0]->getVariable()->getValue() );
     for (size_t i = 0; i < v.size(); i++) {
         m += static_cast<const Real&>( v.getElement(i) ).getValue();
     }
     
     m /= v.size();
     
-    value.setValue( m );
-    return value;
+    return RbPtr<RbLanguageObject>( new Real(m) );
 }
 
 
@@ -69,7 +68,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "x", RbVector<Real>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "x", TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec(Real::getClassTypeSpec() ) ) ) );
 //        argumentRules.push_back( new Ellipsis( TypeSpec(Vector::getClassTypeSpec(), new TypeSpec( Real::getClassTypeSpec() ) ) ) );
         rulesSet = true;
     }
@@ -108,17 +107,5 @@ const TypeSpec& Func_mean::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     return returnTypeSpec;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_mean::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "x" ) {
-        x = var;
-    }
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
 }
 

@@ -17,6 +17,7 @@
  */
 
 #include "CharacterData.h"
+#include "ConstArgumentRule.h"
 #include "DistanceMatrix.h"
 #include "DnaState.h"
 #include "Func_distance.h"
@@ -28,13 +29,12 @@
 #include "StringUtilities.h"
 #include "TaxonData.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 #include <cmath>
 #include <sstream>
 #include <vector>
 
 
-Func_distance::Func_distance(void) : RbFunction(), matrix(1) {
+Func_distance::Func_distance(void) : RbFunction() {
     
 }
 
@@ -47,7 +47,7 @@ Func_distance* Func_distance::clone(void) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_distance::executeFunction( const std::vector<const RbObject*> &args ) {
+RbPtr<RbLanguageObject> Func_distance::executeFunction( const std::vector<const RbObject*> &args ) {
 
     // get the information from the arguments for reading the file
     const CharacterData& m      = static_cast<const CharacterData&>( *args[0] );
@@ -95,7 +95,7 @@ const RbLanguageObject& Func_distance::executeFunction( const std::vector<const 
     int n = (int)m.getNumberOfTaxa();
 
     // allocate the distance matrix
-    matrix = DistanceMatrix(n);
+    DistanceMatrix *matrix = new DistanceMatrix(n);
 
     // fill in the distance matrix
     for (int i=0; i<n; i++)
@@ -124,8 +124,8 @@ const RbLanguageObject& Func_distance::executeFunction( const std::vector<const 
                 dist = distanceJC69(td_i, td_j);
             else if (myModel == logdet)
                 dist = distanceJC69(td_i, td_j);
-            matrix[i][j] = dist;
-            matrix[j][i] = dist;
+            (*matrix)[i][j] = dist;
+            (*matrix)[j][i] = dist;
             }
         }
         
@@ -133,10 +133,10 @@ const RbLanguageObject& Func_distance::executeFunction( const std::vector<const 
     for (int i=0; i<n; i++)
         {
         std::string tName = m.getTaxonNameWithIndex(i);
-        matrix.addTaxonWithName(tName);
+        matrix->addTaxonWithName(tName);
         }
 
-    return matrix;
+    return RbPtr<RbLanguageObject>( matrix );
 }
 
 
@@ -183,12 +183,12 @@ const ArgumentRules& Func_distance::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "data",   CharacterData::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "model",  RbString::getClassTypeSpec()      ) );
-        argumentRules.push_back( new ValueRule( "freqs",  RbString::getClassTypeSpec()      ) );
-        argumentRules.push_back( new ValueRule( "asrv",   RbString::getClassTypeSpec()      ) );
-        argumentRules.push_back( new ValueRule( "shape",  Real::getClassTypeSpec()          ) );
-        argumentRules.push_back( new ValueRule( "pinvar", Real::getClassTypeSpec()          ) );
+        argumentRules.push_back( new ConstArgumentRule( "data",   CharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "model",  RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ConstArgumentRule( "freqs",  RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ConstArgumentRule( "asrv",   RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ConstArgumentRule( "shape",  Real::getClassTypeSpec()          ) );
+        argumentRules.push_back( new ConstArgumentRule( "pinvar", Real::getClassTypeSpec()          ) );
         rulesSet = true;
         }
 

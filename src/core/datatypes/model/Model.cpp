@@ -54,7 +54,7 @@ Model::Model( const Model& x ) : MemberObject( x ) {
 
     /* Make copy of DAG by pulling from first node in x */
     if ( x.sourceNodes.size() > 0 ) {
-        for (std::set<const DAGNode*>::const_iterator it = x.sourceNodes.begin(); it != x.sourceNodes.end(); ++it) {
+        for (std::set<RbPtr<const DAGNode> >::const_iterator it = x.sourceNodes.begin(); it != x.sourceNodes.end(); ++it) {
             createModelFromDagNode( *it );
             createLeanDag( nodesMap[*it] );
         }
@@ -75,7 +75,7 @@ Model& Model::operator=( const Model& x ) {
         
         /* Make copy of DAG by pulling from first node in x */
         if ( x.sourceNodes.size() > 0 ) {
-            for (std::set<const DAGNode*>::const_iterator it = x.sourceNodes.begin(); it != x.sourceNodes.end(); ++it) {
+            for (std::set<RbPtr<const DAGNode> >::const_iterator it = x.sourceNodes.begin(); it != x.sourceNodes.end(); ++it) {
                 createModelFromDagNode( *it );
                 createLeanDag( nodesMap[*it] );
             }
@@ -89,7 +89,7 @@ Model& Model::operator=( const Model& x ) {
 /*
  * Add a source node and rebuilt the model.
  */
-void Model::addSourceNode( const DAGNode *sourceNode ) {
+void Model::addSourceNode( const RbPtr<const DAGNode> &sourceNode ) {
     
     // test whether var is a DagNodeContainer
     if ( sourceNode != NULL && sourceNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
@@ -130,14 +130,14 @@ void Model::createLeanDag(const DAGNode *fatDagNode) {
  *
  * First we clone the entire DAG, then we clone the moves and the monitors and set the new nodes appropriately.
  */
-void Model::createModelFromDagNode(const DAGNode *theSourceNode) {
+void Model::createModelFromDagNode(const RbPtr<const DAGNode> &theSourceNode) {
     
     if (theSourceNode == NULL)
         throw RbException("Cannot instantiate a model with a NULL DAG node.");
     
     theSourceNode->cloneDAG(nodesMap);
     // add the source node to our set of sources
-    sourceNodes.insert( nodesMap[theSourceNode] );
+    sourceNodes.insert( (DAGNode*)nodesMap[theSourceNode] );
     
     /* insert new nodes in dagNodes member frame and direct access vector */
     std::map<const DAGNode*, RbPtr<DAGNode> >::iterator i = nodesMap.begin();
@@ -276,7 +276,7 @@ const std::map<const DAGNode *, InferenceDagNode *>& Model::getNodesMap( void ) 
 
 
 /* Get the source node to clone the model */
-const std::set<const DAGNode*>& Model::getSourceNodes( void ) const {
+const std::set<RbPtr<const DAGNode> >& Model::getSourceNodes( void ) const {
     return sourceNodes;
 }
 

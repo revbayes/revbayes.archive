@@ -15,6 +15,7 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "DagNodeContainer.h"
 #include "Ellipsis.h"
 #include "Integer.h"
@@ -23,11 +24,11 @@
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
-#include "ValueRule.h"
 #include "VariableNode.h"
 
 
 #include <sstream>
+#include <map>
 
 
 /** Constructor */
@@ -55,13 +56,13 @@ ObjectMonitor* ObjectMonitor::clone(void) const {
 
 
 /** Map calls to member methods */
-const RbLanguageObject& ObjectMonitor::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> ObjectMonitor::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
-    if (name == "getValues") {
-        const RbString& name = static_cast<const RbString&>( args[0].getVariable().getValue() );
-        
-        return getValues( name );
-    }
+//    if (name == "getValues") {
+//        const RbString& name = static_cast<const RbString&>( args[0].getVariable().getValue() );
+//        
+//        return getValues( name );
+//    }
     
     return MemberObject::executeOperationSimple( name, args );
 }
@@ -119,9 +120,9 @@ const MethodTable& ObjectMonitor::getMethods( void ) const {
     if ( !methodsSet ) {
         
         ArgumentRules* getValues = new ArgumentRules();
-        getValues->push_back( new ValueRule( "name", RbString::getClassTypeSpec() ) );
+        getValues->push_back( new ConstArgumentRule( "name", RbString::getClassTypeSpec() ) );
         
-        methods.addFunction( "getValues", new MemberFunction( RbVector<RbLanguageObject>::getClassTypeSpec(), getValues ) );
+        methods.addFunction( "getValues", new MemberFunction( RbVector::getClassTypeSpec(), getValues ) );
         
         methods.setParentTable( &Monitor::getMethods() );
         
@@ -135,63 +136,11 @@ const MethodTable& ObjectMonitor::getMethods( void ) const {
 /** Monitor value unconditionally */
 void ObjectMonitor::monitor(void) {
     
-    for (std::set<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
-        
-        // save the value        
-        RbLanguageObject* temp = (*it)->getValue().clone();
-        values[(*it)->getName()].push_back( temp );
-    }
+//    for (std::set<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+//        
+//        // save the value        
+//        RbLanguageObject* temp = (*it)->getValue().clone();
+//        values[(*it)->getName()].push_back( temp );
+//    }
     
-}
-
-
-/** Monitor value at generation gen */
-void ObjectMonitor::monitor(int gen) {
-    
-    // get the sampling frequency
-    int samplingFrequency = dynamic_cast<const Natural&>( printgen->getValue() ).getValue();
-
-    if (gen % samplingFrequency == 0) {
-        
-        for (std::set<DAGNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
-            
-            // save the value
-            RbLanguageObject* temp = (*it)->getValue().clone();
-            values[(*it)->getName()].push_back( temp );
-        }
-        
-    }
-}
-
-
-/** Print value for user */
-void ObjectMonitor::printValue(std::ostream& o) const {
-    
-    // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Natural&>( printgen->getValue() ).getValue();
-    
-    o << "Monitor: interval = " << samplingFrequency;
-}
-
-
-void ObjectMonitor::setMemberVariable(std::string const &name, const Variable* var) {
-    
-    // catch setting of the variables 
-    // We don't have any
-        
-    // call parent class to set member variable
-    Monitor::setMemberVariable( name, var );
-}
-
-
-/** returns the values contained in the values vector for variable with name varName */
-RbVector<RbLanguageObject>& ObjectMonitor::getValues(const RbString& varName) {
-    std::map<RbString,RbVector<RbLanguageObject> >::iterator it = values.find(varName);
-    
-    if (it != values.end()) {
-        RbVector<RbLanguageObject>& toReturn = it->second;
-        return toReturn;
-    }
-    
-    throw RbException("Could not find values in object monitor for name " + varName);
 }

@@ -50,7 +50,7 @@ class Model : public MemberObject {
         void                                    setMember(const std::string &name, const RbPtr<const Variable> &var);    //!< Set a member variable. We catch here setting of variable nodes
     
         // Model functions
-        const std::set<const DAGNode*>&         getSourceNodes(void) const;                                 // get the source node to pull copies of the model
+        const std::set<RbPtr<const DAGNode> >&  getSourceNodes(void) const;                                 // get the source node to pull copies of the model
         const std::map<const DAGNode*, InferenceDagNode*>&  getNodesMap(void) const;
 // Sebastian: These functions are commented out because they violate our const-correctness!
         const std::vector<InferenceDagNode*>&   getLeanDagNodes(void) const { return leanDagNodes; }        //!< Return the DAGNodes in the model graph.
@@ -58,8 +58,8 @@ class Model : public MemberObject {
 //        const std::vector<const Move*>&         getMoves(void) const { return moves; }
 
 	private:
-        void                                    addSourceNode(const DAGNode* sourceNode);
-        void                                    createModelFromDagNode(const DAGNode *source );
+        void                                    addSourceNode(const RbPtr<const DAGNode> &sourceNode);
+        void                                    createModelFromDagNode(const RbPtr<const DAGNode> &source );
         void                                    createLeanDag(const DAGNode* fatDagNode);
         int                                     findIndexInVector(const std::vector<RbPtr<DAGNode> >& v, const DAGNode* p) const;
         int                                     findIndexInVector(const std::vector<InferenceDagNode*>& v, const InferenceDagNode* p) const;
@@ -67,7 +67,7 @@ class Model : public MemberObject {
         // Member variables
         std::vector<RbPtr<DAGNode> >            dagNodes;                                                   //!< The DAG nodes contained in this model
         std::vector<InferenceDagNode*>          leanDagNodes;
-        std::set<const DAGNode*>                sourceNodes;                                                //!< The source node for this model
+        std::set<RbPtr<const DAGNode> >         sourceNodes;                                                //!< The source node for this model
     
         std::map<const DAGNode*, RbPtr<DAGNode> >  nodesMap;
         std::map<const DAGNode*, InferenceDagNode*>  leanNodesMap;

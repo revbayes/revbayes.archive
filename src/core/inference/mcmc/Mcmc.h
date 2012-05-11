@@ -53,7 +53,6 @@ public:
 
     // Member variable rules
     const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
-    void                            setMemberVariable(const std::string& name, const Variable* var);                              //!< Only constants allowed
 
     // Member method inits
     const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
@@ -62,7 +61,7 @@ public:
     void                            run(size_t ngen);                                                                       //!< Update the chain
 
 protected:
-    const RbLanguageObject&         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Execute method
+    RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Execute method
 
  
 private:

@@ -23,7 +23,6 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "ParserDistribution.h"
-#include "RbConstVariablePtr.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
@@ -36,77 +35,12 @@
 #include <sstream>
 
 
-/** Construct rule based on default value; use "" for no label. */
-ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject *defVal) : RbInternal(), label(argName), argTypeSpec( defVal->getTypeSpec() ), hasDefaultVal(true), defaultVariable( new Variable( new ConstantNode( defVal ) ) ) {
-
-    defaultVariable->incrementReferenceCount();
-}
-
 
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool opt) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(false), defaultVariable( NULL ), optional( opt ) {
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool opt) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(false), optional( opt ) {
     
-}
-
-
-/** Construct rule with default value. We rely on workspace to check the provided type specification. */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject *defValue) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(true), defaultVariable( new Variable( new ConstantNode( defValue ) ) ) {
-    
-    defaultVariable->incrementReferenceCount();
-}
-
-
-/** Construct rule with default reference or value variable. */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(true), defaultVariable( new Variable( defVariable ) ) {
-    
-    defaultVariable->incrementReferenceCount();
-}
-
-
-/** Copy constructor */
-ArgumentRule::ArgumentRule(const ArgumentRule& a) : RbInternal( a ), argTypeSpec( a.argTypeSpec ) {
-    
-    label               = a.label;
-    defaultVariable     = a.defaultVariable;
-    if ( defaultVariable != NULL )
-        defaultVariable->incrementReferenceCount();
-    
-    hasDefaultVal       = a.hasDefaultVal;
-    optional            = a.optional;
-}
-
-
-/** Destructor. */
-ArgumentRule::~ArgumentRule() {
-    
-    if ( defaultVariable != NULL && defaultVariable->decrementReferenceCount() == 0) {
-        delete defaultVariable;
-    }
-}
-
-
-/** Assignment operator */
-ArgumentRule& ArgumentRule::operator=(const ArgumentRule &a) {
-    
-    if ( this != &a ) {
-        
-        argTypeSpec         = a.argTypeSpec;
-        label               = a.label;
-        if (defaultVariable != NULL && defaultVariable->decrementReferenceCount() == 0 ) {
-            delete defaultVariable;
-        }
-        
-        defaultVariable     = a.defaultVariable;
-        if ( defaultVariable != NULL )
-            defaultVariable->incrementReferenceCount();
-        
-        hasDefaultVal       = a.hasDefaultVal;
-        optional            = a.optional;
-    }
-    
-    return *this;
 }
 
 
@@ -145,16 +79,6 @@ const TypeSpec& ArgumentRule::getTypeSpec( void ) const {
 }
 
 
-const Variable& ArgumentRule::getDefaultVariable(void) const {
-    return *defaultVariable; 
-}
-
-
-Variable& ArgumentRule::getDefaultVariable(void) {
-    return *defaultVariable; 
-}
-
-
 bool ArgumentRule::hasDefault(void) const {
     return hasDefaultVal;
 }
@@ -186,7 +110,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
                 // do the conversion if we are actually asked to
                 if ( convert ) {
                     // this is a safe const cast (Sebastian)
-                    const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
+                    const_cast<Variable*>( (const Variable *)var )->setValueTypeSpec( argTypeSpec );
                 }
                 
                 return true;
@@ -195,13 +119,13 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
                 
                 // should we do the type conversion?
                 if ( convert ) {
-                    ConstantNode* theConstNode = static_cast<ConstantNode*>( const_cast<Variable*>( var )->getDagNode() );
+                    ConstantNode* theConstNode = static_cast<ConstantNode*>( (DAGNode *) const_cast<Variable*>( (const Variable *) var )->getDagNode() );
                     // Do the type conversion
                     RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( argTypeSpec ) );
                     theConstNode->setValue( convertedObj );
                     
                     // set the new type spec of the variable
-                    const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
+                    const_cast<Variable*>( (const Variable *) var )->setValueTypeSpec( argTypeSpec );
                 }
                 return true;
             }
@@ -214,7 +138,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
             // first handle deterministic nodes
             if ( var->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) ) {
                 
-                const DeterministicNode* theDetNode = static_cast<const DeterministicNode*>( var->getDagNode() );
+                const DeterministicNode* theDetNode = static_cast<const DeterministicNode*>( (const DAGNode *) var->getDagNode() );
                 const RbFunction& theFunction = theDetNode->getFunction();
                 
                 // first we check if the argument needs to be converted
@@ -223,7 +147,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
                     
                     // do the conversion if we are actually asked to
                     if ( convert ) {
-                        const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
+                        const_cast<Variable*>( (const Variable *) var )->setValueTypeSpec( argTypeSpec );
                     }
                     
                     return true;
@@ -231,7 +155,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
             }
             else { // if ( var->getDagNode()->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
                 
-                const StochasticNode* theStocNode = static_cast<const StochasticNode*>( var->getDagNode() );
+                const StochasticNode* theStocNode = static_cast<const StochasticNode*>( (const DAGNode *) var->getDagNode() );
                 const ParserDistribution& theDistribution = theStocNode->getDistribution();
                 
                 // first we check if the argument needs to be converted
@@ -240,7 +164,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
                     
                     // do the conversion if we are actually asked to
                     if ( convert ) {
-                        const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
+                        const_cast<Variable*>( (const Variable *) var )->setValueTypeSpec( argTypeSpec );
                     }
                     
                     return true;
@@ -258,19 +182,19 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
         bool constant = var->getDagNode()->isTypeSpec( ConstantNode::getClassTypeSpec() );
         bool valid = true;
         bool conversionNeeded = false;
-        TypeSpec conversionType = TypeSpec( RbVector<RbObject>::getClassName() );
+        TypeSpec conversionType = TypeSpec( RbVector::getClassName() );
         for (size_t i = 0; i < c.size(); i++) {
             valid &= isArgumentValid( c.getElement(i), conversionNeeded, conversionType );
         }
         if ( constant && conversionNeeded && convert ) {
             
-            ConstantNode* theConstNode = static_cast<ConstantNode*>( const_cast<Variable*>( var )->getDagNode() );
+            ConstantNode* theConstNode = static_cast<ConstantNode*>( (DAGNode *) const_cast<Variable*>( (const Variable *) var )->getDagNode() );
             // Do the type conversion
             RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( conversionType ) );
             theConstNode->setValue( convertedObj );
                 
             // set the new type spec of the variable
-            const_cast<Variable*>( var )->setValueTypeSpec( argTypeSpec );
+            const_cast<Variable*>( (const Variable *) var )->setValueTypeSpec( argTypeSpec );
             
         }
         
@@ -303,7 +227,7 @@ bool ArgumentRule::isArgumentValid(const RbObject& var, bool &conversionNeeded, 
     
     // Finally, we test if this is a vector of types which we accept
     if ( var.getTypeSpec().isDerivedOf( Container::getClassTypeSpec() ) ) {
-        TypeSpec* et = new TypeSpec( RbVector<RbObject>::getClassName() );
+        TypeSpec* et = new TypeSpec( RbVector::getClassName() );
         conversionType.setElementType( et );
         return isArgumentValid( static_cast<const Container&>( var ).getElement(0), conversionNeeded, *et );
     }
@@ -326,10 +250,6 @@ void ArgumentRule::printValue(std::ostream &o) const {
 
     o << argTypeSpec;
     o << " \"" << label << "\"";
-    if ( hasDefaultVal ) {
-        o << " = ";
-        defaultVariable->printValue( o );
-    }
 }
 
 
@@ -341,13 +261,6 @@ std::string ArgumentRule::debugInfo(void) const {
     o << "ArgumentRule:" << std::endl;
     o << "label             = " << label << std::endl;
     o << "hasDefaultVal     = " << hasDefaultVal << std::endl;
-    o << "defaultVaribale   = ";
-    if ( defaultVariable != NULL && defaultVariable->getDagNode() != NULL ) {
-        defaultVariable->getValue().printValue(o);
-    } 
-    else {
-        o << "NULL";
-    }
     o << std::endl;
 
     return o.str();

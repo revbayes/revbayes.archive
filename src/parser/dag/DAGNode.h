@@ -20,6 +20,7 @@
 #define DAGNode_H
 
 #include "RbLanguageObject.h"
+#include "RbPtr.h"
 #include "TypeSpec.h"
 #include "Variable.h"
 

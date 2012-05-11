@@ -41,14 +41,12 @@ class Func_nj :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        const RbLanguageObject&     executeFunction(const std::vector<const RbObject*> &args);              //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*> &args);              //!< Execute function
 
     private:
         Topology*                   neighborJoining(const DistanceMatrix& d);
         void                        buildNj(std::vector<std::vector<double> > distances, std::vector<TopologyNode*> nodes, int nTips);
     
-        // function return value
-        TreePlate                   tree;
 
 };
 

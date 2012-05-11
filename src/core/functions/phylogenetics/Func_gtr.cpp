@@ -16,14 +16,15 @@
  * $Id$
  */
 
+#include "ConstArgumentRule.h"
 #include "Func_gtr.h"
 #include "RateMatrix.h"
 #include "RbException.h"
+#include "RbMatrix.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Simplex.h"
 #include "UserInterface.h"
-#include "ValueRule.h"
 #include <sstream>
 #include <vector>
 
@@ -36,11 +37,11 @@ Func_gtr* Func_gtr::clone(void) const {
 
 
 /** Execute function */
-const RbLanguageObject& Func_gtr::executeFunction(void) {
+RbPtr<RbLanguageObject> Func_gtr::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    const Simplex& r = static_cast<const Simplex&>( rates->getValue() );
-    const Simplex& f = static_cast<const Simplex&>( freqs->getValue() );
+    const Simplex& r = static_cast<const Simplex&>( args[0]->getVariable()->getValue() );
+    const Simplex& f = static_cast<const Simplex&>( args[1]->getVariable()->getValue() );
 
     // initialize the number of states
     const size_t nStates = 4;
@@ -65,24 +66,21 @@ const RbLanguageObject& Func_gtr::executeFunction(void) {
         }
 
     
-    // construct a rate matrix of the correct dimensions
-    if (m.getNumberOfStates() != nStates) {
-        m = RateMatrix(nStates);
-    }
+    RateMatrix* m = new RateMatrix(nStates);
 
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0, k=0; i<nStates; i++)
         {
         for (size_t j=i+1; j<nStates; j++)
             {
-            m[i][j] = r[k] * f[j];
-            m[j][i] = r[k] * f[i];
+            (*m)[i][j] = r[k] * f[j];
+            (*m)[j][i] = r[k] * f[i];
             k++;
             }
         }
 
     // set the diagonal elements of the rate matrix
-    m.setDiagonal();
+    m->setDiagonal();
 
     // Set the stationary frequencies for the rate matrix. Note that we
     // can do this in two ways. First, we can call calculateStationaryFrequencies
@@ -91,7 +89,7 @@ const RbLanguageObject& Func_gtr::executeFunction(void) {
     // the stationary frequencies directly. This is what we do here, because the
     // stationary frequencies have been build directly into the rate matrix.
     std::vector<double> tempFreqs = f.getValue();
-    m.setStationaryFrequencies(tempFreqs);
+    m->setStationaryFrequencies(tempFreqs);
 
     // rescale the rate matrix such that the average rate is 1.0
     // Sebastian: If we rescale the matrix, then we have trouble estimating the branch length correctly!
@@ -100,13 +98,14 @@ const RbLanguageObject& Func_gtr::executeFunction(void) {
 
     // we know that the GTR model is time reversible (just look at the name of the
     // model!), so we might as well set its reversibility flag directly
-    m.setIsTimeReversible(true);
+    m->setIsTimeReversible(true);
 
     // Now that we have set the rate matrix, we should update its eigen system
-    m.updateEigenSystem();
+    m->updateEigenSystem();
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return m;
+//    return RbPtr<RbLanguageObject>( m );
+    return NULL;
 }
 
 
@@ -118,8 +117,8 @@ const ArgumentRules& Func_gtr::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "rates", Simplex::getClassTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "freqs", Simplex::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "rates", Simplex::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "freqs", Simplex::getClassTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -155,21 +154,6 @@ const TypeSpec& Func_gtr::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_gtr::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RbMatrix::getClassTypeSpec();
     return returnTypeSpec;
 }
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void Func_gtr::setArgumentVariable(std::string const &name, const Variable* var) {
-    
-    if ( name == "rates" ) {
-        rates = var;
-    } else if ( name == "freqs" ) {
-        freqs = var;
-    } 
-    else {
-        RbFunction::setArgumentVariable(name, var);
-    }
-}
-

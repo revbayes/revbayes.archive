@@ -28,7 +28,6 @@ class RandomNumberGenerator;
 class Move : public MemberObject {
 
     public:
-    virtual                                    ~Move(void);                                                                             //!< Destructor
 
         // Basic utility functions
         virtual Move*                           clone(void) const = 0;                                                                  //!< Clone the object
@@ -41,7 +40,6 @@ class Move : public MemberObject {
 
         // Member methods
         virtual const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
-        void                                    setMemberVariable(const std::string& name, const Variable* var);                        //!< set the member variables
 
         // Move functions you have to override
         virtual void                            acceptMove(void) = 0;                                                                   //!< Accept the move
@@ -58,9 +56,8 @@ class Move : public MemberObject {
 
 	protected:
         Move(const MemberRules& memberRules);                                                                                           //!< Default constructor
-        Move(const Move& m);                                                                                                            //!< Copy constructor
 
-        virtual RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
+        virtual RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Map method call to internal functions
 
         
         std::vector<StochasticNode*>            nodes;

@@ -19,7 +19,6 @@
 #define Dist_beta_H
 
 #include "DistributionContinuous.h"
-#include "Probability.h"
 
 #include <ostream>
 #include <string>

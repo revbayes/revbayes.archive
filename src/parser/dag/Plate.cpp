@@ -69,16 +69,16 @@ const TypeSpec& Plate::getTypeSpec( void ) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Plate::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> Plate::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     // special handling for adding a variable
     if (name == "add") {
         
         // get the argument
-        const Argument& theArg = args[0];
+        const RbPtr<Argument>& theArg = args[0];
         
         // get the DAG node
-        const RbPtr<const DAGNode> &theNode = theArg.getVariable()->getDagNode();
+        const RbPtr<const DAGNode> &theNode = theArg->getVariable()->getDagNode();
         
         // expand the DAG node
         // \TODO: We shouldn't use const-casts.

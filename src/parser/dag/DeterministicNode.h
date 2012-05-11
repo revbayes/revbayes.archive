@@ -63,7 +63,7 @@ public:
 protected:
 
     // Utility function you have to override
-    void                                    getAffected(std::set<StochasticNode* >& affected);                  //!< Mark and get affected nodes
+    void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
     void                                    keepMe(void);                                                       //!< Keep value of this and affected nodes
     void                                    restoreMe(void);                                                    //!< Restore value of this nodes
     void                                    touchMe(void);                                                      //!< Tell affected nodes value is reset

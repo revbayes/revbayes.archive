@@ -67,14 +67,14 @@ TaxonData* TaxonData::clone(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> TaxonData::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> TaxonData::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     if (name == "size") {
         
         return RbPtr<RbLanguageObject>( new Natural(getNumberOfCharacters() ) );
     } else if ( name == "[]") {
         // get the member with give index
-        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
+        const Natural& index = static_cast<const Natural&>( args[0]->getVariable()->getValue() );
         
         if ( getNumberOfCharacters() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in [] of TaxonData.");

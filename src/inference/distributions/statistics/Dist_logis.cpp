@@ -15,17 +15,11 @@
  * $Id$
  */
 
-#include "DAGNode.h"
 #include "Dist_logis.h"
-#include "Move_msimplex.h"
-#include "RealPos.h"
+#include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "DistributionLogistic.h"
-#include "Real.h"
-#include "Simplex.h"
-#include "ValueRule.h"
-#include "Workspace.h"
 
 #include <cmath>
 #include <sstream>
@@ -52,26 +46,6 @@ double Dist_logis::cdf(double q) {
 Dist_logis* Dist_logis::clone( void ) const {
 
     return new Dist_logis( *this );
-}
-
-
-/**
- * This function calculates the probability density
- * for a Logistic-distributed random variable.
- *
- * @brief Logistic probability density
- *
- * @param value Observed value
- * @return      Probability density
- */
-double Dist_logis::pdf( const RbLanguageObject& value ) const {
-    
-    double l = static_cast<const Real&     >( location->getValue() ).getValue();
-    double s = static_cast<const RealPos&  >( scale->getValue()    ).getValue();
-    double x = static_cast<const Real&     >( value               ).getValue();
-
-	return RbStatistics::Logistic::pdf( l, s, x );
-
 }
 
 
