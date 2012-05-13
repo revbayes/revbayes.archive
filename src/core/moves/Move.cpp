@@ -57,10 +57,10 @@ RbPtr<RbLanguageObject> Move::executeOperationSimple(const std::string& name, co
         acceptMove();
         return NULL;
     }
-    else if ( name == "acceptanceRatio" ) {
+//    else if ( name == "acceptanceRatio" ) {
 
-        return RbPtr<RbLanguageObject>( new Probability( getAcceptanceRatio() ) );
-    }
+//        return RbPtr<RbLanguageObject>( new Probability( getAcceptanceRatio() ) );
+//    }
 //    else if ( name == "numAccepted" ) {
 //
 //        return RbPtr<RbLanguageObject>( new Natural( numAccepted ) ) );

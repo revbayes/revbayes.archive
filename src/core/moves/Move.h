@@ -50,8 +50,8 @@ class Move : public MemberObject {
 
         // Move functions you should not override
         virtual void                            addDagNode(StochasticNode* d);                                                                 //!< Add a DAG node to this move
-        double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
-        double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
+//        double                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
+//        double                                  getUpdateWeight(void) const;                                                            //!< Get update weight of move
         void                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
 
 	protected:

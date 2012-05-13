@@ -101,6 +101,11 @@ void FunctionTable::clear(void) {
 }
 
 
+FunctionTable* FunctionTable::clone( void ) const {
+    return new FunctionTable( *this );
+}
+
+
 /** Erase function */
 void FunctionTable::eraseFunction(const std::string& name) {
 

@@ -27,6 +27,7 @@
 #include "Workspace.h"
 
 #include <sstream>
+#include <typeinfo>
 
 
 

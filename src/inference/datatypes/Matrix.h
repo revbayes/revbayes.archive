@@ -42,4 +42,65 @@ private:
 
 };
 
+
+
+
+
+template <typename valueType>
+Matrix<valueType>::Matrix( size_t n, size_t k) {
+    
+    elements = std::vector<std::vector<valueType> >(n, std::vector<valueType>(k) );
+}
+
+
+template <typename valueType>
+Matrix<valueType>::Matrix( size_t n, size_t k, valueType v) {
+    
+    elements = std::vector<std::vector<valueType> >(n, std::vector<valueType>(k, v) );
+}
+
+
+
+template <typename valueType>
+std::vector<valueType>& Matrix<valueType>::operator[]( size_t index ) {
+    return elements[index];
+}
+
+
+
+template <typename valueType>
+const std::vector<valueType>& Matrix<valueType>::operator[]( size_t index ) const {
+    return elements[index];
+}
+
+
+
+template <typename valueType>
+void Matrix<valueType>::clear( void ) {
+    elements.clear();
+}
+
+
+
+template <typename valueType>
+size_t Matrix<valueType>::getNumberOfColumns( void ) const {
+    return elements[0].size();
+}
+
+
+
+template <typename valueType>
+size_t Matrix<valueType>::getNumberOfRows( void ) const {
+    return elements.size();
+}
+
+
+
+template <typename valueType>
+size_t Matrix<valueType>::size( void ) const {
+    return elements.size();
+}
+
+
 #endif
+

@@ -26,7 +26,7 @@
 #include "MemberFunction.h"
 #include "Model.h"
 #include "FileMonitor.h"
-#include "ObjectMonitor.h"
+#include "Monitor.h"
 #include "Move.h"
 #include "Natural.h"
 #include "ParserDistribution.h"

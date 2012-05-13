@@ -70,6 +70,12 @@ const TypeSpec& ArgumentRule::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+const Variable& ArgumentRule::getDefaultVariable( void ) const {
+    throw RbException("Argument \"" + label + "\" does not have a default value.");
+}
+
+
 /** Get type spec */
 const TypeSpec& ArgumentRule::getTypeSpec( void ) const {
     

@@ -76,7 +76,6 @@ typedef std::map<std::string, RbPtr<RbObject> > TypeTable;
 class Workspace : public Environment {
 
     public:
-        virtual                    ~Workspace(void);                                                                                //!< Delete function table
     
         // Frame functions you have to override
         Workspace*                  clone(void) const;                                                                              //!< Clone frame

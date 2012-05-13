@@ -16,18 +16,25 @@
  * $Id: ConstArgument.cpp -1   $
  */
 
-#include <sstream>
-
 #include "ConstArgument.h"
 #include "DAGNode.h"
+#include "RbPtr.h"
 #include "RbUtil.h"
+#include "Variable.h"
+
+#include <sstream>
 
 
 /** Construct from ConstArgument label and DAG node */
 ConstArgument::ConstArgument(const RbPtr<const Variable> &v, const std::string& argLabel) : Argument( argLabel ) {
     
-    var     = v;
+    var = v;
     
+}
+
+
+ConstArgument* ConstArgument::clone( void ) const {
+    return new ConstArgument( *this );
 }
 
 
@@ -65,7 +72,7 @@ const RbPtr<const Variable>& ConstArgument::getVariable(void) const {
 /** Complete info about object */
 void ConstArgument::printValue(std::ostream &o) const {
     
-    o << label << " = ";
+    o << label << " = const ";
     var->printValue(o);
     
 }

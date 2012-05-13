@@ -19,12 +19,9 @@
 
 #include "ConstArgumentRule.h"
 #include "RbVector.h"
+#include "RbString.h"
 
 #include <string>
-
-class DAGNode;
-class RbObject;
-class RbString;
 
 
 class OptionRule : public ConstArgumentRule {

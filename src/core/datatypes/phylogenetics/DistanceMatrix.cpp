@@ -47,6 +47,17 @@ typeSpec( DistanceMatrix::getClassTypeSpec() )
 
 
 
+std::vector<double>& DistanceMatrix::operator[](size_t i) {
+    return elements[i];
+}
+
+
+
+const std::vector<double>& DistanceMatrix::operator[](size_t i) const {
+    return elements[i];
+}
+
+
 /** clear the oblect */
 void DistanceMatrix::clear(void) {
     

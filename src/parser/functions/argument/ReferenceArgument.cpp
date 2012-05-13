@@ -31,6 +31,11 @@ ReferenceArgument::ReferenceArgument(const RbPtr<Variable> &v, const std::string
 }
 
 
+ReferenceArgument* ReferenceArgument::clone( void ) const {
+    return new ReferenceArgument( *this );
+}
+
+
 /** Get class name of object */
 const std::string& ReferenceArgument::getClassName(void) { 
     

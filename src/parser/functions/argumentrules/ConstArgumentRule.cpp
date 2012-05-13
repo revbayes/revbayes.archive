@@ -18,6 +18,7 @@
 #include "ConstantNode.h"
 
 #include <sstream>
+#include <typeinfo>
 
 
 /** Construct rule based on default value; use "" for no label. */
@@ -35,6 +36,11 @@ ConstArgumentRule::ConstArgumentRule( const std::string& argName, const TypeSpec
 /** Construct rule with default value. We rely on workspace to check the provided type specification. */
 ConstArgumentRule::ConstArgumentRule( const std::string& argName, const TypeSpec& argTypeSp, const RbPtr<RbLanguageObject> &defVal ) : ArgumentRule( argName, argTypeSp, defVal ), defaultVar( new ConstantNode( defVal ) ) {
     
+}
+
+
+ConstArgumentRule* ConstArgumentRule::clone( void ) const {
+    return new ConstArgumentRule( *this );
 }
 
 
@@ -65,3 +71,16 @@ const TypeSpec& ConstArgumentRule::getTypeSpec( void ) const {
 const Variable& ConstArgumentRule::getDefaultVariable( void ) const {
     return defaultVar;
 }
+
+
+
+/* Print value for user (in descriptions of functions, for instance) */
+void ConstArgumentRule::printValue(std::ostream &o) const {
+    
+    o << argTypeSpec;
+    o << " \"" << label << "\" = ";
+    defaultVar.printValue( o );
+}
+
+
+

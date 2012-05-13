@@ -46,7 +46,7 @@ class Argument : public RbInternal {
         virtual const RbPtr<const Variable>& getVariable(void) const = 0;
 
     protected:
-        Argument(const std::string& argLabel = "");    //!< Constructor 
+        Argument(const std::string& argLabel);                                              //!< Constructor 
 
         std::string                         label;                                                                      //!< Label of argument
     

@@ -18,6 +18,8 @@
 
 #include "ParserTransitionProbabilityMatrix.h"
 
+#include "MemberFunction.h"
+#include "MethodTable.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TransitionProbabilityMatrix.h"
@@ -54,6 +56,39 @@ const TypeSpec& ParserTransitionProbabilityMatrix::getClassTypeSpec(void) {
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
 	return rbClass; 
+}
+
+
+/** Return member rules */
+const MemberRules& ParserTransitionProbabilityMatrix::getMemberRules( void ) const {
+    
+    static MemberRules memberRules = MemberRules();
+    static bool        rulesSet = false;
+    
+    if (!rulesSet) {
+        
+        rulesSet = true;
+    }
+    
+    return memberRules;
+}
+
+
+/** Get move methods */
+const MethodTable& ParserTransitionProbabilityMatrix::getMethods(void) const {
+    
+    static MethodTable methods = MethodTable();
+    
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        // Set parent table for proper inheritance
+        methods.setParentTable( &MemberObject::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 /** Get type spec */

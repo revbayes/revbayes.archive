@@ -47,3 +47,8 @@ const TypeSpec& Argument::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+const std::string& Argument::getLabel( void ) const {
+    return label;
+}
+
