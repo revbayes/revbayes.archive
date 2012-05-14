@@ -160,8 +160,9 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        const DAGNode* theConstNode = theVariable->getDagNode();
-        const RbPtr<const RbLanguageObject>& value = theConstNode->getValue();
+        const RbPtr<DAGNode> &theConstNode = theVariable->getDagNode();
+        const RbPtr<RbLanguageObject>& value = theConstNode->getValue();
+        
         
         DAGNode* theNode;
         // check if the type is valid. This is necessary for reassignments
