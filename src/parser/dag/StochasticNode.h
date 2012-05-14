@@ -51,94 +51,94 @@ class StochasticNode : public VariableNode {
 public:
     enum VariableType                   { INSTANTIATED, SUMMED_OVER, ELIMINATED };
     
-                                        StochasticNode(void);                                                                   //!< Construct empty stochastic node
-                                        StochasticNode(const RbPtr<const Plate> &p);                                            //!< Construct empty stochastic node
-                                        StochasticNode(const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p);     //!< Construct from distribution (raw object) with plate holding this node
-                                        StochasticNode(const StochasticNode& x);                                                //!< Copy constructor
+                                            StochasticNode(void);                                                                   //!< Construct empty stochastic node
+                                            StochasticNode(const RbPtr<const Plate> &p);                                            //!< Construct empty stochastic node
+                                            StochasticNode(const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p);     //!< Construct from distribution (raw object) with plate holding this node
+                                            StochasticNode(const StochasticNode& x);                                                //!< Copy constructor
 
     // Assignment operator
-    StochasticNode&                     operator=(const StochasticNode& x);                                 //!< Assignment operator
+    StochasticNode&                         operator=(const StochasticNode& x);                                 //!< Assignment operator
 
     // Basic utility functions
-    StochasticNode*                     clone(void) const;                                                  //!< Clone the stochastic node
-    std::string                         debugInfo(void) const;                                              //!< Complete info about object
-    static const std::string&           getClassName(void);                                                 //!< Get class name
-    static const TypeSpec&              getClassTypeSpec(void);                                             //!< Get class type spec
-    const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
-    void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
+    StochasticNode*                         clone(void) const;                                                  //!< Clone the stochastic node
+    std::string                             debugInfo(void) const;                                              //!< Complete info about object
+    static const std::string&               getClassName(void);                                                 //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                             //!< Get class type spec
+    const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
+    void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG node function
-    RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args);   //!< Override to map member methods to internal functions
-    const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods (const)
-    const RbLanguageObject&             getValue(void) const;                                               //!< Get value (const)
-    RbLanguageObject&                   getValue(void);                                                     //!< Get value (non-const)
-    void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
+    RbPtr<RbLanguageObject>                 executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args);   //!< Override to map member methods to internal functions
+    const MethodTable&                      getMethods(void) const;                                                         //!< Get member methods (const)
+    const RbPtr<const RbLanguageObject>&    getValue(void) const;                                               //!< Get value (const)
+    const RbPtr<RbLanguageObject>&          getValue(void);                                                     //!< Get value (non-const)
+    void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
 
     // StochasticNode functions
-    double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
-    void                                clamp(const RbPtr<RbLanguageObject> &observedVal);                  //!< Clamp the node with an observed value
-    void                                markForRecalculation(void);                                         //!< Flag this node for recalculation
-    const ParserDistribution&           getDistribution(void) const;                                        //!< Get distribution (const)
-    ParserDistribution&                 getDistribution(void);                                              //!< Get distribution (non-const)
-    double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
-    bool                                isNotInstantiated(void) const;
-    bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
-    bool                                isEliminated() const;
-    bool                                isSummedOver() const { return type == SUMMED_OVER; }
-    void                                likelihoodsNeedUpdates(void);                                       //!< Tell this node that the likelihoods need to be updated
-    bool                                needsRecalculation(void) const;                                     //!< Does this node need to recalculate its probability or likelihood?
-    void                                setInstantiated(bool inst);                                         //!< Set whether the node is instantiated or summed over
-    void                                setSummationType(VariableType t);  
-    void                                setSumProductSequence(const std::vector<StochasticNode*> seq);      //!< Set the sum-product sequence
-    void                                setValue(RbLanguageObject* value);                                  //!< Set value but do not clamp; get affected nodes
-    void                                unclamp(void);                                                      //!< Unclamp the node
+    double                                  calculateLnProbability(void);                                       //!< Calculate log conditional probability
+    void                                    clamp(const RbPtr<RbLanguageObject> &observedVal);                  //!< Clamp the node with an observed value
+    void                                    markForRecalculation(void);                                         //!< Flag this node for recalculation
+    const ParserDistribution&               getDistribution(void) const;                                        //!< Get distribution (const)
+    ParserDistribution&                     getDistribution(void);                                              //!< Get distribution (non-const)
+    double                                  getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
+    bool                                    isNotInstantiated(void) const;
+    bool                                    isClamped(void) const { return clamped; }                           //!< Is the node clamped?
+    bool                                    isEliminated() const;
+    bool                                    isSummedOver() const { return type == SUMMED_OVER; }
+    void                                    likelihoodsNeedUpdates(void);                                       //!< Tell this node that the likelihoods need to be updated
+    bool                                    needsRecalculation(void) const;                                     //!< Does this node need to recalculate its probability or likelihood?
+    void                                    setInstantiated(bool inst);                                         //!< Set whether the node is instantiated or summed over
+    void                                    setSummationType(VariableType t);  
+    void                                    setSumProductSequence(const std::vector<StochasticNode*> seq);      //!< Set the sum-product sequence
+    void                                    setValue(RbLanguageObject* value);                                  //!< Set value but do not clamp; get affected nodes
+    void                                    unclamp(void);                                                      //!< Unclamp the node
     
     // DAG functions
-    double                              calculateSummedLnProbability(size_t nodeIndex);                                 //!< Calculate summed log conditional probability over all possible states
-    double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation);           //!< Calculate summed log conditional probability over all possible states
-    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;            //!< Clone entire graph
-    virtual InferenceDagNode*           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
-    void                                constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence); //!< Construct the sum-product sequecence
-    void                                constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
-    void                                expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
-    void                                swapParentNode( DAGNode* oldP, DAGNode* newP);                      //!< Swap a parent node
+    double                                  calculateSummedLnProbability(size_t nodeIndex);                                 //!< Calculate summed log conditional probability over all possible states
+    double                                  calculateEliminatedLnProbability(bool enforceProbabilityCalculation);           //!< Calculate summed log conditional probability over all possible states
+    DAGNode*                                cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;            //!< Clone entire graph
+    virtual InferenceDagNode*               createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
+    void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence); //!< Construct the sum-product sequecence
+    void                                    constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
+    void                                    expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
+    void                                    swapParentNode( DAGNode* oldP, DAGNode* newP);                      //!< Swap a parent node
 
 protected:
     // Help function
-    void                                getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
-    void                                keepMe(void);                                                       //!< Keep value of this and affected nodes
-    void                                restoreMe(void);                                                    //!< Restore value of this nodes
-    void                                touchMe(void);                                                      //!< Tell affected nodes value is reset
+    void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
+    void                                    keepMe(void);                                                       //!< Keep value of this and affected nodes
+    void                                    restoreMe(void);                                                    //!< Restore value of this nodes
+    void                                    touchMe(void);                                                      //!< Tell affected nodes value is reset
 
     // Member variables
-    bool                                clamped;                                                            //!< Is the node clamped with data?
-    RbPtr<ParserDistribution>           distribution;                                                       //!< Distribution (density functions, random draw function)
-    double                              lnProb;                                                             //!< Current log probability
-    bool                                needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
-    bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?
-    double                              storedLnProb;                                                       //!< Stored log probability
-    bool                                probabilityRecalculated;                                            //!< Was the probability and/or likelihood recalculated
+    bool                                    clamped;                                                            //!< Is the node clamped with data?
+    RbPtr<ParserDistribution>               distribution;                                                       //!< Distribution (density functions, random draw function)
+    double                                  lnProb;                                                             //!< Current log probability
+    bool                                    needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
+    bool                                    needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?
+    double                                  storedLnProb;                                                       //!< Stored log probability
+    bool                                    probabilityRecalculated;                                            //!< Was the probability and/or likelihood recalculated
 
 private:
-    RbLanguageObject*                   createRV(void);
-    RbLanguageObject*                   createRV(const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
-    RbLanguageObject*                   createRVSingleValue(size_t plateIndex, const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
-    bool                                isValueTypeAllowed(RbLanguageObject* observed, bool &needsConversion);
+    RbLanguageObject*                       createRV(void);
+    RbLanguageObject*                       createRV(const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
+    RbLanguageObject*                       createRVSingleValue(size_t plateIndex, const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
+    bool                                    isValueTypeAllowed(RbLanguageObject* observed, bool &needsConversion);
     
-    static const TypeSpec               typeSpec;
-    RbPtr<RbLanguageObject>             value;                                                              //!< Value
+    static const TypeSpec                   typeSpec;
+    RbPtr<RbLanguageObject>                 value;                                                              //!< Value
 
-    VariableType                        type;
+    VariableType                            type;
         
     // probability arrays and likelihood arrays for summed out computations
-    std::vector<double>                 probabilities;
-    std::vector<double>                 likelihoods;
-    std::vector<std::vector<double> >   partialLikelihoods;
-    std::vector<double>                 storedProbabilities;
-    std::vector<double>                 storedLikelihoods;
-    std::vector<std::vector<double> >   storedPartialLikelihoods;
+    std::vector<double>                     probabilities;
+    std::vector<double>                     likelihoods;
+    std::vector<std::vector<double> >       partialLikelihoods;
+    std::vector<double>                     storedProbabilities;
+    std::vector<double>                     storedLikelihoods;
+    std::vector<std::vector<double> >       storedPartialLikelihoods;
     
-    std::vector<StochasticNode*>        sumProductSequence;
+    std::vector<StochasticNode*>            sumProductSequence;
     
 };
 

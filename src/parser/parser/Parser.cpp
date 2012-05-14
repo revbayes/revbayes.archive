@@ -178,7 +178,7 @@ int Parser::execute(SyntaxElement* root, Environment &env) const {
     }
 
     // Print result if the root is not an assign expression
-    if (result != NULL && result->getDagNode() != NULL && dynamic_cast<RbNullObject*>(&result->getValue()) == NULL && !root->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec())) {
+    if (result != NULL && result->getDagNode() != NULL && result->getValue() != NULL && !root->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec())) {
         std::ostringstream msg;
         result->getDagNode()->printValue(msg);
         RBOUT( msg.str() );

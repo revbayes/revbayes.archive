@@ -69,7 +69,7 @@ Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
 template <>
 RbPtr<RbLanguageObject> Func_simplex<Integer>::executeFunction( void ) {
 
-    int size = static_cast<const Integer&>( args[0]->getVariable()->getValue() ).getValue();
+    int size = static_cast<const Integer&>( *args[0]->getVariable()->getValue() ).getValue();
 
     if ( size < 2 )
         throw RbException( "Simplex size must be at least 2" );
@@ -82,7 +82,7 @@ RbPtr<RbLanguageObject> Func_simplex<Integer>::executeFunction( void ) {
 template <>
 RbPtr<RbLanguageObject> Func_simplex<RbVector>::executeFunction( void ) {
 
-    const RbVector& tempVec = static_cast<const RbVector& >( args[0]->getVariable()->getValue() );
+    const RbVector& tempVec = static_cast<const RbVector& >( *args[0]->getVariable()->getValue() );
 
     return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );
 }
@@ -94,7 +94,7 @@ RbPtr<RbLanguageObject> Func_simplex<RealPos>::executeFunction( void ) {
 
     RbVector  tempVec( RealPos::getClassTypeSpec() );
     for ( size_t i = 0; i < args.size(); i++ )
-        tempVec.push_back( static_cast<const RealPos&>( args[i]->getVariable()->getValue() ).clone() );
+        tempVec.push_back( static_cast<const RealPos&>( *args[i]->getVariable()->getValue() ).clone() );
 
     // Normalization is done by the Simplex constructor
     return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );

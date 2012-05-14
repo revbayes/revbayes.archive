@@ -417,7 +417,7 @@ const RbLanguageObject& Environment::getValue( const std::string& name ) const {
     
     // set the slot
     const VariableSlot* theSlot = it->second;
-    return theSlot->getValue();
+    return *theSlot->getValue();
 }
 
 
@@ -435,7 +435,7 @@ RbLanguageObject& Environment::getValue( const std::string& name ) {
     
     // set the slot
     VariableSlot* theSlot = it->second;
-    return theSlot->getValue();
+    return *theSlot->getValue();
 }
 
 

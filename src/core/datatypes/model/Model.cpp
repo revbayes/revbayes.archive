@@ -92,11 +92,11 @@ Model& Model::operator=( const Model& x ) {
 void Model::addSourceNode( const RbPtr<const DAGNode> &sourceNode ) {
     
     // test whether var is a DagNodeContainer
-    if ( sourceNode != NULL && sourceNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        const RbObject& objPtr = sourceNode->getValue();
-        const DagNodeContainer& container = static_cast<const DagNodeContainer&>( objPtr );
-        for (size_t i = 0; i < container.size(); ++i) {
-            const RbObject& elemPtr = container.getElement(i);
+    if ( sourceNode != NULL && sourceNode->getValue()->isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        const RbPtr<const RbLanguageObject>& objPtr = sourceNode->getValue();
+        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
+        for (size_t i = 0; i < container->size(); ++i) {
+            const RbObject& elemPtr = container->getElement(i);
             addSourceNode(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
         }
     }
@@ -333,7 +333,7 @@ void Model::printValue(std::ostream& o) const {
 		msg.str("");
        
         msg << "   Value        = ";
-        (*i)->getValue().printValue(msg);
+        (*i)->getValue()->printValue(msg);
             
 		if ( msg.str() != "" )
 			RBOUT(msg.str());

@@ -65,11 +65,11 @@ RbPtr<RbLanguageObject> MemberObject::executeOperationSimple(const std::string& 
     
     if (name == "get") {
         // get the member with give name
-        const RbString& varName = static_cast<const RbString&>( args[0]->getVariable()->getValue() );
+        const RbString *varName = static_cast<const RbString *>( (const RbLanguageObject *) args[0]->getVariable()->getValue() );
         
         // check if a member with that name exists
-        if ( hasMember(varName) ) {
-            return getMember(varName);
+        if ( hasMember(*varName) ) {
+            return getMember(*varName);
         }
         
         // there was no variable with the given name
@@ -173,7 +173,7 @@ void MemberObject::setMemberVariable(const std::string& name, const RbPtr<RbLang
 void MemberObject::setMember(const std::string& name, const RbPtr<const Variable> &var) {
     // calling the internal mthod to set the DAG node
     // the derived classes should know how to set their members
-    setMemberVariable(name, var->getValue().clone() );
+    setMemberVariable(name, var->getValue()->clone() );
     
 }
 

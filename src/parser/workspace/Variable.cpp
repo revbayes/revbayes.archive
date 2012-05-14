@@ -89,21 +89,21 @@ const RbPtr<DAGNode>& Variable::getDagNode(void) {
 
 
 /* Get the value of the variable */
-const RbLanguageObject& Variable::getValue(void) const {
+const RbPtr<const RbLanguageObject>& Variable::getValue(void) const {
 
     if (node == NULL) {
-        return RbNullObject::getInstance();
+        return NULL;
     }
     
-    RbLanguageObject& retVal = node->getValue();
+    const RbPtr<RbLanguageObject>& retVal = node->getValue();
     
-    return retVal;
+    return RbPtr<const RbLanguageObject>( retVal );
 }
 
 /** Get the value of the variable */
-RbLanguageObject& Variable::getValue(void) {
+const RbPtr<RbLanguageObject>& Variable::getValue(void) {
     
-    RbLanguageObject& retVal = node->getValue();
+    const RbPtr<RbLanguageObject>& retVal = node->getValue();
     
     return retVal;
 }

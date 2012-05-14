@@ -171,13 +171,13 @@ const TypeSpec& ConstantNode::getTypeSpec( void ) const {
 }
 
 
-const RbLanguageObject& ConstantNode::getValue(void) const {
-    return *value;
+const RbPtr<const RbLanguageObject>& ConstantNode::getValue(void) const {
+    return RbPtr<const RbLanguageObject>( value );
 }
 
 
-RbLanguageObject& ConstantNode::getValue(void) {
-    return *value;
+const RbPtr<RbLanguageObject>& ConstantNode::getValue(void) {
+    return value;
 }
 
 /**

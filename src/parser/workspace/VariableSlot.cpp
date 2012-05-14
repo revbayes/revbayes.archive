@@ -108,35 +108,18 @@ DAGNode* VariableSlot::getDagNode( void ) {
 
 
 /** Get the value of the variable */
-const RbLanguageObject& VariableSlot::getValue( void ) const {
+const RbPtr<const RbLanguageObject>& VariableSlot::getValue( void ) const {
     
-    const RbLanguageObject& retVal = variable->getDagNode()->getValue();
+    const RbPtr<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
     
-//    // check the type and if we need conversion
-//    if (!retVal.isTypeSpec(varTypeSpec)) {
-//        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
-//        
-////        return convRetVal;
-//    }
-    
-    return retVal;
+    return RbPtr<const RbLanguageObject>( retVal );
 }
 
 
 /** Get the value of the variable */
-RbLanguageObject& VariableSlot::getValue( void ) {
+const RbPtr<RbLanguageObject>& VariableSlot::getValue( void ) {
     
-    RbLanguageObject& retVal = variable->getDagNode()->getValue();
-    
-//    // check the type and if we need conversion
-//    if (!retVal.isTypeSpec(varTypeSpec)) {
-//        
-//      //  variable->getDagNode()->setValue(convRetVal);
-//        
-//        // \TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
-//        
-//        return *dynamic_cast<RbLanguageObject*>(retVal.convertTo(varTypeSpec));
-//    }
+    const RbPtr<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
     
     return retVal;
 }

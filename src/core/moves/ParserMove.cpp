@@ -108,7 +108,7 @@ void ParserMove::setMemberVariable(std::string const &name, const Variable* var)
     
     if ( attributeNames.find( name ) != attributeNames.end() ) {
         RbValue<void*> lValue;
-        lValue.value = var->getValue().getLeanValue( lValue.lengths );
+        lValue.value = var->getValue()->getLeanValue( lValue.lengths );
         move->setAttribute( name, lValue );
     }
     else {

@@ -326,7 +326,7 @@ int RbFunction::computeMatchScore(const DAGNode *arg, const ArgumentRule &rule) 
    
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
 
-    const TypeSpec& argClass = arg->getValue().getTypeSpec();
+    const TypeSpec& argClass = arg->getValue()->getTypeSpec();
     size_t j = 0;
     const TypeSpec* parent = &argClass;
     do {
@@ -370,7 +370,7 @@ RbPtr<RbLanguageObject> RbFunction::execute(void) {
     
     std::vector<const RbObject*> newArgs;
     for (std::vector<RbPtr<Argument> >::iterator i = args.begin(); i != args.end(); ++i) {
-        newArgs.push_back( &(*i)->getVariable()->getValue() );
+        newArgs.push_back( (*i)->getVariable()->getValue() );
     }
     return execute( newArgs );
     

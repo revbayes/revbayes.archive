@@ -71,11 +71,11 @@ RbPtr<RbLanguageObject> ParserDistributionContinuous::executeOperationSimple( co
     
     if ( name == "cdf" ) {
         
-        return RbPtr<RbLanguageObject>( new Probability( cdf( static_cast<const Real&>( args[1]->getVariable()->getValue() ) ) ) );
+        return RbPtr<RbLanguageObject>( new Probability( cdf( static_cast<const Real&>( *args[1]->getVariable()->getValue() ) ) ) );
     }
     else if ( name == "quantile" ) {
         
-        return RbPtr<RbLanguageObject>( new Real( quantile( static_cast<const Real&>( args[1]->getVariable()->getValue() ).getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new Real( quantile( static_cast<const Real&>( *args[1]->getVariable()->getValue() ).getValue() ) ) );
     }
     
     return ParserDistribution::executeOperationSimple( name, args );

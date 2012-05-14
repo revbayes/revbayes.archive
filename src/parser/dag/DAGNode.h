@@ -53,8 +53,8 @@ class DAGNode : public RbLanguageObject {
         virtual DAGNode*                                    clone(void) const = 0;                                                                  //!< Clone this node
         static const std::string&                           getClassName(void);                                                                     //!< Get DAG node class name
         static const TypeSpec&                              getClassTypeSpec(void);                                                                 //!< Get DAG node class type spec
-        virtual const RbLanguageObject&                     getValue(void) const = 0;                                                               //!< Get value (const)
-        virtual RbLanguageObject&                           getValue(void) = 0;                                                                     //!< Get value (non-const)
+        virtual const RbPtr<const RbLanguageObject>&        getValue(void) const = 0;                                                               //!< Get value (const)
+        virtual const RbPtr<RbLanguageObject>&              getValue(void) = 0;                                                                     //!< Get value (non-const)
         virtual const TypeSpec&                             getTypeSpec(void) const = 0;                                                            //!< Get the type spec of the instance
         virtual void                                        printStruct(std::ostream& o) const = 0;                                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                                  //!< Print value for user

@@ -106,20 +106,20 @@ Mcmc& Mcmc::operator=(const Mcmc &m) {
 void Mcmc::addMove( const DAGNode *m ) {
     
     // test whether var is a DagNodeContainer
-    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        const RbObject& objPtr = m->getValue();
-        const DagNodeContainer& container = static_cast<const DagNodeContainer&>( objPtr );
-        for (size_t i = 0; i < container.size(); ++i) {
-            const RbObject& elemPtr = container.getElement(i);
+    if ( m != NULL && m->getValue()->isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        const RbPtr<const RbLanguageObject>& objPtr = m->getValue();
+        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
+        for (size_t i = 0; i < container->size(); ++i) {
+            const RbObject& elemPtr = container->getElement(i);
             addMove(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
         }
     }
     else {
         // first, we cast the value to a parser move
-        const ParserMove &move = static_cast<const ParserMove&>( m->getValue() );
+        const ParserMove *move = static_cast<const ParserMove *>( (const RbLanguageObject *) m->getValue() );
         
         // we need to extract the lean move
-        InferenceMove* leanMove = move.getLeanMove()->clone();
+        InferenceMove* leanMove = move->getLeanMove()->clone();
         
         // create a named DAG node map
         std::map<std::string, InferenceDagNode *> nodesMap;
@@ -131,7 +131,7 @@ void Mcmc::addMove( const DAGNode *m ) {
         }
         
         // replace the DAG nodes of the move to point to our cloned DAG nodes
-        const std::vector<RbPtr<const DAGNode> >& orgNodes = move.getMoveArgumgents();
+        const std::vector<RbPtr<const DAGNode> >& orgNodes = move->getMoveArgumgents();
         std::vector<StochasticInferenceNode*> clonedNodes;
         for (std::vector<RbPtr<const DAGNode> >::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
             const DAGNode *orgNode = *i;
@@ -198,20 +198,20 @@ void Mcmc::addMove(const InferenceMove *m) {
 void Mcmc::addMonitor( const DAGNode *m ) {
     
     // test whether var is a DagNodeContainer
-    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        const RbObject& objPtr = m->getValue();
-        const DagNodeContainer& container = static_cast<const DagNodeContainer&>( objPtr );
-        for (size_t i = 0; i < container.size(); ++i) {
-            const RbObject& elemPtr = container.getElement(i);
+    if ( m != NULL && m->getValue()->isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        const RbPtr<const RbLanguageObject>& objPtr = m->getValue();
+        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
+        for (size_t i = 0; i < container->size(); ++i) {
+            const RbObject& elemPtr = container->getElement(i);
             addMonitor(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
         }
     }
     else {
         // first, we cast the value to a parser monitor
-        const ParserMonitor &monitor = static_cast<const ParserMonitor&>( m->getValue() );
+        const ParserMonitor *monitor = static_cast<const ParserMonitor *>( (const RbLanguageObject *) m->getValue() );
         
         // we need to extract the lean move
-        InferenceMonitor* leanMonitor = monitor.getLeanMonitor()->clone();
+        InferenceMonitor* leanMonitor = monitor->getLeanMonitor()->clone();
         
         // create a named DAG node map
         std::map<std::string, InferenceDagNode *> nodesMap;
@@ -223,7 +223,7 @@ void Mcmc::addMonitor( const DAGNode *m ) {
         }
         
         // replace the DAG nodes of the monitor to point to our cloned DAG nodes
-        const std::vector<const DAGNode *> orgNodes = monitor.getMonitorArgumgents();
+        const std::vector<const DAGNode *> orgNodes = monitor->getMonitorArgumgents();
         std::vector<InferenceDagNode *> clonedNodes;
         std::vector<RbLanguageObject *> templateObjects;
         for (std::vector<const DAGNode *>::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
@@ -235,7 +235,7 @@ void Mcmc::addMonitor( const DAGNode *m ) {
             else {
                 InferenceDagNode* clonedNode = it->second;
                 clonedNodes.push_back( clonedNode );
-                templateObjects.push_back( orgNode->getValue().clone() );
+                templateObjects.push_back( orgNode->getValue()->clone() );
             }
         }
         leanMonitor->setArguments( clonedNodes );
@@ -291,7 +291,7 @@ Mcmc* Mcmc::clone(void) const {
 RbPtr<RbLanguageObject> Mcmc::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     if (name == "run") {
-        const RbLanguageObject& argument = args[0]->getVariable()->getValue();
+        const RbLanguageObject& argument = *args[0]->getVariable()->getValue();
         int n = static_cast<const Natural&>( argument ).getValue();
         run(n);
         return NULL;

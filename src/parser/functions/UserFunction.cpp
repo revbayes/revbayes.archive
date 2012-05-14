@@ -136,7 +136,7 @@ RbPtr<RbLanguageObject> UserFunction::executeFunction( void ) {
 
     
     // Return the return value
-    return RbPtr<RbLanguageObject>( retVar->getValue().clone() );
+    return RbPtr<RbLanguageObject>( retVar->getValue()->clone() );
 }
 
 

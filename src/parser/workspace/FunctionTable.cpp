@@ -203,7 +203,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                 if (it != args.begin()) {
                     msg << ",";
                 }
-                msg << " " << (*it)->getVariable()->getDagNode()->getValue().getTypeSpec() << " \"" << (*it)->getLabel() << "\"";
+                msg << " " << (*it)->getVariable()->getDagNode()->getValue()->getTypeSpec() << " \"" << (*it)->getLabel() << "\"";
             }
             msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
@@ -272,7 +272,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                     msg << " " << theStochNode->getDistribution().getVariableType();
                 }
                 else {
-                    msg << " " << theParNode->getValue().getTypeSpec();
+                    msg << " " << theParNode->getValue()->getTypeSpec();
                 }
             }
             msg << " )" << std::endl;

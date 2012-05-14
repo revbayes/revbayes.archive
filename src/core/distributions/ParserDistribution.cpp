@@ -50,11 +50,11 @@ RbPtr<RbLanguageObject> ParserDistribution::executeOperationSimple( const std::s
     
     if ( name == "lnPdf" ) {
         
-        return RbPtr<RbLanguageObject>( new Real( lnPdf( args[1]->getVariable()->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new Real( lnPdf( *args[1]->getVariable()->getValue() ) ) );
     }
     else if ( name == "pdf" ) {
         
-        return RbPtr<RbLanguageObject>( new RealPos( pdf( args[1]->getVariable()->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( pdf( *args[1]->getVariable()->getValue() ) ) );
     }
     else if ( name == "rv" ) {
         

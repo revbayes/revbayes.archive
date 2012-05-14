@@ -138,7 +138,7 @@ std::string RangeRule<valType>::debugInfo(void) const {
     o << "hasDefaultVal = " << hasDefaultVal << std::endl;
     o << "defaultVaribale   = ";
     if ( defaultVar.getDagNode() != NULL ) {
-        defaultVar.getValue().printValue(o);
+        defaultVar.getValue()->printValue(o);
     } 
     else {
         o << "NULL";

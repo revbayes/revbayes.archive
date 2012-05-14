@@ -35,40 +35,40 @@ public:
     ConstantNode(const ConstantNode &x);                                                                                //!< Copy constructor
 
     // overloaded operators
-    ConstantNode&                       operator=(const ConstantNode &c);                                               //!< Overloaded assignment operator
+    ConstantNode&                           operator=(const ConstantNode &c);                                               //!< Overloaded assignment operator
     
     // Basic utility functions
-    ConstantNode*                       clone(void) const;                                                              //!< Clone this object
-    static const std::string&           getClassName(void);                                                             //!< Get class name
-    static const TypeSpec&              getClassTypeSpec(void);                                                         //!< Get class type spec
-    const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
-    void                                printStruct(std::ostream& o) const;                                             //!< Print struct for user
-    void                                printValue(std::ostream& o) const;                                              //!< Print value for user
+    ConstantNode*                           clone(void) const;                                                              //!< Clone this object
+    static const std::string&               getClassName(void);                                                             //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
+    const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
+    void                                    printStruct(std::ostream& o) const;                                             //!< Print struct for user
+    void                                    printValue(std::ostream& o) const;                                              //!< Print value for user
 
     // ConstantNode functions
-    const RbLanguageObject&             getValue(void) const;                                                           //!< Get value 
-    RbLanguageObject&                   getValue(void);                                                                 //!< Get value 
-    void                                setValue(const RbPtr<RbLanguageObject> &val);                                   //!< Set the value of the constant node
+    const RbPtr<const RbLanguageObject>&    getValue(void) const;                                                           //!< Get value 
+    const RbPtr<RbLanguageObject>&          getValue(void);                                                                 //!< Get value 
+    void                                    setValue(const RbPtr<RbLanguageObject> &val);                                   //!< Set the value of the constant node
 
     // DAG functions
-    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;               //!< Clone entire graph
-    InferenceDagNode*                   createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
-    void                                expand(void);                                                                   //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
-    bool                                isTouched (void) const { return false; }                                        //!< Touched by a move?
-    bool                                isEliminated(void) const;
-    bool                                isNotInstantiated(void) const;
+    DAGNode*                                cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;            //!< Clone entire graph
+    InferenceDagNode*                       createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
+    void                                    expand(void);                                                                   //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
+    bool                                    isTouched (void) const { return false; }                                        //!< Touched by a move?
+    bool                                    isEliminated(void) const;
+    bool                                    isNotInstantiated(void) const;
 
 
 protected:
 
-    void                                getAffected(std::set<RbPtr<StochasticNode> >& affected);                              //!< Mark and get affected nodes
-    void                                keepMe(void);                                                                   //!< Keep value of this and affected nodes
-    void                                restoreMe(void);                                                                //!< Restore value of this nodes
-    void                                touchMe(void);                                                                  //!< Tell affected nodes value is reset
+    void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);                              //!< Mark and get affected nodes
+    void                                    keepMe(void);                                                                   //!< Keep value of this and affected nodes
+    void                                    restoreMe(void);                                                                //!< Restore value of this nodes
+    void                                    touchMe(void);                                                                  //!< Tell affected nodes value is reset
 
 private:
 
-    RbPtr<RbLanguageObject>             value;                                                                          //!< Value
+    RbPtr<RbLanguageObject>                 value;                                                                          //!< Value
 
 };
 

@@ -147,7 +147,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         // We need here to replace the constant expression by constant variables
         // Constant variables are faster and can be converted safely!
         if ( (*i)->isConstExpression() ) {
-            theVar->setDagNode( new ConstantNode( theVar->getValue().clone() ) );
+            theVar->setDagNode( new ConstantNode( theVar->getValue()->clone() ) );
         }
         
         RbPtr<Argument> theArg( new ConstArgument( RbPtr<const Variable>( (Variable *) theVar), theLabel.getValue() ) );
@@ -186,18 +186,18 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
             throw RbException( "Could not find the variable" );
 
         bool successful = false;
-        if ( theNode->getValue().isTypeSpec( MemberObject::getClassTypeSpec() ) ) {
+        if ( theNode->getValue()->isTypeSpec( MemberObject::getClassTypeSpec() ) ) {
             
-            MemberObject& theMemberObject = dynamic_cast<MemberObject&>( theNode->getValue() );
+            MemberObject *theMemberObject = dynamic_cast<MemberObject *>( (RbLanguageObject *) theNode->getValue() );
             //        args.insert( args.begin(), new Argument( "", memberNode ) );
             // \todo: We shouldn't allow const casts!!!
-            MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
+            MethodTable& mt = const_cast<MethodTable&>( theMemberObject->getMethods() );
             
             try {
                 RbFunction* theFunction = mt.getFunction( functionName->getValue(), args ).clone();
                 theFunction->processArguments(args);
                 MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
-                theMemberFunction->setMemberObject(theMemberObject);
+                theMemberFunction->setMemberObject( theMemberObject );
                 func = theMemberFunction;
                 successful = true;
             } catch (RbException& e) {

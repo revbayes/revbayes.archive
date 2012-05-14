@@ -49,7 +49,7 @@ Func_mean* Func_mean::clone( void ) const {
 RbPtr<RbLanguageObject> Func_mean::executeFunction( void ) {
     
     double m = 0.0;
-    const RbVector& v = static_cast<const RbVector&>( args[0]->getVariable()->getValue() );
+    const RbVector& v = static_cast<const RbVector&>( *args[0]->getVariable()->getValue() );
     for (size_t i = 0; i < v.size(); i++) {
         m += static_cast<const Real&>( v.getElement(i) ).getValue();
     }

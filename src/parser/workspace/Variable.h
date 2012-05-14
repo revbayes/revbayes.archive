@@ -49,26 +49,26 @@ public:
     Variable(const RbPtr<DAGNode> &var);                                                                 //!< Constructor of filled, unnamed variable
     
     // Regular functions
-    Variable*                           clone(void) const;                                  //!< Clone variable
-    static const std::string&           getClassName(void);                                 //!< Get class name
-    static const TypeSpec&              getClassTypeSpec(void);                             //!< Get class type spec
-    const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
-    RbPtr<const DAGNode>                getDagNode(void) const;                             //!< Get the variable 
-    const RbPtr<DAGNode>&               getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
-    const RbLanguageObject&             getValue(void) const;                               //!< Get the value of the variable
-    RbLanguageObject&                   getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
-    const TypeSpec&                     getValueTypeSpec(void) const;                       //!< Get the required value type spec
-    void                                printValue(std::ostream& o) const;                  //!< Print value of variable
-    void                                setDagNode(const RbPtr<DAGNode> &newVar);           //!< Set a variable with a variable
-    void                                setValueTypeSpec(const TypeSpec& ts);               //!< set the required value type spec
+    Variable*                               clone(void) const;                                  //!< Clone variable
+    static const std::string&               getClassName(void);                                 //!< Get class name
+    static const TypeSpec&                  getClassTypeSpec(void);                             //!< Get class type spec
+    const TypeSpec&                         getTypeSpec(void) const;                            //!< Get language type of the object
+    RbPtr<const DAGNode>                    getDagNode(void) const;                             //!< Get the variable 
+    const RbPtr<DAGNode>&                   getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
+    const RbPtr<const RbLanguageObject>&    getValue(void) const;                               //!< Get the value of the variable
+    const RbPtr<RbLanguageObject>&          getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
+    const TypeSpec&                         getValueTypeSpec(void) const;                       //!< Get the required value type spec
+    void                                    printValue(std::ostream& o) const;                  //!< Print value of variable
+    void                                    setDagNode(const RbPtr<DAGNode> &newVar);           //!< Set a variable with a variable
+    void                                    setValueTypeSpec(const TypeSpec& ts);               //!< set the required value type spec
     
 private:
     // Help functions
-    void                                replaceDagNode(const RbPtr<DAGNode> &newVariable);  //!< Replace the old DAG node with the new one and set the children and parent
+    void                                    replaceDagNode(const RbPtr<DAGNode> &newVariable);  //!< Replace the old DAG node with the new one and set the children and parent
     
     // Member variables
-    RbPtr<DAGNode>                      node;                                               //!< Pointer to the variable (reference or not)
-    TypeSpec                            valueTypeSpec;
+    RbPtr<DAGNode>                          node;                                               //!< Pointer to the variable (reference or not)
+    TypeSpec                                valueTypeSpec;
     
 };
 

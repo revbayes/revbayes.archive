@@ -138,7 +138,7 @@ RbPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
         else {
             
             DAGNode*            temp    = (*i)->evaluateContent( env )->getDagNode();
-            const RbLanguageObject&   value   = temp->getValue();
+            const RbLanguageObject&   value   = *temp->getValue();
             
             if ( value.isTypeSpec( Integer::getClassTypeSpec() ) )
                 length.push_back( static_cast<const Integer&>( value ).getValue() );

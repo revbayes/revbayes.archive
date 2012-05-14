@@ -95,7 +95,7 @@ void ParserMonitor::setMemberVariable(std::string const &name, const Variable *v
     
     if ( attributeNames.find( name ) != attributeNames.end() ) {
         RbValue<void*> lValue;
-        lValue.value = var->getValue().getLeanValue( lValue.lengths );
+        lValue.value = var->getValue()->getLeanValue( lValue.lengths );
         monitor->setAttribute( name, lValue );
     }
     else {

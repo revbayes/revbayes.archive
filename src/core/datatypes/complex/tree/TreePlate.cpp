@@ -89,13 +89,13 @@ std::string TreePlate::buildNewickString(const TopologyNode& node) const {
             const std::string &varName = *it;
             
             // get the container with the variables for this node
-            const Container& vars = static_cast<const Container &>( memberVariables[varName].getDagNode()->getValue() );
+            const Container *vars = static_cast<const Container *>( (const RbLanguageObject *) memberVariables[varName].getDagNode()->getValue() );
             
             // get the index of the node
             size_t nodeIndex = getNodeIndex(node) - 1;
             
             // get the variable
-            const RbObject& obj = vars.getElement(nodeIndex);
+            const RbObject& obj = vars->getElement(nodeIndex);
             const Variable& var = static_cast<const VariableSlot&>( obj ).getVariable();
             
             // check if this node also has the parameter (already) set and only if so, add it
@@ -105,7 +105,7 @@ std::string TreePlate::buildNewickString(const TopologyNode& node) const {
                     newick += ",";
                 }
                 std::ostringstream ss;
-                var.getDagNode()->getValue().printValue(ss);
+                var.getDagNode()->getValue()->printValue(ss);
                 newick += varName + ":" + ss.str();
             }
         }
@@ -297,12 +297,12 @@ void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &nam
     }
     
     // get the container with the variables for this node
-    DagNodeContainer& vars = static_cast<DagNodeContainer&>( memberVariables[name].getValue() );
+    DagNodeContainer *vars = static_cast<DagNodeContainer *>( (RbLanguageObject *) memberVariables[name].getValue() );
     
     // get the index of the node
     size_t nodeIndex = getNodeIndex(node);
     
     // set the variable
-    vars.setElement(nodeIndex - 1, value.clone() );
+    vars->setElement(nodeIndex - 1, value.clone() );
 }
 

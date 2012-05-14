@@ -64,7 +64,7 @@ Simulate* Simulate::clone(void) const {
 RbPtr<RbLanguageObject> Simulate::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     if (name == "run") {
-        const RbLanguageObject& argument = args[0]->getVariable()->getValue();
+        const RbLanguageObject& argument = *args[0]->getVariable()->getValue();
         int n = static_cast<const Natural&>( argument ).getValue();
         run(n);
         return NULL;

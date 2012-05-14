@@ -618,7 +618,7 @@ RbLanguageObject* StochasticNode::createRV( void ) {
     
         std::vector<const RbObject*> newArgs;
         for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
-            newArgs.push_back( &(*i)->getVariable()->getValue() );
+            newArgs.push_back( (*i)->getVariable()->getValue() );
         }
         return createRV( std::vector<size_t>(), newArgs );
     }
@@ -636,7 +636,7 @@ RbLanguageObject* StochasticNode::createRV( void ) {
         // convert the argument into RbObjects
         std::vector<const RbObject*> newArgs;
         for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
-            newArgs.push_back( &(*i)->getVariable()->getValue() );
+            newArgs.push_back( (*i)->getVariable()->getValue() );
         }
         
         // we create a vector of lengths telling us the length of each plate
@@ -777,7 +777,7 @@ RbPtr<RbLanguageObject> StochasticNode::executeOperation(const std::string& name
     if (name == "clamp") {
         
         // get the observed value
-        const RbLanguageObject& observedValue = args[0]->getVariable()->getValue();
+        const RbLanguageObject& observedValue = *args[0]->getVariable()->getValue();
         
         // clamp the observed value to myself
         clamp( observedValue.clone() );
@@ -887,16 +887,16 @@ const TypeSpec& StochasticNode::getTypeSpec( void ) const {
 }
 
 
-/** Get const value; we always know our value. */
-const RbLanguageObject& StochasticNode::getValue( void ) const {
+/* Get const value; we always know our value. */
+const RbPtr<const RbLanguageObject>& StochasticNode::getValue( void ) const {
 
-    return *value;
+    return RbPtr<const RbLanguageObject>( value );
 }
 
-/** Get non-const value; we always know our value. */
-RbLanguageObject& StochasticNode::getValue( void ) {
+/* Get non-const value; we always know our value. */
+const RbPtr<RbLanguageObject>& StochasticNode::getValue( void ) {
     
-    return *value;
+    return value;
 }
 
 

@@ -46,6 +46,8 @@ private:
     ptrType*                                    mPtr;
 };
 
+#include <iostream>
+
 
 template <typename ptrType>
 RbPtr<ptrType>::RbPtr(ptrType* inPtr) {
@@ -101,6 +103,10 @@ ptrType* RbPtr<ptrType>::operator->(void) const {
 
 template <typename ptrType>
 ptrType& RbPtr<ptrType>::operator*(void) const {
+    
+    if ( mPtr == NULL ) {
+        std::cerr << "Major BUG: Dereferencing NULL pointer!!!" << std::endl;
+    }
     
     return (*mPtr);
 }

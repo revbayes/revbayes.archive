@@ -110,7 +110,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
             
             
             // first we check if the argument needs to be converted
-            if ( var->getValue().isTypeSpec( argTypeSpec ) ) {
+            if ( var->getValue()->isTypeSpec( argTypeSpec ) ) {
                 // No, we don't.
                 
                 // do the conversion if we are actually asked to
@@ -120,14 +120,14 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
                 }
                 
                 return true;
-            } else if ( var->getValue().isConvertibleTo( argTypeSpec ) ) {
+            } else if ( var->getValue()->isConvertibleTo( argTypeSpec ) ) {
                 // Yes, we can and have to convert
                 
                 // should we do the type conversion?
                 if ( convert ) {
                     ConstantNode* theConstNode = static_cast<ConstantNode*>( (DAGNode *) const_cast<Variable*>( (const Variable *) var )->getDagNode() );
                     // Do the type conversion
-                    RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( argTypeSpec ) );
+                    RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue()->convertTo( argTypeSpec ) );
                     theConstNode->setValue( convertedObj );
                     
                     // set the new type spec of the variable
@@ -183,8 +183,8 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
     }
     
     // Finally, we test if this is a vector of types which we accept
-    if ( var->getValue().getTypeSpec().isDerivedOf( Container::getClassTypeSpec() ) ) {
-        const Container& c = static_cast<const Container&>( var->getValue() );
+    if ( var->getValue()->getTypeSpec().isDerivedOf( Container::getClassTypeSpec() ) ) {
+        const Container& c = static_cast<const Container&>( *var->getValue() );
         bool constant = var->getDagNode()->isTypeSpec( ConstantNode::getClassTypeSpec() );
         bool valid = true;
         bool conversionNeeded = false;
@@ -196,7 +196,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
             
             ConstantNode* theConstNode = static_cast<ConstantNode*>( (DAGNode *) const_cast<Variable*>( (const Variable *) var )->getDagNode() );
             // Do the type conversion
-            RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue().convertTo( conversionType ) );
+            RbLanguageObject* convertedObj = static_cast<RbLanguageObject*>( var->getValue()->convertTo( conversionType ) );
             theConstNode->setValue( convertedObj );
                 
             // set the new type spec of the variable

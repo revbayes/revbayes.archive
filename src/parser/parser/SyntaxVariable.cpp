@@ -171,10 +171,10 @@ RbVector SyntaxVariable::computeIndex( Environment& env ) {
             
             RbPtr<DAGNode> indexVar = (*i)->evaluateContent( env )->getDagNode();
             
-            if ( indexVar->getValue().isTypeSpec( Integer::getClassTypeSpec() ) ) {
+            if ( indexVar->getValue()->isTypeSpec( Integer::getClassTypeSpec() ) ) {
                 
                 // Calculate (or get) an integer index
-                int intIndex = static_cast<const Integer&>( indexVar->getValue() ).getValue(); 
+                int intIndex = static_cast<Integer *>( (RbLanguageObject *) indexVar->getValue() )->getValue(); 
                 
                 if ( intIndex < 1 ) {
                     
@@ -191,7 +191,7 @@ RbVector SyntaxVariable::computeIndex( Environment& env ) {
                 theIndex.push_back( new Natural(intIndex-1) );
             }
             
-            else if ( indexVar->getValue().isTypeSpec( RbString::getClassTypeSpec() ) ) {
+            else if ( indexVar->getValue()->isTypeSpec( RbString::getClassTypeSpec() ) ) {
                 
                 // Push string index onto index vector
 //                theIndex.push_back( indexVar->getValue()->clone() );
@@ -286,7 +286,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
 //            if (theDagNode != NULL && !theDagNode->getValue()) {
                 // throw expection because we don't allow insertion of variable
                 std::ostringstream msg;
-                msg << "Object of type " << theDagNode->getValue().getTypeSpec() << " does not allow insertion of variables.";
+                msg << "Object of type " << theDagNode->getValue()->getTypeSpec() << " does not allow insertion of variables.";
                 throw RbException(msg);
 //            }
             
@@ -310,12 +310,12 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
                 theSlot->getVariable().setDagNode(theDagNode);
             }
             
-            DagNodeContainer& con = static_cast<DagNodeContainer&>( theDagNode->getValue() );
+            DagNodeContainer *con = static_cast<DagNodeContainer *>( (RbLanguageObject *) theDagNode->getValue() );
             // test if the container is large enough
-            if (con.size() <= indexValue) {
-                con.resize(indexValue);
+            if (con->size() <= indexValue) {
+                con->resize(indexValue);
             }
-            RbObject& subElement = con.getElement(indexValue);
+            RbObject& subElement = con->getElement(indexValue);
             
             // test whether the element needs type conversion
             if (subElement.isTypeSpec( VariableSlot::getClassTypeSpec() )) {
@@ -382,13 +382,13 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
             const RbPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
-            if ( !baseVar->getValue().isTypeSpec( MemberObject::getClassTypeSpec() ) )
+            if ( !baseVar->getValue()->isTypeSpec( MemberObject::getClassTypeSpec() ) )
                 throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members" );       
         
             if ( identifier == NULL )
                 throw RbException( "Member variable identifier missing" );
 
-            const MemberObject& theMemberObject = static_cast<const MemberObject&>( baseVar->getDagNode()->getValue() );
+            const MemberObject * theMemberObject = static_cast<const MemberObject *>( (const RbLanguageObject *) baseVar->getDagNode()->getValue() );
             // \TODO:
 //            const std::map<std::string, const Variable*>& members = theMemberObject.getMembers();
 //            
@@ -416,8 +416,8 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             SyntaxElement*         indexSyntaxElement     = *it;
             RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
             
-            if (theVar->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
-                RbLanguageObject&   theValue               = indexVar->getValue();
+            if (theVar->getValue()->isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
+                RbLanguageObject&   theValue               = *indexVar->getValue();
                 size_t              indexValue             = 0;
                 if ( !theValue.isTypeSpec( Natural::getClassTypeSpec() ) ) {
                     if (theValue.isConvertibleTo( Natural::getClassTypeSpec() )) {
@@ -441,11 +441,11 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                 //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
                 
                 // convert the value into a member object
-                MemberObject& mObject = static_cast<MemberObject&>( theVar->getValue() );
+                MemberObject *mObject = static_cast<MemberObject *>( (RbLanguageObject*) theVar->getValue() );
             
                 // get the method table for this member object
                 // \TODO: We should not allow const casts
-                MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
+                MethodTable& mt = const_cast<MethodTable&>( mObject->getMethods() );
             
                 // create the arguments which consist only of the single paramater inside the square brackets
                 std::vector<RbPtr<Argument> > args;

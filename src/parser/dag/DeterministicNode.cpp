@@ -347,24 +347,22 @@ const RbFunction& DeterministicNode::getFunction(void) const {
 
 
 /** Get value */
-const RbLanguageObject& DeterministicNode::getValue( void ) const {
+const RbPtr<const RbLanguageObject>& DeterministicNode::getValue( void ) const {
     
     if ( touched && needsUpdate )
         const_cast<DeterministicNode*>(this)->update();
     
-    return *value;
+    return RbPtr<const RbLanguageObject>( value );
 }
 
 
 /** Get value */
-RbLanguageObject& DeterministicNode::getValue( void ) {
-    
-    //throw RbException("We should never call non-const getValue in deterministic nodes because we don't own them.");
-    
+const RbPtr<RbLanguageObject>& DeterministicNode::getValue( void ) {
+        
     if ( touched && needsUpdate )
         update();
     
-    return *value;
+    return value;
 }
 
 /** 

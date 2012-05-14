@@ -107,14 +107,14 @@ RbPtr<RbLanguageObject> Container::executeOperationSimple(const std::string& nam
         return RbPtr<RbLanguageObject>( new Natural( size() ) );
     } else if ( name == "[]") {
         // get the member with give index
-        const Natural& index = static_cast<const Natural&>( args[0]->getVariable()->getValue() );
+        const Natural *index = static_cast<const Natural *>( (const RbLanguageObject *) args[0]->getVariable()->getValue() );
 
-        if (size() < (size_t)(index.getValue()) ) {
+        if (size() < (size_t)(index->getValue()) ) {
             throw RbException("Index out of bounds in []");
         }
         
         // \TODO: Check what happens with DAGNodeContainers
-        RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index.getValue() - 1) );
+        RbLanguageObject& element = static_cast<RbLanguageObject&>( getElement(index->getValue() - 1) );
         return RbPtr<RbLanguageObject>( element.clone() );
     } 
     

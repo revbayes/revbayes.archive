@@ -40,8 +40,8 @@ Func_gtr* Func_gtr::clone(void) const {
 RbPtr<RbLanguageObject> Func_gtr::executeFunction(void) {
 
     // get the information from the arguments for reading the file
-    const Simplex& r = static_cast<const Simplex&>( args[0]->getVariable()->getValue() );
-    const Simplex& f = static_cast<const Simplex&>( args[1]->getVariable()->getValue() );
+    const Simplex& r = static_cast<const Simplex&>( *args[0]->getVariable()->getValue() );
+    const Simplex& f = static_cast<const Simplex&>( *args[1]->getVariable()->getValue() );
 
     // initialize the number of states
     const size_t nStates = 4;

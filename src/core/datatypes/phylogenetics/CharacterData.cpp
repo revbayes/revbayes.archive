@@ -572,7 +572,7 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
     const std::map<std::string, const Variable*>::const_iterator& i = taxonMap.find(name); 
     
     if (i != taxonMap.end() ) {
-        return static_cast<const TaxonData&>( i->second->getValue() );
+        return *static_cast<const TaxonData *>( (const RbLanguageObject *)i->second->getValue() );
     }
     else {
         throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
@@ -690,7 +690,7 @@ RbVector* CharacterData::makeSiteColumn( size_t cn ) const {
 
     const std::string& name = static_cast<const RbString &>( sequenceNames[0] ).getValue();
     const std::map<std::string, const Variable*>::const_iterator& it = taxonMap.find(name);
-    TaxonData* temp = static_cast<TaxonData*>( ( it->second->getValue() ).clone() );
+    TaxonData* temp = static_cast<TaxonData*>( ( it->second->getValue() )->clone() );
     // @John: Not sure if this code works. Seems strange to me (Sebastian)
 //    temp->clear();
 //    for ( size_t i=0; i<getNumberOfTaxa(); i++ )

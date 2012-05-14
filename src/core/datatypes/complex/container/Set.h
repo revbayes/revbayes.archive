@@ -458,7 +458,7 @@ template <typename setType>
 void Set<setType>::setMemberVariable(const std::string& name, const Variable* var) {
     
     if (name == "x" || name == "" ) { // the ellipsis variables
-        setType* element = static_cast<setType*>( var->getValue().clone() );
+        setType* element = static_cast<setType*>( var->getValue()->clone() );
         insert( element);
     }
     else {

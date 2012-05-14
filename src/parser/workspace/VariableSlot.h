@@ -43,8 +43,8 @@ public:
     static const TypeSpec&                  getClassTypeSpec(void);                                                 //!< Get class type spec
     const TypeSpec&                         getTypeSpec(void) const;                                                //!< Get language type of the object
 
-    const RbLanguageObject&                 getValue(void) const;                                                   //!< Get the value of the variable
-    RbLanguageObject&                       getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
+    const RbPtr<const RbLanguageObject>&    getValue(void) const;                                                   //!< Get the value of the variable
+    const RbPtr<RbLanguageObject>&          getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
     const DAGNode*                          getDagNode(void) const;                                                 //!< Get the DAG node
     DAGNode*                                getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
     const std::string&                      getLabel(void) const { return label; }                                  //!< Get the label of the slot
