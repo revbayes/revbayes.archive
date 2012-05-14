@@ -25,7 +25,7 @@
 #include <sstream>
 
 /** Constructor */
-ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(RbLanguageObject* obj) : RbFunction(), templateObject(obj) {
+ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(const RbPtr<RbLanguageObject> &obj) : RbFunction(), templateObject(obj) {
     // Hack: We know that we do not own the member rules.
     argRules = &templateObject->getMemberRules();
 }
@@ -37,11 +37,6 @@ ConstructorFunctionForSimpleObjects::ConstructorFunctionForSimpleObjects(const C
     
     // Hack: We know that we do not own the member rules.
     argRules = &templateObject->getMemberRules();
-}
-
-
-ConstructorFunctionForSimpleObjects::~ConstructorFunctionForSimpleObjects() {
-    delete templateObject;
 }
 
 

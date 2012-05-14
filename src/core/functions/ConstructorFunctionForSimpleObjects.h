@@ -30,9 +30,8 @@ class DAGNode;
 class ConstructorFunctionForSimpleObjects :  public RbFunction {
     
 public:
-    ConstructorFunctionForSimpleObjects(RbLanguageObject* obj);                                                             //!< Object constructor
+    ConstructorFunctionForSimpleObjects(const RbPtr<RbLanguageObject> &obj);                                                //!< Object constructor
     ConstructorFunctionForSimpleObjects(const ConstructorFunctionForSimpleObjects& obj);                                    //!< Copy constructor
-    virtual ~ConstructorFunctionForSimpleObjects(void);                                                                     //!< Destructor
     
     // Basic utility functions
     ConstructorFunctionForSimpleObjects*    clone(void) const;                                                              //!< Clone the object
@@ -50,8 +49,8 @@ protected:
     void                                    setArgumentVariable(const std::string& name, const Variable* var);
 
     const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
-    RbLanguageObject*                       templateObject;                                                                 //!< The template object
-    RbLanguageObject*                       copyObject;
+    RbPtr<RbLanguageObject>                 templateObject;                                                                 //!< The template object
+    RbPtr<RbLanguageObject>                 copyObject;
     
 };
 

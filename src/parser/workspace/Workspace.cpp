@@ -91,7 +91,7 @@ bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistr
     PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
     typeTable.insert(std::pair<std::string, RbPtr<RbObject> >(dist->getTypeSpec(),dist->clone()));
 
-    functionTable.addFunction(name, new ConstructorFunction( dist ) );
+    functionTable.addFunction(name, new ConstructorFunction( RbPtr<MemberObject>( dist ) ) );
     functionTable.addFunction("d" + name, new DistributionFunctionPdf( dist->clone() ) );
     functionTable.addFunction("r" + name, new DistributionFunctionRv( dist->clone() ) );
 
@@ -109,7 +109,7 @@ bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistr
     
     typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
     
-    functionTable.addFunction(name      , new ConstructorFunction ( dist ));
+    functionTable.addFunction(name      , new ConstructorFunction ( RbPtr<MemberObject>( dist ) ) );
     functionTable.addFunction("d" + name, new DistributionFunctionPdf( dist->clone() ));
     functionTable.addFunction("r" + name, new DistributionFunctionRv(dist->clone() ));
     functionTable.addFunction("p" + name, new DistributionFunctionCdf(dist->clone() ));

@@ -76,7 +76,7 @@ public:
 
     // StochasticNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
-    void                                clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
+    void                                clamp(const RbPtr<RbLanguageObject> &observedVal);                  //!< Clamp the node with an observed value
     void                                markForRecalculation(void);                                         //!< Flag this node for recalculation
     const ParserDistribution&           getDistribution(void) const;                                        //!< Get distribution (const)
     ParserDistribution&                 getDistribution(void);                                              //!< Get distribution (non-const)

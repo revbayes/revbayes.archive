@@ -34,7 +34,6 @@ class MemberFunction :  public RbFunction {
 
 public:
     MemberFunction(const TypeSpec retType, ArgumentRules* argRules);                                                //!< Constructor
-    virtual ~MemberFunction(void);                                                                                  //!< Destructor
 
     // Basic utility functions
     MemberFunction*                     clone(void) const;                                                          //!< Clone the object

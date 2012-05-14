@@ -26,7 +26,7 @@
 
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), templateObject(obj), copyObject( NULL ) {
+ConstructorFunction::ConstructorFunction(const RbPtr<MemberObject> &obj) : RbFunction(), templateObject(obj), copyObject( NULL ) {
 
     // Hack: we know that we will not own the argRules.
     argRules = &templateObject->getMemberRules();
@@ -45,20 +45,12 @@ ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : RbFun
     argRules = &templateObject->getMemberRules();
 }
 
-ConstructorFunction::~ConstructorFunction() {
-    delete templateObject;
-    delete copyObject;
-    // we do not delete the argRules because we know that we do not own them!
-}
-
 
 ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c) {
     
     if (this != &c) {
         RbFunction::operator=(c);
         
-        delete templateObject;
-        delete copyObject;
         templateObject = c.templateObject->clone();
         if (c.copyObject != NULL) {
             copyObject = c.copyObject->clone();
@@ -84,8 +76,6 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 /** Execute function: we reset our template object here and give out a copy */
 RbPtr<RbLanguageObject> ConstructorFunction::execute( void ) {
-
-    delete copyObject;
     
     copyObject = templateObject->clone();
 

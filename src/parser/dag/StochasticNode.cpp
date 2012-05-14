@@ -353,7 +353,7 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
 
 
 /** Clamp the node to an observed value */
-void StochasticNode::clamp( RbLanguageObject* observedVal ) {
+void StochasticNode::clamp( const RbPtr<RbLanguageObject> &observedVal ) {
 
 //    if ( touched )
 //        throw RbException( "Cannot clamp stochastic node in volatile state" );
@@ -365,15 +365,11 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
     bool needsConversion = false;
     if ( isValueTypeAllowed( observedVal, needsConversion ) ) {
         
-        // delete the old value
-        delete value;
         if ( needsConversion ) {
             value = static_cast<RbLanguageObject*>(observedVal->convertTo(distribution->getVariableType()) );
             if (value == NULL) {
                 std::cerr << "Ooops, observed value was NULL!\n";
             }
-            // we own the parameter so we need to delete it
-            delete observedVal;
         }
         else {
             value = observedVal;
@@ -797,8 +793,6 @@ RbPtr<RbLanguageObject> StochasticNode::executeOperation(const std::string& name
 
 
 void StochasticNode::expand( void ) {
-    // free memory of the old value
-    delete value;
     
     // draw a new value
     value = createRV();

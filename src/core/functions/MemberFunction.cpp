@@ -38,13 +38,6 @@ MemberFunction::MemberFunction(const TypeSpec retType, ArgumentRules* argRules) 
 
 }
 
-MemberFunction::~MemberFunction() {
-    // we do not own the object
-//    if (object != NULL) {
-//        delete object;
-//    }
-}
-
 
 /** Clone the object */
 MemberFunction* MemberFunction::clone(void) const {

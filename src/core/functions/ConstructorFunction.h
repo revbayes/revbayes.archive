@@ -30,9 +30,8 @@ class DAGNode;
 class ConstructorFunction :  public RbFunction {
 
     public:
-                                                ConstructorFunction(MemberObject* obj);                                         //!< Object constructor
+                                                ConstructorFunction(const RbPtr<MemberObject> &obj);                            //!< Object constructor
                                                 ConstructorFunction(const ConstructorFunction& obj);                            //!< Copy constructor
-    virtual                                    ~ConstructorFunction();
     
         // overloaded operators
         ConstructorFunction&                    operator=(const ConstructorFunction& c);
@@ -51,8 +50,8 @@ class ConstructorFunction :  public RbFunction {
 	protected:
 
         const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
-        MemberObject*                           templateObject;                                                                 //!< The template object
-        MemberObject*                           copyObject;
+        RbPtr<MemberObject>                     templateObject;                                                                 //!< The template object
+        RbPtr<MemberObject>                     copyObject;
     
 };
 

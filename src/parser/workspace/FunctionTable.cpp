@@ -83,9 +83,6 @@ void FunctionTable::addFunction(const std::string name, const RbPtr<RbFunction> 
             msg << " cannot overload " << name << " = ";
             func->printValue(msg);
             
-            // free the memory
-            delete func;
-            
             // throw the error message
             throw RbException(msg.str());
         }
@@ -115,10 +112,6 @@ void FunctionTable::eraseFunction(const std::string& name) {
     retVal = table.equal_range(name);
     table.erase(retVal.first, retVal.second);
     
-    for (std::multimap<std::string, RbPtr<RbFunction> >::iterator it=retVal.first; it!=retVal.second; it++) {
-        RbFunction* theFunction = it->second;
-        delete theFunction;
-    }
 }
 
 
