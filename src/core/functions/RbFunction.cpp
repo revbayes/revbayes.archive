@@ -397,7 +397,7 @@ RbPtr<RbLanguageObject> RbFunction::execute( const std::vector<const RbObject*> 
         }
     }
     
-    RbLanguageObject* retVal;
+    RbPtr<RbLanguageObject> retVal;
     if ( repeatedExecution ) {
         RbVector* retValVector = new RbVector( RbLanguageObject::getClassTypeSpec() );
         for ( size_t j = 0; j < size; ++j) {
