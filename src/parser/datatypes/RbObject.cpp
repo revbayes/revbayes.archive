@@ -29,12 +29,27 @@
 
 
 RbObject::RbObject(void) {
-    
+    refCount = 0;
+}
+
+
+RbObject::RbObject(const RbObject &o) {
+    refCount = 0;
 }
 
 /** Destructor */
 RbObject::~RbObject() {
 
+}
+
+
+RbObject& RbObject::operator=(const RbObject &o) {
+    // check for self assignment
+    if ( this == &o ) {
+        // nothing actually to do
+    }
+    
+    return *this;
 }
 
 

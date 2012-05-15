@@ -89,7 +89,7 @@ const RbPtr<DAGNode>& Variable::getDagNode(void) {
 
 
 /* Get the value of the variable */
-const RlValue<const RbLanguageObject>& Variable::getValue(void) const {
+RlValue<const RbLanguageObject> Variable::getValue(void) const {
 
     if (node == NULL) {
         return RlValue<const RbLanguageObject>();
@@ -99,7 +99,7 @@ const RlValue<const RbLanguageObject>& Variable::getValue(void) const {
     
     std::vector<RbPtr<const RbLanguageObject> > tmp;
     for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = retVal.value.begin(); i != retVal.value.end(); ++i) {
-        tmp.push_back( RbPtr<const RbLanguageObject>() );
+        tmp.push_back( RbPtr<const RbLanguageObject>( *i ) );
     }
     
     return RlValue<const RbLanguageObject>( tmp, retVal.lengths );

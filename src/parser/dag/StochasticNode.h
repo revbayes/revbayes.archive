@@ -70,7 +70,7 @@ public:
     // DAG node function
     RbPtr<RbLanguageObject>                 executeMethod(const std::string& name, const std::vector<RlValue<const RbObject> >& args);            //!< Override to map member methods to internal functions
     const MethodTable&                      getMethods(void) const;                                                         //!< Get member methods (const)
-    const RlValue<const RbLanguageObject>&  getValue(void) const;                                               //!< Get value (const)
+    RlValue<const RbLanguageObject>         getValue(void) const;                                               //!< Get value (const)
     const RlValue<RbLanguageObject>&        getValue(void);                                                     //!< Get value (non-const)
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
 

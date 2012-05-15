@@ -49,7 +49,7 @@ public:
     virtual InferenceDagNode*               createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const; //!< Create a lean DAG from this "fat" DAG
     void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
     void                                    expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
-    const RlValue<const RbLanguageObject>&  getValue(void) const;                                               //!< Get value (const)
+    RlValue<const RbLanguageObject>         getValue(void) const;                                               //!< Get value (const)
     const RlValue<RbLanguageObject>&        getValue(void);                                                     //!< Get value (non-const)
     const RbFunction&                       getFunction(void) const;
     bool                                    isNotInstantiated(void) const;

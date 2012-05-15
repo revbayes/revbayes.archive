@@ -115,10 +115,10 @@ RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
 
     // Package the arguments
     std::vector<RbPtr<Argument> > args;
-    RbPtr<const Variable> left( (Variable *) leftOperand->evaluateContent(env) );
-    args.push_back( new ConstArgument(left, "") );
-    RbPtr<const Variable> right( (Variable *) rightOperand->evaluateContent(env) );
-    args.push_back( new ConstArgument(right, "") );
+    RbPtr<Variable> left = leftOperand->evaluateContent(env);
+    args.push_back( new ConstArgument(RbPtr<const Variable>( left ), "") );
+    RbPtr<Variable> right = rightOperand->evaluateContent(env);
+    args.push_back( new ConstArgument(RbPtr<const Variable>( right ), "") );
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];

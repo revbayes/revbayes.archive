@@ -929,11 +929,11 @@ const TypeSpec& StochasticNode::getTypeSpec( void ) const {
 
 
 /* Get const value; we always know our value. */
-const RlValue<const RbLanguageObject>& StochasticNode::getValue( void ) const {
+RlValue<const RbLanguageObject> StochasticNode::getValue( void ) const {
 
     std::vector<RbPtr<const RbLanguageObject> > tmp;
     for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = value.value.begin(); i != value.value.end(); ++i) {
-        tmp.push_back( RbPtr<const RbLanguageObject>() );
+        tmp.push_back( RbPtr<const RbLanguageObject>( *i ) );
     }
     
     return RlValue<const RbLanguageObject>( tmp, value.lengths );

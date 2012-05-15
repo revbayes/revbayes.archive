@@ -62,6 +62,10 @@ class RbObject {
 
     protected:
         RbObject(void);                                                                                             //!< No objects of this class
+        RbObject(const RbObject &o);                                                                                //!< No objects of this class
+    
+        // overloaded operators
+        RbObject&                           operator=(const RbObject &o);                                                                                             //!< No objects of this class
 
     private:
         size_t                              refCount;                                                               //!< The reference count for smart pointers

@@ -46,7 +46,7 @@ public:
     void                                    printValue(std::ostream& o) const;                                              //!< Print value for user
 
     // ConstantNode functions
-    const RlValue<const RbLanguageObject>&  getValue(void) const;                                                           //!< Get value 
+    RlValue<const RbLanguageObject>         getValue(void) const;                                                           //!< Get value 
     const RlValue<RbLanguageObject>&        getValue(void);                                                                 //!< Get value 
     void                                    setValue(const RlValue<RbLanguageObject> &val);                                   //!< Set the value of the constant node
 

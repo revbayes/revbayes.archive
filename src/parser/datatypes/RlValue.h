@@ -31,8 +31,13 @@ public:
     RlValue(void);
     RlValue(const RbPtr<valueType> &v);
     RlValue(const std::vector<RbPtr<valueType> > &v, const std::vector<size_t> &l);
+    RlValue(const RlValue<valueType> &x);
     virtual                            ~RlValue(void) {}                                                         //!< Virtual destructor
+ 
+    // overloaded operators
+    RlValue<valueType>&                 operator=(const RlValue<valueType> &x);
     
+    // member functions
     RlValue<RbObject>                   clone(void) const;
     RlValue<RbObject>                   convertTo(const TypeSpec& type) const;                                  //!< Convert to type
     RbValue<void *>                     getLeanValue(void) const;
@@ -43,6 +48,7 @@ public:
     bool                                isTypeSpec(const TypeSpec &ts) const;
     void                                printValue(std::ostream& o) const;
     
+    // public members
     std::vector<RbPtr<valueType> >      value;
     std::vector<size_t>                 lengths;
     
@@ -67,6 +73,25 @@ template <typename valueType>
 RlValue<valueType>::RlValue( const std::vector<RbPtr<valueType> > &vals, const std::vector<size_t> &l ) {
     value = vals;
     lengths = l;
+}
+
+
+template <typename valueType>
+RlValue<valueType>::RlValue( const RlValue<valueType> &x) {
+    value = x.value;
+    lengths = x.lengths;
+}
+
+
+template <typename valueType>
+RlValue<valueType>& RlValue<valueType>::operator=(const RlValue<valueType> &x) {
+    // check for self assignment
+    if ( this != &x) {
+        value = x.value;
+        lengths = x.lengths;
+    }
+    
+    return *this;
 }
 
 
@@ -139,6 +164,9 @@ bool RlValue<valueType>::isNULL( void ) const {
 template <typename valueType>
 bool RlValue<valueType>::isTypeSpec( const TypeSpec &ts ) const {
     
+    if ( value.size() < 1) {
+        throw RbException("Trying to access NULL element!!!");
+    }
     return value[0]->isTypeSpec( ts );
 }
 
