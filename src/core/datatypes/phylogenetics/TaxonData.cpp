@@ -20,10 +20,10 @@
 #include "Character.h"
 #include "ConstArgumentRule.h"
 #include "Ellipsis.h"
-#include "MemberFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "SimpleMemberFunction.h"
 #include "TaxonData.h"
 
 
@@ -67,14 +67,14 @@ TaxonData* TaxonData::clone(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> TaxonData::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> TaxonData::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if (name == "size") {
         
         return RbPtr<RbLanguageObject>( new Natural(getNumberOfCharacters() ) );
     } else if ( name == "[]") {
         // get the member with give index
-        const Natural& index = static_cast<const Natural&>( *args[0]->getVariable()->getValue() );
+        const Natural& index = static_cast<const Natural&>( *args[0] );
         
         if ( getNumberOfCharacters() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in [] of TaxonData.");
@@ -85,7 +85,7 @@ RbPtr<RbLanguageObject> TaxonData::executeOperationSimple(const std::string& nam
         return RbPtr<RbLanguageObject>( element.clone() );
     } 
     
-    return MemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -133,12 +133,12 @@ const MethodTable& TaxonData::getMethods(void) const {
     if ( methodsSet == false ) 
     {
         ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size", new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+        methods.addFunction("size", new SimpleMemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new SimpleMemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
@@ -183,17 +183,17 @@ void TaxonData::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void TaxonData::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
+void TaxonData::setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var) {
     
     if ( name == "name" ) {
-        taxonName = static_cast<RbString*>( (RbLanguageObject*)var )->getValue();
+        taxonName = static_cast<const RbString*>( (const RbLanguageObject *) var )->getValue();
     }
     else if (name == "x" || name == "" ) { // the ellipsis variables
-        Character* element = static_cast<Character*>( (RbLanguageObject*) var );
+        Character* element = static_cast<Character*>( var->clone() );
         sequence.push_back( element );
     }
     else {
-        MemberObject::setMemberVariable(name, var);
+        MemberObject::setSimpleMemberValue(name, var);
     }
 }
 

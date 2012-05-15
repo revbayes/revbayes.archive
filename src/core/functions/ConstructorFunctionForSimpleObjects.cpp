@@ -48,19 +48,19 @@ ConstructorFunctionForSimpleObjects* ConstructorFunctionForSimpleObjects::clone(
 
 
 /** Execute function: we reset our template object here and give out a copy */
-const RbLanguageObject& ConstructorFunctionForSimpleObjects::executeFunction(void) {
+RbPtr<RbLanguageObject> ConstructorFunctionForSimpleObjects::executeFunction(const std::vector<const RbObject *> &args) {
     
-    copyObject = templateObject->clone();
+    RbPtr<RbLanguageObject> copyObject = templateObject->clone();
     
-    std::vector<RbObject*> params;
+    std::vector<RbObject *> params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        params.push_back( args[i]->getVariable()->getValue()->clone() );
+        params.push_back( args[i]->clone() );
 //        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
     
     copyObject->initialize(params);
     
-    return *copyObject;
+    return copyObject;
 }
 
 

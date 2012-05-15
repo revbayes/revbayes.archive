@@ -39,7 +39,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute operation */
-RbPtr<RbLanguageObject> Func_quit::execute( void ) {
+RbPtr<RbLanguageObject> Func_quit::executeFunction(const std::vector<const RbObject *> &args) {
 
     /* Ask if user really wants to quit */
     //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)

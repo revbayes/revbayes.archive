@@ -19,7 +19,6 @@
 #include "ConstArgumentRule.h"
 #include "ConstantNode.h"
 #include "DagNodeContainer.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "Move.h"
@@ -27,6 +26,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbVector.h"
+#include "SimpleMemberFunction.h"
 #include "TypeSpec.h"
 #include <algorithm>
 
@@ -101,39 +101,32 @@ DagNodeContainer* DagNodeContainer::clone(void) const {
 
 RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
     
-    if ( type.getBaseType() == RbVector::getClassName() ) {
-        // test whether each object in the container is actually a constant node holding a value
-        RbVector* valueVector = new RbVector( type.getElementType() );
-        for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            DAGNode* theNode = (*it)->getDagNode();
-            if (theNode->isTypeSpec( ConstantNode::getClassTypeSpec() ) && theNode->getValue()->isTypeSpec(type.getElementType())) {
-                const RbPtr<RbLanguageObject>& element = theNode->getValue();
-                valueVector->push_back( static_cast<RbLanguageObject*>( element->clone() ) );
-            }
-            else {
-                return NULL;
-            }
-        }
-        
-        // we rely on the vector implementation to do the actual conversion to the correct vector type
-        Container* tmpVector = static_cast<Container*>( valueVector->convertTo( type ) );
-        
-        // free the memory
-        delete valueVector;
-        
-        // return the vector
-        return tmpVector;
-    }
+//    if ( type.getBaseType() == RbVector::getClassName() ) {
+//        // test whether each object in the container is actually a constant node holding a value
+//        RbVector* valueVector = new RbVector( type.getElementType() );
+//        for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+//            DAGNode* theNode = (*it)->getDagNode();
+//            if (theNode->isTypeSpec( ConstantNode::getClassTypeSpec() ) && theNode->getValue()->isTypeSpec(type.getElementType())) {
+//                const RbPtr<RbLanguageObject>& element = theNode->getValue();
+//                valueVector->push_back( static_cast<RbLanguageObject*>( element->clone() ) );
+//            }
+//            else {
+//                return NULL;
+//            }
+//        }
+//        
+//        // we rely on the vector implementation to do the actual conversion to the correct vector type
+//        Container* tmpVector = static_cast<Container*>( valueVector->convertTo( type ) );
+//        
+//        // free the memory
+//        delete valueVector;
+//        
+//        // return the vector
+//        return tmpVector;
+//    }
     
     
     return Container::convertTo(type);
-}
-
-
-/** Execute a member method. We overwrite the executeOperation function here because we return DAG nodes directly. */
-RbPtr<RbLanguageObject> DagNodeContainer::executeOperation(std::string const &name, const std::vector<RbPtr<Argument> >& args) {
-    
-    return MemberObject::executeOperation( name, args );
 }
 
 
@@ -178,30 +171,6 @@ RbObject& DagNodeContainer::getElement(const size_t index) {
     return *elements[index];
 }
 
-
-
-/* Get method specifications */
-const MethodTable& DagNodeContainer::getMethods(void) const {
-    
-    static MethodTable methods = MethodTable();
-    static bool          methodsSet = false;
-    
-    if ( methodsSet == false ) 
-    {
-        
-        // add method for call "x[]" as a function
-        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &Container::getMethods() );
-        methodsSet = true;
-    }
-    
-    return methods;
-}
-
 /** Get type spec */
 const TypeSpec& DagNodeContainer::getTypeSpec( void ) const {
     
@@ -214,18 +183,18 @@ const TypeSpec& DagNodeContainer::getTypeSpec( void ) const {
 /** Can we convert this DAG node container into another object? */
 bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     
-    if ( type.getBaseType() == RbVector::getClassName() ) {
-        // test whether each object in the container is actually a constant node holding a value
-        for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            DAGNode* theNode = (*it)->getDagNode();
-            if (!theNode->isTypeSpec( ConstantNode::getClassTypeSpec() ) || !theNode->getValue()->isTypeSpec(type.getElementType())) {
-                return false;
-            }
-        }
-        
-        // return the true
-        return true;
-    }
+//    if ( type.getBaseType() == RbVector::getClassName() ) {
+//        // test whether each object in the container is actually a constant node holding a value
+//        for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+//            DAGNode* theNode = (*it)->getDagNode();
+//            if (!theNode->isTypeSpec( ConstantNode::getClassTypeSpec() ) || !theNode->getValue()->isTypeSpec(type.getElementType())) {
+//                return false;
+//            }
+//        }
+//        
+//        // return the true
+//        return true;
+//    }
     
     return Container::isConvertibleTo(type);
 }

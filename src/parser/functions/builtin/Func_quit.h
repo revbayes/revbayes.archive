@@ -32,11 +32,11 @@ class Func_quit :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Func_quit functions
-        RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return val
 
     protected:
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute the function. This is the function one has to overwrite for single return values.
 
 };
 

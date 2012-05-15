@@ -19,7 +19,6 @@
 #include "ConstArgumentRule.h"
 #include "DistributionContinuous.h"
 #include "ParserDistributionContinuous.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Probability.h"
 #include "RbException.h"
@@ -27,6 +26,7 @@
 #include "Real.h"
 #include "RbConstants.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 
 #include <cfloat>
 
@@ -67,18 +67,18 @@ ParserDistributionContinuous* ParserDistributionContinuous::clone(void) const {
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> ParserDistributionContinuous::executeOperationSimple( const std::string& name, const std::vector<RbPtr<Argument> >& args ) {
+RbPtr<RbLanguageObject> ParserDistributionContinuous::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if ( name == "cdf" ) {
         
-        return RbPtr<RbLanguageObject>( new Probability( cdf( static_cast<const Real&>( *args[1]->getVariable()->getValue() ) ) ) );
+        return RbPtr<RbLanguageObject>( new Probability( cdf( static_cast<const Real&>( *args[1] ) ) ) );
     }
     else if ( name == "quantile" ) {
         
-        return RbPtr<RbLanguageObject>( new Real( quantile( static_cast<const Real&>( *args[1]->getVariable()->getValue() ).getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new Real( quantile( static_cast<const Real&>( *args[1] ).getValue() ) ) );
     }
     
-    return ParserDistribution::executeOperationSimple( name, args );
+    return ParserDistribution::executeSimpleMethod( name, args );
 }
 
 
@@ -136,8 +136,8 @@ const MethodTable& ParserDistributionContinuous::getMethods( void ) const {
         
         quantileArgRules->push_back( new ConstArgumentRule    ( "p", RealPos::getClassTypeSpec()      ) );
         
-        methods.addFunction( "cdf",      new MemberFunction( Probability::getClassTypeSpec(), cdfArgRules      ) );
-        methods.addFunction( "quantile", new MemberFunction( Real::getClassTypeSpec(), quantileArgRules ) );
+        methods.addFunction( "cdf",      new SimpleMemberFunction( Probability::getClassTypeSpec(), cdfArgRules      ) );
+        methods.addFunction( "quantile", new SimpleMemberFunction( Real::getClassTypeSpec(), quantileArgRules ) );
         
         methods.setParentTable( &ParserDistribution::getMethods() );
         
@@ -153,13 +153,14 @@ const TypeSpec& ParserDistributionContinuous::getTypeSpec(void) const {
 }
 
 
-double ParserDistributionContinuous::jointLnPdf(const RbLanguageObject &value) const {
+double ParserDistributionContinuous::jointLnPdf(const RlValue<RbLanguageObject> &value) const {
     
-    std::vector<size_t> lengths;
-    value.getLeanValue( lengths );
+    std::vector<size_t> lengths = value.lengths;
     
+    // compute all the probability densities (pd's)
     double *pds = distribution->lnPdf();
     
+    // sum all pd's together
     if ( lengths.size() > 0 ) {
         double lnPd = 0.0;
         size_t index = 0;

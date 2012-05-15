@@ -49,8 +49,8 @@ public:
     virtual InferenceDagNode*               createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const; //!< Create a lean DAG from this "fat" DAG
     void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
     void                                    expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
-    const RbPtr<const RbLanguageObject>&    getValue(void) const;                                               //!< Get value (const)
-    const RbPtr<RbLanguageObject>&          getValue(void);                                                     //!< Get value (non-const)
+    const RlValue<const RbLanguageObject>&  getValue(void) const;                                               //!< Get value (const)
+    const RlValue<RbLanguageObject>&        getValue(void);                                                     //!< Get value (non-const)
     const RbFunction&                       getFunction(void) const;
     bool                                    isNotInstantiated(void) const;
     bool                                    isEliminated(void) const;
@@ -58,7 +58,7 @@ public:
     void                                    markForRecalculation(void);                                         //!< Flag this node for recalculation
     bool                                    needsRecalculation(void) const;                                     //!< Does this node need to recalculate its probability or likelihood?
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
-    void                                    swapParentNode( DAGNode* oldP, DAGNode* newP);           //!< Swap a parent node
+    void                                    swapParentNode( DAGNode* oldP, DAGNode* newP);                      //!< Swap a parent node
 
 protected:
 
@@ -76,7 +76,7 @@ private:
     // Member variable
     bool                                    needsUpdate;                                                        //!< True when value after touch but before update; if then updated set to false
     RbPtr<RbFunction>                       function;
-    RbPtr<RbLanguageObject>                 value;                                                               //!< Value
+    RlValue<RbLanguageObject>               value;                                                               //!< Value
 
 };
 

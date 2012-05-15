@@ -41,7 +41,7 @@ class Func_nj :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*> &args);              //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);               //!< Execute the function. This is the function one has to overwrite for single return values.
 
     private:
         Topology*                   neighborJoining(const DistanceMatrix& d);

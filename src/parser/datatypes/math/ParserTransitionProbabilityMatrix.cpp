@@ -18,10 +18,10 @@
 
 #include "ParserTransitionProbabilityMatrix.h"
 
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <iostream>

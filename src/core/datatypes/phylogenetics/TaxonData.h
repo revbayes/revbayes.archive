@@ -42,9 +42,10 @@ class TaxonData : public MemberObject {
         void                                    printValue(std::ostream& o) const;                                  //!< Print value for user
         
         // Member object methods 
+        RbPtr<RbLanguageObject>                 executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);            //!< Override to map member methods to internal functions
         const MemberRules&                      getMemberRules(void) const;                                         //!< Get member rules
         virtual const MethodTable&              getMethods(void) const;                                             //!< Get methods
-        void                                    setMemberVariable(const std::string &name, const RbPtr<RbLanguageObject> &var);    //!< Set a member variable. We catch here setting of variable nodes
+        void                                    setSimpleMemberValue(const std::string &name, const RbPtr<const RbLanguageObject> &var);    //!< Set a member variable. We catch here setting of variable nodes
        
         // TaxonData functions
         void                                    addCharacter( Character* newChar );                                 //!< Push back a new character
@@ -54,12 +55,6 @@ class TaxonData : public MemberObject {
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
         void                                    setTaxonName(std::string tn);                                       //!< Set the taxon name
  
-    
-    protected:
-    
-        // member object functions
-        virtual RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);//!< Execute method
-
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               

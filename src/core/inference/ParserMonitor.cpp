@@ -91,11 +91,10 @@ const MemberRules& ParserMonitor::getMemberRules( void ) const {
 }
 
 
-void ParserMonitor::setMemberVariable(std::string const &name, const Variable *var) {
+void ParserMonitor::setMemberVariable(std::string const &name, const RbPtr<Variable> &var) {
     
     if ( attributeNames.find( name ) != attributeNames.end() ) {
-        RbValue<void*> lValue;
-        lValue.value = var->getValue()->getLeanValue( lValue.lengths );
+        RbValue<void*> lValue = var->getValue().getLeanValue();
         monitor->setAttribute( name, lValue );
     }
     else {

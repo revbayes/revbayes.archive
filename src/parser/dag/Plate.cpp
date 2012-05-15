@@ -69,27 +69,27 @@ const TypeSpec& Plate::getTypeSpec( void ) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Plate::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> Plate::executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args) {
     
     // special handling for adding a variable
     if (name == "add") {
         
-        // get the argument
-        const RbPtr<Argument>& theArg = args[0];
-        
-        // get the DAG node
-        const RbPtr<const DAGNode> &theNode = theArg->getVariable()->getDagNode();
-        
-        // expand the DAG node
-        // \TODO: We shouldn't use const-casts.
-        const_cast<DAGNode *>( (const DAGNode*) theNode )->setPlate( this );
-        const_cast<DAGNode *>( (const DAGNode*) theNode )->expand();
-        const_cast<DAGNode *>( (const DAGNode*) theNode )->touch();
+//        // get the argument
+//        const RbPtr<Argument>& theArg = args[0];
+//        
+//        // get the DAG node
+//        const RbPtr<const DAGNode> &theNode = theArg->getVariable()->getDagNode();
+//        
+//        // expand the DAG node
+//        // \TODO: We shouldn't use const-casts.
+//        const_cast<DAGNode *>( (const DAGNode*) theNode )->setPlate( this );
+//        const_cast<DAGNode *>( (const DAGNode*) theNode )->expand();
+//        const_cast<DAGNode *>( (const DAGNode*) theNode )->touch();
         
         return NULL;
     }
     else {
-        return MemberObject::executeOperationSimple( name, args );
+        return MemberObject::executeSimpleMethod( name, args );
     }
 }
 
@@ -106,7 +106,7 @@ const MethodTable& Plate::getMethods(void) const {
         // add the 'addVariable()' method
         addArgRules->push_back( new ConstArgumentRule( "var"  , RbObject::getClassTypeSpec() )     );
         
-        methods.addFunction("add", new MemberFunction(RbVoid_name, addArgRules) );
+        methods.addFunction("add", new SimpleMemberFunction(RbVoid_name, addArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
@@ -172,16 +172,16 @@ void Plate::printValue(std::ostream& o) const {
 
 
 
-/** Catch setting of the topology variable */
-void Plate::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
+/** Catch setting of the size variable */
+void Plate::setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var) {
     
     if ( name == "size" ) {
-        size = static_cast<Natural *>( (RbLanguageObject *)var )->getValue();
+        size = static_cast<const Natural *>( (const RbLanguageObject *)var )->getValue();
     }
     else if ( name == "parent" ) {
-        parent = static_cast<Plate *>( (RbLanguageObject *)var );
+        parent = static_cast<const Plate *>( (const RbLanguageObject *)var );
     }
     else {
-        MemberObject::setMemberVariable(name, var);
+        MemberObject::setSimpleMemberValue(name, var);
     }
 }

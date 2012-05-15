@@ -53,9 +53,9 @@ DagNodeFunction* DagNodeFunction::clone(void) const {
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbPtr<RbLanguageObject> DagNodeFunction::execute( void ) {
+RbPtr<RbLanguageObject> DagNodeFunction::executeFunction(const std::vector<const RbObject *> &args) {
     
-    return node->executeOperation( funcName, args );
+    return node->executeSimpleMethod( funcName, args );
     
 }
 

@@ -35,7 +35,7 @@ class Func_structure :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 
         // Regular functions
-        RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute operation
+        RlValue<RbLanguageObject>   execute(void);                                      //!< Execute operation
         const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 

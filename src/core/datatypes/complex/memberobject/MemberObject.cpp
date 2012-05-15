@@ -19,7 +19,6 @@
 #include "ConstantNode.h"
 #include "ConstArgumentRule.h"
 #include "Integer.h"
-#include "MemberFunction.h"
 #include "MemberObject.h"
 #include "MethodTable.h"
 #include "RbException.h"
@@ -27,6 +26,7 @@
 #include "RbNullObject.h"
 #include "RbString.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "UserInterface.h"
 #include "VariableNode.h"
 
@@ -44,28 +44,38 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() 
 }
 
 
-
-/* Execute method. This method just delegate the call to executeOperationSimple and wraps the return value into
- * a constant node. If you don't want this, you have to overwrite this method.
+/** Execute method. 
+ * This is the deault implemention. You should overwrite this method only if you want to treat the multidimensional data type RlValue
+ * yourselve.
+ *
+ * We assumes that the arguments come as scalar types, not multidimensional RevLanguage objects.
+ * Therefore, we just delegate the call to executeSimpleMethod.
  */
-RbPtr<RbLanguageObject> MemberObject::executeOperation(std::string const &name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> MemberObject::executeMethod(std::string const &name, const std::vector<RlValue<const RbObject> > &args) {
     
-    // get the return value
-    const RbPtr<RbLanguageObject>& value = executeOperationSimple(name, args);
-  
-    return value;
+    std::vector<const RbObject *> simpleArgs;
+    for (std::vector<RlValue<const RbObject> >::const_iterator i =args.begin(); i != args.end(); ++i) {
+        // check first if these arguments are actually scalars
+        if (i->lengths.size() > 0 ) {
+            throw RbException("We currently do not support setting of multidimensional member values!");
+        }
+        simpleArgs.push_back( i->getSingleValue() );
+    }
     
+    // calling the internal method to execute the member-method
+    return executeSimpleMethod(name, simpleArgs );
 }
 
 
-/** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
- *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
- *  is used without the appropriate mapping to internal function calls being present. */
-RbPtr<RbLanguageObject> MemberObject::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+
+/* Execute simple method. This method assumes that the arguments come as scalar types, not multidimensional RevLanguage objects.
+ * Therefore, it should be OK if we just get an RbObject argument instead of an RlValue.
+ */
+RbPtr<RbLanguageObject> MemberObject::executeSimpleMethod(std::string const &name, const std::vector<const RbObject*>& args) {
     
     if (name == "get") {
         // get the member with give name
-        const RbString *varName = static_cast<const RbString *>( (const RbLanguageObject *) args[0]->getVariable()->getValue() );
+        const RbString *varName = static_cast<const RbString *>( args[0] );
         
         // check if a member with that name exists
         if ( hasMember(*varName) ) {
@@ -129,11 +139,11 @@ const MethodTable& MemberObject::getMethods(void) const {
         ArgumentRules* getArgRules = new ArgumentRules();
         
         // add the 'memberNames()' method
-        methods.addFunction("memberNames", new MemberFunction(RbVoid_name, getMemberNamesArgRules) );
+        methods.addFunction("memberNames", new SimpleMemberFunction(RbVoid_name, getMemberNamesArgRules) );
         
         // add the 'memberNames()' method
         getArgRules->push_back( new ConstArgumentRule( "name" , RbString::getClassTypeSpec() ) );
-        methods.addFunction("get", new MemberFunction(RbLanguageObject::getClassTypeSpec(), getArgRules) );
+        methods.addFunction("get", new SimpleMemberFunction(RbLanguageObject::getClassTypeSpec(), getArgRules) );
         
         methodsSet = true;
     }   
@@ -162,19 +172,67 @@ void MemberObject::printValue(std::ostream& o) const {
 }
 
 
-/** Set a member DAG node */
-void MemberObject::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
-
-    throw RbException("No Member named '" + name + "' expected in an object of class " + getTypeSpec().getBaseType() + " and therefore cannot set it.");
+/** Set a member variable */
+void MemberObject::setConstMember(const std::string& name, const RbPtr<const Variable> &var) {
+    
+    // here, we might want to do some general stuff like catching all members so that we can provide general functions as
+    // 1) getNames()
+    // 2) getMember(name)
+    
+    setConstMemberVariable(name, var );
+    
 }
 
 
 /** Set a member variable */
-void MemberObject::setMember(const std::string& name, const RbPtr<const Variable> &var) {
+void MemberObject::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+    
+    if (var->getValue().lengths.size() > 0 ) {
+        throw RbException("We currently do not support setting of multidimensional member values!");
+    }
+    
     // calling the internal mthod to set the DAG node
     // the derived classes should know how to set their members
-    setMemberVariable(name, var->getValue()->clone() );
+    setSimpleMemberValue(name, var->getValue().getSingleValue() );
     
+}
+
+
+/* Set a member variable.
+ * In this default implementation, we delegate to setConstMemberVariable.
+ * Derived classes of MemberObject who need non-const variable should overwrite this function.
+ * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
+ */
+void MemberObject::setMember(const std::string& name, const RbPtr<Variable> &var) {
+    
+    // here, we might want to do some general stuff like catching all members so that we can provide general functions as
+    // 1) getNames()
+    // 2) getMember(name)
+    
+    setMemberVariable(name, var );
+    
+}
+
+
+/* Set a member variable.
+ * In this default implementation, we delegate to setConstMemberVariable.
+ * Derived classes of MemberObject who need non-const variable should overwrite this function.
+ * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
+ */
+void MemberObject::setMemberVariable(const std::string& name, const RbPtr<Variable> &var) {
+    
+    setConstMemberVariable(name, RbPtr<const Variable>( var ) );
+    
+}
+
+
+
+
+
+/** Set a member DAG node */
+void MemberObject::setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var) {
+    
+    throw RbException("No Member named '" + name + "' expected in an object of class " + getTypeSpec().getBaseType() + " and therefore cannot set it.");
 }
 
 

@@ -49,14 +49,13 @@ class CharacterData : public MemberObject {
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
 
         // Member variable functions
-        const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules
-        const std::map<std::string, const Variable*>& getMembers(void) const;                                                             //!< Get members
-        std::map<std::string, const Variable*>&       getMembers(void);                                                                   //!< Get members
-        void                                        setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var);                  //!< Catch setting of the topology
+        const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
+        void                                setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var);   //!< Catch setting of the topology
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
-    
+        RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);            //!< Override to map member methods to internal functions
+  
         // Container functions
         void                                clear(void);
         void                                setElement(const size_t index, RbLanguageObject* elem);                     //!< Set element with type conversion
@@ -96,9 +95,6 @@ class CharacterData : public MemberObject {
         void                                setIsHomologyEstablished(bool tf) { isHomologyEstablished = tf; }           //!< Set whether the homology of the characters has been established
         void                                showData(void);                                                             //!< Show the data in the character matrix
     
-    protected:
-        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);         //!< Execute method
-
     private:
         // Utility functions
         size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
@@ -132,7 +128,7 @@ class CharacterData : public MemberObject {
         Natural                             numMissing;
         RbBoolean                           isHomologous;
         
-        std::map<std::string, const Variable*> taxonMap;
+        std::map<std::string, RbPtr<TaxonData> > taxonMap;
 };
 
 #endif

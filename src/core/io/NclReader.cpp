@@ -1237,7 +1237,7 @@ TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree, const N
     myTreeFromNcl->setRoot(root);
     
     TreePlate* myTreePlateFromNcl = new TreePlate();
-    myTreePlateFromNcl->setMember("topology", new Variable( new ConstantNode(myTreeFromNcl) ) );
+    myTreePlateFromNcl->setMember("topology", new Variable( new ConstantNode( RbPtr<RbLanguageObject>( myTreeFromNcl ) ) ) );
     
     const std::vector<const TopologyNode*>& nodes = myTreeFromNcl->getNodes();
     for (std::vector<const TopologyNode*>::const_iterator i = nodes.begin(); i != nodes.end(); i++) {

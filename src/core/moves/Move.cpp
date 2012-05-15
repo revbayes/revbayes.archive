@@ -19,7 +19,6 @@
 #include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Move.h"
 #include "Natural.h"
@@ -28,6 +27,7 @@
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "StochasticNode.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -50,7 +50,7 @@ void Move::addDagNode(StochasticNode *d) {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Move::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> Move::executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args) {
 
     if ( name == "accept" ) {
 
@@ -89,7 +89,7 @@ RbPtr<RbLanguageObject> Move::executeOperationSimple(const std::string& name, co
 //    }
 
     // No hit yet; we hope there is a mapped function call in the base class
-    return MemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -145,14 +145,14 @@ const MethodTable& Move::getMethods(void) const {
         {
         
         // Add functions
-        methods.addFunction( "accept",          new MemberFunction( RbVoid_name,     acceptArgRules            ) );
-        methods.addFunction( "acceptanceRatio", new MemberFunction( Real::getClassTypeSpec(),       acceptanceRatioArgRules   ) );
-        methods.addFunction( "numAccepted",     new MemberFunction( Natural::getClassTypeSpec(),    numAcceptedArgRules       ) );
-        methods.addFunction( "numRejected",     new MemberFunction( Natural::getClassTypeSpec(),    numRejectedArgRules       ) );
-        methods.addFunction( "numTried",        new MemberFunction( Natural::getClassTypeSpec(),    numTriedArgRules          ) );
+        methods.addFunction( "accept",          new SimpleMemberFunction( RbVoid_name,     acceptArgRules            ) );
+        methods.addFunction( "acceptanceRatio", new SimpleMemberFunction( Real::getClassTypeSpec(),       acceptanceRatioArgRules   ) );
+        methods.addFunction( "numAccepted",     new SimpleMemberFunction( Natural::getClassTypeSpec(),    numAcceptedArgRules       ) );
+        methods.addFunction( "numRejected",     new SimpleMemberFunction( Natural::getClassTypeSpec(),    numRejectedArgRules       ) );
+        methods.addFunction( "numTried",        new SimpleMemberFunction( Natural::getClassTypeSpec(),    numTriedArgRules          ) );
 //        methods.addFunction( "propose",         new MemberFunction( RbVector<Real>::getClassTypeSpec(), proposeArgRules           ) );
-        methods.addFunction( "reject",          new MemberFunction( RbVoid_name,     rejectArgRules            ) );
-        methods.addFunction( "resetCounters",   new MemberFunction( RbVoid_name,     resetCountersArgRules     ) );
+        methods.addFunction( "reject",          new SimpleMemberFunction( RbVoid_name,     rejectArgRules            ) );
+        methods.addFunction( "resetCounters",   new SimpleMemberFunction( RbVoid_name,     resetCountersArgRules     ) );
         
         // Set parent table for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );

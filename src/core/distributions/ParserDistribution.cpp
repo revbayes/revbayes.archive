@@ -21,11 +21,11 @@
 #include "ConstArgumentRule.h"
 #include "ParserDistribution.h"
 #include "Environment.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RealPos.h"
+#include "SimpleMemberFunction.h"
 #include "Workspace.h"
 
 
@@ -46,15 +46,15 @@ void ParserDistribution::clear( void ) {
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> ParserDistribution::executeOperationSimple( const std::string& name, const std::vector<RbPtr<Argument> >& args ) {
+RbPtr<RbLanguageObject> ParserDistribution::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if ( name == "lnPdf" ) {
         
-        return RbPtr<RbLanguageObject>( new Real( lnPdf( *args[1]->getVariable()->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new Real( lnPdf( static_cast<const RbLanguageObject &>( *args[1] ) ) ) );
     }
     else if ( name == "pdf" ) {
         
-        return RbPtr<RbLanguageObject>( new RealPos( pdf( *args[1]->getVariable()->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( pdf( static_cast<const RbLanguageObject &>( *args[1] ) ) ) );
     }
     else if ( name == "rv" ) {
         
@@ -62,7 +62,7 @@ RbPtr<RbLanguageObject> ParserDistribution::executeOperationSimple( const std::s
         return randomValue;
     }
     else
-        return MemberObject::executeOperationSimple( name, args );
+        return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -98,9 +98,9 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
         
         pdfArgRules->push_back( new ConstArgumentRule( "x", RbObject::getClassTypeSpec() ) );
         
-        methods.addFunction( "lnPdf", new MemberFunction( Real::getClassTypeSpec()    , lnPdfArgRules ) );
-        methods.addFunction( "pdf",   new MemberFunction( Real::getClassTypeSpec()    , pdfArgRules   ) );
-        methods.addFunction( "rv",    new MemberFunction( RbObject::getClassTypeSpec(), rvArgRules    ) );
+        methods.addFunction( "lnPdf", new SimpleMemberFunction( Real::getClassTypeSpec()    , lnPdfArgRules ) );
+        methods.addFunction( "pdf",   new SimpleMemberFunction( Real::getClassTypeSpec()    , pdfArgRules   ) );
+        methods.addFunction( "rv",    new SimpleMemberFunction( RbObject::getClassTypeSpec(), rvArgRules    ) );
         
         methods.setParentTable( &MemberObject::getMethods() );
         

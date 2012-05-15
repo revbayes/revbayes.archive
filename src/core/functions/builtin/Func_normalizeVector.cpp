@@ -46,11 +46,11 @@ Func_normalizeVector* Func_normalizeVector::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_normalizeVector::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_normalizeVector::executeFunction(const std::vector<const RbObject *> &args) {
 
     // Get first element
-    const RbVector& tempVec    = static_cast<const RbVector& >( *args[0]->getVariable()->getValue() );
-    double          desiredSum = static_cast<const RealPos&  >( *args[1]->getVariable()->getValue() ).getValue();
+    const RbVector& tempVec    = static_cast<const RbVector& >( *args[0] );
+    double          desiredSum = static_cast<const RealPos&  >( *args[1] ).getValue();
     
     // type conversion
     std::vector<double> unnormalizedVector;

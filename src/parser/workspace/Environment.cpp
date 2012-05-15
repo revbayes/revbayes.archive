@@ -286,7 +286,7 @@ void Environment::eraseVariable( const std::string& name ) {
 
 
 /* Execute function to get its value (workspaces only evaluate functions once) */
-RbPtr<RbLanguageObject> Environment::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RlValue<RbLanguageObject> Environment::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     /* Using this calling convention indicates that we are only interested in
      evaluating the function once */
@@ -404,25 +404,34 @@ const TypeSpec& Environment::getTypeSpec( void ) const {
 
 
 /** Get value, alternative method */
-const RbLanguageObject& Environment::getValue( const std::string& name ) const {
+RlValue<const RbLanguageObject> Environment::getValue( const std::string& name ) const {
     
     // find the variable slot first
     const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
-        if ( parentEnvironment != NULL )
-            return parentEnvironment->getValue( name );
+        if ( parentEnvironment != NULL ) {
+            const RlValue<RbLanguageObject>& tmpVal = parentEnvironment->getValue( name );
+            
+            std::vector<RbPtr<const RbLanguageObject> > constVals;
+            for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = tmpVal.value.begin(); i != tmpVal.value.end(); ++i) {
+                constVals.push_back( RbPtr<const RbLanguageObject>( *i ) );
+            }
+            
+            RlValue<const RbLanguageObject> retVal = RlValue<const RbLanguageObject>( constVals, tmpVal.lengths );
+            return retVal;
+        }
         else
             throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist" );
     }
     
     // set the slot
     const VariableSlot* theSlot = it->second;
-    return *theSlot->getValue();
+    return theSlot->getValue();
 }
 
 
 /** Get value, alternative method */
-RbLanguageObject& Environment::getValue( const std::string& name ) {
+const RlValue<RbLanguageObject>& Environment::getValue( const std::string& name ) {
     
     // find the variable slot first
     const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find( name );
@@ -435,7 +444,7 @@ RbLanguageObject& Environment::getValue( const std::string& name ) {
     
     // set the slot
     VariableSlot* theSlot = it->second;
-    return *theSlot->getValue();
+    return theSlot->getValue();
 }
 
 

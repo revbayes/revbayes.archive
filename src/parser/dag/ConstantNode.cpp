@@ -28,6 +28,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbVector.h"
+#include "RlValue.h"
 #include "StochasticNode.h"
 #include "Workspace.h"
 
@@ -38,27 +39,41 @@
 
 
 /** Constructor from value */
-ConstantNode::ConstantNode( const RbPtr<RbLanguageObject> &val ) : DAGNode( NULL ) {
+ConstantNode::ConstantNode( const RlValue<RbLanguageObject> &val ) : DAGNode( NULL ) {
     value = val;
 }
 
 
 /** Constructor from value */
-ConstantNode::ConstantNode( const RbPtr<RbLanguageObject> &val, const RbPtr<const Plate> &p ) : DAGNode( p ) {
+ConstantNode::ConstantNode( const RlValue<RbLanguageObject> &val, const RbPtr<const Plate> &p ) : DAGNode( p ) {
     value = val;
 }
 
 
 /** Copy constructor */
 ConstantNode::ConstantNode( const ConstantNode &x ) : DAGNode( x ) {
-    value = x.value->clone();
+    RlValue<RbObject> tmp = x.value.clone();
+    
+    std::vector<RbPtr<RbLanguageObject> > vals;
+    for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+        vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+    }
+    
+    value = RlValue<RbLanguageObject>(vals, tmp.lengths);
 }
 
 
 ConstantNode& ConstantNode::operator=(const ConstantNode &c) {
     // check for self assignment
     if ( this != &c ) {
-        value = c.value->clone();
+        RlValue<RbObject> tmp = c.value.clone();
+        
+        std::vector<RbPtr<RbLanguageObject> > vals;
+        for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+            vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+        }
+        
+        value = RlValue<RbLanguageObject>(vals, tmp.lengths);
     }
     
     return *this;
@@ -114,8 +129,7 @@ InferenceDagNode* ConstantNode::createLeanDag(std::map<const DAGNode *, Inferenc
         return ( newNodes[ this ] );
     
     // make a copy of the current value
-    RbValue<void*> leanValue;
-    leanValue.value = value->getLeanValue( leanValue.lengths );
+    RbValue<void*> leanValue = value.getLeanValue();
     
     /* Create a lean DAG node */
     ConstantInferenceNode* copy = new ConstantInferenceNode( leanValue, name );
@@ -171,12 +185,17 @@ const TypeSpec& ConstantNode::getTypeSpec( void ) const {
 }
 
 
-const RbPtr<const RbLanguageObject>& ConstantNode::getValue(void) const {
-    return RbPtr<const RbLanguageObject>( value );
+const RlValue<const RbLanguageObject>& ConstantNode::getValue(void) const {
+    std::vector<RbPtr<const RbLanguageObject> > tmp;
+    for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = value.value.begin(); i != value.value.end(); ++i) {
+        tmp.push_back( RbPtr<const RbLanguageObject>() );
+    }
+    
+    return RlValue<const RbLanguageObject>( tmp, value.lengths );
 }
 
 
-const RbPtr<RbLanguageObject>& ConstantNode::getValue(void) {
+const RlValue<RbLanguageObject>& ConstantNode::getValue(void) {
     return value;
 }
 
@@ -204,10 +223,7 @@ void ConstantNode::keepMe( void ) {
 /** Print value for user */
 void ConstantNode::printValue( std::ostream& o ) const {
 
-    if ( value != NULL )
-        value->printValue(o);
-    else  /* NULL value */
-        o << "NULL";
+    value.printValue(o);
 }
 
 
@@ -215,9 +231,9 @@ void ConstantNode::printValue( std::ostream& o ) const {
 void ConstantNode::printStruct(std::ostream &o) const {
 
     o << "_Class        = " << getClassTypeSpec() << std::endl;
-    o << "_valueType    = " << value->getTypeSpec() << std::endl;
+    o << "_valueType    = " << value.getTypeSpec() << std::endl;
     o << "_value        = ";
-    value->printValue(o);
+    value.printValue(o);
     o << std::endl;
 
     o << "_children     = ";
@@ -236,11 +252,7 @@ void ConstantNode::restoreMe( void ) {
  * Set value: same as clamp, but do not clamp. This function will
  * also be used by moves to propose a new value.
  */
-void ConstantNode::setValue( const RbPtr<RbLanguageObject> &val ) {
-    
-    if (val == NULL) {
-        std::cerr << "Ooops ..." << std::endl;
-    }
+void ConstantNode::setValue( const RlValue<RbLanguageObject> &val ) {
     
     // touch the node (which will store the lnProb)
     touch();

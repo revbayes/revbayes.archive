@@ -78,14 +78,8 @@ StochasticNode::StochasticNode( const RbPtr<ParserDistribution> &dist, const RbP
     
     // create a new random variable
     value = createRV();
-    RbValue<void*> rvPrimitive;
-    rvPrimitive.value = value->getLeanValue( rvPrimitive.lengths );
+    RbValue<void*> rvPrimitive = value.getLeanValue();
     dist->setValue( rvPrimitive );
-    
-    /* We use a random draw as the initial value */
-    if (value == NULL) {
-        std::cerr << "Ooops, rv return NULL!\n";
-    }
     
     /* Get initial probability */
     lnProb = calculateLnProbability();
@@ -113,8 +107,16 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     type                            = x.type;
     needsProbabilityRecalculation   = x.needsProbabilityRecalculation;
     needsLikelihoodRecalculation    = x.needsLikelihoodRecalculation;
-    value                           = x.value->clone();
     touched                         = x.touched;
+    
+    RlValue<RbObject> tmp = x.value.clone();
+    
+    std::vector<RbPtr<RbLanguageObject> > vals;
+    for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+        vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+    }
+    
+    value = RlValue<RbLanguageObject>(vals, tmp.lengths);
     
     lnProb                          = x.lnProb;
     storedLnProb                    = x.storedLnProb;
@@ -154,7 +156,15 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         
         factorRoot                      = x.factorRoot;
         
-        value                           = x.value->clone();
+        RlValue<RbObject> tmp = x.value.clone();
+        
+        std::vector<RbPtr<RbLanguageObject> > vals;
+        for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+            vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+        }
+        
+        value = RlValue<RbLanguageObject>(vals, tmp.lengths);
+
         touched                         = x.touched;
         lnProb                          = x.lnProb;
         storedLnProb                    = x.storedLnProb;
@@ -179,7 +189,7 @@ double StochasticNode::calculateLnProbability( void ) {
         // but do not actually sum over all possible values. This is only done in the MCMC.
         // Trying to safe some time ...
 //        if (type == INSTANTIATED) { // this should always be true
-            lnProb = distribution->jointLnPdf( *value );
+            lnProb = distribution->jointLnPdf( value );
 //        }
 //        else {
 //            throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
@@ -353,7 +363,7 @@ double StochasticNode::calculateSummedLnProbability(size_t nodeIndex) {
 
 
 /** Clamp the node to an observed value */
-void StochasticNode::clamp( const RbPtr<RbLanguageObject> &observedVal ) {
+void StochasticNode::clamp( const RlValue<RbLanguageObject> &observedVal ) {
 
 //    if ( touched )
 //        throw RbException( "Cannot clamp stochastic node in volatile state" );
@@ -361,26 +371,7 @@ void StochasticNode::clamp( const RbPtr<RbLanguageObject> &observedVal ) {
     // touch for recalculation
     touch(); 
     
-    // check for type conversion
-    bool needsConversion = false;
-    if ( isValueTypeAllowed( observedVal, needsConversion ) ) {
-        
-        if ( needsConversion ) {
-            value = static_cast<RbLanguageObject*>(observedVal->convertTo(distribution->getVariableType()) );
-            if (value == NULL) {
-                std::cerr << "Ooops, observed value was NULL!\n";
-            }
-        }
-        else {
-            value = observedVal;
-            if (value == NULL) {
-                std::cerr << "Ooops, observed value was NULL!\n";
-            }
-        }
-    }
-    else {
-        throw RbException("Cannot clamp stochastic node with value of type \"" + observedVal->getTypeSpec() + "\" because the distribution requires a \"" + distribution->getVariableType().toString() + "\".");
-    }
+    value = observedVal;
 
     clamped = true;
     lnProb  = calculateLnProbability();
@@ -409,12 +400,19 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& ne
     copy->setName(name);
 
     /* Set the copy member variables */
-    copy->distribution = distribution->clone();
-    copy->clamped      = clamped;
-    copy->touched      = touched;
-    if (value != NULL) {
-        copy->value    = value->clone();
+    copy->distribution  = distribution->clone();
+    copy->clamped       = clamped;
+    copy->touched       = touched;
+    
+    RlValue<RbObject> tmp = value.clone();
+    
+    std::vector<RbPtr<RbLanguageObject> > vals;
+    for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+        vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
     }
+    
+    copy->value = RlValue<RbLanguageObject>(vals, tmp.lengths);
+
     
     // set also the type of this node (if it is eliminated or not)
     copy->type                          = type;
@@ -567,8 +565,7 @@ InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, Infere
     Distribution* leanDistribution = distribution->getLeanDistribution()->clone();
     
     // make a copy of the current value
-    RbValue<void*> leanValue;
-    leanValue.value = value->getLeanValue( leanValue.lengths );
+    RbValue<void*> leanValue = value.getLeanValue();
     
     /* Create a lean DAG node */
     StochasticInferenceNode* copy = new StochasticInferenceNode(leanValue, leanDistribution, name);
@@ -610,17 +607,19 @@ InferenceDagNode* StochasticNode::createLeanDag(std::map<const DAGNode *, Infere
  * Create a new rv for the node. 
  *
  */
-RbLanguageObject* StochasticNode::createRV( void ) {
+RlValue<RbLanguageObject> StochasticNode::createRV( void ) {
     
     if ( plate == NULL ) {
         
         const std::vector<RbPtr<Argument> > &params = distribution->getParameters();
     
-        std::vector<const RbObject*> newArgs;
+        std::vector<size_t> offsets;
+        std::vector<RlValue<const RbLanguageObject> > newArgs;
         for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
             newArgs.push_back( (*i)->getVariable()->getValue() );
+            offsets.push_back( 0 );
         }
-        return createRV( std::vector<size_t>(), newArgs );
+        return createRV( std::vector<size_t>(), 0, offsets, newArgs );
     }
     else {
         // we need to get the arguments for checking if they live on the same plate or any parent plate of this
@@ -634,9 +633,11 @@ RbLanguageObject* StochasticNode::createRV( void ) {
         }
         
         // convert the argument into RbObjects
-        std::vector<const RbObject*> newArgs;
+        std::vector<size_t> offsets;
+        std::vector<RlValue<const RbLanguageObject> > newArgs;
         for ( std::vector<RbPtr<Argument> >::const_iterator i = params.begin(); i != params.end(); i++ ) {
             newArgs.push_back( (*i)->getVariable()->getValue() );
+            offsets.push_back( 0 );
         }
         
         // we create a vector of lengths telling us the length of each plate
@@ -656,7 +657,7 @@ RbLanguageObject* StochasticNode::createRV( void ) {
                 p = p->getParentPlate();
             }
         }
-        return createRV( plateLengths, newArgs );
+        return createRV( plateLengths, 0, offsets, newArgs );
     }
 }
 
@@ -666,46 +667,65 @@ RbLanguageObject* StochasticNode::createRV( void ) {
  * Execute the Function. 
  *
  */
-RbLanguageObject* StochasticNode::createRV( const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args ) {
+RlValue<RbLanguageObject> StochasticNode::createRV( const std::vector<size_t> &plateLengths, size_t level, const std::vector<size_t> &offsets, const std::vector<RlValue<const RbLanguageObject> > &args ) {
     
     // check each argument if it is a vector and hence the function needs repeated evaluation
     bool repeatedExecution = false;
     size_t size = 0;
-    for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
-        if ( (*i)->isTypeSpec( Container::getClassTypeSpec() ) ) {
+    std::vector<size_t> new_offsets;
+    for (size_t i = 0; i != args.size(); ++i) {
+        if ( args[i].lengths.size() > level ) {
+            // security check
+            if ( repeatedExecution && size != args[i].lengths[level] ) {
+                throw RbException("Received arguments with different lengths in the same dimension!");
+            }
+            
             repeatedExecution = true;
-            size = static_cast<const Container*>( *i )->size();
-            break;
+            size = args[i].lengths[level];
+            new_offsets.push_back( offsets[i] * size);
         }
+        else {
+            new_offsets.push_back( offsets[i] );
+        }
+        
     }
     
-    RbLanguageObject* retVal;
+    RlValue<RbLanguageObject> retVal;
     if ( repeatedExecution ) {
-        RbVector* retValVector = new RbVector( RbLanguageObject::getClassTypeSpec() );
         for ( size_t j = 0; j < size; ++j) {
-            std::vector<const RbObject*> newArgs;
-            for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
-                if ( (*i)->isTypeSpec( Container::getClassTypeSpec() ) ) {
-                    newArgs.push_back( &static_cast<const Container*>( (*i) )->getElement(j) );
-                }
-                else {
-                    newArgs.push_back( *i );
-                    
+            
+            // call the execute function now for the single elements
+            const RlValue<RbLanguageObject>& singleRetVal = createRV(plateLengths, level+1, new_offsets, args);
+            
+            // push back all single elements to the retVal
+            for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = singleRetVal.value.begin(); i != singleRetVal.value.end(); ++i) {
+                retVal.value.push_back( *i );
+            }
+            
+            // set the dimension correctly
+            if ( j == 0) {
+                for (std::vector<size_t>::const_iterator i = singleRetVal.lengths.begin(); i != singleRetVal.lengths.end(); ++i) {
+                    retVal.lengths.push_back( *i );
                 }
             }
-            // call the execute function now for the single elements
-            RbLanguageObject* singleRetVal = createRV(plateLengths, newArgs);
-            retValVector->push_back( singleRetVal );
-            // \TODO If the execute functions returns a pointer to the object and the caller owns the object, 
-            // then we don't need to copy each time the object.
+            
+            // update the offsets
+            for (size_t i = 0; i != args.size(); ++i) {
+                if ( args[i].lengths.size() > level ) {
+                    new_offsets[i]++;
+                }
+            }
         }
-        
-        retVal = retValVector;
     }
     else {
+        std::vector<const RbObject *> newArgs;
+        
+        for (size_t i = 0; i != args.size(); ++i) {
+            newArgs.push_back( args[i].value[offsets[i]] );
+        }
         
         // get the value by executing the internal function
-        retVal = createRVSingleValue(0, plateLengths, args);
+        retVal = createRVSingleValue(0, plateLengths, newArgs);
     }
     
     return retVal;
@@ -713,7 +733,7 @@ RbLanguageObject* StochasticNode::createRV( const std::vector<size_t> &plateLeng
 }
 
 
-RbLanguageObject* StochasticNode::createRVSingleValue(size_t plateIndex, const std::vector<size_t> &plateLengths, const std::vector<const RbObject *> &args) {
+RlValue<RbLanguageObject> StochasticNode::createRVSingleValue(size_t plateIndex, const std::vector<size_t> &plateLengths, const std::vector<const RbObject *> &args) {
     
     if ( plateLengths.size() == plateIndex ) {
         // converting the arguments into atomic data types
@@ -735,18 +755,30 @@ RbLanguageObject* StochasticNode::createRVSingleValue(size_t plateIndex, const s
     
         distribution->rv();
     
-        return retVal;
+        return RlValue<RbLanguageObject>( RbPtr<RbLanguageObject>( retVal ) );
     }
     else {
         // create a new vector for the rv's
-        RbVector *rvs = new RbVector( distribution->getVariableType() );
+        RlValue<RbLanguageObject> retVal;
         
         // iterate over all indices of the current plate
         for (size_t i = 0; i < plateLengths[plateIndex]; ++i) {
-            rvs->push_back( createRVSingleValue( plateIndex+1, plateLengths, args ) );
+            RlValue<RbLanguageObject> tmp = createRVSingleValue( plateIndex+1, plateLengths, args);
+            
+            // push back all single elements to the retVal
+            for (std::vector<RbPtr<RbLanguageObject> >::iterator j = tmp.value.begin(); j != tmp.value.end(); ++j) {
+                retVal.value.push_back( *j );
+            }
+            
+            // set the dimension correctly
+            if ( i == 0) {
+                for (std::vector<size_t>::iterator j = tmp.lengths.begin(); j != tmp.lengths.end(); ++j) {
+                    retVal.lengths.push_back( *j );
+                }
+            }
         }
         
-        return rvs;
+        return retVal;
     }
 }
  
@@ -762,7 +794,7 @@ std::string StochasticNode::debugInfo(void) const {
     distribution->printValue( o );
     o << std::endl;
     o << "Value        = ";
-    value->printValue( o );
+    value.printValue( o );
     o << std::endl;
     
     return o.str();
@@ -772,15 +804,24 @@ std::string StochasticNode::debugInfo(void) const {
 /**
  * Map calls to member methods 
  */
-RbPtr<RbLanguageObject> StochasticNode::executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> StochasticNode::executeMethod(std::string const &name, const std::vector<RlValue<const RbObject> > &args) {
     
     if (name == "clamp") {
         
         // get the observed value
-        const RbLanguageObject& observedValue = *args[0]->getVariable()->getValue();
+        const RlValue<const RbObject>& observedValue = args[0];
+
+        RlValue<RbObject> tmp = observedValue.clone();
+        
+        std::vector<RbPtr<RbLanguageObject> > vals;
+        for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+            vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+        }
+        
+        RlValue<RbLanguageObject> clampValue = RlValue<RbLanguageObject>(vals, tmp.lengths);
         
         // clamp the observed value to myself
-        clamp( observedValue.clone() );
+        clamp( clampValue );
         
         // we keep the new value
         keep();
@@ -788,7 +829,7 @@ RbPtr<RbLanguageObject> StochasticNode::executeOperation(const std::string& name
         return NULL;
     } 
     
-    return DAGNode::executeOperation( name, args );
+    return DAGNode::executeMethod( name, args );
 }
 
 
@@ -888,13 +929,18 @@ const TypeSpec& StochasticNode::getTypeSpec( void ) const {
 
 
 /* Get const value; we always know our value. */
-const RbPtr<const RbLanguageObject>& StochasticNode::getValue( void ) const {
+const RlValue<const RbLanguageObject>& StochasticNode::getValue( void ) const {
 
-    return RbPtr<const RbLanguageObject>( value );
+    std::vector<RbPtr<const RbLanguageObject> > tmp;
+    for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = value.value.begin(); i != value.value.end(); ++i) {
+        tmp.push_back( RbPtr<const RbLanguageObject>() );
+    }
+    
+    return RlValue<const RbLanguageObject>( tmp, value.lengths );
 }
 
 /* Get non-const value; we always know our value. */
-const RbPtr<RbLanguageObject>& StochasticNode::getValue( void ) {
+const RlValue<RbLanguageObject>& StochasticNode::getValue( void ) {
     
     return value;
 }
@@ -924,33 +970,6 @@ bool StochasticNode::isNotInstantiated( void ) const {
     return type != INSTANTIATED;
 }
 
-
-bool StochasticNode::isValueTypeAllowed(RbLanguageObject *observed, bool &needsConversion) {
-    
-    if ( observed->isTypeSpec( distribution->getVariableType() ) ) {
-        return true;
-    }
-    else if ( observed->isConvertibleTo( distribution->getVariableType() ) ) {
-        needsConversion = true;
-        return true;
-    }
-    else {
-        
-        if ( observed->isTypeSpec( Container::getClassTypeSpec() ) ) {
-            Container* c = static_cast<Container*>( observed );
-            
-            bool allowed = true;
-            for ( size_t i = 0; i < c->size(); ++i) {
-                allowed &= isValueTypeAllowed( static_cast<RbLanguageObject*>( &c->getElement( i ) ), needsConversion);
-            }
-            
-            return allowed;
-        }
-        else {
-            return false;
-        }
-    }
-}
 
 
 /**
@@ -1044,7 +1063,7 @@ void StochasticNode::printStruct( std::ostream& o ) const {
 
     o << "_Class        = " << getClassTypeSpec() << std::endl;
     o << "_Adress       = " << this << std::endl;
-    o << "_valueType    = " << value->getTypeSpec() << std::endl;
+    o << "_valueType    = " << value.getTypeSpec() << std::endl;
     o << "_distribution = ";
     distribution->printValue(o);
     o << std::endl;
@@ -1054,7 +1073,7 @@ void StochasticNode::printStruct( std::ostream& o ) const {
     if ( type == INSTANTIATED ) {
         o << "instantiated" << std::endl;
         o << "_value        = ";
-        value->printValue(o);
+        value.printValue(o);
         o << std::endl;
     }
     else if ( type == ELIMINATED ) {
@@ -1097,12 +1116,7 @@ void StochasticNode::printValue( std::ostream& o ) const {
     if ( touched )
         RBOUT( "Warning: Variable in touched state" );
 
-    if (value == NULL) {
-        o << "NULL";
-    }
-    else {
-        value->printValue(o);
-    }
+    value.printValue(o);
 }
 
 
@@ -1249,11 +1263,7 @@ void StochasticNode::setSumProductSequence(const std::vector<StochasticNode *> s
  * Set value: same as clamp, but do not clamp. This function will
  * also be used by moves to propose a new value.
  */
-void StochasticNode::setValue( RbLanguageObject* val ) {
-
-    if (val == NULL) {
-        std::cerr << "Ooops ..." << std::endl;
-    }
+void StochasticNode::setValue( const RlValue<RbLanguageObject> &val ) {
     
     if ( clamped )
         throw RbException( "Cannot change value of clamped node" );
@@ -1267,9 +1277,6 @@ void StochasticNode::setValue( RbLanguageObject* val ) {
 
     // set the value
     value = val;
-    if (value == NULL) {
-        std::cerr << "Ooops, setting value to NULL!\n";
-    }
 }
 
 

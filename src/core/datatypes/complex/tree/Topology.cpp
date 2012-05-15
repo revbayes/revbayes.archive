@@ -18,11 +18,11 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "MemberObject.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 
@@ -114,7 +114,7 @@ const TypeSpec& Topology::getTypeSpec( void ) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Topology::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> Topology::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if (name == "nTips") {
     
@@ -125,7 +125,7 @@ RbPtr<RbLanguageObject> Topology::executeOperationSimple(const std::string& name
         return RbPtr<RbLanguageObject>( new Natural( getNumberOfNodes() ) );
     }
 
-    return MemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -188,8 +188,8 @@ const MethodTable& Topology::getMethods(void) const {
     
     if ( methodsSet == false ) 
     {
-        methods.addFunction("nTips",  new MemberFunction(Natural::getClassTypeSpec(), ntipsArgRules) );
-        methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(), nnodesArgRules) );
+        methods.addFunction("nTips",  new SimpleMemberFunction(Natural::getClassTypeSpec(), ntipsArgRules) );
+        methods.addFunction("nnodes", new SimpleMemberFunction(Natural::getClassTypeSpec(), nnodesArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );

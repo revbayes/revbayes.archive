@@ -116,10 +116,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-const RbPtr<RbLanguageObject>& FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+const RlValue<RbLanguageObject>& FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
-    RbFunction&                     theFunction = findFunction(name, args);
-    const RbPtr<RbLanguageObject>&  theValue    = theFunction.execute();
+    RbFunction&                         theFunction = findFunction(name, args);
+    const RlValue<RbLanguageObject>&    theValue    = theFunction.execute();
 
     theFunction.clear();
 
@@ -203,7 +203,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                 if (it != args.begin()) {
                     msg << ",";
                 }
-                msg << " " << (*it)->getVariable()->getDagNode()->getValue()->getTypeSpec() << " \"" << (*it)->getLabel() << "\"";
+                msg << " " << (*it)->getVariable()->getDagNode()->getValue().getTypeSpec() << " \"" << (*it)->getLabel() << "\"";
             }
             msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
@@ -272,7 +272,7 @@ RbFunction& FunctionTable::findFunction(const std::string& name, const std::vect
                     msg << " " << theStochNode->getDistribution().getVariableType();
                 }
                 else {
-                    msg << " " << theParNode->getValue()->getTypeSpec();
+                    msg << " " << theParNode->getValue().getTypeSpec();
                 }
             }
             msg << " )" << std::endl;

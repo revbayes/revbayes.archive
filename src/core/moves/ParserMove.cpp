@@ -18,7 +18,6 @@
 
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "ParserMove.h"
@@ -26,6 +25,7 @@
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "StochasticNode.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -107,8 +107,7 @@ void ParserMove::printValue(std::ostream &o) const {
 void ParserMove::setMemberVariable(std::string const &name, const Variable* var) {
     
     if ( attributeNames.find( name ) != attributeNames.end() ) {
-        RbValue<void*> lValue;
-        lValue.value = var->getValue()->getLeanValue( lValue.lengths );
+        RbValue<void*> lValue = var->getValue().getLeanValue();
         move->setAttribute( name, lValue );
     }
     else {

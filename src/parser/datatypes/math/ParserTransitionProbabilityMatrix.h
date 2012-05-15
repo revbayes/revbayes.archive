@@ -39,7 +39,7 @@ public:
     const MethodTable&                  getMethods(void) const;                                                                 //!< Get methods
     
 protected:
-    RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);     //!< Map method call to internal functions
+    RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<Argument>& args);        //!< Map method call to internal functions
     
 private:
     TransitionProbabilityMatrix         m;

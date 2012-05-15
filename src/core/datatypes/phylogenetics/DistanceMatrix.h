@@ -49,6 +49,7 @@ class DistanceMatrix : public MemberObject {
         const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
 
         // Member method inits
+        virtual RbPtr<RbLanguageObject>     executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);            //!< Override to map member methods to internal functions
         const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
     
         // Container functions
@@ -75,9 +76,6 @@ class DistanceMatrix : public MemberObject {
         void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
         void                                showData(void);                                                             //!< Show the data in the character matrix
-
-    protected:
-        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);         //!< Execute method
 
     private:
         // Utility functions

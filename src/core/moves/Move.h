@@ -57,7 +57,7 @@ class Move : public MemberObject {
 	protected:
         Move(const MemberRules& memberRules);                                                                                           //!< Default constructor
 
-        virtual RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Map method call to internal functions
+        virtual RbPtr<RbLanguageObject>         executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args);    //!< Map method call to internal functions
 
         
         std::vector<StochasticNode*>            nodes;

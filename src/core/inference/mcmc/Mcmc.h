@@ -61,7 +61,7 @@ public:
     void                            run(size_t ngen);                                                                       //!< Update the chain
 
 protected:
-    RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Execute method
+    RbPtr<RbLanguageObject>         executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args); //!< Execute method
 
  
 private:

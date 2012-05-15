@@ -161,31 +161,47 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         
         // fill the slot with the new variable
         const RbPtr<DAGNode> &theConstNode = theVariable->getDagNode();
-        const RbPtr<RbLanguageObject>& value = theConstNode->getValue();
+        const RlValue<RbLanguageObject>& value = theConstNode->getValue();
         
         
         DAGNode* theNode;
         // check if the type is valid. This is necessary for reassignments
-        if ( !value->getTypeSpec().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
+        if ( !value.getTypeSpec().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
             // We are not of a derived type (or the same type)
             // since this will create a constant node we are allowed to type cast
-            if (value->isConvertibleTo( theSlot.getVariable().getValueTypeSpec() ) ) {
-                theNode = new ConstantNode( static_cast<RbLanguageObject*>( value->convertTo( theSlot.getVariable().getValueTypeSpec() ) ) );
+            if (value.isConvertibleTo( theSlot.getVariable().getValueTypeSpec() ) ) {
+                RlValue<RbObject> tmp = value.convertTo( theSlot.getVariable().getValueTypeSpec() );
+                
+                std::vector<RbPtr<RbLanguageObject> > vals;
+                for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+                    vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+                }
+                
+                RlValue<RbLanguageObject> convValue = RlValue<RbLanguageObject>(vals, tmp.lengths);
+                theNode = new ConstantNode( convValue );
             }
             else {
                 std::ostringstream msg;
-                msg << "Cannot reassign variable '" << theSlot.getLabel() << "' with type " << value->getTypeSpec() << " with value ";
-                value->printValue(msg);
+                msg << "Cannot reassign variable '" << theSlot.getLabel() << "' with type " << value.getTypeSpec() << " with value ";
+                value.printValue(msg);
                 msg << " because the variable requires type " << theSlot.getVariable().getValueTypeSpec() << "." << std::endl;
                 throw RbException( msg );
             }
         }
         else {
-            if (value->isTypeSpec( DAGNode::getClassTypeSpec() )) {
-                theNode = static_cast<DAGNode*>( value->clone() );
+            if (value.isTypeSpec( DAGNode::getClassTypeSpec() )) {
+                theNode = static_cast<DAGNode*>( value.getSingleValue()->clone() );
             }
             else {
-                theNode = new ConstantNode( value->clone() );
+                RlValue<RbObject> tmp = value.clone();
+                
+                std::vector<RbPtr<RbLanguageObject> > vals;
+                for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+                    vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+                }
+                
+                RlValue<RbLanguageObject> clonedValue = RlValue<RbLanguageObject>(vals, tmp.lengths);
+                theNode = new ConstantNode( clonedValue );
             }
         }
         
@@ -257,7 +273,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         
         // Make an independent copy of the distribution and delete the exprVal
 //        Distribution* distribution = (Distribution*) detNode->getFunctionPtr()->execute();
-        const ParserDistribution *dist = dynamic_cast<const ParserDistribution *>( (const RbLanguageObject *) detNode->getValue() );
+        const ParserDistribution *dist = dynamic_cast<const ParserDistribution *>( (const RbLanguageObject *) detNode->getValue().getSingleValue() );
                
         // Create new stochastic node
         DAGNode* node = new StochasticNode( dist->clone(), NULL );

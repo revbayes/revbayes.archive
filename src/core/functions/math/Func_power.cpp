@@ -36,10 +36,10 @@ Func_power* Func_power::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_power::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_power::executeFunction(const std::vector<const RbObject *> &args) {
     
-    const double a = static_cast<const Real&>( *args[0]->getVariable()->getValue() ).getValue();
-    const double b = static_cast<const Real&>( *args[1]->getVariable()->getValue() ).getValue();
+    const double a = static_cast<const Real *>( args[0] )->getValue();
+    const double b = static_cast<const Real *>( args[1] )->getValue();
 
     return RbPtr<RbLanguageObject>( new Real( pow(a,b) ) );
 }

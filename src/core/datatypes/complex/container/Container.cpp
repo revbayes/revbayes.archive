@@ -18,13 +18,13 @@
 
 #include "ConstArgumentRule.h"
 #include "Container.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbObject.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "TypeSpec.h"
 
 #include <algorithm>
@@ -88,7 +88,7 @@ const MethodTable& Container::getMethods(void) const {
     if ( methodsSet == false ) 
     {
         ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size", new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+        methods.addFunction("size", new SimpleMemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
@@ -100,14 +100,14 @@ const MethodTable& Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Container::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> Container::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if (name == "size") {
         
         return RbPtr<RbLanguageObject>( new Natural( size() ) );
     } else if ( name == "[]") {
         // get the member with give index
-        const Natural *index = static_cast<const Natural *>( (const RbLanguageObject *) args[0]->getVariable()->getValue() );
+        const Natural *index = static_cast<const Natural *>( args[0] );
 
         if (size() < (size_t)(index->getValue()) ) {
             throw RbException("Index out of bounds in []");
@@ -118,7 +118,7 @@ RbPtr<RbLanguageObject> Container::executeOperationSimple(const std::string& nam
         return RbPtr<RbLanguageObject>( element.clone() );
     } 
     
-    return MemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeSimpleMethod( name, args );
 }
 
 

@@ -35,7 +35,7 @@ public:
     
     // Member variable functions
     const MemberRules&                  getMemberRules(void) const;                                                                         //!< Get member rules
-    void                                setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var);                     //!< Catch setting of the topology
+    void                                setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var);            //!< Catch setting of the topology
     
     // Member method inits
     const MethodTable&                  getMethods(void) const;                                                                             //!< Get methods
@@ -45,7 +45,7 @@ public:
     size_t                              getLength(void) const;                                                                              //!< Get the length for this plate
     
 protected:
-    RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);         //!< Execute method
+    RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args);            //!< Execute method
     
 private:
     

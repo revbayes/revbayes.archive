@@ -20,7 +20,6 @@
 #include "DagNodeFunction.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
-#include "MemberFunction.h"
 #include "MemberObject.h"
 #include "Plate.h"
 #include "RbException.h"
@@ -147,7 +146,17 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         // We need here to replace the constant expression by constant variables
         // Constant variables are faster and can be converted safely!
         if ( (*i)->isConstExpression() ) {
-            theVar->setDagNode( new ConstantNode( theVar->getValue()->clone() ) );
+            
+            RlValue<RbObject> tmp = theVar->getValue().clone();
+            
+            std::vector<RbPtr<RbLanguageObject> > vals;
+            for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+                vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+            }
+            
+            RlValue<RbLanguageObject> clonedVal = RlValue<RbLanguageObject>(vals, tmp.lengths);
+
+            theVar->setDagNode( new ConstantNode( clonedVal ) );
         }
         
         RbPtr<Argument> theArg( new ConstArgument( RbPtr<const Variable>( (Variable *) theVar), theLabel.getValue() ) );
@@ -159,9 +168,9 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         bool found = false;
         // first, we test if the function corresponds to a user-defined variable
         if ( env.existsVariable( functionName->getValue() ) ) {
-            const RbLanguageObject &theValue = env.getValue( functionName->getValue() );
+            const RlValue<RbLanguageObject> &theValue = env.getValue( functionName->getValue() );
             if ( theValue.isTypeSpec( RbFunction::getClassTypeSpec() ) ) {
-                const RbFunction &theFunc = static_cast<const RbFunction&>( theValue );
+                const RbFunction &theFunc = static_cast<const RbFunction&>( *theValue.getSingleValue() );
                 func = theFunc.clone();
                 found = func->checkArguments(args, NULL);
             }
@@ -186,9 +195,9 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
             throw RbException( "Could not find the variable" );
 
         bool successful = false;
-        if ( theNode->getValue()->isTypeSpec( MemberObject::getClassTypeSpec() ) ) {
+        if ( theNode->getValue().isTypeSpec( MemberObject::getClassTypeSpec() ) ) {
             
-            MemberObject *theMemberObject = dynamic_cast<MemberObject *>( (RbLanguageObject *) theNode->getValue() );
+            MemberObject *theMemberObject = dynamic_cast<MemberObject *>( (RbLanguageObject *) theNode->getValue().getSingleValue() );
             //        args.insert( args.begin(), new Argument( "", memberNode ) );
             // \todo: We shouldn't allow const casts!!!
             MethodTable& mt = const_cast<MethodTable&>( theMemberObject->getMethods() );
@@ -196,7 +205,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
             try {
                 RbFunction* theFunction = mt.getFunction( functionName->getValue(), args ).clone();
                 theFunction->processArguments(args);
-                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
+                SimpleMemberFunction* theMemberFunction = static_cast<SimpleMemberFunction*>( theFunction );
                 theMemberFunction->setMemberObject( theMemberObject );
                 func = theMemberFunction;
                 successful = true;

@@ -25,7 +25,6 @@
 #include "InferenceMove.h"
 #include "InferenceMonitor.h"
 #include "Mcmc.h"
-#include "MemberFunction.h"
 #include "Model.h"
 #include "FileMonitor.h"
 #include "Move.h"
@@ -40,6 +39,7 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "RbVector.h"
+#include "SimpleMemberFunction.h"
 #include "StochasticInferenceNode.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -106,8 +106,8 @@ Mcmc& Mcmc::operator=(const Mcmc &m) {
 void Mcmc::addMove( const DAGNode *m ) {
     
     // test whether var is a DagNodeContainer
-    if ( m != NULL && m->getValue()->isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        const RbPtr<const RbLanguageObject>& objPtr = m->getValue();
+    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        const RbPtr<const RbLanguageObject>& objPtr = m->getValue().getSingleValue();
         const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
         for (size_t i = 0; i < container->size(); ++i) {
             const RbObject& elemPtr = container->getElement(i);
@@ -116,7 +116,7 @@ void Mcmc::addMove( const DAGNode *m ) {
     }
     else {
         // first, we cast the value to a parser move
-        const ParserMove *move = static_cast<const ParserMove *>( (const RbLanguageObject *) m->getValue() );
+        const ParserMove *move = static_cast<const ParserMove *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
         
         // we need to extract the lean move
         InferenceMove* leanMove = move->getLeanMove()->clone();
@@ -198,8 +198,8 @@ void Mcmc::addMove(const InferenceMove *m) {
 void Mcmc::addMonitor( const DAGNode *m ) {
     
     // test whether var is a DagNodeContainer
-    if ( m != NULL && m->getValue()->isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        const RbPtr<const RbLanguageObject>& objPtr = m->getValue();
+    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        const RbPtr<const RbLanguageObject>& objPtr = m->getValue().getSingleValue();
         const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
         for (size_t i = 0; i < container->size(); ++i) {
             const RbObject& elemPtr = container->getElement(i);
@@ -208,7 +208,7 @@ void Mcmc::addMonitor( const DAGNode *m ) {
     }
     else {
         // first, we cast the value to a parser monitor
-        const ParserMonitor *monitor = static_cast<const ParserMonitor *>( (const RbLanguageObject *) m->getValue() );
+        const ParserMonitor *monitor = static_cast<const ParserMonitor *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
         
         // we need to extract the lean move
         InferenceMonitor* leanMonitor = monitor->getLeanMonitor()->clone();
@@ -235,7 +235,7 @@ void Mcmc::addMonitor( const DAGNode *m ) {
             else {
                 InferenceDagNode* clonedNode = it->second;
                 clonedNodes.push_back( clonedNode );
-                templateObjects.push_back( orgNode->getValue()->clone() );
+                templateObjects.push_back( orgNode->getValue().getSingleValue()->clone() );
             }
         }
         leanMonitor->setArguments( clonedNodes );
@@ -288,11 +288,10 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Mcmc::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> Mcmc::executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args) {
 
     if (name == "run") {
-        const RbLanguageObject& argument = *args[0]->getVariable()->getValue();
-        int n = static_cast<const Natural&>( argument ).getValue();
+        int n = static_cast<const Natural *>( args[0] )->getValue();
         run(n);
         return NULL;
     }
@@ -300,7 +299,7 @@ RbPtr<RbLanguageObject> Mcmc::executeOperationSimple(const std::string& name, co
 //        return monitors;
 //    }
 
-    return MemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -370,7 +369,7 @@ const MethodTable& Mcmc::getMethods(void) const {
         // method "run" for "n" generations
         ArgumentRules* updateArgRules = new ArgumentRules();
         updateArgRules->push_back( new ConstArgumentRule( "generations", Natural::getClassTypeSpec()     ) );
-        methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules) );
+        methods.addFunction("run", new SimpleMemberFunction( RbVoid_name, updateArgRules) );
         
 //        // get Monitors
 //        ArgumentRules* getMonitorsRules = new ArgumentRules();

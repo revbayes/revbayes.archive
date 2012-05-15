@@ -72,7 +72,7 @@ class RbFunction :  public RbLanguageObject {
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was executed.
 
         // RbFunction functions you have to override
-        virtual RbPtr<RbLanguageObject>                 execute(void);                                                                      //!< Execute function
+        virtual RlValue<RbLanguageObject>               execute(void);                                                                      //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
@@ -99,7 +99,7 @@ class RbFunction :  public RbLanguageObject {
         virtual void                                    setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var) {}   //!< Set the private member variable here (for derived classes)!
 
         // helper functions
-        RbPtr<RbLanguageObject>                         execute(const std::vector<const RbObject*>& args);                                  //!< Execute the function. This is the function one has to overwrite for vector type execution.
+        RlValue<RbLanguageObject>                       execute(size_t level, const std::vector<size_t> &offsets, const std::vector<RlValue<const RbLanguageObject> >& args);                 //!< Execute the function. This is the function one has to overwrite for vector type execution.
 
         // Member variables
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?

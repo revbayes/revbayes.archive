@@ -43,17 +43,16 @@ public:
 
     // Member variable functions
     const MemberRules&              getMemberRules(void) const;                                                                         //!< Get member rules
-    void                            setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var);                     //!< Catch setting of the topology
+    void                            setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var);            //!< Catch setting of the topology
 
     // Member method inits
-    const MethodTable&              getMethods(void) const;                                                                             //!< Get methods
+//    RbPtr<RbLanguageObject>         executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);         //!< Override to map member methods to internal functions
+//    const MethodTable&              getMethods(void) const;                                                                             //!< Get methods
 
     // Tree plate functions
     const Topology&                 getTopology(void) const;                                                                            //!< Get the topology for this tree
     void                            setNodeVariable(const TopologyNode& node, const std::string& name, RbLanguageObject* value);
     void                            setNodeVariable(const TopologyNode& node, const std::string& name, const Variable& value);
-protected:
-    RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);                 //!< Execute method
 
 private:
     

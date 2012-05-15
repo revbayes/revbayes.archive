@@ -44,13 +44,15 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
     
     // Regular functions   
-    RbPtr<RbLanguageObject>     execute(void);                                                              //!< Execute function
     const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
     void                        setArgumentVariable(const std::string& name, const Variable* var);     
     void                        setDagNode(DAGNode& obj);                                                   //!< Set the DagNode object to which this function belongs
     void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of DagNode method
-    
+
+    protected:
+    RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);                  //!< Execute the function. This is the function one has to overwrite for single return values.
+
     
 private:
     const ArgumentRules*        argumentRules;                                                              //!< Argument rules (different for different DagNode functions)

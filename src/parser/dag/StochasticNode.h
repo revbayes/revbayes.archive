@@ -68,15 +68,15 @@ public:
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
 
     // DAG node function
-    RbPtr<RbLanguageObject>                 executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args);   //!< Override to map member methods to internal functions
+    RbPtr<RbLanguageObject>                 executeMethod(const std::string& name, const std::vector<RlValue<const RbObject> >& args);            //!< Override to map member methods to internal functions
     const MethodTable&                      getMethods(void) const;                                                         //!< Get member methods (const)
-    const RbPtr<const RbLanguageObject>&    getValue(void) const;                                               //!< Get value (const)
-    const RbPtr<RbLanguageObject>&          getValue(void);                                                     //!< Get value (non-const)
+    const RlValue<const RbLanguageObject>&  getValue(void) const;                                               //!< Get value (const)
+    const RlValue<RbLanguageObject>&        getValue(void);                                                     //!< Get value (non-const)
     void                                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
 
     // StochasticNode functions
     double                                  calculateLnProbability(void);                                       //!< Calculate log conditional probability
-    void                                    clamp(const RbPtr<RbLanguageObject> &observedVal);                  //!< Clamp the node with an observed value
+    void                                    clamp(const RlValue<RbLanguageObject> &observedVal);                  //!< Clamp the node with an observed value
     void                                    markForRecalculation(void);                                         //!< Flag this node for recalculation
     const ParserDistribution&               getDistribution(void) const;                                        //!< Get distribution (const)
     ParserDistribution&                     getDistribution(void);                                              //!< Get distribution (non-const)
@@ -90,7 +90,7 @@ public:
     void                                    setInstantiated(bool inst);                                         //!< Set whether the node is instantiated or summed over
     void                                    setSummationType(VariableType t);  
     void                                    setSumProductSequence(const std::vector<StochasticNode*> seq);      //!< Set the sum-product sequence
-    void                                    setValue(RbLanguageObject* value);                                  //!< Set value but do not clamp; get affected nodes
+    void                                    setValue(const RlValue<RbLanguageObject> &value);                                  //!< Set value but do not clamp; get affected nodes
     void                                    unclamp(void);                                                      //!< Unclamp the node
     
     // DAG functions
@@ -120,13 +120,11 @@ protected:
     bool                                    probabilityRecalculated;                                            //!< Was the probability and/or likelihood recalculated
 
 private:
-    RbLanguageObject*                       createRV(void);
-    RbLanguageObject*                       createRV(const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
-    RbLanguageObject*                       createRVSingleValue(size_t plateIndex, const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
-    bool                                    isValueTypeAllowed(RbLanguageObject* observed, bool &needsConversion);
+    RlValue<RbLanguageObject>               createRV(void);
+    RlValue<RbLanguageObject>               createRV(const std::vector<size_t> &plateLengths, size_t level, const std::vector<size_t> &offsets, const std::vector<RlValue<const RbLanguageObject> > &args);
+    RlValue<RbLanguageObject>               createRVSingleValue(size_t plateIndex, const std::vector<size_t> &plateLengths, const std::vector<const RbObject*> &args);
     
-    static const TypeSpec                   typeSpec;
-    RbPtr<RbLanguageObject>                 value;                                                              //!< Value
+    RlValue<RbLanguageObject>               value;                                                              //!< Value
 
     VariableType                            type;
         

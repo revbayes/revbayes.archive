@@ -46,7 +46,7 @@ class RbMatrix : public RbVector {
         virtual                        ~RbMatrix(void) {}                                                     //!< Virtual destructor
     
         // Basic utility functions you have to override
-        virtual RbMatrix*                 clone(void) const;                                                  //!< Clone object
+        virtual RbMatrix*               clone(void) const;                                                  //!< Clone object
         static const std::string&       getClassName(void);                                                 //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                             //!< Get class type spec
         virtual void                    printValue(std::ostream& o) const;                                  //!< Print value for user

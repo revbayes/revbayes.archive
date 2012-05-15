@@ -92,13 +92,14 @@ Model& Model::operator=( const Model& x ) {
 void Model::addSourceNode( const RbPtr<const DAGNode> &sourceNode ) {
     
     // test whether var is a DagNodeContainer
-    if ( sourceNode != NULL && sourceNode->getValue()->isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        const RbPtr<const RbLanguageObject>& objPtr = sourceNode->getValue();
-        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
-        for (size_t i = 0; i < container->size(); ++i) {
-            const RbObject& elemPtr = container->getElement(i);
-            addSourceNode(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
-        }
+    if ( sourceNode != NULL && sourceNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+        throw RbException("Missing implementation to build a model from a DAG node container.");
+//        const RbPtr<const RbLanguageObject>& objPtr = sourceNode->getValue();
+//        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
+//        for (size_t i = 0; i < container->size(); ++i) {
+//            const RbObject& elemPtr = container->getElement(i);
+//            addSourceNode(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
+//        }
     }
     else {
         
@@ -333,7 +334,7 @@ void Model::printValue(std::ostream& o) const {
 		msg.str("");
        
         msg << "   Value        = ";
-        (*i)->getValue()->printValue(msg);
+        (*i)->getValue().printValue(msg);
             
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
@@ -446,7 +447,7 @@ void Model::printLeanValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Model::setMember(const std::string& name, const RbPtr<const Variable> &var) {
+void Model::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
     if ( name == "sinknode" || name == "" ) {
         
@@ -455,7 +456,7 @@ void Model::setMember(const std::string& name, const RbPtr<const Variable> &var)
         
     }
     else {
-        MemberObject::setMember(name, var);
+        MemberObject::setConstMemberVariable(name, var);
     }
 }
 

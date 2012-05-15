@@ -65,6 +65,7 @@ class TopologyNode : public MemberObject {
         const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
 
         // Member method inits
+        RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);         //!< Override to map member methods to internal functions
         const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
             
         // TopologyNode functions
@@ -83,10 +84,7 @@ class TopologyNode : public MemberObject {
         void                                setParent(TopologyNode* p);                                                 //!< Sets the node's parent
         void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
         void                                removeChild(TopologyNode* p);                                               //!< Removes a specific child
-         
-    protected:
-        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<Argument>& args);         //!< Execute method
-        
+                 
     private:
         std::string                         buildNewickString(const TopologyNode& node) const;                          //!< compute the newick string for a tree rooting at this node
         void                                refreshNewickString(void);                                                  //!< recompute the newick string

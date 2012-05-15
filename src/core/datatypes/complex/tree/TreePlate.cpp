@@ -20,7 +20,6 @@
 #include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "RbBoolean.h"
@@ -30,6 +29,7 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Real.h"
+#include "SimpleMemberFunction.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "TreePlate.h"
@@ -88,26 +88,26 @@ std::string TreePlate::buildNewickString(const TopologyNode& node) const {
             // get the name of the variable
             const std::string &varName = *it;
             
-            // get the container with the variables for this node
-            const Container *vars = static_cast<const Container *>( (const RbLanguageObject *) memberVariables[varName].getDagNode()->getValue() );
-            
-            // get the index of the node
-            size_t nodeIndex = getNodeIndex(node) - 1;
-            
-            // get the variable
-            const RbObject& obj = vars->getElement(nodeIndex);
-            const Variable& var = static_cast<const VariableSlot&>( obj ).getVariable();
-            
-            // check if this node also has the parameter (already) set and only if so, add it
-            if (var.getDagNode() != NULL) {
-                // for every except the first element we need to add a delimiter
-                if (it != nodeVariableNames.begin()) {
-                    newick += ",";
-                }
-                std::ostringstream ss;
-                var.getDagNode()->getValue()->printValue(ss);
-                newick += varName + ":" + ss.str();
-            }
+//            // get the container with the variables for this node
+//            const Container *vars = static_cast<const Container *>( memberVariables[varName].getDagNode()->getValue() );
+//            
+//            // get the index of the node
+//            size_t nodeIndex = getNodeIndex(node) - 1;
+//            
+//            // get the variable
+//            const RbObject& obj = vars->getElement(nodeIndex);
+//            const Variable& var = static_cast<const VariableSlot&>( obj ).getVariable();
+//            
+//            // check if this node also has the parameter (already) set and only if so, add it
+//            if (var.getDagNode() != NULL) {
+//                // for every except the first element we need to add a delimiter
+//                if (it != nodeVariableNames.begin()) {
+//                    newick += ",";
+//                }
+//                std::ostringstream ss;
+//                var.getDagNode()->getValue()->printValue(ss);
+//                newick += varName + ":" + ss.str();
+//            }
         }
         
         newick += "]";
@@ -146,32 +146,6 @@ const TypeSpec& TreePlate::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-
-
-/* Map calls to member methods */
-RbPtr<RbLanguageObject> TreePlate::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
-    
-    return MemberObject::executeOperationSimple( name, args );
-
-}
-
-/* Get method specifications */
-const MethodTable& TreePlate::getMethods(void) const {
-    
-    static MethodTable methods = MethodTable();
-    static bool          methodsSet = false;
-    
-    if ( methodsSet == false ) {
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &MemberObject::getMethods() );
-        methodsSet = true;
-    }
-    
-    return methods;
 }
 
 
@@ -262,13 +236,13 @@ void TreePlate::printValue(std::ostream& o) const {
 
 
 /** Catch setting of the topology variable */
-void TreePlate::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
+void TreePlate::setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var) {
     
     if ( name == "topology" ) {
-        orderingTopology = static_cast<Topology*>( (RbLanguageObject*)var );
+        orderingTopology = static_cast<Topology*>( var->clone() );
     }
     else {
-        MemberObject::setMemberVariable(name, var);
+        MemberObject::setSimpleMemberValue(name, var);
     }
 }
 
@@ -276,7 +250,7 @@ void TreePlate::setMemberVariable(const std::string& name, const RbPtr<RbLanguag
 /** Set the variable with identifier for a node */
 void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &name, RbLanguageObject *value) {
     
-    setNodeVariable(node, name, Variable( new ConstantNode(value) ) );
+    setNodeVariable(node, name, Variable( new ConstantNode(RbPtr<RbLanguageObject>( value ) ) ) );
 }
 
 
@@ -288,7 +262,7 @@ void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &nam
     {
         // we don't have a container for this variable name yet
         // so we just create one
-        Variable* var = new Variable( new ConstantNode( new DagNodeContainer( orderingTopology->getNumberOfNodes() ) ) );
+        Variable* var = new Variable( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer( orderingTopology->getNumberOfNodes() ) ) ) );
         
         memberVariables.addVariable(name, var );
         
@@ -297,7 +271,7 @@ void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &nam
     }
     
     // get the container with the variables for this node
-    DagNodeContainer *vars = static_cast<DagNodeContainer *>( (RbLanguageObject *) memberVariables[name].getValue() );
+    DagNodeContainer *vars = static_cast<DagNodeContainer *>( (RbLanguageObject *) memberVariables[name].getValue().getSingleValue() );
     
     // get the index of the node
     size_t nodeIndex = getNodeIndex(node);

@@ -93,7 +93,7 @@ class Environment : public RbInternal {
         void                                    addVariable(const std::string& name);                                                       //!< Add variable
         void                                    clear(void);                                                                                //!< clears the variable table
         void                                    eraseVariable(const std::string& name);                                                     //!< Erase a variable
-        RbPtr<RbLanguageObject>                 executeFunction(    const std::string&              name,
+        RlValue<RbLanguageObject>               executeFunction(    const std::string&              name,
                                                 const std::vector<RbPtr<Argument> >&   args);                                                       //!< Execute function
         bool                                    existsFunction(const std::string &name) const;                                              //!< Does a function exists with given name?
         bool                                    existsVariable(const std::string& name) const;                                              //!< Does variable exist?
@@ -106,8 +106,8 @@ class Environment : public RbInternal {
         const FunctionTable&                    getFunctionTable(void) const;                                                               //!< Get function table (const)
         FunctionTable&                          getFunctionTable(void);                                                                     //!< Get function table (non-const)
         const std::string&                      getName(size_t i) const;                                                                    //!< Get name at position i.
-        const RbLanguageObject&                 getValue(const std::string& name) const;                                                    //!< Convenient alternative for [name]->getValue()
-        RbLanguageObject&                       getValue(const std::string& name);                                                          //!< Convenient alternative for [name]->getValue() (non-const to return non-const value)
+        RlValue<const RbLanguageObject>         getValue(const std::string& name) const;                                                    //!< Convenient alternative for [name]->getValue()
+        const RlValue<RbLanguageObject>&        getValue(const std::string& name);                                                          //!< Convenient alternative for [name]->getValue() (non-const to return non-const value)
         virtual bool                            isSameOrParentOf(const Environment& otherEnvironment) const;                                //!< Is the Environment same or parent of other Environment?
         void                                    setName(size_t i, const std::string &n);                                                    //!< Replace the name of the i'th variable
         void                                    setParentEnvironment(Environment* newEnvironment);                                          //!< Set parent Environment

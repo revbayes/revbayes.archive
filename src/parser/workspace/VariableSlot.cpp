@@ -108,18 +108,24 @@ DAGNode* VariableSlot::getDagNode( void ) {
 
 
 /** Get the value of the variable */
-const RbPtr<const RbLanguageObject>& VariableSlot::getValue( void ) const {
+RlValue<const RbLanguageObject> VariableSlot::getValue( void ) const {
     
-    const RbPtr<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
+    const RlValue<RbLanguageObject>& tmpVal = variable->getDagNode()->getValue();
     
-    return RbPtr<const RbLanguageObject>( retVal );
+    std::vector<RbPtr<const RbLanguageObject> > constVals;
+    for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = tmpVal.value.begin(); i != tmpVal.value.end(); ++i) {
+        constVals.push_back( RbPtr<const RbLanguageObject>( *i ) );
+    }
+    
+    RlValue<const RbLanguageObject> retVal = RlValue<const RbLanguageObject>( constVals, tmpVal.lengths );
+    return retVal;
 }
 
 
 /** Get the value of the variable */
-const RbPtr<RbLanguageObject>& VariableSlot::getValue( void ) {
+const RlValue<RbLanguageObject>& VariableSlot::getValue( void ) {
     
-    const RbPtr<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
+    const RlValue<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
     
     return retVal;
 }

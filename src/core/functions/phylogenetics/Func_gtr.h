@@ -37,7 +37,7 @@ class Func_gtr :  public RbFunction {
         const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(void);                                                   //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);               //!< Execute the function. This is the function one has to overwrite for single return values.
 
     
 };

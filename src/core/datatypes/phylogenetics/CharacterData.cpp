@@ -23,12 +23,12 @@
 #include "ConstArgumentRule.h"
 #include "DnaState.h"
 #include "Ellipsis.h"
-#include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "SimpleMemberFunction.h"
 #include "StochasticNode.h"
 #include "TaxonData.h"
 #include "VariableNode.h"
@@ -121,10 +121,7 @@ void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
     sequenceNames.push_back( new RbString(obs->getTaxonName()) );
     
     // add the sequence also as a member so that we can access it by name
-    DAGNode* node = new ConstantNode( obs );
-    Variable* var = new Variable( node );
-    var->incrementReferenceCount();
-    taxonMap.insert( std::pair<std::string,const Variable*>( obs->getTaxonName(), var ) );
+    taxonMap.insert( std::pair<std::string, RbPtr<TaxonData> >( obs->getTaxonName(), obs ) );
 }
 
 void CharacterData::addTaxonData( TaxonData* obs ) {
@@ -191,7 +188,7 @@ void CharacterData::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> CharacterData::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
 
 //    if (name == "names") 
 //        {
@@ -363,7 +360,7 @@ RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string&
 //        return isHomologous;
 //        }
 
-    return MemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -420,16 +417,6 @@ const std::string& CharacterData::getFileName(void) const {
 }
 
 
-const std::map<std::string, const Variable*>& CharacterData::getMembers(void) const {
-    return taxonMap;
-}
-
-
-std::map<std::string, const Variable*>& CharacterData::getMembers(void) {
-    return taxonMap;
-}
-
-
 /** Get member rules */
 const MemberRules& CharacterData::getMemberRules(void) const {
 
@@ -480,34 +467,34 @@ const MethodTable& CharacterData::getMethods(void) const {
         excludecharArgRules->push_back(        new ConstArgumentRule(     "", Natural::getClassTypeSpec()       ) );
         excludecharArgRules2->push_back(       new ConstArgumentRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
         
-        methods.addFunction("names",               new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
-        methods.addFunction("nchar",               new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
-        methods.addFunction("ntaxa",               new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
-        methods.addFunction("chartype",            new MemberFunction(RbString::getClassTypeSpec(),      chartypeArgRules           ) );
-        methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
-        methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
-        methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
-        methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
-        methods.addFunction("excludedtaxa",        new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
-        methods.addFunction("excludedchars",       new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
-        methods.addFunction("includedtaxa",        new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
-        methods.addFunction("includedchars",       new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
-        methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
-        methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
-        methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules        ) );
-        methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules2       ) );
-        methods.addFunction("show",                new MemberFunction(RbVoid_name,        showdataArgRules           ) );
-        methods.addFunction("ishomologous",        new MemberFunction(RbBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+        methods.addFunction("names",               new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
+        methods.addFunction("nchar",               new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
+        methods.addFunction("ntaxa",               new SimpleMemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
+        methods.addFunction("chartype",            new SimpleMemberFunction(RbString::getClassTypeSpec(),      chartypeArgRules           ) );
+        methods.addFunction("nexcludedtaxa",       new SimpleMemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
+        methods.addFunction("nexcludedchars",      new SimpleMemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
+        methods.addFunction("nincludedtaxa",       new SimpleMemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
+        methods.addFunction("nincludedchars",      new SimpleMemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
+        methods.addFunction("excludedtaxa",        new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
+        methods.addFunction("excludedchars",       new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
+        methods.addFunction("includedtaxa",        new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
+        methods.addFunction("includedchars",       new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
+        methods.addFunction("nconstantpatterns",   new SimpleMemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
+        methods.addFunction("ncharswithambiguity", new SimpleMemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
+        methods.addFunction("excludechar",         new SimpleMemberFunction(RbVoid_name,        excludecharArgRules        ) );
+        methods.addFunction("excludechar",         new SimpleMemberFunction(RbVoid_name,        excludecharArgRules2       ) );
+        methods.addFunction("show",                new SimpleMemberFunction(RbVoid_name,        showdataArgRules           ) );
+        methods.addFunction("ishomologous",        new SimpleMemberFunction(RbBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
             
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( TaxonData::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new SimpleMemberFunction( TaxonData::getClassTypeSpec(), squareBracketArgRules) );
             
             
         // add method for call "x[]" as a function
         ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+        methods.addFunction("size",  new SimpleMemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
             
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );
@@ -569,10 +556,10 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
         throw RbException( "Taxon index out of range" );
 
     const std::string& name = static_cast<const RbString &>( sequenceNames[tn] ).getValue();
-    const std::map<std::string, const Variable*>::const_iterator& i = taxonMap.find(name); 
+    const std::map<std::string, RbPtr<TaxonData> >::const_iterator& i = taxonMap.find(name); 
     
     if (i != taxonMap.end() ) {
-        return *static_cast<const TaxonData *>( (const RbLanguageObject *)i->second->getValue() );
+        return *i->second;
     }
     else {
         throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
@@ -689,8 +676,8 @@ RbVector* CharacterData::makeSiteColumn( size_t cn ) const {
         throw RbException( "Character matrix is empty" );
 
     const std::string& name = static_cast<const RbString &>( sequenceNames[0] ).getValue();
-    const std::map<std::string, const Variable*>::const_iterator& it = taxonMap.find(name);
-    TaxonData* temp = static_cast<TaxonData*>( ( it->second->getValue() )->clone() );
+    const std::map<std::string, RbPtr<TaxonData> >::const_iterator& it = taxonMap.find(name);
+    const RbPtr<TaxonData>& temp = it->second;
     // @John: Not sure if this code works. Seems strange to me (Sebastian)
 //    temp->clear();
 //    for ( size_t i=0; i<getNumberOfTaxa(); i++ )
@@ -784,10 +771,7 @@ void CharacterData::setElement( const size_t index, RbLanguageObject* var ) {
         static_cast<RbString &>( sequenceNames[index] ) = seq->getTaxonName();
         
         // add the sequence also as a member so that we can access it by name
-        DAGNode* variable = new ConstantNode(var );
-        Variable* var = new Variable( variable );
-        var->incrementReferenceCount();
-        taxonMap.insert( std::pair<std::string, const Variable*>( seq->getTaxonName(), var ) );
+        taxonMap.insert( std::pair<std::string, RbPtr<TaxonData> >( seq->getTaxonName(), static_cast<TaxonData*>( var ) ) );
     }
 }
 
@@ -799,17 +783,17 @@ void CharacterData::setElement( size_t row, size_t col, RbLanguageObject* var ) 
 
 
 /** Catch setting of the mixture variable */
-void CharacterData::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
+void CharacterData::setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var) {
     
     if ( name == "type" ) {
 //        elementType = TypeSpec( static_cast<RbString&>( var->getValue() ).getValue() );
     }
     else if ( name == "x" || name == "" ) {
-        TaxonData* obs = static_cast<TaxonData *>( (RbLanguageObject*) var );
+        TaxonData* obs = static_cast<TaxonData *>( var->clone() );
         addTaxonData( obs );        
     }
     else {
-        MemberObject::setMemberVariable(name, var);
+        MemberObject::setSimpleMemberValue(name, var);
     }
 }
 

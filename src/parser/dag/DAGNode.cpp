@@ -87,12 +87,34 @@ void DAGNode::addChildNode(VariableNode *c) {
     }
 }
 
-/** 
- * All DAG node types provide the functions to add and remove monitors. 
+/** Execute method. 
+ * This is the deault implemention. You should overwrite this method only if you want to treat the multidimensional data type RlValue
+ * yourselve.
  *
+ * We assumes that the arguments come as scalar types, not multidimensional RevLanguage objects.
+ * Therefore, we just delegate the call to executeSimpleMethod.
+ */
+RbPtr<RbLanguageObject> DAGNode::executeMethod(std::string const &name, const std::vector<RlValue<const RbObject> > &args) {
+    
+    std::vector<const RbObject *> simpleArgs;
+    for (std::vector<RlValue<const RbObject> >::const_iterator i =args.begin(); i != args.end(); ++i) {
+        // check first if these arguments are actually scalars
+        if (i->lengths.size() > 0 ) {
+            throw RbException("We currently do not support setting of multidimensional member values!");
+        }
+        simpleArgs.push_back( i->getSingleValue() );
+    }
+    
+    // calling the internal method to execute the member-method
+    return executeSimpleMethod(name, simpleArgs );
+}
+
+
+/** 
+ * DAG nodes might provides special member access functions. 
  * These functions are implemented here.
  */
-RbPtr<RbLanguageObject> DAGNode::executeOperation(std::string const &name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> DAGNode::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     throw RbException("No method with name '" + name + "' available for DAG nodes.");
 }

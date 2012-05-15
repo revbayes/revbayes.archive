@@ -20,12 +20,12 @@
 #include "DistanceMatrix.h"
 #include "ConstantNode.h"
 #include "ConstArgumentRule.h"
-#include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "SimpleMemberFunction.h"
 #include "StochasticNode.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -111,7 +111,7 @@ void DistanceMatrix::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> DistanceMatrix::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> DistanceMatrix::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
 
 //    if (name == "names") 
 //        {
@@ -219,7 +219,7 @@ RbPtr<RbLanguageObject> DistanceMatrix::executeOperationSimple(const std::string
 //        return RbNullObject::getInstance();
 //        }
 
-    return MemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -302,17 +302,17 @@ const MethodTable& DistanceMatrix::getMethods(void) const {
         excludetaxaArgRules3->push_back(       new ConstArgumentRule(     "", RbString::getClassTypeSpec()      ) );
         excludetaxaArgRules4->push_back(       new ConstArgumentRule(     "", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ) ) );
 
-        methods.addFunction("names",         new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
-        methods.addFunction("ntaxa",         new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
-        methods.addFunction("nexcludedtaxa", new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
-        methods.addFunction("nincludedtaxa", new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
-        methods.addFunction("excludedtaxa",  new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
-        methods.addFunction("includedtaxa",  new MemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
-        methods.addFunction("show",          new MemberFunction(RbVoid_name,        showdataArgRules           ) );
-        methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules        ) );
-        methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules2       ) );
-        methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules3       ) );
-        methods.addFunction("excludetaxa",   new MemberFunction(RbVoid_name,        excludetaxaArgRules4       ) );
+        methods.addFunction("names",         new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
+        methods.addFunction("ntaxa",         new SimpleMemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
+        methods.addFunction("nexcludedtaxa", new SimpleMemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
+        methods.addFunction("nincludedtaxa", new SimpleMemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
+        methods.addFunction("excludedtaxa",  new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
+        methods.addFunction("includedtaxa",  new SimpleMemberFunction(TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
+        methods.addFunction("show",          new SimpleMemberFunction(RbVoid_name,        showdataArgRules           ) );
+        methods.addFunction("excludetaxa",   new SimpleMemberFunction(RbVoid_name,        excludetaxaArgRules        ) );
+        methods.addFunction("excludetaxa",   new SimpleMemberFunction(RbVoid_name,        excludetaxaArgRules2       ) );
+        methods.addFunction("excludetaxa",   new SimpleMemberFunction(RbVoid_name,        excludetaxaArgRules3       ) );
+        methods.addFunction("excludetaxa",   new SimpleMemberFunction(RbVoid_name,        excludetaxaArgRules4       ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );

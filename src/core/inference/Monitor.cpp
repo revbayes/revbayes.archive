@@ -19,10 +19,10 @@
 #include "DagNodeContainer.h"
 #include "Ellipsis.h"
 #include "Integer.h"
-#include "MemberFunction.h"
 #include "Monitor.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "VariableNode.h"
 
 #include <sstream>

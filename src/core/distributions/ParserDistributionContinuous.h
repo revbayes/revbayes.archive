@@ -17,7 +17,6 @@
 #define ParserDistributionContinuous_H
 
 #include "DistributionContinuous.h"
-#include "MemberFunction.h"
 #include "ParserDistribution.h"
 #include "Real.h"
 
@@ -45,12 +44,13 @@ public:
     
     // Member object functions
     double                                  cdf( const Real& value);                                                                //!< Cumulative probability
+    RbPtr<RbLanguageObject>                 executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args); //!< Override to map member methods to internal functions
     DistributionContinuous*                 getLeanDistribution(void) const;                                                        //!< Get the lean distribution
     double                                  getMax(void) const;                                                                     //!< Get max value of coverage
     const MemberRules&                      getMemberRules(void) const;                                                             //!< Get member rules
     const MethodTable&                      getMethods(void) const;                                                                 //!< Get member methods
     double                                  getMin(void) const;                                                                     //!< Get min value of coverage
-    double                                  jointLnPdf( const RbLanguageObject& value) const;                                       //!< Ln probability density
+    double                                  jointLnPdf( const RlValue<RbLanguageObject>& value) const;                              //!< Ln probability density
     double                                  lnPdf( const RbLanguageObject& value) const;                                            //!< Ln probability density
     double                                  pdf( const RbLanguageObject& value) const;                                              //!< Probability density
     double                                  quantile(const double p);                                                               //!< Quantile
@@ -59,7 +59,6 @@ public:
     void                                    setValue(const RbValue<void*> &v);                                                      //!< Set the pointers to the value of the distribution.
     
 protected:
-    RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);     //!< Direct call of member method
     
     TypeSpec                                typeSpec;
     

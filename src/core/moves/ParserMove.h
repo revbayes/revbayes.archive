@@ -22,6 +22,7 @@
 #include "MemberObject.h"
 #include "Natural.h"
 #include "RealPos.h"
+#include "SimpleMemberFunction.h"
 
 class RandomNumberGenerator;
 

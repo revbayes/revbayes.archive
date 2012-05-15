@@ -18,13 +18,13 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "ConstArgumentRule.h"
-#include "MemberFunction.h"
 #include "MemberObject.h"
 #include "MethodTable.h"
 #include "RbBoolean.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "TopologyNode.h"
 
 #include <algorithm>
@@ -214,7 +214,7 @@ bool TopologyNode::equals(const TopologyNode& node) const {
 }
 
 
-RbPtr<RbLanguageObject> TopologyNode::executeOperationSimple(const std::string& name, const std::vector<Argument>& args) {
+RbPtr<RbLanguageObject> TopologyNode::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if (name == "isTip") {
         return RbPtr<RbLanguageObject>( new RbBoolean( isTipNode ) );
@@ -232,9 +232,7 @@ RbPtr<RbLanguageObject> TopologyNode::executeOperationSimple(const std::string& 
         return RbPtr<RbLanguageObject>( new RbString( this->name ) );
     }
     else
-        throw RbException("No member method called '" + name + "'");
-    
-    return NULL;
+        return MemberObject::executeSimpleMethod(name, args);
 }
 
 
@@ -278,11 +276,11 @@ const MethodTable& TopologyNode::getMethods(void) const {
         ArgumentRules* isRootArgRules = new ArgumentRules();
         ArgumentRules* isInteriorArgRules = new ArgumentRules();
         
-        methods.addFunction("ancestor",   new MemberFunction(TopologyNode::getClassTypeSpec(), ancestorRules) );
-        methods.addFunction("getName",    new MemberFunction(RbString::getClassTypeSpec(),     getNameRules) );
-        methods.addFunction("isTip",      new MemberFunction(RbBoolean::getClassTypeSpec(),    isTipArgRules) );
-        methods.addFunction("isRoot",     new MemberFunction(RbBoolean::getClassTypeSpec(),    isRootArgRules) );
-        methods.addFunction("isInterior", new MemberFunction(RbBoolean::getClassTypeSpec(),    isInteriorArgRules) );
+        methods.addFunction("ancestor",   new SimpleMemberFunction(TopologyNode::getClassTypeSpec(), ancestorRules) );
+        methods.addFunction("getName",    new SimpleMemberFunction(RbString::getClassTypeSpec(),     getNameRules) );
+        methods.addFunction("isTip",      new SimpleMemberFunction(RbBoolean::getClassTypeSpec(),    isTipArgRules) );
+        methods.addFunction("isRoot",     new SimpleMemberFunction(RbBoolean::getClassTypeSpec(),    isRootArgRules) );
+        methods.addFunction("isInterior", new SimpleMemberFunction(RbBoolean::getClassTypeSpec(),    isInteriorArgRules) );
         
         // Necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );

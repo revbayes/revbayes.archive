@@ -30,9 +30,9 @@ class RbObject;
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode(const RbPtr<RbLanguageObject> &val);                                                                   //!< Constructor from value
-    ConstantNode(const RbPtr<RbLanguageObject> &val, const RbPtr<const Plate> &p);                                      //!< Constructor from value
-    ConstantNode(const ConstantNode &x);                                                                                //!< Copy constructor
+    ConstantNode(const RlValue<RbLanguageObject> &val);                                                                     //!< Constructor from value
+    ConstantNode(const RlValue<RbLanguageObject> &val, const RbPtr<const Plate> &p);                                        //!< Constructor from value
+    ConstantNode(const ConstantNode &x);                                                                                    //!< Copy constructor
 
     // overloaded operators
     ConstantNode&                           operator=(const ConstantNode &c);                                               //!< Overloaded assignment operator
@@ -46,9 +46,9 @@ public:
     void                                    printValue(std::ostream& o) const;                                              //!< Print value for user
 
     // ConstantNode functions
-    const RbPtr<const RbLanguageObject>&    getValue(void) const;                                                           //!< Get value 
-    const RbPtr<RbLanguageObject>&          getValue(void);                                                                 //!< Get value 
-    void                                    setValue(const RbPtr<RbLanguageObject> &val);                                   //!< Set the value of the constant node
+    const RlValue<const RbLanguageObject>&  getValue(void) const;                                                           //!< Get value 
+    const RlValue<RbLanguageObject>&        getValue(void);                                                                 //!< Get value 
+    void                                    setValue(const RlValue<RbLanguageObject> &val);                                   //!< Set the value of the constant node
 
     // DAG functions
     DAGNode*                                cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;            //!< Clone entire graph
@@ -68,7 +68,7 @@ protected:
 
 private:
 
-    RbPtr<RbLanguageObject>                 value;                                                                          //!< Value
+    RlValue<RbLanguageObject>               value;                                                                          //!< Value
 
 };
 

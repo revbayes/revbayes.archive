@@ -67,7 +67,9 @@ std::string ParserFunction::debugInfo(void) const {
         o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
     
     for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = " << args[i]->getVariable()->getValue() << std::endl;
+        o << " args[" << i << "] = ";
+        args[i]->getVariable()->getValue().printValue( o );
+        o << std::endl;
     }
     
     return o.str();

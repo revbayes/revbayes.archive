@@ -26,17 +26,17 @@ class Func_clear :  public RbFunction {
     
 public:
     // Basic utility functions
-    Func_clear*                 clone(void) const;                                  //!< Clone object
-    static const std::string&   getClassName(void);                                 //!< Get class name
-    static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
-    const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
+    Func_clear*                 clone(void) const;                                          //!< Clone object
+    static const std::string&   getClassName(void);                                         //!< Get class name
+    static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
+    const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
     
     // Func_clear functions
-    RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute function
-    const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
-    const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
+    const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+    const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return val
 
 protected:
+    RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute the function. This is the function one has to overwrite for single return values.
 
 };
 

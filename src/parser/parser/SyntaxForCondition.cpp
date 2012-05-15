@@ -160,14 +160,14 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    const RbPtr<DAGNode>&           theNode     = inExpression->evaluateContent(env)->getDagNode();
-    const RbPtr<RbLanguageObject>&  theValue    = theNode->getValue();
+    const RbPtr<DAGNode>&               theNode     = inExpression->evaluateContent(env)->getDagNode();
+    const RlValue<RbLanguageObject>&    theValue    = theNode->getValue();
 
     // Check that it is a vector
-    if ( theValue->isTypeSpec( Container::getClassTypeSpec() ) == false ) {
+    if ( theValue.isTypeSpec( Container::getClassTypeSpec() ) == false ) {
        throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = dynamic_cast<Container*>(theValue->clone());
+    vector = dynamic_cast<Container*>(theValue.getSingleValue()->clone());
 
     // Initialize nextValue
     nextElement = 0;

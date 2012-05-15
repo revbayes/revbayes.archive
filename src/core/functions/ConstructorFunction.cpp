@@ -16,6 +16,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
 #include "MemberObject.h"
@@ -75,13 +76,12 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbPtr<RbLanguageObject> ConstructorFunction::execute( void ) {
+RbPtr<RbLanguageObject> ConstructorFunction::executeFunction(const std::vector<const RbObject *> &args) {
     
     copyObject = templateObject->clone();
 
-    
     for ( size_t i = 0; i < args.size(); i++ ) {
-        copyObject->setMember( args[i]->getLabel(), args[i]->getVariable() );
+        copyObject->setConstMember( this->args[i]->getLabel(), RbPtr<const Variable>( new Variable( new ConstantNode( RlValue<RbLanguageObject>( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( args[i]->clone() ) ) ) ) ) ) );
     }
  
     return RbPtr<RbLanguageObject>( copyObject );

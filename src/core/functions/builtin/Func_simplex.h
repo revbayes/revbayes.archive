@@ -41,7 +41,7 @@ class Func_simplex :  public RbFunction {
         bool                        throws(void) const;                                         //!< One variant needs to throw
 
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
+        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);                          //!< Execute the function. This is the function one has to overwrite for single return values.
 
 };
 
@@ -67,9 +67,9 @@ Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
 
 /** Execute function: Simplex <- ( Integer ) */
 template <>
-RbPtr<RbLanguageObject> Func_simplex<Integer>::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_simplex<Integer>::executeFunction(const std::vector<const RbObject *> &args) {
 
-    int size = static_cast<const Integer&>( *args[0]->getVariable()->getValue() ).getValue();
+    int size = static_cast<const Integer *>( args[0] )->getValue();
 
     if ( size < 2 )
         throw RbException( "Simplex size must be at least 2" );
@@ -80,9 +80,9 @@ RbPtr<RbLanguageObject> Func_simplex<Integer>::executeFunction( void ) {
 
 /** Execute function: Simplex <- ( VectorRealPos ) */
 template <>
-RbPtr<RbLanguageObject> Func_simplex<RbVector>::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_simplex<RbVector>::executeFunction(const std::vector<const RbObject *> &args) {
 
-    const RbVector& tempVec = static_cast<const RbVector& >( *args[0]->getVariable()->getValue() );
+    const RbVector& tempVec = static_cast<const RbVector &>( *args[0] );
 
     return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );
 }
@@ -90,11 +90,11 @@ RbPtr<RbLanguageObject> Func_simplex<RbVector>::executeFunction( void ) {
 
 /** Execute function: Simplex <- ( RealPos, RealPos, ... ) */
 template <>
-RbPtr<RbLanguageObject> Func_simplex<RealPos>::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_simplex<RealPos>::executeFunction(const std::vector<const RbObject *> &args) {
 
     RbVector  tempVec( RealPos::getClassTypeSpec() );
     for ( size_t i = 0; i < args.size(); i++ )
-        tempVec.push_back( static_cast<const RealPos&>( *args[i]->getVariable()->getValue() ).clone() );
+        tempVec.push_back( static_cast<const RealPos *>( args[i] )->clone() );
 
     // Normalization is done by the Simplex constructor
     return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );

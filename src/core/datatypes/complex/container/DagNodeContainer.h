@@ -49,11 +49,11 @@ class DagNodeContainer : public Container {
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
 
         // Member object functions
-        virtual const MethodTable&          getMethods(void) const;                                                     //!< Get methods
+//        RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);         //!< Override to map member methods to internal functions
+//        virtual const MethodTable&          getMethods(void) const;                                                     //!< Get methods
 
         // Container functions
         void                                clear(void);                                                                //!< Clear
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args);   //!< Execute a member method
         const RbObject&                     getElement(size_t index) const;                                             //!< Get element
         RbObject&                           getElement(size_t index);                                                   //!< Get element (non-const to return non-const element)
         void                                pop_back(void);                                                             //!< Drop element at back

@@ -23,7 +23,6 @@
 #include "DeterministicNode.h"
 #include "Integer.h"
 #include "Simulate.h"
-#include "MemberFunction.h"
 #include "Model.h"
 #include "FileMonitor.h"
 #include "Monitor.h"
@@ -38,6 +37,7 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "RbVector.h"
+#include "SimpleMemberFunction.h"
 #include "StochasticNode.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -61,11 +61,10 @@ Simulate* Simulate::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Simulate::executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> Simulate::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if (name == "run") {
-        const RbLanguageObject& argument = *args[0]->getVariable()->getValue();
-        int n = static_cast<const Natural&>( argument ).getValue();
+        int n = static_cast<const Natural *>( args[0] )->getValue();
         run(n);
         return NULL;
     }
@@ -73,7 +72,7 @@ RbPtr<RbLanguageObject> Simulate::executeOperationSimple(const std::string& name
 //        return monitors;
 //    }
 
-    return MemberObject::executeOperationSimple( name, args );
+    return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -213,11 +212,11 @@ const MethodTable& Simulate::getMethods(void) const {
         
         ArgumentRules* updateArgRules = new ArgumentRules();
         updateArgRules->push_back( new ConstArgumentRule( "dataElements", Natural::getClassTypeSpec()     ) );
-        methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules ) );
+        methods.addFunction("run", new SimpleMemberFunction( RbVoid_name, updateArgRules ) );
         
         // get Monitors
         ArgumentRules* getMonitorsRules = new ArgumentRules();
-        methods.addFunction("getMonitors", new MemberFunction( TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec( Monitor::getClassTypeSpec() ) ), getMonitorsRules) );
+        methods.addFunction("getMonitors", new SimpleMemberFunction( TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec( Monitor::getClassTypeSpec() ) ), getMonitorsRules) );
         
         methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;
@@ -302,7 +301,7 @@ void Simulate::run(size_t ndata) {
         for (size_t i = 0; i < orderedStochasticNodes.size() ; i++) {
             ParserDistribution& dist = orderedStochasticNodes[i]->getDistribution();
             dist.rv();
-            orderedStochasticNodes[i]->setValue( dist.getTemplateRandomVariable().clone() );
+//            orderedStochasticNodes[i]->setValue( dist.getTemplateRandomVariable().clone() );
             // we need to call keep so that the values get recalculated properly
             orderedStochasticNodes[i]->keep();
         }

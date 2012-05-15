@@ -46,6 +46,7 @@ public:
     
     // Member method inits
     virtual const MethodTable&                  getMethods(void) const;                                             //!< Get methods
+    virtual RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);         //!< Override to map member methods to internal functions
 
     // Container functions you do not have to override
     const TypeSpec&                             getElementType(void) const { return elementType; }                  //!< Get element type
@@ -59,8 +60,6 @@ protected:
     Container(const TypeSpec &elemType, const MemberRules& memberRules);                                    //!< Set type spec of container from type of elements
     
     Container&                                  operator=(const Container& x);                                          //!< Assignment operator
-
-    virtual RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args);//!< Execute method
 
     // Member variables
     const TypeSpec                              elementType;                                                            //!< Type of elements

@@ -12,7 +12,6 @@
 #include "Complex.h"
 #include "ConstArgumentRule.h"
 #include "Ellipsis.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -22,6 +21,7 @@
 #include "RbNullObject.h"
 #include "RbString.h"
 #include "RbUtil.h"
+#include "SimpleMemberFunction.h"
 #include "TypeSpec.h"
 
 #include <algorithm>
@@ -38,15 +38,15 @@ RbVector::RbVector( const TypeSpec &elemType ) : Container( elemType ), typeSpec
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-    methods.addFunction("[]",  new MemberFunction( elemType, squareBracketArgRules) );
+    methods.addFunction("[]",  new SimpleMemberFunction( elemType, squareBracketArgRules) );
     
     // add method for call "x.sort()" as a function
     ArgumentRules* sortArgRules = new ArgumentRules();
-    methods.addFunction("sort",  new MemberFunction( RbVoid_name, sortArgRules) );
+    methods.addFunction("sort",  new SimpleMemberFunction( RbVoid_name, sortArgRules) );
     
     // add method for call "x.unique()" as a function
     ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique",  new MemberFunction( RbVoid_name, uniqueArgRules) );
+    methods.addFunction("unique",  new SimpleMemberFunction( RbVoid_name, uniqueArgRules) );
     
     // necessary call for proper inheritance
     methods.setParentTable( &Container::getMethods() );
@@ -65,15 +65,15 @@ RbVector::RbVector(const TypeSpec &elemType, size_t n) : Container( elemType ), 
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-    methods.addFunction("[]",  new MemberFunction( elemType, squareBracketArgRules) );
+    methods.addFunction("[]",  new SimpleMemberFunction( elemType, squareBracketArgRules) );
     
     // add method for call "x.sort()" as a function
     ArgumentRules* sortArgRules = new ArgumentRules();
-    methods.addFunction("sort",  new MemberFunction( RbVoid_name, sortArgRules) );
+    methods.addFunction("sort",  new SimpleMemberFunction( RbVoid_name, sortArgRules) );
     
     // add method for call "x.unique()" as a function
     ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique",  new MemberFunction( RbVoid_name, uniqueArgRules) );
+    methods.addFunction("unique",  new SimpleMemberFunction( RbVoid_name, uniqueArgRules) );
     
     // necessary call for proper inheritance
     methods.setParentTable( &Container::getMethods() );
@@ -96,15 +96,15 @@ RbVector::RbVector(const TypeSpec &elemType, size_t n, RbObject* x) : Container(
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-    methods.addFunction("[]",  new MemberFunction( elemType, squareBracketArgRules) );
+    methods.addFunction("[]",  new SimpleMemberFunction( elemType, squareBracketArgRules) );
     
     // add method for call "x.sort()" as a function
     ArgumentRules* sortArgRules = new ArgumentRules();
-    methods.addFunction("sort",  new MemberFunction( RbVoid_name, sortArgRules) );
+    methods.addFunction("sort",  new SimpleMemberFunction( RbVoid_name, sortArgRules) );
     
     // add method for call "x.unique()" as a function
     ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique",  new MemberFunction( RbVoid_name, uniqueArgRules) );
+    methods.addFunction("unique",  new SimpleMemberFunction( RbVoid_name, uniqueArgRules) );
     
     // necessary call for proper inheritance
     methods.setParentTable( &Container::getMethods() );
@@ -353,7 +353,7 @@ std::vector<RbObject *>::const_iterator RbVector::end( void ) const {
 
 
 /** Execute member function. */
-RbPtr<RbLanguageObject> RbVector::executeOperationSimple(std::string const &name, const std::vector<RbPtr<Argument> > &args) {
+RbPtr<RbLanguageObject> RbVector::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if ( name == "sort" ) {
         sort();
@@ -366,7 +366,7 @@ RbPtr<RbLanguageObject> RbVector::executeOperationSimple(std::string const &name
         return NULL;
     }
     
-    return Container::executeOperationSimple(name, args);
+    return Container::executeSimpleMethod(name, args);
 }
 
 
@@ -604,18 +604,6 @@ void RbVector::setElement(const size_t index, RbObject *elem) {
     elements.erase(elements.begin()+index);
     
     elements.insert(elements.begin()+index, elem);
-}
-
-
-/** Vector a member variable */
-void RbVector::setMemberVariable(const std::string& name, const RbPtr<RbLanguageObject> &var) {
-    
-    if (name == "x" || name == "" ) { // the ellipsis variables
-        push_back( var );
-    }
-    else {
-        Container::setMemberVariable(name, var);
-    }
 }
 
 

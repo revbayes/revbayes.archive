@@ -53,7 +53,7 @@ class FunctionTable : public RbInternal {
         // FunctionTable functions
         virtual void                            addFunction(const std::string name, const RbPtr<RbFunction> &func);                     //!< Add function
         void                                    clear(void);                                                                            //!< Clear table
-        const RbPtr<RbLanguageObject>&          executeFunction(const std::string&           name,
+        const RlValue<RbLanguageObject>&        executeFunction(const std::string&           name,
                                                                 const std::vector<RbPtr<Argument> >& args);                                     //!< Evaluate function (once)
         bool                                    existsFunction(const std::string &name) const;                                          //!< Does this table contain a function with given name?
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)

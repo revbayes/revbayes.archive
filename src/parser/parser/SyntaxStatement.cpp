@@ -203,7 +203,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && result->getValue() != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && !result->getValue().isNULL() ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -255,7 +255,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
 	            result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && result->getValue() != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && !result->getValue().isNULL() ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -298,7 +298,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent(env);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && result->getValue() != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && !result->getValue().isNULL() ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -323,7 +323,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->getValue() != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !result->getValue().isNULL() && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -342,7 +342,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && result->getValue() != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && !(*i)->isTypeSpec(SyntaxAssignExpr::getClassTypeSpec()) && !result->getValue().isNULL() ) {
                     std::ostringstream msg;
                     result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
@@ -372,17 +372,17 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment& env ) cons
     if ( temp == NULL )
         return false;
     
-    if ( temp->getValue()->isTypeSpec( RbBoolean::getClassTypeSpec() ) ) {
+    if ( temp->getValue().isTypeSpec( RbBoolean::getClassTypeSpec() ) ) {
         
-        bool retValue = static_cast<const RbBoolean&>( *temp->getValue() ).getValue();
+        bool retValue = static_cast<const RbBoolean&>( *temp->getValue().getSingleValue() ).getValue();
         
         return retValue;
     }
     else {
         
-        RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue()->convertTo( RbBoolean::getClassTypeSpec() ) );
+        RbPtr<RbObject> tempObject = temp->getValue().convertTo( RbBoolean::getClassTypeSpec() ).getSingleValue();
+        RbBoolean* tempBool = static_cast<RbBoolean*>( (RbObject *) tempObject );
         bool     retValue = tempBool->getValue();
-        delete tempBool;
         
         return   retValue;
     }

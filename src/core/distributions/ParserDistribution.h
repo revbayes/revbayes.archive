@@ -22,10 +22,10 @@
 
 #include "Distribution.h"
 #include "MemberObject.h"
-#include "MemberFunction.h"
 #include "RbValue.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "SimpleMemberFunction.h"
 
 #include <set>
 #include <string>
@@ -48,7 +48,8 @@ public:
     
     // Member object function you have to override
     virtual const MemberRules&              getMemberRules(void) const = 0;                                                     //!< Get member rules
-    
+    virtual RbPtr<RbLanguageObject>         executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);//!< Override to map member methods to internal functions
+
     // Member object functions you may want to override
     virtual void                            clear(void);                                                                        //!< Clear the arguments
     virtual const MethodTable&              getMethods(void) const;                                                             //!< Get member methods
@@ -59,7 +60,7 @@ public:
     
     // functions you have to override
     virtual Distribution*                   getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
-    virtual double                          jointLnPdf( const RbLanguageObject& value) const = 0;                               //!< Ln probability density
+    virtual double                          jointLnPdf( const RlValue<RbLanguageObject>& value) const = 0;                      //!< Ln probability density
     virtual double                          lnPdf( const RbLanguageObject& value) const = 0;                                    //!< Ln probability density
     virtual double                          pdf( const RbLanguageObject& value) const = 0;                                      //!< Probability density function
     virtual void                            rv(void) = 0;                                                                       //!< Generate a random draw
@@ -69,9 +70,7 @@ public:
 protected:
     ParserDistribution( const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);               //!< Simple constructor
     ParserDistribution( const ParserDistribution &p);                                                                           //!< Copy constructor
-    
-    virtual RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const std::vector<RbPtr<Argument> >& args); //!< Map member methods to internal functions
-    
+        
     std::string                         name;
     MemberRules                         memberRules;
     std::vector<RbPtr<Argument> >       params;

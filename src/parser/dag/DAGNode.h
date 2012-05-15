@@ -21,6 +21,7 @@
 
 #include "RbLanguageObject.h"
 #include "RbPtr.h"
+#include "RlValue.h"
 #include "TypeSpec.h"
 #include "Variable.h"
 
@@ -53,8 +54,8 @@ class DAGNode : public RbLanguageObject {
         virtual DAGNode*                                    clone(void) const = 0;                                                                  //!< Clone this node
         static const std::string&                           getClassName(void);                                                                     //!< Get DAG node class name
         static const TypeSpec&                              getClassTypeSpec(void);                                                                 //!< Get DAG node class type spec
-        virtual const RbPtr<const RbLanguageObject>&        getValue(void) const = 0;                                                               //!< Get value (const)
-        virtual const RbPtr<RbLanguageObject>&              getValue(void) = 0;                                                                     //!< Get value (non-const)
+        virtual const RlValue<const RbLanguageObject>&      getValue(void) const = 0;                                                               //!< Get value (const)
+        virtual const RlValue<RbLanguageObject>&            getValue(void) = 0;                                                                     //!< Get value (non-const)
         virtual const TypeSpec&                             getTypeSpec(void) const = 0;                                                            //!< Get the type spec of the instance
         virtual void                                        printStruct(std::ostream& o) const = 0;                                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                                  //!< Print value for user
@@ -62,7 +63,8 @@ class DAGNode : public RbLanguageObject {
         // DAG function you have to override
         virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;                //!< Clone graph
         virtual InferenceDagNode*                           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0;         //!< Create a lean DAG from this "fat" DAG
-        virtual RbPtr<RbLanguageObject>                     executeOperation(const std::string& name, const std::vector<RbPtr<Argument> >& args);   //!< Override to map member methods to internal functions
+        virtual RbPtr<RbLanguageObject>                     executeMethod(const std::string& name, const std::vector<RlValue<const RbObject> >& args);      //!< Override to map member methods to internal functions
+        virtual RbPtr<RbLanguageObject>                     executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args);        //!< Override to map member methods to internal functions
         virtual void                                        expand(void) = 0;                                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
         virtual const MethodTable&                          getMethods(void) const;                                                                 //!< Get member methods (const)
         virtual bool                                        isEliminated(void) const = 0;

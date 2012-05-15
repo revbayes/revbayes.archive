@@ -230,8 +230,7 @@ InferenceDagNode* DeterministicNode::createLeanDag(std::map<const DAGNode *, Inf
     InferenceFunction* leanFunction = function->getLeanFunction()->clone();
     
     // make a copy of the current value
-    RbValue<void*> leanValue;
-    leanValue.value = value->getLeanValue( leanValue.lengths );
+    RbValue<void*> leanValue = value.getLeanValue();
     
     /* Create a lean DAG node */
     DeterministicInferenceNode* copy = new DeterministicInferenceNode( leanValue, leanFunction, name);
@@ -282,7 +281,7 @@ std::string DeterministicNode::debugInfo( void ) const {
     o << std::endl;
     
     o << "value       = ";
-    value->printValue(o);
+    value.printValue(o);
     o << std::endl;
     
     return o.str();
@@ -346,18 +345,23 @@ const RbFunction& DeterministicNode::getFunction(void) const {
 }
 
 
-/** Get value */
-const RbPtr<const RbLanguageObject>& DeterministicNode::getValue( void ) const {
+/* Get value */
+const RlValue<const RbLanguageObject>& DeterministicNode::getValue( void ) const {
     
     if ( touched && needsUpdate )
         const_cast<DeterministicNode*>(this)->update();
     
-    return RbPtr<const RbLanguageObject>( value );
+    std::vector<RbPtr<const RbLanguageObject> > tmp;
+    for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = value.value.begin(); i != value.value.end(); ++i) {
+        tmp.push_back( RbPtr<const RbLanguageObject>() );
+    }
+    
+    return RlValue<const RbLanguageObject>( tmp, value.lengths );
 }
 
 
-/** Get value */
-const RbPtr<RbLanguageObject>& DeterministicNode::getValue( void ) {
+/* Get value */
+const RlValue<RbLanguageObject>& DeterministicNode::getValue( void ) {
         
     if ( touched && needsUpdate )
         update();
@@ -482,8 +486,7 @@ void DeterministicNode::printValue( std::ostream& o ) const {
     if ( touched && needsUpdate )
         const_cast<DeterministicNode*>(this)->update();
 
-    if (value != NULL) 
-        value->printValue(o);
+    value.printValue(o);
 }
 
 /** Print struct for user */
@@ -491,10 +494,10 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
     
     o << "_DAGClass    = " << getClassTypeSpec() << std::endl;
     o << "_value       = ";
-    value->printValue(o);
+    value.printValue(o);
     o << std::endl;
     
-    o << "_valueType   = " << value->getTypeSpec() << std::endl;
+    o << "_valueType   = " << value.getTypeSpec() << std::endl;
     o << "_function    = " << function->getTypeSpec() << std::endl;
     o << "_touched     = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
     o << "_needsUpdate = " << ( needsUpdate ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;

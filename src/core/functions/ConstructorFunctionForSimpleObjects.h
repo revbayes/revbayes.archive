@@ -45,12 +45,11 @@ public:
     const TypeSpec&                         getTemplateObjectType(void) const { return templateObject->getTypeSpec(); }         //!< Get the type of the template object
     
 protected:
-    const RbLanguageObject&                 executeFunction(void);                                                          //!< Execute function
+    RbPtr<RbLanguageObject>                 executeFunction(const std::vector<const RbObject*>& args);                      //!< Execute the function. This is the function one has to overwrite for single return values.
     void                                    setArgumentVariable(const std::string& name, const Variable* var);
 
     const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
     RbPtr<RbLanguageObject>                 templateObject;                                                                 //!< The template object
-    RbPtr<RbLanguageObject>                 copyObject;
     
 };
 

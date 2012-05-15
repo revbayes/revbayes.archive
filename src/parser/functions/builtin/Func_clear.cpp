@@ -33,7 +33,7 @@ Func_clear* Func_clear::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_clear::execute( void ) {
+RbPtr<RbLanguageObject> Func_clear::executeFunction(const std::vector<const RbObject *> &args) {
     
     // clear the user workspace
     Workspace::userWorkspace().clear();

@@ -17,10 +17,10 @@
  */
 
 #include "ConstantNode.h"
-#include "MemberFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbLanguageObject.h"
+#include "SimpleMemberFunction.h"
 #include "TypeSpec.h"
 #include "Workspace.h"
 

@@ -111,7 +111,7 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> UserFunction::executeFunction( void ) {
+RlValue<RbLanguageObject> UserFunction::executeFunction( void ) {
 
     // Clear signals
     Signals::getSignals().clearFlags();
@@ -134,9 +134,17 @@ RbPtr<RbLanguageObject> UserFunction::executeFunction( void ) {
             break;
     }
 
+    RlValue<RbObject> tmp = retVar->getValue().clone();
     
+    std::vector<RbPtr<RbLanguageObject> > vals;
+    for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+        vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+    }
+    
+    RlValue<RbLanguageObject> retValue = RlValue<RbLanguageObject>(vals, tmp.lengths);
+
     // Return the return value
-    return RbPtr<RbLanguageObject>( retVar->getValue()->clone() );
+    return retValue;
 }
 
 

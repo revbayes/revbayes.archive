@@ -19,8 +19,8 @@
 #define ParserMonitor_H
 
 #include "MemberObject.h"
-#include "MemberFunction.h"
 #include "RbString.h"
+#include "SimpleMemberFunction.h"
 
 #include <fstream>
 #include <ostream>
@@ -50,8 +50,8 @@ public:
     void                                    printValue(std::ostream& o) const;                                  //!< Print value (for user)
     
     // Member Object Functions
-    const MemberRules&                      getMemberRules(void) const;                                         //!< The member rules for a ParserMonitor
-    void                                    setMemberVariable(const std::string &name, const Variable* var);    //!< Set a member variable. We catch here setting of variable nodes
+    const MemberRules&                      getMemberRules(void) const;                                                 //!< The member rules for a ParserMonitor
+    void                                    setMemberVariable(const std::string &name, const RbPtr<Variable> &var);     //!< Set a member variable. We catch here setting of variable nodes
     
     // access functions
     const InferenceMonitor*                 getLeanMonitor(void) const;

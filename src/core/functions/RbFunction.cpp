@@ -326,7 +326,7 @@ int RbFunction::computeMatchScore(const DAGNode *arg, const ArgumentRule &rule) 
    
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
 
-    const TypeSpec& argClass = arg->getValue()->getTypeSpec();
+    const TypeSpec& argClass = arg->getValue().getTypeSpec();
     size_t j = 0;
     const TypeSpec* parent = &argClass;
     do {
@@ -353,7 +353,9 @@ std::string RbFunction::debugInfo(void) const {
         o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
     
     for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = " << args[i]->getVariable()->getValue() << std::endl;
+        o << " args[" << i << "] = ";
+        args[i]->getVariable()->getValue().printValue(o);
+        o << std::endl;
     }
     
     return o.str();
@@ -366,13 +368,15 @@ std::string RbFunction::debugInfo(void) const {
  * from DAG nodes to RbObjects.
  *
  */
-RbPtr<RbLanguageObject> RbFunction::execute(void) {
+RlValue<RbLanguageObject> RbFunction::execute(void) {
     
-    std::vector<const RbObject*> newArgs;
+    std::vector<RlValue<const RbLanguageObject> > newArgs;
+    std::vector<size_t> offsets;
     for (std::vector<RbPtr<Argument> >::iterator i = args.begin(); i != args.end(); ++i) {
         newArgs.push_back( (*i)->getVariable()->getValue() );
+        offsets.push_back( 0 );
     }
-    return execute( newArgs );
+    return execute( 0, offsets, newArgs );
     
 }
 
@@ -384,44 +388,64 @@ RbPtr<RbLanguageObject> RbFunction::execute(void) {
  * if one or more arguments are containers.
  *
  */
-RbPtr<RbLanguageObject> RbFunction::execute( const std::vector<const RbObject*> &args ) {
+RlValue<RbLanguageObject> RbFunction::execute( size_t level, const std::vector<size_t> &offsets, const std::vector<RlValue<const RbLanguageObject> > &args ) {
     
     // check each argument if it is a vector and hence the function needs repeated evaluation
     bool repeatedExecution = false;
     size_t size = 0;
-    for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
-        if ( (*i)->isTypeSpec( Container::getClassTypeSpec() ) ) {
+    std::vector<size_t> new_offsets;
+    for (size_t i = 0; i != args.size(); ++i) {
+        if ( args[i].lengths.size() > level ) {
+            // security check
+            if ( repeatedExecution && size != args[i].lengths[level] ) {
+                throw RbException("Received arguments with different lengths in the same dimension!");
+            }
+            
             repeatedExecution = true;
-            size = static_cast<const Container*>( *i )->size();
-            break;
+            size = args[i].lengths[level];
+            new_offsets.push_back( offsets[i] * size);
+        }
+        else {
+            new_offsets.push_back( offsets[i] );
         }
     }
     
-    RbPtr<RbLanguageObject> retVal;
+    RlValue<RbLanguageObject> retVal;
     if ( repeatedExecution ) {
-        RbVector* retValVector = new RbVector( RbLanguageObject::getClassTypeSpec() );
         for ( size_t j = 0; j < size; ++j) {
-            std::vector<const RbObject*> newArgs;
-            for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
-                if ( (*i)->isTypeSpec( Container::getClassTypeSpec() ) ) {
-                    newArgs.push_back( &static_cast<const Container*>( (*i) )->getElement(j) );
-                }
-                else {
-                    newArgs.push_back( *i );
-                    
+            
+            // call the execute function now for the single elements
+            const RlValue<RbLanguageObject>& singleRetVal = execute(level+1, new_offsets, args);
+            
+            // push back all single elements to the retVal
+            for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = singleRetVal.value.begin(); i != singleRetVal.value.end(); ++i) {
+                retVal.value.push_back( *i );
+            }
+            
+            // set the dimension correctly
+            if ( j == 0) {
+                for (std::vector<size_t>::const_iterator i = singleRetVal.lengths.begin(); i != singleRetVal.lengths.end(); ++i) {
+                    retVal.lengths.push_back( *i );
                 }
             }
-            // call the execute function now for the single elements
-            const RbPtr<RbLanguageObject>& singleRetVal = execute(newArgs);
-            retValVector->push_back( singleRetVal );
+            
+            // update the offsets
+            for (size_t i = 0; i != args.size(); ++i) {
+                if ( args[i].lengths.size() > level ) {
+                    new_offsets[i]++;
+                }
+            }
         }
-        
-        retVal = retValVector;
     }
     else {
+        std::vector<const RbObject *> newArgs;
+        
+        for (size_t i = 0; i != args.size(); ++i) {
+            newArgs.push_back( args[i].value[offsets[i]] );
+        }
         
         // get the value by executing the internal function
-        retVal = executeFunction(args);
+        retVal = executeFunction(newArgs);
     }
     
     return retVal;

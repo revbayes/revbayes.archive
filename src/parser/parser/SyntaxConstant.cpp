@@ -92,9 +92,9 @@ RbPtr<Variable> SyntaxConstant::evaluateContent( Environment& env ) {
 
     // We return a clone in case this function is called repeatedly.
     if (value == NULL)
-        return RbPtr<Variable>( new Variable(new ConstantNode( NULL ) ) );
-    else
-        return RbPtr<Variable>( new Variable(new ConstantNode( value->clone() ) ) );
+        return RbPtr<Variable>( new Variable(new ConstantNode( RbPtr<RbLanguageObject>( NULL ) ) ) );
+    else 
+        return RbPtr<Variable>( new Variable(new ConstantNode( RbPtr<RbLanguageObject>( value->clone() ) ) ) );
 }
 
 

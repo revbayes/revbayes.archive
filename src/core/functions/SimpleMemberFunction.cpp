@@ -1,13 +1,13 @@
 /**
  * @file
- * This file contains the implementation of MemberFunction, which is used
+ * This file contains the implementation of SimpleMemberFunction, which is used
  * to map member function calls (member method calls) of complex objects
  * to internal functions instead of providing regular RbFunction objects
  * implementing the member functions. Note that the first argument passed
  * in a member function call is a pointer to the MemberNode of the calling
  * object (like a this pointer).
  *
- * @brief Implementation of MemberFunction
+ * @brief Implementation of SimpleMemberFunction
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -23,7 +23,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Ellipsis.h"
-#include "MemberFunction.h"
+#include "SimpleMemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -33,29 +33,29 @@
 
 
 /** Constructor */
-MemberFunction::MemberFunction(const TypeSpec retType, ArgumentRules* argRules) : 
+SimpleMemberFunction::SimpleMemberFunction(const TypeSpec retType, ArgumentRules* argRules) : 
     RbFunction(), argumentRules(argRules), object(NULL), returnType(retType) {
 
 }
 
 
 /** Clone the object */
-MemberFunction* MemberFunction::clone(void) const {
+SimpleMemberFunction* SimpleMemberFunction::clone(void) const {
 
-    return new MemberFunction(*this);
+    return new SimpleMemberFunction(*this);
 }
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbPtr<RbLanguageObject> MemberFunction::execute( void ) {
+RbPtr<RbLanguageObject> SimpleMemberFunction::executeFunction( const std::vector<const RbObject *> &args ) {
 
-    return object->executeOperation( funcName, args );
+    return object->executeSimpleMethod( funcName, args );
 
 }
 
 
 /** Get class name of object */
-const std::string& MemberFunction::getClassName(void) { 
+const std::string& SimpleMemberFunction::getClassName(void) { 
     
     static std::string rbClassName = "Member function";
     
@@ -63,7 +63,7 @@ const std::string& MemberFunction::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& MemberFunction::getClassTypeSpec(void) { 
+const TypeSpec& SimpleMemberFunction::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
     
@@ -71,7 +71,7 @@ const TypeSpec& MemberFunction::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& MemberFunction::getTypeSpec( void ) const {
+const TypeSpec& SimpleMemberFunction::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -80,20 +80,20 @@ const TypeSpec& MemberFunction::getTypeSpec( void ) const {
 
 
 /** Get argument rules */
-const ArgumentRules& MemberFunction::getArgumentRules(void) const {
+const ArgumentRules& SimpleMemberFunction::getArgumentRules(void) const {
 
     return *argumentRules;
 }
 
 
 /** Get return type */
-const TypeSpec& MemberFunction::getReturnType(void) const {
+const TypeSpec& SimpleMemberFunction::getReturnType(void) const {
 
     return returnType;
 }
 
 
-void MemberFunction::setMemberObject( const RbPtr<MemberObject>& obj) {
+void SimpleMemberFunction::setMemberObject( const RbPtr<MemberObject>& obj) {
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;
@@ -101,7 +101,7 @@ void MemberFunction::setMemberObject( const RbPtr<MemberObject>& obj) {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void MemberFunction::setArgumentVariable(std::string const &name, const Variable* var) {
+void SimpleMemberFunction::setArgumentVariable(std::string const &name, const RbPtr<const RbLanguageObject> &var) {
     
     
     // We expect a couple of parameters which we need to add to the member function. Therefore we do not call the base class.

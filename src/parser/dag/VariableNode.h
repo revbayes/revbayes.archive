@@ -38,8 +38,8 @@ public:
     virtual VariableNode*                           clone(void) const = 0;                                                                  //!< Clone this node
     static const std::string&                       getClassName(void);                                                                     //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
-    virtual const RbPtr<const RbLanguageObject>&    getValue(void) const = 0;                                                               //!< Get value (const)
-    virtual const RbPtr<RbLanguageObject>&          getValue(void) = 0;                                                                     //!< Get value (non-const)
+    virtual const RlValue<const RbLanguageObject>&  getValue(void) const = 0;                                                               //!< Get value (const)
+    virtual const RlValue<RbLanguageObject>&        getValue(void) = 0;                                                                     //!< Get value (non-const)
     virtual void                                    printStruct(std::ostream& o) const = 0;                                                 //!< Print struct for user
     virtual void                                    printValue(std::ostream& o) const = 0;                                                  //!< Print value for user
 
