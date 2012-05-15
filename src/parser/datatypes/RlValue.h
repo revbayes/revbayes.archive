@@ -157,7 +157,7 @@ bool RlValue<valueType>::isConvertibleTo( const TypeSpec &type ) const {
 template <typename valueType>
 bool RlValue<valueType>::isNULL( void ) const {
     
-    return value.size() == 0;
+    return value.size() == 0 || value[0] == NULL;
 }
 
 
