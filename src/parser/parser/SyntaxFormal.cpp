@@ -55,7 +55,7 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
     }
 
     // Create the type specification
-    argType = new TypeSpec( Workspace::userWorkspace().getClassTypeSpecOfType( typeString ) );
+    argType = new TypeSpec( Workspace::userWorkspace()->getClassTypeSpecOfType( typeString ) );
     
     // Make argument rule from element
     if (defaultExpr == NULL)

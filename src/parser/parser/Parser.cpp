@@ -157,7 +157,7 @@ int Parser::execute(SyntaxElement* root, Environment &env) const {
         if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
 
             RbString& fxnName = theVariable->getIdentifier();
-            const std::vector<RbPtr<RbFunction> >& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( fxnName.getValue() );
+            const std::vector<RbPtr<RbFunction> >& functions = Workspace::userWorkspace()->getFunctionTable().findFunctions( fxnName.getValue() );
             if ( functions.size() != 0 ) {
                 RBOUT( "Usage:" );
                 for ( std::vector<RbPtr<RbFunction> >::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
@@ -248,7 +248,7 @@ int Parser::help(const RbString& symbol) const {
         else if ( userHelp.isHelpAvailableForQuery( symbol.getValue() ) == false )
             RBOUT("Help unavailable for \"" + symbol.getValue() + "\"");
 
-        const std::vector<RbPtr<RbFunction> >& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol.getValue() );
+        const std::vector<RbPtr<RbFunction> >& functions = Workspace::userWorkspace()->getFunctionTable().findFunctions( symbol.getValue() );
         if ( functions.size() != 0 ) {
             RBOUT( "Usage:" );
             for ( std::vector<RbPtr<RbFunction> >::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {

@@ -49,7 +49,7 @@ RbPtr<RbLanguageObject> Func_ls::executeFunction( const std::vector<const RbObje
     std::cout << "===============" << std::endl;
     std::cout << std::endl;
 
-    Workspace::userWorkspace().printValue( std::cout );
+    Workspace::userWorkspace()->printValue( std::cout );
     std::cout << std::endl;
     
     if ( printAll == true ) {
@@ -58,7 +58,7 @@ RbPtr<RbLanguageObject> Func_ls::executeFunction( const std::vector<const RbObje
         std::cout << "===============" << std::endl;
         std::cout << std::endl;
 
-        Workspace::globalWorkspace().printValue( std::cout );
+        Workspace::globalWorkspace()->printValue( std::cout );
         std::cout << std::endl;
     }
 

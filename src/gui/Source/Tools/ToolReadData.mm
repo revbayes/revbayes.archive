@@ -239,7 +239,7 @@
     
     // check the workspace and make certain that we use an unused name for the
     // data variable
-    std::string variableName = Workspace::userWorkspace().generateUniqueVariableName();
+    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
 		    
     // format a string command to read the data file(s) and send the
@@ -247,7 +247,7 @@
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-    int coreResult = Parser::getParser().processCommand(line);
+    int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -256,7 +256,7 @@
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    RbLanguageObject* dv = Workspace::userWorkspace().getValue(variableName).clone();
+    RbLanguageObject* dv = Workspace::userWorkspace()->getValue(variableName).getSingleValue()->clone();
     if ( dv == NULL )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -274,9 +274,9 @@
         for (int i=0; i<dnc->size(); i++)
             {
             const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
-            const RbLanguageObject& theDagNode = vs->getDagNode()->getValue();
-            const CharacterData& cd = static_cast<const CharacterData&>( theDagNode );
-            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            const RbPtr<const RbLanguageObject>& theDagNode = vs->getDagNode()->getValue().getSingleValue();
+            const CharacterData *cd = static_cast<const CharacterData *>( (const RbLanguageObject *) theDagNode );
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)];
             [newMatrix setAlignmentMethod:@"Unknown"];
             [self addMatrix:newMatrix];
             }
@@ -296,8 +296,8 @@
         }
         
     // erase the data in the core
-    if ( Workspace::userWorkspace().existsVariable(variableName) )
-        Workspace::userWorkspace().eraseVariable(variableName);
+    if ( Workspace::userWorkspace()->existsVariable(variableName) )
+        Workspace::userWorkspace()->eraseVariable(variableName);
         
     // set the name of the variable in the tool
     [self setDataWorkspaceName:@""];

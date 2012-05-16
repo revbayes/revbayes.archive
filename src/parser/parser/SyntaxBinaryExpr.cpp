@@ -123,7 +123,7 @@ RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];
     
-    RbFunction* theFunction = Workspace::globalWorkspace().getFunction(funcName, args).clone();
+    RbFunction* theFunction = Workspace::globalWorkspace()->getFunction(funcName, args).clone();
     theFunction->processArguments( args );
     
     return RbPtr<Variable>( new Variable(new DeterministicNode( theFunction, NULL ) ) );

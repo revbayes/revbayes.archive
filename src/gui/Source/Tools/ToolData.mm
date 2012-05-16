@@ -112,8 +112,8 @@
         {
         const char* tempSeeStr = [[self dataWorkspaceName] UTF8String];
         std::string tempStr = tempSeeStr;
-        if ( Workspace::userWorkspace().existsVariable(tempStr) == true )
-            Workspace::userWorkspace().eraseVariable(tempStr);
+        if ( Workspace::userWorkspace()->existsVariable(tempStr) == true )
+            Workspace::userWorkspace()->eraseVariable(tempStr);
         [self setDataWorkspaceName:@""];
         }
         
@@ -143,7 +143,7 @@
         }
     
     // check the workspace and make certain that we use an unused name for the data variable
-    std::string variableName = Workspace::userWorkspace().generateUniqueVariableName();
+    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
 		    
     // format a string command to read the data file(s) and send the
@@ -151,7 +151,7 @@
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-    int coreResult = Parser::getParser().processCommand(line);
+    int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -234,10 +234,10 @@
         const char* cmdAsCStr = [fn UTF8String];
         std::string cmdAsStlStr = cmdAsCStr;
         std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-        int coreResult = Parser::getParser().processCommand(line);
+            int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
         if (coreResult != 0)
             NSLog(@"Error: Could not create data in workspace");
-        if ( !Workspace::userWorkspace().existsVariable(variableName) )
+        if ( !Workspace::userWorkspace()->existsVariable(variableName) )
             NSLog(@"Error: Could not create data in workspace");
 return;
         }
@@ -268,17 +268,17 @@ return;
         const char* cmdAsCStr = [tempDir UTF8String];
         std::string cmdAsStlStr = cmdAsCStr;
         std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-        int coreResult = Parser::getParser().processCommand(line);
+            int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
         if (coreResult != 0)
             NSLog(@"Error: Could not create data in workspace");
-        if ( !Workspace::userWorkspace().existsVariable(variableName) )
+        if ( !Workspace::userWorkspace()->existsVariable(variableName) )
             NSLog(@"Error: Could not create data in workspace");
         }
     [self removeFilesFromTemporaryDirectory];
     
     [self makeDataInspector];
 
-    if ( Workspace::userWorkspace().existsVariable(variableName) )
+    if ( Workspace::userWorkspace()->existsVariable(variableName) )
         std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
 }
 
@@ -399,8 +399,8 @@ return;
 
     NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);
     std::string tempName = [vName UTF8String];
-    if ( Workspace::userWorkspace().existsVariable(tempName) )
-        Workspace::userWorkspace().eraseVariable(tempName);
+    if ( Workspace::userWorkspace()->existsVariable(tempName) )
+        Workspace::userWorkspace()->eraseVariable(tempName);
     [self removeAllDataMatrices];
 }
 

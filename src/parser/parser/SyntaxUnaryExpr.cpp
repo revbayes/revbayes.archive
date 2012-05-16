@@ -113,7 +113,7 @@ RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Find the function
     std::string funcName = "_" + opCode[operation];
-    RbFunction* func = Workspace::globalWorkspace().getFunction(funcName, arg).clone();
+    RbFunction* func = Workspace::globalWorkspace()->getFunction(funcName, arg).clone();
     func->processArguments( arg );
 
     // Return new function node

@@ -85,7 +85,7 @@
         }
 
     // get a variable name from the workspace for the data 
-    std::string dataName = Workspace::userWorkspace().generateUniqueVariableName();
+    std::string dataName = Workspace::userWorkspace()->generateUniqueVariableName();
 		    
     // format a string command to read the data file(s) and send the
     // formatted string to the parser
@@ -93,14 +93,14 @@
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = dataName + " <- read(\"" + cmdAsStlStr + "\")";
     std::cout << line << std::endl;
-    int coreResult = Parser::getParser().processCommand(line);
+    int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self stopProgressIndicator];
         return;
         }
         
-    std::string distName = Workspace::userWorkspace().generateUniqueVariableName();
+    std::string distName = Workspace::userWorkspace()->generateUniqueVariableName();
 
     // get string for specifying distance commands
     std::string cmdStr = distName;
@@ -148,15 +148,15 @@
     std::cout << cmdStr << std::endl;
 
     // have the core process the command
-    coreResult = Parser::getParser().processCommand(cmdStr);
+    coreResult = Parser::getParser().processCommand(cmdStr, Workspace::userWorkspace());
     if (coreResult != 0)
         {
         // possibly return, after erasing the temporary variable names
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RbLanguageObject& dv = Workspace::userWorkspace().getValue(distName);
-    if ( RbNullObject::getInstance() == dv )
+    const RbPtr<RbLanguageObject>& dv = Workspace::userWorkspace()->getValue(distName).getSingleValue();
+    if ( NULL == dv )
         {
         //[self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not find matrix in work space", @"OK", nil, nil);
@@ -166,8 +166,8 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    const DistanceMatrix& dm = dynamic_cast<const DistanceMatrix&>( dv );
-    if ( RbNullObject::getInstance() == dm )
+    DistanceMatrix *dm = dynamic_cast<DistanceMatrix *>( (RbLanguageObject *) dv );
+    if ( NULL == dm )
         {
         NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not convert matrix in work space", @"OK", nil, nil);
         [self stopProgressIndicator];
@@ -179,12 +179,12 @@
 
     // fill in the distance matrix in the tool
 //    std::vector<std::vector<double> > dMat = dm.getValue();
-    numTaxa = (int)dm.getNumberOfTaxa();
+    numTaxa = (int)dm->getNumberOfTaxa();
     for (int i=0; i<numTaxa; i++)
         {
         for (int j=0; j<numTaxa; j++)
             {
-            NSNumber* myNumber = [[NSNumber alloc] initWithDouble:(dm[i][j])];
+            NSNumber* myNumber = [[NSNumber alloc] initWithDouble:((*dm)[i][j])];
             [distances addObject:myNumber];
             [myNumber release];
             }
@@ -202,8 +202,8 @@
         }
     
     // remove the variables from the core
-    Workspace::userWorkspace().eraseVariable(dataName);
-    Workspace::userWorkspace().eraseVariable(distName);
+    Workspace::userWorkspace()->eraseVariable(dataName);
+    Workspace::userWorkspace()->eraseVariable(distName);
 
     [self stopProgressIndicator];
 }
@@ -295,7 +295,7 @@
         }
         
     // make a unique name for this distance matrix
-    std::string variableName = Workspace::userWorkspace().generateUniqueVariableName();
+    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
     [self setWorkspaceName:nsVariableName];
         
@@ -308,7 +308,7 @@
     line += ", \"jc69\", \"equal\", \"equal\", 0.5, 0.0)";
     std::cout << "line = \"" << line << "\"" << std::cout;
     
-    int coreResult = Parser::getParser().processCommand(line);
+    int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self stopProgressIndicator];

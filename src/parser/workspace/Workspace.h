@@ -78,42 +78,32 @@ class Workspace : public Environment {
     public:
     
         // Frame functions you have to override
-        Workspace*                  clone(void) const;                                                                              //!< Clone frame
-        static const std::string&   getClassName(void);                                                                             //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                                                        //!< Get language type of the object
-        void                        printValue(std::ostream& o) const;                                                              //!< Print table for user
+        Workspace*                      clone(void) const;                                                                              //!< Clone frame
+        static const std::string&       getClassName(void);                                                                             //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                                                         //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                                                                        //!< Get language type of the object
+        void                            printValue(std::ostream& o) const;                                                              //!< Print table for user
         
-        bool                        addDistribution(const std::string& name, const RbPtr<ParserDistribution> &dist);                //!< Add distribution on continuous variable
-        bool                        addDistribution(const std::string& name, const RbPtr<ParserDistributionContinuous> &dist);      //!< Add distribution on continuous variable
-        bool                        addType(const RbPtr<RbObject> &exampleObj);                                                     //!< Add type
-        bool                        addType(const std::string& name, const RbPtr<RbObject> &exampleObj);                            //!< Add special abstract type (synonym)
-        bool                        addTypeWithConstructor(const std::string& name, const RbPtr<MemberObject> &templ);              //!< Add type with constructor
-        bool                        addTypeWithConstructor(const std::string& name, const RbPtr<RbLanguageObject> &templ);          //!< Add type with constructor
-        bool                        areTypesInitialized(void) const { return typesInitialized; }                                    //!< Is type table initialized?
-        bool                        existsType(const TypeSpec& name) const;                                                         //!< Does the type exist in the type table?
-        const TypeSpec&             getClassTypeSpecOfType(const std::string& type) const;                                          //!< Get reference to class vector of type
-        void                        initializeGlobalWorkspace(void);                                                                //!< Initialize global workspace
-        static Workspace&           globalWorkspace(void)                                                                           //!< Get global workspace
-                                        {
-                                        static bool workspaceInit = false;
-                                        static Workspace globalSpace = Workspace();
-                                        if (!workspaceInit) {
-                                            globalSpace.incrementReferenceCount();
-                                            workspaceInit = true;
-                                        }
-                                        return globalSpace;
-                                        }
-        static Workspace&           userWorkspace(void)                                                                             //!< Get user workspace
-                                        {
-                                        static bool workspaceInit = false;
-                                        static Workspace userSpace = Workspace(&Workspace::globalWorkspace());
-                                        if (!workspaceInit) {
-                                            userSpace.incrementReferenceCount();
-                                            workspaceInit = true;
-                                        }
-                                        return userSpace;
-                                    }
+        bool                            addDistribution(const std::string& name, const RbPtr<ParserDistribution> &dist);                //!< Add distribution on continuous variable
+        bool                            addDistribution(const std::string& name, const RbPtr<ParserDistributionContinuous> &dist);      //!< Add distribution on continuous variable
+        bool                            addType(const RbPtr<RbObject> &exampleObj);                                                     //!< Add type
+        bool                            addType(const std::string& name, const RbPtr<RbObject> &exampleObj);                            //!< Add special abstract type (synonym)
+        bool                            addTypeWithConstructor(const std::string& name, const RbPtr<MemberObject> &templ);              //!< Add type with constructor
+        bool                            addTypeWithConstructor(const std::string& name, const RbPtr<RbLanguageObject> &templ);          //!< Add type with constructor
+        bool                            areTypesInitialized(void) const { return typesInitialized; }                                    //!< Is type table initialized?
+        bool                            existsType(const TypeSpec& name) const;                                                         //!< Does the type exist in the type table?
+        const TypeSpec&                 getClassTypeSpecOfType(const std::string& type) const;                                          //!< Get reference to class vector of type
+        void                            initializeGlobalWorkspace(void);                                                                //!< Initialize global workspace
+        static const RbPtr<Workspace>&  globalWorkspace(void)                                                                           //!< Get global workspace
+                                            {
+                                                static RbPtr<Workspace> globalSpace = new Workspace();
+                                                return globalSpace;
+                                            }
+        static const RbPtr<Workspace>&  userWorkspace(void)                                                                             //!< Get user workspace
+                                            {
+                                                static RbPtr<Workspace> userSpace = new Workspace(Workspace::globalWorkspace());
+                                                return userSpace;
+                                            }
  
     private:
                                     Workspace(void);                                                                                //!< Workspace with NULL parent

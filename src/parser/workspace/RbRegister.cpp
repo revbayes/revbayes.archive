@@ -358,8 +358,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "unif",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_unif(), "uniform", distUnifMemberRules, new Real() ) ) );
         
         /* Now we have added all primitive and complex data types and can start type checking */
-        Workspace::globalWorkspace().typesInitialized = true;
-        Workspace::userWorkspace().typesInitialized   = true;
+        Workspace::globalWorkspace()->typesInitialized = true;
+        Workspace::userWorkspace()->typesInitialized   = true;
 
         ///////////////////////////////
         // Add parser functions here //

@@ -290,7 +290,7 @@ RbPtr<RbLanguageObject> CharacterData::executeSimpleMethod(std::string const &na
         }
     else if (name == "excludechar")
         {
-        const RbObject& argument = *args[1];
+        const RbObject& argument = *args[0];
         if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
             {
             int n = static_cast<const Natural&>( argument ).getValue();

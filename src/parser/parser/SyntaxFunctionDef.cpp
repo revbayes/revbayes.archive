@@ -35,7 +35,7 @@ SyntaxFunctionDef::SyntaxFunctionDef( RbString* type,
                         
     if (type != NULL) {
         const std::string   typeString  = type->getValue();
-                            returnType  = new TypeSpec( Workspace::userWorkspace().getClassTypeSpecOfType(typeString) );
+                            returnType  = new TypeSpec( Workspace::userWorkspace()->getClassTypeSpecOfType(typeString) );
         int                 nDim        = 0;
         bool                isRef       = false;
         std::string         tpName      = std::string();
@@ -166,7 +166,7 @@ RbPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
     RbFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
 
     // insert in the user workspace
-    Workspace::userWorkspace().addFunction(functionName->getValue(), theFunction);
+    Workspace::userWorkspace()->addFunction(functionName->getValue(), theFunction);
 
     // No return value 
     return NULL;

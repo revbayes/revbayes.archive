@@ -124,7 +124,7 @@ RbPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
         throw RbException( "Illegal attempt to redefine variable " + *variableName );
     
     // Check if type exists
-    if ( !Workspace::userWorkspace().existsType( TypeSpec(elementTypeName->getValue()) ) )
+    if ( !Workspace::userWorkspace()->existsType( TypeSpec(elementTypeName->getValue()) ) )
         throw RbException( "Type " + *elementTypeName + " does not exist" );
 
     // Evaluate length specification
