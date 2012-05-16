@@ -28,6 +28,8 @@ template <typename valType, typename retType>
 class Func_vector :  public RbFunction {
 
     public:
+        Func_vector(void);
+    
         // Basic utility functions
         Func_vector*                clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassName(void);                                         //!< Get class name
@@ -41,6 +43,8 @@ class Func_vector :  public RbFunction {
     protected:
         RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);  //!< Execute function
     
+    private:
+        TypeSpec                    returnTypeSpec;
 };
 
 #endif
@@ -51,7 +55,13 @@ class Func_vector :  public RbFunction {
 #include "TypeSpec.h"
 
 
-/** Clone object */
+/* Default constructor */
+template <typename valType, typename retType>
+Func_vector<valType, retType>::Func_vector( void ) : returnTypeSpec( TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec( valType::getClassTypeSpec() ) ) ) {
+    
+}
+
+/* Clone object */
 template <typename valType, typename retType>
 Func_vector<valType, retType>* Func_vector<valType, retType>::clone( void ) const {
 
@@ -123,6 +133,6 @@ const TypeSpec& Func_vector<firstValType, secondValType>::getTypeSpec( void ) co
 template <typename valType, typename retType>
 const TypeSpec& Func_vector<valType, retType>::getReturnType( void ) const {
 
-    return retType( valType::getClassTypeSpec() ).getTypeSpec();
+    return returnTypeSpec;
 }
 
