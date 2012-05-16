@@ -429,12 +429,12 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                     }
                 }
                 else {
-                    indexValue = dynamic_cast<const Natural&>( theValue ).getValue() - 1;
+                    indexValue = dynamic_cast<const Natural *>( (RbLanguageObject *) theValue.getSingleValue() )->getValue() - 1;
                 }
                 
                 // \TODO:
-//                RbObject&   subElement  = theVar->getDagNode()->getElement(indexValue);
-//                            theVar      = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
+                RbObject&   subElement  = static_cast<DagNodeContainer *>( (RbLanguageObject *) theVar->getValue().getSingleValue() )->getElement(indexValue);
+                            theVar      = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
             }
             else {
                 //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
