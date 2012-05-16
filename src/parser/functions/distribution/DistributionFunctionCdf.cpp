@@ -71,8 +71,6 @@ DistributionFunctionCdf::DistributionFunctionCdf( const DistributionFunctionCdf&
     
     distribution  = x.distribution->clone();
     
-    argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "q"  , distribution->getVariableType() ) );
-    
 }
 
 
@@ -95,8 +93,6 @@ DistributionFunctionCdf& DistributionFunctionCdf::operator=( const DistributionF
         }
         
         distribution  = x.distribution->clone();
-        
-        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "q"  , distribution->getVariableType() ) );
         
     }
     

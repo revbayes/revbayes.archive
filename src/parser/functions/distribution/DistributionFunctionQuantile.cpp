@@ -70,8 +70,6 @@ DistributionFunctionQuantile::DistributionFunctionQuantile( const DistributionFu
     
     distribution  = x.distribution->clone();
     
-    argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "p"  , Probability::getClassTypeSpec()     ) );
-    
 }
 
 
@@ -94,8 +92,6 @@ DistributionFunctionQuantile& DistributionFunctionQuantile::operator=( const Dis
         }
         
         distribution  = x.distribution->clone();
-        
-        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "p"  , Probability::getClassTypeSpec()     ) );
         
     }
     
