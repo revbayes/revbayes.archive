@@ -420,9 +420,9 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                 size_t                              indexValue  = 0;
                 if ( !theValue.isTypeSpec( Natural::getClassTypeSpec() ) ) {
                     if (theValue.isConvertibleTo( Natural::getClassTypeSpec() )) {
-                        Natural* convertedValue = static_cast<Natural*>( (RbObject *) theValue.convertTo( Natural::getClassTypeSpec() ).getSingleValue() );
+                        RbPtr<RbObject> convertedObj = theValue.convertTo( Natural::getClassTypeSpec() ).getSingleValue();
+                        Natural* convertedValue = static_cast<Natural*>( (RbObject *)  convertedObj);
                         indexValue = convertedValue->getValue() - 1;
-                        delete convertedValue;
                     }
                     else { 
                         throw RbException("Could not access index with type xxx because only natural indices are supported!");
