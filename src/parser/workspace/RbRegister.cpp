@@ -668,14 +668,15 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add builtin templated functions */
 //        addFunction( "transpose", new Func_transpose<       Matrix<Real>                                                    >() );
-        addFunction( "v",         new Func_vector<          RbBoolean,                      RbVector             >() );
-        addFunction( "v",         new Func_vector<          Integer,                        RbVector               >() );
-        addFunction( "v",         new Func_vector<          Natural,                        RbVector               >() );
-        addFunction( "v",         new Func_vector<          Real,                           RbVector               >() );
-        addFunction( "v",         new Func_vector<          RealPos,                        RbVector               >() );
-        addFunction( "v",         new Func_vector<          Complex,                        RbVector               >() );
-        addFunction( "v",         new Func_vector<          RbString,                       RbVector               >() );
-//        addFunction( "v",         new Func_vector<          RbVector,              Matrix<Integer>                 >() );
+        addFunction( "v",         new Func_vector(new RbBoolean()) );
+        addFunction( "v",         new Func_vector(new Integer()) );
+        addFunction( "v",         new Func_vector(new Natural()) );
+        addFunction( "v",         new Func_vector(new Real()) );
+        addFunction( "v",         new Func_vector(new RealPos()) );
+        addFunction( "v",         new Func_vector(new Complex()) );
+        addFunction( "v",         new Func_vector(new RbString()) );
+        addFunction( "v",         new Func_vector(new RbVector(Integer::getClassTypeSpec())) );
+        addFunction( "v",         new Func_vector(new RbVector(Natural::getClassTypeSpec())) );
 //        addFunction( "v",         new Func_vector<          RbVector<Natural>,              Matrix<Natural>                 >() );
 //        addFunction( "v",         new Func_vector<          RbVector<Real>,                 Matrix<Real>                    >() );
 //        addFunction( "v",         new Func_vector<          RbVector<RealPos>,              Matrix<RealPos>                 >() );
