@@ -694,7 +694,7 @@ void RbFunction::processArguments( const std::vector<RbPtr<Argument> >& passedAr
             passedArgIndex[matchRule] = static_cast<int>( i );
         }
         else
-            throw RbException("Argument is not valid.");
+            throw RbException("Argument " + passedArgs[i]->getLabel() + "is not valid.");
     }
 
 
@@ -719,7 +719,7 @@ void RbFunction::processArguments( const std::vector<RbPtr<Argument> >& passedAr
                     break;
                 }
                 else
-                    throw RbException("Argument is not valid.");
+                    throw RbException("Argument of type \"" + passedArgs[i]->getVariable()->getValue().getTypeSpec() + "\" is not valid for function " + getTypeSpec() + ".");
             }
         }
     }

@@ -22,8 +22,9 @@
 
 
 /** Construct rule based on default value; use "" for no label. */
-ConstArgumentRule::ConstArgumentRule( const std::string& argName, const RbPtr<RbLanguageObject> &defVal ) : ArgumentRule( argName, defVal->getTypeSpec(), true ), defaultVar( new ConstantNode( defVal ) ) {
+ConstArgumentRule::ConstArgumentRule( const std::string& argName, const RbPtr<RbLanguageObject> &defVal ) : ArgumentRule( argName, defVal->getTypeSpec(), false ), defaultVar( new ConstantNode( defVal ) ) {
     defaultVar = Variable( new ConstantNode( defVal ) );
+    hasDefaultVal = true;
 }
 
 
@@ -34,8 +35,9 @@ ConstArgumentRule::ConstArgumentRule( const std::string& argName, const TypeSpec
 
 
 /** Construct rule with default value. We rely on workspace to check the provided type specification. */
-ConstArgumentRule::ConstArgumentRule( const std::string& argName, const TypeSpec& argTypeSp, const RbPtr<RbLanguageObject> &defVal ) : ArgumentRule( argName, argTypeSp, defVal ), defaultVar( new ConstantNode( defVal ) ) {
+ConstArgumentRule::ConstArgumentRule( const std::string& argName, const TypeSpec& argTypeSp, const RbPtr<RbLanguageObject> &defVal ) : ArgumentRule( argName, argTypeSp, false ), defaultVar( new ConstantNode( defVal ) ) {
     
+    hasDefaultVal = true;
 }
 
 

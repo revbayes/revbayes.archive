@@ -52,7 +52,7 @@ protected:
     RbPtr<ArgumentRules>        argumentRules;                                                          //!< Argument rules
     TypeSpec                    returnType;                                                             //!< Return type
     RbPtr<ParserDistribution>   distribution;                                                           //!< The distribution
-    
+    std::string                 name;
 };
 
 #endif

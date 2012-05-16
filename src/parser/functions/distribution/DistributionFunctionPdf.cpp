@@ -56,6 +56,23 @@ DistributionFunctionPdf::DistributionFunctionPdf( const RbPtr<ParserDistribution
     argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "x"  , distribution->getVariableType() ) );
     argumentRules->push_back(                      new ConstArgumentRule( "log", new RbBoolean(false)            ) );
     
+    name = "pdf<" + dist->getClassName() + ">(";
+    for ( std::vector<ArgumentRule*>::const_iterator i = argumentRules->begin(); i != argumentRules->end(); i++ ) {
+        // add the argument
+        if ( i != argumentRules->begin() ) {
+            name += ", ";
+        }
+        name += (*i)->getArgumentTypeSpec().getType() + " ";
+        name += (*i)->getArgumentLabel();
+        
+        if ( (*i)->hasDefault() ) {
+            name += " = ";
+            std::stringstream o;
+            (*i)->getDefaultVariable().getValue().getSingleValue()->printValue( o );
+            name += o.str();
+        }
+    }
+    name += ")";
 }
 
 
@@ -70,8 +87,7 @@ DistributionFunctionPdf::DistributionFunctionPdf( const DistributionFunctionPdf&
     
     distribution  = x.distribution->clone();
     
-    argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "x"  , distribution->getVariableType() ) );
-    argumentRules->push_back(                      new ConstArgumentRule( "log", new RbBoolean(false)            ) );
+    name = x.name;
     
 }
 
@@ -96,8 +112,7 @@ DistributionFunctionPdf& DistributionFunctionPdf::operator=( const DistributionF
         
         distribution  = x.distribution->clone();
         
-        argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "x"  , distribution->getVariableType() ) );
-        argumentRules->push_back(                      new ConstArgumentRule( "log", new RbBoolean(false)            ) );
+        name = x.name;
         
     }
     
@@ -166,7 +181,7 @@ const TypeSpec& DistributionFunctionPdf::getClassTypeSpec(void) {
 /** Get type spec */
 const TypeSpec& DistributionFunctionPdf::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec typeSpec = TypeSpec( name, new TypeSpec( RbFunction::getClassTypeSpec() ) );;
     
     return typeSpec;
 }
