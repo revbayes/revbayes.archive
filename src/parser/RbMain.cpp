@@ -24,10 +24,10 @@ int main(int argc, char** argv) {
 
     RbSettings::userSettings().initializeUserSettings();
     Help::getHelp().initializeHelp("~/help/");
-    Workspace::globalWorkspace().initializeGlobalWorkspace();
+    Workspace::globalWorkspace()->initializeGlobalWorkspace();
 
     /* Add stuff that Sebastian does not want to have in the core */
-    Workspace::globalWorkspace().addFunction( "source", new Func_source() );
+    Workspace::globalWorkspace()->addFunction( "source", new Func_source() );
 
 #	if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
             commandLine += line;
         else
             commandLine = line;
-        result = Parser::getParser().processCommand(commandLine, &Workspace::userWorkspace());
+        result = Parser::getParser().processCommand(commandLine, Workspace::userWorkspace());
 
         // We just hope for better input next time
         if ( result == 2 ) {
