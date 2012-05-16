@@ -231,7 +231,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
     VariableSlot* theSlot = NULL;
     
     /* Get variable */
-    DAGNode* theDagNode = NULL;
+    RbPtr<DAGNode> theDagNode = NULL;
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
@@ -282,17 +282,17 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
         while (!indices.empty()) {
             // test whether the value of the DAG node allows assignment of variable to its elemens
             // e.g.: A simplex might not allow assignment of its elements whereas a DagNodeContainer does
-//            if (theDagNode != NULL && !theDagNode->getValue()) {
+            if (theDagNode != NULL && !theDagNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
                 // throw expection because we don't allow insertion of variable
                 std::ostringstream msg;
                 msg << "Object of type " << theDagNode->getValue().getTypeSpec() << " does not allow insertion of variables.";
                 throw RbException(msg);
-//            }
+            }
             
-            // test whether this element support subscipting
-//            if (theDagNode != NULL && !theDagNode->getValue() ) {
-                throw RbException("DAG node does not support indexing.");
-//            }
+            // test whether this element support subscripting
+   //         if (theDagNode != NULL && !theDagNode->getValue() ) {
+   //             throw RbException("DAG node does not support indexing.");
+   //         }
             
             // take the first index and remove it
             size_t indexValue = static_cast<const Natural &>( indices[0] ).getValue();

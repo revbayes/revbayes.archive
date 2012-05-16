@@ -160,7 +160,8 @@ void SyntaxForCondition::initializeLoop(Environment& env) {
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    const RbPtr<DAGNode>&               theNode     = inExpression->evaluateContent(env)->getDagNode();
+    const RbPtr<Variable>&              theVar      = inExpression->evaluateContent(env);
+    const RbPtr<DAGNode>&               theNode     = theVar->getDagNode();
     const RlValue<RbLanguageObject>&    theValue    = theNode->getValue();
 
     // Check that it is a vector
