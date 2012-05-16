@@ -28,7 +28,7 @@
 
 
 /** Constructor with element type, used to properly construct vectors */
-TaxonData::TaxonData(const std::string& elemType, const std::string tname) : MemberObject(), taxonName(tname), sequence( RbString::getClassTypeSpec() ) {
+TaxonData::TaxonData(const std::string& elemType, const std::string tname) : MemberObject(), taxonName(tname), sequence( Character::getClassTypeSpec() ) {
     
 }
 
