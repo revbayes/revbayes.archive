@@ -96,14 +96,24 @@ class Workspace : public Environment {
         void                        initializeGlobalWorkspace(void);                                                                //!< Initialize global workspace
         static Workspace&           globalWorkspace(void)                                                                           //!< Get global workspace
                                         {
+                                        static bool workspaceInit = false;
                                         static Workspace globalSpace = Workspace();
+                                        if (!workspaceInit) {
+                                            globalSpace.incrementReferenceCount();
+                                            workspaceInit = true;
+                                        }
                                         return globalSpace;
                                         }
         static Workspace&           userWorkspace(void)                                                                             //!< Get user workspace
                                         {
-                                        static Workspace userSpace = Workspace(&globalWorkspace());
-                                        return userSpace;
+                                        static bool workspaceInit = false;
+                                        static Workspace userSpace = Workspace(&Workspace::globalWorkspace());
+                                        if (!workspaceInit) {
+                                            userSpace.incrementReferenceCount();
+                                            workspaceInit = true;
                                         }
+                                        return userSpace;
+                                    }
  
     private:
                                     Workspace(void);                                                                                //!< Workspace with NULL parent

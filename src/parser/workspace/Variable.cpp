@@ -38,9 +38,6 @@ Variable::Variable(const TypeSpec& ts) : RbInternal(), valueTypeSpec( ts ), node
 /** Constructor of filled variable. */
 Variable::Variable(const RbPtr<DAGNode> &n): valueTypeSpec( RbLanguageObject::getClassTypeSpec() ) {
     
-    // initialize the variable
-    node = NULL;
-    
     setDagNode( n );
     
 }
