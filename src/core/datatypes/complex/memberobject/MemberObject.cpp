@@ -87,7 +87,7 @@ RbPtr<RbLanguageObject> MemberObject::executeSimpleMethod(std::string const &nam
         
     }
     else {
-        throw RbException( "No mapping from member method " + name + " to internal function call provided" );
+        throw RbException( "No mapping from member method '" + name + "' to internal function call provided" );
     }
 }
 

@@ -82,6 +82,7 @@ class CharacterData : public MemberObject {
         size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
+        TaxonData&                          getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const TaxonData&                    getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         const std::string                   getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
@@ -114,19 +115,9 @@ class CharacterData : public MemberObject {
         bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
 
         // memberfunction return values
-        Natural                             numTaxa;
-        RbVector                            numChar;
-        Natural                             numExcludedTaxa;
-        Natural                             numExcludedChars;
-        Natural                             numIncludedTaxa;
-        Natural                             numIncludedChars;
-        RbVector                            excludedTaxa;
-        RbVector                            excludedChars;
-        RbVector                            includedTaxa;
-        RbVector                            includedChars;
-        Natural                             numConstPatterns;
-        Natural                             numMissing;
-        RbBoolean                           isHomologous;
+//        Natural                             numConstPatterns;
+//        Natural                             numMissing;
+//        RbBoolean                           isHomologous;
         
         std::map<std::string, RbPtr<TaxonData> > taxonMap;
 };

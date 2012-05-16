@@ -43,12 +43,7 @@
 /** Constructor requires character type; passes member rules to base class */
 CharacterData::CharacterData( const std::string& charType ) : MemberObject( getMemberRules() ), 
 typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec(charType) ), 
-sequenceNames( RbString::getClassTypeSpec() ),
-excludedChars( Natural::getClassTypeSpec() ),
-excludedTaxa( RbString::getClassTypeSpec() ),
-includedTaxa( RbString::getClassTypeSpec() ),
-includedChars( Natural::getClassTypeSpec() ),
-numChar( Natural::getClassTypeSpec() )
+sequenceNames( RbString::getClassTypeSpec() )
 {
 
     characterType = charType;
@@ -57,12 +52,7 @@ numChar( Natural::getClassTypeSpec() )
 
 /** Copy constructor */
 CharacterData::CharacterData(const CharacterData& x) : MemberObject( x ), typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec(characterType) ),
-sequenceNames( x.sequenceNames ),
-excludedChars( x.excludedChars ),
-excludedTaxa( x.excludedTaxa ),
-includedTaxa( x.includedTaxa ),
-includedChars( x.includedChars ),
-numChar( x.numChar )
+sequenceNames( x.sequenceNames )
 {
 
     characterType           = x.characterType;
@@ -97,11 +87,6 @@ CharacterData& CharacterData::operator=( const CharacterData& x ) {
         isHomologyEstablished   = x.isHomologyEstablished;
         taxonMap                = x.taxonMap;
         sequenceNames           = x.sequenceNames;
-        excludedChars           = x.excludedChars;
-        excludedTaxa            = x.excludedTaxa;
-        includedTaxa            = x.includedTaxa;
-        includedChars           = x.includedChars;
-        numChar                 = x.numChar;
         }
     return (*this);
 }
@@ -190,175 +175,166 @@ void CharacterData::excludeTaxon(std::string& s) {
 /** Map calls to member methods */
 RbPtr<RbLanguageObject> CharacterData::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
 
-//    if (name == "names") 
-//        {
-//        return sequenceNames;
-//        }
-//    else if (name == "[]") 
-//        {
-//        // get the member with give index
-//        const Natural& index = static_cast<const Natural&>( args[0].getVariable().getValue() );
-//        
-//        if (size() < (size_t)(index.getValue()) ) {
-//            throw RbException("Index out of bounds in []");
-//        }
-//        
-//        const TaxonData& element = getTaxonData(index.getValue() - 1);
-//        return element;
-//        }
-//    else if (name == "size") 
-//    {
-//        int n = (int)getNumberOfTaxa();
-//        numTaxa.setValue( n );
-//        return numTaxa;
-//    }
-//    else if (name == "ntaxa") 
-//        {
-//        int n = (int)getNumberOfTaxa();
-//        numTaxa.setValue( n );
-//        return numTaxa;
-//        }
-//    else if (name == "nchar")
-//        {
-//        
-//        numChar.clear();
-//        for (size_t i=0; i<getNumberOfTaxa(); i++)
-//            {
-//            if ( isTaxonExcluded(i) == false )
-//                {
-//                if (isHomologyEstablished == true)
-//                    numChar.push_back( new Natural( getNumberOfCharacters() ) );
-//                else
-//                    numChar.push_back( new Natural( getTaxonData(i).getNumberOfCharacters() ) );
-//                }
-//            }
-//        return numChar;
-//        }
-//    else if (name == "chartype")
-//        {
-//        return characterType;
-//        }
-//    else if (name == "nexcludedtaxa")
-//        {
-//        int n = (int)deletedTaxa.size();
-//        numExcludedTaxa.setValue( n );
-//        return numExcludedTaxa;
-//        }
-//    else if (name == "nexcludedchars")
-//        {
-//        int n = (int)deletedCharacters.size();
-//        numExcludedChars.setValue( n );
-//        return numExcludedChars;
-//        }
-//    else if (name == "nincludedtaxa")
-//        {
-//        int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
-//        numIncludedTaxa.setValue( n );
-//        return numIncludedTaxa;
-//        }
-//    else if (name == "nincludedchars")
-//        {
-//        int n = (int)(getNumberOfCharacters() - deletedCharacters.size());
-//        numIncludedChars.setValue( n );
-//        return numIncludedChars;
-//        }
-//    else if (name == "excludedtaxa")
-//        {
-//        excludedTaxa.clear();
-//        for (std::set<size_t>::iterator it = deletedTaxa.begin(); it != deletedTaxa.end(); it++)
-//            {
-//            const std::string& tn = getTaxonNameWithIndex(*it);
-//            excludedTaxa.push_back( new RbString( tn ) );
-//            }
-//        return excludedTaxa;
-//        }
-//    else if (name == "excludedchars")
-//        {
-//        excludedChars.clear();
-//        for (std::set<size_t>::iterator it = deletedCharacters.begin(); it != deletedCharacters.end(); it++)
-//            excludedChars.push_back( new Natural(*it) );
-//        return excludedChars;
-//        }
-//    else if (name == "includedtaxa")
-//        {
-//        includedTaxa.clear();
-//        for (size_t i=0; i<getNumberOfTaxa(); i++)
-//            {
-//            if ( isTaxonExcluded(i) == false )
-//                includedTaxa.push_back( new RbString( getTaxonNameWithIndex(i) ) );
-//            }
-//        return includedTaxa;
-//        }
-//    else if (name == "includedchars")
-//        {
-//        includedChars.clear();
-//        for (size_t i=0; i<getNumberOfCharacters(); i++)
-//            {
-//            if ( isCharacterExcluded(i) == false )
-//                includedChars.push_back( new Natural(i+1) );
-//            }
-//        return includedTaxa;
-//        }
-//    else if (name == "nconstantpatterns")
-//        {
-//        int n = (int)numConstantPatterns();
-//        numConstPatterns.setValue( n );
-//        return numConstPatterns;
-//        }
-//    else if (name == "ncharswithambiguity")
-//        {
-//        int n = (int)numMissAmbig();
-//            numMissing.setValue( n );
-//        return numMissing;
-//        }
-//    else if (name == "excludechar")
-//        {
-//        const RbLanguageObject& argument = args[1].getVariable().getValue();
-//        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
-//            {
-//            int n = static_cast<const Natural&>( argument ).getValue();
-//            deletedCharacters.insert( n );
-//            }
-//        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
-//            {
-//            const RbVector& x = static_cast<const RbVector&>( argument );
-//            for ( size_t i=0; i<x.size(); i++ )
-//                deletedCharacters.insert( static_cast<const Natural &>( x[i] ).getValue() );
-//            }
-//        return RbNullObject::getInstance();
-//        }
-//    else if (name == "show")
-//        {
-//        int nt = (int)getNumberOfTaxa();
-//        for (int i=0; i<nt; i++)
-//            {
-//            const TaxonData& taxonData = getTaxonData(i);
-//            std::string taxonName = getTaxonNameWithIndex(i);
-//            int nc = (int)taxonData.getNumberOfCharacters();
-//            std::cout << "   " << taxonName << std::endl;
-//            std::cout << "   ";
-//            for (int j=0; j<nc; j++)
-//                {
-//                RbObject& o = getElement(i, j);
-//                Character& c = dynamic_cast<Character&>(o);
-//                if (&c == NULL)
-//                    throw RbException( "Problem retreiving character from Character Data object" );
-//                std::string s = c.getStringValue();
-//                
-//                std::cout << s;
-//                if ( (j+1) % 100 == 0 && (j+1) != nc )
-//                    std::cout << std::endl << "   ";
-//                }
-//            std::cout << std::endl;
-//            }
-//        return RbNullObject::getInstance();
-//        }
-//    else if (name == "ishomologous")
-//        {
-//        bool ih = getIsHomologyEstablished();
-//        isHomologous.setValue( ih );
-//        return isHomologous;
-//        }
+    if (name == "names") 
+        {
+        return RbPtr<RbLanguageObject>( sequenceNames.clone() );
+        }
+    else if (name == "[]") 
+        {
+        // get the member with give index
+        const Natural& index = static_cast<const Natural&>( *args[0] );
+        
+        if (size() < (size_t)(index.getValue()) ) {
+            throw RbException("Index out of bounds in []");
+        }
+        
+        const TaxonData& element = getTaxonData(index.getValue() - 1);
+        return RbPtr<RbLanguageObject>( element.clone() );
+        }
+    else if (name == "size") 
+        {
+        int n = (int)getNumberOfTaxa();
+        return RbPtr<RbLanguageObject>( new Natural(n) );
+        }
+    else if (name == "ntaxa") 
+        {
+        int n = (int)getNumberOfTaxa();
+        return RbPtr<RbLanguageObject>( new Natural(n) );
+        }
+    else if (name == "nchar")
+        {
+        
+        RbVector *numChar = new RbVector(Natural::getClassTypeSpec() );
+        for (size_t i=0; i<getNumberOfTaxa(); i++)
+            {
+            if ( isTaxonExcluded(i) == false )
+                {
+                if (isHomologyEstablished == true)
+                    numChar->push_back( new Natural( getNumberOfCharacters() ) );
+                else
+                    numChar->push_back( new Natural( getTaxonData(i).getNumberOfCharacters() ) );
+                }
+            }
+        return numChar;
+        }
+    else if (name == "chartype")
+        {
+        return characterType.clone();
+        }
+    else if (name == "nexcludedtaxa")
+        {
+        int n = (int)deletedTaxa.size();
+        return RbPtr<RbLanguageObject>( new Natural(n) );
+        }
+    else if (name == "nexcludedchars")
+        {
+        int n = (int)deletedCharacters.size();
+        return RbPtr<RbLanguageObject>( new Natural(n) );
+        }
+    else if (name == "nincludedtaxa")
+        {
+        int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
+        return RbPtr<RbLanguageObject>( new Natural(n) );
+        }
+    else if (name == "nincludedchars")
+        {
+        int n = (int)(getNumberOfCharacters() - deletedCharacters.size());
+        return RbPtr<RbLanguageObject>( new Natural(n) );
+        }
+    else if (name == "excludedtaxa")
+        {
+        RbVector *excludedTaxa = new RbVector(RbString::getClassTypeSpec());
+        for (std::set<size_t>::iterator it = deletedTaxa.begin(); it != deletedTaxa.end(); it++)
+            {
+            const std::string& tn = getTaxonNameWithIndex(*it);
+            excludedTaxa->push_back( new RbString( tn ) );
+            }
+        return excludedTaxa;
+        }
+    else if (name == "excludedchars")
+        {
+        RbVector *excludedChars = new RbVector(Natural::getClassTypeSpec());
+        for (std::set<size_t>::iterator it = deletedCharacters.begin(); it != deletedCharacters.end(); it++)
+            excludedChars->push_back( new Natural(*it) );
+        return excludedChars;
+        }
+    else if (name == "includedtaxa")
+        {
+        RbVector *includedTaxa = new RbVector(RbString::getClassTypeSpec());
+        for (size_t i=0; i<getNumberOfTaxa(); i++)
+            {
+            if ( isTaxonExcluded(i) == false )
+                includedTaxa->push_back( new RbString( getTaxonNameWithIndex(i) ) );
+            }
+        return includedTaxa;
+        }
+    else if (name == "includedchars")
+        {
+        RbVector *includedChars = new RbVector(Natural::getClassTypeSpec());
+        for (size_t i=0; i<getNumberOfCharacters(); i++)
+            {
+            if ( isCharacterExcluded(i) == false )
+                includedChars->push_back( new Natural(i+1) );
+            }
+        return includedChars;
+        }
+    else if (name == "nconstantpatterns")
+        {
+        int n = (int)numConstantPatterns();
+        return RbPtr<RbLanguageObject>( new Natural(n) );
+        }
+    else if (name == "ncharswithambiguity")
+        {
+        int n = (int)numMissAmbig();
+        return RbPtr<RbLanguageObject>( new Natural(n) );
+        }
+    else if (name == "excludechar")
+        {
+        const RbObject& argument = *args[1];
+        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
+            {
+            int n = static_cast<const Natural&>( argument ).getValue();
+            deletedCharacters.insert( n );
+            }
+        else if ( argument.isTypeSpec( RbVector::getClassTypeSpec() ) ) 
+            {
+            const RbVector& x = static_cast<const RbVector&>( argument );
+            for ( size_t i=0; i<x.size(); i++ )
+                deletedCharacters.insert( static_cast<const Natural &>( x[i] ).getValue() );
+            }
+        return NULL;
+        }
+    else if (name == "show")
+        {
+        int nt = (int)getNumberOfTaxa();
+        for (int i=0; i<nt; i++)
+            {
+            const TaxonData& taxonData = getTaxonData(i);
+            std::string taxonName = getTaxonNameWithIndex(i);
+            int nc = (int)taxonData.getNumberOfCharacters();
+            std::cout << "   " << taxonName << std::endl;
+            std::cout << "   ";
+            for (int j=0; j<nc; j++)
+                {
+                RbObject& o = getElement(i, j);
+                Character& c = dynamic_cast<Character&>(o);
+                if (&c == NULL)
+                    throw RbException( "Problem retreiving character from Character Data object" );
+                std::string s = c.getStringValue();
+                
+                std::cout << s;
+                if ( (j+1) % 100 == 0 && (j+1) != nc )
+                    std::cout << std::endl << "   ";
+                }
+            std::cout << std::endl;
+            }
+        return NULL;
+        }
+    else if (name == "ishomologous")
+        {
+        bool ih = getIsHomologyEstablished();
+        return RbPtr<RbLanguageObject>( new RbBoolean(ih) );
+        }
 
     return MemberObject::executeSimpleMethod( name, args );
 }
@@ -406,8 +382,10 @@ const RbObject& CharacterData::getElement(size_t row, size_t col) const {
 
 
 RbObject& CharacterData::getElement(size_t row, size_t col) {
-
-    throw RbException("Non-const getElement(row,col) not implemented in CharacterData.");
+    
+    TaxonData& sequence = getTaxonData( row );
+    return sequence[col];
+    
 }
 
 
@@ -565,6 +543,25 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
         throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
     }
 
+}
+
+
+/** Get sequence with index tn */
+TaxonData& CharacterData::getTaxonData( size_t tn ) {
+    
+    if ( tn >= getNumberOfTaxa() )
+        throw RbException( "Taxon index out of range" );
+    
+    const std::string& name = static_cast<const RbString &>( sequenceNames[tn] ).getValue();
+    const std::map<std::string, RbPtr<TaxonData> >::const_iterator& i = taxonMap.find(name); 
+    
+    if (i != taxonMap.end() ) {
+        return *i->second;
+    }
+    else {
+        throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
+    }
+    
 }
 
 
