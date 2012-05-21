@@ -125,7 +125,41 @@ RlValue<RbObject> RlValue<valueType>::convertTo(const TypeSpec &type) const {
 
 template <typename valueType>
 RbValue<void *> RlValue<valueType>::getLeanValue( void ) const {
+    // compute the number of elements we need to reserve the memory for
+    size_t elements = 1;
+    for (size_t i = 0; i < lengths.size(); ++i) {
+        elements *= lengths[i];
+    }
     
+    // get the size for each value
+    size_t s = value[0]->memorySize();
+    
+    // allocate the memory
+    
+    // create the c-style array of elements
+    void* data = malloc( elements * s );
+    
+    // tmp length vector
+    std::vector<size_t> tmp_lengths;
+    
+    // iterate over all elements and copy their values
+    typename std::vector<RbPtr<valueType> >::const_iterator i;
+    for ( i = value.begin(); i != value.end(); i++ ) {
+        const RbObject *x = *i;
+        void* elemVal = elemVal = x->getLeanValue( tmp_lengths );
+        memcpy(data, elemVal,(*i)->memorySize());
+        //        *(data) = *(*i)->getValue(lengths);
+        char *tmp_ptr = (char*)data;
+        tmp_ptr += (*i)->memorySize();
+        data = tmp_ptr;
+    }
+    char *tmp_ptr = (char*)data;
+    tmp_ptr -= s;
+    RbValue<void *> v;
+    v.value = tmp_ptr;
+    v.lengths = lengths;
+    
+    return v;
 }
 
 
