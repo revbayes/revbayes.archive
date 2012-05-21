@@ -125,7 +125,13 @@ const TypeSpec& ParserDistribution::getVariableType( void ) const {
 }
 
 
-void ParserDistribution::setMember(std::string const &name, const RbPtr<const Variable> &var) {
+void ParserDistribution::setConstMember(std::string const &name, const RbPtr<const Variable> &var) {
     params.push_back( new ConstArgument(var, name) );
+}
+
+
+
+void ParserDistribution::setSimpleMemberValue(std::string const &name, const RbPtr<const RbLanguageObject> &var) {
+    // we do nothing, we catch just the call because it leads to an exception otherwise.
 }
 

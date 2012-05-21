@@ -56,7 +56,7 @@ public:
     const std::vector<RbPtr< Argument> >&   getParameters() const;
     virtual const TypeSpec&                 getVariableType(void) const;                                                        //!< Get random variable type
     virtual const RbLanguageObject&         getTemplateRandomVariable(void) const;                                              //!< Get the template ranom variable
-    virtual void                            setMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
+    virtual void                            setConstMember(const std::string& name, const RbPtr<const Variable> &var);                            //!< Set member variable
     
     // functions you have to override
     virtual Distribution*                   getLeanDistribution(void) const = 0;                                                //!< Get the lean distribution
@@ -70,7 +70,9 @@ public:
 protected:
     ParserDistribution( const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);               //!< Simple constructor
     ParserDistribution( const ParserDistribution &p);                                                                           //!< Copy constructor
-        
+  
+    virtual void                            setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var);    //!< Set member variable
+
     std::string                         name;
     MemberRules                         memberRules;
     std::vector<RbPtr<Argument> >       params;

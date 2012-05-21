@@ -183,7 +183,7 @@ void DistributionFunctionQuantile::processArguments( const std::vector<RbPtr<Arg
         const RbPtr<Argument>& theArg = *i;
         std::string label = theArg->getLabel();
         if ( label != "p" ) {
-            distribution->setMember( label, theArg->getVariable() );
+            distribution->setConstMember( label, theArg->getVariable() );
         }
     }
 }

@@ -183,7 +183,7 @@ void DistributionFunctionCdf::processArguments( const std::vector<RbPtr<Argument
         const RbPtr<Argument>& theArg = *i;
         std::string label = theArg->getLabel();
         if ( label != "q" ) {
-            distribution->setMember( label, theArg->getVariable() );
+            distribution->setConstMember( label, theArg->getVariable() );
         }
     }
 }

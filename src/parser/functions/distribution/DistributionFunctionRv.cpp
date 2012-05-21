@@ -176,7 +176,7 @@ void DistributionFunctionRv::processArguments( const std::vector<RbPtr<Argument>
     for (std::vector<RbPtr<Argument> >::iterator i = this->args.begin(); i != this->args.end(); i++) {
         const RbPtr<Argument>& theArg = *i;
         std::string label = theArg->getLabel();
-        distribution->setMember( label, theArg->getVariable() );
+        distribution->setConstMember( label, theArg->getVariable() );
     }
 }
 

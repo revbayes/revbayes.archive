@@ -205,7 +205,7 @@ void DistributionFunctionPdf::processArguments( const std::vector<RbPtr<Argument
         const RbPtr<Argument>& theArg = *i;
         std::string label = theArg->getLabel();
         if ( label != "x" && label != "log" ) {
-            distribution->setMember( label, theArg->getVariable() );
+            distribution->setConstMember( label, theArg->getVariable() );
         }
     }
 }
