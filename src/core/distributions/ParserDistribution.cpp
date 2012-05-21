@@ -30,18 +30,41 @@
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const std::string &n, const MemberRules& mr, const RbPtr<RbLanguageObject> &rv ) : MemberObject( mr ), randomValue( rv ), memberRules( mr ), name( n ) {
+ParserDistribution::ParserDistribution( Distribution *d, const std::string &n, const MemberRules& mr, const RbPtr<RbLanguageObject> &rv ) : MemberObject( mr ), distribution( d ), randomValue( rv ), memberRules( mr ), name( n ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( MemberObject::getClassTypeSpec() )) {
 }
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ), name( p.name ), params( p.params ) {
+ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p ), distribution( p.distribution->clone() ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ), name( p.name ), params( p.params ), typeSpec( p.typeSpec ) {
 }
 
+
+ParserDistribution& ParserDistribution::operator=(const ParserDistribution &d) {
+    // check for self assignment
+    if ( this != &d ) {
+        MemberObject::operator=( d );
+        
+        delete distribution;
+        
+        distribution    = d.distribution->clone();
+        name            = d.name;
+        memberRules     = d.memberRules;
+        params          = d.params;
+        randomValue     = d.randomValue->clone();
+        typeSpec        = d.typeSpec;
+    }
+    
+    return *this;
+}
 
 
 void ParserDistribution::clear( void ) {
     params.clear();
+}
+
+
+ParserDistribution* ParserDistribution::clone(void) const {
+    return new ParserDistribution(*this);
 }
 
 
@@ -83,6 +106,18 @@ const TypeSpec& ParserDistribution::getClassTypeSpec(void) {
 }
 
 
+
+
+Distribution* ParserDistribution::getLeanDistribution( void ) const {
+    return distribution;
+}
+
+
+const MemberRules& ParserDistribution::getMemberRules(void) const {
+    return memberRules;
+}
+
+
 /** Get methods */
 const MethodTable& ParserDistribution::getMethods( void ) const {
     
@@ -120,8 +155,55 @@ const RbLanguageObject& ParserDistribution::getTemplateRandomVariable( void ) co
 }   
 
 
+const TypeSpec& ParserDistribution::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 const TypeSpec& ParserDistribution::getVariableType( void ) const {
     return randomValue->getTypeSpec();
+}
+
+
+double ParserDistribution::jointLnPdf(const RlValue<RbLanguageObject> &value) const {
+    
+    std::vector<size_t> lengths = value.lengths;
+    
+    // compute all the probability densities (pd's)
+    double *pds = distribution->lnPdf();
+    
+    // sum all pd's together
+    if ( lengths.size() > 0 ) {
+        double lnPd = 0.0;
+        size_t index = 0;
+        for ( size_t i = 0; i < lengths.size(); ++i) {
+            for ( size_t j = 0; j < lengths[i]; ++j, ++index) {
+                lnPd += pds[index];
+            }
+        }
+        return lnPd;
+    }
+    else {
+        return *pds;
+    }
+}
+
+
+double ParserDistribution::lnPdf(const RbLanguageObject &value) const {
+    
+    return *distribution->lnPdf();
+}
+
+
+double ParserDistribution::pdf(const RbLanguageObject &value) const {
+    
+    return *distribution->pdf();
+}
+
+
+void ParserDistribution::rv(void) {
+    
+    distribution->rv();
 }
 
 
@@ -129,9 +211,19 @@ void ParserDistribution::setConstMember(std::string const &name, const RbPtr<con
     params.push_back( new ConstArgument(var, name) );
 }
 
+/** We delegate the call to the inference distribution. */
+void ParserDistribution::setParameters(const std::vector<RbValue<void *> > &p) {
+    distribution->setParameters(p);
+}
 
 
 void ParserDistribution::setSimpleMemberValue(std::string const &name, const RbPtr<const RbLanguageObject> &var) {
     // we do nothing, we catch just the call because it leads to an exception otherwise.
+}
+
+
+/** We delegate the call to the inference distribution. */
+void ParserDistribution::setValue(const RbValue<void *> &v) {
+    distribution->setObservedValue(v);
 }
 

@@ -312,9 +312,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "beta",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_beta(), "beta", distBetaMemberRules, new Probability() ) ) );
 
         // dirichlet distribution
-//        MemberRules distDirichletMemberRules;
-//        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
-//        addDistribution( "dirichlet",        RbPtr<ParserDistribution>(  new ParserDistributionContinuous( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) ) );
+        MemberRules distDirichletMemberRules;
+        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
+        addDistribution( "dirichlet",        RbPtr<ParserDistribution>(  new ParserDistribution( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) ) );
 
         // exponential distribution
         MemberRules distExpMemberRules;

@@ -32,32 +32,18 @@
 
 
 /** Constructor passes member rules to base class */
-ParserDistributionContinuous::ParserDistributionContinuous( DistributionContinuous *d, const std::string &n, const MemberRules& mr, const RbPtr<RbLanguageObject> &rv ) : ParserDistribution( n, mr, rv ), distribution( d ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( ParserDistribution::getClassTypeSpec() )) {
+ParserDistributionContinuous::ParserDistributionContinuous( DistributionContinuous *d, const std::string &n, const MemberRules& mr, const RbPtr<RbLanguageObject> &rv ) : ParserDistribution( d, n, mr, rv ) {
 
 }
 
-ParserDistributionContinuous::ParserDistributionContinuous( const ParserDistributionContinuous &d) : ParserDistribution( d ), distribution( d.distribution->clone() ), typeSpec( d.typeSpec ) {
+ParserDistributionContinuous::ParserDistributionContinuous( const ParserDistributionContinuous &d) : ParserDistribution( d ) {
     
-}
-
-
-ParserDistributionContinuous& ParserDistributionContinuous::operator=(const ParserDistributionContinuous &d) {
-    // check for self assignment
-    if ( this != &d ) {
-        ParserDistribution::operator=( d );
-        
-        delete distribution;
-        
-        distribution = d.distribution->clone();
-    }
-    
-    return *this;
 }
 
 
 double ParserDistributionContinuous::cdf(const Real &value) {
     
-    return distribution->cdf( value.getValue() );
+    return static_cast<DistributionContinuous *>( distribution )->cdf( value.getValue() );
 }
 
 
@@ -99,26 +85,17 @@ const TypeSpec& ParserDistributionContinuous::getClassTypeSpec(void) {
 }
 
 
-DistributionContinuous* ParserDistributionContinuous::getLeanDistribution( void ) const {
-    return distribution;
-}
-
-
 /** Get max value of ParserDistribution */
 double ParserDistributionContinuous::getMax( void ) const {
     
-    return distribution->getMax();
+    return static_cast<DistributionContinuous *>( distribution )->getMax();
 }
 
 
 /** Get min value of ParserDistribution */
 double ParserDistributionContinuous::getMin( void ) const {
     
-    return distribution->getMin();
-}
-
-const MemberRules& ParserDistributionContinuous::getMemberRules(void) const {
-    return memberRules;
+    return static_cast<DistributionContinuous *>( distribution )->getMin();
 }
 
 
@@ -148,66 +125,9 @@ const MethodTable& ParserDistributionContinuous::getMethods( void ) const {
 }
 
 
-const TypeSpec& ParserDistributionContinuous::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
-double ParserDistributionContinuous::jointLnPdf(const RlValue<RbLanguageObject> &value) const {
-    
-    std::vector<size_t> lengths = value.lengths;
-    
-    // compute all the probability densities (pd's)
-    double *pds = distribution->lnPdf();
-    
-    // sum all pd's together
-    if ( lengths.size() > 0 ) {
-        double lnPd = 0.0;
-        size_t index = 0;
-        for ( size_t i = 0; i < lengths.size(); ++i) {
-            for ( size_t j = 0; j < lengths[i]; ++j, ++index) {
-                lnPd += pds[index];
-            }
-        }
-        return lnPd;
-    }
-    else {
-        return *pds;
-    }
-}
-
-
-double ParserDistributionContinuous::lnPdf(const RbLanguageObject &value) const {
-    
-    return *distribution->lnPdf();
-}
-
-
-double ParserDistributionContinuous::pdf(const RbLanguageObject &value) const {
-    
-    return *distribution->pdf();
-}
-
-
 double ParserDistributionContinuous::quantile(const double p) {
     
-    return distribution->quantile( p );
-}
-
-
-void ParserDistributionContinuous::rv(void) {
-    
-    distribution->rv();
-}
-
-/** We delegate the call to the inference distribution. */
-void ParserDistributionContinuous::setParameters(const std::vector<RbValue<void *> > &p) {
-    distribution->setParameters(p);
-}
-
-/** We delegate the call to the inference distribution. */
-void ParserDistributionContinuous::setValue(const RbValue<void *> &v) {
-    distribution->setObservedValue(v);
+    return static_cast<DistributionContinuous *>( distribution )->quantile( p );
 }
 
 

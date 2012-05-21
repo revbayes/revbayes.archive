@@ -1,54 +1,56 @@
-///**
-// * @file
-// * This file contains the declaration of Dist_dirichlet, which is used to hold
-// * parameters and functions related to a Dirichlet distribution.
-// *
-// * @brief Declaration of Dist_dirichlet
-// *
-// * (c) Copyright 2009- under GPL version 3
-// * @date Last modified: $Date$
-// * @author The RevBayes Development Core Team
-// * @license GPL version 3
-// * @version 1.0
-// * @since 2009-08-27, version 1.0
-// *
-// * $Id$
-// */
-//
-//#ifndef Dist_dirichlet_H
-//#define Dist_dirichlet_H
-//
-//#include "DistributionContinuous.h"
-//#include "Simplex.h"
-//
-//#include <ostream>
-//#include <string>
-//
-//class DAGNode;
-//class Real;
-//class Simplex;
-//
-//
-//class Dist_dirichlet: public Distribution {
-//
-//    
-//public:
-//    Dist_dirichlet(void);                                                                           //!< constructor
-//    
-//    // Basic utility functions
-//    Dist_dirichlet*                 clone(void) const;                                                  //!< Clone object
-//    
-//private:
-//    double                          lnPdfSingleValue(std::vector<size_t> &offset) const;                //!< Ln probability density
-//    double                          pdfSingleValue(std::vector<size_t> &offset) const;                  //!< Probability density
-//    void                            rvSingleValue(std::vector<size_t> &offset);                         //!< Generate random variable
-//    void                            setInternalParameters(const std::vector<RbValue<void*> > &p);       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
-//    
-//    // parameters
-//    RbValue<std::vector<double>*>   alpha;
-//    RbValue<std::vector<double>*>   randomVariable;
-//
-//};
-//
-//#endif
-//
+/**
+ * @file
+ * This file contains the declaration of Dist_dirichlet, which is used to hold
+ * parameters and functions related to a Dirichlet distribution.
+ *
+ * @brief Declaration of Dist_dirichlet
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-08-27, version 1.0
+ *
+ * $Id$
+ */
+
+#ifndef Dist_dirichlet_H
+#define Dist_dirichlet_H
+
+#include "Distribution.h"
+#include "Simplex.h"
+
+#include <ostream>
+#include <string>
+
+class DAGNode;
+class Real;
+class Simplex;
+
+
+class Dist_dirichlet: public Distribution {
+
+    
+public:
+    Dist_dirichlet(void);                                                                           //!< constructor
+    
+    // Basic utility functions
+    Dist_dirichlet*                 clone(void) const;                                                  //!< Clone object
+    
+protected:
+    double                          lnPdfSingleValue(std::vector<size_t> &offset) const;                //!< Ln probability density
+    double                          pdfSingleValue(std::vector<size_t> &offset) const;                  //!< Probability density
+    void                            rvSingleValue(std::vector<size_t> &offset);                         //!< Generate random variable
+    void                            setInternalParameters(const std::vector<RbValue<void*> > &p);       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
+    void                            setInternalObservedValue(const RbValue<void*> &v);                  //!< Set the pointers to the observation (random variable) of the distribution.
+    
+private:
+    // parameters
+    RbValue<std::vector<double>*>   alpha;
+    RbValue<std::vector<double>*>   randomVariable;
+
+};
+
+#endif
+
