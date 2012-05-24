@@ -114,7 +114,7 @@ XmlElement* RbObject::encode(XmlDocument* doc, const std::string& name) {
 }
 
 
-/** Get class name of object */
+/* Get class name of object */
 const std::string& RbObject::getClassName(void) { 
     
     static std::string rbClassName = "Object";
@@ -122,7 +122,7 @@ const std::string& RbObject::getClassName(void) {
 	return rbClassName; 
 }
 
-/** Get class type spec describing type of object */
+/* Get class type spec describing type of object */
 const TypeSpec& RbObject::getClassTypeSpec(void) { 
 
     static TypeSpec rbClass = TypeSpec( getClassName() );
@@ -130,7 +130,15 @@ const TypeSpec& RbObject::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
-/** Get type spec */
+
+void* RbObject::getLeanValue(std::vector<size_t> &length) const {
+    throw RbException("Missing implementation of getLeanValue() in " + getClassName());
+    
+    return NULL;
+}
+
+
+/* Get type spec */
 const TypeSpec& RbObject::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -167,6 +175,13 @@ bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
 bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
     
     return getTypeSpec().isDerivedOf( typeSpec );
+}
+
+
+size_t RbObject::memorySize() const {
+    throw RbException("Missing implementation of memorySize() in " + getClassName());
+    
+    return 0;
 }
 
 
