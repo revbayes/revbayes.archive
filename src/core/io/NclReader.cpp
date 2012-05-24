@@ -17,8 +17,6 @@
  */
 
 #include "AminoAcidState.h"
-#include "Character.h"
-#include "CharacterContinuous.h"
 #include "CharacterData.h"
 #include "ConstantNode.h"
 #include "DnaState.h"
@@ -230,7 +228,7 @@ CharacterData* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	CharacterData* cMat = new CharacterData( AminoAcidState::getClassName() );
+	CharacterData<AminoAcidState>* cMat = new CharacterData<AminoAcidState>();
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names

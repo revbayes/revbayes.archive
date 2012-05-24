@@ -40,7 +40,10 @@ class RbString : public RbLanguageObject {
         bool                        operator==(const RbString& x) const;                //!< Equals operator
 //        bool                        operator<(const RbString& x) const;                 //!< Smaller comparison
 
-    // Basic utility functions
+        // the value type definition
+        typedef std::string valueType;
+
+        // Basic utility functions
 	    RbString*                   clone(void) const;                                  //!< Copy
         static const std::string&   getClassName(void);                                 //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec

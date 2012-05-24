@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of CharacterContinuous, which is
+ * This file contains the implementation of RlContinuousCharacterState, which is
  * the base class for the continuous character data type in RevBayes.
  *
- * @brief Implementation of CharacterContinuous
+ * @brief Implementation of RlContinuousCharacterState
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -14,13 +14,13 @@
  */
 
 #include "RbUtil.h"
-#include "CharacterContinuous.h"
+#include "RlContinuousCharacterState.h"
 #include <cmath>
 #include <sstream>
 
 
 /** Default constructor */
-CharacterContinuous::CharacterContinuous(void) : Character() {
+RlContinuousCharacterState::RlContinuousCharacterState(void) : Character() {
 
     mean     = 0.0;
     variance = 0.0;
@@ -28,7 +28,7 @@ CharacterContinuous::CharacterContinuous(void) : Character() {
 
 
 /** Copy constructor */
-CharacterContinuous::CharacterContinuous(const CharacterContinuous& s) : Character() {
+RlContinuousCharacterState::RlContinuousCharacterState(const RlContinuousCharacterState& s) : Character() {
 
     mean     = s.mean;
     variance = s.variance;
@@ -36,7 +36,7 @@ CharacterContinuous::CharacterContinuous(const CharacterContinuous& s) : Charact
 
 
 /** Constructor that sets the mean value */
-CharacterContinuous::CharacterContinuous(const double x) : Character() {
+RlContinuousCharacterState::RlContinuousCharacterState(const double x) : Character() {
 
     mean     = x;
     variance = 0.0;
@@ -44,7 +44,7 @@ CharacterContinuous::CharacterContinuous(const double x) : Character() {
 
 
 /** Constructor that sets the mean and variance */
-CharacterContinuous::CharacterContinuous(const double x, const double v) : Character() {
+RlContinuousCharacterState::RlContinuousCharacterState(const double x, const double v) : Character() {
 
     mean     = x;
     variance = v;
@@ -52,9 +52,9 @@ CharacterContinuous::CharacterContinuous(const double x, const double v) : Chara
 
 
 /** Equals comparison */
-bool CharacterContinuous::operator==(const Character& x) const {
+bool RlContinuousCharacterState::operator==(const Character& x) const {
 
-    const CharacterContinuous* derivedX = static_cast<const CharacterContinuous*>(&x);
+    const RlContinuousCharacterState* derivedX = static_cast<const RlContinuousCharacterState*>(&x);
 
     if ( fabs(mean - derivedX->mean) < 0.000000001 && fabs(variance - derivedX->variance) < 0.000000001 )
         return true;
@@ -63,21 +63,21 @@ bool CharacterContinuous::operator==(const Character& x) const {
 
 
 /** Not equals comparison */
-bool CharacterContinuous::operator!=(const Character& x) const {
+bool RlContinuousCharacterState::operator!=(const Character& x) const {
 
     return !operator==(x);
 }
 
 
 /** Clone object */
-CharacterContinuous* CharacterContinuous::clone(void) const {
+RlContinuousCharacterState* RlContinuousCharacterState::clone(void) const {
 
-	return new CharacterContinuous( *this );
+	return new RlContinuousCharacterState( *this );
 }
 
 
 /** Get class name of object */
-const std::string& CharacterContinuous::getClassName(void) { 
+const std::string& RlContinuousCharacterState::getClassName(void) { 
     
     static std::string rbClassName = "Continuous character";
     
@@ -85,7 +85,7 @@ const std::string& CharacterContinuous::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& CharacterContinuous::getClassTypeSpec(void) { 
+const TypeSpec& RlContinuousCharacterState::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Character::getClassTypeSpec() ) );
     
@@ -93,7 +93,7 @@ const TypeSpec& CharacterContinuous::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& CharacterContinuous::getTypeSpec( void ) const {
+const TypeSpec& RlContinuousCharacterState::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -102,7 +102,7 @@ const TypeSpec& CharacterContinuous::getTypeSpec( void ) const {
 
 
 /** Print information for the user */
-void CharacterContinuous::printValue(std::ostream &o) const {
+void RlContinuousCharacterState::printValue(std::ostream &o) const {
 
     if ( fabs(variance - 0.0) < 0.00000001 )
         o << mean;

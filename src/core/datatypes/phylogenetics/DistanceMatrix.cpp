@@ -298,16 +298,16 @@ const MethodTable& DistanceMatrix::getMethods(void) const {
     if ( methodsSet == false ) 
         {
         excludetaxaArgRules->push_back(        new ConstArgumentRule(     "", Natural::getClassTypeSpec()       ) );
-        excludetaxaArgRules2->push_back(       new ConstArgumentRule(     "", TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ) ) );
+        excludetaxaArgRules2->push_back(       new ConstArgumentRule(     "", TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ) ) );
         excludetaxaArgRules3->push_back(       new ConstArgumentRule(     "", RbString::getClassTypeSpec()      ) );
-        excludetaxaArgRules4->push_back(       new ConstArgumentRule(     "", TypeSpec(RlVector<std::string, RbString>::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ) ) );
+        excludetaxaArgRules4->push_back(       new ConstArgumentRule(     "", TypeSpec(RlVector<RbString>::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ) ) );
 
-        methods.addFunction("names",         new SimpleMemberFunction(TypeSpec(RlVector<std::string, RbString>::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
+        methods.addFunction("names",         new SimpleMemberFunction(TypeSpec(RlVector<RbString>::getClassTypeSpec(), new TypeSpec(RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
         methods.addFunction("ntaxa",         new SimpleMemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
         methods.addFunction("nexcludedtaxa", new SimpleMemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
         methods.addFunction("nincludedtaxa", new SimpleMemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
-        methods.addFunction("excludedtaxa",  new SimpleMemberFunction(TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
-        methods.addFunction("includedtaxa",  new SimpleMemberFunction(TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
+        methods.addFunction("excludedtaxa",  new SimpleMemberFunction(TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
+        methods.addFunction("includedtaxa",  new SimpleMemberFunction(TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec(Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
         methods.addFunction("show",          new SimpleMemberFunction(RbVoid_name,        showdataArgRules           ) );
         methods.addFunction("excludetaxa",   new SimpleMemberFunction(RbVoid_name,        excludetaxaArgRules        ) );
         methods.addFunction("excludetaxa",   new SimpleMemberFunction(RbVoid_name,        excludetaxaArgRules2       ) );

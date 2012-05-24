@@ -44,7 +44,7 @@ public:
     bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
     bool                            isMissingOrAmbiguous(void) const;                   //!< Is the character missing or ambiguous
     void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
-    void                            setIsGapState(bool tf);                             //!< Set whether this is a gapped character
+    void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
         
 private:
     char                            getNucleotideCode(const std::set<char>& s) const;

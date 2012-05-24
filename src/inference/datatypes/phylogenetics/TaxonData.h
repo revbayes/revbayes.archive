@@ -23,9 +23,8 @@
 #include <string>
 #include <vector>
 
-class CharacterState;
 
-
+template <typename valueType>
 class TaxonData {
     
     public:
@@ -45,7 +44,7 @@ class TaxonData {
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
-        std::vector<CharacterState>             sequence;
+        std::vector<valueType>                  sequence;
     
 
 };

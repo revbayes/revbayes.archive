@@ -35,6 +35,9 @@ class RbBoolean : public RbLanguageObject {
                                         operator bool(void) const { return value; }                             //!< Type conversion to bool
             bool                        operator==(const RbBoolean& x) const;                                   //!< Equals operator
 
+        // the value type definition
+        typedef bool valueType;
+
         // Basic utility functions
         RbBoolean*                      clone(void) const;                                                      //!< Clone object
         RbObject*                       convertTo(const TypeSpec& type) const;                                  //!< Convert to type

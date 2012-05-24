@@ -50,6 +50,9 @@ class Complex : public RbLanguageObject {
         Complex&                    operator/=(const Complex& x);                                           //!< operator /= 
         Complex&                    operator/=(double x);                                                   //!< operator /= 
 
+        // the value type definition
+        typedef std::complex<double> valueType;
+
         // Basic utility functions
         Complex*                    clone(void) const;                                                      //!< Clone object
         static const std::string&   getClassName(void);                                                     //!< Get class name

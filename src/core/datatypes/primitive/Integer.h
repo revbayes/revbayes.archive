@@ -41,6 +41,9 @@ public:
     bool                        operator!=(const Integer& x) const;                                     //!< Not-Equals operator
     bool                        operator<(const Integer& x) const;                                      //!< Smaller comparison
     
+    // the value type definition
+    typedef int valueType;
+
     // Basic utility functions
     virtual Integer*            clone(void) const;                                                      //!< Clone object
     virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type

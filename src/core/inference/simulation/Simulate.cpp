@@ -216,7 +216,7 @@ const MethodTable& Simulate::getMethods(void) const {
         
         // get Monitors
         ArgumentRules* getMonitorsRules = new ArgumentRules();
-        methods.addFunction("getMonitors", new SimpleMemberFunction( TypeSpec( RlVector::getClassTypeSpec(), new TypeSpec( Monitor::getClassTypeSpec() ) ), getMonitorsRules) );
+        methods.addFunction("getMonitors", new SimpleMemberFunction( TypeSpec( RlVector<Monitor>::getClassTypeSpec(), new TypeSpec( Monitor::getClassTypeSpec() ) ), getMonitorsRules) );
         
         methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;

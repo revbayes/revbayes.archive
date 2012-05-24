@@ -19,6 +19,7 @@
 #include "CharacterData.h"
 #include "ConstantNode.h"
 #include "ConstArgumentRule.h"
+#include "DnaState.h"
 #include "Ellipsis.h"
 #include "Func_concatenate.h"
 #include "RbException.h"
@@ -50,11 +51,13 @@ RbPtr<RbLanguageObject> Func_concatenate::executeFunction( const std::vector<con
 //    for (size_t i = 0; i < elements.size(); i++)
 //        elements[i]->getValue().printValue(std::cout);
         
-    const RlCharacterData& m0 = static_cast<const RlCharacterData&>( *args[0] );
+//    const RlCharacterData& m0 = static_cast<const RlCharacterData&>( *args[0] );
 
-    CharacterData concatenatedMatrix = CharacterData( m0.getCharacterData() );
+//    CharacterData concatenatedMatrix = CharacterData( m0.getCharacterData() );
     
-    return RbPtr<RbLanguageObject>( new RlCharacterData( concatenatedMatrix ) );
+//    return RbPtr<RbLanguageObject>( new RlCharacterData( concatenatedMatrix ) );
+    
+    return NULL;
 }
 
 
@@ -66,7 +69,7 @@ const ArgumentRules& Func_concatenate::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "data",  RlCharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "data",  RlCharacterData<DnaState>::getClassTypeSpec() ) );
         argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
         }
@@ -100,6 +103,6 @@ const TypeSpec& Func_concatenate::getTypeSpec(void) const {
 /** Get return type */
 const TypeSpec& Func_concatenate::getReturnType(void) const {
     
-    static TypeSpec returnTypeSpec = CharacterData::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RlCharacterData<DnaState>::getClassTypeSpec();
     return returnTypeSpec;
 }

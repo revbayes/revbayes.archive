@@ -43,6 +43,9 @@ class Real : public RbLanguageObject {
                                     Real(const bool v);                                                     //!< Construct from bool
                                     Real(const Real& x);                                                    //!< Copy constructor
     
+        // the value type definition
+        typedef double valueType;
+    
         // Overloaded operators
                                     operator double(void) const { return value; }                           //!< Type conversion to double for convenience
         bool                        operator==(const Real& x) const;                                        //!< Equals operator
