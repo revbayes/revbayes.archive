@@ -19,7 +19,7 @@
 //#define Dist_multinomial_H
 //
 //#include "DistributionDiscrete.h"
-//#include "RbVector.h"
+//#include "RlVector.h"
 //
 //#include <ostream>
 //#include <string>

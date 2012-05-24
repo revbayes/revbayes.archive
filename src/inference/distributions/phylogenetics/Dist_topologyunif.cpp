@@ -28,7 +28,7 @@
 //#include "RbException.h"
 //#include "RbString.h"
 //#include "RbUtil.h"
-//#include "RbVector.h"
+//#include "RlVector.h"
 //#include "Simplex.h"
 //#include "Topology.h"
 //#include "TopologyNode.h"
@@ -199,7 +199,7 @@
 //    if ( !rulesSet )
 //		{
 //        memberRules.push_back( new ValueRule( "numberTaxa" , Natural::getClassTypeSpec()      ) );
-//        memberRules.push_back( new ValueRule( "tipNames"   , RbVector<RbString>::getClassTypeSpec() ) );
+//        memberRules.push_back( new ValueRule( "tipNames"   , RlVector<RbString>::getClassTypeSpec() ) );
 //        memberRules.push_back( new ValueRule( "isRooted"   , RbBoolean::getClassTypeSpec()    ) );
 //        memberRules.push_back( new ValueRule( "isBinary"   , new RbBoolean(true) ) );
 //
@@ -314,7 +314,7 @@
 //    int  nTaxa                      = static_cast<const Natural&            >( numTaxa->getValue()  ).getValue();
 //    bool rooted                     = static_cast<const RbBoolean&          >( isRooted->getValue() ).getValue();
 //    bool binary                     = static_cast<const RbBoolean&          >( isBinary->getValue() ).getValue();
-//    const RbVector<RbString>& names = static_cast<const RbVector<RbString>& >( tipNames->getValue() );
+//    const RlVector<RbString>& names = static_cast<const RlVector<RbString>& >( tipNames->getValue() );
 //
 //    // Draw a random topology
 //    if (binary) {

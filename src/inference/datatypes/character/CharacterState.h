@@ -39,7 +39,7 @@ public:
 //    virtual unsigned                getUnsignedValue(void) const { return 0; } //!< Get an unsigned representation of the bool set
 
 protected:
-    Character(void);                           //!< Default constructor
+    CharacterState(void);                                                               //!< Default constructor
 };
 
 #endif

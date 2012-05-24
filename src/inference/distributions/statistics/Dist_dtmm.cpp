@@ -109,7 +109,7 @@
 //    // initialize the number of states
 //    const size_t stateIndex = c.getUnsignedValue();
 //    
-//    const RbVector<Real>& probs = m[stateIndex];
+//    const RlVector<Real>& probs = m[stateIndex];
 //    
 //    //
 //    probMassVector.setValue( probs );
@@ -242,7 +242,7 @@
 ////    for (std::vector<bool>::const_iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
 ////        // test whether the state is set
 ////        if (*itStart) {
-////            const RbVector<Real>& probs = m[indexStart];
+////            const RlVector<Real>& probs = m[indexStart];
 ////            double u = rng->uniform01();
 ////            for (size_t i=0; i<probs.size(); i++) {
 ////                u -= probs[i];

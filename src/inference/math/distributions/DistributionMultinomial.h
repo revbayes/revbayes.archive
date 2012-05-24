@@ -15,7 +15,7 @@
  */
 
 #include <vector>
-#include "RbVector.h"
+#include "RlVector.h"
 
 class RandomNumberGenerator;
 

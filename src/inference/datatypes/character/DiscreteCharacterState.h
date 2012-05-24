@@ -17,19 +17,19 @@
 #ifndef DiscreteCharacterState_H
 #define DiscreteCharacterState_H
 
-#include "Character.h"
-#include "RbVector.h"
+#include "CharacterState.h"
+#include "RlVector.h"
 #include <ostream>
 #include <vector>
 
 
-class DiscreteCharacterState : public Character {
+class DiscreteCharacterState : public CharacterState {
     
 public:
-    virtual bool                            operator==(const Character& x) const = 0;           //!< Equality
-    virtual bool                            operator!=(const Character& x) const = 0;           //!< Inequality
-    virtual void                            operator++();                                       //!< Increment
-    virtual void                            operator--();                                       //!< Decrement
+    virtual bool                            operator==(const CharacterState& x) const = 0;      //!< Equality
+    virtual bool                            operator!=(const CharacterState& x) const = 0;      //!< Inequality
+    virtual void                            operator++() = 0;                                   //!< Increment
+    virtual void                            operator--() = 0;                                   //!< Decrement
  
     // Discrete character observation functions
     virtual void                            addState(size_t pos) = 0;                           //!< Add a character state to the set of character states

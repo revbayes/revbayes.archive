@@ -86,7 +86,7 @@
 ///** Get random variable type */
 //const TypeSpec& Dist_multinomial::getVariableType( void ) const {
 //
-//    static TypeSpec varTypeSpec = RbVector<Natural>::getClassTypeSpec();
+//    static TypeSpec varTypeSpec = RlVector<Natural>::getClassTypeSpec();
 //    
 //    return varTypeSpec;
 //}

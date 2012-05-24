@@ -17,7 +17,7 @@
 
 #include <vector>
 
-#include "RbVector.h"
+#include "RlVector.h"
 
 namespace RbMath {
     
