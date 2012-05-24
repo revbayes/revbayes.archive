@@ -19,21 +19,21 @@
 
 
 /** Default constructor */
-Character::Character(void) : RbLanguageObject() {
+RlCharacterState::RlCharacterState(void) : RbLanguageObject() {
 
 }
 
 
 /** Get class name of object */
-const std::string& Character::getClassName(void) { 
+const std::string& RlCharacterState::getClassName(void) { 
     
-    static std::string rbClassName = "Character";
+    static std::string rbClassName = "Character State";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Character::getClassTypeSpec(void) { 
+const TypeSpec& RlCharacterState::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
     
