@@ -22,7 +22,7 @@
 
 #include "MemberObject.h"
 #include "Model.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "Variable.h"
 
 #include <set>

@@ -16,8 +16,8 @@
  */
 
 #include "ArgumentRule.h"
+#include "CharacterState.h"
 #include "ConstArgumentRule.h"
-#include "Character.h"
 #include "ConstructorTaxonData.h"
 #include "DAGNode.h"
 #include "DagNodeContainer.h"
@@ -25,6 +25,8 @@
 #include "RbFunction.h"
 #include "RbString.h"
 #include "RbUtil.h"
+#include "RlCharacterState.h"
+#include "RlTaxonData.h"
 #include "TaxonData.h"
 #include "TypeSpec.h"
 
@@ -48,20 +50,20 @@ ConstructorTaxonData* ConstructorTaxonData::clone(void) const {
 RbPtr<RbLanguageObject> ConstructorTaxonData::executeFunction(const std::vector<const RbObject *> &args) {
     
     // \TODO: Maybe we want to have specialized taxondata vectors?!
-    TaxonData *retVal = new TaxonData( Character::getClassName() );
+    TaxonData retVal;
     
     // the name of the taxon
     const std::string& n = static_cast<const RbString *>( args[0] )->getValue();
-    retVal->setTaxonName( n );
+    retVal.setTaxonName( n );
     
     // set the vector of characters
-    const RbVector<char, Character>& v = static_cast<const RbVector<char, Character> &>( *args[1] );
+    const RlVector<CharacterState, RlCharacterState>& v = static_cast<const RlVector<CharacterState, RlCharacterState> &>( *args[1] );
     for (size_t i = 0; i < v.size(); i++) {
-        Character* c = static_cast<Character*>( v.getElement( i ).clone() );
-        retVal->addCharacter( c );
+        const CharacterState& c = v[i];
+        retVal.addCharacter( c );
     }
     
-    return RbPtr<RbLanguageObject>( retVal );
+    return RbPtr<RbLanguageObject>( new RlTaxonData( retVal ) );
 }
 
 
@@ -75,7 +77,7 @@ const ArgumentRules& ConstructorTaxonData::getArgumentRules(void) const {
        
        argRules.push_back( new ConstArgumentRule( "name", RbString::getClassTypeSpec() ) );
        // \TODO: We should specificly expect elements of type character and not DAG node containers for which we cannot guarantee what is inside.
-       argRules.push_back( new ConstArgumentRule( "x"   , TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec( Character::getClassTypeSpec() ) ) ) );
+       argRules.push_back( new ConstArgumentRule( "x"   , TypeSpec( RlVector<CharacterState, RlCharacterState>::getClassTypeSpec(), new TypeSpec( RlCharacterState::getClassTypeSpec() ) ) ) );
 //       argRules.push_back( new ConstArgumentRule( "x"   , RbObject::getClassTypeSpec() ) );
        
        rulesSet = true;
@@ -114,7 +116,7 @@ const TypeSpec& ConstructorTaxonData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& ConstructorTaxonData::getReturnType(void) const {
     
-    return TaxonData::getClassTypeSpec();
+    return RlTaxonData::getClassTypeSpec();
 }
 
 

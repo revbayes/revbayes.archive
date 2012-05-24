@@ -20,24 +20,24 @@
 //
 //
 ///** Default constructor for RbMatrix */
-//RbMatrix::RbMatrix( const TypeSpec &elemType ) : RbVector( elemType ) {
+//RbMatrix::RbMatrix( const TypeSpec &elemType ) : RlVector( elemType ) {
 //}
 //
 //
 ///** Constructor with dimension (n,k) and NULL pointers to every object */
-//RbMatrix::RbMatrix(const TypeSpec &elemType, size_t n, size_t k) : RbVector( elemType ) {
+//RbMatrix::RbMatrix(const TypeSpec &elemType, size_t n, size_t k) : RlVector( elemType ) {
 //    
 //    for (size_t i = 0; i < n; i++) {
-//        this->push_back( new RbVector(elemType, k) );
+//        this->push_back( new RlVector(elemType, k) );
 //    }
 //}
 //
 //
 ///** Constructor with dimension (n,k) and NULL pointers to every object */
-//RbMatrix::RbMatrix(const TypeSpec &elemType, size_t n, size_t k, RbObject *x) : RbVector( elemType ) {
+//RbMatrix::RbMatrix(const TypeSpec &elemType, size_t n, size_t k, RbObject *x) : RlVector( elemType ) {
 //    
 //    for (size_t i = 0; i < n; i++) {
-//        this->push_back( new RbVector(elemType, k, x->clone() ) );
+//        this->push_back( new RlVector(elemType, k, x->clone() ) );
 //    }
 //    
 //    delete x;
@@ -60,7 +60,7 @@
 ///** Get class type spec describing type of object */
 //const TypeSpec& RbMatrix::getClassTypeSpec(void) { 
 //    
-//    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbVector::getClassTypeSpec() ) );
+//    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlVector::getClassTypeSpec() ) );
 //    
 //	return rbClass; 
 //}
@@ -68,13 +68,13 @@
 //
 ///** Get element of row and col. */
 //const RbObject& RbMatrix::getElement(size_t row, size_t col) const {
-//    return static_cast<const RbVector *>(elements[row])->getElement(col);
+//    return static_cast<const RlVector *>(elements[row])->getElement(col);
 //}
 //
 //
 ///** Get element of row and col. */
 //RbObject& RbMatrix::getElement(size_t row, size_t col) {
-//    return static_cast<RbVector *>(elements[row])->getElement(col);
+//    return static_cast<RlVector *>(elements[row])->getElement(col);
 //}
 //
 //size_t RbMatrix::getNumberOfColumns(void) const {
@@ -117,16 +117,16 @@
 //    
 //    if ( k != static_cast<Container *>( this->elements[0] )->size() ) {
 //        for ( size_t i = 0; i < this->elements.size(); i++ )
-//            static_cast<RbVector *>( this->elements[i] )->resize( k );
+//            static_cast<RlVector *>( this->elements[i] )->resize( k );
 //    }
 //    for ( size_t i = this->elements.size(); i < n; i++ )
-//        this->elements.push_back( new RbVector(elementType, k) );
+//        this->elements.push_back( new RlVector(elementType, k) );
 //}
 //
 //
 ///** Set element of row and col. */
 //void RbMatrix::setElement(size_t row, size_t col, RbObject* x) {
-//    RbVector* r = static_cast<RbVector *>( this->elements[row] );
+//    RlVector* r = static_cast<RlVector *>( this->elements[row] );
 //    r->setElement(col,x);
 //}
 //

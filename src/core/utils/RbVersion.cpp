@@ -22,11 +22,11 @@ RbVersion::RbVersion( void ) {
 }
 
 std::string RbVersion::getDate( void ) const {
-    return "29 February 2012";
+    return "$Date:$";
 }
 
 std::string RbVersion::getVersion( void ) const {
-    return "Version 1.0.0 pre-beta";
+    return "Version 1.0.1 pre-beta";
 }
 
 
@@ -36,7 +36,8 @@ std::string RbVersion::getHeader( void ) const {
     header += "\n\n";
     header += "                             RevBayes\n";
     header += "                      " + getVersion() + "\n";
-    header += "                        " + getDate() + "\n\n";
+    header += "                        " + getDate() + "\n";
+    header += "                        Revision: $Rev: 430 $\n\n";
     header += "          An R-like environment for phylogenetic analysis\n";
     header += "                     using Bayesian inference\n\n";
     header += "             Released under the GPL license, version 3\n\n";

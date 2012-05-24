@@ -20,7 +20,7 @@
 #include "DAGNode.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "RbVector.h"
+#include "RlVector.h"
 
 #include <sstream>
 

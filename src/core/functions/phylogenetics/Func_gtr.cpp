@@ -20,7 +20,6 @@
 #include "Func_gtr.h"
 #include "RateMatrix.h"
 #include "RbException.h"
-#include "RbMatrix.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Simplex.h"
@@ -154,6 +153,8 @@ const TypeSpec& Func_gtr::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_gtr::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbMatrix::getClassTypeSpec();
+//    static TypeSpec returnTypeSpec = RlRateMatrix::getClassTypeSpec();
+    throw RbException("Missing implementation in Func_gtr::getReturnType()");
+    static TypeSpec returnTypeSpec = RbObject::getClassTypeSpec();
     return returnTypeSpec;
 }

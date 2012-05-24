@@ -68,7 +68,7 @@ Func_vector<valType, rlType>* Func_vector<valType, rlType>::clone( void ) const 
 template <typename valType, typename rlType>
 RbPtr<RbLanguageObject> Func_vector<valType, rlType>::executeFunction( const std::vector<const RbObject*>& args ) {
     
-    RbVector<valType, rlType> *theVector = new RbVector<valType, rlType>();
+    RlVector<valType, rlType> *theVector = new RlVector<valType, rlType>();
     for ( size_t i = 0; i < args.size(); i++ )
         theVector->push_back( static_cast<rlType*>( args[i]->clone() ) );
     

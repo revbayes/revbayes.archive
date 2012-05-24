@@ -25,7 +25,7 @@
 #include "Real.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 
@@ -49,9 +49,9 @@ Func_mean* Func_mean::clone( void ) const {
 RbPtr<RbLanguageObject> Func_mean::executeFunction(const std::vector<const RbObject *> &args) {
     
     double m = 0.0;
-    const RbVector& v = static_cast<const RbVector&>( *args[0] );
+    const RlVector<double, Real>& v = static_cast<const RlVector<double, Real>&>( *args[0] );
     for (size_t i = 0; i < v.size(); i++) {
-        m += static_cast<const Real&>( v.getElement(i) ).getValue();
+        m += v[i];
     }
     
     m /= v.size();
@@ -68,7 +68,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ConstArgumentRule( "x", TypeSpec( RbVector::getClassTypeSpec(), new TypeSpec(Real::getClassTypeSpec() ) ) ) );
+        argumentRules.push_back( new ConstArgumentRule( "x", TypeSpec( RlVector<double, Real>::getClassTypeSpec(), new TypeSpec(Real::getClassTypeSpec() ) ) ) );
 //        argumentRules.push_back( new Ellipsis( TypeSpec(Vector::getClassTypeSpec(), new TypeSpec( Real::getClassTypeSpec() ) ) ) );
         rulesSet = true;
     }

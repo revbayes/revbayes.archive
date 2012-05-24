@@ -25,7 +25,7 @@
 #include "StringUtilities.h"
 #include "Trace.h"
 #include "UserInterface.h"
-#include "RbVector.h"
+#include "RlVector.h"
 
 #include <map>
 #include <set>
@@ -43,126 +43,126 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_readTraces::executeFunction( const std::vector<const RbObject*>& args ) {
     // get the information from the arguments for reading the file
-    const RbString& fn = static_cast<const RbString&>( *args[0] );
-    
-    // check that the file/path name has been correctly specified
-    RbFileManager myFileManager( fn.getValue() );
-    if ( (myFileManager.isFileNamePresent() == false && myFileManager.testDirectory() == false) ||
-        (myFileManager.isFileNamePresent() == true  && (myFileManager.testFile() == false || myFileManager.testDirectory() == false)) )
-    {
-        std::string errorStr = "";
-        formatError(myFileManager, errorStr);
-        //throw( RbException(errorStr) );
-    }
-    
-    // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = myFileManager.isDirectory(fn.getValue());
-    if (readingDirectory == true)
-        RBOUT("Recursively reading the contents of a directory");
-    else
-        RBOUT("Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"");
-    
-    // set up a vector of strings containing the name or names of the files to be read
-    std::vector<std::string> vectorOfFileNames;
-    if (readingDirectory == true)
-        myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    else 
-    {
-#       if defined (WIN32)
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
-#       else
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-#       endif
-    }
-    if (readingDirectory == true)
-    {
-        std::stringstream o1;
-        o1 << "Found " << vectorOfFileNames.size() << " files in directory";
-        RBOUT(o1.str());
-    }
-    
-    RbVector* data = new RbVector( Trace::getClassTypeSpec() );
-    
-    
-    // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
-    // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
-    // that can be read.
-    std::map<std::string,std::string> fileMap;
-    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
-        bool hasHeaderBeenRead = false;
-        
-        /* Open file */
-        std::ifstream inFile( fn.getValue().c_str() );
-        
-        if ( !inFile )
-            throw RbException( "Could not open file \"" + fn + "\"" );
-        
-        /* Initialize */
-        std::string commandLine;
-        RBOUT("Processing file \"" + fn + "\"");
-        
-        /* Command-processing loop */
-        while ( inFile.good() ) {
-            
-            // Read a line
-            std::string line;
-            getline( inFile, line );
-            
-            // skip empty lines
-            //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            if (line.length() == 0) 
-            {
-                continue;
-            }
-            
-            
-            // removing comments
-            if (line[0] == '#') {
-                continue;
-            }
-            
-            // splitting every line into its columns
-            std::vector<std::string> columns;
-            // first, getting the file delimmiter
-            std::string delimitter = ";";
-            
-            // we should provide other delimiters too
-            //if ([delimitter isEqualToString:@"Tab Delimitted (txt)"] == YES) 
-            //{
-            //    columns = [line componentsSeparatedByString:@"\t"]; 
-            //}
-            //else if ([delimitter isEqualToString:@"Comma Delimmited (csv)"] == YES) 
-            //{
-            //    columns = [line componentsSeparatedByString:@","]; 
-            //}
-            
-            // we assume a header at the first line of the file
-            if (!hasHeaderBeenRead) {
-                
-                for (size_t j=0; j<columns.size(); j++) {
-                    Trace* t = new Trace();
-                    
-                    std::string parmName = columns[j];
-                    t->setParameterName(parmName);
-                    t->setFileName(fn);
-                    
-                    data->push_back( t );
-                }
-                
-                hasHeaderBeenRead = true;
-                
-                continue;
-            }
-            
-            // adding values to the Tracess
-            for (size_t j=0; j<columns.size(); j++) {
-                Trace& t = static_cast<Trace&>( (*data)[j] );
-                std::string tmp = columns[j];
-                double d = 1.0;
-                t.addObject(d);
-            }
-        }
-    }
+//    const RbString& fn = static_cast<const RbString&>( *args[0] );
+//    
+//    // check that the file/path name has been correctly specified
+//    RbFileManager myFileManager( fn.getValue() );
+//    if ( (myFileManager.isFileNamePresent() == false && myFileManager.testDirectory() == false) ||
+//        (myFileManager.isFileNamePresent() == true  && (myFileManager.testFile() == false || myFileManager.testDirectory() == false)) )
+//    {
+//        std::string errorStr = "";
+//        formatError(myFileManager, errorStr);
+//        //throw( RbException(errorStr) );
+//    }
+//    
+//    // are we reading a single file or are we reading the contents of a directory?
+//    bool readingDirectory = myFileManager.isDirectory(fn.getValue());
+//    if (readingDirectory == true)
+//        RBOUT("Recursively reading the contents of a directory");
+//    else
+//        RBOUT("Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"");
+//    
+//    // set up a vector of strings containing the name or names of the files to be read
+//    std::vector<std::string> vectorOfFileNames;
+//    if (readingDirectory == true)
+//        myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
+//    else 
+//    {
+//#       if defined (WIN32)
+//        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
+//#       else
+//        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
+//#       endif
+//    }
+//    if (readingDirectory == true)
+//    {
+//        std::stringstream o1;
+//        o1 << "Found " << vectorOfFileNames.size() << " files in directory";
+//        RBOUT(o1.str());
+//    }
+//    
+//    RlVector* data = new RlVector( Trace::getClassTypeSpec() );
+//    
+//    
+//    // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
+//    // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
+//    // that can be read.
+//    std::map<std::string,std::string> fileMap;
+//    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
+//        bool hasHeaderBeenRead = false;
+//        
+//        /* Open file */
+//        std::ifstream inFile( fn.getValue().c_str() );
+//        
+//        if ( !inFile )
+//            throw RbException( "Could not open file \"" + fn + "\"" );
+//        
+//        /* Initialize */
+//        std::string commandLine;
+//        RBOUT("Processing file \"" + fn + "\"");
+//        
+//        /* Command-processing loop */
+//        while ( inFile.good() ) {
+//            
+//            // Read a line
+//            std::string line;
+//            getline( inFile, line );
+//            
+//            // skip empty lines
+//            //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+//            if (line.length() == 0) 
+//            {
+//                continue;
+//            }
+//            
+//            
+//            // removing comments
+//            if (line[0] == '#') {
+//                continue;
+//            }
+//            
+//            // splitting every line into its columns
+//            std::vector<std::string> columns;
+//            // first, getting the file delimmiter
+//            std::string delimitter = ";";
+//            
+//            // we should provide other delimiters too
+//            //if ([delimitter isEqualToString:@"Tab Delimitted (txt)"] == YES) 
+//            //{
+//            //    columns = [line componentsSeparatedByString:@"\t"]; 
+//            //}
+//            //else if ([delimitter isEqualToString:@"Comma Delimmited (csv)"] == YES) 
+//            //{
+//            //    columns = [line componentsSeparatedByString:@","]; 
+//            //}
+//            
+//            // we assume a header at the first line of the file
+//            if (!hasHeaderBeenRead) {
+//                
+//                for (size_t j=0; j<columns.size(); j++) {
+//                    Trace* t = new Trace();
+//                    
+//                    std::string parmName = columns[j];
+//                    t->setParameterName(parmName);
+//                    t->setFileName(fn);
+//                    
+//                    data->push_back( t );
+//                }
+//                
+//                hasHeaderBeenRead = true;
+//                
+//                continue;
+//            }
+//            
+//            // adding values to the Tracess
+//            for (size_t j=0; j<columns.size(); j++) {
+//                Trace& t = static_cast<Trace&>( (*data)[j] );
+//                std::string tmp = columns[j];
+//                double d = 1.0;
+//                t.addObject(d);
+//            }
+//        }
+//    }
     
     
     return NULL;
@@ -237,7 +237,8 @@ const TypeSpec& Func_readTraces::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTraces::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = TypeSpec(RbVector::getClassName(), new TypeSpec( Trace::getClassTypeSpec() ) );
+//    static TypeSpec returnTypeSpec = TypeSpec(RlVector::getClassName(), new TypeSpec( Trace::getClassTypeSpec() ) );
+    static TypeSpec returnTypeSpec = Trace::getClassTypeSpec();
 
     return returnTypeSpec;
 }

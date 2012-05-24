@@ -17,7 +17,7 @@
 #define Simplex_H
 
 #include "MemberObject.h"
-#include "RbVector.h"
+#include "RlVector.h"
 
 #include <ostream>
 #include <string>
@@ -29,7 +29,7 @@ class Simplex : public MemberObject {
 public:
                                 Simplex(const size_t n = 2);                                //!< Simplex of length (size) n
                                 Simplex(const std::vector<double>& x);                      //!< Simplex from double vector
-                                Simplex(const RbVector<double, Real>& x);                   //!< Simplex from double RbVector
+                                Simplex(const RlVector<double, Real>& x);                   //!< Simplex from double RlVector
 
     double                      operator[](size_t i);                                       //!< Index op
     double                      operator[](size_t i) const;                                 //!< Const index op

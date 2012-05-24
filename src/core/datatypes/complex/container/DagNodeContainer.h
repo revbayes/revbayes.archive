@@ -28,7 +28,7 @@
 #include <vector>
 
 
-class DagNodeContainer : public Container {
+class DagNodeContainer {
     
     public: 
                                             DagNodeContainer(void);                                                     //!< Default constructor 

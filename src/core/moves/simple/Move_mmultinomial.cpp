@@ -24,7 +24,7 @@
 //#include "RbException.h"
 //#include "RbUtil.h"
 //#include "RbStatisticsHelper.h"
-//#include "RbVector.h"
+//#include "RlVector.h"
 //#include "RealPos.h"
 //#include "Simplex.h"
 //#include "StochasticNode.h"
@@ -110,9 +110,9 @@
 ////    double                 alpha0  = static_cast<const RealPos&>( alpha->getValue()         ).getValue();
 ////    int                    k       = static_cast<const Integer&>( numCategories->getValue() ).getValue();
 ////
-////    const RbVector<RealPos>& valPtr = static_cast<const RbVector<RealPos> &>( node->getValue() );
+////    const RlVector<RealPos>& valPtr = static_cast<const RlVector<RealPos> &>( node->getValue() );
 ////
-////    RbVector<RealPos>  curVal  = valPtr;
+////    RlVector<RealPos>  curVal  = valPtr;
 ////    int             n       = int( curVal.size() );
 ////
 ////    double sum = 0.0;
@@ -120,7 +120,7 @@
 ////        sum += curVal[i];
 ////    for ( size_t i = 0; i < curVal.size(); i++ )
 ////        curVal[i] /= sum;
-////    RbVector<RealPos>* newVal = curVal.clone();
+////    RlVector<RealPos>* newVal = curVal.clone();
 ////
 ////	/* We update the simplex values by proposing new values from a Dirichlet centered
 ////	   on the current values. The i-th parameter of the Dirichlet is the i-th value

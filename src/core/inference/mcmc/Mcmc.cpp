@@ -38,7 +38,7 @@
 #include "RangeRule.h"
 #include "RbUtil.h"
 #include "RbString.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "SimpleMemberFunction.h"
 #include "StochasticInferenceNode.h"
 #include "VariableNode.h"
@@ -373,7 +373,7 @@ const MethodTable& Mcmc::getMethods(void) const {
         
 //        // get Monitors
 //        ArgumentRules* getMonitorsRules = new ArgumentRules();
-//        methods.addFunction("getMonitors", new MemberFunction( RbVector<Monitor>::getClassTypeSpec() , getMonitorsRules) );
+//        methods.addFunction("getMonitors", new MemberFunction( RlVector<Monitor>::getClassTypeSpec() , getMonitorsRules) );
 
         methods.setParentTable( &MemberObject::getMethods() );
         methodsSet = true;

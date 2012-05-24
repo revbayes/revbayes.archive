@@ -19,7 +19,7 @@
 #include "Matrix.h"
 #include "Natural.h"
 #include "RbString.h"
-#include "RbVector.h"
+#include "RlVector.h"
 
 #include <set>
 #include <string>

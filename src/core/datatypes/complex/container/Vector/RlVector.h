@@ -31,22 +31,22 @@
 
 
 template <typename valueType, typename rlType>
-class RbVector : public Container {
+class RlVector : public Container {
     
 public:
     
     typedef typename std::vector<valueType>::iterator iterator;
     typedef typename std::vector<valueType>::const_iterator const_iterator;
     
-    RbVector(void);                                                                                                 //!< Default constructor with type RbLanguageObject
-    RbVector(size_t n);                                                                                             //!< Default constructor with type RbLanguageObject
-    RbVector(size_t n, const valueType &v);                                                                         //!< Default constructor with type RbLanguageObject
-    RbVector(const RbVector& v);                                                                                    //!< Copy Constructor
+    RlVector(void);                                                                                                 //!< Default constructor with type RbLanguageObject
+    RlVector(size_t n);                                                                                             //!< Default constructor with type RbLanguageObject
+    RlVector(size_t n, const valueType &v);                                                                         //!< Default constructor with type RbLanguageObject
+    RlVector(const RlVector& v);                                                                                    //!< Copy Constructor
     
-    virtual                                        ~RbVector(void);                                                 //!< Virtual destructor 
+    virtual                                        ~RlVector(void);                                                 //!< Virtual destructor 
     
     // Basic utility functions 
-    RbVector*                                       clone(void) const;                                              //!< Clone object
+    RlVector*                                       clone(void) const;                                              //!< Clone object
     RbObject*                                       convertTo(const TypeSpec& type) const;                          //!< Convert to type
     static const std::string&                       getClassName(void);                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
@@ -54,15 +54,15 @@ public:
     virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
     virtual void                                    printValue(std::ostream& o) const;                              //!< Print value for user
     
-    valueType&                                      operator[](size_t i);                                           //!< Index op allowing change
-    const valueType&                                operator[](size_t i) const;                                     //!< Const index op
-    RbVector&                                       operator=(const RbVector& x);                                   //!< Assignment operator
-    RbVector&                                       operator+=(const rlType& x);                                    //!< Concatenate
-    RbVector&                                       operator+=(const RbVector& x);                                  //!< Concatenate
-    const RbVector                                  operator+(const rlType& x) const;                               //!< Concatenate
-    const RbVector                                  operator+(const RbVector& x) const;                             //!< Concatenate
-    bool                                            operator==(const RbVector& x) const;                            //!< Equality
-    bool                                            operator!=(const RbVector& x) const;                            //!< Inequality
+    valueType&                                      operator[](size_t index);                                       //!< subscript operator
+    const valueType&                                operator[](size_t index) const;                                 //!< subscript operator (const)
+    RlVector&                                       operator=(const RlVector& x);                                   //!< Assignment operator
+    RlVector&                                       operator+=(const rlType& x);                                    //!< Concatenate
+    RlVector&                                       operator+=(const RlVector& x);                                  //!< Concatenate
+    const RlVector                                  operator+(const rlType& x) const;                               //!< Concatenate
+    const RlVector                                  operator+(const RlVector& x) const;                             //!< Concatenate
+    bool                                            operator==(const RlVector& x) const;                            //!< Equality
+    bool                                            operator!=(const RlVector& x) const;                            //!< Inequality
     
     // Overwritten RbObject functions
     virtual void*                                   getLeanValue(std::vector<size_t> &length) const;                //!< Transform the object into a basic element pointer for fast access.
@@ -80,10 +80,8 @@ public:
     void                                            clear(void);                                                    //!< Clear
     iterator                                        end(void);                                                      //!< Iterator to the end of the Vector
     const_iterator                                  end(void) const;                                                //!< Const-iterator to the end of the Vector
-    const RbObject&                                 find(const RbObject& x) const;                                  //!< Find the element being equal to that one
     int                                             findIndex(const RbObject& x) const;                             //!< Find the index if the element being equal to that one
-    const RbObject&                                 getElement(size_t index) const;                                 //!< Get element
-    RbObject&                                       getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+    RbObject                                        getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
     const std::vector<valueType>&                   getValue(void) const;                                           //!< Get the stl Vector of elements
     void                                            pop_back(void);                                                 //!< Drop element at back
     void                                            pop_front(void);                                                //!< Drop element from front
@@ -134,7 +132,7 @@ private:
 
 /** Vector type of elements */
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>::RbVector( void ) : Container( rlType::getClassTypeSpec() ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec()) ) {
+RlVector<valueType, rlType>::RlVector( void ) : Container( rlType::getClassTypeSpec() ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec()) ) {
     
     // set the member rules
     memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
@@ -162,7 +160,7 @@ RbVector<valueType, rlType>::RbVector( void ) : Container( rlType::getClassTypeS
 
 /** Constructor with dimension (n) and NULL pointers to every object */
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>::RbVector(size_t n) : Container( rlType::getClassTypeSpec() ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) )  {
+RlVector<valueType, rlType>::RlVector(size_t n) : Container( rlType::getClassTypeSpec() ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) )  {
     
     // set the member rules
     memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
@@ -194,7 +192,7 @@ RbVector<valueType, rlType>::RbVector(size_t n) : Container( rlType::getClassTyp
 
 /** Constructor with dimension (n) and copys of x for every object */
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>::RbVector(size_t n, const valueType &x) : Container( rlType::getClassTypeSpec() ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( elementType) )  {
+RlVector<valueType, rlType>::RlVector(size_t n, const valueType &x) : Container( rlType::getClassTypeSpec() ), typeSpec(getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( elementType) )  {
     
     // set the member rules
     memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
@@ -227,16 +225,12 @@ RbVector<valueType, rlType>::RbVector(size_t n, const valueType &x) : Container(
 
 /** Copy Constructor */
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>::RbVector(const RbVector<valueType, rlType> &v) : Container(v), memberRules( v.memberRules ), methods( v.methods ), typeSpec( v.typeSpec ) {
+RlVector<valueType, rlType>::RlVector(const RlVector<valueType, rlType> &v) : Container(v), memberRules( v.memberRules ), methods( v.methods ), typeSpec( v.typeSpec ) {
     
     typename std::vector<valueType>::const_iterator it;
     // copy all the elements by deep copy
     for ( it = v.elements.begin(); it != v.elements.end(); it++) {
-        // We need to type cast because clone return by default RbObject*
-        RbObject *copy =  NULL;
-        if ( (*it) != NULL )
-            copy = (*it)->clone();
-        elements.push_back( copy );
+        elements.push_back( *it );
     }
     
 }
@@ -244,7 +238,7 @@ RbVector<valueType, rlType>::RbVector(const RbVector<valueType, rlType> &v) : Co
 
 /** Destructor. Free the memory of the elements. */
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>::~RbVector(void) {
+RlVector<valueType, rlType>::~RlVector(void) {
     
     // just call clear which will free the memory of the elements
     clear();
@@ -252,7 +246,7 @@ RbVector<valueType, rlType>::~RbVector(void) {
 
 /** Assignment operator; make sure we get independent elements */
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>& RbVector<valueType, rlType>::operator=( const RbVector<valueType, rlType>& x ) {
+RlVector<valueType, rlType>& RlVector<valueType, rlType>::operator=( const RlVector<valueType, rlType>& x ) {
     
     if ( this != &x ) {
         
@@ -283,9 +277,25 @@ RbVector<valueType, rlType>& RbVector<valueType, rlType>::operator=( const RbVec
 }
 
 
+/* Subscript operator */
+template <typename valueType, typename rlType>
+valueType& RlVector<valueType, rlType>::operator[]( size_t index ) {
+    
+    return elements[index];
+}
+
+
+/* Subscript operator */
+template <typename valueType, typename rlType>
+const valueType& RlVector<valueType, rlType>::operator[]( size_t index ) const {
+    
+    return elements[index];
+}
+
+
 /** Concatenation with operator+ (valueType) */
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>& RbVector<valueType, rlType>::operator+=( const rlType& x ) {
+RlVector<valueType, rlType>& RlVector<valueType, rlType>::operator+=( const rlType& x ) {
     
     push_back( x.clone() );
     
@@ -293,9 +303,9 @@ RbVector<valueType, rlType>& RbVector<valueType, rlType>::operator+=( const rlTy
 }
 
 
-/** Concatenation with operator+ (RbVector) */
+/** Concatenation with operator+ (RlVector) */
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>& RbVector<valueType, rlType>::operator+=( const RbVector<valueType, rlType>& x ) {
+RlVector<valueType, rlType>& RlVector<valueType, rlType>::operator+=( const RlVector<valueType, rlType>& x ) {
     
     for ( size_t i = 0; i < x.elements.size(); i++ )
         push_back( x[i].clone() );
@@ -303,38 +313,16 @@ RbVector<valueType, rlType>& RbVector<valueType, rlType>::operator+=( const RbVe
     return *this;
 }
 
-/** Subscript operator */
-template <typename valueType, typename rlType>
-valueType& RbVector<valueType, rlType>::operator[](size_t index) {
-    
-    if (index > elements.size())
-        throw RbException("Index out of bounds");
-    
-    
-    return elements[index];
-}
-
-
-/** Subscript const operator */
-template <typename valueType, typename rlType>
-const valueType& RbVector<valueType, rlType>::operator[](size_t index) const {
-    
-    if (index > elements.size())
-        throw RbException("Index out of bounds");
-    
-    return elements[index];
-}
-
 
 /** Equals comparison */
 template <typename valueType, typename rlType>
-bool RbVector<valueType, rlType>::operator==(const RbVector<valueType, rlType>& x) const {
+bool RlVector<valueType, rlType>::operator==(const RlVector<valueType, rlType>& x) const {
     
     if (size() != x.size())
         return false;
     
     for (size_t i=0; i<elements.size(); i++) {
-        if (operator[](i) != x[i])
+        if (elements[i] != x[i])
             return false;
     }
     
@@ -344,7 +332,7 @@ bool RbVector<valueType, rlType>::operator==(const RbVector<valueType, rlType>& 
 
 /** Not equals comparison */
 template <typename valueType, typename rlType>
-bool RbVector<valueType, rlType>::operator!=(const RbVector<valueType, rlType>& x) const {
+bool RlVector<valueType, rlType>::operator!=(const RlVector<valueType, rlType>& x) const {
     
     return !operator==(x);
 }
@@ -352,9 +340,9 @@ bool RbVector<valueType, rlType>::operator!=(const RbVector<valueType, rlType>& 
 
 /** Concatenation with operator+ (valueType) */
 template <typename valueType, typename rlType>
-const RbVector<valueType, rlType> RbVector<valueType, rlType>::operator+( const rlType& x ) const {
+const RlVector<valueType, rlType> RlVector<valueType, rlType>::operator+( const rlType& x ) const {
     
-    RbVector tempVec = *this;
+    RlVector tempVec = *this;
     
     tempVec.push_back( x.getValue() );
     
@@ -362,11 +350,11 @@ const RbVector<valueType, rlType> RbVector<valueType, rlType>::operator+( const 
 }
 
 
-/** Concatenation with operator+ (RbVector) */
+/** Concatenation with operator+ (RlVector) */
 template <typename valueType, typename rlType>
-const RbVector<valueType, rlType> RbVector<valueType, rlType>::operator+( const RbVector<valueType, rlType>& x ) const {
+const RlVector<valueType, rlType> RlVector<valueType, rlType>::operator+( const RlVector<valueType, rlType>& x ) const {
     
-    RbVector<valueType, rlType> tempVec = *this;
+    RlVector<valueType, rlType> tempVec = *this;
     
     for ( size_t i = 0; i < x.elements.size(); i++ )
         tempVec.push_back( x[i] );
@@ -377,39 +365,40 @@ const RbVector<valueType, rlType> RbVector<valueType, rlType>::operator+( const 
 
 /** Get iterator to the beginning of the Vector. */
 template <typename valueType, typename rlType>
-typename std::vector<valueType>::iterator RbVector<valueType, rlType>::begin( void ) {
+typename std::vector<valueType>::iterator RlVector<valueType, rlType>::begin( void ) {
     return elements.begin();
 }
 
 
 /** Get iterator to the beginning of the Vector. */
 template <typename valueType, typename rlType>
-typename std::vector<valueType>::const_iterator RbVector<valueType, rlType>::begin( void ) const {
+typename std::vector<valueType>::const_iterator RlVector<valueType, rlType>::begin( void ) const {
     return elements.begin();
 }
 
 
 /** Convertible to: default implementation */
 template <typename valueType, typename rlType>
-RbObject* RbVector<valueType, rlType>::convertTo(const TypeSpec &type) const {
+RbObject* RlVector<valueType, rlType>::convertTo(const TypeSpec &type) const {
     
     // test whether we want to convert to another Vector
     if ( type.getBaseType() == getClassName() ) {
         
-        RbVector<valueType, rlType> *convObject = new RbVector<valueType, rlType>();
+        RlVector<valueType, rlType> *convObject = new RlVector<valueType, rlType>();
         
         //  convert all objects. clone if they are of the right type, otherwise convert them
-        std::vector<RbObject *>::const_iterator i;
-        for ( i = begin(); i != end(); i++) {
-            RbObject* orgElement = *i;
-            // test whether this element is already of the right type
-            if ( orgElement->isTypeSpec(type.getElementType()) ) {
-                convObject->push_back( orgElement->clone() );
-            }
-            else {
-                convObject->push_back( orgElement->convertTo(type.getElementType() ) );
-            }
-        }
+        throw RbException("Missing implementation in RlVector::convert()");
+//        typename std::vector<valueType>::const_iterator i;
+//        for ( i = begin(); i != end(); i++) {
+//            RbObject* orgElement = *i;
+//            // test whether this element is already of the right type
+//            if ( orgElement->isTypeSpec(type.getElementType()) ) {
+//                convObject->push_back( orgElement->clone() );
+//            }
+//            else {
+//                convObject->push_back( orgElement->convertTo(type.getElementType() ) );
+//            }
+//        }
         
         return convObject;
         
@@ -422,7 +411,7 @@ RbObject* RbVector<valueType, rlType>::convertTo(const TypeSpec &type) const {
 
 /** Clear contents of value container */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::clear( void ) {
+void RlVector<valueType, rlType>::clear( void ) {
     
     typename std::vector<valueType>::iterator i;
     for ( i = elements.begin(); i != elements.end(); i++) {
@@ -435,54 +424,28 @@ void RbVector<valueType, rlType>::clear( void ) {
 
 
 template <typename valueType, typename rlType>
-RbVector<valueType, rlType>* RbVector<valueType, rlType>::clone() const {
-    return new RbVector<valueType, rlType>( *this );
-}
-
-
-/**
- * Find the given element.
- * We rely on overloaded operator== in the element classes.
- * 
- * \param x the element we are looking for. 
- * \return The reference to the element we found or RbNullObject
- */
-template <typename valueType, typename rlType>
-const RbObject& RbVector<valueType, rlType>::find(const RbObject& x) const {
-    
-    // get the iterator to the first element
-    typename std::vector<valueType>::const_iterator i;
-    for ( i = elements.begin(); i != elements.end(); i++) {
-        RbObject& element = *(*i);
-        
-        // test if the object matches
-        // note that we rely on the implemented operator==
-        if ( element == x ) {
-            return element;
-        }
-    }
-    
-    return RbNullObject::getInstance();
+RlVector<valueType, rlType>* RlVector<valueType, rlType>::clone() const {
+    return new RlVector<valueType, rlType>( *this );
 }
 
 
 /** Get iterator to the end of the Vector. */
 template <typename valueType, typename rlType>
-typename std::vector<valueType>::iterator RbVector<valueType, rlType>::end( void ) {
+typename std::vector<valueType>::iterator RlVector<valueType, rlType>::end( void ) {
     return elements.end();
 }
 
 
 /** Get iterator to the end of the Vector. */
 template <typename valueType, typename rlType>
-typename std::vector<valueType>::const_iterator RbVector<valueType, rlType>::end( void ) const {
+typename std::vector<valueType>::const_iterator RlVector<valueType, rlType>::end( void ) const {
     return elements.end();
 }
 
 
 /** Execute member function. */
 template <typename valueType, typename rlType>
-RbPtr<RbLanguageObject> RbVector<valueType, rlType>::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
+RbPtr<RbLanguageObject> RlVector<valueType, rlType>::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if ( name == "sort" ) {
         sort();
@@ -508,7 +471,7 @@ RbPtr<RbLanguageObject> RbVector<valueType, rlType>::executeSimpleMethod(std::st
  * \return The index or -1 if we didn't find it.
  */
 template <typename valueType, typename rlType>
-int RbVector<valueType, rlType>::findIndex(const RbObject& x) const {
+int RlVector<valueType, rlType>::findIndex(const RbObject& x) const {
     
     // get the iterator to the first element
     typename std::vector<valueType>::const_iterator i;
@@ -531,7 +494,7 @@ int RbVector<valueType, rlType>::findIndex(const RbObject& x) const {
 
 /* Get class name of object */
 template <typename valueType, typename rlType>
-const std::string& RbVector<valueType, rlType>::getClassName(void) { 
+const std::string& RlVector<valueType, rlType>::getClassName(void) { 
     
     static std::string rbClassName = "Vector";
     
@@ -540,7 +503,7 @@ const std::string& RbVector<valueType, rlType>::getClassName(void) {
 
 /* Get class type spec describing type of object */
 template <typename valueType, typename rlType>
-const TypeSpec& RbVector<valueType, rlType>::getClassTypeSpec(void) { 
+const TypeSpec& RlVector<valueType, rlType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ) );
     
@@ -550,17 +513,9 @@ const TypeSpec& RbVector<valueType, rlType>::getClassTypeSpec(void) {
 
 /* Get element */
 template <typename valueType, typename rlType>
-const RbObject& RbVector<valueType, rlType>::getElement(size_t index) const {
+RbObject RlVector<valueType, rlType>::getElement(size_t index) {
     
-    return operator[](index);
-}
-
-
-/* Get element */
-template <typename valueType, typename rlType>
-RbObject& RbVector<valueType, rlType>::getElement(size_t index) {
-    
-    return this->operator[](index);
+    return rlType( elements[index] );
 }
 
 
@@ -571,7 +526,7 @@ RbObject& RbVector<valueType, rlType>::getElement(size_t index) {
  * constructor functions should be used.
  */
 template <typename valueType, typename rlType>
-const MemberRules& RbVector<valueType, rlType>::getMemberRules(void) const {
+const MemberRules& RlVector<valueType, rlType>::getMemberRules(void) const {
     
     return memberRules;
 }
@@ -580,58 +535,28 @@ const MemberRules& RbVector<valueType, rlType>::getMemberRules(void) const {
 /** Get the methods for this vector class */
 /* Get method specifications */
 template <typename valueType, typename rlType>
-const MethodTable& RbVector<valueType, rlType>::getMethods(void) const {
+const MethodTable& RlVector<valueType, rlType>::getMethods(void) const {
     
     return methods;
 }
 
 
 template <typename valueType, typename rlType>
-const std::vector<valueType>& RbVector<valueType, rlType>::getValue(void) const {
+const std::vector<valueType>& RlVector<valueType, rlType>::getValue(void) const {
     return elements;
 }
 
 
 
 template <typename valueType, typename rlType>
-void* RbVector<valueType, rlType>::getLeanValue( std::vector<size_t> &lengths ) const {
+void* RlVector<valueType, rlType>::getLeanValue( std::vector<size_t> &lengths ) const {
     
-    // add the length for this dimension
-    lengths.push_back( elements.size() );
-    
-    // create the c-style array of elements
-    void* data = malloc(memorySize());
-    
-    // tmp length vector
-    std::vector<size_t> tmp_lengths;
-    
-    // iterate over all elements and copy their values
-    std::vector<RbObject *>::const_iterator i;
-    for ( i = elements.begin(); i != elements.end(); i++ ) {
-        const RbObject *x = *i;
-        void* elemVal;
-        if ( i == elements.begin() ) {
-            elemVal = x->getLeanValue( lengths );
-        }
-        else {
-            elemVal = x->getLeanValue( tmp_lengths );            
-        }
-        memcpy(data, elemVal,(*i)->memorySize());
-        //        *(data) = *(*i)->getValue(lengths);
-        char *tmp_ptr = (char*)data;
-        tmp_ptr += (*i)->memorySize();
-        data = tmp_ptr;
-    }
-    char *tmp_ptr = (char*)data;
-    tmp_ptr -= memorySize();
-    data = tmp_ptr;
-    
-    return data;
+    return const_cast<std::vector<valueType> *>( &elements );
 }
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 template <typename valueType, typename rlType>
-const TypeSpec& RbVector<valueType, rlType>::getTypeSpec(void) const {
+const TypeSpec& RlVector<valueType, rlType>::getTypeSpec(void) const {
     
     return typeSpec;
 }
@@ -639,23 +564,23 @@ const TypeSpec& RbVector<valueType, rlType>::getTypeSpec(void) const {
 
 /* Is convertible to: default implementation */
 template <typename valueType, typename rlType>
-bool RbVector<valueType, rlType>::isConvertibleTo(const TypeSpec &type) const {
+bool RlVector<valueType, rlType>::isConvertibleTo(const TypeSpec &type) const {
     
     // test whether we want to convert to another Vector
-    if ( type.getBaseType() == getClassName() ) {
-        
-        // work through all the elements
-        std::vector<RbObject *>::const_iterator i;
-        for ( i = begin(); i != end(); i++) {
-            RbObject* orgElement = *i;
-            // test whether this element is already of the right type
-            if ( !orgElement->isTypeSpec(type.getElementType()) && !orgElement->isConvertibleTo(type.getElementType()) ) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
+//    if ( type.getBaseType() == getClassName() ) {
+//        
+//        // work through all the elements
+//        typename std::vector<valueType>::const_iterator i;
+//        for ( i = begin(); i != end(); i++) {
+//            rlType orgElement( *i );
+//            // test whether this element is already of the right type
+//            if ( !orgElement.isTypeSpec(type.getElementType()) && !orgElement.isConvertibleTo(type.getElementType()) ) {
+//                return false;
+//            }
+//        }
+//        
+//        return true;
+//    }
     
     return false;
 }
@@ -663,7 +588,7 @@ bool RbVector<valueType, rlType>::isConvertibleTo(const TypeSpec &type) const {
 
 /** Print value for user */
 template <typename valueType, typename rlType>
-size_t RbVector<valueType, rlType>::memorySize( void ) const {
+size_t RlVector<valueType, rlType>::memorySize( void ) const {
     
     return sizeof( std::vector<valueType> );
 }
@@ -671,17 +596,14 @@ size_t RbVector<valueType, rlType>::memorySize( void ) const {
 
 /** Print value for user */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::printValue( std::ostream& o ) const {
+void RlVector<valueType, rlType>::printValue( std::ostream& o ) const {
     
     o << "[ ";
     typename std::vector<valueType>::const_iterator i;
     for ( i = elements.begin(); i != elements.end(); i++ ) {
         if ( i != elements.begin() )
             o << ", ";
-        if ( (*i) == NULL )
-            o << "NULL";
-        else 
-            (*i)->printValue(o);
+        rlType(*i).printValue(o);
     }
     o <<  " ]";
     
@@ -690,7 +612,7 @@ void RbVector<valueType, rlType>::printValue( std::ostream& o ) const {
 
 /** Pop element off of front of vector, updating length in process */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::pop_front(void) {
+void RlVector<valueType, rlType>::pop_front(void) {
     
     elements.erase(elements.begin());
 }
@@ -698,7 +620,7 @@ void RbVector<valueType, rlType>::pop_front(void) {
 
 /** Pop element off of back of vector, updating length in process */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::pop_back(void) {
+void RlVector<valueType, rlType>::pop_back(void) {
     
     elements.pop_back();
 }
@@ -706,7 +628,7 @@ void RbVector<valueType, rlType>::pop_back(void) {
 
 /** Push an int onto the back of the vector */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::push_back( const rlType &x ) {
+void RlVector<valueType, rlType>::push_back( const rlType &x ) {
     
     elements.push_back( x.getValue() );
     
@@ -715,7 +637,7 @@ void RbVector<valueType, rlType>::push_back( const rlType &x ) {
 
 /** Push an int onto the back of the vector */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::push_back( const valueType &x ) {
+void RlVector<valueType, rlType>::push_back( const valueType &x ) {
     
     elements.push_back( x );
     
@@ -724,7 +646,7 @@ void RbVector<valueType, rlType>::push_back( const valueType &x ) {
 
 /** Push an int onto the front of the vector */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::push_front( const rlType &x ) {
+void RlVector<valueType, rlType>::push_front( const rlType &x ) {
     
     elements.insert( elements.begin(), x.getValue() );
 }
@@ -732,7 +654,7 @@ void RbVector<valueType, rlType>::push_front( const rlType &x ) {
 
 /** Push an int onto the front of the vector */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::push_front( const valueType &x ) {
+void RlVector<valueType, rlType>::push_front( const valueType &x ) {
     
     elements.insert( elements.begin(), x );
 }
@@ -740,7 +662,7 @@ void RbVector<valueType, rlType>::push_front( const valueType &x ) {
 
 /** Resize vector */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::resize( size_t n ) {
+void RlVector<valueType, rlType>::resize( size_t n ) {
     
     if ( n < elements.size() )
         throw RbException( "Invalid attempt to shrink vector" );
@@ -752,7 +674,7 @@ void RbVector<valueType, rlType>::resize( size_t n ) {
 
 /* Set element */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::setElement(const size_t index, RbObject *elem) {
+void RlVector<valueType, rlType>::setElement(const size_t index, RbObject *elem) {
     if (index >= elements.size()) {
         throw RbException("Cannot set element in Vector outside the current range.");
     }
@@ -768,7 +690,7 @@ void RbVector<valueType, rlType>::setElement(const size_t index, RbObject *elem)
 
 /** Get the size of the vector */
 template <typename valueType, typename rlType>
-size_t RbVector<valueType, rlType>::size( void ) const {
+size_t RlVector<valueType, rlType>::size( void ) const {
     
     return elements.size();
     
@@ -777,7 +699,7 @@ size_t RbVector<valueType, rlType>::size( void ) const {
 
 /* Sort the vector */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::sort( void ) {
+void RlVector<valueType, rlType>::sort( void ) {
     
     std::sort(elements.begin(), elements.end(), myComparator);
     
@@ -785,15 +707,15 @@ void RbVector<valueType, rlType>::sort( void ) {
 
 /* Remove duplicates and resize the vector */
 template <typename valueType, typename rlType>
-void RbVector<valueType, rlType>::unique(void) {
+void RlVector<valueType, rlType>::unique(void) {
     
     sort();
-    std::vector<RbObject* > uniqueVector;
-    uniqueVector.push_back (elements[0]->clone());
+    std::vector<valueType> uniqueVector;
+    uniqueVector.push_back (elements[0]);
     for (size_t i = 1 ; i< elements.size() ; i++)
     {
-        if ( *(elements[i]) != *(elements[i-1]) )
-            uniqueVector.push_back(elements[i]->clone());
+        if ( elements[i] != elements[i-1] )
+            uniqueVector.push_back(elements[i]);
     }
     
     clear();

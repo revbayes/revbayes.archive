@@ -26,7 +26,7 @@
 #include "RbLanguageObject.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "Workspace.h"
 
 #include <sstream>

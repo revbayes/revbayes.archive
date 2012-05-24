@@ -20,7 +20,7 @@
 //
 ////#include "MemberObject.h"
 //#include "Monitor.h"
-//#include "RbVector.h"
+//#include "RlVector.h"
 //#include "RbString.h"
 //
 //
@@ -55,10 +55,10 @@
 //    void                                monitor(int gen);                                                                       //!< Monitor at generation gen
 //
 //    // ObjectMonitor function
-//    RbVector&                           getValues(const RbString& varName);                                                     //!< returns the values contained in the values vector for variable with name varName
+//    RlVector&                           getValues(const RbString& varName);                                                     //!< returns the values contained in the values vector for variable with name varName
 //    
 //private:
-//    std::map<RbString, RbVector> values;                                                                                 //!< Vector of values from the monitored node
+//    std::map<RbString, RlVector> values;                                                                                 //!< Vector of values from the monitored node
 //    
 //};
 //

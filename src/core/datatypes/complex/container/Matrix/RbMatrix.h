@@ -18,7 +18,7 @@
 #ifndef RbMatrix_H
 #define RbMatrix_H
 
-#include "RbVector.h"
+#include "RlVector.h"
 #include "Complex.h"
 
 #include <iostream>
@@ -37,7 +37,7 @@
  * vector. 
  */
 
-class RbMatrix : public RbVector {
+class RbMatrix : public RlVector {
 
     public:
                                         RbMatrix(const TypeSpec &elemType);                                   //!< Default constructor

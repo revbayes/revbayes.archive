@@ -150,7 +150,7 @@ const MethodTable& Move::getMethods(void) const {
         methods.addFunction( "numAccepted",     new SimpleMemberFunction( Natural::getClassTypeSpec(),    numAcceptedArgRules       ) );
         methods.addFunction( "numRejected",     new SimpleMemberFunction( Natural::getClassTypeSpec(),    numRejectedArgRules       ) );
         methods.addFunction( "numTried",        new SimpleMemberFunction( Natural::getClassTypeSpec(),    numTriedArgRules          ) );
-//        methods.addFunction( "propose",         new MemberFunction( RbVector<Real>::getClassTypeSpec(), proposeArgRules           ) );
+//        methods.addFunction( "propose",         new MemberFunction( RlVector<Real>::getClassTypeSpec(), proposeArgRules           ) );
         methods.addFunction( "reject",          new SimpleMemberFunction( RbVoid_name,     rejectArgRules            ) );
         methods.addFunction( "resetCounters",   new SimpleMemberFunction( RbVoid_name,     resetCountersArgRules     ) );
         

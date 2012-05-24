@@ -25,6 +25,8 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Real.h"
+#include "RlCharacterData.h"
+#include "RlDnaState.h"
 #include "RnaState.h"
 #include "StringUtilities.h"
 #include "TaxonData.h"
@@ -50,7 +52,7 @@ Func_distance* Func_distance::clone(void) const {
 RbPtr<RbLanguageObject> Func_distance::executeFunction( const std::vector<const RbObject*> &args ) {
 
     // get the information from the arguments for reading the file
-    const CharacterData& m      = static_cast<const CharacterData&>( *args[0] );
+    const CharacterData& m      = static_cast<const RlCharacterData&>( *args[0] ).getCharacterData();
     const RbString&      dName  = static_cast<const RbString&>     ( *args[1] );
     const RbString&      f      = static_cast<const RbString&>     ( *args[2] );
     const RbString&      a      = static_cast<const RbString&>     ( *args[3] );
@@ -62,7 +64,7 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction( const std::vector<const 
         throw( RbException("Data is not aligned") );
 
     // check that we have DNA or RNA sequences
-    if  ( !(m.getDataType() == DnaState::getClassName() || m.getDataType() == RnaState::getClassName() ) )
+    if  ( !(m.getDataType() == RlDnaState::getClassName() || m.getDataType() == RnaState::getClassName() ) )
         throw( RbException("Data must be DNA or RNA") );
         
     // determine the distance model
@@ -183,7 +185,7 @@ const ArgumentRules& Func_distance::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "data",   CharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "data",   RlCharacterData::getClassTypeSpec() ) );
         argumentRules.push_back( new ConstArgumentRule( "model",  RbString::getClassTypeSpec()      ) );
         argumentRules.push_back( new ConstArgumentRule( "freqs",  RbString::getClassTypeSpec()      ) );
         argumentRules.push_back( new ConstArgumentRule( "asrv",   RbString::getClassTypeSpec()      ) );

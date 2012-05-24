@@ -608,7 +608,7 @@ CharacterData* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-            TaxonData* dataVec = new TaxonData(StandardState::getClassName(),tName);
+        TaxonData* dataVec = new TaxonData(StandardState::getClassName(),tName);
         
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)

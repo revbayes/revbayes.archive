@@ -24,6 +24,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "RlCharacterData.h"
 #include "StringUtilities.h"
 #include "UserInterface.h"
 
@@ -49,11 +50,11 @@ RbPtr<RbLanguageObject> Func_concatenate::executeFunction( const std::vector<con
 //    for (size_t i = 0; i < elements.size(); i++)
 //        elements[i]->getValue().printValue(std::cout);
         
-    const CharacterData& m0 = static_cast<const CharacterData&>( *args[0] );
+    const RlCharacterData& m0 = static_cast<const RlCharacterData&>( *args[0] );
 
-    CharacterData* concatenatedMatrix = new CharacterData( m0.getDataType() );
+    CharacterData concatenatedMatrix = CharacterData( m0.getCharacterData() );
     
-    return RbPtr<RbLanguageObject>( concatenatedMatrix );
+    return RbPtr<RbLanguageObject>( new RlCharacterData( concatenatedMatrix ) );
 }
 
 
@@ -65,7 +66,7 @@ const ArgumentRules& Func_concatenate::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "data",  CharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "data",  RlCharacterData::getClassTypeSpec() ) );
         argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
         }

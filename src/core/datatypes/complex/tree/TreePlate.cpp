@@ -262,21 +262,23 @@ void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &nam
     {
         // we don't have a container for this variable name yet
         // so we just create one
-        Variable* var = new Variable( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer( orderingTopology->getNumberOfNodes() ) ) ) );
+        throw RbException("Missing implementation in TreePlate::setNodeVariable()");
+//        Variable* var = new Variable( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer( orderingTopology->getNumberOfNodes() ) ) ) );
         
-        memberVariables.addVariable(name, var );
+//        memberVariables.addVariable(name, var );
         
         // and we add it to our names list
-        nodeVariableNames.push_back(name);
+//        nodeVariableNames.push_back(name);
     }
     
     // get the container with the variables for this node
-    DagNodeContainer *vars = static_cast<DagNodeContainer *>( (RbLanguageObject *) memberVariables[name].getValue().getSingleValue() );
+//    DagNodeContainer *vars = static_cast<DagNodeContainer *>( (RbLanguageObject *) memberVariables[name].getValue().getSingleValue() );
     
     // get the index of the node
-    size_t nodeIndex = getNodeIndex(node);
+//    size_t nodeIndex = getNodeIndex(node);
     
     // set the variable
-    vars->setElement(nodeIndex - 1, value.clone() );
+    //    vars->setElement(nodeIndex - 1, value.clone() );
+    throw RbException("Missing implementation in TreePlate::setNodeVariable()");
 }
 

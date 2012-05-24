@@ -122,7 +122,7 @@
 //        ArgumentRules* getValues = new ArgumentRules();
 //        getValues->push_back( new ConstArgumentRule( "name", RbString::getClassTypeSpec() ) );
 //        
-//        methods.addFunction( "getValues", new MemberFunction( RbVector::getClassTypeSpec(), getValues ) );
+//        methods.addFunction( "getValues", new MemberFunction( RlVector::getClassTypeSpec(), getValues ) );
 //        
 //        methods.setParentTable( &Monitor::getMethods() );
 //        

@@ -187,11 +187,11 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vect
             }
         }
     
-    RbVector *retList;
+    RlVector *retList;
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-            retList = new RbVector( CharacterData::getClassTypeSpec(), m.size() );
+            retList = new RlVector( CharacterData::getClassTypeSpec(), m.size() );
         size_t index = 0;
         for (std::vector<CharacterData*>::iterator it = m.begin(); it != m.end(); it++)
             {

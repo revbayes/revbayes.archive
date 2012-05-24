@@ -25,22 +25,22 @@
 #include "Monitor.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "SimpleMemberFunction.h"
 #include "TypeSpec.h"
 #include <algorithm>
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(void) : Container( RbLanguageObject::getClassTypeSpec() ) {
+DagNodeContainer::DagNodeContainer(void)  {
     
 }
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(size_t l) : Container( RbLanguageObject::getClassTypeSpec() ) {
+DagNodeContainer::DagNodeContainer(size_t l)  {
     resize(l-1);
 }
 
-DagNodeContainer::DagNodeContainer(const DagNodeContainer& c) : Container(c) {
+DagNodeContainer::DagNodeContainer(const DagNodeContainer& c) {
     
     for (std::vector<VariableSlot*>::const_iterator it = c.elements.begin(); it != c.elements.end(); it++) {
         elements.push_back((*it)->clone());
@@ -101,9 +101,9 @@ DagNodeContainer* DagNodeContainer::clone(void) const {
 
 RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
     
-//    if ( type.getBaseType() == RbVector::getClassName() ) {
+//    if ( type.getBaseType() == RlVector::getClassName() ) {
 //        // test whether each object in the container is actually a constant node holding a value
-//        RbVector* valueVector = new RbVector( type.getElementType() );
+//        RlVector* valueVector = new RlVector( type.getElementType() );
 //        for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
 //            DAGNode* theNode = (*it)->getDagNode();
 //            if (theNode->isTypeSpec( ConstantNode::getClassTypeSpec() ) && theNode->getValue()->isTypeSpec(type.getElementType())) {
@@ -125,8 +125,8 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
 //        return tmpVector;
 //    }
     
-    
-    return Container::convertTo(type);
+    throw RbException("Missing implementation of DagNodeContainer::convertTo()");
+    return NULL;
 }
 
 
@@ -183,7 +183,7 @@ const TypeSpec& DagNodeContainer::getTypeSpec( void ) const {
 /** Can we convert this DAG node container into another object? */
 bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     
-//    if ( type.getBaseType() == RbVector::getClassName() ) {
+//    if ( type.getBaseType() == RlVector::getClassName() ) {
 //        // test whether each object in the container is actually a constant node holding a value
 //        for (std::vector<VariableSlot* >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
 //            DAGNode* theNode = (*it)->getDagNode();
@@ -196,7 +196,9 @@ bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
 //        return true;
 //    }
     
-    return Container::isConvertibleTo(type);
+    
+    throw RbException("Missing implementation of DagNodeContainer::isConvertibeleTo()");
+    return false;
 }
 
 
