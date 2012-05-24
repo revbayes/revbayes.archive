@@ -31,7 +31,7 @@
 #include "RbLanguageObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "SyntaxFunctionCall.h"
 #include "Variable.h"
 #include "SyntaxVariable.h"
@@ -155,9 +155,9 @@ const std::string& SyntaxVariable::getClassName(void) {
 
 
 /** Get index */
-RbVector SyntaxVariable::computeIndex( Environment& env ) {
+RlVector SyntaxVariable::computeIndex( Environment& env ) {
     
-    RbVector theIndex( Natural::getClassTypeSpec() );
+    RlVector theIndex( Natural::getClassTypeSpec() );
     
     int count = 1;
     for ( std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++ ) {
@@ -226,7 +226,7 @@ RbVector SyntaxVariable::computeIndex( Environment& env ) {
 VariableSlot& SyntaxVariable::createVariable( Environment& env) {
     
     /* Get index */
-    RbVector indices = computeIndex(env);
+    RlVector indices = computeIndex(env);
     
     VariableSlot* theSlot = NULL;
     

@@ -44,7 +44,7 @@ RbPtr<RbLanguageObject> Func_rep::executeFunction( const std::vector<const RbObj
     const RbLanguageObject *var = static_cast<const RbLanguageObject*>( args[0] );
     int times = static_cast<const Natural*>( args[1] )->getValue();
     
-    RbVector *repValues = new RbVector( RbLanguageObject::getClassTypeSpec() );
+    RlVector *repValues = new RlVector( RbLanguageObject::getClassTypeSpec() );
     for ( int i = 0; i < times; i++ ) {
         repValues->push_back( var->clone() );
     }
@@ -98,7 +98,7 @@ const TypeSpec& Func_rep::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_rep::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbVector::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RlVector::getClassTypeSpec();
     return returnTypeSpec;
 }
 

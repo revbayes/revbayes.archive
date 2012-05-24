@@ -20,7 +20,7 @@
 #include "RbException.h"
 #include "RbObject.h"
 #include "RbUtil.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "TypeSpec.h"
 #include "Workspace.h"
 
@@ -58,8 +58,8 @@ RbObject& RbObject::operator=(const RbObject &o) {
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
     // test if we need to convert this object into an vector
-    if ( typeSpec.getBaseType() == RbVector::getClassName() ) {
-        RbVector *v = new RbVector( typeSpec.getElementType() );
+    if ( typeSpec.getBaseType() == RlVector::getClassName() ) {
+        RlVector *v = new RlVector( typeSpec.getElementType() );
         v->push_back( this->clone() );
         
         // we rely on the implemented conversion functions inside the vector class
@@ -163,7 +163,7 @@ void RbObject::incrementReferenceCount( void ) const {
 /* Is convertible to type? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
     
-    if (typeSpec.getBaseType() == RbVector::getClassName() && isTypeSpec(typeSpec.getElementType())) {
+    if (typeSpec.getBaseType() == RlVector::getClassName() && isTypeSpec(typeSpec.getElementType())) {
         return true;
     }
 

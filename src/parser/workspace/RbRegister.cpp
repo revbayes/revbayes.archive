@@ -58,7 +58,7 @@
 #include "DagNodeContainer.h"
 #include "Matrix.h"
 #include "Set.h"
-#include "RbVector.h"
+#include "RlVector.h"
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
 #include "CharacterData.h"
@@ -219,13 +219,13 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addTypeWithConstructor( "set",         new Set<NucleotideState>()  );
 //        addTypeWithConstructor( "set",         new Set<Real>()             );
 //        addTypeWithConstructor( "set",         new Set<RealPos>()          );
-//        addType( RbPtr<MemberObject>( new RbVector( RbObject::getClassTypeSpec() ) )  );
-//        addType( new RbVector<RbBoolean>()          );
-//        addType( new RbVector<Integer>()            );
-//        addType( new RbVector<Natural>()            );
-//        addType( new RbVector<Real>()               );
-//        addType( new RbVector<RealPos>()            );
-//        addType( new RbVector<RbString>()           );
+//        addType( RbPtr<MemberObject>( new RlVector( RbObject::getClassTypeSpec() ) )  );
+//        addType( new RlVector<RbBoolean>()          );
+//        addType( new RlVector<Integer>()            );
+//        addType( new RlVector<Natural>()            );
+//        addType( new RlVector<Real>()               );
+//        addType( new RlVector<RealPos>()            );
+//        addType( new RlVector<RbString>()           );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
         addType( new Simplex()                      );
@@ -313,7 +313,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         // dirichlet distribution
         MemberRules distDirichletMemberRules;
-        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
+        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RlVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
         addDistribution( "dirichlet",        RbPtr<ParserDistribution>(  new ParserDistribution( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) ) );
 
         // exponential distribution
@@ -343,7 +343,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        MemberRules distMultMemberRules;
 //        distMultMemberRules.push_back( new ConstArgumentRule( "probabilities", Simplex::getClassTypeSpec()    ) );
 //        distMultMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-//        addDistribution( "mult",         RbPtr<ParserDistribution>( new ParserDistributionContinuous( new Dist_multinomial(), "multinomial", distMultMemberRules, new RbVector( Natural::getClassTypeSpec() ) ) ) );
+//        addDistribution( "mult",         RbPtr<ParserDistribution>( new ParserDistributionContinuous( new Dist_multinomial(), "multinomial", distMultMemberRules, new RlVector( Natural::getClassTypeSpec() ) ) ) );
         
         // normal distribution
         MemberRules distNormMemberRules;
@@ -432,13 +432,13 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "rep",                      new Func_rep()                      );
         addFunction( "simplex",                  new Func_simplex<Integer>()         );
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
-//        addFunction( "simplex",                  new Func_simplex<RbVector>() );
+//        addFunction( "simplex",                  new Func_simplex<RlVector>() );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
-//        addFunction( "unique",                   new Func_unique<RbVector>()  );
+//        addFunction( "unique",                   new Func_unique<RlVector>()  );
 //        addFunction( "size",                     new Func_size<DagNodeContainer>()   );
-//        addFunction( "size",                     new Func_size<RbVector>()    );
-//        addFunction( "sort",                     new Func_sort<RbVector>()    );
+//        addFunction( "size",                     new Func_size<RlVector>()    );
+//        addFunction( "sort",                     new Func_sort<RlVector>()    );
         
 
         
@@ -675,12 +675,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_vector(new RealPos()) );
         addFunction( "v",         new Func_vector(new Complex()) );
         addFunction( "v",         new Func_vector(new RbString()) );
-        addFunction( "v",         new Func_vector(new RbVector(Integer::getClassTypeSpec())) );
-        addFunction( "v",         new Func_vector(new RbVector(Natural::getClassTypeSpec())) );
-//        addFunction( "v",         new Func_vector<          RbVector<Natural>,              Matrix<Natural>                 >() );
-//        addFunction( "v",         new Func_vector<          RbVector<Real>,                 Matrix<Real>                    >() );
-//        addFunction( "v",         new Func_vector<          RbVector<RealPos>,              Matrix<RealPos>                 >() );
-//        addFunction( "v",         new Func_vector<          RbVector<Complex>,              Matrix<Complex>                 >() );
+        addFunction( "v",         new Func_vector(new RlVector(Integer::getClassTypeSpec())) );
+        addFunction( "v",         new Func_vector(new RlVector(Natural::getClassTypeSpec())) );
+//        addFunction( "v",         new Func_vector<          RlVector<Natural>,              Matrix<Natural>                 >() );
+//        addFunction( "v",         new Func_vector<          RlVector<Real>,                 Matrix<Real>                    >() );
+//        addFunction( "v",         new Func_vector<          RlVector<RealPos>,              Matrix<RealPos>                 >() );
+//        addFunction( "v",         new Func_vector<          RlVector<Complex>,              Matrix<Complex>                 >() );
     }
     catch(RbException& rbException) {
 

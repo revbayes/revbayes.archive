@@ -32,7 +32,7 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "StochasticNode.h"
 #include "UserInterface.h"
 #include "Workspace.h"

@@ -18,7 +18,7 @@
 #define Func_rep_H
 
 #include "RbFunction.h"
-#include "RbVector.h"
+#include "RlVector.h"
 
 #include <string>
 

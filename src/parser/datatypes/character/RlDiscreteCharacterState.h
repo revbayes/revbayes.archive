@@ -17,13 +17,12 @@
 #ifndef CharacterStateDiscrete_H
 #define CharacterStateDiscrete_H
 
-#include "Character.h"
-#include "RbVector.h"
+#include "RlCharacterState.h"
 #include <ostream>
 #include <vector>
 
 
-class CharacterStateDiscrete : public Character {
+class RlDiscreteCharacterState : public RlCharacterState {
 
     public:
         virtual bool                            operator==(const Character& x) const = 0;           //!< Equality

@@ -23,7 +23,7 @@
 #include "Integer.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "TypeSpec.h"
 
 
@@ -47,7 +47,7 @@ RbPtr<RbLanguageObject> Func__range::executeFunction( const std::vector<const Rb
     int f = static_cast<const Integer*>( args[0] )->getValue();
     int l = static_cast<const Integer*>( args[1] )->getValue();
 
-    RbVector *range = new RbVector( Integer::getClassTypeSpec() );
+    RlVector *range = new RlVector( Integer::getClassTypeSpec() );
     if (f < l) {
         for ( int i = f; i <= l; i++ )
             range->push_back( new Integer(i) );
@@ -106,7 +106,7 @@ const TypeSpec& Func__range::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func__range::getReturnType( void ) const {
 
-    static TypeSpec returnTypeSpec = TypeSpec(RbVector::getClassTypeSpec(), new TypeSpec( Integer::getClassTypeSpec() ) );
+    static TypeSpec returnTypeSpec = TypeSpec(RlVector::getClassTypeSpec(), new TypeSpec( Integer::getClassTypeSpec() ) );
     return returnTypeSpec;
 }
 

@@ -27,7 +27,7 @@
 #include "RbFunction.h"
 #include "RbUtil.h"
 #include "RbObject.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "Workspace.h"
@@ -213,7 +213,7 @@ bool ArgumentRule::isArgumentValid(const RbObject& var, bool &conversionNeeded, 
     
     // Finally, we test if this is a vector of types which we accept
     if ( var.getTypeSpec().isDerivedOf( Container::getClassTypeSpec() ) ) {
-        TypeSpec* et = new TypeSpec( RbVector::getClassName() );
+        TypeSpec* et = new TypeSpec( RlVector::getClassName() );
         conversionType.setElementType( et );
         return isArgumentValid( static_cast<const Container&>( var ).getElement(0), conversionNeeded, *et );
     }

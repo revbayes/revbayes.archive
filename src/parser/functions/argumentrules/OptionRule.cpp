@@ -23,7 +23,7 @@
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "RbString.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -32,7 +32,7 @@
 
 
 /** Construct rule without default value; use "" for no label. */
-OptionRule::OptionRule( const std::string& argName, const RbVector &optVals ) : ConstArgumentRule( argName, RbString::getClassTypeSpec() ), options( optVals ) {
+OptionRule::OptionRule( const std::string& argName, const RlVector &optVals ) : ConstArgumentRule( argName, RbString::getClassTypeSpec() ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -40,7 +40,7 @@ OptionRule::OptionRule( const std::string& argName, const RbVector &optVals ) : 
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, const RbPtr<RbString> &defVal, const RbVector &optVals ) : ConstArgumentRule( argName, RbPtr<RbLanguageObject>( (RbString*) defVal ) ), options( optVals ) {
+OptionRule::OptionRule(const std::string& argName, const RbPtr<RbString> &defVal, const RlVector &optVals ) : ConstArgumentRule( argName, RbPtr<RbLanguageObject>( (RbString*) defVal ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -48,7 +48,7 @@ OptionRule::OptionRule(const std::string& argName, const RbPtr<RbString> &defVal
 
 
 /** Help function to test whether a vector of string contains unique string values */
-bool OptionRule::areOptionsUnique( const RbVector& optVals ) const {
+bool OptionRule::areOptionsUnique( const RlVector& optVals ) const {
 
     for ( size_t i = 0; i < optVals.size(); i++ )
         for ( size_t j = i + 1; j < optVals.size(); j++ )

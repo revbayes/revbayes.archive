@@ -33,7 +33,7 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbValue.h"
-#include "RbVector.h"
+#include "RlVector.h"
 #include "StochasticNode.h"
 #include "StochasticInferenceNode.h"
 #include "UserInterface.h"

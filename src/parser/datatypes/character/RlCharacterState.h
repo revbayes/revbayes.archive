@@ -36,6 +36,8 @@ class RlCharacterState : public RbLanguageObject {
         // Basic utility functions you have to override
         virtual RlCharacterState*       clone(void) const = 0;                              //!< Clone object
         virtual void                    printValue(std::ostream& o) const = 0;              //!< Print value (for user)
+    
+        virtual const CharacterState&   getCharacterState() const;                          //!< Get the internal character object.
 
     protected:
                                         RlCharacterState(void);                             //!< Default constructor
