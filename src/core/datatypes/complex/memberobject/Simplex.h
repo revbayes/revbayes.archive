@@ -29,7 +29,7 @@ class Simplex : public MemberObject {
 public:
                                 Simplex(const size_t n = 2);                                //!< Simplex of length (size) n
                                 Simplex(const std::vector<double>& x);                      //!< Simplex from double vector
-                                Simplex(const RbVector& x);                                 //!< Simplex from double RbVector
+                                Simplex(const RbVector<double, Real>& x);                   //!< Simplex from double RbVector
 
     double                      operator[](size_t i);                                       //!< Index op
     double                      operator[](size_t i) const;                                 //!< Const index op
@@ -38,8 +38,11 @@ public:
     Simplex*                    clone(void) const;                                          //!< Clone object
     static const std::string&   getClassName(void);                                         //!< Get class name
     static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
+    void*                       getLeanValue(std::vector<size_t> &length) const;            //!< Transform the object into a basic element pointer for fast access.
     const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+    size_t                      memorySize() const;                                         //!< Get the size
     void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
+    void                        setLeanValue(const RbValue<void*> &val);                    //!< Set the value of the object from a basic (lean) element pointer.
 
     // Vector functions, including STL-like functions
     const std::vector<double>&  getValue( void ) const;

@@ -46,12 +46,12 @@ Simplex::Simplex(const std::vector<double>& x) : MemberObject() {
 
 
 /** Construct simplex from STL vector */
-Simplex::Simplex(const RbVector& x) : MemberObject() {
+Simplex::Simplex(const RbVector<double, Real>& x) : MemberObject() {
     
     std::vector<double> tmp;
     
     for (size_t i = 0; i < x.size(); ++i) {
-        tmp.push_back( static_cast<const Real &>( x.getElement( i ) ).getValue() );
+        tmp.push_back( x[i] );
     }
     
     elements = tmp;
@@ -90,12 +90,12 @@ const std::string& Simplex::getClassName(void) {
 }
 
 
-/** Get the stl vector */
+/* Get the stl vector */
 const std::vector<double>& Simplex::getValue( void ) const {
     return elements;
 }
 
-/** Get class type spec describing type of object */
+/* Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
@@ -103,7 +103,12 @@ const TypeSpec& Simplex::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
-/** Get type spec */
+
+void* Simplex::getLeanValue(std::vector<size_t> &length) const {
+    return static_cast<void*>( &const_cast<std::vector<double>&>( elements ) );
+}
+
+/* Get type spec */
 const TypeSpec& Simplex::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -112,7 +117,12 @@ const TypeSpec& Simplex::getTypeSpec( void ) const {
 }
 
 
-/** Print value for user */
+size_t Simplex::memorySize() const {
+    return sizeof( std::vector<double> );
+}
+
+
+/* Print value for user */
 void Simplex::printValue(std::ostream& o) const {
     
     std::streamsize previousPrecision = o.precision();
@@ -150,6 +160,11 @@ void Simplex::rescale(void) {
         elements[i] = elements[i] / sum;
     }
     
+}
+
+
+void Simplex::setLeanValue(const RbValue<void *> &val) {
+    elements = *static_cast<std::vector<double> *>( val.value );
 }
 
 

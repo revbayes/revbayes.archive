@@ -58,7 +58,7 @@ class TaxonData : public MemberObject {
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
-        RbVector                                sequence;
+        RbVector<Character, RlCharacter>        sequence;
     
 
 };

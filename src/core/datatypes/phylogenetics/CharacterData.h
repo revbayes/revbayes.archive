@@ -88,7 +88,7 @@ class CharacterData : public MemberObject {
         bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
         bool                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
-        RbVector*                           makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
+        RbVector<char, Character>*          makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
         void                                restoreCharacter(size_t i);                                                 //!< Restore character
         void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
@@ -108,16 +108,11 @@ class CharacterData : public MemberObject {
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
         std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
         std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
-        RbVector                            sequenceNames;                                                              //!< names of the sequences
+        std::vector<std::string>            sequenceNames;                                                              //!< names of the sequences
         size_t                              sequenceLength;                                                             //!< The length of each sequence
         RbString                            characterType;                                                              //!< Rule describing sequence type
         TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
         bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
-
-        // memberfunction return values
-//        Natural                             numConstPatterns;
-//        Natural                             numMissing;
-//        RbBoolean                           isHomologous;
         
         std::map<std::string, RbPtr<TaxonData> > taxonMap;
 };

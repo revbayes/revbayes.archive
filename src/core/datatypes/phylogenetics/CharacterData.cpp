@@ -42,8 +42,7 @@
 
 /** Constructor requires character type; passes member rules to base class */
 CharacterData::CharacterData( const std::string& charType ) : MemberObject( getMemberRules() ), 
-typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec(charType) ), 
-sequenceNames( RbString::getClassTypeSpec() )
+typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec(charType) )
 {
 
     characterType = charType;
@@ -103,7 +102,7 @@ const TaxonData& CharacterData::operator[]( const size_t i ) const {
 void CharacterData::addTaxonData(TaxonData* obs, bool forceAdd) {
     
     // add the sequence name to the list
-    sequenceNames.push_back( new RbString(obs->getTaxonName()) );
+    sequenceNames.push_back( obs->getTaxonName() );
     
     // add the sequence also as a member so that we can access it by name
     taxonMap.insert( std::pair<std::string, RbPtr<TaxonData> >( obs->getTaxonName(), obs ) );
@@ -163,7 +162,7 @@ void CharacterData::excludeTaxon(std::string& s) {
 
     for (size_t i = 0; i < size(); i++) 
         {
-        if (s == static_cast<RbString &>( sequenceNames[i] ).getValue() ) 
+        if (s == sequenceNames[i] ) 
             {
             deletedTaxa.insert( i );
             break;
@@ -177,7 +176,11 @@ RbPtr<RbLanguageObject> CharacterData::executeSimpleMethod(std::string const &na
 
     if (name == "names") 
         {
-        return RbPtr<RbLanguageObject>( sequenceNames.clone() );
+        RbVector<std::string, RbString> *n = new RbVector<std::string, RbString>();
+        for (std::vector<std::string>::const_iterator i = sequenceNames.begin(); i != sequenceNames.end(); ++i) {
+            n->push_back( *i );
+        }
+        return RbPtr<RbLanguageObject>( n );
         }
     else if (name == "[]") 
         {

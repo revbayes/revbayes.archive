@@ -28,7 +28,7 @@
  * \param a is a reference to a vector of doubles containing the Dirichlet parameters. 
  * \param z is a reference to a vector of doubles containing the random variables. 
  * \return Returns the probability density.
- * \throws Throws an MbException::ERROR.
+ * \throws Throws an RbException::ERROR.
  */
 double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vector<double> &z) {
 	

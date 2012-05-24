@@ -55,7 +55,7 @@ RbPtr<RbLanguageObject> ConstructorTaxonData::executeFunction(const std::vector<
     retVal->setTaxonName( n );
     
     // set the vector of characters
-    const RbVector& v = static_cast<const RbVector &>( *args[1] );
+    const RbVector<char, Character>& v = static_cast<const RbVector<char, Character> &>( *args[1] );
     for (size_t i = 0; i < v.size(); i++) {
         Character* c = static_cast<Character*>( v.getElement( i ).clone() );
         retVal->addCharacter( c );
