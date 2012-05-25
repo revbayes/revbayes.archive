@@ -14,7 +14,7 @@
  * @interface Mcmc
  * @package datatypes
  *
- * $Id: CharacterData.cpp -1   $
+ * $Id$
  */
 
 #include "CharacterState.h"
@@ -70,7 +70,7 @@ RbPtr<RbLanguageObject> RlCharacterData::executeSimpleMethod(std::string const &
     
     if (name == "names") 
     {
-        RlVector<std::string, RbString> *n = new RlVector<std::string, RbString>();
+        RlVector<RbString> *n = new RlVector<RbString>();
         for (size_t i = 0; i < data.getNumberOfTaxa(); ++i) {
             n->push_back( data.getTaxonNameWithIndex( i ) );
         }
@@ -101,7 +101,7 @@ RbPtr<RbLanguageObject> RlCharacterData::executeSimpleMethod(std::string const &
     else if (name == "nchar")
     {
         
-        RlVector<int, Natural> *numChar = new RlVector<int, Natural>();
+        RlVector<Natural> *numChar = new RlVector<Natural>();
         for (size_t i=0; i<data.getNumberOfTaxa(); i++)
         {
             if ( data.isTaxonExcluded(i) == false )

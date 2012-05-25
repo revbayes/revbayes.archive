@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "Character.h"
+#include "RlCharacterState.h"
 #include "RbUtil.h"
 
 

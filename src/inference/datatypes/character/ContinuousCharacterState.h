@@ -34,7 +34,9 @@ public:
 
     bool                            operator==(const CharacterState& x) const;              //!< Equality
     bool                            operator!=(const CharacterState& x) const;              //!< Inequality
-        
+ 
+    ContinuousCharacterState*       clone(void) const;                                      //!< Get a copy of this object
+
     // character observation functions
     double                          getMean(void) const;                                    //!< Get the continuous observation
     size_t                          getNumberOfStates(void) const;                          //!< Get the number states for a character (return 0 in base class)

@@ -33,14 +33,14 @@ DnaState::DnaState(const DnaState& s) : DiscreteCharacterState(), state( s.state
 /** Constructor that sets the observation */
 DnaState::DnaState(char s) : DiscreteCharacterState() {
     
-    setState(s);
+//    setState(s);
 }
 
 
 /** Equals comparison */
-bool DnaState::operator==(const Character& x) const {
+bool DnaState::operator==(const CharacterState& x) const {
     
-    const DnaState* derivedX = dynamic_cast<const DnaState*>(x);
+    const DnaState* derivedX = dynamic_cast<const DnaState*>( &x );
     
     if (derivedX != NULL) {
         return derivedX->state == state;
@@ -51,40 +51,20 @@ bool DnaState::operator==(const Character& x) const {
 
 
 /** Not equals comparison */
-bool DnaState::operator!=(const Character& x) const {
+bool DnaState::operator!=(const CharacterState& x) const {
     
     return !operator==(x);
 }
 
 
-const char DnaState::getNucleotideCode(const std::set<char>& s) const {
-    
-    std::vector<bool> stateSet(4);
-    for (size_t i=0; i<4; i++)
-        stateSet[i] = false;
-    for (std::set<char>::const_iterator p = s.begin(); p != s.end(); p++)
-    {
-        char c = toupper(*p);
-        if (c == 'A')
-            stateSet[0] = true;
-        else if (c == 'C')
-            stateSet[1] = true;
-        else if (c == 'G')
-            stateSet[2] = true;
-        else if (c == 'T' || c == 'U')
-            stateSet[3] = true;
-    }
-    return getNucleotideCode(stateSet);
-}
 
-/** Get value */
-const char DnaState::getState(void) const {
-    
-    return getNucleotideCode(value);
+DnaState* DnaState::clone( void ) const {
+    return new DnaState( *this );
 }
 
 
 const std::string& DnaState::getStateLabels( void ) const {
+    
     static std::string labels = "ACGT";
     
     return labels;
@@ -93,37 +73,37 @@ const std::string& DnaState::getStateLabels( void ) const {
 std::string DnaState::getStringValue(void) const  {
     
     switch ( state ) {
-        case 0x0
+        case 0x0:
             return "-";
-        case 0x1
+        case 0x1:
             return "A";
-        case 0x2
+        case 0x2:
             return "C";
-        case 0x3
+        case 0x3:
             return "M";
-        case 0x4
+        case 0x4:
             return "G";
-        case 0x5
+        case 0x5:
             return "R";
-        case 0x6
+        case 0x6:
             return "S";
-        case 0x7
+        case 0x7:
             return "V";
-        case 0x8
+        case 0x8:
             return "T";
-        case 0x9
+        case 0x9:
             return "W";
-        case 0xA
+        case 0xA:
             return "Y";
-        case 0xB
+        case 0xB:
             return "H";
-        case 0xC
+        case 0xC:
             return "K";
-        case 0xD
+        case 0xD:
             return "D";
-        case 0xE
+        case 0xE:
             return "B";
-        case 0xF
+        case 0xF:
             return "N";
             
         default:

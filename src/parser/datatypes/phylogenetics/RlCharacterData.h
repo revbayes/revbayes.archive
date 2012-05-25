@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: RlCharacterData.h -1   $
+ * $Id$
  */
 
 #ifndef RlCharacterData_H
@@ -26,9 +26,11 @@
 class RlCharacterData : public MemberObject {
     
 public:
-    RlCharacterData();                                                                                                                      //!< Constructor requires character type
-    RlCharacterData(const CharacterData& d);                                                                                     //!< Constructor requires character type
-        
+    RlCharacterData(const std::string &t);                                                                                                  //!< Constructor requires character type
+    RlCharacterData(const CharacterData& d);                                                                                                //!< Constructor requires character type
+ 
+    typedef CharacterData valueType;
+
     // Basic utility functions
     RlCharacterData*                    clone(void) const;                                                                                  //!< Clone object
     static const std::string&           getClassName(void);                                                                                 //!< Get class name
@@ -48,6 +50,7 @@ public:
         
 private:
     CharacterData                       data;
+    TypeSpec                            typeSpec;
 };
 
 #endif

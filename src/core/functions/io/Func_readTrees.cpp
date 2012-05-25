@@ -24,6 +24,7 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "RlTree.h"
 #include "RlVector.h"
 #include "StringUtilities.h"
 #include "TreePlate.h"
@@ -92,7 +93,7 @@ RbPtr<RbLanguageObject> Func_readTrees::executeFunction( const std::vector<const
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    RlVector<TreePlate>* trees = new RlVector<TreePlate>();
+    RlVector<RlTree>* trees = new RlVector<RlTree>();
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
         // we should check here the file type first and make sure it is valid
         
@@ -103,7 +104,7 @@ RbPtr<RbLanguageObject> Func_readTrees::executeFunction( const std::vector<const
             
         if (m != NULL) {
             for (std::vector<TreePlate*>::iterator it = m->begin(); it != m->end(); it++) {
-                trees->push_back(*it);
+                trees->push_back( RlTree( *(*it) ) );
             }
         }
     }
@@ -233,7 +234,7 @@ const TypeSpec& Func_readTrees::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTrees::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = TypeSpec( RlVector::getClassName(), new TypeSpec( TreePlate::getClassTypeSpec() ) );
+    static TypeSpec returnTypeSpec = TypeSpec( RlVector<RlTree>::getClassName() );
     return returnTypeSpec;
 }
 

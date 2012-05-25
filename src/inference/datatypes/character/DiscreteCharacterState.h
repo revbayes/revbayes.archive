@@ -31,6 +31,8 @@ public:
     virtual void                            operator++() = 0;                                   //!< Increment
     virtual void                            operator--() = 0;                                   //!< Decrement
  
+    virtual DiscreteCharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
+
     // Discrete character observation functions
     virtual void                            addState(size_t pos) = 0;                           //!< Add a character state to the set of character states
     virtual short                           getNumberObservedStates(void) const;                //!< How many states are observed for the character

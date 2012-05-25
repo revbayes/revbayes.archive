@@ -34,6 +34,8 @@ public:
     void                            operator++();                                       //!< Increment
     void                            operator--();                                       //!< Decrement
     
+    DnaState*                       clone(void) const;                                  //!< Get a copy of this object
+
     // Discrete character observation functions
     void                            addState(size_t pos);                               //!< Add a character state to the set of character states
     short                           getNumberObservedStates(void) const;                //!< How many states are observed for the character

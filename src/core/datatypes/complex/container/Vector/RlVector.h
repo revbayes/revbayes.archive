@@ -675,11 +675,10 @@ void RlVector<rlType>::setElement(const size_t index, RbObject *elem) {
     }
     
     // remove first the old element at the index
-    RbObject* oldElement = elements[index];
-    delete oldElement;
     elements.erase(elements.begin()+index);
-    
-    elements.insert(elements.begin()+index, elem);
+  
+    throw RbException("Missing implementation of RlVector::setElement()");
+//    elements.insert(elements.begin()+index, *elem);
 }
 
 

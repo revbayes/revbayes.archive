@@ -13,13 +13,15 @@
  * @since 2009-09-08, version 1.0
  * @extends Vector
  *
- * $Id: RlTaxonData.cpp -1   $
+ * $Id$
  */
 
 
 #include "CharacterState.h"
 #include "ConstArgumentRule.h"
 #include "Ellipsis.h"
+#include "MethodTable.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
@@ -62,7 +64,7 @@ RbPtr<RbLanguageObject> RlTaxonData::executeSimpleMethod(std::string const &name
         
         // we have to internally reduce the index by 1
         CharacterState& element = taxon[index.getValue() - 1];
-        return RbPtr<RbLanguageObject>( element.clone() );
+        return RbPtr<RbLanguageObject>( RlCharacterState( element ) );
     } 
     
     return MemberObject::executeSimpleMethod( name, args );
@@ -107,8 +109,8 @@ const MemberRules& RlTaxonData::getMemberRules(void) const {
 /* Get method specifications */
 const MethodTable& RlTaxonData::getMethods(void) const {
     
-    static MethodTable methods = MethodTable();
-    static bool          methodsSet = false;
+    static MethodTable  methods = MethodTable();
+    static bool         methodsSet = false;
     
     if ( methodsSet == false ) 
     {
@@ -155,17 +157,10 @@ void RlTaxonData::setSimpleMemberValue(const std::string& name, const RbPtr<cons
     }
     else if (name == "x" || name == "" ) { // the ellipsis variables
         const RlCharacterState* element = static_cast<const RlCharacterState*>( (const RbLanguageObject *) var );
-        taxon.push_back( element->getCharacterState() );
+        taxon.addCharacter( element->getValue().clone() );
     }
     else {
         MemberObject::setSimpleMemberValue(name, var);
     }
-}
-
-
-
-void RlTaxonData::setRlTaxonName(std::string tn) {
-    
-    RlTaxonName = tn;
 }
 

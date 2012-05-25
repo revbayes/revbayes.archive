@@ -29,6 +29,8 @@ public:
     virtual bool                    operator==(const CharacterState& x) const = 0;      //!< Equality
     virtual bool                    operator!=(const CharacterState& x) const = 0;      //!< Inequality
             
+    virtual CharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
+    
     virtual size_t                  getNumberOfStates(void) const = 0;                  //!< Get the number states for a character (return 0 in base class)
     virtual std::string             getStringValue(void) const = 0;                     //!< Get a representation of the character as a string
     virtual bool                    isGapState(void) const = 0;                         //!< Get whether this is a gapped character state

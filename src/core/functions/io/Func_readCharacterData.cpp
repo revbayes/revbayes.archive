@@ -193,12 +193,12 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vect
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-        retList = new RlVector<CharacterData>( m.size() );
+        retList = new RlVector<RlCharacterData>( m.size() );
         size_t index = 0;
         for (std::vector<CharacterData*>::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, *(*it) );
+            retList->setElement( index, RlCharacterData( *(*it) ) );
             index++;
             }
         return retList;
