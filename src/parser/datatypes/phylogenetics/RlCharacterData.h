@@ -23,12 +23,11 @@
 #include <vector>
 
 
-template <typename valueType>
 class RlCharacterData : public MemberObject {
     
 public:
     RlCharacterData();                                                                                                                      //!< Constructor requires character type
-    RlCharacterData(const CharacterData<valueType>& d);                                                                                     //!< Constructor requires character type
+    RlCharacterData(const CharacterData& d);                                                                                     //!< Constructor requires character type
         
     // Basic utility functions
     RlCharacterData*                    clone(void) const;                                                                                  //!< Clone object
@@ -45,10 +44,10 @@ public:
     const MethodTable&                  getMethods(void) const;                                                                             //!< Get methods
     RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);             //!< Override to map member methods to internal functions
         
-    const CharacterData<valueType>&     getValue(void) const;
+    const CharacterData&                getValue(void) const;
         
 private:
-    CharacterData<valueType>            data;
+    CharacterData                       data;
 };
 
 #endif
