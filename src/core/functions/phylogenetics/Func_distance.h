@@ -42,8 +42,8 @@ class Func_distance :  public RbFunction {
         RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*> &args);              //!< Execute function
 
     private:
-        double                      distanceP(const TaxonData<DnaState>& td1, const TaxonData<DnaState>& td2);
-        double                      distanceJC69(const TaxonData<DnaState>& td1, const TaxonData<DnaState>& td2);
+        double                      distanceP(const TaxonData& td1, const TaxonData& td2);
+        double                      distanceJC69(const TaxonData& td1, const TaxonData& td2);
     
 };
 

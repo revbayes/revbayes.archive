@@ -35,12 +35,13 @@ class RlVector : public Container {
     
 public:
     
-    typedef typename std::vector<typename rlType::valueType>::iterator iterator;
-    typedef typename std::vector<typename rlType::valueType>::const_iterator const_iterator;
+    typedef typename rlType::valueType valueType;
+    typedef typename std::vector<valueType>::iterator iterator;
+    typedef typename std::vector<valueType>::const_iterator const_iterator;
     
     RlVector(void);                                                                                                 //!< Default constructor with type RbLanguageObject
     RlVector(size_t n);                                                                                             //!< Default constructor with type RbLanguageObject
-    RlVector(size_t n, const typename rlType::valueType &v);                                                                         //!< Default constructor with type RbLanguageObject
+    RlVector(size_t n, const valueType &v);                                                                         //!< Default constructor with type RbLanguageObject
     RlVector(const RlVector& v);                                                                                    //!< Copy Constructor
     
     virtual                                        ~RlVector(void);                                                 //!< Virtual destructor 
@@ -54,8 +55,8 @@ public:
     virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
     virtual void                                    printValue(std::ostream& o) const;                              //!< Print value for user
     
-    typename rlType::valueType&                     operator[](size_t index);                                       //!< subscript operator
-    const typename rlType::valueType&               operator[](size_t index) const;                                 //!< subscript operator (const)
+    valueType&                                      operator[](size_t index);                                       //!< subscript operator
+    const valueType&                                operator[](size_t index) const;                                 //!< subscript operator (const)
     RlVector&                                       operator=(const RlVector& x);                                   //!< Assignment operator
     RlVector&                                       operator+=(const rlType& x);                                    //!< Concatenate
     RlVector&                                       operator+=(const RlVector& x);                                  //!< Concatenate
@@ -82,13 +83,13 @@ public:
     const_iterator                                  end(void) const;                                                //!< Const-iterator to the end of the Vector
     int                                             findIndex(const RbObject& x) const;                             //!< Find the index if the element being equal to that one
     RbObject                                        getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
-    const std::vector<typename rlType::valueType>&  getValue(void) const;                                           //!< Get the stl Vector of elements
+    const std::vector<valueType>&                   getValue(void) const;                                           //!< Get the stl Vector of elements
     void                                            pop_back(void);                                                 //!< Drop element at back
     void                                            pop_front(void);                                                //!< Drop element from front
     void                                            push_back(const rlType &x);                                     //!< Append element to end
-    void                                            push_back(const typename rlType::valueType &x);                 //!< Append element to end
+//    void                                            push_back(const valueType &x);                 //!< Append element to end
     void                                            push_front(const rlType &x);                                    //!< Append element to end
-    void                                            push_front(const typename rlType::valueType &x);                //!< Append element to end
+//    void                                            push_front(const valueType &x);                //!< Append element to end
     void                                            resize(size_t n);                                               //!< Resize to new AbstractVector of length n
     void                                            setElement(const size_t index, RbObject *elem);                 //!< Set element with type conversion
     void                                            sort(void);                                                     //!< sort the AbstractVector
@@ -98,7 +99,7 @@ public:
 protected:
         
     // We store internally pointers to our objects. This is necessary because elements can be also of the derived type and we need to be able to make proper copies of the Vector and all its elements
-    std::vector<typename rlType::valueType>         elements;
+    std::vector<valueType>                          elements;
 
 private:
     
@@ -106,7 +107,7 @@ private:
     MethodTable                                     methods;
     
     struct comparator {
-        bool operator() (typename rlType::valueType A, typename rlType::valueType B) const { return ( A < B);}
+        bool operator() (valueType A, valueType B) const { return ( A < B);}
     } myComparator;
 };
 
@@ -226,7 +227,7 @@ RlVector<rlType>::RlVector(size_t n, const typename rlType::valueType &x) : Cont
 template <typename rlType>
 RlVector<rlType>::RlVector(const RlVector<rlType> &v) : Container(v), memberRules( v.memberRules ), methods( v.methods ) {
     
-    typename std::vector<typename rlType::valueType>::const_iterator it;
+    typename std::vector<valueType>::const_iterator it;
     // copy all the elements by deep copy
     for ( it = v.elements.begin(); it != v.elements.end(); it++) {
         elements.push_back( *it );
@@ -406,7 +407,7 @@ RbObject* RlVector<rlType>::convertTo(const TypeSpec &type) const {
 template <typename rlType>
 void RlVector<rlType>::clear( void ) {
     
-    typename std::vector<typename rlType::valueType>::iterator i;
+    typename std::vector<valueType>::iterator i;
     for ( i = elements.begin(); i != elements.end(); i++) {
 //        RbObject* theElement = *i;
 //        delete theElement;
@@ -544,7 +545,7 @@ const std::vector<typename rlType::valueType>& RlVector<rlType>::getValue(void) 
 template <typename rlType>
 void* RlVector<rlType>::getLeanValue( std::vector<size_t> &lengths ) const {
     
-    return const_cast<std::vector<typename rlType::valueType> *>( &elements );
+    return const_cast<std::vector<valueType> *>( &elements );
 }
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
@@ -584,7 +585,7 @@ bool RlVector<rlType>::isConvertibleTo(const TypeSpec &type) const {
 template <typename rlType>
 size_t RlVector<rlType>::memorySize( void ) const {
     
-    return sizeof( std::vector<typename rlType::valueType> );
+    return sizeof( std::vector<valueType> );
 }
 
 
@@ -593,7 +594,7 @@ template <typename rlType>
 void RlVector<rlType>::printValue( std::ostream& o ) const {
     
     o << "[ ";
-    typename std::vector<typename rlType::valueType>::const_iterator i;
+    typename std::vector<valueType>::const_iterator i;
     for ( i = elements.begin(); i != elements.end(); i++ ) {
         if ( i != elements.begin() )
             o << ", ";
@@ -629,13 +630,13 @@ void RlVector<rlType>::push_back( const rlType &x ) {
 }
 
 
-/** Push an int onto the back of the vector */
-template <typename rlType>
-void RlVector<rlType>::push_back( const typename rlType::valueType &x ) {
-    
-    elements.push_back( x );
-    
-}
+///** Push an int onto the back of the vector */
+//template <typename rlType>
+//void RlVector<rlType>::push_back( const typename rlType::valueType &x ) {
+//    
+//    elements.push_back( x );
+//    
+//}
 
 
 /** Push an int onto the front of the vector */
@@ -646,12 +647,12 @@ void RlVector<rlType>::push_front( const rlType &x ) {
 }
 
 
-/** Push an int onto the front of the vector */
-template <typename rlType>
-void RlVector<rlType>::push_front( const typename rlType::valueType &x ) {
-    
-    elements.insert( elements.begin(), x );
-}
+///** Push an int onto the front of the vector */
+//template <typename rlType>
+//void RlVector<rlType>::push_front( const typename rlType::valueType &x ) {
+//    
+//    elements.insert( elements.begin(), x );
+//}
 
 
 /** Resize vector */
@@ -704,7 +705,7 @@ template <typename rlType>
 void RlVector<rlType>::unique(void) {
     
     sort();
-    std::vector<typename rlType::valueType> uniqueVector;
+    std::vector<valueType> uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (size_t i = 1 ; i< elements.size() ; i++)
     {

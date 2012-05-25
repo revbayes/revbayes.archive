@@ -28,6 +28,8 @@
 #include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "RlCharacterData.h"
+#include "RlVector.h"
 #include "StringUtilities.h"
 #include "UserInterface.h"
 
@@ -187,16 +189,16 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vect
             }
         }
     
-    RlVector *retList;
+    RlVector<RlCharacterData> *retList;
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-            retList = new RlVector( CharacterData::getClassTypeSpec(), m.size() );
+        retList = new RlVector<CharacterData>( m.size() );
         size_t index = 0;
         for (std::vector<CharacterData*>::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, *it );
+            retList->setElement( index, *(*it) );
             index++;
             }
         return retList;
@@ -204,7 +206,7 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vect
         }
     else if ( m.size() == 1 ) 
         {
-        return RbPtr<RbLanguageObject>( m[0] );
+        return RbPtr<RbLanguageObject>( new RlCharacterData(*m[0]) );
         }
     else
         {
@@ -280,7 +282,7 @@ const TypeSpec& Func_readCharacterData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = CharacterData::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RlCharacterData::getClassTypeSpec();
     return returnTypeSpec;
 }
 

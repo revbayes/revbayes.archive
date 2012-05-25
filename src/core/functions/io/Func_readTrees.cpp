@@ -92,7 +92,7 @@ RbPtr<RbLanguageObject> Func_readTrees::executeFunction( const std::vector<const
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    RlVector* trees = new RlVector( TreePlate::getClassTypeSpec() );
+    RlVector<TreePlate>* trees = new RlVector<TreePlate>();
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
         // we should check here the file type first and make sure it is valid
         

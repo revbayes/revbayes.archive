@@ -52,7 +52,7 @@ Func_distance* Func_distance::clone(void) const {
 RbPtr<RbLanguageObject> Func_distance::executeFunction( const std::vector<const RbObject*> &args ) {
 
     // get the information from the arguments for reading the file
-    const CharacterData<DnaState>& m      = static_cast<const RlCharacterData<DnaState>&>( *args[0] ).getValue();
+    const CharacterData& m      = static_cast<const RlCharacterData&>( *args[0] ).getValue();
     const RbString&      dName  = static_cast<const RbString&>     ( *args[1] );
     const RbString&      f      = static_cast<const RbString&>     ( *args[2] );
     const RbString&      a      = static_cast<const RbString&>     ( *args[3] );
@@ -102,10 +102,10 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction( const std::vector<const 
     // fill in the distance matrix
     for (int i=0; i<n; i++)
         {
-        const TaxonData<DnaState>& td_i = m.getTaxonData(i);
+        const TaxonData& td_i = m.getTaxonData(i);
         for (int j=i+1; j<n; j++)
             {
-            const TaxonData<DnaState>& td_j = m.getTaxonData(j);
+            const TaxonData& td_j = m.getTaxonData(j);
             
             double dist = 0.0;
             if (myModel == p_dist)
@@ -142,7 +142,7 @@ RbPtr<RbLanguageObject> Func_distance::executeFunction( const std::vector<const 
 }
 
 
-double Func_distance::distanceJC69(const TaxonData<DnaState>& td1, const TaxonData<DnaState>& td2) {
+double Func_distance::distanceJC69(const TaxonData& td1, const TaxonData& td2) {
 
     int numDiff = 0;
     for (int c=0; c<td1.getNumberOfCharacters(); c++)
@@ -159,7 +159,7 @@ double Func_distance::distanceJC69(const TaxonData<DnaState>& td1, const TaxonDa
 }
 
 
-double Func_distance::distanceP(const TaxonData<DnaState>& td1, const TaxonData<DnaState>& td2) {
+double Func_distance::distanceP(const TaxonData& td1, const TaxonData& td2) {
 
     int numDiff = 0;
     for (int c=0; c<td1.getNumberOfCharacters(); c++)
@@ -181,7 +181,7 @@ const ArgumentRules& Func_distance::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "data",   RlCharacterData<DnaState>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "data",   RlCharacterData::getClassTypeSpec() ) );
         argumentRules.push_back( new ConstArgumentRule( "model",  RbString::getClassTypeSpec()      ) );
         argumentRules.push_back( new ConstArgumentRule( "freqs",  RbString::getClassTypeSpec()      ) );
         argumentRules.push_back( new ConstArgumentRule( "asrv",   RbString::getClassTypeSpec()      ) );

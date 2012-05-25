@@ -34,6 +34,8 @@ public:
     Monitor();                                                                                              //!< Default Constructor
     Monitor(const MemberRules& rules ) ;                                                                    //!< Constructor
     
+    typedef Monitor valueType;
+    
     // Basic utility functions
     virtual Monitor*                    clone(void) const = 0;                                              //!< Clone object
     static const std::string&           getClassName(void);                                                 //!< Get class name

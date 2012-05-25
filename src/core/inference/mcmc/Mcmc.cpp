@@ -105,16 +105,17 @@ Mcmc& Mcmc::operator=(const Mcmc &m) {
  */
 void Mcmc::addMove( const DAGNode *m ) {
     
-    // test whether var is a DagNodeContainer
-    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        const RbPtr<const RbLanguageObject>& objPtr = m->getValue().getSingleValue();
-        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
-        for (size_t i = 0; i < container->size(); ++i) {
-            const RbObject& elemPtr = container->getElement(i);
-            addMove(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
-        }
-    }
-    else {
+    // \TODO: Clean this up (Sebastian)
+//    // test whether var is a DagNodeContainer
+//    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+//        const RbPtr<const RbLanguageObject>& objPtr = m->getValue().getSingleValue();
+//        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
+//        for (size_t i = 0; i < container->size(); ++i) {
+//            const RbObject& elemPtr = container->getElement(i);
+//            addMove(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
+//        }
+//    }
+//    else {
         // first, we cast the value to a parser move
         const ParserMove *move = static_cast<const ParserMove *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
         
@@ -151,7 +152,7 @@ void Mcmc::addMove( const DAGNode *m ) {
         
         // finally, add the move to our moves list
         moves.push_back( leanMove );
-    }
+//    }
 }
 
 
@@ -197,16 +198,17 @@ void Mcmc::addMove(const InferenceMove *m) {
  */
 void Mcmc::addMonitor( const DAGNode *m ) {
     
-    // test whether var is a DagNodeContainer
-    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        const RbPtr<const RbLanguageObject>& objPtr = m->getValue().getSingleValue();
-        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
-        for (size_t i = 0; i < container->size(); ++i) {
-            const RbObject& elemPtr = container->getElement(i);
-            addMonitor(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
-        }
-    }
-    else {
+    // \TODO: Sebastian
+//    // test whether var is a DagNodeContainer
+//    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
+//        const RbPtr<const RbLanguageObject>& objPtr = m->getValue().getSingleValue();
+//        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
+//        for (size_t i = 0; i < container->size(); ++i) {
+//            const RbObject& elemPtr = container->getElement(i);
+//            addMonitor(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
+//        }
+//    }
+//    else {
         // first, we cast the value to a parser monitor
         const ParserMonitor *monitor = static_cast<const ParserMonitor *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
         
@@ -243,7 +245,7 @@ void Mcmc::addMonitor( const DAGNode *m ) {
         
         // finally, add the move to our moves list
         monitors.push_back( leanMonitor );
-    }
+//    }
 }
 
 

@@ -57,6 +57,8 @@ RbPtr<RbLanguageObject> Func_concatenate::executeFunction( const std::vector<con
     
 //    return RbPtr<RbLanguageObject>( new RlCharacterData( concatenatedMatrix ) );
     
+    throw RbException("Missing implementation in Func_concatenate::executeFunction()");
+    
     return NULL;
 }
 
@@ -69,7 +71,7 @@ const ArgumentRules& Func_concatenate::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "data",  RlCharacterData<DnaState>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "data",  RlCharacterData::getClassTypeSpec() ) );
         argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
         }
@@ -103,6 +105,6 @@ const TypeSpec& Func_concatenate::getTypeSpec(void) const {
 /** Get return type */
 const TypeSpec& Func_concatenate::getReturnType(void) const {
     
-    static TypeSpec returnTypeSpec = RlCharacterData<DnaState>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RlCharacterData::getClassTypeSpec();
     return returnTypeSpec;
 }
