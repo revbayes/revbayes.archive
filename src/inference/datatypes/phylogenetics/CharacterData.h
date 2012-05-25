@@ -24,17 +24,16 @@
 #include <vector>
 
 
-template <typename valueType>
 class CharacterData {
 
     public:
-                                            CharacterData();                                                            //!< Constructor requires character type
+                                            CharacterData(const std::string &t);                                        //!< Constructor requires character type
                                             CharacterData(const CharacterData& x);                                      //!< Copy constructor to deal with sequenceTypeRule
         virtual                            ~CharacterData(void);                                                        //!< Destructor to deal with sequenceTypeRule
 
         // Overloaded operators
         CharacterData&                      operator=(const CharacterData& x);                                          //!< Assignment operator
-        const TaxonData<valueType>&         operator[](size_t i) const;                                                 //!< Subscript operator (const)
+        const TaxonData&                    operator[](size_t i) const;                                                 //!< Subscript operator (const)
   
         // Container functions
         void                                clear(void);
@@ -49,12 +48,12 @@ class CharacterData {
 //        void                                transpose(void);                                                            //!< Transpose the matrix
 
         // CharacterData functions
-        void                                addTaxonData(const TaxonData<valueType> &obs);                              //!< Add taxon data
-        void                                addTaxonData(const TaxonData<valueType> &obs, bool forceAdd);               //!< Add taxon data
+        void                                addTaxonData(const TaxonData &obs);                                         //!< Add taxon data
+        void                                addTaxonData(const TaxonData &obs, bool forceAdd);                          //!< Add taxon data
         void                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
-        const valueType&                    getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
+        const CharacterState&               getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         const std::string&                  getDataType(void) const;                                                    //!< Returns the data type for the matrix
         const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         bool                                getIsHomologyEstablished(void) const { return isHomologyEstablished; }      //!< Returns whether the homology of the characters has been established
@@ -62,8 +61,8 @@ class CharacterData {
         size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
-        TaxonData<valueType>&               getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
-        const TaxonData<valueType>&         getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
+        TaxonData&                          getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
+        const TaxonData&                    getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
@@ -85,6 +84,7 @@ class CharacterData {
         size_t                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
 
         // Member variables
+        std::string                         characterType;
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
         std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
         std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
@@ -92,8 +92,10 @@ class CharacterData {
         size_t                              sequenceLength;                                                             //!< The length of each sequence
         bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
         
-        std::map<std::string, TaxonData<valueType> >    taxonMap;
+        std::map<std::string, TaxonData>    taxonMap;
 };
+
+
 
 #endif
 

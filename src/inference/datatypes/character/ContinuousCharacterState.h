@@ -18,7 +18,7 @@
 #ifndef ContinuousCharacterState_H
 #define ContinuousCharacterState_H
 
-#include "Character.h"
+#include "CharacterState.h"
 #include <ostream>
 #include <vector>
 
@@ -32,8 +32,8 @@ public:
     ContinuousCharacterState(const double x);                                               //!< Constructor with mean value
     ContinuousCharacterState(const double x, const double v);                               //!< Constructor with mean and variance values
 
-    bool                            operator==(const Character& x) const;                   //!< Equality
-    bool                            operator!=(const Character& x) const;                   //!< Inequality
+    bool                            operator==(const CharacterState& x) const;              //!< Equality
+    bool                            operator!=(const CharacterState& x) const;              //!< Inequality
         
     // character observation functions
     double                          getMean(void) const;                                    //!< Get the continuous observation

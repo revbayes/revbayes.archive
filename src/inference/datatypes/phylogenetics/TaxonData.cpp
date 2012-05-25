@@ -38,7 +38,7 @@ CharacterState& TaxonData::operator[](size_t i) {
     
     if (i >= sequence.size())
         throw RbException("Index out of bounds");
-    return sequence[i];
+    return *sequence[i];
 }
 
 
@@ -47,11 +47,11 @@ const CharacterState& TaxonData::operator[](size_t i) const {
     
     if (i >= sequence.size())
         throw RbException("Index out of bounds");
-    return sequence[i];
+    return *sequence[i];
 }
 
 /** Push back a new character */
-void TaxonData::addCharacter( const CharacterState &newChar ) {
+void TaxonData::addCharacter( CharacterState *newChar ) {
     
     sequence.push_back( newChar );
 }

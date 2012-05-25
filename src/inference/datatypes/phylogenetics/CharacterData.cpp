@@ -17,9 +17,11 @@
  * $Id$
  */
 
+
 #include "CharacterState.h"
 #include "CharacterData.h"
 #include "RbException.h"
+#include "RbString.h"
 #include "RbUtil.h"
 #include "TaxonData.h"
 
@@ -29,19 +31,17 @@
 #include <string>
 
 
-/** Constructor requires character type; passes member rules to base class */
-CharacterData::CharacterData( const std::string& charType )  
+/* Constructor */
+CharacterData::CharacterData(const std::string &ct) : characterType( ct )  
 {
-    characterType = charType;
 }
 
 
-/** Copy constructor */
+/* Copy constructor */
 CharacterData::CharacterData(const CharacterData& x) : 
-sequenceNames( x.sequenceNames )
+sequenceNames( x.sequenceNames ), characterType( x.characterType )
 {
-
-    characterType           = x.characterType;
+    
     deletedTaxa             = x.deletedTaxa;
     deletedCharacters       = x.deletedCharacters;
     fileName                = x.fileName;
@@ -52,33 +52,32 @@ sequenceNames( x.sequenceNames )
 
 /** Destructor */
 CharacterData::~CharacterData( void ) {
-
+    
 }
 
 
 /** Assignment operator */
 CharacterData& CharacterData::operator=( const CharacterData& x ) {
-
+    
     if ( this != &x ) 
-        {
-        if ( characterType != x.characterType )
-            throw RbException( "Invalid assignment of character matrices: sequence data types differ" );
-
-        characterType           = x.characterType;
+    {
+        if (characterType != x.characterType) {
+            throw RbException("Cannot assign a character data object with element type '" + x.characterType + "' to a character data object with element type '" + characterType + "'");
+        }
         deletedTaxa             = x.deletedTaxa;
         deletedCharacters       = x.deletedCharacters;
         fileName                = x.fileName;
         isHomologyEstablished   = x.isHomologyEstablished;
         taxonMap                = x.taxonMap;
         sequenceNames           = x.sequenceNames;
-        }
+    }
     return (*this);
 }
 
 
 /** Index (const) operator */
 const TaxonData& CharacterData::operator[]( const size_t i ) const {
-
+    
     return getTaxonData( i );
 }
 
@@ -94,15 +93,15 @@ void CharacterData::addTaxonData(const TaxonData &obs, bool forceAdd) {
 }
 
 void CharacterData::addTaxonData(const  TaxonData &obs ) {
-
+    
     // set the number of character per sequence
     if ( getNumberOfTaxa() > 0 && obs.getNumberOfCharacters() != getNumberOfCharacters() ) 
-        {
+    {
         std::ostringstream msg;
         msg << "Invalid attempt to add sequence of length " << obs.getNumberOfCharacters() << " to aligned character matrix of length " << getNumberOfCharacters();
         throw RbException( msg );
-        }
-        
+    }
+    
     addTaxonData(obs, true);
 }
 
@@ -117,97 +116,97 @@ void CharacterData::clear( void ) {
 
 /** Exclude a character */
 void CharacterData::excludeCharacter(size_t i) {
-
+    
     if (i >= getNumberOfCharacters() )
         throw RbException( "Only " + RbString(int(getNumberOfCharacters())) + " characters in matrix" );
-
+    
     deletedCharacters.insert( i );
 }
 
 
 /** Exclude a taxon */
 void CharacterData::excludeTaxon(size_t i) {
-
+    
     if (i >= taxonMap.size())
         throw RbException( "Only " + RbString(int(taxonMap.size())) + " taxa in matrix" );
-
+    
     deletedTaxa.insert( i );
 }
 
 
 /** Exclude a taxon */
 void CharacterData::excludeTaxon(std::string& s) {
-
+    
     for (size_t i = 0; i < getNumberOfTaxa(); i++) 
-        {
+    {
         if (s == sequenceNames[i] ) 
-            {
+        {
             deletedTaxa.insert( i );
             break;
-            }
         }
+    }
 }
 
 
 
 /** Return a pointer to a character element in the character matrix */
 const CharacterState& CharacterData::getCharacter( size_t tn, size_t cn ) const {
-
+    
     if ( cn >= getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
-
+    
     return getTaxonData( tn )[cn];
 }
 
 
 
 const std::string& CharacterData::getDataType(void) const {
-
+    
     return characterType;
 }
 
 
 const std::string& CharacterData::getFileName(void) const {
-
+    
     return fileName;
 }
 
 
 /** Return the number of characters in each vector of taxon observations */
 size_t CharacterData::getNumberOfCharacters(void) const {
-
+    
     if (getNumberOfTaxa() > 0) 
-        {
+    {
         return getTaxonData(0).getNumberOfCharacters();
-        }
+    }
     return 0;
 }
 
 
 /** Return the number of characters in each vector of taxon observations */
 size_t CharacterData::getNumberOfCharacters(size_t idx) const {
-
+    
     if (getNumberOfTaxa() > 0) 
-        {
+    {
         return getTaxonData(idx).getNumberOfCharacters();
-        }
+    }
     return 0;
 }
 
 
 /** Get the number of states for the characters in this matrix. We
-    assume that all of the characters in the matrix are of the same
-    type and have the same number of potential states. */
+ assume that all of the characters in the matrix are of the same
+ type and have the same number of potential states. */
 size_t CharacterData::getNumberOfStates(void) const {
-
+    
     // Get the first character in the matrix
     if ( getNumberOfTaxa() == 0 )
         return 0;
-
+    
     const TaxonData& sequence = getTaxonData( 0 );
     if ( sequence.getNumberOfCharacters() == 0 )
         return 0;
-
+    
     return sequence[0].getNumberOfStates();
 }
 
@@ -219,10 +218,10 @@ size_t CharacterData::getNumberOfTaxa(void) const {
 
 /** Get sequence with index tn */
 const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
-
+    
     if ( tn >= getNumberOfTaxa() )
         throw RbException( "Taxon index out of range" );
-
+    
     const std::string& name = static_cast<const RbString &>( sequenceNames[tn] ).getValue();
     const std::map<std::string, TaxonData>::const_iterator& i = taxonMap.find(name); 
     
@@ -232,7 +231,7 @@ const TaxonData& CharacterData::getTaxonData( size_t tn ) const {
     else {
         throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
     }
-
+    
 }
 
 
@@ -257,7 +256,7 @@ TaxonData& CharacterData::getTaxonData( size_t tn ) {
 
 /** Get taxon with index idx */
 const std::string& CharacterData::getTaxonNameWithIndex( size_t idx ) const {
-
+    
     return sequenceNames[idx];
 }
 
@@ -267,41 +266,41 @@ size_t CharacterData::indexOfTaxonWithName( std::string& s ) const {
     
     // search through all names
     for (size_t i=0; i<sequenceNames.size(); i++) 
-        {
+    {
         if (s == static_cast<const RbString &>( sequenceNames[i] ).getValue() ) 
-            {
+        {
             return i;
-            }
         }
+    }
     return -1;
 }
 
 
 /** Is this character pattern constant? */
 bool CharacterData::isCharacterConstant(size_t idx) const {
-
+    
     const CharacterState* f = NULL;
     for ( size_t i=0; i<getNumberOfTaxa(); i++ ) 
-        {
+    {
         if ( isTaxonExcluded(i) == false ) 
-            {
+        {
             if ( f == NULL )
                 f = &getCharacter( i, idx );
             else 
-                {
+            {
                 const CharacterState* s = &getCharacter( i , idx );
                 if ( (*f) != (*s) )
                     return false;
-                }
             }
         }
+    }
     return true;
 }
 
 
 /** Is the character excluded */
 bool CharacterData::isCharacterExcluded(size_t i) const {
-
+    
 	std::set<size_t>::const_iterator it = deletedCharacters.find( i );
 	if ( it != deletedCharacters.end() )
 		return true;
@@ -311,23 +310,23 @@ bool CharacterData::isCharacterExcluded(size_t i) const {
 
 /** Does the character have missing or ambiguous characters */
 bool CharacterData::isCharacterMissingOrAmbiguous(size_t idx) const {
-
+    
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
-        {
+    {
         if ( isTaxonExcluded(i) == false )
-            {
+        {
             const CharacterState& c = getCharacter( i, idx );
             if ( c.isMissingOrAmbiguous() == true )
                 return true;
-            }
         }
+    }
     return false;
 }
 
 
 /** Is the taxon excluded */
 bool CharacterData::isTaxonExcluded(size_t i) const {
-
+    
 	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
 	if ( it != deletedTaxa.end() )
 		return true;
@@ -337,7 +336,7 @@ bool CharacterData::isTaxonExcluded(size_t i) const {
 
 /** Is the taxon excluded */
 bool CharacterData::isTaxonExcluded(std::string& s) const {
-
+    
     size_t i = indexOfTaxonWithName(s);
 	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
 	if ( it != deletedTaxa.end() )
@@ -348,55 +347,55 @@ bool CharacterData::isTaxonExcluded(std::string& s) const {
 
 /** Calculates and returns the number of constant characters */
 size_t CharacterData::numConstantPatterns(void) const {
-
+    
     size_t nc = 0;
     for (size_t i=0; i<getNumberOfCharacters(); i++)
-        {
+    {
         if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
             nc++;
-        }
+    }
     return nc;
 }
 
 
 /** Returns the number of characters with missing or ambiguous data */
 size_t CharacterData::numMissAmbig(void) const {
-
+    
     size_t nma = 0;
     for (size_t i=0; i<getNumberOfCharacters(); i++)
-        {
+    {
         if ( isCharacterExcluded(i) == false && isCharacterMissingOrAmbiguous(i) == true )
             nma++;
-        }
+    }
     return nma;
 }
 
 
 /** Restore a character */
 void CharacterData::restoreCharacter(size_t i) {
-
+    
     if (i >= getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
-
+    
     deletedCharacters.erase( i );
 }
 
 
 /** Restore a taxon */
 void CharacterData::restoreTaxon(size_t i) {
-
+    
     if ( i >= getNumberOfTaxa() )
         return;
-
+    
     deletedTaxa.erase( i );
 }
 
 
 /** Restore a taxon */
 void CharacterData::restoreTaxon(std::string& s) {
-
+    
     size_t i = indexOfTaxonWithName( s );
-
+    
     deletedTaxa.erase( i );
 }
 

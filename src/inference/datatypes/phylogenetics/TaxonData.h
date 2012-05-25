@@ -16,15 +16,12 @@
 #ifndef TaxonData_H
 #define TaxonData_H
 
-#include "MemberObject.h"
-#include "RlVector.h"
-
-#include <ostream>
 #include <string>
 #include <vector>
 
+class CharacterState;
 
-template <typename valueType>
+
 class TaxonData {
     
     public:
@@ -34,7 +31,7 @@ class TaxonData {
         const CharacterState&                   operator[](size_t i) const;                                         //!< Const index op
                        
         // TaxonData functions
-        void                                    addCharacter(const CharacterState &newChar );                       //!< Push back a new character
+        void                                    addCharacter(CharacterState *newChar );                             //!< Push back a new character
         const CharacterState&                   getCharacter(size_t index) const;                                   //!< Get the character at position index
         CharacterState&                         getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
@@ -44,7 +41,7 @@ class TaxonData {
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
-        std::vector<valueType>                  sequence;
+        std::vector<CharacterState*>            sequence;
     
 
 };
