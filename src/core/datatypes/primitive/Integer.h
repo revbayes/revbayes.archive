@@ -30,10 +30,10 @@ class Integer : public RbLanguageObject {
 
 public:
     Integer(void);                                                                                      //!< Default constructor
-    Integer(const bool v);                                                                              //!< Constructor from bool
-    Integer(const int v);                                                                               //!< Constructor from int
-    Integer(const unsigned int v);                                                                      //!< Constructor from unsigned int
-    Integer(const unsigned long v);                                                                     //!< Constructor from unsigned long
+    Integer(bool v);                                                                                    //!< Constructor from bool
+    Integer(int v);                                                                                     //!< Constructor from int
+    Integer(unsigned int v);                                                                            //!< Constructor from unsigned int
+    Integer(unsigned long v);                                                                           //!< Constructor from unsigned long
 
     // Overloaded operator
     operator int(void) const { return value; }                                                          //!< Type conversion to int

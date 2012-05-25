@@ -29,7 +29,7 @@ class Simplex : public MemberObject {
 public:
                                 Simplex(const size_t n = 2);                                //!< Simplex of length (size) n
                                 Simplex(const std::vector<double>& x);                      //!< Simplex from double vector
-                                Simplex(const RlVector<Real>& x);                           //!< Simplex from double RlVector
+                                Simplex(const RlVector<RealPos>& x);                        //!< Simplex from double RlVector
 
     double                      operator[](size_t i);                                       //!< Index op
     double                      operator[](size_t i) const;                                 //!< Const index op

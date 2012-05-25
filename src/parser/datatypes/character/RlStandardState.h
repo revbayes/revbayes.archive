@@ -33,6 +33,9 @@ class RlStandardState : public RlDiscreteCharacterState {
 
         bool                            operator==(const RlCharacterState& x) const;               //!< Equality
 
+        // the value type definition
+        typedef StandardState valueType;
+
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                         //!< Print value (for user)
 

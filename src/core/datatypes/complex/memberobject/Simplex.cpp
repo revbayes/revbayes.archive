@@ -46,7 +46,7 @@ Simplex::Simplex(const std::vector<double>& x) : MemberObject() {
 
 
 /** Construct simplex from STL vector */
-Simplex::Simplex(const RlVector<Real>& x) : MemberObject() {
+Simplex::Simplex(const RlVector<RealPos>& x) : MemberObject() {
     
     std::vector<double> tmp;
     

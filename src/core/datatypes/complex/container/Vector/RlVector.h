@@ -35,13 +35,16 @@ class RlVector : public Container {
     
 public:
     
-    typedef typename rlType::valueType valueType;
-    typedef typename std::vector<valueType>::iterator iterator;
-    typedef typename std::vector<valueType>::const_iterator const_iterator;
+    typedef typename rlType::valueType elementType;
+    typedef typename std::vector<elementType> valueType;
+    typedef typename std::vector<elementType>::iterator iterator;
+    typedef typename std::vector<elementType>::const_iterator const_iterator;
     
     RlVector(void);                                                                                                 //!< Default constructor with type RbLanguageObject
+    RlVector(const std::vector<elementType> &v);                                                                    //!< Default constructor with type RbLanguageObject
+    RlVector(const rlType &v);                                                                                      //!< Default constructor with type RbLanguageObject
     RlVector(size_t n);                                                                                             //!< Default constructor with type RbLanguageObject
-    RlVector(size_t n, const valueType &v);                                                                         //!< Default constructor with type RbLanguageObject
+    RlVector(size_t n, const elementType &v);                                                                       //!< Default constructor with type RbLanguageObject
     RlVector(const RlVector& v);                                                                                    //!< Copy Constructor
     
     virtual                                        ~RlVector(void);                                                 //!< Virtual destructor 
@@ -55,8 +58,8 @@ public:
     virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
     virtual void                                    printValue(std::ostream& o) const;                              //!< Print value for user
     
-    valueType&                                      operator[](size_t index);                                       //!< subscript operator
-    const valueType&                                operator[](size_t index) const;                                 //!< subscript operator (const)
+    elementType&                                    operator[](size_t index);                                       //!< subscript operator
+    const elementType&                              operator[](size_t index) const;                                 //!< subscript operator (const)
     RlVector&                                       operator=(const RlVector& x);                                   //!< Assignment operator
     RlVector&                                       operator+=(const rlType& x);                                    //!< Concatenate
     RlVector&                                       operator+=(const RlVector& x);                                  //!< Concatenate
@@ -83,7 +86,7 @@ public:
     const_iterator                                  end(void) const;                                                //!< Const-iterator to the end of the Vector
     int                                             findIndex(const RbObject& x) const;                             //!< Find the index if the element being equal to that one
     RbPtr<RbObject>                                 getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
-    const std::vector<valueType>&                   getValue(void) const;                                           //!< Get the stl Vector of elements
+    const std::vector<elementType>&                 getValue(void) const;                                           //!< Get the stl Vector of elements
     void                                            pop_back(void);                                                 //!< Drop element at back
     void                                            pop_front(void);                                                //!< Drop element from front
     void                                            push_back(const rlType &x);                                     //!< Append element to end
@@ -99,7 +102,7 @@ public:
 protected:
         
     // We store internally pointers to our objects. This is necessary because elements can be also of the derived type and we need to be able to make proper copies of the Vector and all its elements
-    std::vector<valueType>                          elements;
+    std::vector<elementType>                        elements;
 
 private:
     
@@ -107,7 +110,7 @@ private:
     MethodTable                                     methods;
     
     struct comparator {
-        bool operator() (valueType A, valueType B) const { return ( A < B);}
+        bool operator() (elementType A, elementType B) const { return ( A < B);}
     } myComparator;
 };
 
@@ -134,55 +137,12 @@ private:
 template <typename rlType>
 RlVector<rlType>::RlVector( void ) : Container( rlType::getClassTypeSpec() ) {
     
-    // set the member rules
-    memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
-    memberRules.push_back( new Ellipsis( elementType ) );
-    
-    // set the methods
-    
-    // add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-    methods.addFunction("[]",  new SimpleMemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
-    
-    // add method for call "x.sort()" as a function
-    ArgumentRules* sortArgRules = new ArgumentRules();
-    methods.addFunction("sort",  new SimpleMemberFunction( RbVoid_name, sortArgRules) );
-    
-    // add method for call "x.unique()" as a function
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique",  new SimpleMemberFunction( RbVoid_name, uniqueArgRules) );
-    
-    // necessary call for proper inheritance
-    methods.setParentTable( &Container::getMethods() );
 }
 
 
 /** Constructor with dimension (n) and NULL pointers to every object */
 template <typename rlType>
 RlVector<rlType>::RlVector(size_t n) : Container( rlType::getClassTypeSpec() )  {
-    
-    // set the member rules
-    memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
-    memberRules.push_back( new Ellipsis( elementType ) );
-    
-    // set the methods
-    
-    // add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-    methods.addFunction("[]",  new SimpleMemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
-    
-    // add method for call "x.sort()" as a function
-    ArgumentRules* sortArgRules = new ArgumentRules();
-    methods.addFunction("sort",  new SimpleMemberFunction( RbVoid_name, sortArgRules) );
-    
-    // add method for call "x.unique()" as a function
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique",  new SimpleMemberFunction( RbVoid_name, uniqueArgRules) );
-    
-    // necessary call for proper inheritance
-    methods.setParentTable( &Container::getMethods() );
     
 //    for (size_t i = 0; i < n; i++) {
 //        this->push_back( NULL );
@@ -193,28 +153,6 @@ RlVector<rlType>::RlVector(size_t n) : Container( rlType::getClassTypeSpec() )  
 /** Constructor with dimension (n) and copys of x for every object */
 template <typename rlType>
 RlVector<rlType>::RlVector(size_t n, const typename rlType::valueType &x) : Container( rlType::getClassTypeSpec() )  {
-    
-    // set the member rules
-    memberRules.push_back( new ConstArgumentRule( "x"  , elementType ) );
-    memberRules.push_back( new Ellipsis( elementType ) );
-    
-    // set the methods
-    
-    // add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
-    methods.addFunction("[]",  new SimpleMemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
-    
-    // add method for call "x.sort()" as a function
-    ArgumentRules* sortArgRules = new ArgumentRules();
-    methods.addFunction("sort",  new SimpleMemberFunction( RbVoid_name, sortArgRules) );
-    
-    // add method for call "x.unique()" as a function
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique",  new SimpleMemberFunction( RbVoid_name, uniqueArgRules) );
-    
-    // necessary call for proper inheritance
-    methods.setParentTable( &Container::getMethods() );
     
     for (size_t i = 0; i < n; i++) {
         this->push_back( x->clone() );
@@ -227,7 +165,7 @@ RlVector<rlType>::RlVector(size_t n, const typename rlType::valueType &x) : Cont
 template <typename rlType>
 RlVector<rlType>::RlVector(const RlVector<rlType> &v) : Container(v), memberRules( v.memberRules ), methods( v.methods ) {
     
-    typename std::vector<valueType>::const_iterator it;
+    typename std::vector<elementType>::const_iterator it;
     // copy all the elements by deep copy
     for ( it = v.elements.begin(); it != v.elements.end(); it++) {
         elements.push_back( *it );
@@ -407,7 +345,7 @@ RbObject* RlVector<rlType>::convertTo(const TypeSpec &type) const {
 template <typename rlType>
 void RlVector<rlType>::clear( void ) {
     
-    typename std::vector<valueType>::iterator i;
+    typename std::vector<elementType>::iterator i;
     for ( i = elements.begin(); i != elements.end(); i++) {
 //        RbObject* theElement = *i;
 //        delete theElement;
@@ -522,6 +460,17 @@ RbPtr<RbObject> RlVector<rlType>::getElement(size_t index) {
 template <typename rlType>
 const MemberRules& RlVector<rlType>::getMemberRules(void) const {
     
+    static MemberRules memberRules;
+    static bool rulesSet = false;
+    
+    if ( ! rulesSet ) {
+        // set the member rules
+        memberRules.push_back( new ConstArgumentRule( "x"  , rlType::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis( rlType::getClassTypeSpec() ) );
+    
+        rulesSet = true;
+    }
+    
     return memberRules;
 }
 
@@ -530,6 +479,31 @@ const MemberRules& RlVector<rlType>::getMemberRules(void) const {
 /* Get method specifications */
 template <typename rlType>
 const MethodTable& RlVector<rlType>::getMethods(void) const {
+    
+    static MethodTable methods;
+    static bool methodsSet = false;
+    
+    if (!methodsSet) {
+        
+        // add method for call "x[]" as a function
+        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+        squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
+        methods.addFunction("[]",  new SimpleMemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
+        
+        // add method for call "x.sort()" as a function
+        ArgumentRules* sortArgRules = new ArgumentRules();
+        methods.addFunction("sort",  new SimpleMemberFunction( RbVoid_name, sortArgRules) );
+        
+        // add method for call "x.unique()" as a function
+        ArgumentRules* uniqueArgRules = new ArgumentRules();
+        methods.addFunction("unique",  new SimpleMemberFunction( RbVoid_name, uniqueArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &Container::getMethods() );
+        
+        methodsSet = true;
+    }
+    
     
     return methods;
 }
@@ -545,7 +519,7 @@ const std::vector<typename rlType::valueType>& RlVector<rlType>::getValue(void) 
 template <typename rlType>
 void* RlVector<rlType>::getLeanValue( std::vector<size_t> &lengths ) const {
     
-    return const_cast<std::vector<valueType> *>( &elements );
+    return const_cast<std::vector<elementType> *>( &elements );
 }
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
@@ -594,11 +568,13 @@ template <typename rlType>
 void RlVector<rlType>::printValue( std::ostream& o ) const {
     
     o << "[ ";
-    typename std::vector<valueType>::const_iterator i;
+    typename std::vector<elementType>::const_iterator i;
     for ( i = elements.begin(); i != elements.end(); i++ ) {
         if ( i != elements.begin() )
             o << ", ";
-        rlType(*i).printValue(o);
+        elementType tmp = *i;
+        rlType rlTmp = rlType(tmp);
+        rlTmp.printValue(o);
     }
     o <<  " ]";
     
@@ -704,7 +680,7 @@ template <typename rlType>
 void RlVector<rlType>::unique(void) {
     
     sort();
-    std::vector<valueType> uniqueVector;
+    std::vector<elementType> uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (size_t i = 1 ; i< elements.size() ; i++)
     {

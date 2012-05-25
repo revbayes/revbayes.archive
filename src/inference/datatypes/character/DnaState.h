@@ -31,9 +31,10 @@ public:
 
     bool                            operator==(const CharacterState& x) const;          //!< Equality
     bool                            operator!=(const CharacterState& x) const;          //!< Inequality
+    bool                            operator<(const DnaState& d) const;                 //!< Less than
     void                            operator++();                                       //!< Increment
     void                            operator--();                                       //!< Decrement
-    
+
     DnaState*                       clone(void) const;                                  //!< Get a copy of this object
     static const std::string&       getClassName(void);                                 //!< Get class name
 

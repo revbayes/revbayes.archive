@@ -80,9 +80,9 @@ RbPtr<RbLanguageObject> Func_simplex<Integer>::executeFunction(const std::vector
 
 /** Execute function: Simplex <- ( VectorRealPos ) */
 template <>
-RbPtr<RbLanguageObject> Func_simplex<RlVector>::executeFunction(const std::vector<const RbObject *> &args) {
+RbPtr<RbLanguageObject> Func_simplex<RlVector<RealPos> >::executeFunction(const std::vector<const RbObject *> &args) {
 
-    const RlVector& tempVec = static_cast<const RlVector &>( *args[0] );
+    const RlVector<RealPos>& tempVec = static_cast<const RlVector<RealPos> &>( *args[0] );
 
     return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );
 }
@@ -92,7 +92,7 @@ RbPtr<RbLanguageObject> Func_simplex<RlVector>::executeFunction(const std::vecto
 template <>
 RbPtr<RbLanguageObject> Func_simplex<RealPos>::executeFunction(const std::vector<const RbObject *> &args) {
 
-    RlVector  tempVec( RealPos::getClassTypeSpec() );
+    RlVector<RealPos>  tempVec;
     for ( size_t i = 0; i < args.size(); i++ )
         tempVec.push_back( static_cast<const RealPos *>( args[i] )->clone() );
 

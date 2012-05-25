@@ -49,10 +49,12 @@
 #include "RealPos.h"
 
 #include "RlAminoAcidState.h"
+#include "RlCharacterData.h"
 #include "RlContinuousCharacterState.h"
 #include "RlDnaState.h"
 //#include "RlRnaState.h"
 #include "RlStandardState.h"
+#include "RlTaxonData.h"
 
 /* Container types (alphabetic order) */
 #include "DagNodeContainer.h"
@@ -61,11 +63,9 @@
 #include "RlVector.h"
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
-#include "CharacterData.h"
 #include "Model.h"
 #include "Plate.h"
 #include "Simplex.h"
-#include "TaxonData.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 
@@ -283,8 +283,8 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
         // \TODO: Does this really make sense to use the general character type?! (Sebastian)
-        addTypeWithConstructor( "taxonData",     RbPtr<MemberObject>( new TaxonData( Character::getClassName() ) ) );
-        addTypeWithConstructor( "characterData", RbPtr<MemberObject>( new CharacterData(DnaState::getClassName()) ) );
+        addTypeWithConstructor( "taxonData",     RbPtr<MemberObject>( new RlTaxonData( RlCharacterState::getClassName() ) ) );
+        addTypeWithConstructor( "characterData", RbPtr<MemberObject>( new RlCharacterData(RlDnaState::getClassName()) ) );
 
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
@@ -313,7 +313,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         // dirichlet distribution
         MemberRules distDirichletMemberRules;
-        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RlVector::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
+        distDirichletMemberRules.push_back( new ConstArgumentRule( "alpha", TypeSpec(RlVector<RealPos>::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
         addDistribution( "dirichlet",        RbPtr<ParserDistribution>(  new ParserDistribution( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) ) );
 
         // exponential distribution
@@ -429,7 +429,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "print",                    new Func_print()                    );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
-        addFunction( "rep",                      new Func_rep()                      );
+        addFunction( "rep",                      new Func_rep<Real>()                );
         addFunction( "simplex",                  new Func_simplex<Integer>()         );
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
 //        addFunction( "simplex",                  new Func_simplex<RlVector>() );
@@ -654,7 +654,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sqrt",      new ParserFunction( new Func_sqrt(), "square root function", sqrtFuncArgRules, sqrtFuncRetArg, false )  );
 		
         /* Add constructuor functions (alphabetical order) */
-        addFunction( "taxonData", new ConstructorTaxonData() );
+        addFunction( "taxonData", new ConstructorTaxonData<RlDnaState>() );
         
         /* Add phylogeny-related functions (alphabetical order) */
         addFunction( "concatenate",                 new Func_concatenate()                 );
@@ -668,15 +668,15 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add builtin templated functions */
 //        addFunction( "transpose", new Func_transpose<       Matrix<Real>                                                    >() );
-        addFunction( "v",         new Func_vector(new RbBoolean()) );
-        addFunction( "v",         new Func_vector(new Integer()) );
-        addFunction( "v",         new Func_vector(new Natural()) );
-        addFunction( "v",         new Func_vector(new Real()) );
-        addFunction( "v",         new Func_vector(new RealPos()) );
-        addFunction( "v",         new Func_vector(new Complex()) );
-        addFunction( "v",         new Func_vector(new RbString()) );
-        addFunction( "v",         new Func_vector(new RlVector(Integer::getClassTypeSpec())) );
-        addFunction( "v",         new Func_vector(new RlVector(Natural::getClassTypeSpec())) );
+        addFunction( "v",         new Func_vector<RbBoolean>() );
+        addFunction( "v",         new Func_vector<Integer>() );
+        addFunction( "v",         new Func_vector<Natural>() );
+        addFunction( "v",         new Func_vector<Real>() );
+        addFunction( "v",         new Func_vector<RealPos>() );
+        addFunction( "v",         new Func_vector<Complex>() );
+        addFunction( "v",         new Func_vector<RbString>() );
+        addFunction( "v",         new Func_vector<RlVector<Integer> > () );
+        addFunction( "v",         new Func_vector<RlVector<Natural> >() );
 //        addFunction( "v",         new Func_vector<          RlVector<Natural>,              Matrix<Natural>                 >() );
 //        addFunction( "v",         new Func_vector<          RlVector<Real>,                 Matrix<Real>                    >() );
 //        addFunction( "v",         new Func_vector<          RlVector<RealPos>,              Matrix<RealPos>                 >() );

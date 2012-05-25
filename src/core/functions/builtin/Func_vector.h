@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 
-template <typename valType, typename rlType>
+template <typename valType>
 class Func_vector :  public RbFunction {
 
     public:
@@ -51,42 +51,42 @@ class Func_vector :  public RbFunction {
 
 
 
-template <typename valType, typename rlType>
-Func_vector<valType, rlType>::Func_vector() : RbFunction() {
+template <typename valType>
+Func_vector<valType>::Func_vector() : RbFunction() {
     
 }
 
 /* Clone object */
-template <typename valType, typename rlType>
-Func_vector<valType, rlType>* Func_vector<valType, rlType>::clone( void ) const {
+template <typename valType>
+Func_vector<valType>* Func_vector<valType>::clone( void ) const {
     
     return new Func_vector( *this );
 }
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-template <typename valType, typename rlType>
-RbPtr<RbLanguageObject> Func_vector<valType, rlType>::executeFunction( const std::vector<const RbObject*>& args ) {
+template <typename valType>
+RbPtr<RbLanguageObject> Func_vector<valType>::executeFunction( const std::vector<const RbObject*>& args ) {
     
-    RlVector<valType, rlType> *theVector = new RlVector<valType, rlType>();
+    RlVector<valType> *theVector = new RlVector<valType>();
     for ( size_t i = 0; i < args.size(); i++ )
-        theVector->push_back( static_cast<rlType*>( args[i]->clone() ) );
+        theVector->push_back( *static_cast<valType*>( args[i]->clone() ) );
     
     return theVector;
 }
 
 
 /** Get argument rules */
-template <typename valType, typename rlType>
-const ArgumentRules& Func_vector<valType, rlType>::getArgumentRules( void ) const {
+template <typename valType>
+const ArgumentRules& Func_vector<valType>::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ValueRule( "", rlType().getTypeSpec() ) );
-        argumentRules.push_back( new Ellipsis (     rlType().getTypeSpec() ) );
+        argumentRules.push_back( new ConstArgumentRule( "", valType().getTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis (     valType().getTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -95,18 +95,18 @@ const ArgumentRules& Func_vector<valType, rlType>::getArgumentRules( void ) cons
 
 
 /** Get class name of object */
-template <typename firstValType, typename secondValType>
-const std::string& Func_vector<firstValType, secondValType>::getClassName(void) { 
+template <typename valType>
+const std::string& Func_vector<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_vector<" + secondValType().getTypeSpec() + ">";
+    static std::string rbClassName = "Func_vector<" + valType().getTypeSpec() + ">";
     
 	return rbClassName; 
 }
 
 
 /** Get class type spec describing type of object */
-template <typename firstValType, typename secondValType>
-const TypeSpec& Func_vector<firstValType, secondValType>::getClassTypeSpec(void) { 
+template <typename valType>
+const TypeSpec& Func_vector<valType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
     
@@ -115,8 +115,8 @@ const TypeSpec& Func_vector<firstValType, secondValType>::getClassTypeSpec(void)
 
 
 /** Get type spec */
-template <typename firstValType, typename secondValType>
-const TypeSpec& Func_vector<firstValType, secondValType>::getTypeSpec( void ) const {
+template <typename valType>
+const TypeSpec& Func_vector<valType>::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -125,10 +125,10 @@ const TypeSpec& Func_vector<firstValType, secondValType>::getTypeSpec( void ) co
 
 
 /** Get return type */
-template <typename valType, typename rlType>
-const TypeSpec& Func_vector<valType, rlType>::getReturnType( void ) const {
+template <typename valType>
+const TypeSpec& Func_vector<valType>::getReturnType( void ) const {
     
-    return rlType().getTypeSpec();
+    return RlVector<valType>::getClassTypeSpec();
 }
 
 

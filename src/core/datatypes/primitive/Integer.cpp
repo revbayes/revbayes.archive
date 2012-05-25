@@ -36,7 +36,7 @@ Integer::Integer(void) : RbLanguageObject(), value(0) {
 
 
 /** Construct from bool */
-Integer::Integer(const bool v) : RbLanguageObject() {
+Integer::Integer(bool v) : RbLanguageObject() {
     
     if (v) value = 1;
     else value = 0;
@@ -44,19 +44,19 @@ Integer::Integer(const bool v) : RbLanguageObject() {
 
 
 /* Construct from int */
-Integer::Integer(const int v) : RbLanguageObject(), value(v) {
+Integer::Integer(int v) : RbLanguageObject(), value(v) {
 
 }
 
 
 /* Construct from unsigned int (ambiguous between int and bool otherwise) */
-Integer::Integer(const unsigned int v) : RbLanguageObject(), value(v) {
+Integer::Integer(unsigned int v) : RbLanguageObject(), value(v) {
     
 }
 
 
 /* Construct from size_t (ambiguous between int and size_t otherwise) */
-Integer::Integer(const unsigned long v) : RbLanguageObject(), value( int(v) ) {
+Integer::Integer(unsigned long v) : RbLanguageObject(), value( int(v) ) {
     
 }
 

@@ -78,20 +78,21 @@ ConstructorTaxonData<valueType>* ConstructorTaxonData<valueType>::clone(void) co
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbPtr<RbLanguageObject> ConstructorTaxonData::executeFunction(const std::vector<const RbObject *> &args) {
+template <typename valueType>
+RbPtr<RbLanguageObject> ConstructorTaxonData<valueType>::executeFunction(const std::vector<const RbObject *> &args) {
     
     // \TODO: Maybe we want to have specialized taxondata vectors?!
-    TaxonData retVal;
+    TaxonData retVal = TaxonData( valueType::getClassName() );
     
     // the name of the taxon
     const std::string& n = static_cast<const RbString *>( args[0] )->getValue();
     retVal.setTaxonName( n );
     
     // set the vector of characters
-    const RlVector<RlCharacterState>& v = static_cast<const RlVector<RlCharacterState> &>( *args[1] );
+    const RlVector<valueType>& v = static_cast<const RlVector<valueType> &>( *args[1] );
     for (size_t i = 0; i < v.size(); i++) {
         const CharacterState& c = v[i];
-        retVal.addCharacter( c );
+        retVal.addCharacter( c.clone() );
     }
     
     return RbPtr<RbLanguageObject>( new RlTaxonData( retVal ) );
@@ -99,7 +100,8 @@ RbPtr<RbLanguageObject> ConstructorTaxonData::executeFunction(const std::vector<
 
 
 /** Get argument rules */
-const ArgumentRules& ConstructorTaxonData::getArgumentRules(void) const {
+template <typename valueType>
+const ArgumentRules& ConstructorTaxonData<valueType>::getArgumentRules(void) const {
     
     static ArgumentRules argRules = MemberRules();
     static bool        rulesSet = false;
@@ -108,7 +110,7 @@ const ArgumentRules& ConstructorTaxonData::getArgumentRules(void) const {
         
         argRules.push_back( new ConstArgumentRule( "name", RbString::getClassTypeSpec() ) );
         // \TODO: We should specificly expect elements of type character and not DAG node containers for which we cannot guarantee what is inside.
-        argRules.push_back( new ConstArgumentRule( "x"   , TypeSpec( RlVector<CharacterState, RlCharacterState>::getClassTypeSpec(), new TypeSpec( RlCharacterState::getClassTypeSpec() ) ) ) );
+        argRules.push_back( new ConstArgumentRule( "x"   , TypeSpec( RlVector<valueType>::getClassTypeSpec(), new TypeSpec( RlCharacterState::getClassTypeSpec() ) ) ) );
         //       argRules.push_back( new ConstArgumentRule( "x"   , RbObject::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -120,15 +122,17 @@ const ArgumentRules& ConstructorTaxonData::getArgumentRules(void) const {
 
 
 /** Get class name of object */
-const std::string& ConstructorTaxonData::getClassName(void) { 
+template <typename valueType>
+const std::string& ConstructorTaxonData<valueType>::getClassName(void) { 
     
-    static std::string rbClassName = "Constructor function for taxon data";
+    static std::string rbClassName = "Constructor function for taxon data(" + valueType::getClassName() + ")";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ConstructorTaxonData::getClassTypeSpec(void) { 
+template <typename valueType>
+const TypeSpec& ConstructorTaxonData<valueType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
     
@@ -136,7 +140,8 @@ const TypeSpec& ConstructorTaxonData::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& ConstructorTaxonData::getTypeSpec( void ) const {
+template <typename valueType>
+const TypeSpec& ConstructorTaxonData<valueType>::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -145,7 +150,8 @@ const TypeSpec& ConstructorTaxonData::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& ConstructorTaxonData::getReturnType(void) const {
+template <typename valueType>
+const TypeSpec& ConstructorTaxonData<valueType>::getReturnType(void) const {
     
     return RlTaxonData::getClassTypeSpec();
 }

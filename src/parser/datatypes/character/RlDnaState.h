@@ -33,6 +33,9 @@ public:
     
     bool                            operator==(const RlCharacterState& x) const;        //!< Equality
     
+    // the value type definition
+    typedef DnaState valueType;
+
     // Basic utility functions
     static const std::string&       getClassName(void);                                 //!< Get class name
     static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
