@@ -82,6 +82,49 @@ const TaxonData& CharacterData::operator[]( const size_t i ) const {
 }
 
 
+bool CharacterData::operator==(const CharacterData &x) const {
+    
+    if ( characterType != x.characterType ) {
+        return false;
+    }
+    
+    if ( deletedTaxa != x.deletedTaxa ) {
+        return false;
+    }
+    
+    if ( deletedCharacters != x.deletedCharacters ) {
+        return false;
+    }
+    
+    if ( fileName != x.fileName ) {
+        return false;
+    }
+    
+    if ( sequenceNames != x.sequenceNames ) {
+        return false;
+    }
+    
+    if ( sequenceLength != x.sequenceLength ) {
+        return false;
+    }
+    
+    if ( isHomologyEstablished != x.isHomologyEstablished ) {
+        return false;
+    }
+    
+    if ( taxonMap != x.taxonMap ) {
+        return false;
+    }
+    
+    return true;
+}
+
+
+bool CharacterData::operator!=(const CharacterData &x) const {
+    return !operator==(x);
+}
+
+
 /** Add a sequence to the character matrix. For now, we require same data type and same length. */
 void CharacterData::addTaxonData(const TaxonData &obs, bool forceAdd) {
     

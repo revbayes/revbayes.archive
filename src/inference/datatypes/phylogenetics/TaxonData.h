@@ -29,6 +29,9 @@ class TaxonData {
         
         CharacterState&                         operator[](size_t i);                                               //!< Index op allowing change
         const CharacterState&                   operator[](size_t i) const;                                         //!< Const index op
+        bool                                    operator==(const TaxonData& x) const;                               //!< Less than operator
+        bool                                    operator!=(const TaxonData& x) const;                               //!< Less than operator
+        bool                                    operator<(const TaxonData& x) const;                                //!< Less than operator
                        
         // TaxonData functions
         void                                    addCharacter(CharacterState *newChar );                             //!< Push back a new character
