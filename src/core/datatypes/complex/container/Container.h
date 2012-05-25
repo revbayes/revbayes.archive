@@ -41,7 +41,7 @@ public:
     virtual size_t                              size(void) const = 0;                                               //!< get the number of elements in the Container
     
     virtual void                                clear(void) = 0;                                                    //!< Clear
-    virtual RbObject                            getElement(size_t index) = 0;                                       //!< Get element (non-const to return non-const element)
+    virtual RbPtr<RbObject>                     getElement(size_t index) = 0;                                       //!< Get element (non-const to return non-const element)
     
     // Member method inits
     virtual const MethodTable&                  getMethods(void) const;                                             //!< Get methods

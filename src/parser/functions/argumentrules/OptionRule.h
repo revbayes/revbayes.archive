@@ -27,8 +27,8 @@
 class OptionRule : public ConstArgumentRule {
 
     public:
-                                    OptionRule(const std::string& argName, const RlVector &optVals);                                    //!< Constructor of rule without default value
-                                    OptionRule(const std::string& argName, const RbPtr<RbString> &defVal, const RlVector& optVals);     //!< Constructor of rule with default value
+                                    OptionRule(const std::string& argName, const RlVector<RbString> &optVals);                          //!< Constructor of rule without default value
+                                    OptionRule(const std::string& argName, const RbPtr<RbString> &defVal, const RlVector<RbString>& optVals);     //!< Constructor of rule with default value
 
         // Basic utility functions
         OptionRule*                 clone(void) const { return new OptionRule(*this); }                                                 //!< Clone object
@@ -39,9 +39,9 @@ class OptionRule : public ConstArgumentRule {
         void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
 
     protected:
-        bool                        areOptionsUnique(const RlVector& optVals) const;                                                    //!< Test if options are unique
+        bool                        areOptionsUnique(const RlVector<RbString>& optVals) const;                                          //!< Test if options are unique
 
-        RlVector                    options;                                                                                            //!< Permissible values
+        RlVector<RbString>          options;                                                                                            //!< Permissible values
     
 };
 

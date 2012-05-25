@@ -198,7 +198,7 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vect
         for (std::vector<CharacterData*>::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, RlCharacterData( *(*it) ) );
+            retList->setElement( index, new RlCharacterData( *(*it) ) );
             index++;
             }
         return retList;

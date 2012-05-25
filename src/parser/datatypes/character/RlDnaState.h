@@ -17,32 +17,32 @@
 #ifndef RlDnaState_H
 #define RlDnaState_H
 
-#include "RlCharacterState.h"
+#include "RlDiscreteCharacterState.h"
 #include "DnaState.h"
 
 #include <ostream>
 #include <string>
 
 
-class RlDnaState : public RlCharacterState {
+class RlDnaState : public RlDiscreteCharacterState {
     
 public:
     RlDnaState(void);                                                                   //!< Default constructor
     RlDnaState(const DnaState &s);                                                      //!< Default constructor
 
     
-    virtual bool                    operator==(const RlDnaState& x) const;              //!< Equality
-    virtual bool                    operator!=(const RlDnaState& x) const;              //!< Inequality
+    bool                            operator==(const RlCharacterState& x) const;        //!< Equality
     
     // Basic utility functions
     static const std::string&       getClassName(void);                                 //!< Get class name
     static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
+    const TypeSpec&                 getTypeSpec(void) const;                                   //!< Get language type of the object
     
     // Basic utility functions you have to override
-    virtual RlDnaState*             clone(void) const = 0;                              //!< Clone object
-    virtual void                    printValue(std::ostream& o) const;                  //!< Print value (for user)
+    RlDnaState*                     clone(void) const;                                  //!< Clone object
+    void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
     
-    virtual const DnaState&         getValue() const;                                   //!< Get the internal character object.
+    const DnaState&                 getValue() const;                                   //!< Get the internal character object.
     
 private:
     DnaState                        state;

@@ -193,12 +193,12 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
         // Now loop over statements inside the for loop
         while ( forCond->isFinished() ) {
             
-            RbLanguageObject& indexValue = forCond->getNextLoopState();
+            RbPtr<RbLanguageObject> indexValue = forCond->getNextLoopState();
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
                 SyntaxElement* theSyntaxElement = *i;
                 // replace the index variable first with its new value
-                theSyntaxElement->replaceVariableWithConstant(forCond->getIndexVarName().getValue(), indexValue);
+                theSyntaxElement->replaceVariableWithConstant(forCond->getIndexVarName().getValue(), *indexValue);
                 // Execute statement
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 

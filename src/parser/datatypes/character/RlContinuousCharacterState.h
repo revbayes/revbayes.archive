@@ -31,17 +31,18 @@ class RlContinuousCharacterState : public RlCharacterState {
                                         RlContinuousCharacterState(const RlContinuousCharacterState& s);        //!< Copy constructor
                                         RlContinuousCharacterState(const ContinuousCharacterState &x);          //!< Constructor with mean value
 
-        bool                            operator==(const CharacterState& x) const;                              //!< Equality
-        bool                            operator!=(const CharacterState& x) const;                              //!< Inequality
+        bool                            operator==(const RlCharacterState& x) const;                            //!< Equality
 
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
         // Basic utility functions you have to override
-        RlContinuousCharacterState*            clone(void) const;                                               //!< Clone object
+        RlContinuousCharacterState*     clone(void) const;                                               //!< Clone object
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+
+        const ContinuousCharacterState& getValue() const;                               //!< Get the internal character object.
 
 
     private:

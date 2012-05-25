@@ -36,6 +36,7 @@ public:
     bool                            operator!=(const CharacterState& x) const;              //!< Inequality
  
     ContinuousCharacterState*       clone(void) const;                                      //!< Get a copy of this object
+    static const std::string&       getClassName(void);                                     //!< Get class name
 
     // character observation functions
     double                          getMean(void) const;                                    //!< Get the continuous observation

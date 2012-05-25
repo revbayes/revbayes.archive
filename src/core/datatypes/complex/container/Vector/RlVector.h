@@ -82,7 +82,7 @@ public:
     iterator                                        end(void);                                                      //!< Iterator to the end of the Vector
     const_iterator                                  end(void) const;                                                //!< Const-iterator to the end of the Vector
     int                                             findIndex(const RbObject& x) const;                             //!< Find the index if the element being equal to that one
-    RbObject                                        getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+    RbPtr<RbObject>                                 getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
     const std::vector<valueType>&                   getValue(void) const;                                           //!< Get the stl Vector of elements
     void                                            pop_back(void);                                                 //!< Drop element at back
     void                                            pop_front(void);                                                //!< Drop element from front
@@ -184,9 +184,9 @@ RlVector<rlType>::RlVector(size_t n) : Container( rlType::getClassTypeSpec() )  
     // necessary call for proper inheritance
     methods.setParentTable( &Container::getMethods() );
     
-    for (size_t i = 0; i < n; i++) {
-        this->push_back( NULL );
-    }
+//    for (size_t i = 0; i < n; i++) {
+//        this->push_back( NULL );
+//    }
 }
 
 
@@ -507,9 +507,9 @@ const TypeSpec& RlVector<rlType>::getClassTypeSpec(void) {
 
 /* Get element */
 template <typename rlType>
-RbObject RlVector<rlType>::getElement(size_t index) {
+RbPtr<RbObject> RlVector<rlType>::getElement(size_t index) {
     
-    return rlType( elements[index] );
+    return new rlType( elements[index] );
 }
 
 

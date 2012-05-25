@@ -58,18 +58,19 @@ RbObject& RbObject::operator=(const RbObject &o) {
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
     // test if we need to convert this object into an vector
-    if ( typeSpec.getBaseType() == RlVector::getClassName() ) {
-        RlVector *v = new RlVector( typeSpec.getElementType() );
-        v->push_back( this->clone() );
-        
-        // we rely on the implemented conversion functions inside the vector class
-        RbObject* returnVector = v->convertTo( typeSpec );
-        
-        // we need to free the temporary vector object
-        delete v;
-        
-        return returnVector;
-    }
+    // \TODO: Clean up (Sebastian)
+//    if ( typeSpec.getBaseType() == RlVector::getClassName() ) {
+//        RlVector *v = new RlVector( typeSpec.getElementType() );
+//        v->push_back( this->clone() );
+//        
+//        // we rely on the implemented conversion functions inside the vector class
+//        RbObject* returnVector = v->convertTo( typeSpec );
+//        
+//        // we need to free the temporary vector object
+//        delete v;
+//        
+//        return returnVector;
+//    }
     
     throw RbException("Failed conversion from " + getTypeSpec() + " to " + typeSpec);
     
@@ -162,10 +163,11 @@ void RbObject::incrementReferenceCount( void ) const {
 
 /* Is convertible to type? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
-    
-    if (typeSpec.getBaseType() == RlVector::getClassName() && isTypeSpec(typeSpec.getElementType())) {
-        return true;
-    }
+  
+    // \TODO: Cleanup (Sebastian)
+//    if (typeSpec.getBaseType() == RlVector::getClassName() && isTypeSpec(typeSpec.getElementType())) {
+//        return true;
+//    }
 
     return false;
 }

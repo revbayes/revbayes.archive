@@ -210,16 +210,6 @@ bool ArgumentRule::isArgumentValid(const RbObject& var, bool &conversionNeeded, 
         return true;
     }
     
-    
-    // Finally, we test if this is a vector of types which we accept
-    if ( var.getTypeSpec().isDerivedOf( Container::getClassTypeSpec() ) ) {
-        TypeSpec* et = new TypeSpec( RlVector::getClassName() );
-        conversionType.setElementType( et );
-        return isArgumentValid( static_cast<const Container&>( var ).getElement(0), conversionNeeded, *et );
-    }
-    
-    
-    
     return false;
 }
 

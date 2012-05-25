@@ -20,52 +20,25 @@
 
 
 /** Default constructor */
-RlContinuousCharacterState::RlContinuousCharacterState(void) : Character() {
+RlContinuousCharacterState::RlContinuousCharacterState(void) : RlCharacterState() {
 
-    mean     = 0.0;
-    variance = 0.0;
 }
 
 
 /** Copy constructor */
-RlContinuousCharacterState::RlContinuousCharacterState(const RlContinuousCharacterState& s) : Character() {
+RlContinuousCharacterState::RlContinuousCharacterState(const RlContinuousCharacterState& s) : RlCharacterState(), state( s.state ) {
 
-    mean     = s.mean;
-    variance = s.variance;
-}
-
-
-/** Constructor that sets the mean value */
-RlContinuousCharacterState::RlContinuousCharacterState(const double x) : Character() {
-
-    mean     = x;
-    variance = 0.0;
-}
-
-
-/** Constructor that sets the mean and variance */
-RlContinuousCharacterState::RlContinuousCharacterState(const double x, const double v) : Character() {
-
-    mean     = x;
-    variance = v;
 }
 
 
 /** Equals comparison */
-bool RlContinuousCharacterState::operator==(const Character& x) const {
+bool RlContinuousCharacterState::operator==(const RlCharacterState& x) const {
 
-    const RlContinuousCharacterState* derivedX = static_cast<const RlContinuousCharacterState*>(&x);
+    const RlContinuousCharacterState* derivedX = dynamic_cast<const RlContinuousCharacterState*>(&x);
 
-    if ( fabs(mean - derivedX->mean) < 0.000000001 && fabs(variance - derivedX->variance) < 0.000000001 )
-        return true;
+    if ( derivedX != NULL )
+        return state == derivedX->state;
     return false;
-}
-
-
-/** Not equals comparison */
-bool RlContinuousCharacterState::operator!=(const Character& x) const {
-
-    return !operator==(x);
 }
 
 
@@ -87,7 +60,7 @@ const std::string& RlContinuousCharacterState::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RlContinuousCharacterState::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Character::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlCharacterState::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -101,13 +74,15 @@ const TypeSpec& RlContinuousCharacterState::getTypeSpec( void ) const {
 }
 
 
+const ContinuousCharacterState& RlContinuousCharacterState::getValue( void ) const {
+    return state;
+}
+
+
 /** Print information for the user */
 void RlContinuousCharacterState::printValue(std::ostream &o) const {
 
-    if ( fabs(variance - 0.0) < 0.00000001 )
-        o << mean;
-    else
-        o << mean << " (" << variance << ")";
+    o << state.getStringValue();
 }
 
 

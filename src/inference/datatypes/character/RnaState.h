@@ -35,6 +35,7 @@ public:
     void                            operator--();                                       //!< Decrement
     
     RnaState*                       clone(void) const;                                  //!< Get a copy of this object
+    static const std::string&       getClassName(void);                                 //!< Get class name
     
     // Discrete character observation functions
     void                            addState(size_t pos);                               //!< Add a character state to the set of character states
@@ -45,12 +46,11 @@ public:
     //    virtual char                            getState(void) const = 0;                           //!< Get the discrete observation
     bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
     bool                            isMissingOrAmbiguous(void) const;                   //!< Is the character missing or ambiguous
+    void                            setState(char s);                                   //!< Set the discrete observation
     void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
     void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
     
 private:
-    char                            getNucleotideCode(const std::set<char>& s) const;
-    char                            getNucleotideCode(const std::vector<bool>& sSet) const;
     
     char                            state;
     

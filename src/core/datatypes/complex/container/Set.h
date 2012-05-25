@@ -68,7 +68,7 @@ public:
     const_iterator                                  end(void) const;                                                //!< Const-iterator to the end of the set
     const setType&                                  find(const setType& x) const;                                   //!< Find the element being equal to that one
     int                                             findIndex(const setType& x) const;                              //!< Find the index if the element being equal to that one
-    RbObject                                        getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+    RbPtr<RbObject>                                 getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
     const std::set<setType* >&                      getValue(void) const;                                           //!< Get the stl Set of elements
     void                                            insert(setType* x);                                             //!< Add element in front
     size_t                                          size(void) const;                                               //!< get the number of elements in the AbstractSet
@@ -331,7 +331,7 @@ const TypeSpec& Set<setType>::getClassTypeSpec(void) {
 
 /** Get element */
 template <typename setType>
-RbObject Set<setType>::getElement(size_t index) {
+RbPtr<RbObject> Set<setType>::getElement(size_t index) {
     
     return operator[](index);
 }

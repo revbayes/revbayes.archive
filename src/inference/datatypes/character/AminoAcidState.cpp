@@ -17,74 +17,51 @@
 #include "RbUtil.h"
 #include <sstream>
 
-const std::string AminoAcidState::stateLabels = "ARNDCQEGHILKMFPSTWYV";
-
 
 /** Default constructor */
-AminoAcidState::AminoAcidState(void) : CharacterStateDiscrete(20) {
+AminoAcidState::AminoAcidState(void) : DiscreteCharacterState() {
     
-    setState('n');
+//    setState('n');
 }
 
 
 /** Copy constructor */
-AminoAcidState::AminoAcidState(const AminoAcidState& s) : CharacterStateDiscrete(20) {
+AminoAcidState::AminoAcidState(const AminoAcidState& s) : DiscreteCharacterState() {
     
-    value = s.value;
+    state = s.state;
 }
 
 
 /** Constructor that sets the observation */
-AminoAcidState::AminoAcidState(const char s) : CharacterStateDiscrete(20) {
+AminoAcidState::AminoAcidState(const char s) : DiscreteCharacterState() {
     
-    setState(s);
+//    setState(s);
 }
 
 
 /** Equals comparison */
-bool AminoAcidState::operator==(const Character& x) const {
+bool AminoAcidState::operator==(const CharacterState& x) const {
     
     const AminoAcidState* derivedX = static_cast<const AminoAcidState*>(&x);
-    for (size_t i=0; i<numStates; i++) 
-    {
-        if ( value[i] != derivedX->value[i] )
-            return false;
-    }
-    return true;
+    if ( derivedX != NULL ) {
+        return state == derivedX->state;
+    }    
+    
+    return false;
 }
 
 
 /** Not equals comparison */
-bool AminoAcidState::operator!=(const Character& x) const {
+bool AminoAcidState::operator!=(const CharacterState& x) const {
     
     return !operator==(x);
 }
 
 
 /** Set the observation */
-void AminoAcidState::addState(const char s) {
+void AminoAcidState::addState(size_t pos) {
     
-    // look for matches against the state label static vector
-    char c = toupper(s);
-    size_t numMatches = 0;
-    for (size_t i=0; i<numStates; i++)
-    {
-        if ( c == stateLabels[i] )
-        {
-            value[i] = true;
-            numMatches++;
-        }
-    }
     
-    // if there are no matches, we assume that the character state was something like
-    // a '?', 'n', or '-' and set all of the flags to true, to indicate complete ambiguity
-    if (numMatches == 0)
-    {
-        for (size_t i=0; i<numStates; i++)
-            value[i] = true;
-    }
-    if (s == '-')
-        isGapState = true;
 }
 
 
@@ -103,61 +80,67 @@ const std::string& AminoAcidState::getClassName(void) {
 	return rbClassName; 
 }
 
-/** Get class type spec describing type of object */
-const TypeSpec& AminoAcidState::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( CharacterStateDiscrete::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
 
-/** Get type spec */
-const TypeSpec& AminoAcidState::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/** Get value */
-const char AminoAcidState::getState(void) const {
-    
-    char c = '?';
-    size_t numMatches = 0;
-    for (size_t i=0; i<numStates; i++)
-    {
-        if ( value[i] == true )
-        {
-            c = stateLabels[i];
-            numMatches++;
-        }
-    }
-    if (numMatches > 1)
-        c = '?';
-    return c;
+const std::string& AminoAcidState::getStateLabels( void ) const {
+    static const std::string stateLabels = "ARNDCQEGHILKMFPSTWYV";
+   
+    return stateLabels;
 }
 
 std::string AminoAcidState::getStringValue(void) const  {
     
-    char c = getState();
-    std::string s = "";
-    s += c;
-    return s;
+    switch ( state ) {
+        case 0x00000:
+            return "-";
+        case 0x00001:
+            return "A";
+        case 0x00002:
+            return "R";
+        case 0x00004:
+            return "N";
+        case 0x00008:
+            return "D";
+        case 0x00010:
+            return "C";
+        case 0x00020:
+            return "Q";
+        case 0x00040:
+            return "E";
+        case 0x00080:
+            return "G";
+        case 0x00100:
+            return "H";
+        case 0x00200:
+            return "I";
+        case 0x00400:
+            return "L";
+        case 0x00800:
+            return "K";
+        case 0x01000:
+            return "M";
+        case 0x02000:
+            return "F";
+        case 0x04000:
+            return "P";
+        case 0x08000:
+            return "S";
+        case 0x10000:
+            return "T";
+        case 0x20000:
+            return "W";
+        case 0x40000:
+            return "Y";
+        case 0x80000:
+            return "V";
+            
+        default:
+            return "?";
+    }
 }
 
 
-/** Print information for the user */
-void AminoAcidState::printValue(std::ostream &o) const {
-    
-    o << getState();
-}
 
-
-void AminoAcidState::setState(const char s) {
+void AminoAcidState::setState(size_t pos, bool val) {
     
-    // wipe the value clean, setting all bool flags to false
-    for (size_t i=0; i<numStates; i++)
-        value[i] = false;
-    addState(s);
+    state &= val << pos;
 }

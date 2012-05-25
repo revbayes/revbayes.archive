@@ -155,16 +155,16 @@ const std::string& SyntaxVariable::getClassName(void) {
 
 
 /** Get index */
-RlVector SyntaxVariable::computeIndex( Environment& env ) {
+RlVector<Natural> SyntaxVariable::computeIndex( Environment& env ) {
     
-    RlVector theIndex( Natural::getClassTypeSpec() );
+    RlVector<Natural> theIndex;
     
     int count = 1;
     for ( std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++ ) {
         
         if ( (*i) == NULL )
             
-            theIndex.push_back( new Natural(-1) );
+            theIndex.push_back( Natural(-1) );
         
         else {
             
@@ -226,7 +226,7 @@ RlVector SyntaxVariable::computeIndex( Environment& env ) {
 VariableSlot& SyntaxVariable::createVariable( Environment& env) {
     
     /* Get index */
-    RlVector indices = computeIndex(env);
+    RlVector<Natural> indices = computeIndex(env);
     
     VariableSlot* theSlot = NULL;
     
@@ -305,24 +305,26 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
             
             // get the element at the index
             if (theDagNode == NULL) {
-                theDagNode = new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(indexValue+1) ) );
-                theSlot->getVariable().setDagNode(theDagNode);
+                throw RbException("Missing implementation of DAG node container casts in SyntaxVariable::createVariable()");
+//                theDagNode = new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(indexValue+1) ) );
+//                theSlot->getVariable().setDagNode(theDagNode);
             }
             
-            DagNodeContainer *con = static_cast<DagNodeContainer *>( (RbLanguageObject *) theDagNode->getValue().getSingleValue() );
-            // test if the container is large enough
-            if (con->size() <= indexValue) {
-                con->resize(indexValue);
-            }
-            RbObject& subElement = con->getElement(indexValue);
-            
-            // test whether the element needs type conversion
-            if (subElement.isTypeSpec( VariableSlot::getClassTypeSpec() )) {
-                theSlot = &dynamic_cast<VariableSlot&>(subElement);
-                theDagNode = theSlot->getVariable().getDagNode();
-                // \TODO: Set the name of the node here!
-                theSlot->setLabel(name);
-            }
+            throw RbException("Missing implementation of DAG node container casts in SyntaxVariable::createVariable()");
+//            DagNodeContainer *con = static_cast<DagNodeContainer *>( (RbLanguageObject *) theDagNode->getValue().getSingleValue() );
+//            // test if the container is large enough
+//            if (con->size() <= indexValue) {
+//                con->resize(indexValue);
+//            }
+//            RbObject& subElement = con->getElement(indexValue);
+//            
+//            // test whether the element needs type conversion
+//            if (subElement.isTypeSpec( VariableSlot::getClassTypeSpec() )) {
+//                theSlot = &dynamic_cast<VariableSlot&>(subElement);
+//                theDagNode = theSlot->getVariable().getDagNode();
+//                // \TODO: Set the name of the node here!
+//                theSlot->setLabel(name);
+//            }
 
         }
     }
@@ -433,8 +435,9 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                 }
                 
                 // \TODO:
-                RbObject&   subElement  = static_cast<DagNodeContainer *>( (RbLanguageObject *) theVar->getValue().getSingleValue() )->getElement(indexValue);
-                            theVar      = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
+                throw RbException("Missing implementation of DAG node container conversion in SyntaxVariable::evaluateContent()");
+//                RbObject&   subElement  = static_cast<DagNodeContainer *>( (RbLanguageObject *) theVar->getValue().getSingleValue() )->getElement(indexValue);
+//                            theVar      = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
             }
             else {
                 //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );

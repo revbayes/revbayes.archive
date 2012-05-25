@@ -20,6 +20,7 @@
 #include "CharacterState.h"
 #include "ConstArgumentRule.h"
 #include "Ellipsis.h"
+#include "MethodTable.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
@@ -129,33 +130,21 @@ const TypeSpec& RlTree::getTypeSpec( void ) const {
 
 void RlTree::printValue(std::ostream &o) const {
     
-    o << taxon.getTaxonName() << ": ";
-    for (size_t i = 0; i < taxon.getNumberOfCharacters(); i++) {
-        o << taxon[i].getStringValue();
-    }
+    o << tree;
 }
 
 
 /** Set a member variable */
 void RlTree::setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var) {
     
-    if ( name == "name" ) {
-        std::string n = static_cast<const RbString*>( (const RbLanguageObject *) var )->getValue();
-        taxon.setTaxonName( n );
-    }
-    else if (name == "x" || name == "" ) { // the ellipsis variables
-        const RlCharacterState* element = static_cast<const RlCharacterState*>( (const RbLanguageObject *) var );
-        taxon.push_back( element->getCharacterState() );
+    if ( name == "topology" ) {
+        throw RbException("Missing implementation of setting a topology in RlTree");
+//        const Topology *t = static_cast<const Topology*>( (const RbLanguageObject *) var );
+//        tree.setTopology( t );
     }
     else {
         MemberObject::setSimpleMemberValue(name, var);
     }
 }
 
-
-
-void RlTree::setRlTaxonName(std::string tn) {
-    
-    RlTaxonName = tn;
-}
 

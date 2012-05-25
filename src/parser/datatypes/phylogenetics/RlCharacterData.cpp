@@ -301,20 +301,20 @@ const MethodTable& RlCharacterData::getMethods(void) const {
     {
         
         excludecharArgRules->push_back(        new ConstArgumentRule(     "", Natural::getClassTypeSpec()       ) );
-        excludecharArgRules2->push_back(       new ConstArgumentRule(     "", TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
+        excludecharArgRules2->push_back(       new ConstArgumentRule(     "", TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
         
-        methods.addFunction("names",               new SimpleMemberFunction(TypeSpec(RlVector<std::string, RbString>::getClassTypeSpec(), new TypeSpec( RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
-        methods.addFunction("nchar",               new SimpleMemberFunction(TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
+        methods.addFunction("names",               new SimpleMemberFunction(TypeSpec(RlVector<RbString>::getClassTypeSpec(), new TypeSpec( RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
+        methods.addFunction("nchar",               new SimpleMemberFunction(TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
         methods.addFunction("ntaxa",               new SimpleMemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
         methods.addFunction("chartype",            new SimpleMemberFunction(RbString::getClassTypeSpec(),      chartypeArgRules           ) );
         methods.addFunction("nexcludedtaxa",       new SimpleMemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
         methods.addFunction("nexcludedchars",      new SimpleMemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
         methods.addFunction("nincludedtaxa",       new SimpleMemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
         methods.addFunction("nincludedchars",      new SimpleMemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
-        methods.addFunction("excludedtaxa",        new SimpleMemberFunction(TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
-        methods.addFunction("excludedchars",       new SimpleMemberFunction(TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
-        methods.addFunction("includedtaxa",        new SimpleMemberFunction(TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
-        methods.addFunction("includedchars",       new SimpleMemberFunction(TypeSpec(RlVector<int, Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
+        methods.addFunction("excludedtaxa",        new SimpleMemberFunction(TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
+        methods.addFunction("excludedchars",       new SimpleMemberFunction(TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
+        methods.addFunction("includedtaxa",        new SimpleMemberFunction(TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
+        methods.addFunction("includedchars",       new SimpleMemberFunction(TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
         methods.addFunction("nconstantpatterns",   new SimpleMemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
         methods.addFunction("ncharswithambiguity", new SimpleMemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
         methods.addFunction("excludechar",         new SimpleMemberFunction(RbVoid_name,        excludecharArgRules        ) );
@@ -366,7 +366,7 @@ void RlCharacterData::setSimpleMemberValue(const std::string& name, const RbPtr<
         //        elementType = TypeSpec( static_cast<RbString&>( var->getValue() ).getValue() );
     }
     else if ( name == "x" || name == "" ) {
-        const TaxonData& obs = static_cast<const RlTaxonData *>( (const RbLanguageObject *) var )->getTaxonData();
+        const TaxonData& obs = static_cast<const RlTaxonData *>( (const RbLanguageObject *) var )->getValue();
         data.addTaxonData( obs );        
     }
     else {

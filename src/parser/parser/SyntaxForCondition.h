@@ -47,7 +47,7 @@ class SyntaxForCondition : public SyntaxElement {
         RbPtr<Variable>             evaluateContent( Environment& env );                                            //!< Get semantic value
         void                        finalizeLoop(void);                                                             //!< Finalize loop
         const RbString&             getIndexVarName(void) const;                                                    //!< Get the name of the index variable
-        RbLanguageObject&           getNextLoopState(void);                                                         //!< Get next state of loop
+        RbPtr<RbLanguageObject>     getNextLoopState(void);                                                         //!< Get next state of loop
         bool                        isFinished() const;                                                             //!< Have we iterated over the whole loop?
         void                        initializeLoop(Environment& env);                                               //!< Initialize loop
         void                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.

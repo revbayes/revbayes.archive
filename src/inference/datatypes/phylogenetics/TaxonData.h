@@ -25,7 +25,7 @@ class CharacterState;
 class TaxonData {
     
     public:
-                                                TaxonData(const std::string tname="");                              //!< Set type spec of container from type of elements
+        TaxonData(const std::string &t, const std::string tname="");                                                //!< Set type spec of container from type of elements
         
         CharacterState&                         operator[](size_t i);                                               //!< Index op allowing change
         const CharacterState&                   operator[](size_t i) const;                                         //!< Const index op
@@ -40,6 +40,7 @@ class TaxonData {
  
         
     private:
+        std::string                             characterType;
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
         std::vector<CharacterState*>            sequence;
     

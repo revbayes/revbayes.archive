@@ -63,8 +63,9 @@ RbPtr<RbLanguageObject> RlTaxonData::executeSimpleMethod(std::string const &name
         }
         
         // we have to internally reduce the index by 1
-        CharacterState& element = taxon[index.getValue() - 1];
-        return RbPtr<RbLanguageObject>( RlCharacterState( element ) );
+//        CharacterState& element = taxon[index.getValue() - 1];
+//        return RbPtr<RbLanguageObject>( RlCharacterState( element ) );
+        throw RbException("Missing implementation in RlTaxonData::executeSimpleMethod()");
     } 
     
     return MemberObject::executeSimpleMethod( name, args );

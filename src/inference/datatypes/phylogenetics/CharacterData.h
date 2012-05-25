@@ -34,7 +34,10 @@ class CharacterData {
         // Overloaded operators
         CharacterData&                      operator=(const CharacterData& x);                                          //!< Assignment operator
         const TaxonData&                    operator[](size_t i) const;                                                 //!< Subscript operator (const)
-  
+        bool                                operator==(const CharacterData& x) const;                                   //!< Less than operator
+        bool                                operator!=(const CharacterData& x) const;                                   //!< Less than operator
+        bool                                operator<(const CharacterData& x) const;                                    //!< Less than operator
+    
         // Container functions
         void                                clear(void);
 //        void                                setElement(const size_t index, RbLanguageObject* elem);                     //!< Set element with type conversion

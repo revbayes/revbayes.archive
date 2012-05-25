@@ -107,7 +107,7 @@ std::string RnaState::getStringValue(void) const  {
             return "N";
             
         default:
-            return "N";
+            return "?";
     }
 }
 

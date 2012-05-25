@@ -59,7 +59,7 @@ class SyntaxVariable : public SyntaxElement {
         void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
 
         // Regular functions
-        RlVector                            computeIndex(Environment& env);                                                         //!< Evaluate index
+        RlVector<Natural>                   computeIndex(Environment& env);                                                         //!< Evaluate index
         VariableSlot&                       createVariable(Environment& env);                                                       //!< Get semantic value
         RbPtr<Variable>                     evaluateContent(Environment& env);                                                      //!< Get semantic value
         RbString&                           getIdentifier(void) { return *identifier; }                                             //!< Get identifier

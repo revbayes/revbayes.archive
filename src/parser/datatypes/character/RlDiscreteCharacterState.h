@@ -26,7 +26,6 @@ class RlDiscreteCharacterState : public RlCharacterState {
 
     public:
         virtual bool                            operator==(const RlCharacterState& x) const = 0;    //!< Equality
-        virtual bool                            operator!=(const RlCharacterState& x) const = 0;    //!< Inequality
 
         // Basic utility functions you can override
         virtual const MemberRules&              getMemberRules(void) const;                         //!< Get member rules

@@ -18,7 +18,9 @@
 #ifndef RlAminoAcidState_H
 #define RlAminoAcidState_H
 
+#include "AminoAcidState.h"
 #include "RlDiscreteCharacterState.h"
+
 #include <ostream>
 #include <string>
 #include <vector>
@@ -29,10 +31,9 @@ class RlAminoAcidState : public RlDiscreteCharacterState {
     public:
                                         RlAminoAcidState(void);                             //!< Default constructor
                                         RlAminoAcidState(const RlAminoAcidState& s);        //!< Copy constructor
-                                        RlAminoAcidState(const char s);                     //!< Constructor with nucleotide observation
+//                                        RlAminoAcidState(const char s);                     //!< Constructor with nucleotide observation
 
         bool                            operator==(const RlCharacterState& x) const;        //!< Equality
-        bool                            operator!=(const RlCharacterState& x) const;        //!< Inequality
 
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
@@ -43,6 +44,8 @@ class RlAminoAcidState : public RlDiscreteCharacterState {
         static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                            //!< Get language type of the object
 
+        const AminoAcidState&           getValue(void) const;
+    
     private:
         AminoAcidState                  state;                                              //!< The internal element
     

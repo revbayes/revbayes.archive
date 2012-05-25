@@ -42,6 +42,7 @@ public:
 //    virtual char                            getState(void) const = 0;                           //!< Get the discrete observation
     virtual bool                            isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
     virtual bool                            isMissingOrAmbiguous(void) const = 0;               //!< Is the character missing or ambiguous
+    virtual void                            setState(char s) = 0;                               //!< Set the discrete observation
     virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
     virtual void                            setGapState(bool tf) = 0;                           //!< Set whether this is a gapped character
     

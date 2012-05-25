@@ -38,11 +38,8 @@
 #include "Workspace.h"
 
 /* Primitive types (alphabetic order) */
-#include "AminoAcidState.h"
 #include "RbBoolean.h"
-#include "CharacterContinuous.h"
 #include "Complex.h"
-#include "DnaState.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "Probability.h"
@@ -50,9 +47,12 @@
 #include "RbString.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RnaState.h"
-#include "StandardState.h"
-#include "TransitionProbabilityMatrix.h"
+
+#include "RlAminoAcidState.h"
+#include "RlContinuousCharacterState.h"
+#include "RlDnaState.h"
+//#include "RlRnaState.h"
+#include "RlStandardState.h"
 
 /* Container types (alphabetic order) */
 #include "DagNodeContainer.h"
@@ -192,10 +192,10 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addType( new RbAbstract( Distribution::getClassTypeSpec() ) );
 
         /* Add primitive types (alphabetic order) */
-        addType( new AminoAcidState()                 );
+        addType( new RlAminoAcidState()                 );
         addType( new RbBoolean()                      );
         addType( new Complex()                        );
-        addType( new CharacterContinuous()            );
+        addType( new RlContinuousCharacterState()       );
         addType( new Integer()                        );
         addType( new Natural()                        );
         addType( new Probability()                    );
@@ -203,15 +203,15 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbString()                       );
         addType( new Real()                           );
         addType( new RealPos()                        );
-        addType( new RnaState()                       );
-        addType( new StandardState()                  );
+//        addType( new RlRnaState()                       );
+        addType( new RlStandardState()                  );
 //        addType( new TransitionProbabilityMatrix()    );
         
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
-        addTypeWithConstructor( "dna",         new DnaState()              );
+        addTypeWithConstructor( "dna",         new RlDnaState()              );
 
         /* Add container types (alphabetic order) */
-        addType( new DagNodeContainer()             );
+//        addType( new DagNodeContainer()             );
 //        addType( new Matrix<Complex>()              );
 //        addType( new Matrix<Real>()                 );
 //        addTypeWithConstructor( "set",         new Set<Integer>()          );

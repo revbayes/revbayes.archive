@@ -28,7 +28,7 @@
 
 
 /** Constructor with element type, used to properly construct vectors */
-TaxonData::TaxonData(const std::string tname) : taxonName(tname), sequence() {
+TaxonData::TaxonData(const std::string &t, const std::string tname) : characterType( t ), taxonName(tname), sequence() {
     
 }
 

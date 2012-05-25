@@ -17,6 +17,7 @@
 #ifndef RlCharacterState_H
 #define RlCharacterState_H
 
+#include "CharacterState.h"
 #include "RbLanguageObject.h"
 
 #include <ostream>
@@ -27,7 +28,7 @@ class RlCharacterState : public RbLanguageObject {
 
     public:
         virtual bool                    operator==(const RlCharacterState& x) const = 0;    //!< Equality
-        virtual bool                    operator!=(const RlCharacterState& x) const = 0;    //!< Inequality
+        bool                            operator!=(const RlCharacterState& x) const;        //!< Inequality
 
         // Basic utility functions
         static const std::string&       getClassName(void);                                 //!< Get class name
@@ -37,7 +38,7 @@ class RlCharacterState : public RbLanguageObject {
         virtual RlCharacterState*       clone(void) const = 0;                              //!< Clone object
         virtual void                    printValue(std::ostream& o) const = 0;              //!< Print value (for user)
     
-        virtual const CharacterState&   getCharacterState() const;                          //!< Get the internal character object.
+        virtual const CharacterState&   getValue() const = 0;                               //!< Get the internal character object.
 
     protected:
                                         RlCharacterState(void);                             //!< Default constructor

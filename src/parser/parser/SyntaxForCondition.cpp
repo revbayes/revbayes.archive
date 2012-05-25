@@ -97,7 +97,7 @@ const RbString& SyntaxForCondition::getIndexVarName( void ) const {
 
 
 /** Get next loop state */
-RbLanguageObject& SyntaxForCondition::getNextLoopState( void ) {
+RbPtr<RbLanguageObject> SyntaxForCondition::getNextLoopState( void ) {
 
     // We do not check here for the loop initialization or finalization. The caller needs to do some work! (Sebastian)
 //    if ( nextElement < 0 )
@@ -115,7 +115,8 @@ RbLanguageObject& SyntaxForCondition::getNextLoopState( void ) {
 //    // the setting of the new iterator might have affected other nodes; therefore we call a keep
 //    theVar.getDagNode()->keep();
     
-    RbLanguageObject& elm = static_cast<RbLanguageObject&>( vector->getElement( nextElement ) );
+    RbPtr<RbObject> tmp = vector->getElement( nextElement );
+    RbLanguageObject* elm = static_cast<RbLanguageObject*>( (RbObject *) tmp );
     
     nextElement++;
 

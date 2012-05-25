@@ -47,7 +47,7 @@ RbPtr<RbLanguageObject> Func__range::executeFunction( const std::vector<const Rb
     int f = static_cast<const Integer*>( args[0] )->getValue();
     int l = static_cast<const Integer*>( args[1] )->getValue();
 
-    RlVector *range = new RlVector( Integer::getClassTypeSpec() );
+    RlVector<Integer> *range = new RlVector<Integer>();
     if (f < l) {
         for ( int i = f; i <= l; i++ )
             range->push_back( new Integer(i) );
@@ -106,7 +106,7 @@ const TypeSpec& Func__range::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func__range::getReturnType( void ) const {
 
-    static TypeSpec returnTypeSpec = TypeSpec(RlVector::getClassTypeSpec(), new TypeSpec( Integer::getClassTypeSpec() ) );
+    static TypeSpec returnTypeSpec = TypeSpec(RlVector<Integer>::getClassTypeSpec(), new TypeSpec( Integer::getClassTypeSpec() ) );
     return returnTypeSpec;
 }
 
