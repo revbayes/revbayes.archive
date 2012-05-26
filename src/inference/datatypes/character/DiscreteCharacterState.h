@@ -39,7 +39,7 @@ public:
     virtual const std::string&              getStateLabels(void) const = 0;                     //!< Get valid state labels
     virtual std::string                     getStringValue(void) const = 0;                     //!< Get a representation of the character as a string
     virtual size_t                          getNumberOfStates(void) const = 0;                  //!< Get the number of discrete states for the character
-//    virtual char                            getState(void) const = 0;                           //!< Get the discrete observation
+    virtual unsigned int                    getState(void) const = 0;                           //!< Get the discrete observation
     virtual bool                            isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
     virtual bool                            isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
     virtual void                            setState(char s) = 0;                               //!< Set the discrete observation

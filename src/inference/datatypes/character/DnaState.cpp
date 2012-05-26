@@ -98,17 +98,6 @@ DnaState* DnaState::clone( void ) const {
 
 
 
-bool DnaState::isAmbiguous( void ) const {
-    return getNumberObservedStates() > 1;
-}
-
-
-bool DnaState::isGapState( void ) const {
-    return state == 0x0;
-}
-
-
-
 /* Get class name of object */
 const std::string& DnaState::getClassName(void) { 
     
@@ -134,6 +123,11 @@ unsigned int DnaState::getNumberObservedStates(void) const  {
 
 size_t DnaState::getNumberOfStates( void ) const {
     return 4;
+}
+
+
+unsigned int DnaState::getState( void ) const {
+    return state;
 }
 
 
@@ -183,6 +177,17 @@ std::string DnaState::getStringValue(void) const  {
         default:
             return "?";
     }
+}
+
+
+
+bool DnaState::isAmbiguous( void ) const {
+    return getNumberObservedStates() > 1;
+}
+
+
+bool DnaState::isGapState( void ) const {
+    return state == 0x0;
 }
 
 

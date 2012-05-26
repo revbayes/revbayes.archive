@@ -5,12 +5,13 @@
 #import "WindowControllerCharacterMatrix.h"
 #include <string>
 #include "AminoAcidState.h"
-#include "Character.h"
-#include "CharacterContinuous.h"
+#include "CharacterState.h"
 #include "CharacterData.h"
+#include "ContinuousCharacterState.h"
 #include "DagNodeContainer.h"
 #include "DnaState.h"
 #include "Parser.h"
+#include "RlCharacterData.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "TaxonData.h"
@@ -311,7 +312,7 @@ return;
         [m setDataType:AA];
     else if ( cd.getDataType() == StandardState::getClassName() )
         [m setDataType:STANDARD];
-    else if ( cd.getDataType() == CharacterContinuous::getClassName() )
+    else if ( cd.getDataType() == ContinuousCharacterState::getClassName() )
         [m setDataType:CONTINUOUS];
 
     for (int i=0; i<cd.getNumberOfTaxa(); i++)
@@ -323,26 +324,26 @@ return;
         [rbTaxonData setTaxonName:taxonName];
         for (int j=0; j<cd.getNumberOfCharacters(i); j++)
             {
-            const Character& theChar = td.getCharacter(j);
+            const CharacterState& theChar = td.getCharacter(j);
             RbDataCell* cell = [[RbDataCell alloc] init];
             [cell setDataType:[m dataType]];
             if ( [m dataType] != CONTINUOUS )
                 {
-                unsigned x = theChar.getUnsignedValue();
+                unsigned int x = static_cast<const DiscreteCharacterState &>(theChar).getState();
                 NSNumber* n = [NSNumber numberWithUnsignedInt:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:YES];
                 [cell setNumStates:((int)theChar.getNumberOfStates())];
-                if ( theChar.isMissingOrAmbiguous() == true )
+                if ( theChar.isAmbiguous() == true )
                     [cell setIsAmbig:YES];
-                if (theChar.getIsGapState() == true)
+                if (theChar.isGapState() == true)
                     [cell setIsGapState:YES];
                 else
                     [cell setIsGapState:NO];
                 }
             else 
                 {
-                double x = theChar.getRealValue();
+                double x = static_cast<const ContinuousCharacterState &>(theChar).getMean();
                 NSNumber* n = [NSNumber numberWithDouble:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:NO];

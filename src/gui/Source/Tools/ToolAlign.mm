@@ -11,13 +11,15 @@
 #import "WindowControllerAlign.h"
 #import "WindowControllerCharacterMatrix.h"
 #include <string>
-#include "Character.h"
+
+#include "CharacterState.h"
 #include "CharacterData.h"
 #include "DagNodeContainer.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RbNullObject.h"
+#include "RlCharacterData.h"
 #include "VariableSlot.h"
 #include "Workspace.h"
 
@@ -248,8 +250,8 @@
             {
             const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
             const RbLanguageObject& theDagNode = *vs->getDagNode()->getValue().getSingleValue();
-            const CharacterData& cd = static_cast<const CharacterData&>( theDagNode );
-            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            const RlCharacterData& cd = static_cast<const RlCharacterData&>( theDagNode );
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
             [newMatrix setAlignmentMethod:@"Unknown"];
             [self addMatrix:newMatrix];
             }

@@ -170,6 +170,11 @@ size_t AminoAcidState::getNumberOfStates( void ) const {
 }
 
 
+unsigned int AminoAcidState::getState( void ) const {
+    return state;
+}
+
+
 const std::string& AminoAcidState::getStateLabels( void ) const {
     static const std::string stateLabels = "ARNDCQEGHILKMFPSTWYV";
    

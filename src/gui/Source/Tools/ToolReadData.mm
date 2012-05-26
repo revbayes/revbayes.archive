@@ -2,15 +2,16 @@
 #include <vector>
 #include <string>
 #include "AminoAcidState.h"
-#include "Character.h"
+#include "CharacterState.h"
 #include "CharacterData.h"
-#include "CharacterContinuous.h"
+#include "ContinuousCharacterState.h"
 #include "DagNodeContainer.h"
 #include "DnaState.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RbNullObject.h"
+#include "RlCharacterData.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "VariableSlot.h"
@@ -267,7 +268,7 @@
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
     DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
-    CharacterData* cd = dynamic_cast<CharacterData*>( dv );
+    RlCharacterData* cd = dynamic_cast<RlCharacterData*>( dv );
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
@@ -275,8 +276,8 @@
             {
             const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
             const RbPtr<const RbLanguageObject>& theDagNode = vs->getDagNode()->getValue().getSingleValue();
-            const CharacterData *cd = static_cast<const CharacterData *>( (const RbLanguageObject *) theDagNode );
-            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)];
+            const RlCharacterData *cd = static_cast<const RlCharacterData *>( (const RbLanguageObject *) theDagNode );
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
             [newMatrix setAlignmentMethod:@"Unknown"];
             [self addMatrix:newMatrix];
             }
@@ -284,7 +285,7 @@
     else if ( cd != NULL )
         {
         [self removeAllDataMatrices];
-        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:*cd];
+        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
         [newMatrix setAlignmentMethod:@"Unknown"];
         [self addMatrix:newMatrix];
         }

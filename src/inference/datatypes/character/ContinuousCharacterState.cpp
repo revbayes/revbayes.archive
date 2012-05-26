@@ -92,6 +92,11 @@ const std::string& ContinuousCharacterState::getClassName(void) {
 }
 
 
+double ContinuousCharacterState::getMean( void ) const {
+    return mean;
+}
+
+
 size_t ContinuousCharacterState::getNumberOfStates( void ) const {
     return -1;
 }
@@ -108,6 +113,12 @@ std::string ContinuousCharacterState::getStringValue(void) const  {
         o << mean << " (" << variance << ")";
     
     return o.str();
+}
+
+
+
+double ContinuousCharacterState::getVariance( void ) const {
+    return variance;
 }
 
 

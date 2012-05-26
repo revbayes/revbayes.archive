@@ -125,6 +125,11 @@ unsigned int StandardState::getNumberObservedStates(void) const  {
 }
 
 
+unsigned int StandardState::getState( void ) const {
+    return state;
+}
+
+
 const std::string& StandardState::getStateLabels( void ) const {
     
     return labels;

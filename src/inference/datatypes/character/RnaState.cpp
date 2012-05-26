@@ -98,17 +98,6 @@ RnaState* RnaState::clone( void ) const {
 
 
 
-bool RnaState::isAmbiguous( void ) const {
-    return getNumberObservedStates() > 1;
-}
-
-
-bool RnaState::isGapState( void ) const {
-    return state == 0x0;
-}
-
-
-
 /**Get class name of object */
 const std::string& RnaState::getClassName(void) { 
     
@@ -134,6 +123,11 @@ unsigned int RnaState::getNumberObservedStates(void) const  {
 
 size_t RnaState::getNumberOfStates( void ) const {
     return 4;
+}
+
+
+unsigned int RnaState::getState( void ) const {
+    return state;
 }
 
 
@@ -183,6 +177,17 @@ std::string RnaState::getStringValue(void) const  {
         default:
             return "?";
     }
+}
+
+
+
+bool RnaState::isAmbiguous( void ) const {
+    return getNumberObservedStates() > 1;
+}
+
+
+bool RnaState::isGapState( void ) const {
+    return state == 0x0;
 }
 
 
