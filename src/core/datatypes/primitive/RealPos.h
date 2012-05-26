@@ -29,7 +29,6 @@ class RealPos : public Real {
                                         RealPos(double x);                      //!< Construct from double
                                         RealPos(int x);                         //!< Construct from int 
                                         RealPos(unsigned int x);                //!< Construct from unsigned int 
-                                        RealPos(bool x);                        //!< Construct from bool
 
         // Basic utility functions
         virtual RealPos*                clone(void) const;                      //!< Clone object

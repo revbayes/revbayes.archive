@@ -19,7 +19,7 @@
 
 
 /** Default constructor */
-RnaState::RnaState(void) : DiscreteCharacterState(), state(0xf) {
+RnaState::RnaState(void) : DiscreteCharacterState(), state(0xFF) {
     
 }
 
@@ -33,7 +33,7 @@ RnaState::RnaState(const RnaState& s) : DiscreteCharacterState(), state( s.state
 /** Constructor that sets the observation */
 RnaState::RnaState(char s) : DiscreteCharacterState() {
     
-    //    setState(s);
+    setState(s);
 }
 
 
@@ -57,9 +57,83 @@ bool RnaState::operator!=(const CharacterState& x) const {
 }
 
 
+bool RnaState::operator<(const CharacterState &x) const {
+    
+    const RnaState* derivedX = static_cast<const RnaState*>(&x);
+    if ( derivedX != NULL ) {
+        unsigned int myState = state;
+        unsigned int yourState = derivedX->state;
+        
+        while ( (myState & 1) == ( yourState & 1 )  ) {
+            myState >>= 1;
+            yourState >>= 1;
+        }
+        
+        return (myState & 1) > ( yourState & 1 );
+    }    
+    
+    return false;
+}
+
+
+void RnaState::operator++( void ) {
+    state <<= 1;
+}
+
+
+void RnaState::operator--( void ) {
+    state >>= 1;
+}
+
+
+void RnaState::addState(size_t pos) {
+    state |= 1 << pos;
+}
+
+
 
 RnaState* RnaState::clone( void ) const {
     return new RnaState( *this );
+}
+
+
+
+bool RnaState::isAmbiguous( void ) const {
+    return getNumberObservedStates() > 1;
+}
+
+
+bool RnaState::isGapState( void ) const {
+    return state == 0x0;
+}
+
+
+
+/**Get class name of object */
+const std::string& RnaState::getClassName(void) { 
+    
+    static std::string rbClassName = "RNA state";
+    
+	return rbClassName; 
+}
+
+
+unsigned int RnaState::getNumberObservedStates(void) const  {
+    
+    unsigned int v = state;     // count the number of bits set in v
+    unsigned int c;             // c accumulates the total bits set in v
+    
+    for (c = 0; v; v >>= 1)
+    {
+        c += v & 1;
+    }
+    
+    return c;
+}
+
+
+size_t RnaState::getNumberOfStates( void ) const {
+    return 4;
 }
 
 
@@ -112,8 +186,76 @@ std::string RnaState::getStringValue(void) const  {
 }
 
 
+void RnaState::setGapState(bool tf) {
+    if ( tf ) {
+        state = 0x0;
+    }
+    else {
+        state = 0xFF;
+    }
+}
+
+
 void RnaState::setState(size_t pos, bool val) {
     
     state &= val << pos;
+}
+
+void RnaState::setState(char val) {
+    
+    val = toupper( val );
+    switch ( val ) {
+        case '-':
+            state = 0x00;
+            break;
+        case 'A':
+            state = 0x01;
+            break;
+        case 'C':
+            state = 0x02;
+            break;
+        case 'M':
+            state = 0x03;
+            break;
+        case 'G':
+            state = 0x04;
+            break;
+        case 'R':
+            state = 0x05;
+            break;
+        case 'S':
+            state = 0x06;
+            break;
+        case 'V':
+            state = 0x07;
+            break;
+        case 'U':
+            state = 0x08;
+            break;
+        case 'W':
+            state = 0x09;
+            break;
+        case 'Y':
+            state = 0x0A;
+            break;
+        case 'H':
+            state = 0x0B;
+            break;
+        case 'K':
+            state = 0x0C;
+            break;
+        case 'D':
+            state = 0x0D;
+            break;
+        case 'B':
+            state = 0x0E;
+            break;
+        case 'N':
+            state = 0x0F;
+            break;
+            
+        default:
+            state = 0xFF;
+    }
 }
 

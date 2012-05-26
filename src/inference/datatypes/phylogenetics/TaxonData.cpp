@@ -50,6 +50,46 @@ const CharacterState& TaxonData::operator[](size_t i) const {
     return *sequence[i];
 }
 
+
+bool TaxonData::operator==(const TaxonData &x) const {
+    
+    if ( characterType != x.characterType ) {
+        return false;
+    }
+    
+    if ( taxonName != x.taxonName ) {
+        return false;
+    }
+    
+    if ( sequence.size() != x.sequence.size() ) {
+        return false;
+    }
+    
+    for (size_t i = 0; i < sequence.size(); ++i) {
+        if ( *sequence[i] != *x.sequence[i] ) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
+bool TaxonData::operator!=(const TaxonData &x) const {
+    return !operator==(x);
+}
+
+
+bool TaxonData::operator<(const TaxonData &x) const {
+    
+    for (size_t i = 0; i < sequence.size() && i < x.sequence.size(); ++i) {
+        if ( *sequence[i] != *x.sequence[i] ) {
+            return *sequence[i] < *x.sequence[i];
+        }
+    }
+    return sequence.size() < x.sequence.size();
+}
+
 /** Push back a new character */
 void TaxonData::addCharacter( CharacterState *newChar ) {
     

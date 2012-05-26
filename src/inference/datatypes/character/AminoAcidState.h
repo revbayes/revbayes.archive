@@ -31,6 +31,7 @@ public:
     
     bool                            operator==(const CharacterState& x) const;          //!< Equality
     bool                            operator!=(const CharacterState& x) const;          //!< Inequality
+    bool                            operator<(const CharacterState& x) const;           //!< Less than
     void                            operator++();                                       //!< Increment
     void                            operator--();                                       //!< Decrement
     
@@ -39,18 +40,19 @@ public:
 
     // Discrete character observation functions
     void                            addState(size_t pos);                               //!< Add a character state to the set of character states
-    short                           getNumberObservedStates(void) const;                //!< How many states are observed for the character
+    unsigned int                    getNumberObservedStates(void) const;                //!< How many states are observed for the character
     const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
     std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
     size_t                          getNumberOfStates(void) const;                      //!< Get the number of discrete states for the character
     //    virtual char                            getState(void) const = 0;                           //!< Get the discrete observation
+    bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
     bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
-    bool                            isMissingOrAmbiguous(void) const;                   //!< Is the character missing or ambiguous
+    void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
     void                            setState(char s);                                   //!< Set the discrete observation
     void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
-    void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
     
 private:
+    unsigned int                    computeState(char c) const;                         //!< Compute the internal state value for this character.
     
     unsigned int                    state;
     

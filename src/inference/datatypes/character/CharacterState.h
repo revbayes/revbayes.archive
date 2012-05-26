@@ -28,20 +28,21 @@ class CharacterState {
 public:
     virtual bool                    operator==(const CharacterState& x) const = 0;      //!< Equality
     virtual bool                    operator!=(const CharacterState& x) const = 0;      //!< Inequality
-            
+    virtual bool                    operator<(const CharacterState& x) const = 0;       //!< Less than
+    
     virtual CharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
     
     virtual size_t                  getNumberOfStates(void) const = 0;                  //!< Get the number states for a character (return 0 in base class)
     virtual std::string             getStringValue(void) const = 0;                     //!< Get a representation of the character as a string
     virtual bool                    isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
-    virtual bool                    isMissingOrAmbiguous(void) const = 0;               //!< Is the character missing or ambiguous
+    virtual bool                    isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
     virtual void                    setGapState(bool tf) = 0;                           //!< Virtual function call to set whether this is a gapped character
 
 //    virtual double                  getRealValue(void) const { return 0.0; }   //!< Return the double representation of the character
 //    virtual unsigned                getUnsignedValue(void) const { return 0; } //!< Get an unsigned representation of the bool set
 
 protected:
-    CharacterState(void);                                                               //!< Default constructor
+    CharacterState(void) {}                                                               //!< Default constructor
 };
 
 #endif

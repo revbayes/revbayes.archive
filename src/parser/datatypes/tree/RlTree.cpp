@@ -128,6 +128,11 @@ const TypeSpec& RlTree::getTypeSpec( void ) const {
 }
 
 
+const TreePlate& RlTree::getValue( void ) const {
+    return tree;
+}
+
+
 void RlTree::printValue(std::ostream &o) const {
     
     o << tree;

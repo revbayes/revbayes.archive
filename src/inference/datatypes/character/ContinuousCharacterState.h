@@ -34,6 +34,7 @@ public:
 
     bool                            operator==(const CharacterState& x) const;              //!< Equality
     bool                            operator!=(const CharacterState& x) const;              //!< Inequality
+    bool                            operator<(const CharacterState& d) const;           //!< Less than
  
     ContinuousCharacterState*       clone(void) const;                                      //!< Get a copy of this object
     static const std::string&       getClassName(void);                                     //!< Get class name
@@ -44,8 +45,8 @@ public:
 //    double                          getValue(void) const;                                   //!< Get the continuous observation
     std::string                     getStringValue(void) const;                             //!< Get a representation of the character as a string
     double                          getVariance(void) const;                                //!< Get the continuous observation
+    bool                            isAmbiguous(void) const;                                //!< Is the character missing or ambiguous
     bool                            isGapState(void) const;                                 //!< Get whether this is a gapped character state
-    bool                            isMissingOrAmbiguous(void) const;                       //!< Is the character missing or ambiguous
     void                            setGapState(bool tf);                                   //!< Set whether this is a gapped character
     void                            setMean(double x);                                      //!< Set the continuous observation
     void                            setVariance(const double x);                            //!< Set the continuous observation

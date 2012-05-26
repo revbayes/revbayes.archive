@@ -155,7 +155,17 @@ template <typename rlType>
 RlVector<rlType>::RlVector(size_t n, const typename rlType::valueType &x) : Container( rlType::getClassTypeSpec() )  {
     
     for (size_t i = 0; i < n; i++) {
-        this->push_back( x->clone() );
+        this->push_back( x->getValue() );
+    }
+}
+
+
+/** Constructor with dimension (n) and copys of x for every object */
+template <typename rlType>
+RlVector<rlType>::RlVector(const std::vector<elementType> &x) : Container( rlType::getClassTypeSpec() )  {
+    
+    for (size_t i = 0; i < x.size(); i++) {
+        this->push_back( x[i] );
     }
 }
 

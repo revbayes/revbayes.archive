@@ -140,6 +140,11 @@ const TypeSpec& RlTaxonData::getTypeSpec( void ) const {
 }
 
 
+const TaxonData& RlTaxonData::getValue( void ) const {
+    return taxon;
+}
+
+
 void RlTaxonData::printValue(std::ostream &o) const {
     
     o << taxon.getTaxonName() << ": ";

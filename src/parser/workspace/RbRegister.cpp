@@ -425,7 +425,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "dppConFromExpNumClusters", new Func_dppConFromExpNumClusters() );
         addFunction( "ls",                       new Func_ls()                       );
-        addFunction( "normalize",                new Func_normalizeVector()          );
+//        addFunction( "normalize",                new Func_normalizeVector()          );
         addFunction( "print",                    new Func_print()                    );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );

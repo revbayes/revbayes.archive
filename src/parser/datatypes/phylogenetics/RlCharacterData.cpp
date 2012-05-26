@@ -349,6 +349,11 @@ const TypeSpec& RlCharacterData::getTypeSpec(void) const {
 }
 
 
+const CharacterData& RlCharacterData::getValue( void ) const {
+    return data;
+}
+
+
 /** Print value for user */
 void RlCharacterData::printValue(std::ostream& o) const {
     

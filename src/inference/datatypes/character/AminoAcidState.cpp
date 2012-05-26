@@ -21,7 +21,7 @@
 /** Default constructor */
 AminoAcidState::AminoAcidState(void) : DiscreteCharacterState() {
     
-//    setState('n');
+    setState('?');
 }
 
 
@@ -33,13 +33,13 @@ AminoAcidState::AminoAcidState(const AminoAcidState& s) : DiscreteCharacterState
 
 
 /** Constructor that sets the observation */
-AminoAcidState::AminoAcidState(const char s) : DiscreteCharacterState() {
+AminoAcidState::AminoAcidState(char s) : DiscreteCharacterState() {
     
-//    setState(s);
+    setState(s);
 }
 
 
-/** Equals comparison */
+/* Equals comparison */
 bool AminoAcidState::operator==(const CharacterState& x) const {
     
     const AminoAcidState* derivedX = static_cast<const AminoAcidState*>(&x);
@@ -51,33 +51,122 @@ bool AminoAcidState::operator==(const CharacterState& x) const {
 }
 
 
-/** Not equals comparison */
+/* Not equals comparison */
 bool AminoAcidState::operator!=(const CharacterState& x) const {
     
     return !operator==(x);
 }
 
 
-/** Set the observation */
-void AminoAcidState::addState(size_t pos) {
+bool AminoAcidState::operator<(const CharacterState &x) const {
     
+    const AminoAcidState* derivedX = static_cast<const AminoAcidState*>(&x);
+    if ( derivedX != NULL ) {
+        unsigned int myState = state;
+        unsigned int yourState = derivedX->state;
+        
+        while ( (myState & 1) == ( yourState & 1 )  ) {
+            myState >>= 1;
+            yourState >>= 1;
+        }
+        
+        return (myState & 1) > ( yourState & 1 );
+    }    
     
+    return false;
+}
+
+void AminoAcidState::operator++( void ) {
+    state <<= 1;
 }
 
 
-/** Clone object */
+void AminoAcidState::operator--( void ) {
+    state >>= 1;
+}
+
+
+void AminoAcidState::addState(size_t pos) {
+    state |= 1 << pos;
+}
+
+
+/* Clone object */
 AminoAcidState* AminoAcidState::clone(void) const {
     
 	return  new AminoAcidState( *this );
 }
 
 
-/** Get class name of object */
+unsigned int AminoAcidState::computeState(char val) const {
+    
+    val = toupper( val );
+    switch ( val ) {
+        case '-':
+            return 0x00000;
+        case 'A':
+            return 0x00001;
+        case 'R':
+            return 0x00002;
+        case 'N':
+            return 0x00004;
+        case 'D':
+            return 0x00008;
+        case 'C':
+            return 0x00010;
+        case 'Q':
+            return 0x00020;
+        case 'E':
+            return 0x00040;
+        case 'G':
+            return 0x00080;
+        case 'H':
+            return 0x00100;
+        case 'I':
+            return 0x00200;
+        case 'L':
+            return 0x00400;
+        case 'K':
+            return 0x00800;
+        case 'M':
+            return 0x01000;
+        case 'F':
+            return 0x02000;
+        case 'P':
+            return 0x04000;
+        case 'S':
+            return 0x08000;
+        case 'T':
+            return 0x10000;
+        case 'W':
+            return 0x20000;
+        case 'Y':
+            return 0x40000;
+        case 'V':
+            return 0x80000;
+            
+        default:
+            return 0x8FFFF;
+    }
+}
+
+
+/* Get class name of object */
 const std::string& AminoAcidState::getClassName(void) { 
     
     static std::string rbClassName = "Amino Acid";
     
 	return rbClassName; 
+}
+
+
+unsigned int AminoAcidState::getNumberObservedStates( void ) const {
+    return 1;
+}
+
+
+size_t AminoAcidState::getNumberOfStates( void ) const {
+    return 20;
 }
 
 
@@ -139,8 +228,33 @@ std::string AminoAcidState::getStringValue(void) const  {
 }
 
 
+bool AminoAcidState::isAmbiguous( void ) const {
+    return getNumberObservedStates() > 1;
+}
+
+
+bool AminoAcidState::isGapState( void ) const {
+    return state == 0x0;
+}
+
+
+void AminoAcidState::setGapState(bool tf) {
+    if ( tf ) {
+        state  = computeState('-');
+    }
+    else {
+        state = computeState('?');
+    }
+}
 
 void AminoAcidState::setState(size_t pos, bool val) {
     
     state &= val << pos;
 }
+
+
+void AminoAcidState::setState(char s) {
+    state = computeState( s );
+}
+
+

@@ -94,7 +94,7 @@ RbPtr<RbLanguageObject> Func_simplex<RealPos>::executeFunction(const std::vector
 
     RlVector<RealPos>  tempVec;
     for ( size_t i = 0; i < args.size(); i++ )
-        tempVec.push_back( static_cast<const RealPos *>( args[i] )->clone() );
+        tempVec.push_back( static_cast<const RealPos *>( args[i] )->getValue() );
 
     // Normalization is done by the Simplex constructor
     return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );

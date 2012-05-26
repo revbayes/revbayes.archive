@@ -35,19 +35,19 @@ public:
 
     // Discrete character observation functions
     virtual void                            addState(size_t pos) = 0;                           //!< Add a character state to the set of character states
-    virtual short                           getNumberObservedStates(void) const;                //!< How many states are observed for the character
+    virtual unsigned int                    getNumberObservedStates(void) const = 0;            //!< How many states are observed for the character
     virtual const std::string&              getStateLabels(void) const = 0;                     //!< Get valid state labels
     virtual std::string                     getStringValue(void) const = 0;                     //!< Get a representation of the character as a string
     virtual size_t                          getNumberOfStates(void) const = 0;                  //!< Get the number of discrete states for the character
 //    virtual char                            getState(void) const = 0;                           //!< Get the discrete observation
     virtual bool                            isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
-    virtual bool                            isMissingOrAmbiguous(void) const = 0;               //!< Is the character missing or ambiguous
+    virtual bool                            isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
     virtual void                            setState(char s) = 0;                               //!< Set the discrete observation
     virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
     virtual void                            setGapState(bool tf) = 0;                           //!< Set whether this is a gapped character
     
 protected:
-    DiscreteCharacterState();                                                                   //!< Constructor
+    DiscreteCharacterState() {}                                                                   //!< Constructor
 };
 
 #endif

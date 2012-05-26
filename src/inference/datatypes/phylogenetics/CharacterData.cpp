@@ -125,6 +125,11 @@ bool CharacterData::operator!=(const CharacterData &x) const {
 }
 
 
+bool CharacterData::operator<(const CharacterData &x) const {
+    return sequenceNames.size() < x.sequenceNames.size();
+}
+
+
 /** Add a sequence to the character matrix. For now, we require same data type and same length. */
 void CharacterData::addTaxonData(const TaxonData &obs, bool forceAdd) {
     
@@ -359,7 +364,7 @@ bool CharacterData::isCharacterMissingOrAmbiguous(size_t idx) const {
         if ( isTaxonExcluded(i) == false )
         {
             const CharacterState& c = getCharacter( i, idx );
-            if ( c.isMissingOrAmbiguous() == true )
+            if ( c.isGapState() == true || c.isAmbiguous() == true )
                 return true;
         }
     }
