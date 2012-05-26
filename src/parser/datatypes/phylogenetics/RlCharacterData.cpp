@@ -114,10 +114,10 @@ RbPtr<RbLanguageObject> RlCharacterData::executeSimpleMethod(std::string const &
         }
         return numChar;
     }
-//    else if (name == "chartype")
-//    {
-//        return characterType.clone();
-//    }
+    else if (name == "chartype")
+    {
+        return new RbString( data.getDataType() );
+    }
 //    else if (name == "nexcludedtaxa")
 //    {
 //        int n = (int)deletedTaxa.size();
