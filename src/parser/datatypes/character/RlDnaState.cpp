@@ -84,6 +84,16 @@ const DnaState& RlDnaState::getValue( void ) const {
 }
 
 
+/** Initialize the discrete character state variable. We just set the value. */
+void RlDnaState::initialize(const std::vector<RbObject*> &attributes) {
+    
+    // set the state
+    state.setState( static_cast<RbString*>( attributes[0] )->getValue()[0] );
+    //    numStates = static_cast<Natural*>( (RbLanguageObject*)(*attr)[0] )->getValue();
+}
+
+
+
 /** Print information for the user */
 void RlDnaState::printValue(std::ostream &o) const {
     

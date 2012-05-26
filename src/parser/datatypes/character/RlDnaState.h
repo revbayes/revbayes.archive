@@ -36,13 +36,12 @@ public:
     // the value type definition
     typedef DnaState valueType;
 
-    // Basic utility functions
+    // Basic utility functions    
+    RlDnaState*                     clone(void) const;                                  //!< Clone object
     static const std::string&       getClassName(void);                                 //!< Get class name
     static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
     const TypeSpec&                 getTypeSpec(void) const;                                   //!< Get language type of the object
-    
-    // Basic utility functions you have to override
-    RlDnaState*                     clone(void) const;                                  //!< Clone object
+    void                            initialize(const std::vector<RbObject*>& attributes);   //!< Initialize this object with the values inside the vector
     void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
     
     const DnaState&                 getValue() const;                                   //!< Get the internal character object.
