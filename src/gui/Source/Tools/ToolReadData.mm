@@ -5,13 +5,13 @@
 #include "CharacterState.h"
 #include "CharacterData.h"
 #include "ContinuousCharacterState.h"
-#include "DagNodeContainer.h"
 #include "DnaState.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RbNullObject.h"
 #include "RlCharacterData.h"
+#include "RlVector.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "VariableSlot.h"
@@ -267,17 +267,16 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
+    RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
     RlCharacterData* cd = dynamic_cast<RlCharacterData*>( dv );
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
-            const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
-            const RbPtr<const RbLanguageObject>& theDagNode = vs->getDagNode()->getValue().getSingleValue();
-            const RlCharacterData *cd = static_cast<const RlCharacterData *>( (const RbLanguageObject *) theDagNode );
-            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
+            const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
+            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
             [newMatrix setAlignmentMethod:@"Unknown"];
             [self addMatrix:newMatrix];
             }

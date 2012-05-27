@@ -8,7 +8,6 @@
 #include "CharacterState.h"
 #include "CharacterData.h"
 #include "ContinuousCharacterState.h"
-#include "DagNodeContainer.h"
 #include "DnaState.h"
 #include "Parser.h"
 #include "RlCharacterData.h"

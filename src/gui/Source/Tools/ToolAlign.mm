@@ -14,12 +14,12 @@
 
 #include "CharacterState.h"
 #include "CharacterData.h"
-#include "DagNodeContainer.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RbNullObject.h"
 #include "RlCharacterData.h"
+#include "RlVector.h"
 #include "VariableSlot.h"
 #include "Workspace.h"
 
@@ -241,16 +241,15 @@
         return;
         }
 
-    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
-    CharacterData* cd = dynamic_cast<CharacterData*>( dv );
+    RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
+    RlCharacterData* cd = dynamic_cast<RlCharacterData*>( dv );
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
-            const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc->getElement(i)) );
-            const RbLanguageObject& theDagNode = *vs->getDagNode()->getValue().getSingleValue();
-            const RlCharacterData& cd = static_cast<const RlCharacterData&>( theDagNode );
+            const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
+            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
             RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
             [newMatrix setAlignmentMethod:@"Unknown"];
             [self addMatrix:newMatrix];
@@ -259,7 +258,7 @@
     else if ( cd != NULL )
         {
         [self removeAllDataMatrices];
-        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:*cd];
+        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
         [newMatrix setAlignmentMethod:@"Unknown"];
         [self addMatrix:newMatrix];
         }
