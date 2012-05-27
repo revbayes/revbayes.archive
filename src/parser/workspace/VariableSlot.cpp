@@ -69,6 +69,7 @@ void VariableSlot::createVariable(const std::vector<int> &indices) {
     }
     else if ( indices.size() > lengths.size() ) {
         // this was a slot for a single variable before
+        variable.clear();
         
         // fill with empty variables
         size_t nElements = 1;
@@ -77,19 +78,30 @@ void VariableSlot::createVariable(const std::vector<int> &indices) {
             lengths.push_back( indices[i]+1 );
         }
         for (size_t i = 0; i < nElements; ++i) {
-            variable.push_back( NULL );
+            variable.push_back( new Variable( NULL ) );
         }
 
     }
     else {
+        std::vector<int> oldLengths = lengths;
+        std::vector<RbPtr<Variable> > oldVars = variable;
+        
+        lengths.clear();
+        variable.clear();
+        
+        // fill with empty variables
+        size_t nElements = 1;
         for (size_t i = 0; i < indices.size(); ++i) {
-            if ( indices[i] > lengths[i] ) {
-                throw RbException();
-            }
+            nElements *= (indices[i]+1);
+            lengths.push_back( indices[i]+1 );
         }
+        for (size_t i = 0; i < nElements; ++i) {
+            variable.push_back( new Variable( NULL ) );
+        }
+        
+        std::vector<int> tmp;
+        resetVariables(oldVars, oldLengths, tmp);
     }
-    
-    // create a new lengths vector, if necessary
 }
 
 
@@ -99,7 +111,7 @@ bool VariableSlot::doesVariableExist(const std::vector<int> &indices) const {
         return false;
     } else {
         for (size_t i = 0; i < indices.size(); ++i) {
-            if ( indices[i] > lengths[i] ) {
+            if ( indices[i] >= lengths[i] ) {
                 return false;
             }
         }
@@ -257,6 +269,41 @@ void VariableSlot::printValue(std::ostream& o) const {
         o << "NULL";
     else
         variable[0]->printValue(o);
+}
+
+
+void VariableSlot::resetVariables(std::vector<RbPtr<Variable> > &v, std::vector<int> &l, std::vector<int> &indices) {
+    
+    int length = l[indices.size()];
+    indices.push_back(0);
+    for (int i = 0; i < length; ++i) {
+        indices.pop_back();
+        indices.push_back( i );
+        
+        // if we have reached the depth of the dimensions
+        if ( indices.size() == l.size() ) {
+            // compute the old position
+            int oldIndex = 0;
+            int elements = 1;
+            for (int j = int(l.size())-1; j >= 0; --j) {
+                oldIndex += indices[i] * elements;
+                elements *= l[i];
+            }
+            
+            // compute the new position
+            int newIndex = 0;
+            elements = 1;
+            for (int j = int(l.size())-1; j >= 0; --j) {
+                newIndex += indices[i] * elements;
+                elements *= lengths[i];
+            }
+            
+            variable[newIndex] = v[oldIndex];
+        }
+        else {
+            resetVariables(v, l, indices);
+        }
+    }
 }
 
 

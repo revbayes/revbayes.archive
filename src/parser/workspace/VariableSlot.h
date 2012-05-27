@@ -60,6 +60,7 @@ public:
     void                                    setVariable(const RbPtr<Variable>& var);                                //!< Set a slot with a variable
     
 private:
+    void                                    resetVariables(std::vector<RbPtr<Variable> > &v, std::vector<int> &l, std::vector<int> &i);
     
     // Member variables
     std::vector<RbPtr<Variable> >           variable;                                                               //!< the argument living in the slot 
