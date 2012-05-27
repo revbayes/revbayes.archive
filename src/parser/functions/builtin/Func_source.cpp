@@ -107,7 +107,7 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const {
     if ( !rulesSet ) {
 
         argumentRules.push_back( new ConstArgumentRule( "file", RbString::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "echo.on", RbBoolean::getClassTypeSpec(), new RbBoolean(false) ) );
+        argumentRules.push_back( new ConstArgumentRule( "echo.on", RbBoolean::getClassTypeSpec(), RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) );
         rulesSet = true;
     }
 

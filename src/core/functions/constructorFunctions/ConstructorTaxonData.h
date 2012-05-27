@@ -49,7 +49,6 @@ protected:
 #include "ConstArgumentRule.h"
 #include "ConstructorTaxonData.h"
 #include "DAGNode.h"
-#include "DagNodeContainer.h"
 #include "MemberObject.h"
 #include "RbFunction.h"
 #include "RbString.h"

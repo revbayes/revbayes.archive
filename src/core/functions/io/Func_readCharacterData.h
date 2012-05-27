@@ -18,7 +18,6 @@
 #define Func_readCharacterData_H
 
 #include "RbFunction.h"
-#include "DagNodeContainer.h"
 
 #include <map>
 #include <string>

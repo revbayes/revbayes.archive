@@ -20,7 +20,6 @@
 #include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_readCharacterData.h"
-#include "DagNodeContainer.h"
 #include "NclReader.h"
 #include "RbBoolean.h"
 #include "RbException.h"

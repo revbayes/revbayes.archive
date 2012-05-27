@@ -35,14 +35,14 @@
 /** Constructor of filled slot with type specification. */
 VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, const RbPtr<Variable>& var) : RbInternal(), label(lbl) {
     
-    variable = var;
+    variable.push_back( var );
     
 }
 
 /** Constructor of filled slot with type specification. */
 VariableSlot::VariableSlot(const std::string &lbl, const RbPtr<Variable>& var) : RbInternal() , label(lbl) {
     
-    variable = var;
+    variable.push_back( var );
     
 }
 
@@ -50,7 +50,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const RbPtr<Variable>& var) :
 /** Constructor of empty slot based on type specification */
 VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbInternal(), label(lbl) {
     
-    variable = NULL;
+    variable.push_back( NULL );
     
 }
 
@@ -59,6 +59,53 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbI
 VariableSlot* VariableSlot::clone( void ) const {
     
     return new VariableSlot( *this );
+}
+
+
+void VariableSlot::createVariable(const std::vector<int> &indices) {
+    // test whether we need to update the dimensions
+    if ( indices.size() > lengths.size() && lengths.size() > 0 ) {
+        throw RbException("Cannot resize dimension of slot variable that already exists!");
+    }
+    else if ( indices.size() > lengths.size() ) {
+        // this was a slot for a single variable before
+        
+        // fill with empty variables
+        size_t nElements = 1;
+        for (size_t i = 0; i < indices.size(); ++i) {
+            nElements *= (indices[i]+1);
+            lengths.push_back( indices[i]+1 );
+        }
+        for (size_t i = 0; i < nElements; ++i) {
+            variable.push_back( NULL );
+        }
+
+    }
+    else {
+        for (size_t i = 0; i < indices.size(); ++i) {
+            if ( indices[i] > lengths[i] ) {
+                throw RbException();
+            }
+        }
+    }
+    
+    // create a new lengths vector, if necessary
+}
+
+
+bool VariableSlot::doesVariableExist(const std::vector<int> &indices) const {
+    // test whether we need to update the dimensions
+    if ( indices.size() > lengths.size() ) {
+        return false;
+    } else {
+        for (size_t i = 0; i < indices.size(); ++i) {
+            if ( indices[i] > lengths[i] ) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
 }
 
 
@@ -78,6 +125,11 @@ const TypeSpec& VariableSlot::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+size_t VariableSlot::getDim( void ) const {
+    return lengths.size();
+}
+
 /** Get type spec */
 const TypeSpec& VariableSlot::getTypeSpec( void ) const {
     
@@ -90,27 +142,27 @@ const TypeSpec& VariableSlot::getTypeSpec( void ) const {
 /** Get a const pointer to the dag node */
 const DAGNode* VariableSlot::getDagNode( void ) const {
     
-    if (variable == NULL) 
+    if (variable[0] == NULL) 
         return NULL;
     else
-        return variable->getDagNode();
+        return variable[0]->getDagNode();
 }
 
 
 /** Get a reference to the slot variable */
 DAGNode* VariableSlot::getDagNode( void ) {
     
-    if (variable == NULL) 
+    if (variable[0] == NULL) 
         return NULL;
     else
-        return variable->getDagNode();
+        return variable[0]->getDagNode();
 }
 
 
 /** Get the value of the variable */
 RlValue<const RbLanguageObject> VariableSlot::getValue( void ) const {
     
-    const RlValue<RbLanguageObject>& tmpVal = variable->getDagNode()->getValue();
+    const RlValue<RbLanguageObject>& tmpVal = variable[0]->getDagNode()->getValue();
     
     std::vector<RbPtr<const RbLanguageObject> > constVals;
     for (std::vector<RbPtr<RbLanguageObject> >::const_iterator i = tmpVal.value.begin(); i != tmpVal.value.end(); ++i) {
@@ -125,24 +177,68 @@ RlValue<const RbLanguageObject> VariableSlot::getValue( void ) const {
 /** Get the value of the variable */
 const RlValue<RbLanguageObject>& VariableSlot::getValue( void ) {
     
-    const RlValue<RbLanguageObject>& retVal = variable->getDagNode()->getValue();
+    const RlValue<RbLanguageObject>& retVal = variable[0]->getDagNode()->getValue();
     
     return retVal;
 }
 
 
 const Variable& VariableSlot::getVariable(void) const {
-    return *variable;
+    return *variable[0];
 }
 
 
 Variable& VariableSlot::getVariable(void) {
-    return *variable;
+    return *variable[0];
+}
+
+
+const RbPtr<const Variable>& VariableSlot::getVariable(const std::vector<int> &indices) const {
+    size_t index = 0;
+    size_t elements = 1;
+    
+    if (indices.size() != lengths.size()) {
+        throw RbException("Index out of bounds! Unequal indices for variables not supported (yet).");
+    }
+    
+    for (int i = int(lengths.size())-1; i >= 0; --i) {
+        // test for boundaries
+        if (indices[i] >= lengths[i]) {
+            throw RbException("Index out of bounds! Cannot access variable with index ...");
+        }
+        index += indices[i] * elements;
+        elements *= lengths[i];
+    }
+    
+    
+    return RbPtr<const Variable>( variable[index] );
+}
+
+
+const RbPtr<Variable>& VariableSlot::getVariable(const std::vector<int> &indices) {
+    size_t index = 0;
+    size_t elements = 1;
+    
+    if (indices.size() != lengths.size()) {
+        throw RbException("Index out of bounds! Unequal indices for variables not supported (yet).");
+    }
+    
+    for (int i = int(lengths.size())-1; i >= 0; --i) {
+        // test for boundaries
+        if (indices[i] >= lengths[i]) {
+            throw RbException("Index out of bounds! Cannot access variable with index ...");
+        }
+        index += indices[i] * elements;
+        elements *= lengths[i];
+    }
+    
+    
+    return variable[index];
 }
 
 
 const RbPtr<Variable>& VariableSlot::getVariablePtr(void) const {
-    return variable;
+    return variable[0];
 }
 
 
@@ -157,10 +253,10 @@ bool VariableSlot::isValidVariable( const DAGNode& newVariable ) const {
 /* Print value of the slot variable */
 void VariableSlot::printValue(std::ostream& o) const {
     
-    if (variable == NULL)
+    if (variable[0] == NULL)
         o << "NULL";
     else
-        variable->printValue(o);
+        variable[0]->printValue(o);
 }
 
 
@@ -168,7 +264,7 @@ void VariableSlot::printValue(std::ostream& o) const {
 void VariableSlot::setVariable(const RbPtr<Variable>& var) {
     
     // set the new variable
-    variable = var;
+    variable[0] = var;
     
     // if our name is not empty we set the name of the DAG node
     if ( label != "" ) {

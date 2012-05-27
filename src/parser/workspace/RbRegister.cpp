@@ -57,7 +57,6 @@
 #include "RlTaxonData.h"
 
 /* Container types (alphabetic order) */
-#include "DagNodeContainer.h"
 #include "Matrix.h"
 #include "Set.h"
 #include "RlVector.h"

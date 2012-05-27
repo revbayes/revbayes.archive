@@ -17,7 +17,6 @@
 #define Func_concatenate_H
 
 #include "RbFunction.h"
-#include "DagNodeContainer.h"
 
 
 

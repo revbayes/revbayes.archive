@@ -20,7 +20,6 @@
 
 #include "ConstantNode.h"
 #include "ConstArgument.h"
-#include "DagNodeContainer.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
 #include "Integer.h"
@@ -187,7 +186,7 @@ RlVector<Natural> SyntaxVariable::computeIndex( Environment& env ) {
                 }
                 
                 // Get zero-based value corresponding to integer index
-                theIndex.push_back( new Natural(intIndex-1) );
+                theIndex.push_back( Natural(intIndex-1) );
             }
             
             else if ( indexVar->getValue().isTypeSpec( RbString::getClassTypeSpec() ) ) {
@@ -223,7 +222,7 @@ RlVector<Natural> SyntaxVariable::computeIndex( Environment& env ) {
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-VariableSlot& SyntaxVariable::createVariable( Environment& env) {
+const RbPtr<Variable>& SyntaxVariable::createVariable( Environment& env) {
     
     /* Get index */
     RlVector<Natural> indices = computeIndex(env);
@@ -250,6 +249,7 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
         }
         else {
 
+            throw RbException("Unexpected syntax for creating a variable. Left-hand-side should be a variable and cannot be a function call!");
 //            theDagNode  = functionCall->getContentAsDagNode( env );
 //            theVar      = theDagNode->getVariable();
         }
@@ -278,58 +278,12 @@ VariableSlot& SyntaxVariable::createVariable( Environment& env) {
     
     if (!indices.empty() && theSlot != NULL) {
         
-        // iterate over the each index
-        while (!indices.empty()) {
-            // test whether the value of the DAG node allows assignment of variable to its elemens
-            // e.g.: A simplex might not allow assignment of its elements whereas a DagNodeContainer does
-            if (theDagNode != NULL && !theDagNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
-                // throw expection because we don't allow insertion of variable
-                std::ostringstream msg;
-                msg << "Object of type " << theDagNode->getValue().getTypeSpec() << " does not allow insertion of variables.";
-                throw RbException(msg);
-            }
-            
-            // test whether this element support subscripting
-   //         if (theDagNode != NULL && !theDagNode->getValue() ) {
-   //             throw RbException("DAG node does not support indexing.");
-   //         }
-            
-            // take the first index and remove it
-            size_t indexValue = static_cast<const Natural &>( indices[0] ).getValue();
-            indices.pop_front();
-            
-            // add the index to the name
-            std::stringstream out;
-            out << (indexValue+1);
-            name += "[" + out.str() + "]";
-            
-            // get the element at the index
-            if (theDagNode == NULL) {
-                throw RbException("Missing implementation of DAG node container casts in SyntaxVariable::createVariable()");
-//                theDagNode = new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(indexValue+1) ) );
-//                theSlot->getVariable().setDagNode(theDagNode);
-            }
-            
-            throw RbException("Missing implementation of DAG node container casts in SyntaxVariable::createVariable()");
-//            DagNodeContainer *con = static_cast<DagNodeContainer *>( (RbLanguageObject *) theDagNode->getValue().getSingleValue() );
-//            // test if the container is large enough
-//            if (con->size() <= indexValue) {
-//                con->resize(indexValue);
-//            }
-//            RbObject& subElement = con->getElement(indexValue);
-//            
-//            // test whether the element needs type conversion
-//            if (subElement.isTypeSpec( VariableSlot::getClassTypeSpec() )) {
-//                theSlot = &dynamic_cast<VariableSlot&>(subElement);
-//                theDagNode = theSlot->getVariable().getDagNode();
-//                // \TODO: Set the name of the node here!
-//                theSlot->setLabel(name);
-//            }
-
+        if ( !theSlot->doesVariableExist( indices.getValue() ) ) {
+            theSlot->createVariable( indices.getValue() );
         }
     }
 
-    return *theSlot;
+    return theSlot->getVariable( indices.getValue() );
 }
 
 
@@ -356,13 +310,36 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     /* Get variable */
     RbPtr<Variable> theVar = NULL;
     
+    size_t usedIndices = 0;
+    
     // if the base variable is not set we have a simple object, otherwise a member object 
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
             // we test whether this variable exists
             if ( env.existsVariable( identifier->getValue() ) ) {
-                theVar = env[ identifier->getValue() ].getVariablePtr();
+                VariableSlot& theSlot = env[ identifier->getValue() ];
+                
+                // 
+                std::vector<int> slotIndices;
+                std::list<SyntaxElement*>::const_iterator it=index->begin();
+                for (size_t i = 0; i < theSlot.getDim() && i < index->size(); ++i, ++it, ++usedIndices) {
+                    SyntaxElement*         indexSyntaxElement     = *it;
+                    RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
+                    
+                    // we assume that the indices have to be natural values
+                    if ( indexVar->getValue().isTypeSpec( Natural::getClassTypeSpec() ) ) {
+                        Natural *n = static_cast<Natural *>( (RbLanguageObject *) indexVar->getValue().getSingleValue() );
+                        slotIndices.push_back( n->getValue()-1 );
+                    } else if (indexVar->getValue().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
+                        Natural *n = static_cast<Natural *>( (RbObject *) indexVar->getValue().convertTo( Natural::getClassTypeSpec() ).getSingleValue() );
+                        slotIndices.push_back( n->getValue()-1 );
+                    } else {
+                        throw RbException("Only natural numbers are allowed as indices for variable slots.");
+                    }
+                }
+                
+                theVar = theSlot.getVariable(slotIndices);
             } 
             else if ( env.existsFunction( identifier->getValue() ) ) {
                 const RbFunction& theFunction = env.getFunction( identifier->getValue() );
@@ -412,58 +389,40 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     
     // test whether we want to directly assess the variable or if we want to assess subelement of this container
     if (!index->empty()) {
+        
         // iterate over the each index
-        for (std::list<SyntaxElement*>::const_iterator it=index->begin(); it!=index->end(); it++) {
+        std::list<SyntaxElement*>::const_iterator it= index->begin();
+        for (size_t i = 0; i < usedIndices; ++i) {
+            ++it;
+        }
+        for (; it!=index->end(); it++) {
             SyntaxElement*         indexSyntaxElement     = *it;
             RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
             
-            if (theVar->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() )) {
-                const RlValue<RbLanguageObject>&    theValue    = indexVar->getValue();
-                size_t                              indexValue  = 0;
-                if ( !theValue.isTypeSpec( Natural::getClassTypeSpec() ) ) {
-                    if (theValue.isConvertibleTo( Natural::getClassTypeSpec() )) {
-                        RbPtr<RbObject> convertedObj = theValue.convertTo( Natural::getClassTypeSpec() ).getSingleValue();
-                        Natural* convertedValue = static_cast<Natural*>( (RbObject *)  convertedObj);
-                        indexValue = convertedValue->getValue() - 1;
-                    }
-                    else { 
-                        throw RbException("Could not access index with type xxx because only natural indices are supported!");
-                    }
-                }
-                else {
-                    indexValue = dynamic_cast<const Natural *>( (RbLanguageObject *) theValue.getSingleValue() )->getValue() - 1;
-                }
+            
+            //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
                 
-                // \TODO:
-                throw RbException("Missing implementation of DAG node container conversion in SyntaxVariable::evaluateContent()");
-//                RbObject&   subElement  = static_cast<DagNodeContainer *>( (RbLanguageObject *) theVar->getValue().getSingleValue() )->getElement(indexValue);
-//                            theVar      = dynamic_cast<VariableSlot&>( subElement ).getVariable().clone();
-            }
-            else {
-                //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
-                
-                // convert the value into a member object
-                MemberObject *mObject = static_cast<MemberObject *>( (RbLanguageObject*) theVar->getValue().getSingleValue() );
+            // convert the value into a member object
+            MemberObject *mObject = static_cast<MemberObject *>( (RbLanguageObject*) theVar->getValue().getSingleValue() );
             
-                // get the method table for this member object
-                // \TODO: We should not allow const casts
-                MethodTable& mt = const_cast<MethodTable&>( mObject->getMethods() );
+            // get the method table for this member object
+            // \TODO: We should not allow const casts
+            MethodTable& mt = const_cast<MethodTable&>( mObject->getMethods() );
             
-                // create the arguments which consist only of the single paramater inside the square brackets
-                std::vector<RbPtr<Argument> > args;
-                args.push_back( new ConstArgument( RbPtr<const Variable>( (Variable *)indexVar ) ) );
+            // create the arguments which consist only of the single paramater inside the square brackets
+            std::vector<RbPtr<Argument> > args;
+            args.push_back( new ConstArgument( RbPtr<const Variable>( (Variable *)indexVar ) ) );
             
-                // get the member function with name "[]"
-                SimpleMemberFunction* theMemberFunction = static_cast<SimpleMemberFunction*>( mt.getFunction( "[]", args ).clone() );
-                theMemberFunction->processArguments( args );
-                // We need to clone because otherwise we overwrite all methods for this object
+            // get the member function with name "[]"
+            SimpleMemberFunction* theMemberFunction = static_cast<SimpleMemberFunction*>( mt.getFunction( "[]", args ).clone() );
+            theMemberFunction->processArguments( args );
+            // We need to clone because otherwise we overwrite all methods for this object
             
-                // set the member object for the member function
-                theMemberFunction->setMemberObject(mObject);
+            // set the member object for the member function
+            theMemberFunction->setMemberObject(mObject);
 //            RbPtr<RbFunction> func( theMemberFunction );
             
-                theVar = RbPtr<Variable>( new Variable( new DeterministicNode( theMemberFunction, NULL ) ) );
-            }
+            theVar = RbPtr<Variable>( new Variable( new DeterministicNode( theMemberFunction, NULL ) ) );
         }
     }
         

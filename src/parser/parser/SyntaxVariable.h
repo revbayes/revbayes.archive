@@ -60,7 +60,7 @@ class SyntaxVariable : public SyntaxElement {
 
         // Regular functions
         RlVector<Natural>                   computeIndex(Environment& env);                                                         //!< Evaluate index
-        VariableSlot&                       createVariable(Environment& env);                                                       //!< Get semantic value
+        const RbPtr<Variable>&              createVariable(Environment& env);                                                       //!< Get semantic value
         RbPtr<Variable>                     evaluateContent(Environment& env);                                                      //!< Get semantic value
         RbString&                           getIdentifier(void) { return *identifier; }                                             //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj

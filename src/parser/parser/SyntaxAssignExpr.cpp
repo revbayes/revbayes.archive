@@ -16,7 +16,6 @@
 #include "ConstantNode.h"
 #include "ConstArgument.h"
 #include "DAGNode.h"
-#include "DagNodeContainer.h"
 #include "DeterministicNode.h"
 #include "Func_reference.h"
 #include "ParserDistribution.h"
@@ -144,7 +143,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
     PRINTF( "Evaluating assign expression\n" );
     
     // Get variable info from lhs
-    VariableSlot& theSlot = variable->createVariable( env );
+    const RbPtr<Variable>& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
     RbPtr<Variable> theVariable = NULL;
@@ -166,11 +165,11 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         
         DAGNode* theNode;
         // check if the type is valid. This is necessary for reassignments
-        if ( !value.getTypeSpec().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
+        if ( !value.getTypeSpec().isDerivedOf( theSlot->getValueTypeSpec() ) ) {
             // We are not of a derived type (or the same type)
             // since this will create a constant node we are allowed to type cast
-            if (value.isConvertibleTo( theSlot.getVariable().getValueTypeSpec() ) ) {
-                RlValue<RbObject> tmp = value.convertTo( theSlot.getVariable().getValueTypeSpec() );
+            if (value.isConvertibleTo( theSlot->getValueTypeSpec() ) ) {
+                RlValue<RbObject> tmp = value.convertTo( theSlot->getValueTypeSpec() );
                 
                 std::vector<RbPtr<RbLanguageObject> > vals;
                 for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
@@ -182,9 +181,9 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
             }
             else {
                 std::ostringstream msg;
-                msg << "Cannot reassign variable '" << theSlot.getLabel() << "' with type " << value.getTypeSpec() << " with value ";
+                msg << "Cannot reassign variable '" << theSlot->getName() << "' with type " << value.getTypeSpec() << " with value ";
                 value.printValue(msg);
-                msg << " because the variable requires type " << theSlot.getVariable().getValueTypeSpec() << "." << std::endl;
+                msg << " because the variable requires type " << theSlot->getValueTypeSpec() << "." << std::endl;
                 throw RbException( msg );
             }
         }
@@ -206,10 +205,10 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         }
         
         // set the DAG node of the variable
-        theSlot.getVariable().setDagNode( theNode );
+        theSlot->setDagNode( theNode );
         
         // set the name of the DAG node. This will ensure nicer outputs about the DAG.
-        theNode->setName( theSlot.getLabel() );
+        theNode->setName( theSlot->getName() );
     }
     
     // Deal with equation assignments
@@ -238,17 +237,17 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         const DeterministicNode* detNode = static_cast<const DeterministicNode*>( (DAGNode *) theVariable->getDagNode() );
         const RbFunction& theFunction = detNode->getFunction();
         // check if the type is valid. This is necessary for reassignments
-        if ( !theFunction.getReturnType().isDerivedOf( theSlot.getVariable().getValueTypeSpec() ) ) {
+        if ( !theFunction.getReturnType().isDerivedOf( theSlot->getValueTypeSpec() ) ) {
             std::ostringstream msg;
-            msg << "Cannot reassign variable '" << theSlot.getLabel() << "' with a function with return type " << theFunction.getReturnType() << " because the variable requires type " << theSlot.getVariable().getValueTypeSpec() << "." << std::endl;
+            msg << "Cannot reassign variable '" << theSlot->getName() << "' with a function with return type " << theFunction.getReturnType() << " because the variable requires type " << theSlot->getValueTypeSpec() << "." << std::endl;
             throw RbException( msg );
         }
         
         // fill the slot with the new variable
-        theSlot.getVariable().setDagNode( theVariable->getDagNode() );
+        theSlot->setDagNode( theVariable->getDagNode() );
         
         // set the name of the DAG node. This will ensure nicer outputs about the DAG.
-        theVariable->getDagNode()->setName( theSlot.getLabel() );
+        theVariable->getDagNode()->setName( theSlot->getName() );
     }
     
     // Deal with tilde assignments
@@ -279,44 +278,15 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         DAGNode* node = new StochasticNode( dist->clone(), NULL );
         
         // fill the slot with the new variable
-        theSlot.getVariable().setDagNode( node );
+        theSlot->setDagNode( node );
         
         // set the name of the DAG node. This will ensure nicer outputs about the DAG.
-        node->setName( theSlot.getLabel() );
+        node->setName( theSlot->getName() );
         
     }
-//    
-//    
-//    // Deal with tilde iid assignments
-//    else if ( opType == TildeIidAssign ) {
-//        
-//        PRINTF( "Tilde iid assignment\n" );
-//        
-//        // Get distribution, which should be the return value of the rhs function
-//        // The rhs could evaluate to a reference to a distribution (allowing several
-//        // stochastic nodes to share the same distribution)
-//        DAGNode* exprValue = expression->getValue( frame );
-//        if ( exprValue == NULL ) {
-//            throw RbException( "Distribution function returns NULL" );
-//        }
-//        MemberNode* dist = dynamic_cast<MemberNode*>( exprValue );
-//        if ( dist == NULL || dist->getValue() == NULL || !dist->getValue()->isType( Distribution_name ) ) {
-//            delete exprValue;
-//            throw RbException( "Function does not return a distribution" );
-//        }
-//        
-//        // Make an independent copy of the distribution and delete the exprVal
-//        Distribution* distribution = static_cast<Distribution*>( dist->getMemberObject()->clone() );
-//        delete exprValue;
-//        if ( distribution == NULL )
-//            throw RbException( "Function returns a NULL distribution" );
-//        
-//        delete distribution;
-//        throw RbException( "Support of ~iid not complete yet" );
-//    }
     
-    theSlot.getDagNode()->touch();
-    theSlot.getDagNode()->keep();
+    theSlot->getDagNode()->touch();
+    theSlot->getDagNode()->keep();
 
     
 #ifdef DEBUG_PARSER

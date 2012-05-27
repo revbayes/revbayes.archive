@@ -19,7 +19,6 @@
 
 #include "ConstantInferenceNode.h"
 #include "ConstArgumentRule.h"
-#include "DagNodeContainer.h"
 #include "Integer.h"
 #include "InferenceDagNode.h"
 #include "InferenceMove.h"

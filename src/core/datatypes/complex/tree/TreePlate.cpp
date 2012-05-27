@@ -19,7 +19,6 @@
 #include "ConstantNode.h"
 #include "ConstArgumentRule.h"
 #include "DAGNode.h"
-#include "DagNodeContainer.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "RbBoolean.h"

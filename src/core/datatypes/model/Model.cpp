@@ -19,7 +19,6 @@
 #include "ConstArgumentRule.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
-#include "DagNodeContainer.h"
 #include "DeterministicNode.h"
 #include "DeterministicInferenceNode.h"
 #include "Distribution.h"
@@ -91,21 +90,10 @@ Model& Model::operator=( const Model& x ) {
  */
 void Model::addSourceNode( const RbPtr<const DAGNode> &sourceNode ) {
     
-    // test whether var is a DagNodeContainer
-    if ( sourceNode != NULL && sourceNode->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-        throw RbException("Missing implementation to build a model from a DAG node container.");
-//        const RbPtr<const RbLanguageObject>& objPtr = sourceNode->getValue();
-//        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
-//        for (size_t i = 0; i < container->size(); ++i) {
-//            const RbObject& elemPtr = container->getElement(i);
-//            addSourceNode(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
-//        }
-    }
-    else {
-        
-        createModelFromDagNode( sourceNode );
-        createLeanDag( nodesMap[sourceNode] );
-    }
+    
+    createModelFromDagNode( sourceNode );
+    createLeanDag( nodesMap[sourceNode] );
+    
 }
 
 

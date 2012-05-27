@@ -85,6 +85,11 @@ const RbPtr<DAGNode>& Variable::getDagNode(void) {
 }
 
 
+const std::string& Variable::getName( void ) const {
+    return node->getName();
+}
+
+
 /* Get the value of the variable */
 RlValue<const RbLanguageObject> Variable::getValue(void) const {
 

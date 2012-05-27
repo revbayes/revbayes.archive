@@ -16,7 +16,6 @@
  */
 
 #include "ConstArgumentRule.h"
-#include "DagNodeContainer.h"
 #include "Ellipsis.h"
 #include "Integer.h"
 #include "Monitor.h"
