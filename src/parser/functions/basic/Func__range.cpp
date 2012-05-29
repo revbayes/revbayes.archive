@@ -50,11 +50,11 @@ RbPtr<RbLanguageObject> Func__range::executeFunction( const std::vector<const Rb
     RlVector<Integer> *range = new RlVector<Integer>();
     if (f < l) {
         for ( int i = f; i <= l; i++ )
-            range->push_back( new Integer(i) );
+            range->push_back( Integer(i) );
     }
     else {
         for ( int i = f; i >= l; i-- )
-            range->push_back( new Integer(i) );
+            range->push_back( Integer(i) );
     }
     
     return RbPtr<RbLanguageObject>( range );
