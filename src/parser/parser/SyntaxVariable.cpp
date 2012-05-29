@@ -222,7 +222,7 @@ RlVector<Natural> SyntaxVariable::computeIndex( Environment& env ) {
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-const RbPtr<Variable>& SyntaxVariable::createVariable( Environment& env) {
+RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
     
     /* Get index */
     RlVector<Natural> indices = computeIndex(env);

@@ -16,9 +16,13 @@
  */
 
 #include "ConstantNode.h"
+#include "ConstArgument.h"
 #include "DAGNode.h"
+#include "DeterministicNode.h"
 #include "MemberObject.h"
+#include "Plate.h"
 #include "RbException.h"
+#include "RbFunction.h"
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "RbOptions.h"
@@ -227,21 +231,25 @@ const RbPtr<const Variable>& VariableSlot::getVariable(const std::vector<int> &i
 }
 
 
-const RbPtr<Variable>& VariableSlot::getVariable(const std::vector<int> &indices) {
+RbPtr<Variable> VariableSlot::getVariable(const std::vector<int> &indices) {
     size_t index = 0;
     size_t elements = 1;
     
-    if (indices.size() != lengths.size()) {
-        throw RbException("Index out of bounds! Unequal indices for variables not supported (yet).");
+    if (indices.size() < lengths.size()) {
+        
+        return getVectorizedVariable( indices );
+        
     }
+    else {
     
-    for (int i = int(lengths.size())-1; i >= 0; --i) {
-        // test for boundaries
-        if (indices[i] >= lengths[i]) {
-            throw RbException("Index out of bounds! Cannot access variable with index ...");
+        for (int i = int(lengths.size())-1; i >= 0; --i) {
+            // test for boundaries
+            if (indices[i] >= lengths[i]) {
+                throw RbException("Index out of bounds! Cannot access variable with index ...");
+            }
+            index += indices[i] * elements;
+            elements *= lengths[i];
         }
-        index += indices[i] * elements;
-        elements *= lengths[i];
     }
     
     
@@ -251,6 +259,52 @@ const RbPtr<Variable>& VariableSlot::getVariable(const std::vector<int> &indices
 
 const RbPtr<Variable>& VariableSlot::getVariablePtr(void) const {
     return variable[0];
+}
+
+
+RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indices) const {
+    
+    int size = lengths[indices.size()];
+    
+    // Package arguments
+    std::vector<RbPtr<Argument> > args;
+    
+    if ( indices.size() + 1 == lengths.size() ) {
+        size_t index = 0;
+        size_t elements = lengths[size];
+        for (int i = int(lengths.size())-2; i >= 0; --i) {
+            // test for boundaries
+            if (indices[i] >= lengths[i]) {
+                throw RbException("Index out of bounds! Cannot access variable with index ...");
+            }
+            index += indices[i] * elements;
+            elements *= lengths[i];
+        }
+        
+        for (int i = 0; i < size; ++i) {
+            args.push_back( new ConstArgument( (Variable*)variable[index+i], "") );
+        }
+    }
+    else {
+        std::vector<int> tmp_indices = indices;
+        tmp_indices.push_back( 0 );
+        for (int i = 0; i < size; ++i) {
+            tmp_indices.pop_back();
+            tmp_indices.push_back( i );
+            args.push_back( new ConstArgument( (Variable*)getVectorizedVariable(tmp_indices), "") );
+        }
+    }
+    
+    RbPtr<Environment> env( (Workspace*) Workspace::userWorkspace() );
+    RbPtr<RbFunction> func = env->getFunction("v", args).clone();
+    
+    if (func == NULL)
+        throw(RbException("Could not find function called 'v' taking specified arguments"));
+    
+    func->processArguments( args );
+    func->setExecutionEnviroment( env );
+    
+    return new Variable( new DeterministicNode( func, NULL ) );
 }
 
 
@@ -286,16 +340,16 @@ void VariableSlot::resetVariables(std::vector<RbPtr<Variable> > &v, std::vector<
             int oldIndex = 0;
             int elements = 1;
             for (int j = int(l.size())-1; j >= 0; --j) {
-                oldIndex += indices[i] * elements;
-                elements *= l[i];
+                oldIndex += indices[j] * elements;
+                elements *= l[j];
             }
             
             // compute the new position
             int newIndex = 0;
             elements = 1;
             for (int j = int(l.size())-1; j >= 0; --j) {
-                newIndex += indices[i] * elements;
-                elements *= lengths[i];
+                newIndex += indices[j] * elements;
+                elements *= lengths[j];
             }
             
             variable[newIndex] = v[oldIndex];

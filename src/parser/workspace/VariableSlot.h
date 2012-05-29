@@ -52,7 +52,7 @@ public:
     const Variable&                         getVariable(void) const;                                                //!< Get the variable
     Variable&                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
     const RbPtr<const Variable>&            getVariable(const std::vector<int> &indices) const;                     //!< Get the variable
-    const RbPtr<Variable>&                  getVariable(const std::vector<int> &indices);                           //!< Get the variable (non-const to return non-const variable)
+    RbPtr<Variable>                         getVariable(const std::vector<int> &indices);                           //!< Get the variable (non-const to return non-const variable)
     const RbPtr<Variable>&                  getVariablePtr(void) const;                                             //!< Get the pointer to the variable
     virtual bool                            isValidVariable(const DAGNode& newVariable ) const;                     //!< Is newVariable valid for the slot?
     void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
@@ -60,6 +60,7 @@ public:
     void                                    setVariable(const RbPtr<Variable>& var);                                //!< Set a slot with a variable
     
 private:
+    RbPtr<Variable>                         getVectorizedVariable(const std::vector<int> &indices) const;
     void                                    resetVariables(std::vector<RbPtr<Variable> > &v, std::vector<int> &l, std::vector<int> &i);
     
     // Member variables
