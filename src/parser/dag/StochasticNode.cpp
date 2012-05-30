@@ -804,12 +804,12 @@ std::string StochasticNode::debugInfo(void) const {
 /**
  * Map calls to member methods 
  */
-RbPtr<RbLanguageObject> StochasticNode::executeMethod(std::string const &name, const std::vector<RlValue<const RbObject> > &args) {
+RbPtr<RbLanguageObject> StochasticNode::executeMethod(std::string const &name, const std::vector<RlValue<const RbLanguageObject> > &args) {
     
     if (name == "clamp") {
         
         // get the observed value
-        const RlValue<const RbObject>& observedValue = args[0];
+        const RlValue<const RbLanguageObject>& observedValue = args[0];
 
         RlValue<RbObject> tmp = observedValue.clone();
         
@@ -822,6 +822,28 @@ RbPtr<RbLanguageObject> StochasticNode::executeMethod(std::string const &name, c
         
         // clamp the observed value to myself
         clamp( clampValue );
+        
+        // we keep the new value
+        keep();
+        
+        return NULL;
+    } 
+    else if (name == "setval") {
+        
+        // get the observed value
+        const RlValue<const RbLanguageObject>& observedValue = args[0];
+        
+        RlValue<RbObject> tmp = observedValue.clone();
+        
+        std::vector<RbPtr<RbLanguageObject> > vals;
+        for (std::vector<RbPtr<RbObject> >::iterator i = tmp.value.begin(); i != tmp.value.end(); ++i) {
+            vals.push_back( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject *>( (RbObject *) *i ) ) );
+        }
+        
+        RlValue<RbLanguageObject> clampValue = RlValue<RbLanguageObject>(vals, tmp.lengths);
+        
+        // clamp the observed value to myself
+        setValue( clampValue );
         
         // we keep the new value
         keep();
@@ -910,6 +932,11 @@ const MethodTable& StochasticNode::getMethods(void) const {
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ConstArgumentRule("x", RbLanguageObject::getClassTypeSpec() ) );
         methods.addFunction("clamp", new DagNodeFunction( RbVoid_name, clampArgRules) );
+        
+        // method "setval"
+        ArgumentRules* setvalArgRules = new ArgumentRules();
+        setvalArgRules->push_back( new ConstArgumentRule("x", RbLanguageObject::getClassTypeSpec() ) );
+        methods.addFunction("setval", new DagNodeFunction( RbVoid_name, setvalArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &DAGNode::getMethods() );

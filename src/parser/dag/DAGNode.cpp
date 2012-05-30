@@ -94,10 +94,10 @@ void DAGNode::addChildNode(VariableNode *c) {
  * We assumes that the arguments come as scalar types, not multidimensional RevLanguage objects.
  * Therefore, we just delegate the call to executeSimpleMethod.
  */
-RbPtr<RbLanguageObject> DAGNode::executeMethod(std::string const &name, const std::vector<RlValue<const RbObject> > &args) {
+RbPtr<RbLanguageObject> DAGNode::executeMethod(std::string const &name, const std::vector<RlValue<const RbLanguageObject> > &args) {
     
-    std::vector<const RbObject *> simpleArgs;
-    for (std::vector<RlValue<const RbObject> >::const_iterator i =args.begin(); i != args.end(); ++i) {
+    std::vector<const RbLanguageObject *> simpleArgs;
+    for (std::vector<RlValue<const RbLanguageObject> >::const_iterator i =args.begin(); i != args.end(); ++i) {
         // check first if these arguments are actually scalars
         if (i->lengths.size() > 0 ) {
             throw RbException("We currently do not support setting of multidimensional member values!");
@@ -114,7 +114,7 @@ RbPtr<RbLanguageObject> DAGNode::executeMethod(std::string const &name, const st
  * DAG nodes might provides special member access functions. 
  * These functions are implemented here.
  */
-RbPtr<RbLanguageObject> DAGNode::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
+RbPtr<RbLanguageObject> DAGNode::executeSimpleMethod(std::string const &name, const std::vector<const RbLanguageObject *> &args) {
     
     throw RbException("No method with name '" + name + "' available for DAG nodes.");
 }

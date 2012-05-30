@@ -63,8 +63,8 @@ class DAGNode : public RbLanguageObject {
         // DAG function you have to override
         virtual DAGNode*                                    cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;                //!< Clone graph
         virtual InferenceDagNode*                           createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const = 0;         //!< Create a lean DAG from this "fat" DAG
-        virtual RbPtr<RbLanguageObject>                     executeMethod(const std::string& name, const std::vector<RlValue<const RbObject> >& args);      //!< Override to map member methods to internal functions
-        virtual RbPtr<RbLanguageObject>                     executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args);        //!< Override to map member methods to internal functions
+        virtual RbPtr<RbLanguageObject>                     executeMethod(const std::string& name, const std::vector<RlValue<const RbLanguageObject> >& args);      //!< Override to map member methods to internal functions
+        virtual RbPtr<RbLanguageObject>                     executeSimpleMethod(const std::string& name, const std::vector<const RbLanguageObject *>& args);        //!< Override to map member methods to internal functions
         virtual void                                        expand(void) = 0;                                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
         virtual const MethodTable&                          getMethods(void) const;                                                                 //!< Get member methods (const)
         virtual bool                                        isEliminated(void) const = 0;
