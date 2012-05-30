@@ -49,11 +49,11 @@ public:
     DAGNode*                                getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
     size_t                                  getDim(void) const;                                                     //!< Get the number of dimension
     const std::string&                      getLabel(void) const { return label; }                                  //!< Get the label of the slot
-    const Variable&                         getVariable(void) const;                                                //!< Get the variable
-    Variable&                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
-    const RbPtr<const Variable>&            getVariable(const std::vector<int> &indices) const;                     //!< Get the variable
+//    const Variable&                         getVariable(void) const;                                                //!< Get the variable
+//    Variable&                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
+    RbPtr<const Variable>                   getVariable(const std::vector<int> &indices) const;                     //!< Get the variable
     RbPtr<Variable>                         getVariable(const std::vector<int> &indices);                           //!< Get the variable (non-const to return non-const variable)
-    const RbPtr<Variable>&                  getVariablePtr(void) const;                                             //!< Get the pointer to the variable
+//    const RbPtr<Variable>&                  getVariablePtr(void) const;                                             //!< Get the pointer to the variable
     virtual bool                            isValidVariable(const DAGNode& newVariable ) const;                     //!< Is newVariable valid for the slot?
     void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
     void                                    setLabel(const std::string l) { label = l; }

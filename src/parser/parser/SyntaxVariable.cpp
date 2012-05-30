@@ -242,9 +242,17 @@ RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
             }
             
             // get the slot and variable
-            theSlot          = &env[ identifier->getValue() ]; // \TODO: We should not allow dereferencing!!!
-            Variable& theVar = theSlot->getVariable();
-            theDagNode       = theVar.getDagNode();
+            theSlot                 = &env[ identifier->getValue() ]; // \TODO: We should not allow dereferencing!!!
+            
+            if (!indices.empty() && theSlot != NULL) {
+                
+                if ( !theSlot->doesVariableExist( indices.getValue() ) ) {
+                    theSlot->createVariable( indices.getValue() );
+                }
+            }
+            
+            RbPtr<Variable> theVar  = theSlot->getVariable( indices.getValue() );
+            theDagNode              = theVar->getDagNode();
                 
         }
         else {
@@ -272,15 +280,6 @@ RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
 //        MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
 //        theSlot = &members[ (*identifier) ];
 //        theVar  = theSlot->getParserVariable();
-    }
-    
-    std::string name = identifier->getValue();
-    
-    if (!indices.empty() && theSlot != NULL) {
-        
-        if ( !theSlot->doesVariableExist( indices.getValue() ) ) {
-            theSlot->createVariable( indices.getValue() );
-        }
     }
 
     return theSlot->getVariable( indices.getValue() );

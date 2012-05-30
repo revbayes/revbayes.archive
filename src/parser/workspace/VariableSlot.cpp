@@ -67,6 +67,7 @@ VariableSlot* VariableSlot::clone( void ) const {
 
 
 void VariableSlot::createVariable(const std::vector<int> &indices) {
+    
     // test whether we need to update the dimensions
     if ( indices.size() > lengths.size() && lengths.size() > 0 ) {
         throw RbException("Cannot resize dimension of slot variable that already exists!");
@@ -96,8 +97,9 @@ void VariableSlot::createVariable(const std::vector<int> &indices) {
         // fill with empty variables
         size_t nElements = 1;
         for (size_t i = 0; i < indices.size(); ++i) {
-            nElements *= (indices[i]+1);
-            lengths.push_back( indices[i]+1 );
+            int n = (indices[i] > oldLengths[i]-1 ? indices[i] : oldLengths[i]-1) + 1;
+            nElements *= (n);
+            lengths.push_back( n );
         }
         for (size_t i = 0; i < nElements; ++i) {
             variable.push_back( new Variable( NULL ) );
@@ -106,6 +108,7 @@ void VariableSlot::createVariable(const std::vector<int> &indices) {
         std::vector<int> tmp;
         resetVariables(oldVars, oldLengths, tmp);
     }
+    
 }
 
 
@@ -199,17 +202,17 @@ const RlValue<RbLanguageObject>& VariableSlot::getValue( void ) {
 }
 
 
-const Variable& VariableSlot::getVariable(void) const {
-    return *variable[0];
-}
+//const Variable& VariableSlot::getVariable(void) const {
+//    return *variable[0];
+//}
+//
+//
+//Variable& VariableSlot::getVariable(void) {
+//    return *variable[0];
+//}
 
 
-Variable& VariableSlot::getVariable(void) {
-    return *variable[0];
-}
-
-
-const RbPtr<const Variable>& VariableSlot::getVariable(const std::vector<int> &indices) const {
+RbPtr<const Variable> VariableSlot::getVariable(const std::vector<int> &indices) const {
     size_t index = 0;
     size_t elements = 1;
     
@@ -257,9 +260,9 @@ RbPtr<Variable> VariableSlot::getVariable(const std::vector<int> &indices) {
 }
 
 
-const RbPtr<Variable>& VariableSlot::getVariablePtr(void) const {
-    return variable[0];
-}
+//const RbPtr<Variable>& VariableSlot::getVariablePtr(void) const {
+//    return variable[0];
+//}
 
 
 RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indices) const {
@@ -271,7 +274,7 @@ RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indi
     
     if ( indices.size() + 1 == lengths.size() ) {
         size_t index = 0;
-        size_t elements = lengths[size];
+        size_t elements = size;
         for (int i = int(lengths.size())-2; i >= 0; --i) {
             // test for boundaries
             if (indices[i] >= lengths[i]) {
@@ -358,6 +361,8 @@ void VariableSlot::resetVariables(std::vector<RbPtr<Variable> > &v, std::vector<
             resetVariables(v, l, indices);
         }
     }
+    
+    indices.pop_back();
 }
 
 

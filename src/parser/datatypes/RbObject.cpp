@@ -40,6 +40,12 @@ RbObject::RbObject(const RbObject &o) {
 /** Destructor */
 RbObject::~RbObject() {
 
+    if ( refCount != 0) {
+        std::cerr << "Aaaahhhhhh, the memory got killed!!!" << std::endl;
+    }
+//    else {
+//        std::cerr << "Memory with " << refCount << " references deleted!" << std::endl;
+//    }
 }
 
 
