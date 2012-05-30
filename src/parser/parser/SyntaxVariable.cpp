@@ -331,8 +331,10 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                         Natural *n = static_cast<Natural *>( (RbLanguageObject *) indexVar->getValue().getSingleValue() );
                         slotIndices.push_back( n->getValue()-1 );
                     } else if (indexVar->getValue().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
-                        Natural *n = static_cast<Natural *>( (RbObject *) indexVar->getValue().convertTo( Natural::getClassTypeSpec() ).getSingleValue() );
-                        slotIndices.push_back( n->getValue()-1 );
+                        RlValue<RbObject> convObj = indexVar->getValue().convertTo( Natural::getClassTypeSpec() );
+                        Natural *n = static_cast<Natural *>( (RbObject *) convObj.getSingleValue() );
+                        int tmp = n->getValue()-1;
+                        slotIndices.push_back( tmp );
                     } else {
                         throw RbException("Only natural numbers are allowed as indices for variable slots.");
                     }
