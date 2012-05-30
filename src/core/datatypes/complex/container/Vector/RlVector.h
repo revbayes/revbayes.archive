@@ -326,23 +326,179 @@ RbObject* RlVector<rlType>::convertTo(const TypeSpec &type) const {
     // test whether we want to convert to another Vector
     if ( type.getBaseType() == getClassName() ) {
         
-        RlVector<rlType> *convObject = new RlVector<rlType>();
+        // work through all the possible base element types
         
-        //  convert all objects. clone if they are of the right type, otherwise convert them
-        throw RbException("Missing implementation in RlVector::convert()");
-//        typename std::vector<valueType>::const_iterator i;
-//        for ( i = begin(); i != end(); i++) {
-//            RbObject* orgElement = *i;
-//            // test whether this element is already of the right type
-//            if ( orgElement->isTypeSpec(type.getElementType()) ) {
-//                convObject->push_back( orgElement->clone() );
+        // RbLanguageObject
+        if ( type.getElementType() == Integer::getClassTypeSpec() ) {
+            RlVector<Integer>* convObject = new RlVector<Integer>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<elementType>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                rlType orgElement = rlType( *i );
+                // test whether this element is already of the right type
+                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<Integer &>( orgElement ) );
+                }
+                else {
+                    convObject->push_back( *static_cast<Integer*>( orgElement.convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+        else if ( type.getElementType() == Natural::getClassTypeSpec() ) {
+            RlVector<Natural>* convObject = new RlVector<Natural>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<elementType>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                rlType orgElement = rlType( *i );
+                // test whether this element is already of the right type
+                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<Natural &>( orgElement ) );
+                }
+                else {
+                    convObject->push_back( *static_cast<Natural*>( orgElement.convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+        else if ( type.getElementType() == Probability::getClassTypeSpec() ) {
+            RlVector<Probability>* convObject = new RlVector<Probability>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<elementType>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                rlType orgElement = rlType( *i );
+                // test whether this element is already of the right type
+                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<Probability &>( orgElement ) );
+                }
+                else {
+                    convObject->push_back( *static_cast<Probability*>( orgElement.convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+        else if ( type.getElementType() == RbBoolean::getClassTypeSpec() ) {
+            RlVector<RbBoolean>* convObject = new RlVector<RbBoolean>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<elementType>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                rlType orgElement = rlType( *i );
+                // test whether this element is already of the right type
+                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<RbBoolean &>( orgElement ) );
+                }
+                else {
+                    convObject->push_back( *static_cast<RbBoolean*>( orgElement.convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+        else if ( type.getElementType() == RbString::getClassTypeSpec() ) {
+            RlVector<RbString>* convObject = new RlVector<RbString>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<elementType>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                rlType orgElement = rlType( *i );
+                // test whether this element is already of the right type
+                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<RbString &>( orgElement ) );
+                }
+                else {
+                    convObject->push_back( *static_cast<RbString*>( orgElement.convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+        else if ( type.getElementType() == Real::getClassTypeSpec() ) {
+            RlVector<Real>* convObject = new RlVector<Real>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<elementType>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                rlType orgElement = rlType( *i );
+                // test whether this element is already of the right type
+                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<Real &>( orgElement ) );
+                }
+                else {
+                    convObject->push_back( *static_cast<Real*>( orgElement.convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+        else if ( type.getElementType() == RealPos::getClassTypeSpec() ) {
+            RlVector<RealPos>* convObject = new RlVector<RealPos>();
+            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+            typename std::vector<elementType>::const_iterator i;
+            for ( i = begin(); i != end(); i++) {
+                rlType orgElement = rlType( *i );
+                // test whether this element is already of the right type
+                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+                    convObject->push_back( dynamic_cast<RealPos &>( orgElement ) );
+                }
+                else {
+                    convObject->push_back( *static_cast<RealPos *>( orgElement.convertTo(type.getElementType()) ) );
+                }
+            }
+            
+            return convObject;
+        }
+//        else if ( type.getElementType() == Complex::getClassTypeSpec() ) {
+//            RlVector<Complex>* convObject = new RlVector<Complex>();
+//            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+//            typename std::vector<elementType>::const_iterator i;
+//            for ( i = begin(); i != end(); i++) {
+//                rlType orgElement = rlType( *i );
+//                // test whether this element is already of the right type
+//                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+//                    convObject->push_back( dynamic_cast<Complex &>( orgElement ) );
+//                }
+//                else {
+//                    convObject->push_back( * static_cast<Complex*>( orgElement.convertTo(type.getElementType() ) ) );
+//                }
 //            }
-//            else {
-//                convObject->push_back( orgElement->convertTo(type.getElementType() ) );
-//            }
+//            
+//            return convObject;
 //        }
-        
-        return convObject;
+//        else if ( type.getElementType() == Move::getClassTypeSpec() ) {
+//            RlVector<Move>* convObject = new RlVector<Move>();
+//            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+//            typename std::vector<elementType>::const_iterator i;
+//            for ( i = begin(); i != end(); i++) {
+//                rlType orgElement = rlType( *i );
+//                // test whether this element is already of the right type
+//                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+//                    convObject->push_back( dynamic_cast<Move &>( orgElement ) );
+//                }
+//                else {
+//                    convObject->push_back( *static_cast<Move*>( orgElement.convertTo(type.getElementType()) ) );
+//                }
+//            }
+//            
+//            return convObject;
+//        }
+//        else if ( type.getElementType() == Monitor::getClassTypeSpec() ) {
+//            RlVector<Monitor>* convObject = new RlVector<Monitor>();
+//            // insert copies of all objects. clone if they are of the right type, otherwise convert them
+//            typename std::vector<elementType>::const_iterator i;
+//            for ( i = begin(); i != end(); i++) {
+//                rlType orgElement = rlType( *i );
+//                // test whether this element is already of the right type
+//                if ( orgElement.isTypeSpec(type.getElementType()) ) {
+//                    convObject->push_back( dynamic_cast<Monitor &>( orgElement ) );
+//                }
+//                else {
+//                    convObject->push_back( *static_cast<Monitor*>( orgElement.convertTo(type.getElementType()) ) );
+//                }
+//            }
+//            
+//            return convObject;
+//        }
         
     }
     
@@ -546,20 +702,20 @@ template <typename rlType>
 bool RlVector<rlType>::isConvertibleTo(const TypeSpec &type) const {
     
     // test whether we want to convert to another Vector
-//    if ( type.getBaseType() == getClassName() ) {
-//        
-//        // work through all the elements
-//        typename std::vector<valueType>::const_iterator i;
-//        for ( i = begin(); i != end(); i++) {
-//            rlType orgElement( *i );
-//            // test whether this element is already of the right type
-//            if ( !orgElement.isTypeSpec(type.getElementType()) && !orgElement.isConvertibleTo(type.getElementType()) ) {
-//                return false;
-//            }
-//        }
-//        
-//        return true;
-//    }
+    if ( type.getBaseType() == getClassName() ) {
+        
+        // work through all the possible base element types
+        typename std::vector<elementType>::const_iterator i;
+        for ( i = begin(); i != end(); i++) {
+            rlType orgElement = rlType(*i);
+            // test whether this element is already of the right type
+            if ( !orgElement.isTypeSpec(type.getElementType()) && !orgElement.isConvertibleTo(type.getElementType()) ) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
     
     return false;
 }
