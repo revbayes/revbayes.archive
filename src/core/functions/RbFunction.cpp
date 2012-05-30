@@ -739,7 +739,8 @@ void RbFunction::processArguments( const std::vector<RbPtr<Argument> >& passedAr
         const ArgumentRule& theRule = theRules[i];
         RbPtr<Variable> theVar = theRule.getDefaultVariable().clone();
         theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
-        passedArgIndex[args.size()] = static_cast<int>( i );
+        size_t idx = args.size();
+        passedArgIndex[i] = static_cast<int>( idx );
         args.push_back( new ConstArgument( RbPtr<const Variable>( theVar ), "" ) );
     }
 
