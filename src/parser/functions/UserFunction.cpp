@@ -120,19 +120,19 @@ RlValue<RbLanguageObject> UserFunction::execute( void ) {
     RbPtr<Variable> retVar = NULL;
 
     // Create new variable frame
-    Environment functionEnvironment = Environment( defineEnvironment );
+    RbPtr<Environment> functionEnvironment = new Environment( defineEnvironment );
     // \TODO: Check that the arguments can still be accessed
 //    Environment functionEnvironment = Environment( args );
     for (std::vector<RbPtr<Argument> >::iterator it = args.begin(); it != args.end(); ++it) {
         RbPtr<Variable> theVar = (*it)->getVariable()->clone();
-        functionEnvironment.addVariable( (*it)->getLabel(), theVar );
+        functionEnvironment->addVariable( (*it)->getLabel(), theVar );
     }
 
     // Execute code
     for ( std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++ ) {
 
         SyntaxElement* theSyntaxElement = *i;
-        retVar = theSyntaxElement->evaluateContent( functionEnvironment );
+        retVar = theSyntaxElement->evaluateContent( *functionEnvironment );
 
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
             break;

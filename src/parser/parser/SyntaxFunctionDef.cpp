@@ -160,13 +160,13 @@ RbPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
         stmts->push_back((*i)->clone());
 
     // Create an environment with the parent environment being the one in which the function was defined
-    Environment* defineEnvironment = new Environment(env);
+    Environment* defineEnvironment = new Environment(&env);
 
     // Create the function
     RbFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
 
-    // insert in the user workspace
-    Workspace::userWorkspace()->addFunction(functionName->getValue(), theFunction);
+    // insert in the (user) workspace
+    env.addFunction(functionName->getValue(), theFunction);
 
     // No return value 
     return NULL;
