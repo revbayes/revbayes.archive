@@ -39,7 +39,7 @@
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool opt) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(false), optional( opt ) {
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(false) {
     
 }
 
@@ -211,12 +211,6 @@ bool ArgumentRule::isArgumentValid(const RbObject& var, bool &conversionNeeded, 
     }
     
     return false;
-}
-
-
-/* Is optional? */
-bool ArgumentRule::isOptional(void) const {
-    return optional;
 }
  
 

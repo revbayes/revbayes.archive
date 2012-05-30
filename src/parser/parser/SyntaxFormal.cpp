@@ -33,7 +33,7 @@ SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElem
         argRule = new ConstArgumentRule(label->getValue(), *argType);
     else {
         Environment env = Environment();
-        argRule = new ConstArgumentRule(label->getValue(), *argType, defaultExpr->evaluateContent( env )->getDagNode() );
+        argRule = new ConstArgumentRule(label->getValue(), *argType, defaultExpr->evaluateContent( env )->getDagNode()->getValue().getSingleValue() );
     }
 }
 
@@ -62,7 +62,7 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
         argRule = new ConstArgumentRule(label->getValue(), *argType);
     else {
         Environment env = Environment();
-        argRule = new ConstArgumentRule(label->getValue(), *argType, defaultExpr->evaluateContent(env)->getDagNode());
+        argRule = new ConstArgumentRule(label->getValue(), *argType, defaultExpr->evaluateContent(env)->getDagNode()->getValue().getSingleValue() );
     }
 }
 

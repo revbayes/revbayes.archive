@@ -294,7 +294,7 @@ bool  RbFunction::checkArguments( const std::vector<RbPtr<Argument> >& passedArg
         if ( filled[i] == true )
             continue;
         
-        if ( !theRules[i].hasDefault() && !theRules[i].isOptional() )
+        if ( !theRules[i].hasDefault() )
             return false;
     }
     
@@ -733,16 +733,14 @@ void RbFunction::processArguments( const std::vector<RbPtr<Argument> >& passedAr
             continue;
 
         // we just leave the optional arguments empty
-        if ( !theRules[i].isOptional() ) {
-            if ( !theRules[i].hasDefault() )
-                throw RbException("No argument found for parameter '" + theRules[i].getArgumentLabel() + "'.");
+        if ( !theRules[i].hasDefault() )
+            throw RbException("No argument found for parameter '" + theRules[i].getArgumentLabel() + "'.");
 
-            const ArgumentRule& theRule = theRules[i];
-            RbPtr<Variable> theVar = theRule.getDefaultVariable().clone();
-            theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
-            passedArgIndex[passedArgs.size()] = static_cast<int>( i );
-            args.push_back( new ConstArgument( RbPtr<const Variable>( theVar ), "" ) );
-        }
+        const ArgumentRule& theRule = theRules[i];
+        RbPtr<Variable> theVar = theRule.getDefaultVariable().clone();
+        theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
+        passedArgIndex[args.size()] = static_cast<int>( i );
+        args.push_back( new ConstArgument( RbPtr<const Variable>( theVar ), "" ) );
     }
 
     argsProcessed = true;

@@ -126,7 +126,7 @@ const MemberRules& Plate::getMemberRules(void) const {
     if (!rulesSet) 
     {
         memberRules.push_back( new ConstArgumentRule( "size" , Natural::getClassTypeSpec() ) );
-        memberRules.push_back( new ConstArgumentRule( "parent" , Plate::getClassTypeSpec(), true ) );
+        memberRules.push_back( new ConstArgumentRule( "parent" , Plate::getClassTypeSpec(), NULL ) );
         
         rulesSet = true;
     }

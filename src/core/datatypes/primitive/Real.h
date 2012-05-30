@@ -37,10 +37,10 @@ class Real : public RbLanguageObject {
     public:
 
                                     Real(void);                                                             //!< Default constructor (0.0)
-                                    Real(const double v);                                                   //!< Construct from double
-                                    Real(const int v);                                                      //!< Construct from int 
-                                    Real(const unsigned int v);                                             //!< Construct from unsigned int 
-                                    Real(const bool v);                                                     //!< Construct from bool
+                                    Real(double v);                                                         //!< Construct from double
+                                    Real(int v);                                                            //!< Construct from int 
+                                    Real(unsigned int v);                                                   //!< Construct from unsigned int 
+                                    Real(bool v);                                                           //!< Construct from bool
                                     Real(const Real& x);                                                    //!< Copy constructor
     
         // the value type definition

@@ -47,20 +47,18 @@ class ArgumentRule : public RbInternal {
         const TypeSpec&             getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
         bool                        hasDefault(void) const;                                                                             //!< Has default?
         virtual bool                isArgumentValid(const RbPtr<const Variable> &var, bool convert = false) const;                      //!< Is var valid argument?
-        bool                        isOptional(void) const;                                                                             //!< Is this rule optional? If so, we do not use a default parameter when no argument is given.
 
         // functions overwritten in derived class
         virtual const Variable&     getDefaultVariable(void) const;                                                                     //!< Get default argument
 
     protected:
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool optional=false);           //!< Constructor of rule without default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
 
         bool                        isArgumentValid(const RbObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;
             
         TypeSpec                    argTypeSpec;
         std::string                 label;                                                                                              //!< Label of argument
         bool                        hasDefaultVal;                                                                                      //!< Has default
-        bool                        optional;                                                                                           //!< Is optional?
 
 };
 

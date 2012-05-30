@@ -296,9 +296,6 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addDistribution( "cat",          new Dist_cat<RealPos>());
 //        addDistribution( "ctmc",         new Dist_ctmm()        );
 //        addDistribution( "dtmm",         new Dist_dtmm()        );
-//        addDistribution( "dirichlet",    new Dist_dirichlet()   );
-//        addDistribution( "exponential",  new Dist_exp()         );
-//        addDistribution( "gamma",        new Dist_gamma()       );
 //        addDistribution( "logis",        new Dist_logis()       );
 //        addDistribution( "multinomial",  new Dist_multinomial() );
 //        addDistribution( "lnorm",        new Dist_lnorm()       );
@@ -330,7 +327,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         MemberRules distlognormMemberRules;
         distlognormMemberRules.push_back( new ConstArgumentRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
         distlognormMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        addDistribution( "lognorm",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_lnorm(), "lognormal", distlognormMemberRules, new RealPos() ) ) );
+        addDistribution( "lnorm",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_lnorm(), "lognormal", distlognormMemberRules, new RealPos() ) ) );
         
         // logistic distribution
         MemberRules distLogisticMemberRules;
@@ -339,15 +336,15 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "logistic",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_logis(), "logistic", distLogisticMemberRules, new Real() ) ) );
         
         // multinomial distribution
-//        MemberRules distMultMemberRules;
-//        distMultMemberRules.push_back( new ConstArgumentRule( "probabilities", Simplex::getClassTypeSpec()    ) );
-//        distMultMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-//        addDistribution( "mult",         RbPtr<ParserDistribution>( new ParserDistributionContinuous( new Dist_multinomial(), "multinomial", distMultMemberRules, new RlVector( Natural::getClassTypeSpec() ) ) ) );
+        MemberRules distMultMemberRules;
+        distMultMemberRules.push_back( new ConstArgumentRule( "probabilities", Simplex::getClassTypeSpec()    ) );
+        distMultMemberRules.push_back( new ConstArgumentRule( "n"  , Natural::getClassTypeSpec(), new Natural(1) ) );
+        addDistribution( "multinomial",         RbPtr<ParserDistribution>( new ParserDistribution( new Dist_multinomial(), "multinomial", distMultMemberRules, new RlVector<Natural>() ) ) );
         
         // normal distribution
         MemberRules distNormMemberRules;
-        distNormMemberRules.push_back( new ConstArgumentRule( "mean", Real::getClassTypeSpec()   , new Real(0.0)    ) );
-        distNormMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        distNormMemberRules.push_back( new ConstArgumentRule( "mean", Real::getClassTypeSpec()   , RbPtr<RbLanguageObject>( new Real(0.0) )   ) );
+        distNormMemberRules.push_back( new ConstArgumentRule( "sd"  , RealPos::getClassTypeSpec(), RbPtr<RbLanguageObject>( new RealPos(1.0) ) ) );
         addDistribution( "norm",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_norm(), "normal", distNormMemberRules, new Real() ) ) );
         
         // uniform distributin

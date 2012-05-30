@@ -27,8 +27,8 @@ class ConstArgumentRule : public ArgumentRule {
     
 public:
     ConstArgumentRule(const std::string& argName, const RbPtr<RbLanguageObject> &defVal);                                           //!< Constructor of rule from default value
-    ConstArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, bool optional=false);                                  //!< Constructor of rule without default value
-    ConstArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const RbPtr<RbLanguageObject> &defVal);                //!< Constructor of rule without default value
+    ConstArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                                       //!< Constructor of rule without default value
+    ConstArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const RbPtr<RbLanguageObject> &defVal);                //!< Constructor of rule with default value
     
     // Basic utility functions
     virtual ConstArgumentRule*  clone(void) const;                                                                                  //!< Clone object

@@ -34,22 +34,22 @@ Real::Real(void) : RbLanguageObject(), value(0.0) {
 
 
 /** Construct from double */
-Real::Real(const double v) : RbLanguageObject(), value(v) {
+Real::Real(double v) : RbLanguageObject(), value(v) {
 }
 
 
 /** Construct from int */
-Real::Real(const int v) : RbLanguageObject(), value(v) {
+Real::Real(int v) : RbLanguageObject(), value(v) {
 }
 
 
 /** Construct from unsigned int */
-Real::Real(const unsigned int v) : RbLanguageObject(), value(v) {
+Real::Real(unsigned int v) : RbLanguageObject(), value(v) {
 }
 
 
 /** Construct from bool */
-Real::Real(const bool v) : RbLanguageObject() {
+Real::Real(bool v) : RbLanguageObject() {
 
     if (v) value = 1.0;
     else value = 0.0;
