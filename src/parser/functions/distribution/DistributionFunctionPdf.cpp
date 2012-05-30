@@ -148,7 +148,7 @@ RbPtr<RbLanguageObject> DistributionFunctionPdf::executeFunction(const std::vect
     distribution->setParameters( newArgs );
     
     if ( static_cast<const RbBoolean*>( args[args.size()-1] )->getValue() == false ) 
-        return RbPtr<RbLanguageObject>( new Probability( distribution->pdf  ( *static_cast<const RbLanguageObject*>( args[0] ) ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( distribution->pdf  ( *static_cast<const RbLanguageObject*>( args[0] ) ) ) );
     else
         return RbPtr<RbLanguageObject>( new Real( distribution->lnPdf( *static_cast<const RbLanguageObject*>( args[0] ) ) ) );
     

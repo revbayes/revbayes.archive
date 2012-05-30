@@ -33,7 +33,7 @@ Probability::Probability( void ) : RealPos( 1.0 ) {
 Probability::Probability( double x ) : RealPos( x ) {
     
     if ( x < 0.0 || x > 1.0)
-        throw RbException( "Creation of " + getClassName() + " with value x=" + x + "outside standard probabilities (0,1)");
+        throw RbException( "Creation of " + getClassName() + " with value x=" + x + " outside standard probabilities (0,1)");
 }
 
 
@@ -41,7 +41,7 @@ Probability::Probability( double x ) : RealPos( x ) {
 Probability::Probability( int x ) : RealPos( x ) {
     
     if ( x < 0 || x > 1)
-        throw RbException( "Creation of " + getClassName() + " with value x=" + x + "outside standard probabilities (0,1)");
+        throw RbException( "Creation of " + getClassName() + " with value x=" + x + " outside standard probabilities (0,1)");
 }
 
 
@@ -49,7 +49,7 @@ Probability::Probability( int x ) : RealPos( x ) {
 Probability::Probability( unsigned int x ) : RealPos( x ) {
     
     if ( x > 1)
-        throw RbException( "Creation of " + getClassName() + " with value x=" + int(x) + "outside standard probabilities (0,1)");
+        throw RbException( "Creation of " + getClassName() + " with value x=" + int(x) + " outside standard probabilities (0,1)");
 }
 
 
@@ -89,7 +89,7 @@ const TypeSpec& Probability::getTypeSpec( void ) const {
 void Probability::setValue( double x ) {
     
     if ( x < 0.0 || x > 1.0)
-        throw RbException( "Creation of " + getClassName() + " with value x=" + x + "outside standard probabilities (0,1)");
+        throw RbException( "Creation of " + getClassName() + " with value x=" + x + " outside standard probabilities (0,1)");
     
     RealPos::setValue( x );
 }
