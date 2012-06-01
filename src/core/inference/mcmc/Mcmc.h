@@ -53,7 +53,7 @@ public:
 
     // Member variable rules
     const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
-
+    void                            setConstMemberVariable(const std::string &name, const RbPtr<const Variable> &var);
     // Member method inits
     const MethodTable&              getMethods(void) const;                                                                 //!< Get methods
         

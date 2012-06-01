@@ -207,7 +207,7 @@ void ParserDistribution::rv(void) {
 }
 
 
-void ParserDistribution::setConstMember(std::string const &name, const RbPtr<const Variable> &var) {
+void ParserDistribution::setConstMemberVariable(std::string const &name, const RbPtr<const Variable> &var) {
     params.push_back( new Argument(var->clone(), name) );
 }
 

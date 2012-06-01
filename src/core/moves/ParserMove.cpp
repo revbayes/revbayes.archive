@@ -35,7 +35,7 @@
 
 
 /** Constructor */
-ParserMove::ParserMove( InferenceMove* m, const std::string &n, const MemberRules& mr, const std::set<std::string> &attrNames ) : MemberObject( mr ), move( m ), memberRules( mr ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( MemberObject::getClassTypeSpec() ) ), attributeNames( attrNames ) {
+ParserMove::ParserMove( InferenceMove* m, const std::string &n, const MemberRules& mr, const std::set<std::string> &attrNames ) : MemberObject( mr ), move( m ), memberRules( mr ), typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec( n ) ), attributeNames( attrNames ) {
 
 }
 
@@ -88,6 +88,11 @@ const MemberRules& ParserMove::getMemberRules( void ) const {
 
 const std::vector<RbPtr<DAGNode> >& ParserMove::getMoveArgumgents( void ) const {
     return args;
+}
+
+
+const InferenceMove& ParserMove::getValue( void ) const {
+    return *move;
 }
 
 

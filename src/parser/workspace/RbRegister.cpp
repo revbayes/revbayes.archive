@@ -134,6 +134,7 @@
 /* Builtin templated functions */
 #include "Func_transpose.h"
 #include "Func_vector.h"
+#include "Func_rlvector.h"
 
 /* Constructor functions */
 #include "ConstructorTaxonData.h"
@@ -673,6 +674,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_vector<RbString>() );
         addFunction( "v",         new Func_vector<RlVector<Integer> > () );
         addFunction( "v",         new Func_vector<RlVector<Natural> >() );
+        
+        addFunction( "v",         new Func_rlvector<ParserMonitor>() );
+        addFunction( "v",         new Func_rlvector<ParserMove>() );
 //        addFunction( "v",         new Func_vector<          RlVector<Natural>,              Matrix<Natural>                 >() );
 //        addFunction( "v",         new Func_vector<          RlVector<Real>,                 Matrix<Real>                    >() );
 //        addFunction( "v",         new Func_vector<          RlVector<RealPos>,              Matrix<RealPos>                 >() );

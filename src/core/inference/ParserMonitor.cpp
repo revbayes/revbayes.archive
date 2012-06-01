@@ -9,7 +9,7 @@
 #include "InferenceMonitor.h"
 #include "ParserMonitor.h"
 
-ParserMonitor::ParserMonitor( InferenceMonitor *m, const std::string &n, const MemberRules &mr, const std::set<std::string> &a) : MemberObject( mr ), monitor( m ), memberRules( mr ), name( n ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( MemberObject::getClassTypeSpec() ) ), attributeNames( a ) {
+ParserMonitor::ParserMonitor( InferenceMonitor *m, const std::string &n, const MemberRules &mr, const std::set<std::string> &a) : MemberObject( mr ), monitor( m ), memberRules( mr ), name( n ), typeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ), new TypeSpec( n ) ), attributeNames( a ) {
     
 }
 
@@ -91,7 +91,24 @@ const MemberRules& ParserMonitor::getMemberRules( void ) const {
 }
 
 
+const InferenceMonitor& ParserMonitor::getValue( void ) const {
+    return *monitor;
+}
+
+
 void ParserMonitor::setMemberVariable(std::string const &name, const RbPtr<Variable> &var) {
+    
+    if ( attributeNames.find( name ) != attributeNames.end() ) {
+        RbValue<void*> lValue = var->getValue().getLeanValue();
+        monitor->setAttribute( name, lValue );
+    }
+    else {
+        nodes.push_back( var->getDagNode() );
+    }
+}
+
+
+void ParserMonitor::setConstMemberVariable(std::string const &name, const RbPtr<const Variable> &var) {
     
     if ( attributeNames.find( name ) != attributeNames.end() ) {
         RbValue<void*> lValue = var->getValue().getLeanValue();

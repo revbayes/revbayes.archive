@@ -39,6 +39,9 @@ public:
     ParserMonitor(const ParserMonitor &x);                                                                              //!< Copy Constructor
     virtual ~ParserMonitor(void);                                                                                 //!< Destructor
  
+    // the value type definition
+    typedef InferenceMonitor valueType;
+
     // overloaded operators
     ParserMonitor&                          operator=(const ParserMonitor& m);
     
@@ -52,11 +55,14 @@ public:
     // Member Object Functions
     const MemberRules&                      getMemberRules(void) const;                                                 //!< The member rules for a ParserMonitor
     void                                    setMemberVariable(const std::string &name, const RbPtr<Variable> &var);     //!< Set a member variable. We catch here setting of variable nodes
+    void                                    setConstMemberVariable(const std::string &name, const RbPtr<const Variable> &var);     //!< Set a member variable. We catch here setting of variable nodes
     
     // access functions
     const InferenceMonitor*                 getLeanMonitor(void) const;
     const std::vector<const DAGNode *>&     getMonitorArgumgents(void) const;
-//    void                                addDagNode(DAGNode* d);                                             //!< Add a DAG node to this ParserMonitor
+    const InferenceMonitor&                 getValue() const;                                                           //!< Get the internal move object.
+
+    //    void                                addDagNode(DAGNode* d);                                             //!< Add a DAG node to this ParserMonitor
     //    std::vector<RbConstVariablePtr>&    getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
 //    virtual void                        monitor(void) = 0;                                                  //!< ParserMonitor unconditionally
 //    virtual void                        monitor(int gen) = 0;                                               //!< ParserMonitor at generation gen

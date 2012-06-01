@@ -277,10 +277,12 @@ bool  RbFunction::checkArguments( const std::vector<RbPtr<Argument> >& passedArg
                     
                     break;
                 }
-                else
-                    return false;
             }
         }
+        
+        /* Final test if we found a match */
+        if ( !taken[i] )
+            return false;
     }
     
     
@@ -717,9 +719,12 @@ void RbFunction::processArguments( const std::vector<RbPtr<Argument> >& passedAr
                     
                     break;
                 }
-                else
-                    throw RbException("Argument of type \"" + passedArgs[i]->getVariable()->getValue().getTypeSpec() + "\" is not valid for function " + getTypeSpec() + ".");
             }
+        }
+        
+        /* Final test if we found a match */
+        if ( !taken[i] ) {
+            throw RbException("Argument of type \"" + passedArgs[i]->getVariable()->getValue().getTypeSpec() + "\" is not valid for function " + getTypeSpec() + ".");
         }
     }
 

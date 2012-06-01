@@ -37,6 +37,7 @@
 #include "RangeRule.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "RlOnlyVector.h"
 #include "RlVector.h"
 #include "SimpleMemberFunction.h"
 #include "StochasticInferenceNode.h"
@@ -104,19 +105,12 @@ Mcmc& Mcmc::operator=(const Mcmc &m) {
  */
 void Mcmc::addMove( const DAGNode *m ) {
     
-    // \TODO: Clean this up (Sebastian)
-//    // test whether var is a DagNodeContainer
-//    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-//        const RbPtr<const RbLanguageObject>& objPtr = m->getValue().getSingleValue();
-//        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
-//        for (size_t i = 0; i < container->size(); ++i) {
-//            const RbObject& elemPtr = container->getElement(i);
-//            addMove(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
-//        }
-//    }
-//    else {
+    const RlOnlyVector<ParserMove> *arg_moves = static_cast<const RlOnlyVector<ParserMove> *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
+    
+    for (RlOnlyVector<ParserMove>::const_iterator it = arg_moves->begin(); it != arg_moves->end(); ++it) {
+        
         // first, we cast the value to a parser move
-        const ParserMove *move = static_cast<const ParserMove *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
+        const ParserMove *move = *it;
         
         // we need to extract the lean move
         InferenceMove* leanMove = move->getLeanMove()->clone();
@@ -151,7 +145,7 @@ void Mcmc::addMove( const DAGNode *m ) {
         
         // finally, add the move to our moves list
         moves.push_back( leanMove );
-//    }
+    }
 }
 
 
@@ -349,8 +343,8 @@ const MemberRules& Mcmc::getMemberRules(void) const {
     if (!rulesSet) {
 
         memberRules.push_back( new ArgumentRule( "model"    , true, Model::getClassTypeSpec()    ) );
-        memberRules.push_back( new ArgumentRule( "moves"    , true, RbObject::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule( "monitors" , true, RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "moves"    , true, RlOnlyVector<ParserMove>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "monitors" , true, RlOnlyVector<ParserMonitor>::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -602,3 +596,23 @@ void Mcmc::run(size_t ngen) {
     std::cout << std::endl;
 }
 
+
+
+void Mcmc::setConstMemberVariable(std::string const &name, const RbPtr<const Variable> &var) {
+    
+    if ( name == "model" ) {
+        model = static_cast<const Model&>( *var->getValue().getSingleValue() );
+        extractDagNodesFromModel( model );
+    }
+    else if ( name == "moves" ) {
+        addMove( var->getDagNode() );
+        
+    }
+    else if ( name == "monitors" ) {
+        addMonitor( var->getDagNode() );
+        
+    }
+    else {
+        MemberObject::setConstMemberVariable(name, var);
+    }
+}

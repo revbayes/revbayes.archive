@@ -60,7 +60,6 @@ public:
     const std::vector<RbPtr< Argument> >&   getParameters() const;
     virtual const TypeSpec&                 getVariableType(void) const;                                                                //!< Get random variable type
     virtual const RbLanguageObject&         getTemplateRandomVariable(void) const;                                                      //!< Get the template ranom variable
-    virtual void                            setConstMember(const std::string& name, const RbPtr<const Variable> &var);                  //!< Set member variable
     
     // functions you have to override
     virtual Distribution*                   getLeanDistribution(void) const;                                                            //!< Get the lean distribution
@@ -72,6 +71,7 @@ public:
     virtual void                            setValue(const RbValue<void*> &v);                                                          //!< Set the pointers to the value of the distribution.
     
 protected:  
+    virtual void                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);          //!< Set member variable
     virtual void                            setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var);    //!< Set member variable
 
     Distribution*                           distribution;

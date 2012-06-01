@@ -70,7 +70,7 @@ RbPtr<RbLanguageObject> Func_vector<valType>::executeFunction( const std::vector
     
     RlVector<valType> *theVector = new RlVector<valType>();
     for ( size_t i = 0; i < args.size(); i++ )
-        theVector->push_back( *static_cast<valType*>( args[i]->clone() ) );
+        theVector->push_back( *static_cast<const valType*>( args[i] ) );
     
     return theVector;
 }
@@ -86,7 +86,7 @@ const ArgumentRules& Func_vector<valType>::getArgumentRules( void ) const {
     if ( !rulesSet ) 
     {
         argumentRules.push_back( new ArgumentRule( "", true, valType::getClassTypeSpec() ) );
-        argumentRules.push_back( new Ellipsis (     valType().getTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis (     valType::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -98,7 +98,7 @@ const ArgumentRules& Func_vector<valType>::getArgumentRules( void ) const {
 template <typename valType>
 const std::string& Func_vector<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_vector<" + valType().getTypeSpec() + ">";
+    static std::string rbClassName = "Func_vector<" + valType::getClassTypeSpec() + ">";
     
 	return rbClassName; 
 }
@@ -108,7 +108,7 @@ const std::string& Func_vector<valType>::getClassName(void) {
 template <typename valType>
 const TypeSpec& Func_vector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( "Func_vector", new TypeSpec( RbFunction::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

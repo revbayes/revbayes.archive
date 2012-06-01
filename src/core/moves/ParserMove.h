@@ -34,6 +34,9 @@ public:
     ParserMove(const ParserMove& m);                                                                                                            //!< Copy constructor
     virtual                                 ~ParserMove(void);                                                                             //!< Destructor
     
+    // the value type definition
+    typedef InferenceMove valueType;  
+    
     // Basic utility functions
     ParserMove*                             clone(void) const;                                                                  //!< Clone the object
     static const std::string&               getClassName(void);                                                                     //!< Get class name
@@ -53,6 +56,7 @@ public:
     // functions you should not override
     const InferenceMove*                    getLeanMove(void) const;
     const std::vector<RbPtr<DAGNode> >&     getMoveArgumgents(void) const;
+    const InferenceMove&                    getValue() const;                                                                       //!< Get the internal move object.
 
 protected:
     
