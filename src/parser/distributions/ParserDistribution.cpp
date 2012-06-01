@@ -17,7 +17,7 @@
  */
 
 #include "ConstantNode.h"
-#include "ConstArgument.h"
+#include "Argument.h"
 #include "ConstArgumentRule.h"
 #include "ParserDistribution.h"
 #include "Environment.h"
@@ -129,9 +129,9 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
     
     if ( !methodsSet ) {
         
-        lnPdfArgRules->push_back( new ConstArgumentRule( "x", RbObject::getClassTypeSpec() ) );
+        lnPdfArgRules->push_back( new ArgumentRule( "x", true, RbObject::getClassTypeSpec() ) );
         
-        pdfArgRules->push_back( new ConstArgumentRule( "x", RbObject::getClassTypeSpec() ) );
+        pdfArgRules->push_back( new ArgumentRule( "x", true, RbObject::getClassTypeSpec() ) );
         
         methods.addFunction( "lnPdf", new SimpleMemberFunction( Real::getClassTypeSpec()    , lnPdfArgRules ) );
         methods.addFunction( "pdf",   new SimpleMemberFunction( Real::getClassTypeSpec()    , pdfArgRules   ) );
@@ -208,7 +208,7 @@ void ParserDistribution::rv(void) {
 
 
 void ParserDistribution::setConstMember(std::string const &name, const RbPtr<const Variable> &var) {
-    params.push_back( new ConstArgument(var, name) );
+    params.push_back( new Argument(var->clone(), name) );
 }
 
 /** We delegate the call to the inference distribution. */

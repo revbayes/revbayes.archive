@@ -249,7 +249,7 @@ const MemberRules& Model::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ConstArgumentRule( "sinknode"  , RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "sinknode", true, RbObject::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( RbObject::getClassTypeSpec() ) );
         
         rulesSet = true;

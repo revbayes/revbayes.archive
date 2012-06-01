@@ -60,8 +60,8 @@ const ArgumentRules& Func_dppConFromExpNumClusters::getArgumentRules( void ) con
 	
     if ( !rulesSet ) {
 		
-        argumentRules.push_back( new ConstArgumentRule( "clusters", RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "number",   RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "clusters", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "number",   true, RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
 	

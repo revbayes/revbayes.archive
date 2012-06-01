@@ -107,9 +107,9 @@ const ArgumentRules& ConstructorTaxonData<valueType>::getArgumentRules(void) con
     
     if (!rulesSet) {
         
-        argRules.push_back( new ConstArgumentRule( "name", RbString::getClassTypeSpec() ) );
+        argRules.push_back( new ArgumentRule( "name", true, RbString::getClassTypeSpec() ) );
         // \TODO: We should specificly expect elements of type character and not DAG node containers for which we cannot guarantee what is inside.
-        argRules.push_back( new ConstArgumentRule( "x"   , TypeSpec( RlVector<valueType>::getClassTypeSpec(), new TypeSpec( RlCharacterState::getClassTypeSpec() ) ) ) );
+        argRules.push_back( new ArgumentRule( "x"   , true, TypeSpec( RlVector<valueType>::getClassTypeSpec(), new TypeSpec( RlCharacterState::getClassTypeSpec() ) ) ) );
         //       argRules.push_back( new ConstArgumentRule( "x"   , RbObject::getClassTypeSpec() ) );
         
         rulesSet = true;

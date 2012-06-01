@@ -94,8 +94,8 @@ const ArgumentRules& Func_rep<valueType>::getArgumentRules( void ) const {
     
     if (!rulesSet) {
         
-        argumentRules.push_back( new ConstArgumentRule( "x",        valueType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "times",    Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x",     true, valueType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "times", true, Natural::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

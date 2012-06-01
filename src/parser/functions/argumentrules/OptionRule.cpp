@@ -32,7 +32,7 @@
 
 
 /** Construct rule without default value; use "" for no label. */
-OptionRule::OptionRule( const std::string& argName, const RlVector<RbString> &optVals ) : ConstArgumentRule( argName, RbString::getClassTypeSpec() ), options( optVals ) {
+OptionRule::OptionRule( const std::string& argName, const RlVector<RbString> &optVals ) : ArgumentRule( argName, true, RbString::getClassTypeSpec() ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -40,7 +40,7 @@ OptionRule::OptionRule( const std::string& argName, const RlVector<RbString> &op
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, const RbPtr<RbString> &defVal, const RlVector<RbString> &optVals ) : ConstArgumentRule( argName, RbPtr<RbLanguageObject>( (RbString*) defVal ) ), options( optVals ) {
+OptionRule::OptionRule(const std::string& argName, const RbPtr<RbString> &defVal, const RlVector<RbString> &optVals ) : ArgumentRule( argName, true, RbString::getClassTypeSpec(), RbPtr<RbLanguageObject>( (RbString*) defVal ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -84,7 +84,7 @@ const std::string& OptionRule::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& OptionRule::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ConstArgumentRule::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ArgumentRule::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

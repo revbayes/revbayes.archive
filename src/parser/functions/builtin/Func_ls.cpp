@@ -74,7 +74,7 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ConstArgumentRule( "all", new RbBoolean( false ) ) );
+        argumentRules.push_back( new ArgumentRule( "all", true, RbBoolean::getClassTypeSpec(), new RbBoolean( false ) ) );
         rulesSet = true;
     }
 

@@ -86,7 +86,7 @@ const ArgumentRules& Func_CtmmTransitionProbabilities::getArgumentRules(void) co
     if (!rulesSet)
         {
 //        argumentRules.push_back( new ConstArgumentRule( "q", RateMatrix::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "t", RealPos::getClassTypeSpec()    ) );
+        argumentRules.push_back( new ArgumentRule( "t", true, RealPos::getClassTypeSpec()    ) );
         rulesSet = true;
         }
 

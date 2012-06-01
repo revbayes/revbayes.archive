@@ -142,7 +142,7 @@ const MethodTable& MemberObject::getMethods(void) const {
         methods.addFunction("memberNames", new SimpleMemberFunction(RbVoid_name, getMemberNamesArgRules) );
         
         // add the 'memberNames()' method
-        getArgRules->push_back( new ConstArgumentRule( "name" , RbString::getClassTypeSpec() ) );
+        getArgRules->push_back( new ArgumentRule( "name", true, RbString::getClassTypeSpec() ) );
         methods.addFunction("get", new SimpleMemberFunction(RbLanguageObject::getClassTypeSpec(), getArgRules) );
         
         methodsSet = true;

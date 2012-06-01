@@ -49,7 +49,7 @@ const ArgumentRules& Func_type::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ConstArgumentRule( "variable",   RbObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "variable", true, RbObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

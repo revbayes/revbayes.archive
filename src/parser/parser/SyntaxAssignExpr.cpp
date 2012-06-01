@@ -229,7 +229,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
             
             RbFunction* func = new Func_reference();
             std::vector<RbPtr<Argument> > args;
-            args.push_back( new ConstArgument( RbPtr<const Variable>( (Variable *)theVariable ) ) );
+            args.push_back( new Argument( theVariable ) );
             func->processArguments(args);
             theVariable = RbPtr<Variable>( new Variable( new DeterministicNode( func, NULL ) ) );
         }

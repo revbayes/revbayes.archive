@@ -68,7 +68,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ConstArgumentRule( "x", TypeSpec( RlVector<Real>::getClassTypeSpec(), new TypeSpec(Real::getClassTypeSpec() ) ) ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, TypeSpec( RlVector<Real>::getClassTypeSpec(), new TypeSpec(Real::getClassTypeSpec() ) ) ) );
 //        argumentRules.push_back( new Ellipsis( TypeSpec(Vector::getClassTypeSpec(), new TypeSpec( Real::getClassTypeSpec() ) ) ) );
         rulesSet = true;
     }

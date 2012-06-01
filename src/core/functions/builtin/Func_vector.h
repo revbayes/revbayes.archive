@@ -85,7 +85,7 @@ const ArgumentRules& Func_vector<valType>::getArgumentRules( void ) const {
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ConstArgumentRule( "", valType().getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, valType::getClassTypeSpec() ) );
         argumentRules.push_back( new Ellipsis (     valType().getTypeSpec() ) );
         rulesSet = true;
     }

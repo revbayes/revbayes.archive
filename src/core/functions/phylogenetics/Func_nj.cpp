@@ -66,9 +66,9 @@ const ArgumentRules& Func_nj::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "d",     DistanceMatrix::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "bionj", RbString::getClassTypeSpec()       ) );
-        argumentRules.push_back( new ConstArgumentRule( "ties",  RbString::getClassTypeSpec()       ) );
+        argumentRules.push_back( new ArgumentRule( "d",     true, DistanceMatrix::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "bionj", true, RbString::getClassTypeSpec()       ) );
+        argumentRules.push_back( new ArgumentRule( "ties",  true, RbString::getClassTypeSpec()       ) );
         rulesSet = true;
         }
 

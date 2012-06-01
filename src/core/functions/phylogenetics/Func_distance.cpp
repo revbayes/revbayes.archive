@@ -181,12 +181,12 @@ const ArgumentRules& Func_distance::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "data",   RlCharacterData::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "model",  RbString::getClassTypeSpec()      ) );
-        argumentRules.push_back( new ConstArgumentRule( "freqs",  RbString::getClassTypeSpec()      ) );
-        argumentRules.push_back( new ConstArgumentRule( "asrv",   RbString::getClassTypeSpec()      ) );
-        argumentRules.push_back( new ConstArgumentRule( "shape",  Real::getClassTypeSpec()          ) );
-        argumentRules.push_back( new ConstArgumentRule( "pinvar", Real::getClassTypeSpec()          ) );
+        argumentRules.push_back( new ArgumentRule( "data",   true, RlCharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "model",  true, RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ArgumentRule( "freqs",  true, RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ArgumentRule( "asrv",   true, RbString::getClassTypeSpec()      ) );
+        argumentRules.push_back( new ArgumentRule( "shape",  true, Real::getClassTypeSpec()          ) );
+        argumentRules.push_back( new ArgumentRule( "pinvar", true, Real::getClassTypeSpec()          ) );
         rulesSet = true;
         }
 

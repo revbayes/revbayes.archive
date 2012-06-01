@@ -32,10 +32,13 @@ class RbObject;
 
 class ArgumentRule : public RbInternal {
 
-    public:
+    public: 
+        ArgumentRule(const std::string& argName, const bool &c, const TypeSpec& argTypeSp);                                             //!< Constructor of rule without default value
+        ArgumentRule(const std::string& argName, const bool &c, const TypeSpec& argTypeSp, const RbPtr<RbLanguageObject> &defVal);      //!< Constructor of rule without default value
+
         
         // Basic utility functions
-        virtual ArgumentRule*       clone(void) const = 0;                                                                              //!< Clone object
+        virtual ArgumentRule*       clone(void) const;                                                                                  //!< Clone object
         static const std::string&   getClassName(void);                                                                                 //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                                                             //!< Get class type spec
         virtual const TypeSpec&     getTypeSpec(void) const;                                                                            //!< Get language type of the object
@@ -47,16 +50,18 @@ class ArgumentRule : public RbInternal {
         const TypeSpec&             getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
         bool                        hasDefault(void) const;                                                                             //!< Has default?
         virtual bool                isArgumentValid(const RbPtr<const Variable> &var, bool convert = false) const;                      //!< Is var valid argument?
-
+        bool                        isConstant(void) const;
+    
         // functions overwritten in derived class
         virtual const Variable&     getDefaultVariable(void) const;                                                                     //!< Get default argument
 
     protected:
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
 
         bool                        isArgumentValid(const RbObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;
             
         TypeSpec                    argTypeSpec;
+        Variable                    defaultVar;
+        bool                        isConst;
         std::string                 label;                                                                                              //!< Label of argument
         bool                        hasDefaultVal;                                                                                      //!< Has default
 

@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "MethodTable.h"
 #include "Move.h"
@@ -116,7 +116,7 @@ const MemberRules& Move::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if (!rulesSet) {
-        memberRules.push_back( new ConstArgumentRule( "weight"  , new RealPos(1.0) ) );
+        memberRules.push_back( new ArgumentRule( "weight", true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         rulesSet = true;
     }
 

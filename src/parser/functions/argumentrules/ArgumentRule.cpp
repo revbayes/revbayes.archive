@@ -39,8 +39,22 @@
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), hasDefaultVal(false) {
+ArgumentRule::ArgumentRule(const std::string& argName, const bool &c, const TypeSpec& argTypeSp) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), isConst( c ), hasDefaultVal(false), defaultVar( NULL ) {
+
+}
+
+
+/**
+ * Construct rule without default value; use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::string& argName, const bool &c, const TypeSpec& argTypeSp, const RbPtr<RbLanguageObject> &defVal) : RbInternal(), label(argName), argTypeSpec( argTypeSp ), isConst( c ), hasDefaultVal( true ), defaultVar( new ConstantNode( defVal ) ) {
     
+}
+
+
+
+ArgumentRule* ArgumentRule::clone( void ) const {
+    return new ArgumentRule( *this );
 }
 
 
@@ -72,7 +86,7 @@ const TypeSpec& ArgumentRule::getClassTypeSpec(void) {
 
 
 const Variable& ArgumentRule::getDefaultVariable( void ) const {
-    throw RbException("Argument \"" + label + "\" does not have a default value.");
+    return defaultVar;
 }
 
 
@@ -211,6 +225,11 @@ bool ArgumentRule::isArgumentValid(const RbObject& var, bool &conversionNeeded, 
     }
     
     return false;
+}
+
+
+bool ArgumentRule::isConstant( void ) const {
+    return isConst;
 }
  
 

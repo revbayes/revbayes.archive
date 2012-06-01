@@ -88,8 +88,8 @@ const ArgumentRules& Func_print::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ConstArgumentRule( "filename", new RbString("") ) );
-        argumentRules.push_back( new ConstArgumentRule( "append", new RbBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "filename", true, RbString::getClassTypeSpec(), new RbString("") ) );
+        argumentRules.push_back( new ArgumentRule( "append", true, RbBoolean::getClassTypeSpec(), new RbBoolean(false) ) );
         argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }

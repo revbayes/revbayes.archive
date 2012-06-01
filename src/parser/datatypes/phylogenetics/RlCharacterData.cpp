@@ -261,8 +261,8 @@ const MemberRules& RlCharacterData::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         
-        memberRules.push_back( new ConstArgumentRule("type", RbString::getClassTypeSpec() ) );
-        memberRules.push_back( new ConstArgumentRule("x", RlTaxonData::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("type", true, RbString::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("x", true, RlTaxonData::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( RlTaxonData::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -300,8 +300,8 @@ const MethodTable& RlCharacterData::getMethods(void) const {
     if ( methodsSet == false ) 
     {
         
-        excludecharArgRules->push_back(        new ConstArgumentRule(     "", Natural::getClassTypeSpec()       ) );
-        excludecharArgRules2->push_back(       new ConstArgumentRule(     "", TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
+        excludecharArgRules->push_back(        new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
+        excludecharArgRules2->push_back(       new ArgumentRule(     "", true, TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
         
         methods.addFunction("names",               new SimpleMemberFunction(TypeSpec(RlVector<RbString>::getClassTypeSpec(), new TypeSpec( RbString::getClassTypeSpec() ) ),  namesArgRules              ) );
         methods.addFunction("nchar",               new SimpleMemberFunction(TypeSpec(RlVector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
@@ -324,7 +324,7 @@ const MethodTable& RlCharacterData::getMethods(void) const {
         
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
+        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new SimpleMemberFunction( RlTaxonData::getClassTypeSpec(), squareBracketArgRules) );
         
         

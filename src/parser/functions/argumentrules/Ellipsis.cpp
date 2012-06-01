@@ -24,12 +24,12 @@
 
 
 /** Constructor allowing all types; ref MemberObject whether arguments should be values or references */
-Ellipsis::Ellipsis( void ) : ArgumentRule("", RbObject::getClassTypeSpec() ) {
+Ellipsis::Ellipsis( void ) : ArgumentRule("", true, RbObject::getClassTypeSpec() ) {
 }
 
 
 /** Constructor requiring a certain type specification */
-Ellipsis::Ellipsis(const TypeSpec& typeSp ) : ArgumentRule("", typeSp) {
+Ellipsis::Ellipsis(const TypeSpec& typeSp ) : ArgumentRule("", true, typeSp) {
 }
 
 

@@ -201,7 +201,7 @@ const ArgumentRules& Func_readTraces::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ConstArgumentRule( "filename", RbString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "filename", true, RbString::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

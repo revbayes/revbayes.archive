@@ -71,7 +71,7 @@ const ArgumentRules& Func_concatenate::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "data",  RlCharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "data", true, RlCharacterData::getClassTypeSpec() ) );
         argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
         }

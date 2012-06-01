@@ -412,7 +412,7 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             
             // create the arguments which consist only of the single paramater inside the square brackets
             std::vector<RbPtr<Argument> > args;
-            args.push_back( new ConstArgument( RbPtr<const Variable>( (Variable *)indexVar ) ) );
+            args.push_back( new Argument( indexVar ) );
             
             // get the member function with name "[]"
             SimpleMemberFunction* theMemberFunction = static_cast<SimpleMemberFunction*>( mt.getFunction( "[]", args ).clone() );

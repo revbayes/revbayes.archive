@@ -95,8 +95,8 @@ const ArgumentRules& Func__or<firstValType, secondValType>::getArgumentRules( vo
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ConstArgumentRule( "first",  firstValType() .getTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "second", secondValType().getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "first",  true, firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "second", true, secondValType().getTypeSpec() ) );
         rulesSet = true;
         }
 

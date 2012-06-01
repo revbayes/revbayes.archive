@@ -351,7 +351,7 @@ const MemberRules& Set<setType>::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ConstArgumentRule( "x"  , setType::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "x", true, setType::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( setType::getClassTypeSpec() ) );
         
         rulesSet = true;

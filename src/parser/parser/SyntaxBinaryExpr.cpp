@@ -18,7 +18,7 @@
 #include <sstream>
 #include <vector>
 
-#include "ConstArgument.h"
+#include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
@@ -116,9 +116,9 @@ RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
     // Package the arguments
     std::vector<RbPtr<Argument> > args;
     RbPtr<Variable> left = leftOperand->evaluateContent(env);
-    args.push_back( new ConstArgument(RbPtr<const Variable>( left ), "") );
+    args.push_back( new Argument( left, "") );
     RbPtr<Variable> right = rightOperand->evaluateContent(env);
-    args.push_back( new ConstArgument(RbPtr<const Variable>( right ), "") );
+    args.push_back( new Argument( right, "") );
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];

@@ -82,7 +82,7 @@ const ArgumentRules& Func_transpose<matrixType>::getArgumentRules( void ) const 
 
     if (!rulesSet) {
 
-        argumentRules.push_back( new ConstArgumentRule( "x", matrixType().getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, matrixType::getClassTypeSpec() ) );
 
         rulesSet = true;
     }

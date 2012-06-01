@@ -245,7 +245,7 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
     
     if (!rulesSet) 
         {
-        argumentRules.push_back( new ConstArgumentRule( "file",    RbString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "file", true, RbString::getClassTypeSpec() ) );
         rulesSet = true;
         }
             

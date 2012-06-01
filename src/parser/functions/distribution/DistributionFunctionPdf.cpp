@@ -47,14 +47,14 @@ DistributionFunctionPdf::DistributionFunctionPdf( const RbPtr<ParserDistribution
     for ( std::vector<ArgumentRule*>::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
         // check if this rule has a default value
         if ((*i)->hasDefault()) {
-            argumentRules->push_back( new ConstArgumentRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), RbPtr<RbLanguageObject>( (*i)->getDefaultVariable().getValue().getSingleValue()->clone() ) ) );
+            argumentRules->push_back( new ArgumentRule( (*i)->getArgumentLabel(), true, (*i)->getArgumentTypeSpec(), RbPtr<RbLanguageObject>( (*i)->getDefaultVariable().getValue().getSingleValue()->clone() ) ) );
         } else {
-            argumentRules->push_back( new ConstArgumentRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
+            argumentRules->push_back( new ArgumentRule( (*i)->getArgumentLabel(), true, (*i)->getArgumentTypeSpec() ) );
         }
     }
     
-    argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "x"  , distribution->getVariableType() ) );
-    argumentRules->push_back(                      new ConstArgumentRule( "log", new RbBoolean(false)            ) );
+    argumentRules->insert( argumentRules->begin(), new ArgumentRule( "x"  , true, distribution->getVariableType() ) );
+    argumentRules->push_back(                      new ArgumentRule( "log", true, RbBoolean::getClassTypeSpec(), new RbBoolean(false)            ) );
     
     name = "pdf<" + dist->getClassName() + ">(";
     for ( std::vector<ArgumentRule*>::const_iterator i = argumentRules->begin(); i != argumentRules->end(); i++ ) {

@@ -23,55 +23,5 @@
 #include "RbUtil.h"
 
 
-/** Construct from ReferenceArgument label and DAG node */
-ReferenceArgument::ReferenceArgument(const RbPtr<Variable> &v, const std::string& argLabel) : Argument( argLabel ) {
-    
-    var = v;
-    
-}
 
-
-ReferenceArgument* ReferenceArgument::clone( void ) const {
-    return new ReferenceArgument( *this );
-}
-
-
-/** Get class name of object */
-const std::string& ReferenceArgument::getClassName(void) { 
-    
-    static std::string rbClassName = "Constant Argument";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& ReferenceArgument::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Argument::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& ReferenceArgument::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-const RbPtr<const Variable>& ReferenceArgument::getVariable(void) const {
-    return RbPtr<const Variable>( var );
-}
-
-
-
-/** Complete info about object */
-void ReferenceArgument::printValue(std::ostream &o) const {
-    
-    o << label << " = ";
-    var->printValue(o);
-    
-}
 

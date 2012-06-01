@@ -110,7 +110,7 @@ const ArgumentRules& Func_simplex<valType>::getArgumentRules( void ) const {
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ConstArgumentRule( "", valType().getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, valType().getTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -127,8 +127,8 @@ const ArgumentRules& Func_simplex<RealPos>::getArgumentRules( void ) const {
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ConstArgumentRule( "", RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "", RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, RealPos::getClassTypeSpec() ) );
         argumentRules.push_back( new Ellipsis (     RealPos::getClassTypeSpec() ) );
         rulesSet = true;
         }

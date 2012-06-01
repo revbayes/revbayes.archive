@@ -109,9 +109,9 @@ const MethodTable& ParserDistributionContinuous::getMethods( void ) const {
     
     if ( !methodsSet ) {
         
-        cdfArgRules->push_back     ( new ConstArgumentRule    ( "q", RealPos::getClassTypeSpec()      ) );
+        cdfArgRules->push_back     ( new ArgumentRule    ( "q", true, RealPos::getClassTypeSpec()      ) );
         
-        quantileArgRules->push_back( new ConstArgumentRule    ( "p", RealPos::getClassTypeSpec()      ) );
+        quantileArgRules->push_back( new ArgumentRule    ( "p", true, RealPos::getClassTypeSpec()      ) );
         
         methods.addFunction( "cdf",      new SimpleMemberFunction( Probability::getClassTypeSpec(), cdfArgRules      ) );
         methods.addFunction( "quantile", new SimpleMemberFunction( Real::getClassTypeSpec(), quantileArgRules ) );

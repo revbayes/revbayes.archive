@@ -15,7 +15,6 @@
 
 #include "Argument.h"
 #include "ConstantNode.h"
-#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
@@ -109,7 +108,7 @@ RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Package the argument
     std::vector<RbPtr<Argument> > arg;
-    arg.push_back( new ConstArgument( RbPtr<const Variable>( (Variable *)expression->evaluateContent(env)) , "" ) );
+    arg.push_back( new Argument( expression->evaluateContent(env), "" ) );
 
     // Find the function
     std::string funcName = "_" + opCode[operation];

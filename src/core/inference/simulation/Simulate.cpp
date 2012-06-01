@@ -192,7 +192,7 @@ const MemberRules& Simulate::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ConstArgumentRule( "model"    , Model::getClassTypeSpec()    ) );        
+        memberRules.push_back( new ArgumentRule( "model", true, Model::getClassTypeSpec()    ) );        
         
         rulesSet = true;
     }
@@ -211,7 +211,7 @@ const MethodTable& Simulate::getMethods(void) const {
     if (!methodsSet) {
         
         ArgumentRules* updateArgRules = new ArgumentRules();
-        updateArgRules->push_back( new ConstArgumentRule( "dataElements", Natural::getClassTypeSpec()     ) );
+        updateArgRules->push_back( new ArgumentRule( "dataElements", true, Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new SimpleMemberFunction( RbVoid_name, updateArgRules ) );
         
         // get Monitors

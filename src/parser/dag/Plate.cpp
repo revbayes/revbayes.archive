@@ -104,7 +104,7 @@ const MethodTable& Plate::getMethods(void) const {
     if ( methodsSet == false ) {
         
         // add the 'addVariable()' method
-        addArgRules->push_back( new ConstArgumentRule( "var"  , RbObject::getClassTypeSpec() )     );
+        addArgRules->push_back( new ArgumentRule( "var", true, RbObject::getClassTypeSpec() ) );
         
         methods.addFunction("add", new SimpleMemberFunction(RbVoid_name, addArgRules) );
         
@@ -125,8 +125,8 @@ const MemberRules& Plate::getMemberRules(void) const {
     
     if (!rulesSet) 
     {
-        memberRules.push_back( new ConstArgumentRule( "size" , Natural::getClassTypeSpec() ) );
-        memberRules.push_back( new ConstArgumentRule( "parent" , Plate::getClassTypeSpec(), NULL ) );
+        memberRules.push_back( new ArgumentRule( "size"  , true,  Natural::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "parent", false, Plate::getClassTypeSpec(), NULL ) );
         
         rulesSet = true;
     }

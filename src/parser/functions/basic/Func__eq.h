@@ -93,8 +93,8 @@ const ArgumentRules& Func__eq<firstValType, secondValType>::getArgumentRules(voi
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
-        argumentRules.push_back( new ConstArgumentRule( "first", firstValType() .getTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "second", secondValType().getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "first",  true, firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "second", true, secondValType().getTypeSpec() ) );
         rulesSet = true;
     }
 

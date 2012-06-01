@@ -21,6 +21,7 @@
 #include "DAGNode.h"
 #include "MemberObject.h"
 #include "RbUtil.h"
+#include "ReferenceArgument.h"
 #include "TypeSpec.h"
 
 #include <sstream>
@@ -76,12 +77,17 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbPtr<RbLanguageObject> ConstructorFunction::executeFunction(const std::vector<const RbObject *> &args) {
+RlValue<RbLanguageObject> ConstructorFunction::execute( void ) {
     
     copyObject = templateObject->clone();
 
     for ( size_t i = 0; i < args.size(); i++ ) {
-        copyObject->setConstMember( this->args[i]->getLabel(), RbPtr<const Variable>( new Variable( new ConstantNode( RlValue<RbLanguageObject>( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( args[i]->clone() ) ) ) ) ) ) );
+        
+        if ( args[i]->isConstant() ) {
+            copyObject->setConstMember( args[i]->getLabel(), args[i]->getVariable() );
+        } else {
+            copyObject->setMember( args[i]->getLabel(), args[i]->getReferenceVariable() );
+        }
     }
  
     return RbPtr<RbLanguageObject>( copyObject );

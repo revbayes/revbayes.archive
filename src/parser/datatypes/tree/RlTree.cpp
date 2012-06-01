@@ -87,7 +87,7 @@ const MemberRules& RlTree::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ConstArgumentRule( "topology" , Topology::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "topology" , true, Topology::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

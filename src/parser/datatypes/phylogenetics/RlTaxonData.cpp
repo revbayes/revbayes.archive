@@ -96,8 +96,8 @@ const MemberRules& RlTaxonData::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ConstArgumentRule( "name", RbString::getClassTypeSpec() ) );
-        memberRules.push_back( new ConstArgumentRule( "x"   , RlCharacterState::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "name", true, RbString::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "x"   , true, RlCharacterState::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( RlCharacterState::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -120,7 +120,7 @@ const MethodTable& RlTaxonData::getMethods(void) const {
         
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
+        squareBracketArgRules->push_back( new ArgumentRule( "index", true, Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new SimpleMemberFunction( RbObject::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance

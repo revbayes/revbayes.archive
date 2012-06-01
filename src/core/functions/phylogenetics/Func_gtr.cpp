@@ -116,8 +116,8 @@ const ArgumentRules& Func_gtr::getArgumentRules(void) const {
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ConstArgumentRule( "rates", Simplex::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "freqs", Simplex::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "rates", true, Simplex::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "freqs", true, Simplex::getClassTypeSpec() ) );
         rulesSet = true;
         }
 

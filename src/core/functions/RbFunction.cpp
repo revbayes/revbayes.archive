@@ -18,7 +18,6 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "Ellipsis.h"
 #include "RbException.h"
@@ -741,7 +740,7 @@ void RbFunction::processArguments( const std::vector<RbPtr<Argument> >& passedAr
         theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
         size_t idx = args.size();
         passedArgIndex[i] = static_cast<int>( idx );
-        args.push_back( new ConstArgument( RbPtr<const Variable>( theVar ), "" ) );
+        args.push_back( new Argument( theVar, "" ) );
     }
 
     argsProcessed = true;
@@ -771,7 +770,7 @@ void RbFunction::setArgument(const std::string& name, const RbPtr<Argument>& arg
 //    setArgumentVariable(name, arg.getVariablePtr() );
     
     // make sure that the argument has the correct label
-    ConstArgument *myArg = new ConstArgument( arg->getVariable(), name );
+    Argument *myArg = new Argument( arg->getReferenceVariable(), name );
     
     // just add this node to the vector
     args.push_back(myArg);

@@ -48,13 +48,13 @@ DistributionFunctionQuantile::DistributionFunctionQuantile( const RbPtr<ParserDi
     for ( std::vector<ArgumentRule*>::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
         // check if this rule has a default value
         if ((*i)->hasDefault()) {
-            argumentRules->push_back( new ConstArgumentRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), (*i)->getDefaultVariable().getValue().getSingleValue()->clone() ) );
+            argumentRules->push_back( new ArgumentRule( (*i)->getArgumentLabel(), true, (*i)->getArgumentTypeSpec(), (*i)->getDefaultVariable().getValue().getSingleValue()->clone() ) );
         } else {
-            argumentRules->push_back( new ConstArgumentRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
+            argumentRules->push_back( new ArgumentRule( (*i)->getArgumentLabel(), true, (*i)->getArgumentTypeSpec() ) );
         }
     }
     
-    argumentRules->insert( argumentRules->begin(), new ConstArgumentRule( "p"  , Probability::getClassTypeSpec()     ) );
+    argumentRules->insert( argumentRules->begin(), new ArgumentRule( "p", true, Probability::getClassTypeSpec()     ) );
     
 }
 

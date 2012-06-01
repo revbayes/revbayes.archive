@@ -89,7 +89,7 @@ const ArgumentRules& Func__unot<valType>::getArgumentRules( void ) const {
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ConstArgumentRule( "value", valType().getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "value", true, valType().getTypeSpec() ) );
         rulesSet = true;
         }
 

@@ -87,7 +87,7 @@ const ArgumentRules& Func__uplus<valType, retType>::getArgumentRules( void ) con
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ConstArgumentRule( "value", valType().getTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "value", true, valType().getTypeSpec() ) );
         rulesSet = true;
         }
 

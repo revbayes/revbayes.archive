@@ -33,22 +33,24 @@ class Argument : public RbInternal {
 
     public:
 
-        // Basic utility functions
-        virtual Argument*                   clone(void) const = 0;                          //!< Clone object
-        static const std::string&           getClassName(void);                                                         //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
-
-        // Regular functions
-        const std::string&                  getLabel(void) const;                                                       //!< Get label of argument
-
-
-        // functions you need to overwrite (in ConstArgument and ReferenceArgument)
-        virtual const RbPtr<const Variable>& getVariable(void) const = 0;
-
-    protected:
-        Argument(const std::string& argLabel);                                              //!< Constructor 
-
-        std::string                         label;                                                                      //!< Label of argument
+    Argument(const RbPtr<Variable> &arg, const std::string& argLabel = "", bool isConst = true);                    //!< Constructor 
+    
+    // Basic utility functions
+    Argument*                           clone(void) const;                                                          //!< Clone object
+    static const std::string&           getClassName(void);                                                         //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
+    const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+    void                                printValue(std::ostream& o) const;                                          //!< Complete info about object
+    
+    // Regular functions
+    const std::string&                  getLabel(void) const;
+    RbPtr<const Variable>               getVariable(void) const;                                                    //!< Get the variable contained in this argument
+    const RbPtr<Variable>&              getReferenceVariable(void) const;
+    bool                                isConstant(void) const;
+private:
+    RbPtr<Variable>                     var;                                                                        //!< Pointer to the variable slot containing the variable (and value)
+    bool                                isConst;                                                                    //!< Is this a constant variable?
+    std::string                         label;                                                                      //!< Label of argument
     
 };
 

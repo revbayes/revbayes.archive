@@ -53,8 +53,8 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ConstArgumentRule( "base",     Real::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "exponent", Real::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "base",     true, Real::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "exponent", true, Real::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Environment.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -30,10 +30,10 @@ SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElem
     
     // Make argument rule from element
     if (defaultExpr == NULL)
-        argRule = new ConstArgumentRule(label->getValue(), *argType);
+        argRule = new ArgumentRule(label->getValue(), true, *argType);
     else {
         Environment env = Environment();
-        argRule = new ConstArgumentRule(label->getValue(), *argType, defaultExpr->evaluateContent( env )->getDagNode()->getValue().getSingleValue() );
+        argRule = new ArgumentRule(label->getValue(), true, *argType, defaultExpr->evaluateContent( env )->getDagNode()->getValue().getSingleValue() );
     }
 }
 
@@ -59,10 +59,10 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
     
     // Make argument rule from element
     if (defaultExpr == NULL)
-        argRule = new ConstArgumentRule(label->getValue(), *argType);
+        argRule = new ArgumentRule(label->getValue(), true, *argType);
     else {
         Environment env = Environment();
-        argRule = new ConstArgumentRule(label->getValue(), *argType, defaultExpr->evaluateContent(env)->getDagNode()->getValue().getSingleValue() );
+        argRule = new ArgumentRule(label->getValue(), true, *argType, defaultExpr->evaluateContent(env)->getDagNode()->getValue().getSingleValue() );
     }
 }
 

@@ -69,8 +69,8 @@ const ArgumentRules& Func__range::getArgumentRules( void ) const {
 
     if (!rulesSet) {
 
-        argumentRules.push_back( new ConstArgumentRule( "first", Integer::getClassTypeSpec() ) );
-        argumentRules.push_back( new ConstArgumentRule( "last",  Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "first", true, Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "last",  true, Integer::getClassTypeSpec() ) );
         rulesSet = true;
     }
 

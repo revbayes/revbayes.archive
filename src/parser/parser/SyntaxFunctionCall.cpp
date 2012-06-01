@@ -159,7 +159,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
             theVar->setDagNode( new ConstantNode( clonedVal ) );
         }
         
-        RbPtr<Argument> theArg( new ConstArgument( RbPtr<const Variable>( (Variable *) theVar), theLabel.getValue() ) );
+        RbPtr<Argument> theArg( new Argument( theVar, theLabel.getValue() ) );
         args.push_back( theArg );
     }
 

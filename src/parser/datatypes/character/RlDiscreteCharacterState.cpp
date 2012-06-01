@@ -54,7 +54,7 @@ const MemberRules& RlDiscreteCharacterState::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ConstArgumentRule( "state"  , RbString::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "state", true, RbString::getClassTypeSpec() ) );
        
         rulesSet = true;
     }

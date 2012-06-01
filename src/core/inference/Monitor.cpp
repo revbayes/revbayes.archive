@@ -77,7 +77,7 @@ const MemberRules& Monitor::getMemberRules( void ) const {
     
     if (!rulesSet) 
     {
-        memberRules.push_back( new ConstArgumentRule( "printgen"  , Integer::getClassTypeSpec()          ) );
+        memberRules.push_back( new ArgumentRule( "printgen", true, Integer::getClassTypeSpec()          ) );
         rulesSet = true;
     }
     

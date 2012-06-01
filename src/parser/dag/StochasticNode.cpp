@@ -930,12 +930,12 @@ const MethodTable& StochasticNode::getMethods(void) const {
         
         // method "clamp"
         ArgumentRules* clampArgRules = new ArgumentRules();
-        clampArgRules->push_back( new ConstArgumentRule("x", RbLanguageObject::getClassTypeSpec() ) );
+        clampArgRules->push_back( new ArgumentRule("x", true, RbLanguageObject::getClassTypeSpec() ) );
         methods.addFunction("clamp", new DagNodeFunction( RbVoid_name, clampArgRules) );
         
         // method "setval"
         ArgumentRules* setvalArgRules = new ArgumentRules();
-        setvalArgRules->push_back( new ConstArgumentRule("x", RbLanguageObject::getClassTypeSpec() ) );
+        setvalArgRules->push_back( new ArgumentRule("x", true, RbLanguageObject::getClassTypeSpec() ) );
         methods.addFunction("setval", new DagNodeFunction( RbVoid_name, setvalArgRules) );
         
         // necessary call for proper inheritance

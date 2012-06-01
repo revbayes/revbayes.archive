@@ -348,9 +348,9 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back( new ConstArgumentRule( "model"    , Model::getClassTypeSpec()    ) );
-        memberRules.push_back( new ConstArgumentRule( "moves"    , RbObject::getClassTypeSpec() ) );
-        memberRules.push_back( new ConstArgumentRule( "monitors" , RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "model"    , true, Model::getClassTypeSpec()    ) );
+        memberRules.push_back( new ArgumentRule( "moves"    , true, RbObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "monitors" , true, RbObject::getClassTypeSpec() ) );
 
         rulesSet = true;
     }
@@ -369,7 +369,7 @@ const MethodTable& Mcmc::getMethods(void) const {
         
         // method "run" for "n" generations
         ArgumentRules* updateArgRules = new ArgumentRules();
-        updateArgRules->push_back( new ConstArgumentRule( "generations", Natural::getClassTypeSpec()     ) );
+        updateArgRules->push_back( new ArgumentRule( "generations", true, Natural::getClassTypeSpec()     ) );
         methods.addFunction("run", new SimpleMemberFunction( RbVoid_name, updateArgRules) );
         
 //        // get Monitors

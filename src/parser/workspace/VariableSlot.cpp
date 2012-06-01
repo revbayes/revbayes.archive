@@ -285,7 +285,7 @@ RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indi
         }
         
         for (int i = 0; i < size; ++i) {
-            args.push_back( new ConstArgument( (Variable*)variable[index+i], "") );
+            args.push_back( new Argument( variable[index+i], "") );
         }
     }
     else {
@@ -294,7 +294,7 @@ RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indi
         for (int i = 0; i < size; ++i) {
             tmp_indices.pop_back();
             tmp_indices.push_back( i );
-            args.push_back( new ConstArgument( (Variable*)getVectorizedVariable(tmp_indices), "") );
+            args.push_back( new Argument( getVectorizedVariable(tmp_indices), "") );
         }
     }
     

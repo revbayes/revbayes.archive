@@ -631,7 +631,7 @@ const MemberRules& RlVector<rlType>::getMemberRules(void) const {
     
     if ( ! rulesSet ) {
         // set the member rules
-        memberRules.push_back( new ConstArgumentRule( "x"  , rlType::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "x", true, rlType::getClassTypeSpec() ) );
         memberRules.push_back( new Ellipsis( rlType::getClassTypeSpec() ) );
     
         rulesSet = true;
@@ -653,7 +653,7 @@ const MethodTable& RlVector<rlType>::getMethods(void) const {
         
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ConstArgumentRule( "index" , Natural::getClassTypeSpec() ) );
+        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
         methods.addFunction("[]",  new SimpleMemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
         
         // add method for call "x.sort()" as a function

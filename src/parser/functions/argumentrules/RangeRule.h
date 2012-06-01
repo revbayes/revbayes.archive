@@ -17,14 +17,14 @@
 #ifndef RangeRule_H
 #define RangeRule_H
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "RbUtil.h"
 
 #include <string>
 
 
 template <typename valType>
-class RangeRule : public ConstArgumentRule {
+class RangeRule : public ArgumentRule {
 
     public:
                                     RangeRule(const std::string& argName, valType min, valType max);                    //!< Constructor of rule without default value
@@ -56,7 +56,7 @@ class RangeRule : public ConstArgumentRule {
 /** Construct rule without default value; use "" for no label. */
 template <typename valType>
 RangeRule<valType>::RangeRule( const std::string& argName, valType min, valType max)
-    : ConstArgumentRule( argName, min.getTypeSpec() ), minVal( min ), maxVal( max ) {
+    : ArgumentRule( argName, true, min.getTypeSpec() ), minVal( min ), maxVal( max ) {
 
     if ( min > max )
         throw RbException( "Min larger than max in range rule" );
@@ -66,7 +66,7 @@ RangeRule<valType>::RangeRule( const std::string& argName, valType min, valType 
 /** Construct rule with default value; use "" for no label. */
 template <typename valType>
 RangeRule<valType>::RangeRule( const std::string& argName, valType* defVal, valType min, valType max )
-    : ConstArgumentRule( argName, defVal ), minVal( min ), maxVal( max ) {
+    : ArgumentRule( argName, true, defVal ), minVal( min ), maxVal( max ) {
 
     if ( min > max )
         throw RbException( "Min larger than max in range rule" );
