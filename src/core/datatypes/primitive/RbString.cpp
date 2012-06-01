@@ -117,8 +117,10 @@ const TypeSpec& RbString::getTypeSpec( void ) const {
 
 
 /* Get a pointer to the elementary value. */
-void* RbString::getLeanValue(std::vector<size_t> &length) const {
-    return static_cast<void*>( &const_cast<std::string&>( value ) );
+RbValue<void*> RbString::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = static_cast<void*>( &const_cast<std::string&>( value ) );
+    return tmp;
 }
 
 

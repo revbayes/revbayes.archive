@@ -38,7 +38,7 @@ public:
     Simplex*                    clone(void) const;                                          //!< Clone object
     static const std::string&   getClassName(void);                                         //!< Get class name
     static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-    void*                       getLeanValue(std::vector<size_t> &length) const;            //!< Transform the object into a basic element pointer for fast access.
+    RbValue<void*>              getLeanValue(void) const;                                   //!< Transform the object into a basic element pointer for fast access.
     const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
     size_t                      memorySize() const;                                         //!< Get the size
     void                        printValue(std::ostream& o) const;                          //!< Print value (for user)

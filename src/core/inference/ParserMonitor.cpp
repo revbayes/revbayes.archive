@@ -103,6 +103,18 @@ void ParserMonitor::setMemberVariable(std::string const &name, const RbPtr<Varia
 }
 
 
+void ParserMonitor::setSimpleMemberValue(std::string const &name, const RbPtr<const RbLanguageObject> &var) {
+    
+    if ( attributeNames.find( name ) != attributeNames.end() ) {
+        RbValue<void*> lValue = var->getLeanValue();
+        monitor->setAttribute( name, lValue );
+    }
+    else {
+        throw RbException("Cannot set simple value which is a variable for a monitor.");
+    }
+}
+
+
 
 /** Print value for user */
 void ParserMonitor::printValue(std::ostream& o) const {

@@ -133,14 +133,12 @@ RbPtr<RbLanguageObject> DistributionFunctionPdf::executeFunction(const std::vect
     std::vector<RbValue<void*> > newArgs;
     // skip the first and the last parameter
     for (std::vector<const RbObject*>::const_iterator i = args.begin()+1; i+1 != args.end(); ++i) {
-        RbValue<void*> arg;
-        arg.value = (*i)->getLeanValue(arg.lengths);
+        RbValue<void*> arg = (*i)->getLeanValue();
         newArgs.push_back( arg );
     }
         
     // add the random value
-    RbValue<void*> arg;
-    arg.value = args[0]->getLeanValue(arg.lengths);
+    RbValue<void*> arg = args[0]->getLeanValue();
     newArgs.push_back( arg );
         
     // Setting the parameter of the distribution

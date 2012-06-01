@@ -107,15 +107,13 @@ RbPtr<RbLanguageObject> DistributionFunctionRv::executeFunction(const std::vecto
     // converting the arguments into atomic data types
     std::vector<RbValue<void*> > newArgs;
     for (std::vector<const RbObject*>::const_iterator i = args.begin(); i != args.end(); ++i) {
-        RbValue<void*> arg;
-        arg.value = (*i)->getLeanValue(arg.lengths);
+        RbValue<void*> arg = (*i)->getLeanValue();
         newArgs.push_back( arg );
     }
         
     // add te return value
     RbLanguageObject* retVal = distribution->getTemplateRandomVariable().clone();
-    RbValue<void*> arg;
-    arg.value = retVal->getLeanValue(arg.lengths);
+    RbValue<void*> arg = retVal->getLeanValue();
     newArgs.push_back( arg );
         
     // Setting the parameter of the distribution

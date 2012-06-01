@@ -62,7 +62,10 @@ public:
 //    virtual void                        monitor(int gen) = 0;                                               //!< ParserMonitor at generation gen
     //    void                                replaceDagNodes(std::vector<VariableNode*> &n);                     //!< Set the nodes vector
 //    bool                                monitorsVariable(const RbString& varName);                          //!< Tell whether the variable with name is ParserMonitored by this ParserMonitor
-        
+      
+    protected:
+    void                                    setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var);        //!< Set member variable
+
 private:
     std::set<std::string>                   attributeNames;
     std::vector<const DAGNode*>             nodes;

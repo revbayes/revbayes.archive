@@ -48,8 +48,7 @@ class RbString : public RbLanguageObject {
         static const std::string&   getClassName(void);                                 //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                             //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
-        void*                       getLeanValue(std::vector<size_t> &length) const;    //!< Transform the object into a basic element pointer for fast access.
-        std::string&                getValueReference(void) { return value; }           //!< Get value reference
+        RbValue<void*>              getLeanValue(void) const;                           //!< Transform the object into a basic element pointer for fast access.
         size_t                      memorySize() const { return sizeof( value ); }      //!< Get the size
         void                        printValue(std::ostream& o) const;                  //!< Print value (for user)
         void                        setLeanValue(const RbValue<void*> &val);            //!< Set the value of the object from a basic (lean) element pointer.

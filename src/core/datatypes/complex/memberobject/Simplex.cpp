@@ -104,8 +104,10 @@ const TypeSpec& Simplex::getClassTypeSpec(void) {
 }
 
 
-void* Simplex::getLeanValue(std::vector<size_t> &length) const {
-    return static_cast<void*>( &const_cast<std::vector<double>&>( elements ) );
+RbValue<void*> Simplex::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = static_cast<void*>( &const_cast<std::vector<double>&>( elements ) );
+    return tmp;
 }
 
 /* Get type spec */

@@ -146,8 +146,8 @@ RbValue<void *> RlValue<valueType>::getLeanValue( void ) const {
     typename std::vector<RbPtr<valueType> >::const_iterator i;
     for ( i = value.begin(); i != value.end(); i++ ) {
         const RbObject *x = *i;
-        void* elemVal = elemVal = x->getLeanValue( tmp_lengths );
-        memcpy(data, elemVal,(*i)->memorySize());
+        RbValue<void*> elemVal = elemVal = x->getLeanValue();
+        memcpy(data, elemVal.value,(*i)->memorySize());
         //        *(data) = *(*i)->getValue(lengths);
         char *tmp_ptr = (char*)data;
         tmp_ptr += (*i)->memorySize();

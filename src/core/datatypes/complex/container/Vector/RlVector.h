@@ -69,8 +69,8 @@ public:
     bool                                            operator!=(const RlVector& x) const;                            //!< Inequality
     
     // Overwritten RbObject functions
-    virtual void*                                   getLeanValue(std::vector<size_t> &length) const;                //!< Transform the object into a basic element pointer for fast access.
-    virtual size_t                                  memorySize() const;                                             //!< Get the size
+    virtual RbValue<void*>                          getLeanValue(void) const;                                       //!< Transform the object into a basic element pointer for fast access.
+    virtual size_t                                  memorySize(void) const;                                         //!< Get the size
 
     
     // Member object function
@@ -683,9 +683,10 @@ const std::vector<typename rlType::valueType>& RlVector<rlType>::getValue(void) 
 
 
 template <typename rlType>
-void* RlVector<rlType>::getLeanValue( std::vector<size_t> &lengths ) const {
-    
-    return const_cast<std::vector<elementType> *>( &elements );
+RbValue<void*> RlVector<rlType>::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = const_cast<std::vector<elementType> *>( &elements );
+    return tmp;
 }
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */

@@ -138,10 +138,10 @@ const TypeSpec& RbObject::getClassTypeSpec(void) {
 }
 
 
-void* RbObject::getLeanValue(std::vector<size_t> &length) const {
-    throw RbException("Missing implementation of getLeanValue() in " + getClassName());
+RbValue<void*> RbObject::getLeanValue( void ) const {
+    throw RbException("Missing implementation of getLeanValue() in " + this->getClassName());
     
-    return NULL;
+    return RbValue<void*>();
 }
 
 
@@ -187,7 +187,7 @@ bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 
 
 size_t RbObject::memorySize() const {
-    throw RbException("Missing implementation of memorySize() in " + getClassName());
+    throw RbException("Missing implementation of memorySize() in " + this->getClassName());
     
     return 0;
 }
@@ -196,8 +196,7 @@ size_t RbObject::memorySize() const {
 /* @TODO: Temporary default implementation. (Sebastian: Needs removal and should be pure virtual!) */
 void RbObject::setLeanValue(const RbValue<void *> &val) {
     
-    RbValue<void *> oldVal;
-    oldVal.value = getLeanValue( oldVal.lengths );
+    RbValue<void *> oldVal = getLeanValue();
     if ( val.value == oldVal.value ) {
         std::cerr << "Assignment to same memory address.\n";
     }

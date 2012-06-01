@@ -190,8 +190,10 @@ const TypeSpec& Real::getTypeSpec( void ) const {
 
 
 /* Get a pointer to the elementary value. */
-void* Real::getLeanValue(std::vector<size_t> &length) const {
-    return static_cast<void*>( &const_cast<double&>( value ) );
+RbValue<void*> Real::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = static_cast<void*>( &const_cast<double&>( value ) );
+    return tmp;
 }
 
 
