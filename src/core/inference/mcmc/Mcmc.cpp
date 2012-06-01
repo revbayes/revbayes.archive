@@ -131,9 +131,9 @@ void Mcmc::addMove( const DAGNode *m ) {
         }
         
         // replace the DAG nodes of the move to point to our cloned DAG nodes
-        const std::vector<RbPtr<const DAGNode> >& orgNodes = move->getMoveArgumgents();
+        const std::vector<RbPtr<DAGNode> >& orgNodes = move->getMoveArgumgents();
         std::vector<StochasticInferenceNode*> clonedNodes;
-        for (std::vector<RbPtr<const DAGNode> >::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
+        for (std::vector<RbPtr<DAGNode> >::const_iterator i = orgNodes.begin(); i != orgNodes.end(); ++i) {
             const DAGNode *orgNode = *i;
             const std::map<std::string, InferenceDagNode*>::const_iterator& it = nodesMap.find( orgNode->getName() );
             if ( it == nodesMap.end() ) {

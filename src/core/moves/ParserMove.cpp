@@ -86,7 +86,7 @@ const MemberRules& ParserMove::getMemberRules( void ) const {
 }
 
 
-const std::vector<RbPtr<const DAGNode> >& ParserMove::getMoveArgumgents( void ) const {
+const std::vector<RbPtr<DAGNode> >& ParserMove::getMoveArgumgents( void ) const {
     return args;
 }
 
@@ -103,7 +103,7 @@ void ParserMove::printValue(std::ostream &o) const {
 
 
 /** We catch here the setting of the member variables to store our parameters. */
-void ParserMove::setMemberVariable(std::string const &name, const Variable* var) {
+void ParserMove::setMember(std::string const &name, const RbPtr<Variable> &var) {
     
     if ( attributeNames.find( name ) != attributeNames.end() ) {
         RbValue<void*> lValue = var->getValue().getLeanValue();
@@ -111,6 +111,18 @@ void ParserMove::setMemberVariable(std::string const &name, const Variable* var)
     }
     else {
         args.push_back( var->getDagNode() );
+    }
+}
+
+/** We catch here the setting of the member variables to store our parameters. */
+void ParserMove::setConstMember(std::string const &name, const RbPtr<const Variable> &var) {
+    
+    if ( attributeNames.find( name ) != attributeNames.end() ) {
+        RbValue<void*> lValue = var->getValue().getLeanValue();
+        move->setAttribute( name, lValue );
+    }
+    else {
+        throw RbException("Cannot add non-const variable for a move.");
     }
 }
 

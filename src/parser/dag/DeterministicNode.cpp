@@ -187,7 +187,7 @@ DAGNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >&
         DAGNode* theArgClone = args[i]->getVariable()->getDagNode()->cloneDAG(newNodes);
         // \TODO: I don't think that we should create a new variable. That will destroy our dependencies structure.
 //        copyArgs[i].getVariable().setDagNode( theArgClone );
-        copy->function->setArgument(args[i]->getLabel(), new Argument( new Variable( theArgClone ) ) );
+        copy->function->setArgument(args[i]->getLabel(), new Argument( new Variable( theArgClone ) ), args[i]->isConstant() );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
         copy->addParentNode( theArgClone );

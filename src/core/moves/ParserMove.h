@@ -45,13 +45,14 @@ public:
     virtual const MemberRules&              getMemberRules(void) const;                                                             //!< Get member rules
     
     // Member methods
-    void                                    setMemberVariable(const std::string& name, const Variable* var);                        //!< set the member variables
+    void                                    setMember(const std::string& name, const RbPtr<Variable> &var);                        //!< set the member variables
+    void                                    setConstMember(const std::string& name, const RbPtr<const Variable> &var);                        //!< set the member variables
     
     // Move functions you have to override
     
     // functions you should not override
     const InferenceMove*                    getLeanMove(void) const;
-    const std::vector<RbPtr<const DAGNode> >&   getMoveArgumgents(void) const;
+    const std::vector<RbPtr<DAGNode> >&     getMoveArgumgents(void) const;
 
 protected:
     
@@ -61,7 +62,7 @@ private:
     TypeSpec                                typeSpec;
 
     std::set<std::string>                   attributeNames;
-    std::vector<RbPtr<const DAGNode> >      args;
+    std::vector<RbPtr<DAGNode> >            args;
     MemberRules                             memberRules;
 };
 

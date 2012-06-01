@@ -748,7 +748,7 @@ void RbFunction::processArguments( const std::vector<RbPtr<Argument> >& passedAr
     /*********************  6. Insert arguments into argument list  **********************/
     for (size_t j=0; j<numRegularRules; j++) {
         if ( passedArgIndex[j] >= 0 ) {
-            setArgument(theRules[j].getArgumentLabel(), args[passedArgIndex[j]]);
+            setArgument(theRules[j].getArgumentLabel(), args[passedArgIndex[j]], theRules[j].isConstant() );
         }
         else {
             std::cerr << "Optional argument for " << theRules[j].getArgumentLabel() << std::endl;
@@ -757,20 +757,20 @@ void RbFunction::processArguments( const std::vector<RbPtr<Argument> >& passedAr
     
     /*********************  7. Insert ellipsis arguments  **********************/
     for (std::vector<RbPtr<Argument> >::iterator i = ellipsisArgs.begin(); i != ellipsisArgs.end(); i++) {
-        setArgument((*i)->getLabel(), *i);
+        setArgument((*i)->getLabel(), *i, true);
     }
 
 }
 
 
 /** Set a member variable */
-void RbFunction::setArgument(const std::string& name, const RbPtr<Argument>& arg) {
+void RbFunction::setArgument(const std::string& name, const RbPtr<Argument>& arg, const bool c) {
     // calling the internal method to set the DAG node
     // the derived classes should know how to set their members
 //    setArgumentVariable(name, arg.getVariablePtr() );
     
     // make sure that the argument has the correct label
-    Argument *myArg = new Argument( arg->getReferenceVariable(), name );
+    Argument *myArg = new Argument( arg->getReferenceVariable(), name, c );
     
     // just add this node to the vector
     args.push_back(myArg);

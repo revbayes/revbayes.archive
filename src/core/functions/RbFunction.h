@@ -87,7 +87,7 @@ class RbFunction :  public RbLanguageObject {
         void                                            clear(void);                                                                        //!< Clear argument Environment "args"
         const std::vector<RbPtr<Argument> >&            getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
         std::vector<RbPtr<Argument> >&                  getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
-        void                                            setArgument(const std::string& name, const RbPtr<Argument>& arg);                   //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+        void                                            setArgument(const std::string& name, const RbPtr<Argument>& arg, bool c);           //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
     
 	protected:
                                                         RbFunction(void);                                                                   //!< Basic constructor
