@@ -47,7 +47,7 @@ class Func__unot :  public RbFunction {
 
 #endif
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "RbBoolean.h"
 #include "DAGNode.h"
 #include "RbUtil.h"

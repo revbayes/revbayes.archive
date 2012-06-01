@@ -46,7 +46,6 @@ protected:
 
 #include "ArgumentRule.h"
 #include "CharacterState.h"
-#include "ConstArgumentRule.h"
 #include "ConstructorTaxonData.h"
 #include "DAGNode.h"
 #include "MemberObject.h"

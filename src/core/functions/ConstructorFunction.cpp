@@ -21,7 +21,6 @@
 #include "DAGNode.h"
 #include "MemberObject.h"
 #include "RbUtil.h"
-#include "ReferenceArgument.h"
 #include "TypeSpec.h"
 
 #include <sstream>

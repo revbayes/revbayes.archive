@@ -79,7 +79,7 @@ protected:
     std::set<setType* >                             elements;
 };
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbNullObject.h"

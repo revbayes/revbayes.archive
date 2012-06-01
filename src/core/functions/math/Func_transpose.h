@@ -44,7 +44,7 @@ class Func_transpose :  public RbFunction {
 
 #endif
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "TypeSpec.h"
 
 

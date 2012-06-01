@@ -17,7 +17,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_print.h"
 #include "RbException.h"

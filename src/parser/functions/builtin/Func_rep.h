@@ -45,7 +45,7 @@ protected:
 };
 
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Func_rep.h"
 #include "Natural.h"
 #include "RbException.h"

@@ -17,8 +17,8 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "ConstantInferenceNode.h"
-#include "ConstArgumentRule.h"
 #include "Integer.h"
 #include "InferenceDagNode.h"
 #include "InferenceMove.h"

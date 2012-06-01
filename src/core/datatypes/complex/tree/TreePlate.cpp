@@ -17,7 +17,6 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "MethodTable.h"
 #include "Natural.h"

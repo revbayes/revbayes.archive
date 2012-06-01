@@ -16,8 +16,8 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "CharacterData.h"
-#include "ConstArgumentRule.h"
 #include "DistanceMatrix.h"
 #include "DnaState.h"
 #include "Func_distance.h"

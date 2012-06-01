@@ -47,7 +47,7 @@ class Func__and :  public RbFunction {
 #endif
 
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Integer.h"
 #include "RbBoolean.h"

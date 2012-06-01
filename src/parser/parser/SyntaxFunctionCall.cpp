@@ -15,7 +15,6 @@
 
 #include "Argument.h"
 #include "ConstantNode.h"
-#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "DagNodeFunction.h"
 #include "DeterministicNode.h"

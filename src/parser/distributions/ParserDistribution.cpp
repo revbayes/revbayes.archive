@@ -18,7 +18,7 @@
 
 #include "ConstantNode.h"
 #include "Argument.h"
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "ParserDistribution.h"
 #include "Environment.h"
 #include "MethodTable.h"

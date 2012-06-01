@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Integer.h"
 #include "Monitor.h"

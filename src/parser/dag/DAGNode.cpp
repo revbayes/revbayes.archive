@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "DagNodeFunction.h"
 #include "MethodTable.h"

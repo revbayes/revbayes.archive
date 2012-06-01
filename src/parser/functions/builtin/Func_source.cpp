@@ -17,7 +17,7 @@
  * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Func_source.h"
 #include "Model.h"

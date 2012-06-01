@@ -16,7 +16,7 @@
  * $Id: ParserDistributionContinuous.cpp 1378 2012-04-17 00:27:08Z hoehna $
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "DistributionContinuous.h"
 #include "ParserDistributionContinuous.h"
 #include "MethodTable.h"

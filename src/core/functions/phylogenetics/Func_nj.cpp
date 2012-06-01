@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DistanceMatrix.h"
 #include "Func_nj.h"

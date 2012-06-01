@@ -48,7 +48,7 @@ protected:
 
 #endif
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"

@@ -19,7 +19,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Func_CtmmTransitionProbabilities.h"
 #include "RateMatrix.h"
 #include "RbException.h"

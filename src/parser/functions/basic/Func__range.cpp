@@ -16,8 +16,8 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "Func__range.h"
 #include "Integer.h"

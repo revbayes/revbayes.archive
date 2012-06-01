@@ -46,7 +46,7 @@ public:
 
 #endif
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "RbLanguageObject.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"

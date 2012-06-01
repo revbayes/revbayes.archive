@@ -17,7 +17,6 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "Integer.h"
 #include "MemberObject.h"
 #include "MethodTable.h"

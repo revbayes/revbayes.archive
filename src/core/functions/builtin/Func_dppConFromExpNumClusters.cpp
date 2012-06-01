@@ -17,7 +17,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Func_dppConFromExpNumClusters.h"

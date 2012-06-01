@@ -17,8 +17,8 @@
  */
 
 
+#include "ArgumentRule.h"
 #include "CharacterState.h"
-#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbUtil.h"

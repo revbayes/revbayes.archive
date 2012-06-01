@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Container.h"
 #include "MethodTable.h"
 #include "Natural.h"

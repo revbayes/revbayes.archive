@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Func_gtr.h"
 #include "RateMatrix.h"
 #include "RbException.h"

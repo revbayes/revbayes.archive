@@ -15,9 +15,9 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "CharacterData.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_readCharacterData.h"
 #include "NclReader.h"

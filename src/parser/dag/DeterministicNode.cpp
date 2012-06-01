@@ -18,7 +18,7 @@
  */
 
 #include "ArgumentRule.h"
-#include "ConstArgument.h"
+#include "Argument.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"

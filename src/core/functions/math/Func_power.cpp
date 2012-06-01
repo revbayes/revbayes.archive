@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "Func_power.h"
 #include "RealPos.h"
 #include "Real.h"

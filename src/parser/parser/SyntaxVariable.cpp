@@ -18,8 +18,8 @@
 #include <string>
 #include <sstream>
 
+#include "Argument.h"
 #include "ConstantNode.h"
-#include "ConstArgument.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
 #include "Integer.h"

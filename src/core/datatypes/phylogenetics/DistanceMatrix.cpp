@@ -17,9 +17,9 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "DistanceMatrix.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbNullObject.h"

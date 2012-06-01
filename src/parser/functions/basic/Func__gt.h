@@ -49,7 +49,7 @@ class Func__gt :  public RbFunction {
 
 #endif
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "RbBoolean.h"
 #include "DAGNode.h"
 #include "Integer.h"

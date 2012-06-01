@@ -15,8 +15,8 @@
  * $Id$
  */
 
+#include "Argument.h"
 #include "ConstantNode.h"
-#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "MemberObject.h"

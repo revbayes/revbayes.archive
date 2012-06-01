@@ -15,8 +15,8 @@
  * $Id: Plate.cpp 1360 2012-03-23 18:18:46Z hoehna $
  */
 
+#include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "MethodTable.h"

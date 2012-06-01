@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Signals.h"

@@ -16,9 +16,9 @@
  * $Id: Func_concatenate.cpp 1247 2012-02-25 09:17:07Z hoehna $
  */
 
+#include "ArgumentRule.h"
 #include "CharacterData.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "DnaState.h"
 #include "Ellipsis.h"
 #include "Func_concatenate.h"

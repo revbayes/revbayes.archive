@@ -44,10 +44,10 @@ class Func_vector :  public RbFunction {
 };
 
 
+#include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "ConstArgumentRule.h"
 
 
 

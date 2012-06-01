@@ -13,8 +13,8 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ConstArgument.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Func_reference.h"

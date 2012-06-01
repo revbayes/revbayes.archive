@@ -17,9 +17,9 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "CharacterState.h"
 #include "CharacterData.h"
-#include "ConstArgumentRule.h"
 #include "DnaState.h"
 #include "Ellipsis.h"
 #include "Natural.h"

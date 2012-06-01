@@ -18,7 +18,6 @@
 #include "ArgumentRule.h"
 #include "RbBoolean.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "DAGNode.h"
 #include "Distribution.h"
 #include "DistributionContinuous.h"

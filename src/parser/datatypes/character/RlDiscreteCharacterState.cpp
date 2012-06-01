@@ -13,8 +13,8 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "RlDiscreteCharacterState.h"
-#include "ConstArgumentRule.h"
 #include "MemberObject.h"
 #include "Natural.h"
 #include "RbException.h"

@@ -15,8 +15,8 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ConstArgumentRule.h"
 #include "Func_readTrees.h"
 #include "NclReader.h"
 #include "RbException.h"

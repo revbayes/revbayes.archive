@@ -17,7 +17,7 @@
  * $Id$
  */
 
-#include "ConstArgumentRule.h"
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Func_quit.h"
 #include "Model.h"
