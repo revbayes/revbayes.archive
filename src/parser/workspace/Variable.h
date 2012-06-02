@@ -45,8 +45,8 @@
 class Variable : public RbInternal {
     
 public:
-    Variable(const TypeSpec& ts);                                           //!< Constructor of filled variable
-    Variable(const RbPtr<DAGNode> &var);                                                                 //!< Constructor of filled, unnamed variable
+    Variable(const TypeSpec& ts);                                                               //!< Constructor of filled variable
+    Variable(const RbPtr<DAGNode> &var, const std::string &n = "");                             //!< Constructor of filled, unnamed variable
     
     // Regular functions
     Variable*                               clone(void) const;                                  //!< Clone variable
@@ -61,6 +61,7 @@ public:
     const TypeSpec&                         getValueTypeSpec(void) const;                       //!< Get the required value type spec
     void                                    printValue(std::ostream& o) const;                  //!< Print value of variable
     void                                    setDagNode(const RbPtr<DAGNode> &newVar);           //!< Set a variable with a variable
+    void                                    setName(const std::string &n);                      //!< Set the name of this variable
     void                                    setValueTypeSpec(const TypeSpec& ts);               //!< set the required value type spec
     
 private:
@@ -70,7 +71,7 @@ private:
     // Member variables
     RbPtr<DAGNode>                          node;                                               //!< Pointer to the variable (reference or not)
     TypeSpec                                valueTypeSpec;
-    
+    std::string                             name;
 };
 
 

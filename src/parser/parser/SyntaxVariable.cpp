@@ -239,6 +239,7 @@ RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
                 // create a new slot
                 RbPtr<Variable> theVar = RbPtr<Variable>( new Variable( RbObject::getClassTypeSpec() ) );
                 env.addVariable(identifier->getValue(),theVar);
+                theVar->setName( identifier->getValue() );
             }
             
             // get the slot and variable

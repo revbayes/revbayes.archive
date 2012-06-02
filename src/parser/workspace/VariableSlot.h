@@ -61,6 +61,7 @@ public:
     
 private:
     RbPtr<Variable>                         getVectorizedVariable(const std::vector<int> &indices) const;
+    void                                    resetNames(const std::string &l, int level, int &index);
     void                                    resetVariables(std::vector<RbPtr<Variable> > &v, std::vector<int> &l, std::vector<int> &i);
     
     // Member variables

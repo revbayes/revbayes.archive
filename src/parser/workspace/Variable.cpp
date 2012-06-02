@@ -36,9 +36,9 @@ Variable::Variable(const TypeSpec& ts) : RbInternal(), valueTypeSpec( ts ), node
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(const RbPtr<DAGNode> &n): valueTypeSpec( RbLanguageObject::getClassTypeSpec() ) {
+Variable::Variable(const RbPtr<DAGNode> &v, const std::string &n) : valueTypeSpec( RbLanguageObject::getClassTypeSpec() ), name( n ) {
     
-    setDagNode( n );
+    setDagNode( v );
     
 }
 
@@ -86,7 +86,7 @@ const RbPtr<DAGNode>& Variable::getDagNode(void) {
 
 
 const std::string& Variable::getName( void ) const {
-    return node->getName();
+    return name;
 }
 
 
@@ -144,6 +144,11 @@ void Variable::setDagNode( const RbPtr<DAGNode> &newVariable ) {
 }
 
 
+void Variable::setName(std::string const &n) {
+    name = n;
+}
+
+
 /** Replace DAG node, only keep the children */
 void Variable::replaceDagNode( const RbPtr<DAGNode> &newVariable) {
     
@@ -160,6 +165,8 @@ void Variable::replaceDagNode( const RbPtr<DAGNode> &newVariable) {
     }
     
     node = newVariable;
+    if ( node != NULL )
+        node->setName( name );
     
 }
 

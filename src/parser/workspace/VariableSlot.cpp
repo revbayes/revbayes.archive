@@ -83,7 +83,9 @@ void VariableSlot::createVariable(const std::vector<int> &indices) {
             lengths.push_back( indices[i]+1 );
         }
         for (size_t i = 0; i < nElements; ++i) {
-            variable.push_back( new Variable( NULL ) );
+            Variable *theVar = new Variable( NULL );
+            theVar->setName( label );
+            variable.push_back( theVar );
         }
 
     }
@@ -108,6 +110,9 @@ void VariableSlot::createVariable(const std::vector<int> &indices) {
         std::vector<int> tmp;
         resetVariables(oldVars, oldLengths, tmp);
     }
+    
+    int index = 0;
+    resetNames(label + "[", 0, index);
     
 }
 
@@ -326,6 +331,37 @@ void VariableSlot::printValue(std::ostream& o) const {
         o << "NULL";
     else
         variable[0]->printValue(o);
+}
+
+
+void VariableSlot::resetNames(std::string const &l, int level, int &index) {
+    
+    int size = lengths[level];
+    
+    // increase the level of depth
+    level++;
+    
+    for (int i = 0; i < size; ++i) {
+        if (lengths.size() == level ) {
+            // we reached the depth of the slot
+            
+            // construct the name
+            std::stringstream o;
+            o << l << (i+1) << "]";
+            variable[index]->setName( o.str() );
+            ++index;
+        }
+        else {
+            
+            // construct the name
+            std::stringstream o;
+            o << l << (i+1) << ",";
+            
+            // recursive call
+            resetNames(o.str(), level, index);
+        }
+    }
+    
 }
 
 
