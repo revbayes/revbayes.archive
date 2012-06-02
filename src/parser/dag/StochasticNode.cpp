@@ -437,7 +437,7 @@ DAGNode* StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& ne
         // set the clone of the member as the member of the clone
         // \TODO: We should check that this does destroy the dependencies of the parameters.
         // Instead of creating a new variable we might need to get the pointer to the variable from somewhere.
-        copy->distribution->setMember("", new Variable( theParamClone) );
+        copy->distribution->setMember("", new Variable( theParamClone, theParamClone->getName() ) );
 
         copy->addParentNode( theParamClone );
         theParamClone->addChildNode( copy );

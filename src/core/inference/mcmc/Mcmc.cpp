@@ -104,7 +104,7 @@ Mcmc& Mcmc::operator=(const Mcmc &m) {
  * Add a move and exchange the DAG nodes.
  */
 void Mcmc::addMove( const DAGNode *m ) {
-    
+        
     const RlOnlyVector<ParserMove> *arg_moves = static_cast<const RlOnlyVector<ParserMove> *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
     
     for (RlOnlyVector<ParserMove>::const_iterator it = arg_moves->begin(); it != arg_moves->end(); ++it) {
@@ -191,19 +191,12 @@ void Mcmc::addMove(const InferenceMove *m) {
  */
 void Mcmc::addMonitor( const DAGNode *m ) {
     
-    // \TODO: Sebastian
-//    // test whether var is a DagNodeContainer
-//    if ( m != NULL && m->getValue().isTypeSpec( DagNodeContainer::getClassTypeSpec() ) ) {
-//        const RbPtr<const RbLanguageObject>& objPtr = m->getValue().getSingleValue();
-//        const DagNodeContainer *container = static_cast<const DagNodeContainer *>( (const RbLanguageObject *) objPtr );
-//        for (size_t i = 0; i < container->size(); ++i) {
-//            const RbObject& elemPtr = container->getElement(i);
-//            addMonitor(static_cast<const VariableSlot&>( elemPtr ).getVariable().getDagNode() );
-//        }
-//    }
-//    else {
-        // first, we cast the value to a parser monitor
-        const ParserMonitor *monitor = static_cast<const ParserMonitor *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
+    const RlOnlyVector<ParserMonitor> *arg_monitors = static_cast<const RlOnlyVector<ParserMonitor> *>( (const RbLanguageObject *) m->getValue().getSingleValue() );
+    
+    for (RlOnlyVector<ParserMonitor>::const_iterator it = arg_monitors->begin(); it != arg_monitors->end(); ++it) {
+        
+        // first, we cast the value to a parser move
+        const ParserMonitor *monitor = *it;
         
         // we need to extract the lean move
         InferenceMonitor* leanMonitor = monitor->getLeanMonitor()->clone();
@@ -238,7 +231,7 @@ void Mcmc::addMonitor( const DAGNode *m ) {
         
         // finally, add the move to our moves list
         monitors.push_back( leanMonitor );
-//    }
+    }
 }
 
 
