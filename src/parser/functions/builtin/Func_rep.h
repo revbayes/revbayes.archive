@@ -73,12 +73,12 @@ Func_rep<valueType>* Func_rep<valueType>::clone( void ) const {
 template <typename valueType>
 RbPtr<RbLanguageObject> Func_rep<valueType>::executeFunction( const std::vector<const RbObject*>& args ) {
     
-    const RbLanguageObject *var = static_cast<const RbLanguageObject*>( args[0] );
+    const valueType *var = static_cast<const valueType*>( args[0] );
     int times = static_cast<const Natural*>( args[1] )->getValue();
     
     RlVector<valueType> *repValues = new RlVector<valueType>();
     for ( int i = 0; i < times; i++ ) {
-        repValues->push_back( var->clone() );
+        repValues->push_back( *var );
     }
     
     return RbPtr<RbLanguageObject>( repValues );

@@ -427,6 +427,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "rep",                      new Func_rep<Real>()                );
+        addFunction( "rep",                      new Func_rep<RlVector<Real> >()     );
         addFunction( "simplex",                  new Func_simplex<Integer>()         );
         addFunction( "simplex",                  new Func_simplex<RealPos>()         );
 //        addFunction( "simplex",                  new Func_simplex<RlVector>() );

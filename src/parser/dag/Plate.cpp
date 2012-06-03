@@ -88,6 +88,7 @@ RlValue<RbLanguageObject> Plate::executeMethod(const std::string& name, const st
         theNode->setPlate( this );
         theNode->expand();
         theNode->touch();
+//        theNode->keep();
         
         return RlValue<RbLanguageObject>( NULL );
     }

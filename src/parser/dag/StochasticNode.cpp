@@ -775,6 +775,7 @@ RlValue<RbLanguageObject> StochasticNode::createRVSingleValue(size_t plateIndex,
                 }
             }
         }
+        retVal.lengths.insert(retVal.lengths.begin(), plateLengths[plateIndex]);
         
         return retVal;
     }

@@ -52,6 +52,9 @@ public:
     std::vector<RbPtr<valueType> >      value;
     std::vector<size_t>                 lengths;
     
+    private:
+    void                                printValue(std::ostream& o, int level, int &index) const;
+
 };
 
 
@@ -208,10 +211,38 @@ bool RlValue<valueType>::isTypeSpec( const TypeSpec &ts ) const {
 template <typename valueType>
 void RlValue<valueType>::printValue( std::ostream &o ) const {
     
-    typename std::vector<RbPtr<valueType> >::const_iterator i;
-    for ( i = value.begin(); i != value.end(); ++i) {
-        (*i)->printValue( o );
+    if (lengths.size() == 0) {
+        value[0]->printValue( o );
     }
+    else {
+        int index = 0;
+        printValue(o, 0, index);
+    }
+}
+
+
+template <typename valueType>
+void RlValue<valueType>::printValue( std::ostream &o, int level, int &index ) const {
+    
+    size_t size = lengths[level];
+    int nextLevel = level + 1;
+    
+    o << "[ ";
+    for (size_t i = 0; i < size; ++i) {
+        if ( i != 0 ) {
+            o << ", ";
+        }
+        
+        if (lengths.size() == nextLevel) {
+            value[index]->printValue( o );
+            index++;
+        }
+        else {
+            printValue(o, nextLevel, index);
+        }
+    }
+    
+    o << "]";
 }
 
 
