@@ -39,13 +39,13 @@ Dist_multinomial* Dist_multinomial::clone( void ) const {
 }
 
 
-///** Get the number of states in the distribution */
-//size_t Dist_multinomial::getNumberOfStates( void ) const {
-//    
-//    return static_cast<const Simplex&>( probabilities->getValue() ).size();
-//}
-//
-//
+/** Get the number of states in the distribution */
+size_t Dist_multinomial::getNumberOfStates( void ) const {
+    
+    return probabilities.value[0].size();
+}
+
+
 ///** Get the probability mass vector */
 //const Simplex& Dist_multinomial::getProbabilityMassVector( void ) {
 //    

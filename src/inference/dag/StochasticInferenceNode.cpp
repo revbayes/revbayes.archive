@@ -19,6 +19,7 @@
 
 #include "InferenceDagNode.h"
 #include "Distribution.h"
+#include "DistributionDiscrete.h"
 #include "RbException.h"
 #include "StochasticInferenceNode.h"
 #include "RbValue.h"
@@ -53,12 +54,14 @@ StochasticInferenceNode::~StochasticInferenceNode( void ) {
 
 
 /** Get the conditional ln probability of the node; do not rely on stored values */
-double StochasticInferenceNode::calculateLnProbability( void ) {
+double StochasticInferenceNode::calculateLnProbability( bool force ) {
     
+    // first, we need to check if either this node or one of it's children is eliminated.
+    // In this case, we will have set the factor root for this node.
     if (factorRoot != NULL) {
-        lnProb =  factorRoot->calculateSummedLnProbability(0);
+        lnProb = factorRoot->calculateSummedLnProbability(0);
     }
-//    else if (needsProbabilityRecalculation) {
+    else if (force || needsProbabilityRecalculation) {
         // \TODO: Hack! We should make sure that the likelihood is properly calculated. (Sebastian)
         // I switched this test of, because we now instantiate the model from the RevLanguage
         // but do not actually sum over all possible values. This is only done in the MCMC.
@@ -69,7 +72,7 @@ double StochasticInferenceNode::calculateLnProbability( void ) {
         //        else {
         //            throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
         //        }
-//    }
+    }
     
     return lnProb;
 }
@@ -79,85 +82,79 @@ double StochasticInferenceNode::calculateLnProbability( void ) {
  * Calculate the ln-probability summed over all possible states.
  * This is the variable elimination algorithm. It only works if we can condition on only one parent being eliminated.
  */
-double StochasticInferenceNode::calculateEliminatedLnProbability( bool enforceProbabilityCalculation ) {
+double StochasticInferenceNode::calculateEliminatedLnProbability( bool force ) {
     
-    //    // if this node is not eliminated, then we have reached the bottom of the elimination algorithm
-    //    if ( type == INSTANTIATED ) {
-    //        if (needsProbabilityRecalculation) {
-    //            if (type == INSTANTIATED) { // this should always be true
-    //                lnProb = distribution->lnPdf( *value );
-    //            }
-    //            else {
-    //                throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
-    //            }
-    //        }
-    //        
-    //        // \TODO: here we maybe could return our stored probability for this parent?
-    //        return lnProb;
-    //    }
-    //    
-    //    if (needsProbabilityRecalculation || needsLikelihoodRecalculation || enforceProbabilityCalculation) {
-    //        // initialize the probability
-    //        double prob = 0.0;
-    //        
-    //        // we need to iterate over my states
-    //        DistributionDiscrete* d = static_cast<DistributionDiscrete*>( distribution );
-    //        
-    //        // we ask for the state vector
-    //        const std::vector<RbLanguageObject*>& states = d->getStateVector();
-    //        
-    //        // now we calculate the probabilities and likelihoods
-    //        size_t i = 0;
-    //        for (std::vector<RbLanguageObject*>::const_iterator state = states.begin(); state != states.end(); state++) {
-    //            // I set my value so that my children can access if for recalculation
+    // if this node is not eliminated, then we have reached the bottom of the elimination algorithm
+    if ( type == INSTANTIATED ) {
+        if (needsProbabilityRecalculation) {
+            if (type == INSTANTIATED) { // this should always be true
+                lnProb = distribution->jointLnPdf();
+            }
+            else {
+                throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
+            }
+        }
+            
+        // here we return our stored probability for this parent?
+        return lnProb;
+    }
+    
+    if (needsProbabilityRecalculation || needsLikelihoodRecalculation || force ) {
+        // initialize the probability
+        double prob = 0.0;
+            
+        // we need to iterate over my states
+        DistributionDiscrete* d = static_cast<DistributionDiscrete*>( distribution );
+            
+        // now we calculate the probabilities and likelihoods
+        for (size_t state = 0; state < d->getNumberOfStates(); state++) {
+            // I set my value so that my children can access if for recalculation
     //            RbLanguageObject* v = (*state);
-    //            // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
+            // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
     //            value = v;
-    //            
-    //            // since we just set the new value we need to flag all children for recalculation
-    ////            markChildrenForRecalculation();
-    //            
-    //            // recalculate the likelihoods if necessary    
-    //            if ( needsLikelihoodRecalculation ) {
-    //                
-    //                
-    //                likelihoods[i] = 0.0;
-    //                size_t j = 0;
-    //                
-    //                // I need to ask for the likelihood of my children
-    //                for (std::set<VariableNode*>::iterator child = children.begin(); child != children.end(); child++) {
-    //                    // only if the child is flagged as changed I need to ask for the likelihood
-    //                    if ( (*child)->isTouched() ) {
-    //                        partialLikelihoods[i][j] = (*child)->calculateEliminatedLnProbability(true);
-    //                    }
-    //                    
-    //                    // add the log-likelihood for this child
-    //                    likelihoods[i] += partialLikelihoods[i][j];
-    //                    
-    //                    // increment the child index
-    //                    j++;
-    //                }
-    //                
-    //            }
-    //            
-    //            // only if the likelihood of this value has changed we need to update it
-    ////            if ( needsProbabilityRecalculation ) {
-    //                // set the likelihood for this state to the probability array
-    //                probabilities[i] = distribution->lnPdf( *value );
-    ////            }
-    //            
-    //            // add this partial probability to the total probability
-    //            prob += exp(probabilities[i] + likelihoods[i]);
-    //            
-    //            // increment the state index
-    //            i++;
-    //        }
-    //        
-    //        lnProb = log(prob);
-    //        
-    //        needsLikelihoodRecalculation    = false;
-    //        needsProbabilityRecalculation   = false;
-    //    }
+            
+            // since we just set the new value we need to flag all children for recalculation
+    //            markChildrenForRecalculation();
+                
+            // recalculate the likelihoods if necessary    
+            if ( needsLikelihoodRecalculation ) {
+                    
+                likelihoods[state] = 0.0;
+                size_t j = 0;
+                    
+                // I need to ask for the likelihood of my children
+                for (std::set<VariableInferenceNode*>::iterator child = children.begin(); child != children.end(); child++) {
+                    // only if the child is flagged as changed I need to ask for the likelihood
+                    if ( (*child)->isTouched() ) {
+                        partialLikelihoods[state][j] = (*child)->calculateEliminatedLnProbability(true);
+                    }
+                        
+                    // add the log-likelihood for this child
+                    likelihoods[state] += partialLikelihoods[state][j];
+                        
+                    // increment the child index
+                    j++;
+                }
+                    
+            }
+                
+            // only if the likelihood of this value has changed we need to update it
+            if ( force || needsProbabilityRecalculation ) {
+                // set the likelihood for this state to the probability array
+                probabilities[state] = distribution->jointLnPdf();
+            }
+                
+            // add this partial probability to the total probability
+            prob += exp(probabilities[state] + likelihoods[state]);
+                
+            // increment the state index
+        }
+            
+        lnProb = log(prob);
+            
+        needsLikelihoodRecalculation    = false;
+        needsProbabilityRecalculation   = false;
+    }
     
     
     return lnProb;
@@ -173,63 +170,63 @@ double StochasticInferenceNode::calculateSummedLnProbability(size_t nodeIndex) {
     // get the node we are talking about from the sum-product sequence
     StochasticInferenceNode* theNode = sumProductSequence[nodeIndex];
     
-    //    // test if this node is eliminated or summed-over
-    //    if ( theNode->type == ELIMINATED ) {
-    //        return theNode->calculateEliminatedLnProbability( false ); // + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
+    // test if this node is eliminated or summed-over
+    if ( theNode->type == ELIMINATED ) {
+        return theNode->calculateEliminatedLnProbability( false ); // + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
+    }
+    else if ( theNode->type == INSTANTIATED ) {
+        return theNode->getDistribution().jointLnPdf() + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
+    }
+        
+    if (theNode->needsProbabilityRecalculation || theNode->needsLikelihoodRecalculation || true) {
+        // initialize the probability
+        double sumProb = 0.0;
+    
+        // we need to iterate over my states
+        const DistributionDiscrete& d = static_cast<const DistributionDiscrete&>( theNode->getDistribution() );
+        
+        // store the current value
+//        RbLanguageObject* tmp_value = theNode->value;
+        
+        // we ask for the state vector
+//        const std::vector<RbLanguageObject*>& states = d.getStateVector();
+        
+        // now we calculate the probabilities
+        for ( size_t i = 0 ; i < d.getNumberOfStates(); i++) {
+            // I set my value so that my children can access if for recalculation
+//            RbLanguageObject* v = (*state);
+            // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
+//            theNode->value = v;
+            // theNode->touch();
+                
+            // \TODO: we need to stop somehow the recursion
+            if ( nodeIndex < sumProductSequence.size() - 1 ) {
+                double prob = calculateSummedLnProbability( nodeIndex + 1 );
+            
+                // add the probability for being in this state
+                sumProb += exp(d.jointLnPdf() + prob);
+            }
+            else {
+                    
+                // add the probability for being in this state
+                sumProb += exp( d.jointLnPdf() );
+            }
+                
+        }
+            
+        // restore the current value
+//        theNode->value = tmp_value;
+            
+                
+        // the ln prob is just the log of the sum of the single probs
+        theNode->lnProb = log(sumProb);
+    }
+        
+    //    if ( lnProb == NAN || lnProb < -1000000) {
+    //        std::cerr << "Oh oh, didn't get a valid likelihood ..." << std::endl;
     //    }
-    //    else if ( theNode->type == INSTANTIATED ) {
-    //        return theNode->getDistribution().lnPdf( theNode->getValue() ) + ( nodeIndex == sumProductSequence.size() - 1 ? 0.0 : calculateSummedLnProbability( nodeIndex + 1) );
-    //    }
-    //    
-    //    if (theNode->needsProbabilityRecalculation || theNode->needsLikelihoodRecalculation || true) {
-    //        // initialize the probability
-    //        double sumProb = 0.0;
-    //        
-    //        // we need to iterate over my states
-    //        DistributionDiscrete& d = static_cast<DistributionDiscrete&>( theNode->getDistribution() );
-    //        
-    //        // store the current value
-    //        RbLanguageObject* tmp_value = theNode->value;
-    //        
-    //        // we ask for the state vector
-    //        const std::vector<RbLanguageObject*>& states = d.getStateVector();
-    //        
-    //        // now we calculate the probabilities
-    //        for (std::vector<RbLanguageObject*>::const_iterator state = states.begin(); state != states.end(); state++) {
-    //            // I set my value so that my children can access if for recalculation
-    //            RbLanguageObject* v = (*state);
-    //            // we set the value here and do not call set value because we do not want that the memory of the old value gets freed
-    //            theNode->value = v;
-    //            theNode->touch();
-    //            
-    //            // \TODO: we need to stop somehow the recursion
-    //            if ( nodeIndex < sumProductSequence.size() - 1 ) {
-    //                double prob = calculateSummedLnProbability( nodeIndex + 1 );
-    //                
-    //                // add the probability for being in this state
-    //                sumProb += d.pdf( *v ) * exp(prob);
-    //            }
-    //            else {
-    //                
-    //                // add the probability for being in this state
-    //                sumProb += d.pdf( *v );
-    //            }
-    //            
-    //        }
-    //        
-    //        // restore the current value
-    //        theNode->value = tmp_value;
-    //        
-    //            
-    //        // the ln prob is just the log of the sum of the single probs
-    //        theNode->lnProb = log(sumProb);
-    //    }
-    //    
-    ////    if ( lnProb == NAN || lnProb < -1000000) {
-    ////        std::cerr << "Oh oh, didn't get a valid likelihood ..." << std::endl;
-    ////    }
-    //    
-    //    theNode->needsProbabilityRecalculation = theNode->needsLikelihoodRecalculation = false;
+        
+    theNode->needsProbabilityRecalculation = theNode->needsLikelihoodRecalculation = false;
     
     return theNode->lnProb;
 }
@@ -405,7 +402,6 @@ void StochasticInferenceNode::keepMe() {
     }
     
     touched = false;
-    probabilityRecalculated         = false;
     needsLikelihoodRecalculation    = false;
     needsProbabilityRecalculation   = false;
     
@@ -413,10 +409,10 @@ void StochasticInferenceNode::keepMe() {
 
 
 /**
- * The likelihoods for this node need recalculations. This should only ever be called if this node is eliminated.
+ * The likelihoods for this node need recalculations. This should only ever be called if this node has eliminated children.
  * We set the flag for likelihood recalculation and also tell that our eliminated parents.
  */
-void StochasticInferenceNode::likelihoodsNeedUpdates() {
+void StochasticInferenceNode::makeLikelihoodsDirty( void ) {
     
     // We need to mark this node as dirty so that the probability and likelihood are recomputed
     if (!touched) {
@@ -428,32 +424,19 @@ void StochasticInferenceNode::likelihoodsNeedUpdates() {
         storedProbabilities         = probabilities;
         storedLikelihoods           = likelihoods;
         storedPartialLikelihoods    = partialLikelihoods;
-        
-        probabilityRecalculated     = true;
     }
     
-    // if we are already flagged for likelihood recalculation, then we have already told our parents about this
-    if (!needsLikelihoodRecalculation) {
-        
+    if ( needsLikelihoodRecalculation ) {
         //  I need to tell all my eliminated parents that they need to update their likelihoods
         for (std::set<InferenceDagNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
             if ( (*i)->isNotInstantiated() ) {
                 // since only variable nodes can be eliminated
-                static_cast<VariableInferenceNode*>( *i )->likelihoodsNeedUpdates();
+                static_cast<VariableInferenceNode*>( *i )->makeLikelihoodsDirty();
             }
         }
     }
     
     needsLikelihoodRecalculation = true;
-}
-
-
-/** 
- * Mark this stochastic node for recalculation.
- * We set the flag for probability recalculation here.
- */
-void StochasticInferenceNode::markForRecalculation(void) {
-    needsProbabilityRecalculation = true;
 }
 
 
@@ -465,63 +448,6 @@ bool StochasticInferenceNode::needsRecalculation() const {
     
     return needsLikelihoodRecalculation || needsProbabilityRecalculation;
 }
-
-
-///** Print struct for user */
-//void StochasticInferenceNode::printStruct( std::ostream& o ) const {
-//    
-//    o << "_Class        = " << getClassTypeSpec() << std::endl;
-//    o << "_Adress       = " << this << std::endl;
-//    o << "_valueType    = " << value->getTypeSpec() << std::endl;
-//    o << "_distribution = ";
-//    distribution->printValue(o);
-//    o << std::endl;
-//    o << "_touched      = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
-//    o << "_clamped      = " << ( clamped ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
-//    o << "_type         = ";
-//    if ( type == INSTANTIATED ) {
-//        o << "instantiated" << std::endl;
-//        o << "_value        = ";
-//        value->printValue(o);
-//        o << std::endl;
-//    }
-//    else if ( type == ELIMINATED ) {
-//        o << "eliminated" << std::endl;
-//    }
-//    else {
-//        o << "summed over" << std::endl;
-//    }
-//    
-//    // print the factor root if available
-//    if ( factorRoot != NULL ) {
-//        o << "_factor root  = " << factorRoot->getName() << std::endl;
-//    }
-//    else {
-//        // only nodes which are not part of a eliminated subgraph have a probability
-//        o << "_lnProb       = " << lnProb << std::endl;
-//    }
-//    // if we are the factor root than we can print the likelihood of the eliminated subgraph.
-//    if ( factorRoot == this ) {
-//        o << "_lnLikelihood = " << lnProb << std::endl;
-//    }
-//    if ( touched && storedValue != NULL) {
-//        o << "_storedValue  = "; 
-//        storedValue->printValue(o);
-//        o << std::endl;
-//    }
-//    if ( touched )
-//        o << "_storedLnProb = " << storedLnProb << std::endl;    
-//    
-//    o << "_parents      = ";
-//    printParents(o);
-//    o << std::endl;
-//    
-//    o << "_children     = ";
-//    printChildren(o);
-//    o << std::endl;
-//    
-//    o << std::endl;
-//}
 
 
 /** Restore the old value of the node and tell affected */
@@ -551,7 +477,6 @@ void StochasticInferenceNode::restoreMe() {
     }
     
     touched = false;
-    probabilityRecalculated = false;
 }
 
 
@@ -593,36 +518,27 @@ void StochasticInferenceNode::setInstantiated(bool inst) {
         // Instead, this needs to be called actively, as done by the MCMC class. (Sebastian)
         // (Therefore, we also don't need to store the likelihood vectors)
         
-        //        // get the number of states
-        //        DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
-        //        size_t nStates = discreteDist->getNumberOfStates();
-        //        
-        //        // resize the probability vector
-        //        probabilities.resize( nStates );
-        //        likelihoods.resize( nStates );
-        //        for (size_t i = 0; i < nStates; i++) {
-        //            partialLikelihoods.push_back( std::vector<double>(nStates) );
-        //        }
-        //        
-        ////        delete value;
-        ////        value = NULL;
-        //        
-        //        // recalculate the factor
-        //        std::vector<StochasticInferenceNode*> sequence = constructSumProductSequence();
-        //        
-        //        // for all nodes in the sequence, set the new factor root
-        //        for (std::vector<StochasticInferenceNode*>::iterator i = sequence.begin(); i != sequence.end(); i++) {
-        //            (*i)->setFactorRoot( sequence[0] );
-        //            (*i)->touch();
-        //        }
-        //        
-        //        // set the sum-product sequence for the factor root
-        //        sequence[0]->setSumProductSequence( sequence );
-        //        
-        //        // I need to tell my children that I'm eliminated
-        //        for (std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++) {
-        //            (*i)->setFactorRoot( factorRoot );
-        //        }
+        // get the number of states
+        DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
+        size_t nStates = discreteDist->getNumberOfStates();
+                
+        // resize the probability vector
+        probabilities.resize( nStates );
+        likelihoods.resize( nStates );
+        for (size_t i = 0; i < nStates; i++) {
+            partialLikelihoods.push_back( std::vector<double>(nStates) );
+        }
+                
+        //        delete value;
+        //        value = NULL;
+                
+        // recalculate the factor
+        constructFactor();
+                
+        // I need to tell my children that I'm eliminated
+        for (std::set<VariableInferenceNode*>::iterator i = children.begin(); i != children.end(); i++) {
+            (*i)->setFactorRoot( factorRoot );
+        }
         
         // flag for recalculation
         needsProbabilityRecalculation = true;
@@ -637,20 +553,20 @@ void StochasticInferenceNode::setInstantiated(bool inst) {
  */
 void StochasticInferenceNode::setSummationType(StochasticInferenceNode::VariableType t) {
     
-    //    if ( type != ELIMINATED && t == ELIMINATED ) {
-    //        // get the number of states
-    //        DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
-    //        size_t nStates = discreteDist->getNumberOfStates();
-    //        
-    //        // resize the probability vector
-    //        probabilities.resize( nStates );
-    //        likelihoods.resize( nStates );
-    //        for (size_t i = 0; i < nStates; i++) {
-    //            partialLikelihoods.push_back( std::vector<double>(nStates) );
-    //        }
-    //    }
-    //    
-    //    type = t;
+    if ( type != ELIMINATED && t == ELIMINATED ) {
+        // get the number of states
+        DistributionDiscrete* discreteDist = static_cast<DistributionDiscrete*>( distribution );
+        size_t nStates = discreteDist->getNumberOfStates();
+           
+        // resize the probability vector
+        probabilities.resize( nStates );
+        likelihoods.resize( nStates );
+        for (size_t i = 0; i < nStates; i++) {
+            partialLikelihoods.push_back( std::vector<double>(nStates) );
+        }
+    }
+        
+    type = t;
     
 }
 
@@ -661,42 +577,6 @@ void StochasticInferenceNode::setSumProductSequence(const std::vector<Stochastic
 }
 
 
-///**
-// * Set value: same as clamp, but do not clamp. This function will
-// * also be used by moves to propose a new value.
-// */
-//void StochasticInferenceNode::setValue( RbLanguageObject* val ) {
-//    
-//    if (val == NULL) {
-//        std::cerr << "Ooops ..." << std::endl;
-//    }
-//    
-//    if ( clamped )
-//        throw RbException( "Cannot change value of clamped node" );
-//    
-//    // only if the node is instantiated (i.e. not summed out) setting the value should have an effect.
-//    // summed out nodes might set the value for internal computations.
-//    if ( type == INSTANTIATED ) {
-//        // touch the node (which will store the lnProb)
-//        touch();
-//    }
-//    
-//    // delete the stored value
-//    if (storedValue == NULL) {
-//        storedValue = value;
-//    }
-//    else {
-//        delete value;
-//    }
-//    
-//    
-//    // set the value
-//    value = val;
-//    if (value == NULL) {
-//        std::cerr << "Ooops, setting value to NULL!\n";
-//    }
-//}
-
 
 /** touch this node for recalculation */
 void StochasticInferenceNode::touchMe( void ) {
@@ -706,9 +586,6 @@ void StochasticInferenceNode::touchMe( void ) {
         touched      = true;
         
         storedLnProb = lnProb;
-        
-        probabilityRecalculated     = true;
-        
         
         if ( isNotInstantiated() ) {
             
@@ -722,7 +599,7 @@ void StochasticInferenceNode::touchMe( void ) {
     for (std::set<InferenceDagNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
-            static_cast<VariableInferenceNode*>( *i )->likelihoodsNeedUpdates();
+            static_cast<VariableInferenceNode*>( *i )->makeLikelihoodsDirty();
         }
     }
     

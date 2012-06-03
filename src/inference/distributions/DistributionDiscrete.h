@@ -30,7 +30,8 @@ public:
     
     // Basic utility function
     virtual DistributionDiscrete*               clone(void) const = 0;                                              //!< Clone object    
-        
+       
+    virtual size_t                              getNumberOfStates(void) const = 0;
 protected:
     DistributionDiscrete() {}                                //!< Constructor
     

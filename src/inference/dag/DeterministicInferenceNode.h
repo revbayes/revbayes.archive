@@ -46,8 +46,7 @@ public:
     void                                    constructSumProductSequence(std::set<VariableInferenceNode*>& nodes, std::vector<StochasticInferenceNode*>& sequence);//!< Construct the set of all nodes which are eliminated
     bool                                    isNotInstantiated(void) const;
     bool                                    isEliminated(void) const;
-    void                                    likelihoodsNeedUpdates();                                           //!< Tell this node that the likelihoods need to be updated
-    void                                    markForRecalculation(void);                                         //!< Flag this node for recalculation
+    void                                    makeLikelihoodsDirty(void);                                         //!< Tell this node that the likelihoods need to be updated
     bool                                    needsRecalculation(void) const;                                     //!< Does this node need to recalculate its probability or likelihood?
     
 protected:

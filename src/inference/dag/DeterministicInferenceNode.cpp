@@ -189,7 +189,7 @@ void DeterministicInferenceNode::keepMe( void ) {
  * The likelihoods for this node need to be updated. This should only be ever called if this node is eliminated, i.e. at least one parent is eliminated.
  * Since this is a deterministic node, we just tell it our eliminated parents.
  */
-void DeterministicInferenceNode::likelihoodsNeedUpdates() {
+void DeterministicInferenceNode::makeLikelihoodsDirty( void ) {
     
     // we need to mark this node as dirty so that it will recompute its likelihood and probability
     if (!touched) {
@@ -202,70 +202,10 @@ void DeterministicInferenceNode::likelihoodsNeedUpdates() {
     for (std::set<InferenceDagNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
-            static_cast<VariableInferenceNode*>( *i )->likelihoodsNeedUpdates();
+            static_cast<VariableInferenceNode*>( *i )->makeLikelihoodsDirty();
         }
     }
 }
-
-
-/** 
- * Mark this deterministic node for recalculation.
- * We set our flag four updating the value.
- * We delegate to all our children that they need to recalculate their probabilities.
- */
-void DeterministicInferenceNode::markForRecalculation(void) {
-    // set our flag for update
-    needsUpdate = true;
-    
-    // tell all children to recalculate their values
-    markChildrenForRecalculation();
-}
-
-
-/**
- * Does the probability or likelihood of this node needs updateing?
- * We need to propagate this call to all our children.
- */
-bool DeterministicInferenceNode::needsRecalculation() const {
-    
-    //  I need to ask all my children if they need to recalculate their probabilities or likelihoods
-    for (std::set<VariableInferenceNode*>::iterator i = children.begin(); i != children.end(); i++) {
-        if ( (*i)->needsRecalculation() ) {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-///** Print struct for user */
-//void DeterministicInferenceNode::printStruct( std::ostream& o ) const {
-//    
-//    o << "_DAGClass    = " << getClassTypeSpec() << std::endl;
-//    o << "_value       = ";
-//    value->printValue(o);
-//    o << std::endl;
-//    if ( touched && !needsUpdate ) {
-//        o << "_storedValue = ";
-//        storedValue->printValue(o);
-//        o << std::endl;
-//    }
-//    
-//    o << "_valueType   = " << value->getTypeSpec() << std::endl;
-//    o << "_function    = " << function->getTypeSpec() << std::endl;
-//    o << "_touched     = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
-//    o << "_needsUpdate = " << ( needsUpdate ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
-//    
-//    o << "_parents     = ";
-//    printParents(o);
-//    o << std::endl;
-//    
-//    o << "_children    = ";
-//    printChildren(o);
-//    o << std::endl;
-//    
-//    o << std::endl;
-//}
 
 
 /** 
@@ -315,7 +255,7 @@ void DeterministicInferenceNode::touchMe( void ) {
     for (std::set<InferenceDagNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
         if ( (*i)->isNotInstantiated() ) {
             // since only variable nodes can be eliminated
-            static_cast<VariableInferenceNode*>( *i )->likelihoodsNeedUpdates();
+            static_cast<VariableInferenceNode*>( *i )->makeLikelihoodsDirty();
         }
     }
     

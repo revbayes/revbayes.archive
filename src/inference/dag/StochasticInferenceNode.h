@@ -58,26 +58,27 @@ public:
     StochasticInferenceNode&            operator=(const StochasticInferenceNode& x);                        //!< Assignment operator
     
     // Basic utility functions
-    const Distribution&        getDistribution(void) const;
+    const Distribution&                 getDistribution(void) const;
     
     // StochasticInferenceNode functions
-    double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
+    double                              calculateLnProbability(bool force = false);                         //!< Calculate log conditional probability
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
-    bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
+    bool                                isClamped(void) const;                                              //!< Is the node clamped?
 //    void                                setValue(valueType* value);                                         //!< Set value but do not clamp; get affected nodes
     void                                unclamp(void);                                                      //!< Unclamp the node
     
     // Stochastic DAG Node functions for efficient computations
     double                              calculateSummedLnProbability(size_t nodeIndex);                     //!< Calculate summed log conditional probability over all possible states
-    double                              calculateEliminatedLnProbability(bool enforceProbabilityCalculation);//!< Calculate summed log conditional probability over all possible states
+    double                              calculateEliminatedLnProbability(bool force = false);               //!< Calculate summed log conditional probability over all possible states
 //    DAGNode*                            cloneDAG(std::map<const DAGNode*, RbDagNodePtr>& newNodes) const;   //!< Clone entire graph
     void                                constructSumProductSequence(std::set<VariableInferenceNode*>& nodes, std::vector<StochasticInferenceNode*>& sequence); //!< Construct the sum-product sequecence
     void                                constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
     bool                                isEliminated() const;
     bool                                isNotInstantiated(void) const;
     bool                                isSummedOver() const { return type == SUMMED_OVER; }
-    void                                likelihoodsNeedUpdates(void);                                       //!< Tell this node that the likelihoods need to be updated
-    void                                markForRecalculation(void);                                         //!< Flag this node for recalculation
+//    void                                likelihoodsNeedUpdates(void);                                       //!< Tell this node that the likelihoods need to be updated
+    void                                makeLikelihoodsDirty(void);                                         //!< Flag this node for recalculation
+//    void                                makeProbabilitiesDirty(void);                                       //!< Flag this node for recalculation
     bool                                needsRecalculation(void) const;                                     //!< Does this node need to recalculate its probability or likelihood?
     void                                setInstantiated(bool inst);                                         //!< Set whether the node is instantiated or summed over
     void                                setSummationType(VariableType t);  
@@ -99,12 +100,11 @@ private:
 
     // Member variables
     bool                                clamped;                                                            //!< Is the node clamped with data?
-    Distribution*              distribution;                                                       //!< Distribution (density functions, random draw function)
+    Distribution*                       distribution;                                                       //!< Distribution (density functions, random draw function)
     double                              lnProb;                                                             //!< Current log probability
     bool                                needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
     bool                                needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?
     double                              storedLnProb;                                                       //!< Stored log probability
-    bool                                probabilityRecalculated;                                            //!< Was the probability and/or likelihood recalculated
 
     // probability arrays and likelihood arrays for summed out computations
     std::vector<double>                 probabilities;

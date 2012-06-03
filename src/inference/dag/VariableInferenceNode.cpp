@@ -33,19 +33,30 @@ StochasticInferenceNode* VariableInferenceNode::getFactorRoot( void ) const {
 }
 
 
-/** 
- * Mark all our children for recalculation. 
- * The difference between this function and touch is that touch also results into a call of likelihood updates.
- * Here, we only want to recalculate the probability.
- */
-void VariableInferenceNode::markChildrenForRecalculation( void ) {
-    
-    for (std::set<VariableInferenceNode*>::iterator i = children.begin(); i != children.end(); i++) {
-        (*i)->markForRecalculation();
-    }
+bool VariableInferenceNode::isTouched( void ) const {
+    return touched;
 }
+
+
+///** 
+// * Mark all our children for recalculation. 
+// * The difference between this function and touch is that touch also results into a call of likelihood updates.
+// * Here, we only want to recalculate the probability.
+// */
+//void VariableInferenceNode::markChildrenForRecalculation( void ) {
+//    
+//    for (std::set<VariableInferenceNode*>::iterator i = children.begin(); i != children.end(); i++) {
+//        (*i)->markForRecalculation();
+//    }
+//}
 
 
 void VariableInferenceNode::setFactorRoot(StochasticInferenceNode *r) {
     factorRoot = r;
+}
+
+
+
+void VariableInferenceNode::removeParentNode(InferenceDagNode *p) {
+    parents.erase( p );
 }
