@@ -9,11 +9,11 @@
 #include "VariableInferenceNode.h"
 
 
-VariableInferenceNode::VariableInferenceNode( const RbValue<void*> &v, const std::string &n) : InferenceDagNode( v, n ) {
+VariableInferenceNode::VariableInferenceNode( const RbValue<void*> &v, const std::string &n) : InferenceDagNode( v, n ), factorRoot( NULL ) {
     
 }
 
-VariableInferenceNode::VariableInferenceNode( const VariableInferenceNode &v) : InferenceDagNode( v ) {
+VariableInferenceNode::VariableInferenceNode( const VariableInferenceNode &v) : InferenceDagNode( v ), factorRoot( v.factorRoot ) {
     
 }
 

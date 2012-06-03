@@ -19,6 +19,7 @@
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
+#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "Ellipsis.h"
 #include "OptionRule.h"
@@ -69,27 +70,29 @@ const TypeSpec& Plate::getTypeSpec( void ) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Plate::executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args) {
+RlValue<RbLanguageObject> Plate::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     // special handling for adding a variable
     if (name == "add") {
         
-//        // get the argument
-//        const RbPtr<Argument>& theArg = args[0];
-//        
-//        // get the DAG node
-//        const RbPtr<const DAGNode> &theNode = theArg->getVariable()->getDagNode();
-//        
-//        // expand the DAG node
-//        // \TODO: We shouldn't use const-casts.
-//        const_cast<DAGNode *>( (const DAGNode*) theNode )->setPlate( this );
-//        const_cast<DAGNode *>( (const DAGNode*) theNode )->expand();
-//        const_cast<DAGNode *>( (const DAGNode*) theNode )->touch();
+        // get the argument
+        RbPtr<Argument> theArg = args[0];
         
-        return NULL;
+        // get the Variable
+        const RbPtr<Variable> &theVar = theArg->getReferenceVariable();
+        
+        // get the DAG node
+        const RbPtr<DAGNode>& theNode = theVar->getDagNode();
+        
+        // expand the DAG node
+        theNode->setPlate( this );
+        theNode->expand();
+        theNode->touch();
+        
+        return RlValue<RbLanguageObject>( NULL );
     }
     else {
-        return MemberObject::executeSimpleMethod( name, args );
+        return MemberObject::executeMethod( name, args );
     }
 }
 
@@ -104,9 +107,9 @@ const MethodTable& Plate::getMethods(void) const {
     if ( methodsSet == false ) {
         
         // add the 'addVariable()' method
-        addArgRules->push_back( new ArgumentRule( "var", true, RbObject::getClassTypeSpec() ) );
+        addArgRules->push_back( new ArgumentRule( "var", false, RbObject::getClassTypeSpec() ) );
         
-        methods.addFunction("add", new SimpleMemberFunction(RbVoid_name, addArgRules) );
+        methods.addFunction("add", new MemberFunction(RbVoid_name, addArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &MemberObject::getMethods() );

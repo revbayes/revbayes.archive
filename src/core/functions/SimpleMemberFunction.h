@@ -19,7 +19,7 @@
 #ifndef SimpleMemberFunction_H
 #define SimpleMemberFunction_H
 
-#include "RbFunction.h"
+#include "MemberFunction.h"
 
 #include <map>
 #include <set>
@@ -30,33 +30,22 @@ class ArgumentRule;
 class DAGNode;
 class MemberObject;
 
-class SimpleMemberFunction :  public RbFunction {
+class SimpleMemberFunction :  public MemberFunction {
 
 public:
-    SimpleMemberFunction(const TypeSpec retType, ArgumentRules* argRules);                                                //!< Constructor
+    SimpleMemberFunction(const TypeSpec retType, ArgumentRules* argRules);                                          //!< Constructor
 
     // Basic utility functions
     SimpleMemberFunction*               clone(void) const;                                                          //!< Clone the object
     static const std::string&           getClassName(void);                                                         //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
-    const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+//    const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
 
     // Regular functions   
-    const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
-    const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
-    void                                setArgumentVariable(const std::string& name, const RbPtr<const RbLanguageObject> &var);     
-    void                                setMemberObject(const RbPtr<MemberObject>& obj);                            //!< Set the member object to which this function belongs
-    void                                setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
+    virtual RlValue<RbLanguageObject>   execute(void);                                                              //!< Execute function
 
 protected:
     virtual RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);                  //!< Execute the function. This is the function one has to overwrite for single return values.
-
-
-private:
-    const ArgumentRules*                argumentRules;                                                              //!< Argument rules (different for different member functions)
-    std::string                         funcName;                                                                   //!< Name of member method
-    MemberObject*                       object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
-    const TypeSpec                      returnType;                                                                 //!< Return type (different for different member functions)
     
 };
 

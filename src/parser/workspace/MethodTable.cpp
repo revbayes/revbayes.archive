@@ -47,8 +47,8 @@ void MethodTable::addFunction( const std::string name, const RbPtr<RbFunction> &
 
     FunctionTable::addFunction( name, func );
 
-    if ( func->isTypeSpec( SimpleMemberFunction::getClassTypeSpec() ) )
-        static_cast<SimpleMemberFunction*>( (RbFunction*)func )->setMethodName( name );
+    if ( func->isTypeSpec( MemberFunction::getClassTypeSpec() ) )
+        static_cast<MemberFunction*>( (RbFunction*)func )->setMethodName( name );
     
     if ( func->isTypeSpec( DagNodeFunction::getClassTypeSpec() ) )
         static_cast<DagNodeFunction*>( (RbFunction*)func )->setMethodName( name );

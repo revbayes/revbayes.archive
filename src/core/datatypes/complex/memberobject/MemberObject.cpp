@@ -50,15 +50,16 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() 
  * We assumes that the arguments come as scalar types, not multidimensional RevLanguage objects.
  * Therefore, we just delegate the call to executeSimpleMethod.
  */
-RbPtr<RbLanguageObject> MemberObject::executeMethod(std::string const &name, const std::vector<RlValue<const RbObject> > &args) {
+RlValue<RbLanguageObject> MemberObject::executeMethod(std::string const &name, const std::vector<RbPtr<Argument> > &args) {
     
     std::vector<const RbObject *> simpleArgs;
-    for (std::vector<RlValue<const RbObject> >::const_iterator i =args.begin(); i != args.end(); ++i) {
+    for (std::vector<RbPtr<Argument> >::const_iterator i =args.begin(); i != args.end(); ++i) {
+        const RlValue<const RbLanguageObject> &val = (*i)->getVariable()->getValue();
         // check first if these arguments are actually scalars
-        if (i->lengths.size() > 0 ) {
+        if (val.lengths.size() > 0 ) {
             throw RbException("We currently do not support setting of multidimensional member values!");
         }
-        simpleArgs.push_back( i->getSingleValue() );
+        simpleArgs.push_back( val.getSingleValue() );
     }
     
     // calling the internal method to execute the member-method

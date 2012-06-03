@@ -304,6 +304,7 @@ void DeterministicInferenceNode::touchMe( void ) {
     
     // flag myself for an update
     needsUpdate = true;
+    update();
     
     // touch all my children because they are affected too
     for ( std::set<VariableInferenceNode*>::iterator i = children.begin(); i != children.end(); i++ )
@@ -323,7 +324,7 @@ void DeterministicInferenceNode::touchMe( void ) {
 /** Update value and stored value after node and its surroundings have been touched by a move */
 void DeterministicInferenceNode::update( void ) {
     
-    if ( touched && needsUpdate ) {
+//    if ( touched && needsUpdate ) {
         
         // compute a new value
         function->execute();
@@ -331,7 +332,7 @@ void DeterministicInferenceNode::update( void ) {
         // mark as changed
         needsUpdate = false;
         
-    }
+//    }
 }
 
 

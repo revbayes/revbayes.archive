@@ -19,6 +19,7 @@
 #include "DagNodeFunction.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
+#include "MemberFunction.h"
 #include "MemberObject.h"
 #include "Plate.h"
 #include "RbException.h"
@@ -204,7 +205,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
             try {
                 RbFunction* theFunction = mt.getFunction( functionName->getValue(), args ).clone();
                 theFunction->processArguments(args);
-                SimpleMemberFunction* theMemberFunction = static_cast<SimpleMemberFunction*>( theFunction );
+                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
                 theMemberFunction->setMemberObject( theMemberObject );
                 func = theMemberFunction;
                 successful = true;

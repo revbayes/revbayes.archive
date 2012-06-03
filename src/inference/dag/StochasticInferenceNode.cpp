@@ -58,7 +58,7 @@ double StochasticInferenceNode::calculateLnProbability( void ) {
     if (factorRoot != NULL) {
         lnProb =  factorRoot->calculateSummedLnProbability(0);
     }
-    else if (needsProbabilityRecalculation) {
+//    else if (needsProbabilityRecalculation) {
         // \TODO: Hack! We should make sure that the likelihood is properly calculated. (Sebastian)
         // I switched this test of, because we now instantiate the model from the RevLanguage
         // but do not actually sum over all possible values. This is only done in the MCMC.
@@ -69,7 +69,7 @@ double StochasticInferenceNode::calculateLnProbability( void ) {
         //        else {
         //            throw RbException("We are asked to calculate the summed ln probability but do not have the root of the factor set. Oh oh ...");
         //        }
-    }
+//    }
     
     return lnProb;
 }
@@ -346,16 +346,16 @@ const Distribution& StochasticInferenceNode::getDistribution( void ) const {
 /** Get the ln probability ratio of this node */
 double StochasticInferenceNode::getLnProbabilityRatio( void ) {
     
-    if ( !probabilityRecalculated ) {
-        
-        return 0.0;
-    }
-    else {
+//    if ( !probabilityRecalculated ) {
+//        
+//        return 0.0;
+//    }
+//    else {
         //        assert( !areDistributionParamsTouched() );
         double lnR = calculateLnProbability() - storedLnProb;
         
         return lnR;
-    }
+//    }
 }
 
 
@@ -551,7 +551,7 @@ void StochasticInferenceNode::restoreMe() {
     }
     
     touched = false;
-    probabilityRecalculated     = false;
+    probabilityRecalculated = false;
 }
 
 

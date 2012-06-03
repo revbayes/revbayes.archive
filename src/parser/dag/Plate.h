@@ -39,13 +39,12 @@ public:
     
     // Member method inits
     const MethodTable&                  getMethods(void) const;                                                                             //!< Get methods
+    RlValue<RbLanguageObject>           executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args);                  //!< Execute method
     
     const RbPtr<const Plate>&           getParentPlate(void) const;                                                                         //!< Get the parent plate of this plate.
     std::vector<size_t>                 getPlateLengths(void) const;                                                                        //!< Get the length for this plate and all parent plates
     size_t                              getLength(void) const;                                                                              //!< Get the length for this plate
     
-protected:
-    RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args);            //!< Execute method
     
 private:
     

@@ -52,7 +52,7 @@ class MemberObject: public RbLanguageObject {
         virtual void                                        setMember(const std::string& name, const RbPtr<Variable> &var);                                 //!< Set member variable
 
         // Member method functions
-        virtual RbPtr<RbLanguageObject>                     executeMethod(const std::string& name, const std::vector<RlValue<const RbObject> >& args);      //!< Override to map member methods to internal functions
+        virtual RlValue<RbLanguageObject>                   executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args);              //!< Override to map member methods to internal functions
         virtual RbPtr<RbLanguageObject>                     executeSimpleMethod(const std::string& name, const std::vector<const RbObject *>& args);        //!< Override to map member methods to internal functions
         virtual const MethodTable&                          getMethods(void) const;                                                                         //!< Get member methods (const)
 

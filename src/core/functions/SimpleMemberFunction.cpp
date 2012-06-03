@@ -34,7 +34,7 @@
 
 /** Constructor */
 SimpleMemberFunction::SimpleMemberFunction(const TypeSpec retType, ArgumentRules* argRules) : 
-    RbFunction(), argumentRules(argRules), object(NULL), returnType(retType) {
+    MemberFunction(retType, argRules) {
 
 }
 
@@ -43,6 +43,11 @@ SimpleMemberFunction::SimpleMemberFunction(const TypeSpec retType, ArgumentRules
 SimpleMemberFunction* SimpleMemberFunction::clone(void) const {
 
     return new SimpleMemberFunction(*this);
+}
+
+
+RlValue<RbLanguageObject> SimpleMemberFunction::execute( void ) {
+    return RbFunction::execute();
 }
 
 
@@ -57,7 +62,7 @@ RbPtr<RbLanguageObject> SimpleMemberFunction::executeFunction( const std::vector
 /** Get class name of object */
 const std::string& SimpleMemberFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Member function";
+    static std::string rbClassName = "Simple Member function";
     
 	return rbClassName; 
 }
@@ -65,46 +70,10 @@ const std::string& SimpleMemberFunction::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& SimpleMemberFunction::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberFunction::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
 
-/** Get type spec */
-const TypeSpec& SimpleMemberFunction::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
 
-
-/** Get argument rules */
-const ArgumentRules& SimpleMemberFunction::getArgumentRules(void) const {
-
-    return *argumentRules;
-}
-
-
-/** Get return type */
-const TypeSpec& SimpleMemberFunction::getReturnType(void) const {
-
-    return returnType;
-}
-
-
-void SimpleMemberFunction::setMemberObject( const RbPtr<MemberObject>& obj) {
-    
-    // we do not own the object itself because one object can have multiple member functions
-    object = obj;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void SimpleMemberFunction::setArgumentVariable(std::string const &name, const RbPtr<const RbLanguageObject> &var) {
-    
-    
-    // We expect a couple of parameters which we need to add to the member function. Therefore we do not call the base class.
-    //        RbFunction::setArgumentVariable(name, var);
-}
 
