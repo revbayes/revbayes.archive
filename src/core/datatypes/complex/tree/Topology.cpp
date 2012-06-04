@@ -15,26 +15,20 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
-#include "ConstantNode.h"
-#include "MemberObject.h"
-#include "MethodTable.h"
-#include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "SimpleMemberFunction.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 
 
 /* Default constructor */
-Topology::Topology(void) : MemberObject( getMemberRules() ), root( NULL ) {
+Topology::Topology(void) : root( NULL ) {
 
 }
 
 
 /* Copy constructor */
-Topology::Topology(const Topology& t) : MemberObject( getMemberRules() ), root( NULL ) {
+Topology::Topology(const Topology& t) : root( NULL ) {
 
     // set the parameters
     isRooted = t.isRooted;
@@ -64,8 +58,6 @@ Topology::~Topology(void) {
 Topology& Topology::operator=(const Topology &t) {
     
     if (this != &t) {
-        // delegate to the base class
-        MemberObject::operator=(t);
         
         nodes.clear();
         delete root;
@@ -85,47 +77,6 @@ Topology& Topology::operator=(const Topology &t) {
 Topology* Topology::clone(void) const {
 
     return new Topology(*this);
-}
-
-
-/** Get class name of object */
-const std::string& Topology::getClassName(void) { 
-    
-    static std::string rbClassName = "Tree Topology";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& Topology::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& Topology::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/* Map calls to member methods */
-RbPtr<RbLanguageObject> Topology::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
-    
-    if (name == "nTips") {
-    
-        return RbPtr<RbLanguageObject>( new Natural( getNumberOfTips() ) );
-    }
-    else if (name == "nnodes") {
-    
-        return RbPtr<RbLanguageObject>( new Natural( getNumberOfNodes() ) );
-    }
-
-    return MemberObject::executeSimpleMethod( name, args );
 }
 
 
@@ -162,47 +113,24 @@ void Topology::fillNodesByPhylogeneticTraversal(const TopologyNode* node) {
 }
 
 
-
-/* Get member rules */
-const MemberRules& Topology::getMemberRules(void) const {
-    
-    static MemberRules memberRules = MemberRules();
-    static bool        rulesSet = false;
-    
-    if (!rulesSet) 
-    {
-        rulesSet = true;
-    }
-    
-    return memberRules;
+bool Topology::getIsBinary( void ) const {
+    return isBinary;
 }
 
 
-/* Get method specifications */
-const MethodTable& Topology::getMethods(void) const {
-    
-    static MethodTable methods = MethodTable();
-    static ArgumentRules* ntipsArgRules = new ArgumentRules();
-    static ArgumentRules* nnodesArgRules = new ArgumentRules();
-    static bool          methodsSet = false;
-    
-    if ( methodsSet == false ) 
-    {
-        methods.addFunction("nTips",  new SimpleMemberFunction(Natural::getClassTypeSpec(), ntipsArgRules) );
-        methods.addFunction("nnodes", new SimpleMemberFunction(Natural::getClassTypeSpec(), nnodesArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &MemberObject::getMethods() );
-        methodsSet = true;
-    }
-    
-    return methods;
+bool Topology::getIsRooted( void ) const {
+    return isRooted;
+}
+
+
+const std::vector<const TopologyNode *>& Topology::getNodes( void ) const {
+    return nodes;
 }
 
 
 /** Calculate the number of interior nodes in the tree by deducing the number of
  tips from number of nodes, and then subtract 1 more if the tree is rooted. */
-size_t Topology::getNumberOfInteriorNodes(void) const {
+size_t Topology::getNumberOfInteriorNodes( void ) const {
     
     size_t preliminaryNumIntNodes = getNumberOfNodes() - getNumberOfTips();
     
@@ -213,9 +141,14 @@ size_t Topology::getNumberOfInteriorNodes(void) const {
 }
 
 
+size_t Topology::getNumberOfNodes( void ) const {
+    return nodes.size();
+}
+
+
 /** Calculate and return the number of tips on the tree by going through the vector
  of nodes, querying each about its tip status. */
-size_t Topology::getNumberOfTips(void) const {
+size_t Topology::getNumberOfTips( void ) const {
     
     size_t n = 0;
     for (size_t i=0; i<nodes.size(); i++)
@@ -248,13 +181,6 @@ const TopologyNode& Topology::getTipNode( size_t indx ) const {
     
     // \TODO: Bound checking
     return *nodes[ indx ];
-}
-
-
-/* Print the tree */
-void Topology::printValue(std::ostream& o) const {
-
-    o << root->getName();
 }
 
 

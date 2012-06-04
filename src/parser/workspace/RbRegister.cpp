@@ -64,7 +64,10 @@
 /* MemberObject types without auto-generated constructors(alphabetic order) */
 #include "Model.h"
 #include "Plate.h"
+#include "RlTopology.h"
 #include "Simplex.h"
+
+
 #include "Topology.h"
 #include "TopologyNode.h"
 
@@ -229,7 +232,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
         addType( new Simplex()                      );
-        addType( new Topology()                     );
+        addType( new RlTopology()                   );
         addType( new TopologyNode()                 );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
@@ -302,6 +305,12 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addDistribution( "lnorm",        new Dist_lnorm()       );
 //        addDistribution( "unifTopology", new Dist_topologyunif());
         
+        ///////////////////////
+        /* Add Distributions */
+        ///////////////////////
+        
+        // Pure statistical distributions
+        
         // beta distribution
         MemberRules distBetaMemberRules;
         distBetaMemberRules.push_back( new ArgumentRule( "alpha",  true, RealPos::getClassTypeSpec()    ) );
@@ -353,6 +362,20 @@ void Workspace::initializeGlobalWorkspace(void) {
         distUnifMemberRules.push_back( new ArgumentRule( "min", true, Real::getClassTypeSpec()   , new Real(0.0)    ) );
         distUnifMemberRules.push_back( new ArgumentRule( "max", true, Real::getClassTypeSpec(), new Real(1.0) ) );
         addDistribution( "unif",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_unif(), "uniform", distUnifMemberRules, new Real() ) ) );
+        
+        
+        // Phylogenetic distributions
+        
+        // uniform topology distribution
+        MemberRules distUnifTopologyMemberRules;
+        distUnifTopologyMemberRules.push_back( new ArgumentRule( "numberTaxa", true, Natural::getClassTypeSpec() ) );
+        distUnifTopologyMemberRules.push_back( new ArgumentRule( "tipNames", true, RlVector<RbString>::getClassTypeSpec() ) );
+        distUnifTopologyMemberRules.push_back( new ArgumentRule( "isRooted", true, RbBoolean::getClassTypeSpec(), new RbBoolean( true ) ) );
+        distUnifTopologyMemberRules.push_back( new ArgumentRule( "isBinary", true, RbBoolean::getClassTypeSpec(), new RbBoolean( true ) ) );
+        addDistribution( "unifTopology",         RbPtr<ParserDistribution>( new ParserDistribution( new Dist_topologyunif(), "uniform topology", distUnifTopologyMemberRules, new RlTopology() ) ) );
+        
+        
+        
         
         /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace()->typesInitialized = true;

@@ -64,7 +64,7 @@ private:
     size_t                          getTipIndex(const TopologyNode& theNode) const;                                                     //!< Get the index of the node
 
     // parameters
-    RbPtr<Topology>                 orderingTopology;                                                               //!< The topology that orders the tree plate
+    Topology                        orderingTopology;                                                               //!< The topology that orders the tree plate
 
     size_t                          numNodes;
     size_t                          nodeIndex;

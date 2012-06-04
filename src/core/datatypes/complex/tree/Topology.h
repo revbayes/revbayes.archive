@@ -17,19 +17,13 @@
 #ifndef Topology_H
 #define Topology_H
 
-#include "MemberObject.h"
-#include "Natural.h"
 #include <set>
 #include <string>
 
-class ArgumentEnvironment;
-class ArgumentRule;
-class DAGNode;
-class MethodTable;
 class TopologyNode;
 
 
-class Topology: public MemberObject {
+class Topology {
     
     public:
                                                     Topology(void);                                                         //!< Default constructor
@@ -40,24 +34,13 @@ class Topology: public MemberObject {
     
         // Basic utility functions
         Topology*                                   clone(void) const;                                                      //!< Clone object
-        static const std::string&                   getClassName(void);                                                         //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
-        const TypeSpec&                             getTypeSpec(void) const;                                                //!< Get language type of the object  
-        void                                        printValue(std::ostream& o) const;                                      //!< Print value for user
-
-        // Member variable rules
-        const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules
-
-        // Member method inits
-        virtual RbPtr<RbLanguageObject>             executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);         //!< Override to map member methods to internal functions
-        const MethodTable&                          getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions
-        bool                                        getIsBinary(void) const { return isBinary; }                            //!< Is the tree rooted
-        bool                                        getIsRooted(void) const { return isRooted; }                            //!< Is the tree rooted
-        const std::vector<const TopologyNode*>&     getNodes(void) const { return nodes; }                                  //!< Get a pointer to the nodes in the tree
+        bool                                        getIsBinary(void) const;                            //!< Is the tree rooted
+        bool                                        getIsRooted(void) const;                            //!< Is the tree rooted
+        const std::vector<const TopologyNode*>&     getNodes(void) const;                                  //!< Get a pointer to the nodes in the tree
         size_t                                      getNumberOfInteriorNodes(void) const;                                   //!< Get the number of nodes in the tree
-        size_t                                      getNumberOfNodes(void) const { return nodes.size(); }                   //!< Get the number of nodes in the tree
+        size_t                                      getNumberOfNodes(void) const;                   //!< Get the number of nodes in the tree
         size_t                                      getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the tree
         const TopologyNode&                         getInteriorNode(int indx) const;                                        //!< Get a pointer to interior node i
         const TopologyNode&                         getRoot(void) const;                                                    //!< Get a pointer to the root node of the tree

@@ -24,6 +24,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "RlTopology.h"
 #include "RlTree.h"
 #include "SimpleMemberFunction.h"
 
@@ -87,7 +88,7 @@ const MemberRules& RlTree::getMemberRules(void) const {
     
     if (!rulesSet) {
         
-        memberRules.push_back( new ArgumentRule( "topology" , true, Topology::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "topology" , true, RlTopology::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

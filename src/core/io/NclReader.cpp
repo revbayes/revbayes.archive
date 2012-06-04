@@ -24,6 +24,7 @@
 #include "NclReader.h"
 #include "RbUtil.h"
 #include "Real.h"
+#include "RlTopology.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "StringUtilities.h"
@@ -1232,7 +1233,7 @@ TreePlate* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree, const N
     myTreeFromNcl->setRoot(root);
     
     TreePlate* myTreePlateFromNcl = new TreePlate();
-    myTreePlateFromNcl->setMember("topology", new Variable( new ConstantNode( RbPtr<RbLanguageObject>( myTreeFromNcl ) ) ) );
+    myTreePlateFromNcl->setMember("topology", new Variable( new ConstantNode( RbPtr<RbLanguageObject>( new RlTopology( *myTreeFromNcl ) ) ) ) );
     
     const std::vector<const TopologyNode*>& nodes = myTreeFromNcl->getNodes();
     for (std::vector<const TopologyNode*>::const_iterator i = nodes.begin(); i != nodes.end(); i++) {

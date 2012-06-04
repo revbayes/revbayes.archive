@@ -21,6 +21,8 @@
 
 //#include "RbFunction.h"     // For typedef of ArgumentRules
 #include "RbInternal.h"
+#include "RbLanguageObject.h"
+#include "RlValue.h"
 
 #include <map>
 #include <ostream>

@@ -27,6 +27,7 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Real.h"
+#include "RlTopology.h"
 #include "SimpleMemberFunction.h"
 #include "Topology.h"
 #include "TopologyNode.h"
@@ -36,7 +37,7 @@
 
 
 /* Default constructor */
-TreePlate::TreePlate(void) : MemberObject( getMemberRules() ), orderingTopology( NULL ) {
+TreePlate::TreePlate(void) : MemberObject( getMemberRules() ), orderingTopology() {
     
 //    orderingTopology = NULL;
 }
@@ -155,7 +156,7 @@ const MemberRules& TreePlate::getMemberRules(void) const {
     
     if (!rulesSet) 
     {
-        memberRules.push_back( new ArgumentRule( "topology", true, Topology::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule( "topology", true, RlTopology::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -169,7 +170,7 @@ const MemberRules& TreePlate::getMemberRules(void) const {
 
 /** Find the index of the node */
 size_t TreePlate::getNodeIndex(const TopologyNode& theNode) const {
-    const std::vector<const TopologyNode*>& nodes = orderingTopology->getNodes();
+    const std::vector<const TopologyNode*>& nodes = orderingTopology.getNodes();
     
     size_t index = 0;
     for (; index<nodes.size(); index++) {
@@ -198,36 +199,36 @@ size_t TreePlate::getNodeIndex(const TopologyNode& theNode) const {
 size_t TreePlate::getTipIndex(const TopologyNode& theNode) const {
     
     size_t index = 0;
-    for (; index<orderingTopology->getNumberOfTips(); index++) {
-        const TopologyNode& theTip = orderingTopology->getTipNode(index);
+    for (; index<orderingTopology.getNumberOfTips(); index++) {
+        const TopologyNode& theTip = orderingTopology.getTipNode(index);
         if (theNode.equals( theTip ) ) {
             break;
         }
     }
-    if (index == orderingTopology->getNumberOfTips()) {
+    if (index == orderingTopology.getNumberOfTips()) {
         if (theNode.isTip()){
             std::cout << "Ooops ..." << std::endl;
         }
-        if (theNode.equals(orderingTopology->getTipNode(index))) {
+        if (theNode.equals(orderingTopology.getTipNode(index))) {
             std::cout << "Hm, wrong numbering scheme ... ?" << std::endl;
         }
     }
     
     // return -1 if the node does not exist in the tree
-    return (index < orderingTopology->getNumberOfTips() ? index + 1 : 0);
+    return (index < orderingTopology.getNumberOfTips() ? index + 1 : 0);
 }
 
 
 
 const Topology& TreePlate::getTopology(void) const {
-    return *orderingTopology;
+    return orderingTopology;
 }
 
 
 /* Print the tree */
 void TreePlate::printValue(std::ostream& o) const {
     
-    o << buildNewickString( orderingTopology->getRoot() );
+    o << buildNewickString( orderingTopology.getRoot() );
     
 }
 
@@ -237,7 +238,7 @@ void TreePlate::printValue(std::ostream& o) const {
 void TreePlate::setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var) {
     
     if ( name == "topology" ) {
-        orderingTopology = static_cast<Topology*>( var->clone() );
+        orderingTopology = static_cast<const RlTopology &>( *var ).getValue();
     }
     else {
         MemberObject::setSimpleMemberValue(name, var);
