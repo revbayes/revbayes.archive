@@ -707,6 +707,7 @@ RlValue<RbLanguageObject> StochasticNode::createRV( const std::vector<size_t> &p
                 for (std::vector<size_t>::const_iterator i = singleRetVal.lengths.begin(); i != singleRetVal.lengths.end(); ++i) {
                     retVal.lengths.push_back( *i );
                 }
+                retVal.lengths.insert(retVal.lengths.begin(), size);
             }
             
             // update the offsets

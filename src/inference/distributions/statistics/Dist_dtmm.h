@@ -41,7 +41,7 @@ protected:
     double                                  pdfSingleValue(std::vector<size_t> &offset) const;                  //!< Probability density
     void                                    rvSingleValue(std::vector<size_t> &offset);                         //!< Generate random variable
     void                                    setInternalParameters(const std::vector<RbValue<void*> > &p);       //!< Set the pointers to the variables of the distribution. The last one is always the random value.
-    void                        setInternalObservedValue(const RbValue<void*> &v);                  //!< Set the pointers to the observation (random variable) of the distribution.
+    void                                    setInternalObservedValue(const RbValue<void*> &v);                  //!< Set the pointers to the observation (random variable) of the distribution.
 
 private:
     // parameters
