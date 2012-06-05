@@ -53,6 +53,13 @@ const TypeSpec& RlTopology::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+RbValue<void*> RlTopology::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = static_cast<void*>( &const_cast<Topology&>( topology ) );
+    return tmp;
+}
+
 /** Get type spec */
 const TypeSpec& RlTopology::getTypeSpec( void ) const {
     
@@ -117,6 +124,11 @@ const MethodTable& RlTopology::getMethods(void) const {
 
 const Topology& RlTopology::getValue( void ) const {
     return topology;
+}
+
+
+size_t RlTopology::memorySize( void ) const {
+    return sizeof( Topology );
 }
 
 

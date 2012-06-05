@@ -36,9 +36,11 @@ public:
         
     // Basic utility functions
     RlTopology*                                 clone(void) const;                                                      //!< Clone object
-    static const std::string&                   getClassName(void);                                                         //!< Get class name
-    static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
+    static const std::string&                   getClassName(void);                                                     //!< Get class name
+    static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
+    RbValue<void*>                              getLeanValue(void) const;                                               //!< Get the lean object contained in this one
     const TypeSpec&                             getTypeSpec(void) const;                                                //!< Get language type of the object  
+    size_t                                      memorySize() const;                                                     //!< Get the size
     void                                        printValue(std::ostream& o) const;                                      //!< Print value for user
     
     // Member variable rules

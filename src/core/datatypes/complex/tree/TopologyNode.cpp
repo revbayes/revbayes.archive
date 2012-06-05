@@ -63,7 +63,7 @@ TopologyNode::TopologyNode(const TopologyNode &n) : MemberObject(n) {
         theClone->setParent(this);
     }
     
-    // add myself as a new child to the parent node
+//    // add myself as a new child to the parent node
 //    if (parent != NULL) {
 //        parent->addChild(this);
 //    }
@@ -94,9 +94,13 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
         removeAllChildren();
         
         // copy the members
-        name = n.name;
-        index = n.index;
-        parent = n.parent;
+        name            = n.name;
+        index           = n.index;
+        parent          = n.parent;
+        isInteriorNode  = n.isInteriorNode;
+        isTipNode       = n.isTipNode;
+        isRootNode      = n.isRootNode;
+        
         // copy the children
         for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
             children.push_back( (*it)->clone() );
@@ -261,6 +265,12 @@ std::vector<int> TopologyNode::getChildrenIndices() const {
 }
 
 
+
+int TopologyNode::getIndex( void ) const {
+    return index;
+}
+
+
 /** Get method specifications */
 const MethodTable& TopologyNode::getMethods(void) const {
     
@@ -304,6 +314,16 @@ const MemberRules& TopologyNode::getMemberRules(void) const {
 }
 
 
+
+const std::string& TopologyNode::getName( void ) const {
+    return name;
+}
+
+
+size_t TopologyNode::getNumberOfChildren( void ) const {
+    return children.size();
+}
+
 const TopologyNode& TopologyNode::getParent(void) const { 
     return *parent; 
 
@@ -316,6 +336,10 @@ void TopologyNode::printValue(std::ostream& o) const {
     o << name;
 }
 
+
+bool TopologyNode::isTip( void ) const {
+    return isTipNode;
+}
 
 
 void TopologyNode::refreshNewickString(void) {
@@ -331,20 +355,16 @@ void TopologyNode::refreshNewickString(void) {
 /** Remove all children. We need to call intelligently the destructor here. */
 void TopologyNode::removeAllChildren(void) {
     
-    // free the memory
-//    for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); it++) {
-//        TopologyNode* theNode = *it;
-//        delete theNode;
-//    }
+    size_t nChildren = children.size();
+    // empty the children vector
     while (children.size() > 0) {
         TopologyNode* theNode = children[0];
+        // free the memory
         delete theNode;
+        nChildren = children.size();
     }
     
-    // empty the children vector
-    children.clear();
-    
-    name = RbString("");
+    name = "";
     
     isTipNode = true;
     isInteriorNode = false;
@@ -358,13 +378,13 @@ void TopologyNode::removeChild(TopologyNode* p) {
         children.erase(it);
 //        delete p;
     }
-//    else 
-//        throw(RbException("Cannot find node in list of children nodes"));
-    
-    name = buildNewickString( *this );
+    else 
+        throw(RbException("Cannot find node in list of children nodes"));
     
     isTipNode = children.size() == 0;
     isInteriorNode = children.size() > 0;
+    
+    name = buildNewickString( *this );
 }
 
 

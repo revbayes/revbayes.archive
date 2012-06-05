@@ -107,9 +107,9 @@ RbPtr<RbLanguageObject> RlCharacterData::executeSimpleMethod(std::string const &
             if ( data.isTaxonExcluded(i) == false )
             {
                 if (data.getIsHomologyEstablished() == true)
-                    numChar->push_back( new Natural( data.getNumberOfCharacters() ) );
+                    numChar->push_back( Natural( data.getNumberOfCharacters() ) );
                 else
-                    numChar->push_back( new Natural( data.getTaxonData(i).getNumberOfCharacters() ) );
+                    numChar->push_back( Natural( data.getTaxonData(i).getNumberOfCharacters() ) );
             }
         }
         return numChar;

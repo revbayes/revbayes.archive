@@ -114,8 +114,8 @@ RbPtr<RbLanguageObject> Container::executeSimpleMethod(std::string const &name, 
         }
         
         // \TODO: Check what happens with DAGNodeContainers
-        RbLanguageObject* element = static_cast<RbLanguageObject*>( (RbObject *) getElement(index->getValue() - 1) );
-        return RbPtr<RbLanguageObject>( element );
+        RbPtr<RbLanguageObject> element = static_cast<RbLanguageObject*>( (RbObject *) getElement(index->getValue() - 1) );
+        return element;
     } 
     
     return MemberObject::executeSimpleMethod( name, args );

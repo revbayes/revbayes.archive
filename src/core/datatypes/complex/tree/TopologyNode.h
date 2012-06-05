@@ -73,13 +73,13 @@ class TopologyNode : public MemberObject {
         const TopologyNode&                 getChild(size_t i) const;                                                   //!< Returns the i-th child
         TopologyNode&                       getChild(size_t i);                                                         //!< Returns the i-th child (non-const to return non-const node)
         std::vector<int>                    getChildrenIndices(void) const;                                             //!< Return children indices
-        int                                 getIndex(void) const { return index; }                                      //!< Get index of node
-        std::string                         getName(void) const { return name; }                                        //!< Get name of node
-        size_t                              getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
+        int                                 getIndex(void) const;                                                       //!< Get index of node
+        const std::string&                  getName(void) const;                                                        //!< Get name of node
+        size_t                              getNumberOfChildren(void) const;                                            //!< Returns the number of children
         const TopologyNode&                 getParent(void) const;                                                      //!< Returns the node's parent
-        int                                 getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
-        bool                                isTip(void) const { return children.size() == 0; }                          //!< Is node tip?
-        bool                                isRoot(void) const { return parent == NULL; }                               //!< Is node root?
+        int                                 getParentIndex(void) const;                                                 //!< Return parent index
+        bool                                isTip(void) const;                                                          //!< Is node tip?
+        bool                                isRoot(void) const;                                                         //!< Is node root?
         void                                setName(const std::string& n);                                              //!< Set the name of this node
         void                                setParent(TopologyNode* p);                                                 //!< Sets the node's parent
         void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
