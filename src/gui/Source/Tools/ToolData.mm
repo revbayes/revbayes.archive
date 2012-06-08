@@ -151,6 +151,7 @@
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    std::cout << line << std::endl;
     int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
     if (coreResult != 0)
         {

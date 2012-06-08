@@ -35,6 +35,23 @@
     return self;
 }
 
+- (id)initWithSize:(int)n {
+
+    if ( (self = [super init]) ) 
+		{
+        nodes = [[NSMutableArray alloc] init];
+        for (int i=0; i<2*n-1; i++)
+            {
+            
+            }
+        downPassSequence = [[NSMutableArray alloc] init];
+        initializedDownPass = NO;
+        //[self buildRandomTree];
+        root  = nil;
+		}
+    return self;
+}
+
 - (void)initializeDownPassSequence {
 
     if (initializedDownPass == NO)
@@ -149,24 +166,6 @@
         {
         [p setX:([p x]/maximumX)];
         }
-        
-        
-        
-	// set y coordinates
-	/*NSEnumerator *enumerator2 = [downPassSequence objectEnumerator];
-	while (p = [enumerator2 nextObject]) 
-		{
-		double depth = 0.0;
-		Node* q = p;
-		while (q != NULL)
-			{
-			depth += 1.0;
-			q = [q ancestor];
-			}
-		[p setY:(depth/maximumY)];
-		[p setX:([p x]/maximumX)];
-		
-		}*/
 }
 
 - (void)setNodesToArray:(NSMutableArray*)n {

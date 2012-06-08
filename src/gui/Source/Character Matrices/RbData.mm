@@ -20,6 +20,8 @@
 
 - (void)addTaxonName:(NSString*)n {
 
+    NSString* stringWithoutSpaces = [n stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+
 	[taxonNames addObject:n];
 }
 

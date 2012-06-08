@@ -280,7 +280,7 @@
                     int len = [self parsimonyScoreForTree:t];
                     if (len < scoreOfBestTree)
                         {
-                        //[bestTrees removeAllObjects];
+                        [bestTrees removeAllObjects];
                         scoreOfBestTree = len;
                         NSLog(@"******** ARCHIVING *********");
                         NSLog(@"nodes = %@", nodes);

@@ -1,6 +1,9 @@
 #import "InOutlet.h"
 #import "RevBayes.h"
 #import "ToolSimulate.h"
+#import "WindowControllerSimulate.h"
+
+
 
 
 @implementation ToolSimulate
@@ -9,8 +12,15 @@
 
 }
 
+- (void)closeControlPanel {
+
+    [NSApp stopModal];
+	[controlWindow close];
+}
+
 - (void)dealloc {
 
+    [controlWindow release];
 	[super dealloc];
 }
 
@@ -47,6 +57,9 @@
 		[self addOutletOfColor:[NSColor greenColor]];
         [self setInletLocations];
         [self setOutletLocations];
+
+		// initialize the control window
+		controlWindow = [[WindowControllerSimulate alloc] initWithTool:self];
 		}
     return self;
 }
@@ -58,6 +71,9 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
+
+		// initialize the control window
+		controlWindow = [[WindowControllerSimulate alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -97,6 +113,15 @@
     NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:myTip attributes:attr];
 
     return attrString;
+}
+
+- (void)showControlPanel {
+
+    NSPoint p = [self originForControlWindow:[controlWindow window]];
+    [[controlWindow window] setFrameOrigin:p];
+	[controlWindow showWindow:self];    
+	[[controlWindow window] makeKeyAndOrderFront:nil];
+    [NSApp runModalForWindow:[controlWindow window]];
 }
 
 @end
