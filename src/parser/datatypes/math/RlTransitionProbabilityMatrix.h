@@ -13,20 +13,20 @@
  * $Id$
  */
 
-#ifndef ParserTransitionProbabilityMatrix_H
-#define ParserTransitionProbabilityMatrix_H
+#ifndef RlTransitionProbabilityMatrix_H
+#define RlTransitionProbabilityMatrix_H
 
 #include "MemberObject.h"
 #include "TransitionProbabilityMatrix.h"
 
 
-class ParserTransitionProbabilityMatrix : public MemberObject {
+class RlTransitionProbabilityMatrix : public MemberObject {
     
 public:
-    ParserTransitionProbabilityMatrix(void);                                                                                    //!< Default constructor (never call this except from the workspace once)
+    RlTransitionProbabilityMatrix(void);                                                                                    //!< Default constructor (never call this except from the workspace once)
     
     // Basic utility functions
-    ParserTransitionProbabilityMatrix*  clone(void) const;                                                                      //!< Clone object
+    RlTransitionProbabilityMatrix*      clone(void) const;                                                                      //!< Clone object
     static const std::string&           getClassName(void);                                                                     //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object

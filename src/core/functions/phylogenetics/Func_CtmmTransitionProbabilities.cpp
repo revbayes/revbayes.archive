@@ -26,7 +26,7 @@
 #include "RbUtil.h"
 #include "RbString.h"
 #include "RealPos.h"
-#include "ParserTransitionProbabilityMatrix.h"
+#include "RlTransitionProbabilityMatrix.h"
 #include "TransitionProbabilityMatrix.h"
 #include "UserInterface.h"
 #include <sstream>
@@ -122,7 +122,7 @@ const TypeSpec& Func_CtmmTransitionProbabilities::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_CtmmTransitionProbabilities::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = ParserTransitionProbabilityMatrix::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RlTransitionProbabilityMatrix::getClassTypeSpec();
     return returnTypeSpec;
 }
 

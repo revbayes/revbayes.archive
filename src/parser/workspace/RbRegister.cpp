@@ -64,6 +64,7 @@
 /* MemberObject types without auto-generated constructors(alphabetic order) */
 #include "Model.h"
 #include "Plate.h"
+#include "RlRateMatrix.h"
 #include "RlTopology.h"
 #include "Simplex.h"
 
@@ -677,10 +678,18 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add constructuor functions (alphabetical order) */
         addFunction( "taxonData", new ConstructorTaxonData<RlDnaState>() );
         
+        
+        
+		// gtr function
+        ArgumentRules gtrFuncArgRules;
+        gtrFuncArgRules.push_back( new ArgumentRule("rates", true, Simplex::getClassTypeSpec() ) );
+        gtrFuncArgRules.push_back( new ArgumentRule("frequencies", true, Simplex::getClassTypeSpec() ) );
+        addFunction( "gtr",      new ParserFunction( new Func_gtr(), "General time reversible (GTR) Markov model rate matrix function", gtrFuncArgRules, new RlRateMatrix(), false )  );
+		
+        
         /* Add phylogeny-related functions (alphabetical order) */
         addFunction( "concatenate",                 new Func_concatenate()                 );
         addFunction( "distances",                   new Func_distance()                    );
-        addFunction( "gtr",                         new Func_gtr()                         );
         addFunction( "nj",                          new Func_nj()                          );
         addFunction( "read",                        new Func_readCharacterData()           );
         addFunction( "readTrees",                   new Func_readTrees()                   );

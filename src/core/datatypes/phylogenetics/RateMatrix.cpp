@@ -32,29 +32,15 @@
 #include <iomanip>
 
 
-/** Constructor passes member rules and method inits to base class */
-RateMatrix::RateMatrix(void) {
-
-    numStates            = 2;
-    areEigensDirty       = true;
-    reversibilityChecked = false;
-    isReversible         = false;
-    theStationaryFreqs   = new Simplex( numStates );
-    theEigenSystem       = new EigenSystem( theRateMatrix );
-    c_ijk.resize(numStates * numStates * numStates);
-    cc_ijk.resize(numStates * numStates * numStates);
-}
-
-
 /** Construct rate matrix with n states */
 RateMatrix::RateMatrix(size_t n) {
 
     numStates            = n;
-    areEigensDirty       = true;
+    eigensDirty          = true;
     reversibilityChecked = false;
-    isReversible         = false;
+    timeReversible       = false;
     theRateMatrix        = new Matrix<double>(numStates, numStates, 0.0 );
-    theStationaryFreqs   = new Simplex(numStates);
+    theStationaryFreqs   = std::vector<double>(numStates);
     theEigenSystem       = new EigenSystem(theRateMatrix);
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
@@ -65,11 +51,11 @@ RateMatrix::RateMatrix(size_t n) {
 RateMatrix::RateMatrix(const RateMatrix& m) {
 
     numStates            = m.numStates;
-    areEigensDirty       = m.areEigensDirty;
+    eigensDirty          = m.eigensDirty;
     reversibilityChecked = m.reversibilityChecked;
-    isReversible         = m.isReversible;
+    timeReversible       = m.timeReversible;
     theRateMatrix        = new Matrix<double>( *m.theRateMatrix );
-    theStationaryFreqs   = m.theStationaryFreqs->clone();
+    theStationaryFreqs   = m.theStationaryFreqs;
     theEigenSystem       = new EigenSystem( *m.theEigenSystem );
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
@@ -83,7 +69,6 @@ RateMatrix::RateMatrix(const RateMatrix& m) {
 RateMatrix::~RateMatrix(void) {
     
     delete theRateMatrix;
-    delete theStationaryFreqs;
     delete theEigenSystem;
 }
 
@@ -93,15 +78,14 @@ RateMatrix& RateMatrix::operator=(const RateMatrix &r) {
     if (this != &r) {
         
         delete theRateMatrix;
-        delete theStationaryFreqs;
         delete theEigenSystem;
         
         numStates            = r.numStates;
-        areEigensDirty       = r.areEigensDirty;
+        eigensDirty          = r.eigensDirty;
         reversibilityChecked = r.reversibilityChecked;
-        isReversible         = r.isReversible;
+        timeReversible       = r.timeReversible;
         theRateMatrix        = new Matrix<double>( *r.theRateMatrix );
-        theStationaryFreqs   = r.theStationaryFreqs->clone();
+        theStationaryFreqs   = r.theStationaryFreqs;
         theEigenSystem       = new EigenSystem( *r.theEigenSystem );
         c_ijk                = r.c_ijk;
         cc_ijk               = r.cc_ijk;
@@ -136,7 +120,7 @@ double RateMatrix::averageRate(void) const {
 
     double ave = 0.0;
     for (size_t i=0; i<numStates; i++)
-        ave += -(*theStationaryFreqs)[i] * (*theRateMatrix)[i][i];
+        ave += -theStationaryFreqs[i] * (*theRateMatrix)[i][i];
     return ave;
 }
 
@@ -237,7 +221,7 @@ void RateMatrix::calculateStationaryFrequencies(void) {
 		pi[i] /= sum;
         
     // set the stationary frequencies
-    theStationaryFreqs->setValue(pi);
+    theStationaryFreqs = pi;
 }
 
 
@@ -264,7 +248,7 @@ bool RateMatrix::checkTimeReversibity(double tolerance) {
 	double diff = 0.0;
 	for (size_t i=0; i<numStates; i++)
 		for (size_t j=i+1; j<numStates; j++)
-			diff += fabs( (*theStationaryFreqs)[i] * (*theRateMatrix)[i][j] - (*theStationaryFreqs)[j] * (*theRateMatrix)[j][i] );
+			diff += fabs( theStationaryFreqs[i] * (*theRateMatrix)[i][j] - theStationaryFreqs[j] * (*theRateMatrix)[j][i] );
     reversibilityChecked = true;
 	if (diff < tolerance)
         return true;
@@ -272,12 +256,22 @@ bool RateMatrix::checkTimeReversibity(double tolerance) {
 }
 
 
+size_t RateMatrix::getNumberOfStates( void ) const {
+    return numStates;
+}
+
+
+const std::vector<double>& RateMatrix::getStationaryFrequencies( void ) const {
+    return theStationaryFreqs;
+}
+
+
 /** Return whether or not the rate matrix is time reversible */
-bool RateMatrix::getIsTimeReversible(void) {
+bool RateMatrix::isTimeReversible(void) {
 
     if (reversibilityChecked == false)
         return checkTimeReversibity(0.000001);
-    return isReversible;
+    return timeReversible;
 }
 
 
@@ -309,10 +303,10 @@ void RateMatrix::setDiagonal(void) {
 
 
 /** Directly set whether or not the rate matrix is time reversible */
-void RateMatrix::setIsTimeReversible(const bool tf) {
+void RateMatrix::setTimeReversible(const bool tf) {
 
     reversibilityChecked = true;
-    isReversible = tf;
+    timeReversible = tf;
 }
 
 
@@ -321,7 +315,7 @@ void RateMatrix::setIsTimeReversible(const bool tf) {
     would know the stationary frequencies for most phylogenetic models. */
 void RateMatrix::setStationaryFrequencies(const std::vector<double>& f) {
 
-    theStationaryFreqs->setValue(f);
+    theStationaryFreqs = f;
 }
 
 
@@ -388,6 +382,6 @@ void RateMatrix::updateEigenSystem(void) {
         return;
     theEigenSystem->update();
     calculateCijk();
-    areEigensDirty = false;
+    eigensDirty = false;
 }
 

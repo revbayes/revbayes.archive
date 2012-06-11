@@ -16,7 +16,7 @@
  */
 
 
-#include "ParserTransitionProbabilityMatrix.h"
+#include "RlTransitionProbabilityMatrix.h"
 
 #include "MethodTable.h"
 #include "RbException.h"
@@ -29,21 +29,21 @@
 
 
 /* Constructor */
-ParserTransitionProbabilityMatrix::ParserTransitionProbabilityMatrix(void) : MemberObject( getMemberRules() ) {
+RlTransitionProbabilityMatrix::RlTransitionProbabilityMatrix(void) : MemberObject( getMemberRules() ) {
     
 }
 
 
 
 /* Clone function */
-ParserTransitionProbabilityMatrix* ParserTransitionProbabilityMatrix::clone() const {
+RlTransitionProbabilityMatrix* RlTransitionProbabilityMatrix::clone() const {
     
-    return new ParserTransitionProbabilityMatrix(*this);
+    return new RlTransitionProbabilityMatrix(*this);
 }
 
 
 /* Get class name of object */
-const std::string& ParserTransitionProbabilityMatrix::getClassName(void) { 
+const std::string& RlTransitionProbabilityMatrix::getClassName(void) { 
     
     static std::string rbClassName = "Parser object of a transition probability matrix";
     
@@ -51,7 +51,7 @@ const std::string& ParserTransitionProbabilityMatrix::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ParserTransitionProbabilityMatrix::getClassTypeSpec(void) { 
+const TypeSpec& RlTransitionProbabilityMatrix::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
@@ -60,7 +60,7 @@ const TypeSpec& ParserTransitionProbabilityMatrix::getClassTypeSpec(void) {
 
 
 /** Return member rules */
-const MemberRules& ParserTransitionProbabilityMatrix::getMemberRules( void ) const {
+const MemberRules& RlTransitionProbabilityMatrix::getMemberRules( void ) const {
     
     static MemberRules memberRules = MemberRules();
     static bool        rulesSet = false;
@@ -75,7 +75,7 @@ const MemberRules& ParserTransitionProbabilityMatrix::getMemberRules( void ) con
 
 
 /** Get move methods */
-const MethodTable& ParserTransitionProbabilityMatrix::getMethods(void) const {
+const MethodTable& RlTransitionProbabilityMatrix::getMethods(void) const {
     
     static MethodTable methods = MethodTable();
     
@@ -92,7 +92,7 @@ const MethodTable& ParserTransitionProbabilityMatrix::getMethods(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& ParserTransitionProbabilityMatrix::getTypeSpec( void ) const {
+const TypeSpec& RlTransitionProbabilityMatrix::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -101,7 +101,7 @@ const TypeSpec& ParserTransitionProbabilityMatrix::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void ParserTransitionProbabilityMatrix::printValue(std::ostream& o) const {
+void RlTransitionProbabilityMatrix::printValue(std::ostream& o) const {
     
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

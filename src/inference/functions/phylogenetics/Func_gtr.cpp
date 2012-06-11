@@ -36,12 +36,15 @@ Func_gtr* Func_gtr::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_gtr::executeFunction(const std::vector<const RbObject *> &args) {
+void Func_gtr::executeSimple(std::vector<size_t> &result_offsets) {
 
     // get the information from the arguments for reading the file
-    const Simplex& r = static_cast<const Simplex&>( *args[0] );
-    const Simplex& f = static_cast<const Simplex&>( *args[1] );
+    const std::vector<double>& r = rates.value[result_offsets[0]];
+    const std::vector<double>& f = frequencies.value[result_offsets[1]];
 
+    size_t tmp_r = r.size();
+    size_t tmp_f = f.size();
+    
     // initialize the number of states
     const size_t nStates = 4;
 
@@ -65,21 +68,21 @@ RbPtr<RbLanguageObject> Func_gtr::executeFunction(const std::vector<const RbObje
         }
 
     
-    RateMatrix* m = new RateMatrix(nStates);
+    RateMatrix m = RateMatrix(nStates);
 
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0, k=0; i<nStates; i++)
         {
         for (size_t j=i+1; j<nStates; j++)
             {
-            (*m)[i][j] = r[k] * f[j];
-            (*m)[j][i] = r[k] * f[i];
+            m[i][j] = r[k] * f[j];
+            m[j][i] = r[k] * f[i];
             k++;
             }
         }
 
     // set the diagonal elements of the rate matrix
-    m->setDiagonal();
+    m.setDiagonal();
 
     // Set the stationary frequencies for the rate matrix. Note that we
     // can do this in two ways. First, we can call calculateStationaryFrequencies
@@ -87,8 +90,8 @@ RbPtr<RbLanguageObject> Func_gtr::executeFunction(const std::vector<const RbObje
     // frequencies using only knowledge of the rate matrix. Second, we can set
     // the stationary frequencies directly. This is what we do here, because the
     // stationary frequencies have been build directly into the rate matrix.
-    std::vector<double> tempFreqs = f.getValue();
-    m->setStationaryFrequencies(tempFreqs);
+    const std::vector<double>& tempFreqs = f;
+    m.setStationaryFrequencies(tempFreqs);
 
     // rescale the rate matrix such that the average rate is 1.0
     // Sebastian: If we rescale the matrix, then we have trouble estimating the branch length correctly!
@@ -97,64 +100,25 @@ RbPtr<RbLanguageObject> Func_gtr::executeFunction(const std::vector<const RbObje
 
     // we know that the GTR model is time reversible (just look at the name of the
     // model!), so we might as well set its reversibility flag directly
-    m->setIsTimeReversible(true);
+    m.setTimeReversible(true);
 
     // Now that we have set the rate matrix, we should update its eigen system
-    m->updateEigenSystem();
+    m.updateEigenSystem();
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-//    return RbPtr<RbLanguageObject>( m );
-    return NULL;
+    result.value[result_offsets[2]] = m;
 }
 
-
-/** Get argument rules */
-const ArgumentRules& Func_gtr::getArgumentRules(void) const {
-
-    static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
-
-    if (!rulesSet)
-        {
-        argumentRules.push_back( new ArgumentRule( "rates", true, Simplex::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "freqs", true, Simplex::getClassTypeSpec() ) );
-        rulesSet = true;
-        }
-
-    return argumentRules;
+/** We catch here the setting of the argument variables to store our parameters. */
+void Func_gtr::setInternalArguments(const std::vector<RbValue<void*> > &args) {
+    
+    rates.value         = static_cast<std::vector<double>*>( args[0].value );
+    rates.lengths       = args[0].lengths;
+    
+    frequencies.value   = static_cast<std::vector<double>*>( args[1].value );
+    frequencies.lengths = args[1].lengths;
+    
+    result.value        = static_cast<RateMatrix*>( args[2].value );
+    result.lengths      = args[2].lengths;
 }
 
-
-/** Get class name of object */
-const std::string& Func_gtr::getClassName(void) { 
-    
-    static std::string rbClassName = "General time reversible (GTR) model rate matrix function";
-    
-	return rbClassName; 
-}
-
-/** Get class type spec describing type of object */
-const TypeSpec& Func_gtr::getClassTypeSpec(void) { 
-    
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbFunction::getClassTypeSpec() ) );
-    
-	return rbClass; 
-}
-
-/** Get type spec */
-const TypeSpec& Func_gtr::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& Func_gtr::getReturnType( void ) const {
-    
-//    static TypeSpec returnTypeSpec = RlRateMatrix::getClassTypeSpec();
-    throw RbException("Missing implementation in Func_gtr::getReturnType()");
-    static TypeSpec returnTypeSpec = RbObject::getClassTypeSpec();
-    return returnTypeSpec;
-}

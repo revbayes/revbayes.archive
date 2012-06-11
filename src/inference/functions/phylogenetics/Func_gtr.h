@@ -17,28 +17,27 @@
 #ifndef Func_gtr_H
 #define Func_gtr_H
 
-#include "RbFunction.h"
+#include "AbstractInferenceFunction.h"
 #include "RateMatrix.h"
 
 class DAGNode;
 
 
-class Func_gtr :  public RbFunction {
+class Func_gtr :  public AbstractInferenceFunction {
     
     public:
         // Basic utility functions
         Func_gtr*                   clone(void) const;                                                       //!< Clone the object
-        static const std::string&   getClassName(void);                                                      //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                                  //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                                 //!< Get language type of the object
-        
-        // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                                            //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                               //!< Get type of return value
 
     protected:
-        RbPtr<RbLanguageObject>     executeFunction(const std::vector<const RbObject*>& args);               //!< Execute the function. This is the function one has to overwrite for single return values.
-
+        void                        setInternalArguments(const std::vector<RbValue<void*> >& args);         //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
+        void                        executeSimple(std::vector<size_t> &result_offsets);                     //!< Execute function
+	
+    private:
+    
+        RbValue<std::vector<double>*>   frequencies;
+        RbValue<std::vector<double>*>   rates;
+        RbValue<RateMatrix*>        result;
     
 };
 
