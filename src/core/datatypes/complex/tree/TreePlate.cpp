@@ -20,6 +20,7 @@
 #include "DAGNode.h"
 #include "MethodTable.h"
 #include "Natural.h"
+#include "Parser.h"
 #include "RbBoolean.h"
 #include "RbException.h"
 #include "RbNullObject.h"
@@ -34,12 +35,15 @@
 #include "TreePlate.h"
 #include "VariableSlot.h"
 #include "Variable.h"
+#include "Workspace.h"
+
+#include <algorithm>
+#include <string>
 
 
 /* Default constructor */
 TreePlate::TreePlate(void) : MemberObject( getMemberRules() ), orderingTopology() {
     
-//    orderingTopology = NULL;
 }
 
 
@@ -123,7 +127,25 @@ TreePlate* TreePlate::clone(void) const {
 }
 
 
-/** Get class name of object */
+/* Map calls to member methods */
+RbPtr<RbLanguageObject> TreePlate::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
+    
+    if (name == "add") {
+        
+        std::string bp              = static_cast<const RbString *>( args[0] )->getValue();
+        std::transform(bp.begin(), bp.end(), bp.begin(), ::tolower);
+        const std::string& command  = static_cast<const RbString *>( args[1] )->getValue();
+        
+        traverseAndExecute( orderingTopology.getRoot(), bp, command);
+        
+        return NULL;
+    } 
+    
+    return MemberObject::executeSimpleMethod( name, args );
+}
+
+
+/* Get class name of object */
 const std::string& TreePlate::getClassName(void) { 
     
     static std::string rbClassName = "Tree Plate";
@@ -131,7 +153,7 @@ const std::string& TreePlate::getClassName(void) {
 	return rbClassName; 
 }
 
-/** Get class type spec describing type of object */
+/* Get class type spec describing type of object */
 const TypeSpec& TreePlate::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
@@ -162,6 +184,28 @@ const MemberRules& TreePlate::getMemberRules(void) const {
     }
     
     return memberRules;
+}
+
+
+/* Get method specifications */
+const MethodTable& TreePlate::getMethods(void) const {
+    
+    static MethodTable  methods = MethodTable();
+    static bool         methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        ArgumentRules* addArgRules = new ArgumentRules();
+        addArgRules->push_back( new ArgumentRule( "bipartition", true, RbString::getClassTypeSpec() ) );
+        addArgRules->push_back( new ArgumentRule( "expression", true, RbString::getClassTypeSpec() ) );
+        methods.addFunction("add", new SimpleMemberFunction( RbVoid_name, addArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &MemberObject::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 
@@ -233,6 +277,40 @@ void TreePlate::printValue(std::ostream& o) const {
 }
 
 
+std::string TreePlate::replaceIndex(std::string const &c, std::string const &n, TopologyNode const &i) const {
+    std::string replacedCommand = c;
+    
+    std::cerr << "String before replacement:\t" << c << std::endl;
+    
+    // replace the index
+    std::stringstream out;
+    out << getNodeIndex( i );
+    std::string index = out.str();
+    
+    std::string marker = "<" + n + ">";
+    size_t pos = 0;
+    while ( ( pos = replacedCommand.find(marker, pos) ) != std::string::npos ) {
+        replacedCommand = replacedCommand.replace(pos, marker.size(), index);
+    }
+    
+    // replace parent function
+    marker = "parent(" + index + ")";
+    
+    out.str("");
+    out << ( i.isRoot() ? -1 : getNodeIndex( i.getParent() ) );
+    index = out.str();
+    
+    pos = 0;
+    while ( ( pos = replacedCommand.find(marker, pos) ) != std::string::npos ) {
+        replacedCommand = replacedCommand.replace(pos, marker.size(), index);
+    }
+    
+    std::cerr << "String after replacement:\t\t" << replacedCommand << std::endl;
+    
+    return replacedCommand;
+}
+
+
 
 /** Catch setting of the topology variable */
 void TreePlate::setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var) {
@@ -279,5 +357,32 @@ void TreePlate::setNodeVariable(const TopologyNode &node, std::string const &nam
     // set the variable
     //    vars->setElement(nodeIndex - 1, value.clone() );
     throw RbException("Missing implementation in TreePlate::setNodeVariable()");
+}
+
+
+
+void TreePlate::traverseAndExecute(const TopologyNode &n, std::string const &bp, std::string const &c) {
+    
+    
+    // if the bipartition specification matches this node, then we'll execute the command
+    if ( bp == "any" || ( n.isRoot() && bp == "root" ) || ( n.isTip() && bp == "tip" ) || ( !n.isTip() && bp == "interior" ) || ( n.getName() == bp  ) ) {
+        
+        // replace the command string
+        std::string replaceCommand = replaceIndex(c, "node", n);
+        
+        Parser &p = Parser::getParser();
+        
+        std::cerr << "Executing:\t" << replaceCommand << std::endl;
+        p.processCommand(replaceCommand, Workspace::userWorkspace());
+    }
+    
+    // call the fill plate recursively if necessary
+    if ( !n.isTip() ) {
+        size_t nChildren = n.getNumberOfChildren();
+        for (size_t i = 0; i < nChildren; ++i) {
+            const TopologyNode& child = n.getChild( i );
+            traverseAndExecute(child, bp, c);
+        }
+    }
 }
 

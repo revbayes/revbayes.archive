@@ -46,8 +46,8 @@ public:
     void                            setSimpleMemberValue(const std::string& name, const RbPtr<const RbLanguageObject> &var);            //!< Catch setting of the topology
 
     // Member method inits
-//    RbPtr<RbLanguageObject>         executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);         //!< Override to map member methods to internal functions
-//    const MethodTable&              getMethods(void) const;                                                                             //!< Get methods
+    RbPtr<RbLanguageObject>         executeSimpleMethod(const std::string& name, const std::vector<const RbObject*>& args);         //!< Override to map member methods to internal functions
+    const MethodTable&              getMethods(void) const;                                                                             //!< Get methods
 
     // Tree plate functions
     const Topology&                 getTopology(void) const;                                                                            //!< Get the topology for this tree
@@ -59,9 +59,10 @@ private:
     std::vector<std::string>        nodeVariableNames;                                                                                  //!< The vector of variables names for each node
     
     std::string                     buildNewickString(const TopologyNode& node) const;                                                  //!< compute the newick string for a tree rooting at this node
-    
     size_t                          getNodeIndex(const TopologyNode& theNode) const;                                                    //!< Get the index of the node
     size_t                          getTipIndex(const TopologyNode& theNode) const;                                                     //!< Get the index of the node
+    std::string                     replaceIndex(const std::string &c, const std::string &n, const TopologyNode &i) const;
+    void                            traverseAndExecute(const TopologyNode &n, const std::string &bp, const std::string &c);
 
     // parameters
     Topology                        orderingTopology;                                                               //!< The topology that orders the tree plate

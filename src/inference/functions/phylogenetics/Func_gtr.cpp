@@ -41,9 +41,6 @@ void Func_gtr::executeSimple(std::vector<size_t> &result_offsets) {
     // get the information from the arguments for reading the file
     const std::vector<double>& r = rates.value[result_offsets[0]];
     const std::vector<double>& f = frequencies.value[result_offsets[1]];
-
-    size_t tmp_r = r.size();
-    size_t tmp_f = f.size();
     
     // initialize the number of states
     const size_t nStates = 4;

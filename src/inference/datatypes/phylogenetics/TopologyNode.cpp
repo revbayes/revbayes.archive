@@ -330,15 +330,20 @@ const TopologyNode& TopologyNode::getParent(void) const {
 }
 
 
-/** Print value for user */
-void TopologyNode::printValue(std::ostream& o) const {
-    
-    o << name;
+bool TopologyNode::isRoot( void ) const {
+    return isRootNode;
 }
 
 
 bool TopologyNode::isTip( void ) const {
     return isTipNode;
+}
+
+
+/** Print value for user */
+void TopologyNode::printValue(std::ostream& o) const {
+    
+    o << name;
 }
 
 
