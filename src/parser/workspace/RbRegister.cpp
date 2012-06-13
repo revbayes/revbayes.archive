@@ -136,6 +136,7 @@
 #include "Func_sort.h"
 
 /* Builtin templated functions */
+#include "Func_set.h"
 #include "Func_transpose.h"
 #include "Func_vector.h"
 #include "Func_rlvector.h"
@@ -698,6 +699,14 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add builtin templated functions */
 //        addFunction( "transpose", new Func_transpose<       Matrix<Real>                                                    >() );
+        addFunction( "set",       new Func_set<RbBoolean>() );
+        addFunction( "set",       new Func_set<Integer>() );
+        addFunction( "set",       new Func_set<Natural>() );
+        addFunction( "set",       new Func_set<Real>() );
+        addFunction( "set",       new Func_set<RealPos>() );
+//        addFunction( "set",       new Func_set<Complex>() );
+        addFunction( "set",       new Func_set<RbString>() );
+        addFunction( "set",       new Func_set<RlDnaState>() );
         addFunction( "v",         new Func_vector<RbBoolean>() );
         addFunction( "v",         new Func_vector<Integer>() );
         addFunction( "v",         new Func_vector<Natural>() );

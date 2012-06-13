@@ -280,7 +280,7 @@ void TreePlate::printValue(std::ostream& o) const {
 std::string TreePlate::replaceIndex(std::string const &c, std::string const &n, TopologyNode const &i) const {
     std::string replacedCommand = c;
     
-    std::cerr << "String before replacement:\t" << c << std::endl;
+//    std::cerr << "String before replacement:\t" << c << std::endl;
     
     // replace the index
     std::stringstream out;
@@ -305,7 +305,7 @@ std::string TreePlate::replaceIndex(std::string const &c, std::string const &n, 
         replacedCommand = replacedCommand.replace(pos, marker.size(), index);
     }
     
-    std::cerr << "String after replacement:\t\t" << replacedCommand << std::endl;
+//    std::cerr << "String after replacement:\t\t" << replacedCommand << std::endl;
     
     return replacedCommand;
 }
@@ -372,7 +372,7 @@ void TreePlate::traverseAndExecute(const TopologyNode &n, std::string const &bp,
         
         Parser &p = Parser::getParser();
         
-        std::cerr << "Executing:\t" << replaceCommand << std::endl;
+//        std::cerr << "Executing:\t" << replaceCommand << std::endl;
         p.processCommand(replaceCommand, Workspace::userWorkspace());
     }
     
