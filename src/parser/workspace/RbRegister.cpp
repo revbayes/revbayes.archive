@@ -327,10 +327,10 @@ void Workspace::initializeGlobalWorkspace(void) {
         
 
         MemberRules distCtmmMemberRules;
-        distCtmmMemberRules.push_back( new ArgumentRule( "start"  , true, RlDiscreteCharacterState::getClassTypeSpec() ) );
+        distCtmmMemberRules.push_back( new ArgumentRule( "start"  , true, RlDnaState::getClassTypeSpec() ) );
         distCtmmMemberRules.push_back( new ArgumentRule( "ratematrix"  , true, RlRateMatrix::getClassTypeSpec() ) );
         distCtmmMemberRules.push_back( new ArgumentRule( "time", true, RealPos::getClassTypeSpec()    ) );
-        addDistribution( "ctmm", RbPtr<RlDistribution>( new RlDistribution( new Dist_ctmm(), "continuous time markov model distribution", distCtmmMemberRules, new RlDnaState() ) ) );
+        addDistribution( "ctmm", RbPtr<RlDistribution>( new RlDistribution( new Dist_ctmm<DnaState>(), "continuous time markov model distribution", distCtmmMemberRules, new RlDnaState() ) ) );
 
         // dirichlet distribution
         MemberRules distDirichletMemberRules;
