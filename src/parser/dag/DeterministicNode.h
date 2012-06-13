@@ -48,7 +48,6 @@ public:
     DAGNode*                                cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;    //!< Clone entire graph
     virtual InferenceDagNode*               createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const; //!< Create a lean DAG from this "fat" DAG
     void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence);//!< Construct the set of all nodes which are eliminated
-    void                                    expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     RlValue<const RbLanguageObject>         getValue(void) const;                                               //!< Get value (const)
     const RlValue<RbLanguageObject>&        getValue(void);                                                     //!< Get value (non-const)
     const RbFunction&                       getFunction(void) const;
@@ -63,6 +62,7 @@ public:
 protected:
 
     // Utility function you have to override
+    void                                    expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
     void                                    keepMe(void);                                                       //!< Keep value of this and affected nodes
     void                                    restoreMe(void);                                                    //!< Restore value of this nodes

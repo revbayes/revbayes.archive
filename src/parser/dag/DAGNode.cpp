@@ -120,6 +120,22 @@ RbPtr<RbLanguageObject> DAGNode::executeSimpleMethod(std::string const &name, co
 }
 
 
+/**
+ * Expand all!
+ * We will recursively also call all chidren to expand them.
+ */
+void DAGNode::expandAll( void ) {
+    
+    // first I expand myself
+    expand();
+    
+    // then I expand all my children
+    for (std::set<VariableNode *>::iterator i = children.begin(); i != children.end(); ++i) {
+        (*i)->expandAll();
+    }
+}
+
+
 
 const std::set<VariableNode *>& DAGNode::getChildren( void ) const {
     return children;

@@ -78,8 +78,8 @@ public:
     double                                  calculateLnProbability(void);                                       //!< Calculate log conditional probability
     void                                    clamp(const RlValue<RbLanguageObject> &observedVal);                  //!< Clamp the node with an observed value
     void                                    markForRecalculation(void);                                         //!< Flag this node for recalculation
-    const RlDistribution&               getDistribution(void) const;                                        //!< Get distribution (const)
-    RlDistribution&                     getDistribution(void);                                              //!< Get distribution (non-const)
+    const RlDistribution&                   getDistribution(void) const;                                        //!< Get distribution (const)
+    RlDistribution&                         getDistribution(void);                                              //!< Get distribution (non-const)
     double                                  getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
     bool                                    isNotInstantiated(void) const;
     bool                                    isClamped(void) const { return clamped; }                           //!< Is the node clamped?
@@ -100,11 +100,11 @@ public:
     virtual InferenceDagNode*               createLeanDag(std::map<const DAGNode*, InferenceDagNode*>& newNodes) const;     //!< Create a lean DAG from this "fat" DAG
     void                                    constructSumProductSequence(std::set<VariableNode*>& nodes, std::vector<StochasticNode*>& sequence); //!< Construct the sum-product sequecence
     void                                    constructFactor(void);                                              //!< Construct the set of all nodes which are eliminated
-    void                                    expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     void                                    swapParentNode( DAGNode* oldP, DAGNode* newP);                      //!< Swap a parent node
 
 protected:
     // Help function
+    void                                    expand(void);                                                       //!< Expand the current value n times. This is equivalent to dropping this node on a plate of size n.
     void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
     void                                    keepMe(void);                                                       //!< Keep value of this and affected nodes
     void                                    restoreMe(void);                                                    //!< Restore value of this nodes
@@ -112,7 +112,7 @@ protected:
 
     // Member variables
     bool                                    clamped;                                                            //!< Is the node clamped with data?
-    RbPtr<RlDistribution>               distribution;                                                       //!< Distribution (density functions, random draw function)
+    RbPtr<RlDistribution>                   distribution;                                                       //!< Distribution (density functions, random draw function)
     double                                  lnProb;                                                             //!< Current log probability
     bool                                    needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
     bool                                    needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?

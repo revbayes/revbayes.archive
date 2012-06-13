@@ -86,7 +86,7 @@ RlValue<RbLanguageObject> Plate::executeMethod(const std::string& name, const st
         
         // expand the DAG node
         theNode->setPlate( this );
-        theNode->expand();
+        theNode->expandAll();
         theNode->touch();
 //        theNode->keep();
         
