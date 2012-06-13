@@ -37,12 +37,14 @@ class RlContinuousCharacterState : public RlCharacterState {
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
         // Basic utility functions you have to override
-        RlContinuousCharacterState*     clone(void) const;                                               //!< Clone object
+        RlContinuousCharacterState*     clone(void) const;                                                      //!< Clone object
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+        RbValue<void*>                  getLeanValue(void) const;                                               //!< Transform the object into a basic element pointer for fast access.
+        size_t                          memorySize(void) const;                                                 //!< Get the size
 
-        const ContinuousCharacterState& getValue() const;                               //!< Get the internal character object.
+        const ContinuousCharacterState& getValue() const;                                                       //!< Get the internal character object.
 
 
     private:

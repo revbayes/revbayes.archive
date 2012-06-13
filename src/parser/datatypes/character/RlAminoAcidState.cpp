@@ -65,6 +65,13 @@ const TypeSpec& RlAminoAcidState::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+RbValue<void*> RlAminoAcidState::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = static_cast<void*>( &const_cast<AminoAcidState&>( state ) );
+    return tmp;
+}
+
 /* Get type spec */
 const TypeSpec& RlAminoAcidState::getTypeSpec( void ) const {
     
@@ -77,6 +84,11 @@ const TypeSpec& RlAminoAcidState::getTypeSpec( void ) const {
 
 const AminoAcidState& RlAminoAcidState::getValue( void ) const {
     return state;
+}
+
+
+size_t RlAminoAcidState::memorySize() const {
+    return sizeof( AminoAcidState );
 }
 
 

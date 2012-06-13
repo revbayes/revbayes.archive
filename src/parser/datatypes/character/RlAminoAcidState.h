@@ -46,6 +46,8 @@ class RlAminoAcidState : public RlDiscreteCharacterState {
         static const std::string&       getClassName(void);                                 //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                            //!< Get language type of the object
+        RbValue<void*>                  getLeanValue(void) const;                           //!< Transform the object into a basic element pointer for fast access.
+        size_t                          memorySize(void) const;                             //!< Get the size
 
         const AminoAcidState&           getValue(void) const;
     

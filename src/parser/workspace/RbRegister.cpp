@@ -317,53 +317,60 @@ void Workspace::initializeGlobalWorkspace(void) {
         MemberRules distBetaMemberRules;
         distBetaMemberRules.push_back( new ArgumentRule( "alpha",  true, RealPos::getClassTypeSpec()    ) );
         distBetaMemberRules.push_back( new ArgumentRule( "beta"  , true, RealPos::getClassTypeSpec() ) );
-        addDistribution( "beta",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_beta(), "beta", distBetaMemberRules, new Probability() ) ) );
+        addDistribution( "beta", RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_beta(), "beta", distBetaMemberRules, new Probability() ) ) );
 
+        
+        MemberRules distCatMemberRules;
+        distCatMemberRules.push_back( new ArgumentRule( "states"  , true, RlSet<RlDnaState>::getClassTypeSpec() ) );
+        distCatMemberRules.push_back( new ArgumentRule( "probabilities", true, Simplex::getClassTypeSpec()    ) );
+        addDistribution( "cat", RbPtr<ParserDistribution>( new ParserDistribution( new Dist_cat<DnaState>(), "categorical", distCatMemberRules, new RlDnaState() ) ) );
+        
+        
         // dirichlet distribution
         MemberRules distDirichletMemberRules;
         distDirichletMemberRules.push_back( new ArgumentRule( "alpha", true, TypeSpec(RlVector<RealPos>::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );
-        addDistribution( "dirichlet",        RbPtr<ParserDistribution>(  new ParserDistribution( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) ) );
+        addDistribution( "dirichlet", RbPtr<ParserDistribution>(  new ParserDistribution( new Dist_dirichlet(), "dirichlet", distDirichletMemberRules, new Simplex() ) ) );
 
         // exponential distribution
         MemberRules distExpMemberRules;
         distExpMemberRules.push_back( new ArgumentRule( "rate", true, RealPos::getClassTypeSpec()   , new RealPos(1.0)    ) );
-        addDistribution( "exponential",        RbPtr<ParserDistributionContinuous>(  new ParserDistributionContinuous( new Dist_exp(), "exponential", distExpMemberRules, new RealPos() ) ) );
+        addDistribution( "exponential", RbPtr<ParserDistributionContinuous>(  new ParserDistributionContinuous( new Dist_exp(), "exponential", distExpMemberRules, new RealPos() ) ) );
         
         // gamma distribution
         MemberRules distGammaMemberRules;
         distGammaMemberRules.push_back( new ArgumentRule( "shape", true, RealPos::getClassTypeSpec()    ) );
         distGammaMemberRules.push_back( new ArgumentRule( "rate" , true, RealPos::getClassTypeSpec() ) );
-        addDistribution( "gamma",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_gamma(), "gamma", distGammaMemberRules, new RealPos() ) ) );
+        addDistribution( "gamma", RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_gamma(), "gamma", distGammaMemberRules, new RealPos() ) ) );
         
         // log-normal distribution
         MemberRules distlognormMemberRules;
         distlognormMemberRules.push_back( new ArgumentRule( "mean", true, Real::getClassTypeSpec()   , new Real(0.0)    ) );
         distlognormMemberRules.push_back( new ArgumentRule( "sd"  , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        addDistribution( "lnorm",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_lnorm(), "lognormal", distlognormMemberRules, new RealPos() ) ) );
+        addDistribution( "lnorm", RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_lnorm(), "lognormal", distlognormMemberRules, new RealPos() ) ) );
         
         // logistic distribution
         MemberRules distLogisticMemberRules;
         distLogisticMemberRules.push_back( new ArgumentRule( "location", true, Real::getClassTypeSpec()    ) );
         distLogisticMemberRules.push_back( new ArgumentRule( "scale"  ,  true, RealPos::getClassTypeSpec() ) );
-        addDistribution( "logistic",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_logis(), "logistic", distLogisticMemberRules, new Real() ) ) );
+        addDistribution( "logistic", RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_logis(), "logistic", distLogisticMemberRules, new Real() ) ) );
         
         // multinomial distribution
         MemberRules distMultMemberRules;
         distMultMemberRules.push_back( new ArgumentRule( "probabilities", true, Simplex::getClassTypeSpec()    ) );
         distMultMemberRules.push_back( new ArgumentRule( "n"  , true, Natural::getClassTypeSpec(), new Natural(1) ) );
-        addDistribution( "multinomial",         RbPtr<ParserDistribution>( new ParserDistribution( new Dist_multinomial(), "multinomial", distMultMemberRules, new RlVector<Natural>() ) ) );
+        addDistribution( "multinomial", RbPtr<ParserDistribution>( new ParserDistribution( new Dist_multinomial(), "multinomial", distMultMemberRules, new RlVector<Natural>() ) ) );
         
         // normal distribution
         MemberRules distNormMemberRules;
         distNormMemberRules.push_back( new ArgumentRule( "mean", true, Real::getClassTypeSpec()   , RbPtr<RbLanguageObject>( new Real(0.0) )   ) );
         distNormMemberRules.push_back( new ArgumentRule( "sd"  , true, RealPos::getClassTypeSpec(), RbPtr<RbLanguageObject>( new RealPos(1.0) ) ) );
-        addDistribution( "norm",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_norm(), "normal", distNormMemberRules, new Real() ) ) );
+        addDistribution( "norm", RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_norm(), "normal", distNormMemberRules, new Real() ) ) );
         
         // uniform distributin
         MemberRules distUnifMemberRules;
         distUnifMemberRules.push_back( new ArgumentRule( "min", true, Real::getClassTypeSpec()   , new Real(0.0)    ) );
         distUnifMemberRules.push_back( new ArgumentRule( "max", true, Real::getClassTypeSpec(), new Real(1.0) ) );
-        addDistribution( "unif",         RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_unif(), "uniform", distUnifMemberRules, new Real() ) ) );
+        addDistribution( "unif", RbPtr<ParserDistributionContinuous>( new ParserDistributionContinuous( new Dist_unif(), "uniform", distUnifMemberRules, new Real() ) ) );
         
         
         // Phylogenetic distributions
@@ -374,7 +381,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         distUnifTopologyMemberRules.push_back( new ArgumentRule( "tipNames", true, RlVector<RbString>::getClassTypeSpec() ) );
         distUnifTopologyMemberRules.push_back( new ArgumentRule( "isRooted", true, RbBoolean::getClassTypeSpec(), new RbBoolean( true ) ) );
         distUnifTopologyMemberRules.push_back( new ArgumentRule( "isBinary", true, RbBoolean::getClassTypeSpec(), new RbBoolean( true ) ) );
-        addDistribution( "unifTopology",         RbPtr<ParserDistribution>( new ParserDistribution( new Dist_topologyunif(), "uniform topology", distUnifTopologyMemberRules, new RlTopology() ) ) );
+        addDistribution( "unifTopology", RbPtr<ParserDistribution>( new ParserDistribution( new Dist_topologyunif(), "uniform topology", distUnifTopologyMemberRules, new RlTopology() ) ) );
         
         
         

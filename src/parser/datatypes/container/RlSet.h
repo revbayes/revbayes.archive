@@ -578,7 +578,7 @@ int RlSet<rlType>::findIndex(const RbObject& x) const {
 template <typename rlType>
 const std::string& RlSet<rlType>::getClassName(void) { 
     
-    static std::string rbClassName = "Vector";
+    static std::string rbClassName = "Set";
     
 	return rbClassName; 
 }
@@ -794,7 +794,7 @@ void RlSet<rlType>::resize( size_t n ) {
 template <typename rlType>
 void RlSet<rlType>::setElement(const size_t index, RbObject *elem) {
     if (index >= elements.size()) {
-        throw RbException("Cannot set element in Vector outside the current range.");
+        throw RbException("Cannot set element in Set outside the current range.");
     }
     
     // remove first the old element at the index

@@ -69,6 +69,13 @@ const TypeSpec& RlDnaState::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+RbValue<void*> RlDnaState::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = static_cast<void*>( &const_cast<DnaState &>( state ) );
+    return tmp;
+}
+
 /** Get type spec */
 const TypeSpec& RlDnaState::getTypeSpec( void ) const {
     
@@ -81,6 +88,11 @@ const TypeSpec& RlDnaState::getTypeSpec( void ) const {
 const DnaState& RlDnaState::getValue( void ) const {
     
     return state;
+}
+
+
+size_t RlDnaState::memorySize() const {
+    return sizeof( DnaState );
 }
 
 

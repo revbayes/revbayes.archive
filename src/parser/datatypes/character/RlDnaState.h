@@ -43,7 +43,9 @@ public:
     const TypeSpec&                 getTypeSpec(void) const;                                   //!< Get language type of the object
     void                            initialize(const std::vector<RbObject*>& attributes);   //!< Initialize this object with the values inside the vector
     void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
-    
+    RbValue<void*>                  getLeanValue(void) const;                           //!< Transform the object into a basic element pointer for fast access.
+    size_t                          memorySize(void) const;                             //!< Get the size
+
     const DnaState&                 getValue() const;                                   //!< Get the internal character object.
     
 private:

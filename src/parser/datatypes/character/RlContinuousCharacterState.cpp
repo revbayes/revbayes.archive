@@ -65,6 +65,13 @@ const TypeSpec& RlContinuousCharacterState::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+RbValue<void*> RlContinuousCharacterState::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = static_cast<void*>( &const_cast<ContinuousCharacterState &>( state ) );
+    return tmp;
+}
+
 /** Get type spec */
 const TypeSpec& RlContinuousCharacterState::getTypeSpec( void ) const {
     
@@ -76,6 +83,11 @@ const TypeSpec& RlContinuousCharacterState::getTypeSpec( void ) const {
 
 const ContinuousCharacterState& RlContinuousCharacterState::getValue( void ) const {
     return state;
+}
+
+
+size_t RlContinuousCharacterState::memorySize() const {
+    return sizeof( ContinuousCharacterState );
 }
 
 

@@ -69,6 +69,13 @@ const TypeSpec& RlStandardState::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+RbValue<void*> RlStandardState::getLeanValue( void ) const {
+    RbValue<void*> tmp;
+    tmp.value = static_cast<void*>( &const_cast<StandardState &>( state ) );
+    return tmp;
+}
+
 /** Get type spec */
 const TypeSpec& RlStandardState::getTypeSpec( void ) const {
     
@@ -81,6 +88,11 @@ const TypeSpec& RlStandardState::getTypeSpec( void ) const {
 const StandardState& RlStandardState::getValue( void ) const {
     
     return state;
+}
+
+
+size_t RlStandardState::memorySize() const {
+    return sizeof( StandardState );
 }
 
 

@@ -64,7 +64,7 @@ bool DnaState::operator<(const CharacterState &x) const {
         unsigned int myState = state;
         unsigned int yourState = derivedX->state;
         
-        while ( (myState & 1) == ( yourState & 1 )  ) {
+        while ( myState != yourState && (myState & 1) == ( yourState & 1 )  ) {
             myState >>= 1;
             yourState >>= 1;
         }
