@@ -29,7 +29,9 @@ public:
     virtual bool                            operator==(const CharacterState& x) const = 0;      //!< Equality
     virtual bool                            operator!=(const CharacterState& x) const = 0;      //!< Inequality
     virtual void                            operator++() = 0;                                   //!< Increment
+    virtual void                            operator++(int i) = 0;                              //!< Increment
     virtual void                            operator--() = 0;                                   //!< Decrement
+    virtual void                            operator--(int i) = 0;                              //!< Decrement
  
     virtual DiscreteCharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
 
@@ -42,9 +44,10 @@ public:
     virtual unsigned int                    getState(void) const = 0;                           //!< Get the discrete observation
     virtual bool                            isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
     virtual bool                            isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
+    virtual void                            setGapState(bool tf) = 0;                           //!< Set whether this is a gapped character
+    virtual void                            setToFirstState(void) = 0;                          //!< Set this character state to the first (lowest) possible state
     virtual void                            setState(char s) = 0;                               //!< Set the discrete observation
     virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
-    virtual void                            setGapState(bool tf) = 0;                           //!< Set whether this is a gapped character
     
 protected:
     DiscreteCharacterState() {}                                                                   //!< Constructor

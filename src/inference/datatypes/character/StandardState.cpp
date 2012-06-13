@@ -80,7 +80,17 @@ void StandardState::operator++( void ) {
 }
 
 
+void StandardState::operator++( int i ) {
+    state <<= 1;
+}
+
+
 void StandardState::operator--( void ) {
+    state >>= 1;
+}
+
+
+void StandardState::operator--( int i ) {
     state >>= 1;
 }
 
@@ -186,5 +196,10 @@ void StandardState::setState(char s) {
     
     size_t pos = labels.find(s);
     state = 1 << pos;
+}
+
+
+void StandardState::setToFirstState( void ) {
+    state = 0x1;
 }
 

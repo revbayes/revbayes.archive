@@ -80,8 +80,17 @@ void AminoAcidState::operator++( void ) {
     state <<= 1;
 }
 
+void AminoAcidState::operator++( int i ) {
+    state <<= 1;
+}
+
 
 void AminoAcidState::operator--( void ) {
+    state >>= 1;
+}
+
+
+void AminoAcidState::operator--( int i ) {
     state >>= 1;
 }
 
@@ -260,6 +269,11 @@ void AminoAcidState::setState(size_t pos, bool val) {
 
 void AminoAcidState::setState(char s) {
     state = computeState( s );
+}
+
+
+void AminoAcidState::setToFirstState( void ) {
+    state = 0x1;
 }
 
 

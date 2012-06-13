@@ -81,7 +81,17 @@ void DnaState::operator++( void ) {
 }
 
 
+void DnaState::operator++( int i ) {
+    state <<= 1;
+}
+
+
 void DnaState::operator--( void ) {
+    state >>= 1;
+}
+
+
+void DnaState::operator--( int i ) {
     state >>= 1;
 }
 
@@ -262,5 +272,10 @@ void DnaState::setState(char val) {
         default:
             state = 0xFF;
     }
+}
+
+
+void DnaState::setToFirstState( void ) {
+    state = 0x1;
 }
 

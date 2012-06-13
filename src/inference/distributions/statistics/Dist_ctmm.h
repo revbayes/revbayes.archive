@@ -37,6 +37,7 @@ public:
     
     // Basic utility functions
     Dist_ctmm*                          clone(void) const;                                                  //!< Clone object
+    size_t                              getNumberOfStates(void) const;
         
 protected:
     double                              lnPdfSingleValue(std::vector<size_t> &offset) const;                //!< Ln probability density
@@ -51,6 +52,7 @@ private:
     RbValue<RateMatrix*>                rateMatrix;
     RbValue<double*>                    time;
     RbValue<DiscreteCharacterState*>    initialState;
+    RbValue<DiscreteCharacterState*>    randomVariable;
 
 };
 

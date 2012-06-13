@@ -81,7 +81,17 @@ void RnaState::operator++( void ) {
 }
 
 
+void RnaState::operator++( int i ) {
+    state <<= 1;
+}
+
+
 void RnaState::operator--( void ) {
+    state >>= 1;
+}
+
+
+void RnaState::operator--( int i ) {
     state >>= 1;
 }
 
@@ -262,5 +272,10 @@ void RnaState::setState(char val) {
         default:
             state = 0xFF;
     }
+}
+
+
+void RnaState::setToFirstState( void ) {
+    state = 0x1;
 }
 

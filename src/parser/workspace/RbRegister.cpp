@@ -325,7 +325,13 @@ void Workspace::initializeGlobalWorkspace(void) {
         distCatMemberRules.push_back( new ArgumentRule( "probabilities", true, Simplex::getClassTypeSpec()    ) );
         addDistribution( "cat", RbPtr<RlDistribution>( new RlDistribution( new Dist_cat<DnaState>(), "categorical", distCatMemberRules, new RlDnaState() ) ) );
         
-        
+
+        MemberRules distCtmmMemberRules;
+        distCtmmMemberRules.push_back( new ArgumentRule( "start"  , true, RlDiscreteCharacterState::getClassTypeSpec() ) );
+        distCtmmMemberRules.push_back( new ArgumentRule( "ratematrix"  , true, RlRateMatrix::getClassTypeSpec() ) );
+        distCtmmMemberRules.push_back( new ArgumentRule( "time", true, RealPos::getClassTypeSpec()    ) );
+        addDistribution( "ctmm", RbPtr<RlDistribution>( new RlDistribution( new Dist_ctmm(), "continuous time markov model distribution", distCtmmMemberRules, new RlDnaState() ) ) );
+
         // dirichlet distribution
         MemberRules distDirichletMemberRules;
         distDirichletMemberRules.push_back( new ArgumentRule( "alpha", true, TypeSpec(RlVector<RealPos>::getClassTypeSpec(), new TypeSpec(RealPos::getClassTypeSpec()) )    ) );

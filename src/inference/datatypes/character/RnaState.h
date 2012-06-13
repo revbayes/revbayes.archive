@@ -33,7 +33,9 @@ public:
     bool                            operator!=(const CharacterState& x) const;          //!< Inequality
     bool                            operator<(const CharacterState& d) const;           //!< Less than
     void                            operator++();                                       //!< Increment
+    void                            operator++(int i);                                  //!< Increment
     void                            operator--();                                       //!< Decrement
+    void                            operator--(int i);                                  //!< Decrement
     
     RnaState*                       clone(void) const;                                  //!< Get a copy of this object
     static const std::string&       getClassName(void);                                 //!< Get class name
@@ -45,11 +47,12 @@ public:
     std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
     size_t                          getNumberOfStates(void) const;                      //!< Get the number of discrete states for the character
     unsigned int                    getState(void) const;                               //!< Get the discrete observation
-    bool                            isAmbiguous(void) const;                   //!< Is the character missing or ambiguous
+    bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
     bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
+    void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
     void                            setState(char s);                                   //!< Set the discrete observation
     void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
-    void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
+    void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
     
 private:
     
