@@ -18,7 +18,7 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Func_reference.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "Plate.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -272,7 +272,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         
         // Make an independent copy of the distribution and delete the exprVal
 //        Distribution* distribution = (Distribution*) detNode->getFunctionPtr()->execute();
-        const ParserDistribution *dist = dynamic_cast<const ParserDistribution *>( (const RbLanguageObject *) detNode->getValue().getSingleValue() );
+        const RlDistribution *dist = dynamic_cast<const RlDistribution *>( (const RbLanguageObject *) detNode->getValue().getSingleValue() );
                
         // Create new stochastic node
         DAGNode* node = new StochasticNode( dist->clone(), NULL );

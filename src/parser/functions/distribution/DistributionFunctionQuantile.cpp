@@ -23,7 +23,7 @@
 #include "DistributionContinuous.h"
 #include "DistributionFunctionQuantile.h"
 #include "Distribution.h"
-#include "ParserDistributionContinuous.h"
+#include "RlDistributionContinuous.h"
 #include "Probability.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -34,7 +34,7 @@
 
 
 /** Constructor */
-DistributionFunctionQuantile::DistributionFunctionQuantile( const RbPtr<ParserDistributionContinuous> &dist ) : RbFunction(), returnType( Real::getClassTypeSpec() ) {
+DistributionFunctionQuantile::DistributionFunctionQuantile( const RbPtr<RlDistributionContinuous> &dist ) : RbFunction(), returnType( Real::getClassTypeSpec() ) {
     
     /* Ininitalize the argument rules */
     argumentRules = new ArgumentRules();

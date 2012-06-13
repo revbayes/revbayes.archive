@@ -29,7 +29,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "ParserMove.h"
 #include "RbException.h"
 #include "RbUtil.h"

@@ -43,7 +43,7 @@
 
 #include "VariableNode.h"
 
-class ParserDistribution;
+class RlDistribution;
 class Move;
 
 class StochasticNode : public VariableNode {
@@ -53,7 +53,7 @@ public:
     
                                             StochasticNode(void);                                                                   //!< Construct empty stochastic node
                                             StochasticNode(const RbPtr<const Plate> &p);                                            //!< Construct empty stochastic node
-                                            StochasticNode(const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p);     //!< Construct from distribution (raw object) with plate holding this node
+                                            StochasticNode(const RbPtr<RlDistribution> &dist, const RbPtr<const Plate> &p);     //!< Construct from distribution (raw object) with plate holding this node
                                             StochasticNode(const StochasticNode& x);                                                //!< Copy constructor
 
     // Assignment operator
@@ -78,8 +78,8 @@ public:
     double                                  calculateLnProbability(void);                                       //!< Calculate log conditional probability
     void                                    clamp(const RlValue<RbLanguageObject> &observedVal);                  //!< Clamp the node with an observed value
     void                                    markForRecalculation(void);                                         //!< Flag this node for recalculation
-    const ParserDistribution&               getDistribution(void) const;                                        //!< Get distribution (const)
-    ParserDistribution&                     getDistribution(void);                                              //!< Get distribution (non-const)
+    const RlDistribution&               getDistribution(void) const;                                        //!< Get distribution (const)
+    RlDistribution&                     getDistribution(void);                                              //!< Get distribution (non-const)
     double                                  getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
     bool                                    isNotInstantiated(void) const;
     bool                                    isClamped(void) const { return clamped; }                           //!< Is the node clamped?
@@ -112,7 +112,7 @@ protected:
 
     // Member variables
     bool                                    clamped;                                                            //!< Is the node clamped with data?
-    RbPtr<ParserDistribution>               distribution;                                                       //!< Distribution (density functions, random draw function)
+    RbPtr<RlDistribution>               distribution;                                                       //!< Distribution (density functions, random draw function)
     double                                  lnProb;                                                             //!< Current log probability
     bool                                    needsProbabilityRecalculation;                                      //!< Do we need recalculation of the ln prob?
     bool                                    needsLikelihoodRecalculation;                                       //!< Do we need recalculation of the ln likelihood?

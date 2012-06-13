@@ -22,14 +22,14 @@
 #include <string>
 #include <vector>
 
-class ParserDistribution;
+class RlDistribution;
 
 
 class DistributionFunctionRv :  public RbFunction {
     
 public:
     
-    DistributionFunctionRv(const RbPtr<ParserDistribution> &dist);                                          //!< Constructor
+    DistributionFunctionRv(const RbPtr<RlDistribution> &dist);                                          //!< Constructor
     DistributionFunctionRv(const DistributionFunctionRv& x);                                                //!< Copy constructor
     
     // Assignment operator
@@ -51,7 +51,7 @@ protected:
     
     RbPtr<ArgumentRules>            argumentRules;                                                          //!< Argument rules
     TypeSpec                        returnType;                                                             //!< Return type
-    RbPtr<ParserDistribution>       distribution;                                                           //!< The distribution
+    RbPtr<RlDistribution>       distribution;                                                           //!< The distribution
     
 };
 

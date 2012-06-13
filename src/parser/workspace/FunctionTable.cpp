@@ -19,7 +19,7 @@
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "FunctionTable.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"

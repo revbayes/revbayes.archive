@@ -1,10 +1,10 @@
 /**
  * @file
- * This file contains the declaration of ParserDistribution, which specifies the
- * interface for ParserDistributions in RevBayes. A ParserDistribution is taken in
+ * This file contains the declaration of RlDistribution, which specifies the
+ * interface for RlDistributions in RevBayes. A RlDistribution is taken in
  * the statistical sense.
  *
- * @brief Declaration of ParserDistribution
+ * @brief Declaration of RlDistribution
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-03-19 09:25:05 +0100 (Mon, 19 Mar 2012) $
@@ -12,13 +12,13 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
- * @interface ParserDistribution
+ * @interface RlDistribution
  *
- * $Id: ParserDistribution.h 1353 2012-03-19 08:25:05Z hoehna $
+ * $Id: RlDistribution.h 1353 2012-03-19 08:25:05Z hoehna $
  */
 
-#ifndef ParserDistribution_H
-#define ParserDistribution_H
+#ifndef RlDistribution_H
+#define RlDistribution_H
 
 #include "Distribution.h"
 #include "MemberObject.h"
@@ -34,18 +34,18 @@ class RandomNumberGenerator;
 class Distribution;
 
 
-class ParserDistribution : public MemberObject  {
+class RlDistribution : public MemberObject  {
     
 public:
-    ParserDistribution( Distribution *d, const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);      //!< Simple constructor
-    ParserDistribution( const ParserDistribution &p);                                                                                   //!< Copy constructor
-    virtual                                ~ParserDistribution(void) {}                                                                 //!< Destructor
+    RlDistribution( Distribution *d, const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);          //!< Simple constructor
+    RlDistribution( const RlDistribution &p);                                                                                           //!< Copy constructor
+    virtual                                ~RlDistribution(void) {}                                                                     //!< Destructor
 
     // overloaded operators
-    ParserDistribution&                     operator=(const ParserDistribution& p);
+    RlDistribution&                         operator=(const RlDistribution& p);
     
     // Basic utility functions
-    virtual ParserDistribution*             clone(void) const;                                                                          //!< Clone object
+    virtual RlDistribution*                 clone(void) const;                                                                          //!< Clone object
     static const std::string&               getClassName(void);                                                                         //!< Get class name
     static const TypeSpec&                  getClassTypeSpec(void);                                                                     //!< Get class type spec
     virtual const TypeSpec&                 getTypeSpec(void) const;    

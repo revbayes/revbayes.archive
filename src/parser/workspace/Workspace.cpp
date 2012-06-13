@@ -28,8 +28,8 @@
 #include "DistributionFunctionRv.h"
 #include "DistributionContinuous.h"
 #include "FunctionTable.h"
-#include "ParserDistribution.h"
-#include "ParserDistributionContinuous.h"
+#include "RlDistribution.h"
+#include "RlDistributionContinuous.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -81,7 +81,7 @@ Workspace& Workspace::operator=(const Workspace& x) {
 
 
 /* Add distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistribution> &dist) {
+bool Workspace::addDistribution(const std::string& name, const RbPtr<RlDistribution> &dist) {
 
     PRINTF("Adding distribution %s to workspace\n", name.c_str());
 
@@ -100,7 +100,7 @@ bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistr
 
 
 /** Add real-valued distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, const RbPtr<ParserDistributionContinuous> &dist) {
+bool Workspace::addDistribution(const std::string& name, const RbPtr<RlDistributionContinuous> &dist) {
     
     PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
     

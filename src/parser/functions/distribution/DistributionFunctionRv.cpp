@@ -22,7 +22,7 @@
 #include "Distribution.h"
 #include "DistributionFunctionRv.h"
 #include "Distribution.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RealPos.h"
@@ -32,7 +32,7 @@
 
 
 /** Constructor */
-DistributionFunctionRv::DistributionFunctionRv( const RbPtr<ParserDistribution> &dist ) : RbFunction(), returnType( dist->getVariableType() ) {
+DistributionFunctionRv::DistributionFunctionRv( const RbPtr<RlDistribution> &dist ) : RbFunction(), returnType( dist->getVariableType() ) {
     
     /* Ininitalize the argument rules */
     argumentRules = new ArgumentRules();

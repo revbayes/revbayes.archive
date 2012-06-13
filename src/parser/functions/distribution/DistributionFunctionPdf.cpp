@@ -22,7 +22,7 @@
 #include "Distribution.h"
 #include "DistributionFunctionPdf.h"
 #include "Distribution.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "Probability.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -33,7 +33,7 @@
 
 
 /** Constructor */
-DistributionFunctionPdf::DistributionFunctionPdf( const RbPtr<ParserDistribution> &dist ) : RbFunction(), returnType( Real::getClassTypeSpec() ) {
+DistributionFunctionPdf::DistributionFunctionPdf( const RbPtr<RlDistribution> &dist ) : RbFunction(), returnType( Real::getClassTypeSpec() ) {
     
     /* Ininitalize the argument rules */
     argumentRules = new ArgumentRules();

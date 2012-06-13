@@ -22,7 +22,7 @@
 #include "Container.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
@@ -183,7 +183,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
             else { // if ( var->getDagNode()->isTypeSpec( StochasticNode::getClassTypeSpec() ) ) {
                 
                 const StochasticNode* theStocNode = static_cast<const StochasticNode*>( (const DAGNode *) var->getDagNode() );
-                const ParserDistribution& theDistribution = theStocNode->getDistribution();
+                const RlDistribution& theDistribution = theStocNode->getDistribution();
                 
                 // first we check if the argument needs to be converted
                 if ( theDistribution.getVariableType().isDerivedOf( argTypeSpec ) ) {

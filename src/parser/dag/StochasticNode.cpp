@@ -26,7 +26,7 @@
 #include "Distribution.h"
 #include "MethodTable.h"
 #include "Model.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "Plate.h"
 #include "RbBoolean.h"
 #include "RbException.h"
@@ -56,7 +56,7 @@ StochasticNode::StochasticNode( const RbPtr<const Plate> &p ) : VariableNode( p 
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( const RbPtr<ParserDistribution> &dist, const RbPtr<const Plate> &p) : VariableNode( p ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
+StochasticNode::StochasticNode( const RbPtr<RlDistribution> &dist, const RbPtr<const Plate> &p) : VariableNode( p ), clamped( false ), distribution( dist ), type( INSTANTIATED ), needsProbabilityRecalculation( true ), needsLikelihoodRecalculation( true ) {
     
     /* Get distribution parameters */
     const std::vector<RbPtr<Argument> >& params = dist->getParameters();
@@ -893,12 +893,12 @@ const TypeSpec& StochasticNode::getClassTypeSpec(void) {
 }
 
 
-const ParserDistribution& StochasticNode::getDistribution(void) const {
+const RlDistribution& StochasticNode::getDistribution(void) const {
     return *distribution;
 }
 
 
-ParserDistribution& StochasticNode::getDistribution(void) {
+RlDistribution& StochasticNode::getDistribution(void) {
     return *distribution;
 }
 

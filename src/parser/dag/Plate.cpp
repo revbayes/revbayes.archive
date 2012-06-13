@@ -23,7 +23,7 @@
 #include "MethodTable.h"
 #include "Ellipsis.h"
 #include "OptionRule.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "Plate.h"
 #include "RbNullObject.h"
 #include "RbUtil.h"

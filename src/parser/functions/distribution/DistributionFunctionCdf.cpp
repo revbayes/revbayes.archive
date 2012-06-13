@@ -23,7 +23,7 @@
 #include "DistributionContinuous.h"
 #include "DistributionFunctionCdf.h"
 #include "Distribution.h"
-#include "ParserDistributionContinuous.h"
+#include "RlDistributionContinuous.h"
 #include "Probability.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -34,7 +34,7 @@
 
 
 /** Constructor */
-DistributionFunctionCdf::DistributionFunctionCdf( const RbPtr<ParserDistributionContinuous> &dist ) : RbFunction(), returnType( Probability::getClassTypeSpec() ) {
+DistributionFunctionCdf::DistributionFunctionCdf( const RbPtr<RlDistributionContinuous> &dist ) : RbFunction(), returnType( Probability::getClassTypeSpec() ) {
     
     /* Ininitalize the argument rules */
     argumentRules = new ArgumentRules();

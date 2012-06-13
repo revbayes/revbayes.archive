@@ -1,23 +1,23 @@
 /**
  * @file
  * This file contains the declaration of DistributiionContinuous, which specifies
- * the interface for ParserDistributions on continuous variables.
+ * the interface for RlDistributions on continuous variables.
  *
- * @brief Declaration of ParserDistributionContinuous
+ * @brief Declaration of RlDistributionContinuous
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-03-19 09:25:05 +0100 (Mon, 19 Mar 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: ParserDistributionContinuous.h 1353 2012-03-19 08:25:05Z hoehna $
+ * $Id: RlDistributionContinuous.h 1353 2012-03-19 08:25:05Z hoehna $
  */
 
-#ifndef ParserDistributionContinuous_H
-#define ParserDistributionContinuous_H
+#ifndef RlDistributionContinuous_H
+#define RlDistributionContinuous_H
 
 #include "DistributionContinuous.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "Real.h"
 
 #include <set>
@@ -25,16 +25,16 @@
 
 class ArgumentRule;
 
-class ParserDistributionContinuous: public ParserDistribution {
+class RlDistributionContinuous: public RlDistribution {
     
 public:
-    ParserDistributionContinuous(DistributionContinuous* d, const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);
+    RlDistributionContinuous(DistributionContinuous* d, const std::string &n, const MemberRules& memberRules, const RbPtr<RbLanguageObject> &rv);
 
-    ParserDistributionContinuous(const ParserDistributionContinuous &p);
-    virtual                                ~ParserDistributionContinuous(void) {}                                                   //!< Destructor
+    RlDistributionContinuous(const RlDistributionContinuous &p);
+    virtual                                ~RlDistributionContinuous(void) {}                                                       //!< Destructor
         
     // Basic utility function
-    virtual ParserDistributionContinuous*   clone(void) const;                                                                      //!< Clone object
+    virtual RlDistributionContinuous*       clone(void) const;                                                                      //!< Clone object
     static const std::string&               getClassName(void);                                                                     //!< Get class name
     static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
     

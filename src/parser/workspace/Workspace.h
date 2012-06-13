@@ -34,8 +34,8 @@ class DAGNode;
 class Distribution;
 class DistributionContinuous;
 class MemberObject;
-class ParserDistribution;
-class ParserDistributionContinuous;
+class RlDistribution;
+class RlDistributionContinuous;
 class RandomNumberGenerator;
 class RbFunction;
 class RbObject;
@@ -84,8 +84,8 @@ class Workspace : public Environment {
         const TypeSpec&                 getTypeSpec(void) const;                                                                        //!< Get language type of the object
         void                            printValue(std::ostream& o) const;                                                              //!< Print table for user
         
-        bool                            addDistribution(const std::string& name, const RbPtr<ParserDistribution> &dist);                //!< Add distribution on continuous variable
-        bool                            addDistribution(const std::string& name, const RbPtr<ParserDistributionContinuous> &dist);      //!< Add distribution on continuous variable
+        bool                            addDistribution(const std::string& name, const RbPtr<RlDistribution> &dist);                //!< Add distribution on continuous variable
+        bool                            addDistribution(const std::string& name, const RbPtr<RlDistributionContinuous> &dist);      //!< Add distribution on continuous variable
         bool                            addType(const RbPtr<RbObject> &exampleObj);                                                     //!< Add type
         bool                            addType(const std::string& name, const RbPtr<RbObject> &exampleObj);                            //!< Add special abstract type (synonym)
         bool                            addTypeWithConstructor(const std::string& name, const RbPtr<MemberObject> &templ);              //!< Add type with constructor

@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the partial implementation of ParserDistribution, the abstract
- * base class for ParserDistributions in RevBayes.
+ * This file contains the partial implementation of RlDistribution, the abstract
+ * base class for RlDistributions in RevBayes.
  *
- * @brief Partial implementation of ParserDistribution
+ * @brief Partial implementation of RlDistribution
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-03-19 09:25:05 +0100 (Mon, 19 Mar 2012) $
@@ -11,15 +11,15 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @interface ParserDistribution
+ * @interface RlDistribution
  *
- * $Id: ParserDistribution.cpp 1353 2012-03-19 08:25:05Z hoehna $
+ * $Id: RlDistribution.cpp 1353 2012-03-19 08:25:05Z hoehna $
  */
 
 #include "ConstantNode.h"
 #include "Argument.h"
 #include "ArgumentRule.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "Environment.h"
 #include "MethodTable.h"
 #include "RbException.h"
@@ -30,16 +30,16 @@
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( Distribution *d, const std::string &n, const MemberRules& mr, const RbPtr<RbLanguageObject> &rv ) : MemberObject( mr ), distribution( d ), randomValue( rv ), memberRules( mr ), name( n ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( MemberObject::getClassTypeSpec() )) {
+RlDistribution::RlDistribution( Distribution *d, const std::string &n, const MemberRules& mr, const RbPtr<RbLanguageObject> &rv ) : MemberObject( mr ), distribution( d ), randomValue( rv ), memberRules( mr ), name( n ), typeSpec( getClassName() + " (" + n + ")", new TypeSpec( MemberObject::getClassTypeSpec() )) {
 }
 
 
 /** Constructor with inheritance for member rules */
-ParserDistribution::ParserDistribution( const ParserDistribution &p ) : MemberObject( p ), distribution( p.distribution->clone() ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ), name( p.name ), params( p.params ), typeSpec( p.typeSpec ) {
+RlDistribution::RlDistribution( const RlDistribution &p ) : MemberObject( p ), distribution( p.distribution->clone() ), randomValue( p.randomValue->clone() ), memberRules( p.memberRules ), name( p.name ), params( p.params ), typeSpec( p.typeSpec ) {
 }
 
 
-ParserDistribution& ParserDistribution::operator=(const ParserDistribution &d) {
+RlDistribution& RlDistribution::operator=(const RlDistribution &d) {
     // check for self assignment
     if ( this != &d ) {
         MemberObject::operator=( d );
@@ -58,18 +58,18 @@ ParserDistribution& ParserDistribution::operator=(const ParserDistribution &d) {
 }
 
 
-void ParserDistribution::clear( void ) {
+void RlDistribution::clear( void ) {
     params.clear();
 }
 
 
-ParserDistribution* ParserDistribution::clone(void) const {
-    return new ParserDistribution(*this);
+RlDistribution* RlDistribution::clone(void) const {
+    return new RlDistribution(*this);
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> ParserDistribution::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
+RbPtr<RbLanguageObject> RlDistribution::executeSimpleMethod(std::string const &name, const std::vector<const RbObject *> &args) {
     
     if ( name == "lnPdf" ) {
         
@@ -90,15 +90,15 @@ RbPtr<RbLanguageObject> ParserDistribution::executeSimpleMethod(std::string cons
 
 
 /** Get class name of object */
-const std::string& ParserDistribution::getClassName(void) { 
+const std::string& RlDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "ParserDistribution";
+    static std::string rbClassName = "RlDistribution";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ParserDistribution::getClassTypeSpec(void) { 
+const TypeSpec& RlDistribution::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( MemberObject::getClassTypeSpec() ) );
     
@@ -108,18 +108,18 @@ const TypeSpec& ParserDistribution::getClassTypeSpec(void) {
 
 
 
-Distribution* ParserDistribution::getLeanDistribution( void ) const {
+Distribution* RlDistribution::getLeanDistribution( void ) const {
     return distribution;
 }
 
 
-const MemberRules& ParserDistribution::getMemberRules(void) const {
+const MemberRules& RlDistribution::getMemberRules(void) const {
     return memberRules;
 }
 
 
 /** Get methods */
-const MethodTable& ParserDistribution::getMethods( void ) const {
+const MethodTable& RlDistribution::getMethods( void ) const {
     
     static MethodTable methods = MethodTable();
     static ArgumentRules*    lnPdfArgRules = new ArgumentRules();
@@ -145,27 +145,27 @@ const MethodTable& ParserDistribution::getMethods( void ) const {
     return methods;
 }    
 
-const std::vector<RbPtr<Argument> >& ParserDistribution::getParameters( void ) const {
+const std::vector<RbPtr<Argument> >& RlDistribution::getParameters( void ) const {
     return params;
 }
 
 
-const RbLanguageObject& ParserDistribution::getTemplateRandomVariable( void ) const {
+const RbLanguageObject& RlDistribution::getTemplateRandomVariable( void ) const {
     return *randomValue;
 }   
 
 
-const TypeSpec& ParserDistribution::getTypeSpec(void) const {
+const TypeSpec& RlDistribution::getTypeSpec(void) const {
     return typeSpec;
 }
 
 
-const TypeSpec& ParserDistribution::getVariableType( void ) const {
+const TypeSpec& RlDistribution::getVariableType( void ) const {
     return randomValue->getTypeSpec();
 }
 
 
-double ParserDistribution::jointLnPdf(const RlValue<RbLanguageObject> &value) const {
+double RlDistribution::jointLnPdf(const RlValue<RbLanguageObject> &value) const {
     
     std::vector<size_t> lengths = value.lengths;
     
@@ -189,41 +189,41 @@ double ParserDistribution::jointLnPdf(const RlValue<RbLanguageObject> &value) co
 }
 
 
-double ParserDistribution::lnPdf(const RbLanguageObject &value) const {
+double RlDistribution::lnPdf(const RbLanguageObject &value) const {
     
     return *distribution->lnPdf();
 }
 
 
-double ParserDistribution::pdf(const RbLanguageObject &value) const {
+double RlDistribution::pdf(const RbLanguageObject &value) const {
     
     return *distribution->pdf();
 }
 
 
-void ParserDistribution::rv(void) {
+void RlDistribution::rv(void) {
     
     distribution->rv();
 }
 
 
-void ParserDistribution::setConstMemberVariable(std::string const &name, const RbPtr<const Variable> &var) {
+void RlDistribution::setConstMemberVariable(std::string const &name, const RbPtr<const Variable> &var) {
     params.push_back( new Argument(var->clone(), name) );
 }
 
 /** We delegate the call to the inference distribution. */
-void ParserDistribution::setParameters(const std::vector<RbValue<void *> > &p) {
+void RlDistribution::setParameters(const std::vector<RbValue<void *> > &p) {
     distribution->setParameters(p);
 }
 
 
-void ParserDistribution::setSimpleMemberValue(std::string const &name, const RbPtr<const RbLanguageObject> &var) {
+void RlDistribution::setSimpleMemberValue(std::string const &name, const RbPtr<const RbLanguageObject> &var) {
     // we do nothing, we catch just the call because it leads to an exception otherwise.
 }
 
 
 /** We delegate the call to the inference distribution. */
-void ParserDistribution::setValue(const RbValue<void *> &v) {
+void RlDistribution::setValue(const RbValue<void *> &v) {
     distribution->setObservedValue(v);
 }
 

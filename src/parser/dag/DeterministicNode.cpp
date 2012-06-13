@@ -26,7 +26,7 @@
 #include "InferenceDagNode.h"
 #include "InferenceFunction.h"
 #include "Model.h"
-#include "ParserDistribution.h"
+#include "RlDistribution.h"
 #include "Plate.h"
 #include "RbBoolean.h"
 #include "RbException.h"
