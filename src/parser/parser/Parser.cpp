@@ -391,9 +391,15 @@ int Parser::processCommand(std::string& command, Environment *env) {
             
             std::ostringstream msg;
             if ( yylloc.first_column == yylloc.last_column )
-                msg << "Syntax error while reading character " << yylloc.first_column;
-            else
-                msg << "Syntax error while reading characters " << yylloc.first_column << " to " << yylloc.last_column;
+                msg << "Syntax error while reading character '" << command[yylloc.first_column-1] << "' at position " << yylloc.first_column << " in command:" << std::endl;
+            else {
+                msg << "Syntax error while reading characters \"";
+                for (int i = yylloc.first_column; i <= yylloc.last_column; ++i) {
+                    msg << command[i-1];
+                }
+                msg << "\" at position " << yylloc.first_column << " to " << yylloc.last_column << " in command:" << std::endl; 
+            }
+            msg << command;
 
             RBOUT( msg.str() );
             command = "";
