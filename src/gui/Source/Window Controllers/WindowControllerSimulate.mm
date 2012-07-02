@@ -1,4 +1,5 @@
 #import "ToolSimulate.h"
+#import "Tree.h"
 #import "WindowControllerSimulate.h"
 
 
@@ -8,6 +9,12 @@
 - (IBAction)cancelButtonAction:(id)sender {
 
     [myTool closeControlPanel];
+}
+
+- (void)dealloc {
+
+	[myTree release];
+	[super dealloc];
 }
 
 - (IBAction)helpButtonAction:(id)sender {
@@ -24,12 +31,15 @@
 	if ( (self = [super initWithWindowNibName:@"ControlWindowSimulate"]) )
         {
         myTool = t;
+        
+        myTree = [[Tree alloc] initWithTipSize:3];
         }
 	return self;
 }
 
 - (IBAction)okButtonAction:(id)sender {
 
+    NSLog(@"number of nodes = %d", [myTree numberOfNodes]);
     [myTool closeControlPanel];
 }
 

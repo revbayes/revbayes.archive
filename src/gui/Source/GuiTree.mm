@@ -1,9 +1,83 @@
 #import "Node.h"
 #import "Tree.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+
 
 
 
 @implementation Tree
+
+- (void)buildRandomTreeWithSize:(int)n {
+
+    // find the global random number generator
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+
+    // fill in the vector of nodes
+    [nodes removeAllObjects];
+    int numNodes = 2 * n - 1;
+    for (int i=0; i<numNodes; i++)
+        {
+        Node* nde = [[Node alloc] init];
+        [nde setIndex:i];
+        NSString* nameStr = [[NSString alloc] initWithFormat:@"Taxon %d", i+1];
+        [nde setName:nameStr];
+        [nodes addObject:nde];
+        }
+        
+    // build a two-species tree
+    NSMutableArray* treeArray = [NSMutableArray arrayWithCapacity:1];
+    int nextTip = 0, nextInt = n;
+    Node* p = [nodes objectAtIndex:nextTip];
+    nextTip++;
+    Node* q = [nodes objectAtIndex:nextInt];
+    nextInt++;
+    [treeArray addObject:p];
+    [treeArray addObject:q];
+    [p setAncestor:q];
+    [q addDescendant:p];
+    p = [nodes objectAtIndex:nextTip];
+    nextTip++;
+    [treeArray addObject:p];
+    [p setAncestor:q];
+    [q addDescendant:p];
+    root = q;
+    
+    // randomly add the remaining branches to the two-species tree
+    for (int i=2; i<n; i++)
+        {
+        p = [nodes objectAtIndex:nextTip];
+        nextTip++;
+        q = [nodes objectAtIndex:nextInt];
+        nextInt++;
+        
+        Node* a = [treeArray objectAtIndex:( (int)(rng->uniform01() * [treeArray count]) )];
+        if ([a ancestor] == nil)
+            {
+            [a setAncestor:q];
+            [q addDescendant:a];
+            [q addDescendant:p];
+            [p setAncestor:q];
+            root = q;            
+            }
+        else 
+            {
+            Node* b = [a ancestor];
+            [b removeDescendant:a];
+            [b addDescendant:q];
+            [q setAncestor:b];
+            [q addDescendant:a];
+            [q addDescendant:p];
+            [a setAncestor:q];
+            [p setAncestor:q];
+            }
+        
+        [treeArray addObject:p];
+        [treeArray addObject:q];
+        }
+        
+    [self print];
+}
 
 - (void)dealloc {
 
@@ -35,15 +109,12 @@
     return self;
 }
 
-- (id)initWithSize:(int)n {
+- (id)initWithTipSize:(int)n {
 
     if ( (self = [super init]) ) 
 		{
         nodes = [[NSMutableArray alloc] init];
-        for (int i=0; i<2*n-1; i++)
-            {
-            
-            }
+        [self buildRandomTreeWithSize:n];
         downPassSequence = [[NSMutableArray alloc] init];
         initializedDownPass = NO;
         //[self buildRandomTree];
@@ -85,6 +156,12 @@
     for (int i=0; i<[p numberOfDescendants]; i++)
         [self passDown:[p descendantIndexed:i]];
     [downPassSequence addObject:p];
+}
+
+- (void)print {
+
+    for (int i=0; i<[nodes count]; i++)
+        [[nodes objectAtIndex:i] print];
 }
 
 - (void)setCoordinates {
