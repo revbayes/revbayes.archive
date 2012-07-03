@@ -1,5 +1,5 @@
 #import "Node.h"
-#import "Tree.h"
+#import "GuiTree.h"
 #import "TreeSetView.h"
 #import "WindowControllerTreeViewer.h"
 

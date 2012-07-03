@@ -8,7 +8,7 @@
 #import "ToolData.h"
 #import "ToolParsimony.h"
 #import "ToolTreeSet.h"
-#import "Tree.h"
+#import "GuiTree.h"
 #import "WindowControllerParsimony.h"
 
 #include <iostream>

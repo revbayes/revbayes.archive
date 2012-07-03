@@ -1,5 +1,5 @@
 #import "Node.h"
-#import "Tree.h"
+#import "GuiTree.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 
