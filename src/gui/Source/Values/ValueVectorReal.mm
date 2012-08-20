@@ -81,7 +81,7 @@
 
 - (NSString*)stringRepresentation {
     
-    NSString* strRep = [NSString stringWithString:@"("];
+    NSString* strRep = @"(";
     for (int i=0; i<[self dimensions]; i++)
         {
         Value* v = [self valueIndexed:i];

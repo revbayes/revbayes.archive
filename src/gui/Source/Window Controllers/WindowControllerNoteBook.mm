@@ -37,7 +37,7 @@
 		[textView setTypingAttributes:attributes];
 		}
 	
-	NSString* nbTitle = [NSString stringWithString:@"RevBayes Notebook for \""];
+	NSString* nbTitle = @"RevBayes Notebook for \"";
 	nbTitle = [nbTitle stringByAppendingString:[myAnalysis analysisName]];
 	nbTitle = [nbTitle stringByAppendingString:@"\""];
 	[[self window] setTitle:nbTitle];

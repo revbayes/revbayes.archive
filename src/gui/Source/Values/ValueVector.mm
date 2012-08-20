@@ -73,7 +73,7 @@
 
 - (NSString*)stringRepresentation {
     
-    NSString* strRep = [NSString stringWithString:@""];
+    NSString* strRep = @"";
     return strRep;
 }
 

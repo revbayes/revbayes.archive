@@ -240,7 +240,6 @@
             NSLog(@"Error: Could not create data in workspace");
         if ( !Workspace::userWorkspace()->existsVariable(variableName) )
             NSLog(@"Error: Could not create data in workspace");
-return;
         }
     else if ( [dataMatrices count] > 1 )
         {
@@ -356,6 +355,8 @@ return;
             }
         [m addTaxonData:rbTaxonData];
         }
+        
+    //[m print];
         
     return m;
 }

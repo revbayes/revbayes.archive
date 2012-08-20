@@ -368,8 +368,8 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             if ( identifier == NULL )
                 throw RbException( "Member variable identifier missing" );
 
-            const MemberObject * theMemberObject = static_cast<const MemberObject *>( (const RbLanguageObject *) baseVar->getDagNode()->getValue().getSingleValue() );
-            // \TODO:
+//            const MemberObject * theMemberObject = static_cast<const MemberObject *>( (const RbLanguageObject *) baseVar->getDagNode()->getValue().getSingleValue() );
+// \TODO:
 //            const std::map<std::string, const Variable*>& members = theMemberObject.getMembers();
 //            
 //            const std::map<std::string, const Variable*>::const_iterator& i = members.find( identifier->getValue() );

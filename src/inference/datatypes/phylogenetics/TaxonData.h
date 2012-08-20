@@ -40,7 +40,6 @@ class TaxonData {
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
         void                                    setTaxonName(std::string tn);                                       //!< Set the taxon name
- 
         
     private:
         std::string                             characterType;

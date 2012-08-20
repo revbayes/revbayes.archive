@@ -86,7 +86,7 @@
         if ( [d isHomologyEstablished] == YES )
             {
             [isAlignedIndicator setStringValue:@"Sequences Aligned: Yes"];
-            NSString* m6 = [NSString stringWithString:@"Alignment Method: "];
+            NSString* m6 = @"Alignment Method: ";
             m6 = [m6 stringByAppendingString:[d alignmentMethod]];
             [alignmentMethodIndicator setStringValue:m6];
             [isAlignedIndicator setHidden:NO];

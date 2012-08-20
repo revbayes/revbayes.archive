@@ -9,7 +9,7 @@
 
 @implementation ToolTreeSet
 
-- (void)addTreeToSet:(Tree*)t {
+- (void)addTreeToSet:(GuiTree*)t {
 
     NSLog(@"adding %@ to tree set", t);
     [myTrees addObject:t];
@@ -55,7 +55,7 @@
     [self stopProgressIndicator];
 }
 
-- (Tree*)getTreeIndexed:(int)idx {
+- (GuiTree*)getTreeIndexed:(int)idx {
 
     if ([myTrees count] == 0 || idx >= [myTrees count])
         return nil;

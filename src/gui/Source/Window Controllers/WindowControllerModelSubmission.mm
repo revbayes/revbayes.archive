@@ -35,7 +35,7 @@
 		sprintf(temp, "Untitled Model %d", i);
 		NSString* fn = [NSString stringWithCString:temp encoding:[NSString defaultCStringEncoding]];
 		i++;
-		NSString* possibleFileName = [NSString stringWithString:@"~/Library/Application Support/RevBayes/User Models/"];
+		NSString* possibleFileName = @"~/Library/Application Support/RevBayes/User Models/";
 		possibleFileName = [possibleFileName stringByAppendingString:fn];
 		possibleFileName = [possibleFileName stringByExpandingTildeInPath];
 		
@@ -64,7 +64,7 @@
 
 - (BOOL)doesModelExist:(NSString*)mn {
 
-	NSString* newModelName = [NSString stringWithString:@"~/Library/Application Support/RevBayes/User Models/"];
+	NSString* newModelName = @"~/Library/Application Support/RevBayes/User Models/";
 	newModelName = [newModelName stringByAppendingString:mn];
 	newModelName = [newModelName stringByExpandingTildeInPath];
 	NSFileManager* fileManager = [NSFileManager defaultManager];

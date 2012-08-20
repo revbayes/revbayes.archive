@@ -5,6 +5,7 @@
 #define IN_OUT_SIZE                              15.0
 #define BURY_FRACTION                             0.7
 
+#define SHOW_ONLY_BIOLOGY_1B_TOOLS
 #define NUM_TOOLS                                18
 #define TOOL_LOOP                                 0
 #define TOOL_READDATA                             1

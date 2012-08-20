@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "Tool.h"
-@class Tree;
+@class GuiTree;
 @class WindowControllerTreeSet;
 @class WindowControllerTreeViewer;
 
@@ -15,12 +15,12 @@
     int                             numberOfInlets;
 }
 
-- (void)addTreeToSet:(Tree*)t;
+- (void)addTreeToSet:(GuiTree*)t;
 - (void)closeControlPanel;
 - (void)closeInspectorPanel;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
 - (void)execute;
-- (Tree*)getTreeIndexed:(int)idx;
+- (GuiTree*)getTreeIndexed:(int)idx;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (int)numberOfInlets;

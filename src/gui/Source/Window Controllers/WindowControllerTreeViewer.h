@@ -1,5 +1,5 @@
 #import <Cocoa/Cocoa.h>
-@class Tree;
+@class GuiTree;
 @class ToolTreeSet;
 @class TreeSetView;
 
@@ -14,6 +14,7 @@
     IBOutlet TreeSetView*           treeView;
     IBOutlet NSTextField*           fontLabel;
     IBOutlet NSTextField*           fontEntry;
+    IBOutlet NSTextField*           treeInfo;
     ToolTreeSet*                    myTool;
     int                             selectedTree;
     float                           fontSize;
@@ -25,7 +26,7 @@
 - (IBAction)changeFontSize:(id)sender;
 - (IBAction)closeButtonAction:(id)sender;
 - (IBAction)helpButtonAction:(id)sender;
-- (Tree*)activeTree;
+- (GuiTree*)activeTree;
 - (id)initWithTool:(ToolTreeSet*)t;
 - (void)initializeTreeInformation;
 - (IBAction)stepAction:(id)sender;

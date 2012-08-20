@@ -18,7 +18,7 @@
     NSString* pStr;
     if ( [self isConnectedToTree] == NO )
         {
-        pStr = [NSString stringWithString:@"P[?]"];
+        pStr = @"P[?]";
         }
     else
         {
@@ -30,9 +30,9 @@
         if (isConfigOk == NO)
             {
             if (errNum == 1)
-                pStr = [NSString stringWithString:@"P[?]"];
+                pStr = @"P[?]";
             else
-                pStr = [NSString stringWithString:@"P[?]"];
+                pStr = @"P[?]";
             }
         else
             {
@@ -40,12 +40,12 @@
             
             if ( [ot treeSizeSource] == NO_SOURCE )
                 {
-                pStr = [NSString stringWithString:@"P[?]"];
+                pStr = @"P[?]";
                 }
             else if ( [ot treeSizeSource] == FIRST_MATRIX )
                 {
                 if (nt == -1)
-                    pStr = [NSString stringWithString:@"P[?]"];
+                    pStr = @"P[?]";
                 else
                     pStr = [NSString stringWithFormat:@"P[%d]", nt];
                 }
@@ -63,7 +63,7 @@
                         }
                     }
                 if (numPlatesIteratingOverMatrices == 0)
-                    pStr = [NSString stringWithString:@"P[?]"];
+                    pStr = @"P[?]";
                 else if (numPlatesIteratingOverMatrices == 1)
                     {
                     if (numMatrices == 0)
@@ -74,7 +74,7 @@
                     }
                 else
                     {
-                    pStr = [NSString stringWithString:@"P[?]"];
+                    pStr = @"P[?]";
                     }
                 }
             }
@@ -270,7 +270,7 @@
 
 - (NSString*)xibName {
     
-	NSString* xn = [NSString stringWithString:@"ControlWindowTreePlate"];
+	NSString* xn = @"ControlWindowTreePlate";
 	return xn;
 }
 

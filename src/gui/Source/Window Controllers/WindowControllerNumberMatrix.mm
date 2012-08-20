@@ -66,7 +66,7 @@
     if (index >= 0 && index < (int)[myTool data]->size()) {
         Trace* t            = [myTool data]->at((int) index);
         
-        [burninLabel setStringValue:[NSString stringWithFormat:@"%lu", t->getBurnin()]];
+        [burninLabel setStringValue:[NSString stringWithFormat:@"%lu", (unsigned long)(t->getBurnin())]];
         [convergenceLabel setStringValue:[NSString stringWithFormat:@"%lu", 0]];
         [essLabel setStringValue:[NSString stringWithFormat:@"%f", t->getEss()]];
         [meanLabel setStringValue:[NSString stringWithFormat:@"%f", t->getMean()]];

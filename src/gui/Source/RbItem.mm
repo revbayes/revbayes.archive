@@ -133,7 +133,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" This is a RB interface object "];
+    NSString* myTip = @" This is a RB interface object ";
 
     NSDictionary *attr = [NSDictionary 
                  dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Lucida Grande Bold" size:14.0], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] 
@@ -154,7 +154,7 @@
 
 - (NSString*)xibName {
 
-	NSString* xn = [NSString stringWithString:@""];
+	NSString* xn = @"";
 	return xn;
 }
 

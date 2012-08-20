@@ -24,7 +24,7 @@
 	[NSBezierPath fillRect:bounds];
     
     // get a pointer to the current tree
-    Tree* t = [myWindowController activeTree];
+    GuiTree* t = [myWindowController activeTree];
 
     // draw the tree
     if (t != nil)
@@ -120,6 +120,9 @@
 			}
 		
 		[NSBezierPath setDefaultLineWidth:1.0];
+        
+        // set the label for the tree, if there is information
+        [treeInfo setStringValue:[t info]];
 
         }
 }

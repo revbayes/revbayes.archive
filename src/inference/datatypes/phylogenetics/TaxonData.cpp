@@ -15,8 +15,6 @@
  *
  * $Id$
  */
-
-
 #include "ArgumentRule.h"
 #include "CharacterState.h"
 #include "Ellipsis.h"
@@ -25,6 +23,8 @@
 #include "RbString.h"
 #include "SimpleMemberFunction.h"
 #include "TaxonData.h"
+
+#include <algorithm>
 
 
 /** Constructor with element type, used to properly construct vectors */
@@ -120,10 +120,16 @@ const std::string& TaxonData::getTaxonName(void) const {
     return taxonName;
 }
 
-
-
 void TaxonData::setTaxonName(std::string tn) {
 
-    taxonName = tn;
+    std::string tempStr = "";
+    for (size_t i=0, j=0; i<tn.size(); i++)
+        {
+        if ( tn[i] == ' ' )
+            tn[i] = '_';
+        if ( !(tn[i] == '\'' || tn[i] == '\"') )
+            tempStr[j++] = tn[i];
+        }
+    taxonName = tempStr;
 }
 

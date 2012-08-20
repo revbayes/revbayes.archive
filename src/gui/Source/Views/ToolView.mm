@@ -11,7 +11,7 @@
 
 - (void)awakeFromNib {
 
-    for (int i=0; i<numTools; i++)
+    for (int i=0; i<numToolsToShow; i++)
         {
 		NSRect toolRect;
 		toolRect.origin = NSMakePoint(i * toolSize, 2.0);
@@ -33,6 +33,8 @@
 	while ( (element = [enumerator nextObject]) )
         [self removeTrackingArea:element];
 	[myTrackingAreas release];
+    delete [] toolShowVector;
+    delete [] toolPaletteOffset;
 	[super dealloc];
 }
 
@@ -50,45 +52,46 @@
 	[NSBezierPath fillRect:bounds];
 
     // draw the tools
-    for (int i=0; i<numTools; i++)
+    for (int i=0; i<numToolsToShow; i++)
         {
         // get a pointer to the tool image
+        int toolIdx = toolShowVector[i];
         NSImage* toolImage;
-        if (i == TOOL_LOOP)
+        if (toolIdx == TOOL_LOOP)
             toolImage = [NSImage imageNamed:@"Tool_Loop.icns"];
-        else if (i == TOOL_READDATA)
+        else if (toolIdx == TOOL_READDATA)
             toolImage = [NSImage imageNamed:@"Tool_ReadData.icns"];
-        else if (i == TOOL_DATAENTRY)
+        else if (toolIdx == TOOL_DATAENTRY)
             toolImage = [NSImage imageNamed:@"Tool_DataEntry.icns"];
-        else if (i == TOOL_ALIGN)
+        else if (toolIdx == TOOL_ALIGN)
             toolImage = [NSImage imageNamed:@"Tool_Align.icns"];
-        else if (i == TOOL_COMBINER)
+        else if (toolIdx == TOOL_COMBINER)
             toolImage = [NSImage imageNamed:@"Tool_Combiner.icns"];
-        else if (i == TOOL_CONCATENATE)
+        else if (toolIdx == TOOL_CONCATENATE)
             toolImage = [NSImage imageNamed:@"Tool_Concatenate.icns"];
-        else if (i == TOOL_MATRIXFILTER)
+        else if (toolIdx == TOOL_MATRIXFILTER)
             toolImage = [NSImage imageNamed:@"Tool_MatrixFilter.icns"];
-        else if (i == TOOL_BOOTSTRAP)
+        else if (toolIdx == TOOL_BOOTSTRAP)
             toolImage = [NSImage imageNamed:@"Tool_Bootstrap.icns"];
-        else if (i == TOOL_MODEL)
+        else if (toolIdx == TOOL_MODEL)
             toolImage = [NSImage imageNamed:@"Tool_Model.icns"];
-        else if (i == TOOL_MCMC)
+        else if (toolIdx == TOOL_MCMC)
             toolImage = [NSImage imageNamed:@"Tool_Mcmc.icns"];
-        else if (i == TOOL_SIMULATE)
+        else if (toolIdx == TOOL_SIMULATE)
             toolImage = [NSImage imageNamed:@"Tool_Simulate.icns"];
-        else if (i == TOOL_DISTANCEMATRIX)
+        else if (toolIdx == TOOL_DISTANCEMATRIX)
             toolImage = [NSImage imageNamed:@"Tool_Distance.icns"];
-        else if (i == TOOL_NEIGHBORJOINING)
+        else if (toolIdx == TOOL_NEIGHBORJOINING)
             toolImage = [NSImage imageNamed:@"Tool_NeighborJoining.icns"];
-        else if (i == TOOL_PARSIMONY)
+        else if (toolIdx == TOOL_PARSIMONY)
             toolImage = [NSImage imageNamed:@"Tool_Parsimony.icns"];
-        else if (i == TOOL_TREECONTAINER)
+        else if (toolIdx == TOOL_TREECONTAINER)
             toolImage = [NSImage imageNamed:@"Tool_TreeSummarize.icns"];
-        else if (i == TOOL_NUMBERSET)
+        else if (toolIdx == TOOL_NUMBERSET)
             toolImage = [NSImage imageNamed:@"ToolNumberSet.icns"];
-        else if (i == TOOL_TREEDIAGNOSIS)
+        else if (toolIdx == TOOL_TREEDIAGNOSIS)
             toolImage = [NSImage imageNamed:@"Tool_TreeDiagnosis.icns"];
-        else if (i == TOOL_NUMBERDIAGNOSIS)
+        else if (toolIdx == TOOL_NUMBERDIAGNOSIS)
             toolImage = [NSImage imageNamed:@"Tool_NumberSetDiagnosis.icns"];
             
         [toolImage setSize:NSMakeSize(toolSize, toolSize)];
@@ -107,46 +110,47 @@
 	if (isToolTipTimerActive == YES && toolForToolTip >= 0)
 		{
 		NSPoint p;
-		p.x = toolForToolTip * toolSize + toolSize * 0.5;
+		p.x = toolPaletteOffset[toolForToolTip] * toolSize + toolSize * 0.5;
+		//p.x = toolForToolTip * toolSize + toolSize * 0.5;
 		p.y = toolSize * 0.75;
 	
 		NSString* myTip;
         if (toolForToolTip == TOOL_LOOP)
-			myTip = [NSString stringWithString:@" Loop Tool "];
+			myTip = @" Loop Tool ";
         else if (toolForToolTip == TOOL_READDATA)
-			myTip = [NSString stringWithString:@" Read Data Tool "];
+			myTip = @" Read Data Tool ";
         else if (toolForToolTip == TOOL_DATAENTRY)
-			myTip = [NSString stringWithString:@" Character Data Entry Tool "];
+			myTip = @" Character Data Entry Tool ";
         else if (toolForToolTip == TOOL_ALIGN)
-			myTip = [NSString stringWithString:@" Sequence Alignment Tool "];
+			myTip = @" Sequence Alignment Tool ";
         else if (toolForToolTip == TOOL_COMBINER)
-			myTip = [NSString stringWithString:@" Matrix Combiner Tool "];
+			myTip = @" Matrix Combiner Tool ";
         else if (toolForToolTip == TOOL_CONCATENATE)
-			myTip = [NSString stringWithString:@" Alignment Concatenation Tool "];
+			myTip = @" Alignment Concatenation Tool ";
         else if (toolForToolTip == TOOL_MATRIXFILTER)
-			myTip = [NSString stringWithString:@" Data Matrix Filter Tool "];
+			myTip = @" Data Matrix Filter Tool ";
         else if (toolForToolTip == TOOL_BOOTSTRAP)
-			myTip = [NSString stringWithString:@" Bootstrap Tool "];
+			myTip = @" Bootstrap Tool ";
         else if (toolForToolTip == TOOL_MODEL)
-			myTip = [NSString stringWithString:@" Model Tool "];
+			myTip = @" Model Tool ";
         else if (toolForToolTip == TOOL_MCMC)
-			myTip = [NSString stringWithString:@" MCMC Tool "];
+			myTip = @" MCMC Tool ";
         else if (toolForToolTip == TOOL_SIMULATE)
-			myTip = [NSString stringWithString:@" Simulate Data Tool "];
+			myTip = @" Simulate Data Tool ";
         else if (toolForToolTip == TOOL_DISTANCEMATRIX)
-			myTip = [NSString stringWithString:@" Distance Matrix Tool "];
+			myTip = @" Distance Matrix Tool ";
         else if (toolForToolTip == TOOL_NEIGHBORJOINING)
-			myTip = [NSString stringWithString:@" Neighbor Joining Tool "];
+			myTip = @" Neighbor Joining Tool ";
         else if (toolForToolTip == TOOL_PARSIMONY)
-			myTip = [NSString stringWithString:@" Parsimony Tool "];
+			myTip = @" Parsimony Tool ";
         else if (toolForToolTip == TOOL_TREECONTAINER)
-			myTip = [NSString stringWithString:@" Tree Container Tool "];
+			myTip = @" Tree Container Tool ";
         else if (toolForToolTip == TOOL_NUMBERSET)
-			myTip = [NSString stringWithString:@" Number Container Tool "];
+			myTip = @" Number Container Tool ";
         else if (toolForToolTip == TOOL_TREEDIAGNOSIS)
-			myTip = [NSString stringWithString:@" Tree Diagnosis Tool "];
+			myTip = @" Tree Diagnosis Tool ";
         else if (toolForToolTip == TOOL_NUMBERDIAGNOSIS)
-			myTip = [NSString stringWithString:@" Number Container Diagnosis Tool "];
+			myTip = @" Number Container Diagnosis Tool ";
             
 		NSDictionary *attr = [NSDictionary 
 					 dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Lucida Grande Bold" size:14.0], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] 
@@ -199,8 +203,45 @@
         scaleFactor          = 1.0;
 		toolTipTimer         = nil;
 		isToolTipTimerActive = NO;
+        
+        // set up a vector controlling which tools are shown/hidden
+        [self initializeToolVector];
 		}
     return self;
+}
+
+- (void)initializeToolVector {
+
+    toolPaletteOffset = new int[NUM_TOOLS];
+    for (int i=0; i<NUM_TOOLS; i++)
+        toolPaletteOffset[i] = i;
+#   if !defined(SHOW_ONLY_BIOLOGY_1B_TOOLS)
+    // show all of the tools
+    numToolsToShow = NUM_TOOLS;
+    toolShowVector = new int[numToolsToShow];
+    for (int i=0; i<NUM_TOOLS; i++)
+        toolShowVector[i] = i;
+#   else
+    // show only the Biology 1B tools
+    numToolsToShow = 8;
+    toolShowVector = new int[numToolsToShow];
+    toolShowVector[0] = TOOL_READDATA;
+    toolShowVector[1] = TOOL_DATAENTRY;
+    toolShowVector[2] = TOOL_SIMULATE;
+    toolShowVector[3] = TOOL_ALIGN;
+    toolShowVector[4] = TOOL_COMBINER;
+    toolShowVector[5] = TOOL_MATRIXFILTER;
+    toolShowVector[6] = TOOL_PARSIMONY;
+    toolShowVector[7] = TOOL_TREECONTAINER;
+    toolPaletteOffset[TOOL_READDATA]      = 0;
+    toolPaletteOffset[TOOL_DATAENTRY]     = 1;
+    toolPaletteOffset[TOOL_SIMULATE]      = 2;
+    toolPaletteOffset[TOOL_ALIGN]         = 3;
+    toolPaletteOffset[TOOL_COMBINER]      = 4;
+    toolPaletteOffset[TOOL_MATRIXFILTER]  = 5;
+    toolPaletteOffset[TOOL_PARSIMONY]     = 6;
+    toolPaletteOffset[TOOL_TREECONTAINER] = 7;
+#   endif
 }
 
 - (void)mouseDown:(NSEvent *)event {
@@ -212,7 +253,7 @@
     p = [self convertPoint:p fromView:nil];
     
     // which tool is selected
-    whichToolSelected = p.x / toolSize;
+    whichToolSelected = toolShowVector[ (int)(p.x / toolSize) ];
 }
 
 - (void)mouseDragged:(NSEvent*)event {
@@ -295,7 +336,7 @@
 
     NSPoint p = [event locationInWindow];
     p = [self convertPoint:p fromView:nil];
-	potentialToolForToolTip = p.x / toolSize;
+	potentialToolForToolTip = toolShowVector[ (int)(p.x / toolSize) ];
 	[self startToolTipTimer];
 }
 

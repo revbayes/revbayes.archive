@@ -154,7 +154,7 @@
 
 - (void)updateInletSelector {
     
-    NSArray* str = [NSArray arrayWithObjects:[NSString stringWithString:@"Alignment"],[NSString stringWithString:@"Unaligned"],[NSString stringWithString:@"Trees"],[NSString stringWithString:@"Numbers"], nil];
+    NSArray* str = [NSArray arrayWithObjects:@"Alignment",@"Unaligned",@"Trees",@"Numbers", nil];
     NSArray* btn = [NSArray arrayWithObjects:possibleInletsButton0,possibleInletsButton1,possibleInletsButton2,possibleInletsButton3,nil];
     
     for (int i=0; i<4; i++)

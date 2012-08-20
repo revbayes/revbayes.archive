@@ -4,14 +4,19 @@
 
 @implementation Node
 
+@synthesize flag;
 @synthesize index;
 @synthesize isLeaf;
 @synthesize isRoot;
+@synthesize isNodeSelected;
+@synthesize isBranchSelected;
 @synthesize branchLength;
 @synthesize name;
 @synthesize x;
 @synthesize y;
 @synthesize depthFromTip;
+@synthesize viewCoordinates;
+@synthesize state;
 
 - (void)addDescendant:(Node*)des {
 
@@ -63,10 +68,12 @@
         ancestor    = nil;
         
         // initialize some variables
-		index        = 0;
-        isLeaf       = NO;
-        isRoot       = NO;
-		branchLength = 0.0;
+		index            = 0;
+        isLeaf           = NO;
+        isRoot           = NO;
+        isBranchSelected = NO;
+        isNodeSelected   = NO;
+		branchLength     = 0.0;
 		}
     return self;
 }
@@ -85,16 +92,19 @@
 		[name retain];
         [ancestor retain];
         [descendants retain];
+
+        isBranchSelected = NO;
+        isNodeSelected   = NO;
 		}
 	return self;
 }
 
 - (void)print {
 
-    NSString* s = [NSString stringWithFormat:@"%d (%x) %lf %x (", index, self, branchLength, ancestor];
+    NSString* s = [NSString stringWithFormat:@"%d (%p) %lf %p (", index, self, branchLength, ancestor];
     for (int i=0; i<[descendants count]; i++)
         {
-        s = [s stringByAppendingFormat:@"%x", [descendants objectAtIndex:i]];
+        s = [s stringByAppendingFormat:@"%p", [descendants objectAtIndex:i]];
         if (i + 1 < [descendants count])
             s = [s stringByAppendingString:@" "];
         }
@@ -107,6 +117,11 @@
 - (void)removeDescendant:(Node*)des {
 
     [descendants removeObject:des];
+}
+
+- (void)removeAllDescendants {
+
+    [descendants removeAllObjects];
 }
 
 - (void)setAncestor:(Node*)anc {

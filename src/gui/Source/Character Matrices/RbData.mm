@@ -20,7 +20,7 @@
 
 - (void)addTaxonName:(NSString*)n {
 
-    NSString* stringWithoutSpaces = [n stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+    [n stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 
 	[taxonNames addObject:n];
 }
@@ -163,7 +163,7 @@
 		numTaxa               = 0;
 		numCharacters         = 0;
         isHomologyEstablished = NO;
-        alignmentMethod       = [NSString stringWithString:@"Unknown"];
+        alignmentMethod       = @"Unknown";
         copiedFrom            = nil;
 		}
     return self;
@@ -316,21 +316,19 @@
 
 - (void)print {
 
-	if (numTaxa * numCharacters != [data count])
+	for (int i=0; i<numTaxa; i++)
 		{
-		NSLog(@"problem printing data matrix");
-		}
-		
-	for (int i=0, k=0; i<numTaxa; i++)
-		{
-		for (int j=0; j<numCharacters; j++)
+        RbTaxonData* td = [self getDataForTaxonIndexed:i];
+		for (int j=0; j<[td numCharacters]; j++)
 			{
-			RbDataCell* cell = [data objectAtIndex:k++];
+			RbDataCell* cell = [td dataCellIndexed:j];
 			NSNumber* n = [cell val];
-			if ([cell isDiscrete] == YES)
+            char c = [cell interpretAsDna:[n unsignedIntValue]];
+            printf("%c", c);
+			/*if ([cell isDiscrete] == YES)
 				printf("%u ", [n unsignedIntValue]);
 			else 
-				printf("%2.4lf ", [n doubleValue]);
+				printf("%2.4lf ", [n doubleValue]);*/
 			}
 		printf("\n");
 		}
@@ -384,8 +382,8 @@
         {
         RbTaxonData* td = [[RbTaxonData alloc] init];
         [td setDataType:STANDARD];
-        [td setTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
-        [self addTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
+        [td setTaxonName:[NSString stringWithFormat:@"Taxon_%d", i+1]];
+        [self addTaxonName:[NSString stringWithFormat:@"Taxon_%d", i+1]];
         for (int j=0; j<numCharacters; j++)
             {
             RbDataCell* dc = [[RbDataCell alloc] init];
@@ -417,39 +415,72 @@
     if ( [self isHomologyEstablished] == YES )
         {
         // write out as NEXUS file
-        NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
-        [outStr appendString:@"#NEXUS\n\n"];
-        [outStr appendString:@"begin data;\n"];
-        [outStr appendFormat:@"   dimensions ntax=%d nchar=%d;\n", numTaxa, numCharacters];
-        [outStr appendString:@"   format gap=- datatype="];
-        if ( dataType == DNA )
-            [outStr appendString:@"DNA;\n"];
-        else if ( dataType == RNA )
-            [outStr appendString:@"RNA;\n"];
-        else if ( dataType == AA )
-            [outStr appendString:@"protein;\n"];
-        else if ( dataType == STANDARD )
-            [outStr appendString:@"standard;\n"];
-        [outStr appendString:@"   matrix\n"];
-        for (int i=0; i<numTaxa; i++)
+        if ( dataType == STANDARD )
             {
-            RbTaxonData* td = [self getDataForTaxonIndexed:i];
-            [outStr appendString:@"   "];
-            [outStr appendString:[td taxonName]];
-            [outStr appendString:@"   "];
-            for (int j=0; j<[td numCharacters]; j++)
+            // write a morphological data file
+            NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
+            [outStr appendString:@"#NEXUS\n\n"];
+            [outStr appendString:@"begin data;\n"];
+            [outStr appendFormat:@"   dimensions ntax=%d nchar=%d;\n", numTaxa, numCharacters];
+            [outStr appendString:@"   format symbols=\"0 1 2 3 4 5 6 7 8 9\" missing=N gap=-;\n"];
+            [outStr appendString:@"   matrix\n"];
+            for (int i=0; i<numTaxa; i++)
                 {
-                RbDataCell* dc = [td dataCellIndexed:j];
-                char c = [dc getDiscreteState];
-                [outStr appendString:[NSString stringWithFormat:@"%c", c]];
+                RbTaxonData* td = [self getDataForTaxonIndexed:i];
+                [outStr appendString:@"   "];
+                NSString* tn = [td taxonName];
+                NSString* tn2 = [tn stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+                [outStr appendString:tn2];
+                [outStr appendString:@"   "];
+                for (int j=0; j<[td numCharacters]; j++)
+                    {
+                    RbDataCell* dc = [td dataCellIndexed:j];
+                    char c = [dc getDiscreteState];
+                    [outStr appendString:[NSString stringWithFormat:@"%c", c]];
+                    }
+                [outStr appendString:@"\n"];
                 }
-            [outStr appendString:@"\n"];
-            }
-        [outStr appendString:@"   ;\n"];
-        [outStr appendString:@"end;\n\n"];
+            [outStr appendString:@"   ;\n"];
+            [outStr appendString:@"end;\n\n"];
 
-        NSError* myError;
-        [outStr writeToFile:fn atomically:YES encoding:NSUTF8StringEncoding error:&myError];
+            NSError* myError;
+            [outStr writeToFile:fn atomically:YES encoding:NSUTF8StringEncoding error:&myError];
+            }
+        else
+            {
+            // write a non-morphological data file
+            NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
+            [outStr appendString:@"#NEXUS\n\n"];
+            [outStr appendString:@"begin data;\n"];
+            [outStr appendFormat:@"   dimensions ntax=%d nchar=%d;\n", numTaxa, numCharacters];
+            [outStr appendString:@"   format gap=- datatype="];
+            if ( dataType == DNA )
+                [outStr appendString:@"DNA;\n"];
+            else if ( dataType == RNA )
+                [outStr appendString:@"RNA;\n"];
+            else if ( dataType == AA )
+                [outStr appendString:@"protein;\n"];
+            [outStr appendString:@"   matrix\n"];
+            for (int i=0; i<numTaxa; i++)
+                {
+                RbTaxonData* td = [self getDataForTaxonIndexed:i];
+                [outStr appendString:@"   "];
+                [outStr appendString:[td taxonName]];
+                [outStr appendString:@"   "];
+                for (int j=0; j<[td numCharacters]; j++)
+                    {
+                    RbDataCell* dc = [td dataCellIndexed:j];
+                    char c = [dc getDiscreteState];
+                    [outStr appendString:[NSString stringWithFormat:@"%c", c]];
+                    }
+                [outStr appendString:@"\n"];
+                }
+            [outStr appendString:@"   ;\n"];
+            [outStr appendString:@"end;\n\n"];
+
+            NSError* myError;
+            [outStr writeToFile:fn atomically:YES encoding:NSUTF8StringEncoding error:&myError];
+            }
         }
     else
         {

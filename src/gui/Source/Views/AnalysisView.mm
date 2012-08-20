@@ -438,6 +438,23 @@
                 [magnifyingImageOff drawInRect:mRect fromRect:infoImageRect operation:NSCompositeSourceOver fraction:1.0];
 				}
             }
+            
+        if ([[element className] isEqualToString:@"ToolParsimony"] == YES)
+            {
+            if ( [element numTreesVisited] > 0 )
+                {
+                NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:(14.0*scaleFactor)], nil]
+                                      forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
+				NSString* numString = [NSString stringWithFormat:@"%d", [element numTreesVisited]];
+				NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:numString attributes:attrs];
+                NSRect numRect = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:(NSStringDrawingUsesLineFragmentOrigin)];
+                numRect.origin = drawingRect.origin;
+                numRect.origin.x += drawingRect.size.width * 0.5 - numRect.size.width * 0.5;
+                numRect.origin.y += drawingRect.size.height * 0.5 - numRect.size.height * 0.5;
+                [attrString drawAtPoint:numRect.origin];
+                [attrString release];
+                }
+            }
 
 		// draw the information button in the lower-right corner of the tool
 		NSRect iRect = informationRect[scaleIdx];

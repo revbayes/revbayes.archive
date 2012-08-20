@@ -234,7 +234,7 @@
 
 - (NSString*)findUniqueNameForAnalysis {
 
-	NSString* uniqueStr = [NSString stringWithString:@"My Analysis"];
+	NSString* uniqueStr = @"My Analysis";
 	int i = 0;
 	while ( [self isAnaysisNameUnique:uniqueStr] == NO )
 		{

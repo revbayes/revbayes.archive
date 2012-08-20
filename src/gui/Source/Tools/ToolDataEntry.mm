@@ -23,20 +23,18 @@
 
 - (RbData*)dataMatrix {
 
-    return dataMatrix;
+    RbData* d = [self dataMatrixIndexed:0];
+    return d;
 }
 
 - (void)dealloc {
 
-    [dataMatrix release];
 	[controlWindow release];
 	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-    [aCoder encodeObject:dataMatrix forKey:@"dataMatrix"];
-    NSLog(@"tool is encoding RbData %@", dataMatrix);
 	[super encodeWithCoder:aCoder];
 }
 
@@ -46,17 +44,18 @@
     return self;
 }
 
-- (void)initializeDataMatrix {
+- (void)initializeDataMatrix:(RbData*)dm {
 
-    [dataMatrix setNumTaxa:3];
-    [dataMatrix setNumCharacters:1];
-    [dataMatrix setDataType:STANDARD];
-    [dataMatrix setName:[NSString stringWithString:@"User-Entered Data Matrix"]];
-    for (int i=0; i<[dataMatrix numTaxa]; i++)
+    [dm setNumTaxa:3];
+    [dm setNumCharacters:1];
+    [dm setDataType:STANDARD];
+    [dm setIsHomologyEstablished:YES];
+    [dm setName:@"User-Entered Data Matrix"];
+    for (int i=0; i<[dm numTaxa]; i++)
         {
         RbTaxonData* td = [[RbTaxonData alloc] init];
         [td setDataType:STANDARD];
-        for (int j=0; j<[dataMatrix numCharacters]; j++)
+        for (int j=0; j<[dm numCharacters]; j++)
             {
             RbDataCell* c = [[RbDataCell alloc] init];
             [c setIsDiscrete:YES];
@@ -70,8 +69,8 @@
             [td addObservation:c];
             [c release];
             }
-        [dataMatrix addTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
-        [dataMatrix addTaxonData:td];
+        [dm addTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
+        [dm addTaxonData:td];
         [td release];
         }
 }
@@ -89,8 +88,11 @@
         [self setOutletLocations];
         
         // instantiate the data object
-        dataMatrix = [[RbData alloc] init];
-        [self initializeDataMatrix];
+        RbData* m = [[RbData alloc] init];
+        [self initializeDataMatrix:m];
+        [self addMatrix:m];
+        [self instantiateDataInCore];
+        hasInspectorInfo = NO;
 		
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
@@ -105,10 +107,6 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-
-        // ressucitate the data object
-        dataMatrix = [aDecoder decodeObjectForKey:@"dataMatrix"];
-        [dataMatrix retain];
 
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
@@ -152,7 +150,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Character Data Entry Tool "];
+    NSString* myTip = @" Character Data Entry Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", 0];
     else 

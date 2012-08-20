@@ -154,7 +154,7 @@
     NSString* nameOfModelToRemove = [[[userModelController selectedObjects] objectAtIndex:0] modelName];
     
     // remove the file
-	NSString* selectedModelName = [NSString stringWithString:@"~/Library/Application Support/RevBayes/User Models/"];
+	NSString* selectedModelName = @"~/Library/Application Support/RevBayes/User Models/";
 	selectedModelName = [selectedModelName stringByAppendingString:nameOfModelToRemove];
 	selectedModelName = [selectedModelName stringByExpandingTildeInPath];
     

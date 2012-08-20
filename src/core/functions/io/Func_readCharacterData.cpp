@@ -105,6 +105,7 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vect
             myFileType = "phylip";
         else if (reader.isFastaFile(*p, dType) == true)
             myFileType = "fasta";
+        std::cout << "myFileType = " << myFileType << std::endl;
             
         if (myFileType != "unknown")
             {

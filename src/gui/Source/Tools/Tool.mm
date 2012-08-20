@@ -415,6 +415,35 @@
 
 - (void)removeInletOfColor:(NSColor*)c {
     
+#   if 1
+
+    NSMutableArray* myArray = [NSMutableArray arrayWithCapacity:0];
+
+    // add all of the connections to the inlets to the map of connections to remove
+	NSEnumerator* enumerator = [inlets objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+        {
+        if ( [element toolColor] == c )
+            {
+            for (int i=0; i<[element numberOfConnections]; i++)
+                {
+                Connection* c = [element connectionWithIndex:i];
+                [myArray addObject:c];
+                }
+            }
+        }
+
+    enumerator = [myArray objectEnumerator];
+	while ( (element = [enumerator nextObject]) )
+        {
+        Connection* c = element;
+        Outlet* theOutlet = [c outlet];
+        [theOutlet removeConnection:c];
+        }
+
+#   else
+
     NSMutableDictionary* myMap = [NSMutableDictionary dictionaryWithCapacity:0];
             
     // add all of the connections to the inlets to the map of connections to remove
@@ -442,11 +471,12 @@
         Outlet* theOutlet = [key objectForKey:key];
         [theOutlet removeConnection:c];
         }
+#   endif
 }
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" This is a tool "];
+    NSString* myTip = @" This is a tool ";
 
     NSDictionary *attr = [NSDictionary 
                  dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Lucida Grande Bold" size:14.0], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] 

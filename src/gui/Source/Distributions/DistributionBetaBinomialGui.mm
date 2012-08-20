@@ -76,7 +76,7 @@
 		[parameters addObject:betaParm];
 
 		// set tips
-		NSString* tStr1 = [NSString stringWithString:@"N > 0"];
+		NSString* tStr1 = @"N > 0";
 		NSString* tStr2 = [NSString stringWithFormat:@"%C %C 0", 0x03B1, 0x2265];
 		NSString* tStr3 = [NSString stringWithFormat:@"%C %C 0", 0x03B2, 0x2265];
 		[nParm     setParameterDescription:tStr1];

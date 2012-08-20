@@ -225,7 +225,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         // if the right-hand-side was a lookup to a variable (e.g. b := a)
         // we therefore create a new reference function which will lookup the value of the original node each time. Hence, the new node (left-hand-side) is just a reference of the original node (right-hand-side).
         SyntaxVariable* rhs = dynamic_cast<SyntaxVariable*>( expression );
-        if ( !theVariable->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) || rhs != NULL && !rhs->hasFunctionCall() ) {
+        if ( !theVariable->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) || (rhs != NULL && !rhs->hasFunctionCall()) ) {
             
             RbFunction* func = new Func_reference();
             std::vector<RbPtr<Argument> > args;

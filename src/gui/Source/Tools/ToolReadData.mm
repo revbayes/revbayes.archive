@@ -315,7 +315,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Read Data Tool "];
+    NSString* myTip = @" Read Data Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", [self numDataMatrices]];
     else 

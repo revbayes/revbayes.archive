@@ -998,7 +998,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
         } while (1);
                 
     // things are quite weird and we will simply send an empty string (not certain how we can ever get here frankly)
-    NSString* defaultName = [NSString stringWithString:@""];
+    NSString* defaultName = @"";
 	return defaultName;
 }
 
@@ -1035,7 +1035,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
         // allocate memory for parameter font attributes
         NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:(18.0)], [[NSColor blackColor] colorWithAlphaComponent:0.5], nil]
 								                          forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]];
-        NSString* tempName = [NSString stringWithString:@"TEMP"];
+        NSString* tempName = @"TEMP";
         NSAttributedString* tempText = [[NSAttributedString alloc] initWithString:tempName attributes:attrs];
         parmNameHeight = [tempText boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil].size.height;
         [tempText release];

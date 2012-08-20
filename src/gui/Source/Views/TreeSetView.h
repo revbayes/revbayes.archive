@@ -6,6 +6,7 @@
 @interface TreeSetView : NSView {
 
     IBOutlet WindowControllerTreeViewer*    myWindowController;
+    IBOutlet NSTextField*                   treeInfo;
 }
 
 @end

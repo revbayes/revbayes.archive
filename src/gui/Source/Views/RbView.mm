@@ -20,7 +20,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 - (void)addTrackingForItem:(RbItem*)itm {
 
     // construct a string containing the item's address as a key for the dictionary
-    NSString* itemKey = [NSString stringWithFormat:@"%d", itm];
+    NSString* itemKey = [NSString stringWithFormat:@"%p", itm];
     
 	// see if the tracking area for the item already exists in the dictionary
 	// if it is present, remove it
@@ -288,7 +288,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 }
 
 - (void)keyDown:(NSEvent*)event {
-NSLog(@"keyDown in RbView");
+
 	// inactivate the timer, if it is still going
 	if ([analysisDocumentPtr isRbTimerActive] == YES)
 		[analysisDocumentPtr invalidateTimer];
@@ -654,7 +654,7 @@ NSLog(@"keyDown in RbView");
 - (void)removeTrackingForItem:(RbItem*)itm {
 
     // construct a string containing the tool's address as a key for the dictionary
-    NSString* itemKey = [NSString stringWithFormat:@"%d", itm];
+    NSString* itemKey = [NSString stringWithFormat:@"%p", itm];
     
 	// see if the tracking area for the tool already exists in the dictionary
 	// if it is present, remove it

@@ -475,7 +475,7 @@
 
 - (NSString*)xibName {
 
-	NSString* xn = [NSString stringWithString:@"ControlWindowTree"];
+	NSString* xn = @"ControlWindowTree";
 	return xn;
 }
 

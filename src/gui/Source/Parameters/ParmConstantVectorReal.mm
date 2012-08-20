@@ -69,7 +69,7 @@
 
 - (NSString*)xibName {
     
-	NSString* xn = [NSString stringWithString:@"ControlWindowConstant"];
+	NSString* xn = @"ControlWindowConstant";
 	return xn;
 }
 

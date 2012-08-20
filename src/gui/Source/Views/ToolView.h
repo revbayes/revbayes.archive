@@ -15,10 +15,14 @@
     int                           toolForToolTip;
     int                           fireNum;
 	NSMutableArray*               myTrackingAreas;
+    int                           numToolsToShow;
+    int*                          toolShowVector;
+    int*                          toolPaletteOffset;
 }
 
 @property (readwrite) int whichToolSelected;
 
+- (void)initializeToolVector;
 - (void)scaleFactorChanged:(NSNotification*)notification;
 - (void)startToolTipTimer;
 - (void)stopToolTipTimer;

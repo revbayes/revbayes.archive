@@ -18,6 +18,8 @@
 
 @implementation ToolParsimony
 
+@synthesize numTreesVisited;
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -68,7 +70,24 @@
     if ( [alignedData count] != 1)
         return;
         
-    [self startProgressIndicator];
+    // check to see if a tree container is downstream of this tool. If so, then purge
+    // it of trees
+    for (int i=0; i<[outlets count]; i++)
+        {
+        Outlet* theOutlet = [outlets objectAtIndex:i];
+        for (int j=0; j<[theOutlet numberOfConnections]; j++)
+            {
+            Connection* c = [theOutlet connectionWithIndex:j];
+            Tool* t = [[c inlet] toolOwner];
+            if ( [t isKindOfClass:[ToolTreeSet class]] == YES )
+                {
+                if ( [(ToolTreeSet*)t numberOfTreesInSet] > 0 )
+                    [(ToolTreeSet*)t removeAllTreesFromSet];
+                }
+            }
+        }
+        
+    //[self startProgressIndicator];
         
     // get a pointer to the single RbData object
     RbData* d = [alignedData objectAtIndex:0];
@@ -136,7 +155,7 @@
         }
 
     // set up the tree object (only used to deal with down pass sequences here
-    Tree* t = [[Tree alloc] init];
+    GuiTree* t = [[GuiTree alloc] init];
     [t setNodesToArray:nodeContainer];
     [t setRoot:r];
         
@@ -146,7 +165,7 @@
     [bestTrees removeAllObjects];
     [self addTaxonFromList:availableTips toTree:currentTree usingSpareNodes:availableInts treeObject:t];
     
-    [self stopProgressIndicator];
+    //[self stopProgressIndicator];
 
     delete [] stateSets[0];
     delete [] stateSets;
@@ -174,7 +193,7 @@
 
         NSMutableArray* treeNodeData = [NSKeyedUnarchiver unarchiveObjectWithData:[bestTrees objectAtIndex:i]];
         [treeNodeData retain];
-        Tree* newTree = [[Tree alloc] init];
+        GuiTree* newTree = [[GuiTree alloc] init];
         [newTree setNodesToArray:treeNodeData];
         Node* newRoot = nil;
         for (int j=0; j<[treeNodeData count]; j++)
@@ -185,11 +204,13 @@
         if (newRoot == nil)
             NSLog(@"problem finding root!");
         [newTree setRoot:newRoot];
+        NSString* treeStr = [NSString stringWithFormat:@"Parsimony length = %d", scoreOfBestTree];
+        [newTree setInfo:treeStr];
         [treeSetTool addTreeToSet:newTree];
         }
 }
 
-- (int)parsimonyScoreForTree:(Tree*)t {
+- (int)parsimonyScoreForTree:(GuiTree*)t {
 
     // NOTE: We assume that the tree is binary. This is a reasonable assumption, as the exhaustive search enumerates
     //       all of the binary trees.
@@ -240,7 +261,7 @@
     return len;
 }
 
-- (void)addTaxonFromList:(NSMutableArray*)availableTaxa toTree:(NSMutableArray*)nodes usingSpareNodes:(NSMutableArray*)spares treeObject:(Tree*)t {
+- (void)addTaxonFromList:(NSMutableArray*)availableTaxa toTree:(NSMutableArray*)nodes usingSpareNodes:(NSMutableArray*)spares treeObject:(GuiTree*)t {
 
     if ([availableTaxa count] > 0)
         {
@@ -282,8 +303,6 @@
                         {
                         [bestTrees removeAllObjects];
                         scoreOfBestTree = len;
-                        NSLog(@"******** ARCHIVING *********");
-                        NSLog(@"nodes = %@", nodes);
                         NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:currentTree];
                         [bestTrees addObject:copiedTree];
                         }
@@ -292,7 +311,9 @@
                         NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:currentTree];
                         [bestTrees addObject:copiedTree];
                         }
-                    NSLog(@"Visiting tree %d -- %d (%d)", ++numTreesVisited, len, scoreOfBestTree);
+                    numTreesVisited++;
+                    //NSLog(@"Visiting tree %d -- %d (%d)", numTreesVisited, len, scoreOfBestTree);
+                    [myAnalysisView setNeedsDisplay:YES];
                     }
                 
                 // add next tip recursively
@@ -370,7 +391,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Parsimony Tool "];
+    NSString* myTip = @" Parsimony Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 

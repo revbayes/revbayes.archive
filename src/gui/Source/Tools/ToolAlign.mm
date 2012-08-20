@@ -472,7 +472,7 @@ std::cout << cd << std::endl;
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Sequence Alignment Tool "];
+    NSString* myTip = @" Sequence Alignment Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 

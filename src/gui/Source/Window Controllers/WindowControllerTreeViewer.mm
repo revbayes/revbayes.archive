@@ -9,7 +9,7 @@
 @synthesize selectedTree;
 @synthesize fontSize;
 
-- (Tree*)activeTree {
+- (GuiTree*)activeTree {
 
     return [myTool getTreeIndexed:selectedTree];
 }
@@ -54,7 +54,7 @@
     int n = [myTool numberOfTreesInSet];
     if (n == 0)
         {
-        [[self window] setTitle:[NSString stringWithString:@"Tree Set (Contains No Trees)"]];
+        [[self window] setTitle:@"Tree Set (Contains No Trees)"];
         [treeCounter setStringValue:@"Tree: xxx"];
         [treeCounter setHidden:YES];
         [treeStepper setHidden:YES];

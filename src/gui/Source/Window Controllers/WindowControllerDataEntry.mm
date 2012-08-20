@@ -59,7 +59,7 @@
         if (i == 0)
             {
             [[newColumn headerCell] setStringValue:@"Taxon Name"];
-            [newColumn setIdentifier:[NSString stringWithString:@"Taxon Name"]];
+            [newColumn setIdentifier:@"Taxon Name"];
             }
         else 
             {

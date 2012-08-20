@@ -7,7 +7,6 @@
 @implementation RbTaxonData
 
 @synthesize dataType;
-@synthesize taxonName;
 
 - (void)addObservation:(RbDataCell*)dc {
 
@@ -21,7 +20,6 @@
 
 - (void)dealloc {
 
-    NSLog(@"delete %@", self);
 	[data release];
 	[taxonName release];
 	[super dealloc];
@@ -43,7 +41,7 @@
 		taxonName  = [[NSString alloc] init];
 		
         // initialize some variables
-		dataType           = 0;
+		dataType = 0;
         }
     return self;
 }
@@ -120,6 +118,23 @@
 - (int)numCharacters {
 
     return (int)[data count];
+}
+
+- (void)setTaxonName:(NSString*)tn {
+
+    if (tn != taxonName)
+        {
+        tn = [tn stringByReplacingOccurrencesOfString:@"\'" withString:@""];
+        tn = [tn stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+        [tn retain];
+        [taxonName release];
+        taxonName = tn;
+        }
+}
+
+- (NSString*)taxonName {
+
+    return taxonName;
 }
 
 @end

@@ -327,7 +327,7 @@
 		
 		// set the client's name (nickname)
 		NSArray* hna = [[NSHost currentHost] names];
-		NSString* hns = [NSString stringWithString:@"("];
+		NSString* hns = @"(";
 		id element;
 		NSEnumerator* myEnumerator = [hna objectEnumerator];
 		int i = 0;

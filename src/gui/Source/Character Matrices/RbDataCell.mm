@@ -15,7 +15,6 @@
 
 - (void)dealloc {
 
-    NSLog(@"delete %@", self);
 	[super dealloc];
 }
 
@@ -127,7 +126,7 @@
 		return 'B';
 	else if (x == 15)
 		return 'N';
-	return '*';
+	return 'N';
 }
 
 - (char)interpretAsStandard:(unsigned)x {

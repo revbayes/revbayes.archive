@@ -49,7 +49,7 @@
 
 - (NSString*)xibName {
 
-	NSString* xn = [NSString stringWithString:@"ControlWindowRV"];
+	NSString* xn = @"ControlWindowRV";
 	return xn;
 }
 

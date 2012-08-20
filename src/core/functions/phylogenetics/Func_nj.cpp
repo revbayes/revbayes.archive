@@ -140,7 +140,7 @@ void Func_nj::buildNj(std::vector<std::vector<double> > distances, std::vector<T
             std::cout << "u[" << i << "] = " << ui[i] << std::endl;
             
         // find i-j tip pair for which d_ij - ui - uj is smallest
-        int smallestI = -1, smallestJ = -1;
+        size_t smallestI = -1, smallestJ = -1;
         double v = 1.0e100;
         for (size_t i=0; i<nTips; i++)
             {

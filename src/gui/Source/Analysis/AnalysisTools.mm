@@ -36,7 +36,7 @@
 		{
         [self setAnalysisName:@"My Analysis"];
 		tools            = [[NSMutableArray alloc] init];
-		notebookContents = [[NSAttributedString alloc] initWithString:@""];
+		notebookContents = [[NSMutableAttributedString alloc] initWithString:@""];
 
 		// allocate the note book
 		noteBook = [[WindowControllerNoteBook alloc] initWithAnalysis:self];
@@ -114,7 +114,7 @@
 		
 		if ( [noteBook isWindowLoaded] == YES )
 			{
-			NSString* nbTitle = [NSString stringWithString:@"RevBayes Notebook for \""];
+			NSString* nbTitle = @"RevBayes Notebook for \"";
 			nbTitle = [nbTitle stringByAppendingString:[self analysisName]];
 			nbTitle = [nbTitle stringByAppendingString:@"\""];
 			[[noteBook window] setTitle:nbTitle];;

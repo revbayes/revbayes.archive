@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import "Tool.h"
 #include <vector>
-@class Tree;
+@class GuiTree;
 @class WindowControllerParsimony;
 
 
@@ -18,7 +18,9 @@
     NSMutableArray*                     bestTrees;
 }
 
-- (void)addTaxonFromList:(NSMutableArray*)availableTaxa toTree:(NSMutableArray*)nodes usingSpareNodes:(NSMutableArray*)spares treeObject:(Tree*)t;
+@property (readwrite) int numTreesVisited;
+
+- (void)addTaxonFromList:(NSMutableArray*)availableTaxa toTree:(NSMutableArray*)nodes usingSpareNodes:(NSMutableArray*)spares treeObject:(GuiTree*)t;
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (void)execute;

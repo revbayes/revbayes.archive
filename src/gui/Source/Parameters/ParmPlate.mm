@@ -72,7 +72,7 @@
 	if ( indexSource == SRC_FIXED_INDEX )
 		{
 		if (numElements == 1)
-			pStr = [NSString stringWithString:@"1"];
+			pStr = @"1";
 		else 
 			pStr = [NSString stringWithFormat:@"%d", numElements];
 		}
@@ -80,9 +80,9 @@
 		{
 		int numMatrices = [self numAttachedMatrices];
 		if (numMatrices == 0)
-			pStr = [NSString stringWithString:@"M"];
+			pStr = @"M";
 		else if (numMatrices == 1)
-			pStr = [NSString stringWithString:@"1"];
+			pStr = @"1";
 		else 
 			pStr = [NSString stringWithFormat:@"%d", numMatrices];
 		}
@@ -93,7 +93,7 @@
 			{
 			ParmPlate* idOfPlateRangingOverMatrices = [self isOnPlateWithIndexSource:SRC_NUMBER_MATRICES];
 			if (idOfPlateRangingOverMatrices == nil)
-				pStr = [NSString stringWithString:@"N[?]"];
+				pStr = @"N[?]";
 			else 
 				{
 				pStr = [NSString stringWithFormat:@"N[%c]", [idOfPlateRangingOverMatrices indexLetter]];
@@ -107,7 +107,7 @@
 			if (idOfPlateRangingOverMatrices != nil)
 				pStr = [NSString stringWithFormat:@"%d", numSites];
 			else 
-				pStr = [NSString stringWithString:@"?"];
+				pStr = @"?";
 			}
 		else 
 			{
@@ -121,11 +121,11 @@
 				{
 				int numAssignedPlates = [self numAssignedPlates];
 				if (numAssignedPlates == 0)
-					pStr = [NSString stringWithString:@"N[?]"];
+					pStr = @"N[?]";
 				else if (numAssignedPlates == 1)
-					pStr = [NSString stringWithString:@"N[?]"];
+					pStr = @"N[?]";
 				else 
-					pStr = [NSString stringWithString:@"N[?]"];
+					pStr = @"N[?]";
 				}
 			}
 		}
@@ -136,7 +136,7 @@
 			{
 			ParmPlate* idOfPlateRangingOverMatrices = [self isOnPlateWithIndexSource:SRC_NUMBER_MATRICES];
 			if (idOfPlateRangingOverMatrices == nil)
-				pStr = [NSString stringWithString:@"T[?]"];
+				pStr = @"T[?]";
 			else 
 				{
 				pStr = [NSString stringWithFormat:@"T[%c]", [idOfPlateRangingOverMatrices indexLetter]];
@@ -150,7 +150,7 @@
 			if (idOfPlateRangingOverMatrices != nil)
 				pStr = [NSString stringWithFormat:@"%d", numTaxa];
 			else 
-				pStr = [NSString stringWithString:@"?"];
+				pStr = @"?";
 			}
 		else 
 			{
@@ -164,11 +164,11 @@
 				{
 				int numAssignedPlates = [self numAssignedPlates];
 				if (numAssignedPlates == 0)
-					pStr = [NSString stringWithString:@"T[?]"];
+					pStr = @"T[?]";
 				else if (numAssignedPlates == 1)
-					pStr = [NSString stringWithString:@"T[?]"];
+					pStr = @"T[?]";
 				else 
-					pStr = [NSString stringWithString:@"T[?]"];
+					pStr = @"T[?]";
 				}
 			}
 		}
@@ -340,9 +340,9 @@
 				int numAssignedPlates = [self numAssignedPlates];
 				NSString* msg;
 				if (numAssignedPlates == 0)
-					msg = [NSString stringWithString:@"This plate will range over the number of characters in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by any plates that could be configured to range over character matrices"];
+					msg = @"This plate will range over the number of characters in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by any plates that could be configured to range over character matrices";
 				else if (numAssignedPlates == 1)
-					msg = [NSString stringWithString:@"This plate will range over the number of characters in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by a plate that ranges over character matrices. However, there is one plate containing this one that could be configured to range over character matrices"];
+					msg = @"This plate will range over the number of characters in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by a plate that ranges over character matrices. However, there is one plate containing this one that could be configured to range over character matrices";
 				else 
 					msg = [NSString stringWithFormat:@"This plate will range over the number of characters in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by a plate that ranges over character matrices. However, there are %d plates containing this one that could be configured to range over character matrices", numAssignedPlates];
 				[msgLabelField setStringValue:msg];
@@ -388,9 +388,9 @@
 				int numAssignedPlates = [self numAssignedPlates];
 				NSString* msg;
 				if (numAssignedPlates == 0)
-					msg = [NSString stringWithString:@"This plate will range over the number of taxa in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by any plates that could be configured to range over character matrices"];
+					msg = @"This plate will range over the number of taxa in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by any plates that could be configured to range over character matrices";
 				else if (numAssignedPlates == 1)
-					msg = [NSString stringWithString:@"This plate will range over the number of taxa in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by a plate that ranges over character matrices. However, there is one plate containing this one that could be configured to range over character matrices"];
+					msg = @"This plate will range over the number of taxa in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by a plate that ranges over character matrices. However, there is one plate containing this one that could be configured to range over character matrices";
 				else 
 					msg = [NSString stringWithFormat:@"This plate will range over the number of taxa in one of several character matrices attached to the Model Tool. Currently, this plate is not contained by a plate that ranges over character matrices. However, there are %d plates containing this one that could be configured to range over character matrices", numAssignedPlates];
 				[msgLabelField setStringValue:msg];
@@ -442,7 +442,7 @@
 
 - (NSString*)xibName {
     
-	NSString* xn = [NSString stringWithString:@"ControlWindowPlate"];
+	NSString* xn = @"ControlWindowPlate";
 	return xn;
 }
 
