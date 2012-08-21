@@ -170,11 +170,10 @@
 
 - (id)initWithCell:(RbDataCell*)c {
 
-    if ( (self = [super init]) ) 
+    if ( (self = [super init]) )
 		{
-		val = nil;
-        
         // initialize some variables
+		val         = nil;
 		isDiscrete  = YES;
 		row         = 0;
 		column      = 0;

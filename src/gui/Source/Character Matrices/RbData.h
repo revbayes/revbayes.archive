@@ -36,6 +36,7 @@
 - (void)excludeTaxonIndexed:(int)idx;
 - (void)excludeCharacterIndexed:(int)idx;
 - (RbTaxonData*)getDataForTaxonIndexed:(int)idx;
+- (RbTaxonData*)getDataForTaxonWithName:(NSString*)ns;
 - (void)includeAllCharacters;
 - (void)includeAllTaxa;
 - (int)indexOfTaxonNamed:(NSString*)nme;

@@ -4,6 +4,7 @@
 #import "Outlet.h"
 #import "RbData.h"
 #import "RbDataCell.h"
+#import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolData.h"
 #import "ToolParsimony.h"
@@ -67,8 +68,15 @@
         if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
             [alignedData addObject:[dataTool dataMatrixIndexed:i]];
         }
-    if ( [alignedData count] != 1)
+        
+    // get a pointer to the single RbData object
+    RbData* d = nil;
+    if ( [alignedData count] == 0 )
         return;
+    else if ( [alignedData count] == 1 )
+        d = [alignedData objectAtIndex:0];
+    else
+        d = [self unconditionallyMergeData:alignedData];
         
     // check to see if a tree container is downstream of this tool. If so, then purge
     // it of trees
@@ -86,12 +94,7 @@
                 }
             }
         }
-        
-    //[self startProgressIndicator];
-        
-    // get a pointer to the single RbData object
-    RbData* d = [alignedData objectAtIndex:0];
-    
+                
     // how many taxa/nodes/characters
     int numTaxa = [d numTaxa];
     int numNodes = 2 * numTaxa - 2;
@@ -165,8 +168,6 @@
     [bestTrees removeAllObjects];
     [self addTaxonFromList:availableTips toTree:currentTree usingSpareNodes:availableInts treeObject:t];
     
-    //[self stopProgressIndicator];
-
     delete [] stateSets[0];
     delete [] stateSets;
     delete [] stateSetsPtr;
@@ -208,6 +209,9 @@
         [newTree setInfo:treeStr];
         [treeSetTool addTreeToSet:newTree];
         }
+
+    if ( [alignedData count] > 1 )
+        [d release];
 }
 
 - (int)parsimonyScoreForTree:(GuiTree*)t {
@@ -417,6 +421,68 @@
 	[controlWindow showWindow:self];    
 	[[controlWindow window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[controlWindow window]];
+}
+
+- (RbData*)unconditionallyMergeData:(NSMutableArray*)a {
+
+    // make a list of the unique taxon names
+    NSMutableArray* uniqueNames = [NSMutableArray arrayWithCapacity:1];
+    for (RbData* d in [a objectEnumerator])
+        {
+        for (int i=0; i<[d numTaxa]; i++)
+            {
+            NSString* name = [d taxonWithIndex:i];
+            BOOL foundName = NO;
+            for (NSString* str in [uniqueNames objectEnumerator])
+                {
+                if ( [name isEqualToString:str] )
+                    {
+                    foundName = YES;
+                    break;
+                    }
+                }
+            if (foundName == NO)
+                [uniqueNames addObject:name];
+            }
+        }
+    NSLog(@"uniqueNames = %@", uniqueNames);
+        
+    // make a new data matrix that concatenates the RbData objects
+    // in the array here called 'a', regardless of the data type for
+    // each array
+    RbData* newD = [[RbData alloc] init];
+    for (NSString* name in [uniqueNames objectEnumerator])
+        {
+        RbTaxonData* td = [[RbTaxonData alloc] init];
+        [td setTaxonName:name];
+        for (RbData* d in [a objectEnumerator])
+            {
+            RbTaxonData* tdToCopy = [d getDataForTaxonWithName:name];
+            if (tdToCopy != nil)
+                {
+                for (int i=0; i<[tdToCopy numCharacters]; i++)
+                    {
+                    RbDataCell* c = [td dataCellIndexed:i];
+                    RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
+                    [tdToCopy addObservation:newC];
+                    }
+                }
+            else
+                {
+                for (int i=0; i<[d numCharactersForTaxon:0]; i++)
+                    {
+                    RbDataCell* newC = [[RbDataCell alloc] init];
+                    [newC setDiscreteStateTo:(-1)];
+                    [tdToCopy addObservation:newC];
+                    }
+                }
+            }
+        [newD addTaxonData:td];
+        }
+    
+    [newD print];
+
+    return newD;
 }
 
 @end

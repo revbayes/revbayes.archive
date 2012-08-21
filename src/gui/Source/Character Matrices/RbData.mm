@@ -119,6 +119,17 @@
     return [data objectAtIndex:idx];
 }
 
+- (RbTaxonData*)getDataForTaxonWithName:(NSString*)ns {
+
+    for (RbTaxonData* td in [data objectEnumerator])
+        {
+        NSString* str = [td taxonName];
+        if ( [ns isEqualToString:str] == YES )
+            return td;
+        }
+    return nil;
+}
+
 - (void)includeAllCharacters {
 
     NSLog(@"including all characters");
