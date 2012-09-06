@@ -92,7 +92,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Matrix Filter Tool "];
+    NSString* myTip = @" Matrix Filter Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", [self numDataMatrices]];
     else 

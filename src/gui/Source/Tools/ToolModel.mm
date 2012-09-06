@@ -112,7 +112,7 @@
     [NSApp runModalForWindow:[modelSubmission window]];
 
 	// get the path to the file for saving the model
-	NSString* newModelName = [NSString stringWithString:@"~/Library/Application Support/RevBayes/User Models/"];
+	NSString* newModelName = @"~/Library/Application Support/RevBayes/User Models/";
 	newModelName = [newModelName stringByAppendingString:[modelSubmission modelName]];
 	newModelName = [newModelName stringByExpandingTildeInPath];
 
@@ -169,7 +169,7 @@
         }
 	
 	NSString* sma = [modelBrowser selectedModel];
-	NSString* selectedModelName = [NSString stringWithString:@"~/Library/Application Support/RevBayes/"];
+	NSString* selectedModelName = @"~/Library/Application Support/RevBayes/";
     if ([modelBrowser userSelectedCuratedModel] == YES)
         selectedModelName = [selectedModelName stringByAppendingString:@"Curated Models/"];
     else 
@@ -391,7 +391,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Model Tool "];
+    NSString* myTip = @" Model Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 

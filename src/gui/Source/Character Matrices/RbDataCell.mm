@@ -233,7 +233,7 @@
         if (x == -1)
             {
             unsigned binaryRep = 0;
-            for (int i=0; i<10; i++)
+            for (int i=0; i<30; i++)
                 {
                 unsigned mask = 1 << i ;
                 binaryRep |= mask;

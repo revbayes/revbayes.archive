@@ -29,6 +29,7 @@
 - (void)passDown:(Node*)p;
 - (void)print;
 - (void)removeSubtreeAboveNode:(Node*)p;
+- (void)rootTreeOnNode:(Node*)p;
 - (void)setCoordinates;
 - (void)setAllFlagsTo:(BOOL)tf;
 - (void)setXCoordinates;

@@ -407,7 +407,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Distance Matrix Tool "];
+    NSString* myTip = @" Distance Matrix Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 

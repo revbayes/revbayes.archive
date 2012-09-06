@@ -80,7 +80,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Neighbor Joining Tool "];
+    NSString* myTip = @" Neighbor Joining Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 

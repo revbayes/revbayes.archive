@@ -21,7 +21,6 @@
 - (void)addTaxonName:(NSString*)n {
 
     [n stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-
 	[taxonNames addObject:n];
 }
 
@@ -330,16 +329,22 @@
 	for (int i=0; i<numTaxa; i++)
 		{
         RbTaxonData* td = [self getDataForTaxonIndexed:i];
+        NSLog(@"name = %@", [td taxonName]);
 		for (int j=0; j<[td numCharacters]; j++)
 			{
 			RbDataCell* cell = [td dataCellIndexed:j];
 			NSNumber* n = [cell val];
-            char c = [cell interpretAsDna:[n unsignedIntValue]];
+            char c;
+            if ( [cell dataType] == DNA )
+                c = [cell interpretAsDna:[n unsignedIntValue]];
+            else if ( [cell dataType] == RNA )
+                c = [cell interpretAsDna:[n unsignedIntValue]];
+            else if ( [cell dataType] == AA )
+                c = [cell interpretAsAminoAcid:[n unsignedIntValue]];
+            else if ( [cell dataType] == STANDARD )
+                c = [cell interpretAsStandard:[n unsignedIntValue]];
+                
             printf("%c", c);
-			/*if ([cell isDiscrete] == YES)
-				printf("%u ", [n unsignedIntValue]);
-			else 
-				printf("%2.4lf ", [n doubleValue]);*/
 			}
 		printf("\n");
 		}

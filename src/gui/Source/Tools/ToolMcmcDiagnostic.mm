@@ -510,7 +510,7 @@
 
 - (NSMutableAttributedString*)sendTip {
     
-    NSString* myTip = [NSString stringWithString:@" MCMC Diagnostic Tool "];
+    NSString* myTip = @" MCMC Diagnostic Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 

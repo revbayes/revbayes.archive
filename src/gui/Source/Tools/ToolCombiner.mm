@@ -82,7 +82,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Character Matrix Combiner Tool "];
+    NSString* myTip = @" Character Matrix Combiner Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 

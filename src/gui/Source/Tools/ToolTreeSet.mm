@@ -11,7 +11,6 @@
 
 - (void)addTreeToSet:(GuiTree*)t {
 
-    NSLog(@"adding %@ to tree set", t);
     [myTrees addObject:t];
     hasInspectorInfo = YES;
 }
@@ -141,7 +140,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Tree Set Tool "];
+    NSString* myTip = @" Tree Set Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 

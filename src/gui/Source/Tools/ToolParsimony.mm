@@ -191,7 +191,6 @@
         
     for (int i=0; i<[bestTrees count]; i++)
         {
-
         NSMutableArray* treeNodeData = [NSKeyedUnarchiver unarchiveObjectWithData:[bestTrees objectAtIndex:i]];
         [treeNodeData retain];
         GuiTree* newTree = [[GuiTree alloc] init];
@@ -205,6 +204,7 @@
         if (newRoot == nil)
             NSLog(@"problem finding root!");
         [newTree setRoot:newRoot];
+        NSLog(@"scoreOfBestTree=%d", scoreOfBestTree);
         NSString* treeStr = [NSString stringWithFormat:@"Parsimony length = %d", scoreOfBestTree];
         [newTree setInfo:treeStr];
         [treeSetTool addTreeToSet:newTree];
@@ -451,10 +451,13 @@
     // in the array here called 'a', regardless of the data type for
     // each array
     RbData* newD = [[RbData alloc] init];
+    [newD setNumTaxa:(int)([uniqueNames count])];
+    int nc = -1;
     for (NSString* name in [uniqueNames objectEnumerator])
         {
         RbTaxonData* td = [[RbTaxonData alloc] init];
         [td setTaxonName:name];
+        [newD addTaxonName:name];
         for (RbData* d in [a objectEnumerator])
             {
             RbTaxonData* tdToCopy = [d getDataForTaxonWithName:name];
@@ -462,9 +465,9 @@
                 {
                 for (int i=0; i<[tdToCopy numCharacters]; i++)
                     {
-                    RbDataCell* c = [td dataCellIndexed:i];
+                    RbDataCell* c = [tdToCopy dataCellIndexed:i];
                     RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
-                    [tdToCopy addObservation:newC];
+                    [td addObservation:newC];
                     }
                 }
             else
@@ -473,11 +476,21 @@
                     {
                     RbDataCell* newC = [[RbDataCell alloc] init];
                     [newC setDiscreteStateTo:(-1)];
-                    [tdToCopy addObservation:newC];
+                    [td addObservation:newC];
                     }
                 }
             }
         [newD addTaxonData:td];
+        if (nc < 0)
+            {
+            nc = [td numCharacters];
+            [newD setNumCharacters:nc];
+            }
+        else
+            {
+            if (nc != [td numCharacters])
+                NSLog(@"problem with inconsistent sizes of rows in data matrix");
+            }
         }
     
     [newD print];

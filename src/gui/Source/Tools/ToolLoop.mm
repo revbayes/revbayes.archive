@@ -107,7 +107,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Loop "];
+    NSString* myTip = @" Loop ";
               myTip = [myTip stringByAppendingFormat:@"\n Number of repeats: %d ", 0];
 
     NSDictionary *attr = [NSDictionary 

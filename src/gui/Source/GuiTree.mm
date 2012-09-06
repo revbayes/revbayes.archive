@@ -443,6 +443,30 @@
         
 }
 
+- (void)rootTreeOnNode:(Node*)p {
+
+    // set the flags from node p to the root to YES
+    [self setAllFlagsTo:NO];
+    [p setFlag:YES];
+    Node* q = p;
+    while ([q ancestor] != nil)
+        {
+        q = [q ancestor];
+        [q setFlag:YES];
+        }
+        
+    // starting from the root, rearrange the nodes, bringing
+    // node p successively closer to the root
+    BOOL continueRotatingTree = YES;
+    do {
+        q = root;
+        
+        
+        root = nil;
+        } while (continueRotatingTree == YES);
+    
+}
+
 - (void)setAllFlagsTo:(BOOL)tf {
 
 	NSEnumerator* enumerator = [downPassSequence objectEnumerator];
