@@ -73,6 +73,8 @@
         m3 = [NSString stringWithFormat:@"Data Type: Standard"];
     else if ([d dataType] == CONTINUOUS)
         m3 = [NSString stringWithFormat:@"Data Type: Continuous"];
+    else if ([d dataType] == MIXED)
+        m3 = [NSString stringWithFormat:@"Data Type: Mixed"];
     NSString* m4 = [NSString stringWithFormat:@"Number of Excluded Characters: %d", [d numExcludedCharacters]];
     NSString* m5 = [NSString stringWithFormat:@"Number of Excluded Taxa: %d", [d numExcludedTaxa]];
 

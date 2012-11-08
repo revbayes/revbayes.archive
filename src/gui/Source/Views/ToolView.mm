@@ -223,24 +223,26 @@
         toolShowVector[i] = i;
 #   else
     // show only the Biology 1B tools
-    numToolsToShow = 8;
+    numToolsToShow = 9;
     toolShowVector = new int[numToolsToShow];
     toolShowVector[0] = TOOL_READDATA;
     toolShowVector[1] = TOOL_DATAENTRY;
     toolShowVector[2] = TOOL_SIMULATE;
     toolShowVector[3] = TOOL_ALIGN;
     toolShowVector[4] = TOOL_COMBINER;
-    toolShowVector[5] = TOOL_MATRIXFILTER;
-    toolShowVector[6] = TOOL_PARSIMONY;
-    toolShowVector[7] = TOOL_TREECONTAINER;
+    toolShowVector[5] = TOOL_CONCATENATE;
+    toolShowVector[6] = TOOL_MATRIXFILTER;
+    toolShowVector[7] = TOOL_PARSIMONY;
+    toolShowVector[8] = TOOL_TREECONTAINER;
     toolPaletteOffset[TOOL_READDATA]      = 0;
     toolPaletteOffset[TOOL_DATAENTRY]     = 1;
     toolPaletteOffset[TOOL_SIMULATE]      = 2;
     toolPaletteOffset[TOOL_ALIGN]         = 3;
     toolPaletteOffset[TOOL_COMBINER]      = 4;
-    toolPaletteOffset[TOOL_MATRIXFILTER]  = 5;
-    toolPaletteOffset[TOOL_PARSIMONY]     = 6;
-    toolPaletteOffset[TOOL_TREECONTAINER] = 7;
+    toolPaletteOffset[TOOL_CONCATENATE]   = 5;
+    toolPaletteOffset[TOOL_MATRIXFILTER]  = 6;
+    toolPaletteOffset[TOOL_PARSIMONY]     = 7;
+    toolPaletteOffset[TOOL_TREECONTAINER] = 8;
 #   endif
 }
 

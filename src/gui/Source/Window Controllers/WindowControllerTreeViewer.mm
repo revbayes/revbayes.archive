@@ -1,6 +1,7 @@
 #import "GuiTree.h"
 #import "Node.h"
 #import "ToolTreeSet.h"
+#import "TreeSetView.h"
 #import "WindowControllerTreeViewer.h"
 
 
@@ -28,7 +29,40 @@
 
 - (IBAction)changeOutgroup:(id)sender {
 
-    NSLog(@"changeOutgroup");
+    int n = [myTool numberOfTreesInSet];
+    if (n > 0)
+        {
+        // get the name of the desired outgroup name
+        NSString* outgroupName = [[outgroupList selectedItem] title];
+        NSLog(@"outgroupName=%@", outgroupName);
+        
+        for (int i=0; i<n; i++)
+            {
+            // get the tree
+            GuiTree* t = [myTool getTreeIndexed:i];
+            
+            // find the node in the tree with the outgroup name
+            Node* outgroupNode = nil;
+            for (int j=0; j<[t numberOfNodes]; j++)
+                {
+                Node* p = [t downPassNodeIndexed:j];
+                NSString* nodeName = [p name];
+                if ( [nodeName isEqualToString:outgroupName] == YES )
+                    {
+                    outgroupNode = p;
+                    break;
+                    }
+                }
+                
+            // reroot the tree
+            if (outgroupNode != nil)
+                {
+                [t rootTreeOnNode:outgroupNode];
+                }
+            }
+        }
+
+    [treeView setNeedsDisplay:YES];
 }
 
 - (IBAction)closeButtonAction:(id)sender {

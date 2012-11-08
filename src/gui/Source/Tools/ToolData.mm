@@ -284,9 +284,15 @@
 
 - (void)makeDataInspector {
 
+    NSLog(@"ToolData a");
     [self removeDataInspector];
+    NSLog(@"ToolData b");
     dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
+    NSLog(@"dataInspector = %@", dataInspector);
+    NSLog(@"ToolData c");
+    NSLog(@"%@", [dataInspector window]);
     [dataInspector window];
+    NSLog(@"ToolData d");
 }
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const CharacterData&)cd {
@@ -373,6 +379,7 @@
 
 - (int)numAlignedMatrices {
 
+    NSLog(@"numAlignedMatrices = %@", dataMatrices);
     int n = 0;
     NSEnumerator* matrixEnumerator = [dataMatrices objectEnumerator];
     RbData* d = nil;
@@ -386,6 +393,7 @@
 
 - (int)numUnalignedMatrices {
 
+    NSLog(@"numUnalignedMatrices = %@", dataMatrices);
     int n = 0;
     NSEnumerator* matrixEnumerator = [dataMatrices objectEnumerator];
     RbData* d = nil;

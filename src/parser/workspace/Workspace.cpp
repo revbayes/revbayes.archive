@@ -88,7 +88,7 @@ bool Workspace::addDistribution(const std::string& name, const RbPtr<RlDistribut
     if ( typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + dist->getTypeSpec() + "' in the workspace");
 
-    PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
+    //PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
     typeTable.insert(std::pair<std::string, RbPtr<RbObject> >(dist->getTypeSpec(),dist->clone()));
 
     functionTable.addFunction(name, new ConstructorFunction( RbPtr<MemberObject>( dist ) ) );

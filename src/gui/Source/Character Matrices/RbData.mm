@@ -294,6 +294,16 @@
 	return NO;
 }
 
+- (BOOL)isTaxonNamePresent:(NSString*)theName {
+
+    for (NSString* str in [taxonNames objectEnumerator])
+        {
+        if ( [str isEqualToString:theName] == YES )
+            return YES;
+        }
+    return NO;
+}
+
 - (int)maxNumCharacters {
 
     int n = 0;

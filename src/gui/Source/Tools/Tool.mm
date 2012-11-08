@@ -564,6 +564,7 @@
 
 - (void)updateDownstreamTools {
 
+    NSLog(@"updateDownstreamTools (%@)", self);
     [myAnalysisView updateToolsDownstreamFromTool:self];
 }
 

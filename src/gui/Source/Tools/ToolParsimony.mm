@@ -1,3 +1,4 @@
+#import "AnalysisView.h"
 #import "Connection.h"
 #import "Inlet.h"
 #import "Node.h"
@@ -72,11 +73,29 @@
     // get a pointer to the single RbData object
     RbData* d = nil;
     if ( [alignedData count] == 0 )
+        {
+        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Parsimony tool data input" 
+                                         defaultButton:@"OK" 
+                                       alternateButton:nil 
+                                           otherButton:nil 
+                             informativeTextWithFormat:@"This tool is not connected to a data matrix."];
+        [alert beginSheetModalForWindow:[myAnalysisView window] modalDelegate:myAnalysisView didEndSelector:nil contextInfo:NULL];
         return;
+        }
     else if ( [alignedData count] == 1 )
+        {
         d = [alignedData objectAtIndex:0];
+        }
     else
-        d = [self unconditionallyMergeData:alignedData];
+        {
+        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Parsimony tool data input" 
+                                         defaultButton:@"OK" 
+                                       alternateButton:nil 
+                                           otherButton:nil 
+                             informativeTextWithFormat:@"This tool can only be connected to a single data matrix."];
+        [alert beginSheetModalForWindow:[myAnalysisView window] modalDelegate:myAnalysisView didEndSelector:nil contextInfo:NULL];
+        return;
+        }
         
     // check to see if a tree container is downstream of this tool. If so, then purge
     // it of trees
@@ -421,81 +440,6 @@
 	[controlWindow showWindow:self];    
 	[[controlWindow window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[controlWindow window]];
-}
-
-- (RbData*)unconditionallyMergeData:(NSMutableArray*)a {
-
-    // make a list of the unique taxon names
-    NSMutableArray* uniqueNames = [NSMutableArray arrayWithCapacity:1];
-    for (RbData* d in [a objectEnumerator])
-        {
-        for (int i=0; i<[d numTaxa]; i++)
-            {
-            NSString* name = [d taxonWithIndex:i];
-            BOOL foundName = NO;
-            for (NSString* str in [uniqueNames objectEnumerator])
-                {
-                if ( [name isEqualToString:str] )
-                    {
-                    foundName = YES;
-                    break;
-                    }
-                }
-            if (foundName == NO)
-                [uniqueNames addObject:name];
-            }
-        }
-    NSLog(@"uniqueNames = %@", uniqueNames);
-        
-    // make a new data matrix that concatenates the RbData objects
-    // in the array here called 'a', regardless of the data type for
-    // each array
-    RbData* newD = [[RbData alloc] init];
-    [newD setNumTaxa:(int)([uniqueNames count])];
-    int nc = -1;
-    for (NSString* name in [uniqueNames objectEnumerator])
-        {
-        RbTaxonData* td = [[RbTaxonData alloc] init];
-        [td setTaxonName:name];
-        [newD addTaxonName:name];
-        for (RbData* d in [a objectEnumerator])
-            {
-            RbTaxonData* tdToCopy = [d getDataForTaxonWithName:name];
-            if (tdToCopy != nil)
-                {
-                for (int i=0; i<[tdToCopy numCharacters]; i++)
-                    {
-                    RbDataCell* c = [tdToCopy dataCellIndexed:i];
-                    RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
-                    [td addObservation:newC];
-                    }
-                }
-            else
-                {
-                for (int i=0; i<[d numCharactersForTaxon:0]; i++)
-                    {
-                    RbDataCell* newC = [[RbDataCell alloc] init];
-                    [newC setDiscreteStateTo:(-1)];
-                    [td addObservation:newC];
-                    }
-                }
-            }
-        [newD addTaxonData:td];
-        if (nc < 0)
-            {
-            nc = [td numCharacters];
-            [newD setNumCharacters:nc];
-            }
-        else
-            {
-            if (nc != [td numCharacters])
-                NSLog(@"problem with inconsistent sizes of rows in data matrix");
-            }
-        }
-    
-    [newD print];
-
-    return newD;
 }
 
 @end

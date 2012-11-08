@@ -1,6 +1,11 @@
+#import "Connection.h"
 #import "Inlet.h"
+#import "RbData.h"
+#import "RbDataCell.h"
+#import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolConcatenate.h"
+#import "ToolData.h"
 #import "WindowControllerConcatenate.h"
 
 
@@ -15,10 +20,257 @@
 
 }
 
+- (void)assembleNames:(NSMutableArray*)names usingMethod:(int)overlapMethod fromMatrices:(NSMutableArray*)alignedData {
+
+    [names removeAllObjects];
+    
+    if (overlapMethod == MINIMAL_OVERLAP_METHOD)
+        {
+        // find the set of names that are found in all of the data matrices
+        // (i.e., find the intersection of the names among all of the data matrices
+        RbData* d0 = [alignedData objectAtIndex:0];
+        for (int n=0; n<[d0 numTaxa]; n++)
+            {
+            if ([d0 isTaxonExcluded:n] == NO)
+                {
+                NSString* queryName = [d0 taxonWithIndex:n];
+                BOOL taxonPresentInAllMatrices = YES;
+                for (int i=1; i<[alignedData count]; i++)
+                    {
+                    RbData* di = [alignedData objectAtIndex:i];
+                    if ([di isTaxonNamePresent:queryName] == NO)
+                        taxonPresentInAllMatrices = NO;
+                    }
+                if (taxonPresentInAllMatrices == YES)
+                    [names addObject:queryName];
+                }
+            }
+        }
+    else
+        {
+        // find the names that are found in at least one of the data matrices
+        // (i.e., find the union of the names among all of the data matrices
+        for (int i=0; i<[alignedData count]; i++)
+            {
+            RbData* di = [alignedData objectAtIndex:i];
+            for (int n=0; n<[di numTaxa]; n++)
+                {
+                NSString* queryName = [di taxonWithIndex:n];
+                BOOL foundTaxon = NO;
+                for (NSString* str in [names objectEnumerator])
+                    {
+                    if ([str isEqualToString:queryName] == YES)
+                        foundTaxon = YES;
+                    }
+                if (foundTaxon == NO)
+                    [names addObject:queryName];
+                }
+            }
+        }
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
 	[controlWindow close];
+}
+
+- (NSMutableArray*)concatenateMatrices:alignedData forTaxa:(NSMutableArray*)names usingMergeMethod:(int)mergeMethod {
+
+    NSMutableArray* arrayWithMatrices = [[NSMutableArray alloc] init];
+    if (mergeMethod == MERGE_BY_DATA_TYPE)
+        {
+        // merge by data type
+        BOOL dataTypePresent[6] = { NO, NO, NO, NO, NO, NO };
+        for (RbData* d in [alignedData objectEnumerator])
+            {
+            int dt = [d dataType];
+            if (dt >= 0 && dt < 6)
+                dataTypePresent[dt] = YES;
+            else
+                NSLog(@"Problem concatenating data because of a matrix of unknown type");
+            }
+            
+        for (int i=0; i<6; i++)
+            {
+            int nc = -1;
+            if (dataTypePresent[i] == YES)
+                {
+                RbData* newD = [[RbData alloc] init];
+                for (NSString* name in [names objectEnumerator])
+                    {
+                    RbTaxonData* td = [[RbTaxonData alloc] init];
+                    for (RbData* d in [alignedData objectEnumerator])
+                        {
+                        if ([d dataType] == i)
+                            {
+                            // begin
+                            RbTaxonData* tdToCopy = [d getDataForTaxonWithName:name];
+                            if (tdToCopy != nil)
+                                {
+                                for (int i=0; i<[tdToCopy numCharacters]; i++)
+                                    {
+                                    RbDataCell* c = [tdToCopy dataCellIndexed:i];
+                                    RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
+                                    [td addObservation:newC];
+                                    }
+                                }
+                            else
+                                {
+                                for (int i=0; i<[d numCharactersForTaxon:0]; i++)
+                                    {
+                                    RbDataCell* newC = [[RbDataCell alloc] init];
+                                    [newC setDiscreteStateTo:(-1)];
+                                    [td addObservation:newC];
+                                    }
+                                }
+                                // end
+                            }
+                        }
+                    [newD addTaxonData:td];
+                    if (nc < 0)
+                        {
+                        nc = [td numCharacters];
+                        [newD setNumCharacters:nc];
+                        }
+                    else
+                        {
+                        if (nc != [td numCharacters])
+                            NSLog(@"problem with inconsistent sizes of rows in data matrix");
+                        }
+                   }
+                }
+            }
+        
+        }
+    else
+        {
+        // unconditionally merge
+        RbData* newD = [[RbData alloc] init];
+        [newD setNumTaxa:(int)([names count])];
+        [newD setName:@"Concatenated Data Matrix"];
+        int nc = -1;
+        for (NSString* name in [names objectEnumerator])
+            {
+            RbTaxonData* td = [[RbTaxonData alloc] init];
+            [td setTaxonName:name];
+            [newD addTaxonName:name];
+            for (RbData* d in [alignedData objectEnumerator])
+                {
+                RbTaxonData* tdToCopy = [d getDataForTaxonWithName:name];
+                if (tdToCopy != nil)
+                    {
+                    for (int i=0; i<[tdToCopy numCharacters]; i++)
+                        {
+                        RbDataCell* c = [tdToCopy dataCellIndexed:i];
+                        RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
+                        [td addObservation:newC];
+                        }
+                    }
+                else
+                    {
+                    for (int i=0; i<[d numCharactersForTaxon:0]; i++)
+                        {
+                        RbDataCell* newC = [[RbDataCell alloc] init];
+                        [newC setDiscreteStateTo:(-1)];
+                        [td addObservation:newC];
+                        }
+                    }
+                }
+            [newD addTaxonData:td];
+            if (nc < 0)
+                {
+                nc = [td numCharacters];
+                [newD setNumCharacters:nc];
+                }
+            else
+                {
+                if (nc != [td numCharacters])
+                    NSLog(@"problem with inconsistent sizes of rows in data matrix");
+                }
+            }
+            
+        // determine data type for this matrix
+        int dt = -1;
+        BOOL allSame = YES;
+        for (RbData* d in [alignedData objectEnumerator])
+            {
+            if (dt < 0)
+                {
+                dt = [d dataType];
+                }
+            else
+                {
+                if ( [d dataType] != dt )
+                    allSame = NO;
+                }
+            }
+        if (allSame == YES)
+            [newD setDataType:dt];
+        else
+            [newD setDataType:MIXED];
+        
+        [newD setNumCharacters:nc];
+        [newD print];
+        [arrayWithMatrices addObject:newD];
+        }
+        
+    return arrayWithMatrices;
+}
+
+- (void)concatenateWithOverlap:(int)overlapMethod andMergeMethod:(int)mergeMethod  {
+
+    // find the parent of this tool, which should be an instance of ToolData
+    ToolData* dataTool = nil;
+    for (int i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (int j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return;
+    [self removeDataInspector];
+
+    // calculate how many aligned data matrices exist
+    NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            [alignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+                
+    // merge the data and put it into a single RbData object
+    if ( [alignedData count] == 0 )
+        {
+        // no data object to concatenate
+        return;
+        }
+    else if ( [alignedData count] == 1 )
+        {
+        // only a single data matrix to concatenate
+        RbData* d = [[RbData alloc] initWithRbData:[alignedData objectAtIndex:0]];
+        [self addMatrix:d];
+        }
+    else
+        {
+        // concatenating at least two matrices
+        NSMutableArray* names = [NSMutableArray arrayWithCapacity:0];
+        [self assembleNames:names usingMethod:overlapMethod fromMatrices:alignedData];
+        NSMutableArray* concatenatedMatrices = [self concatenateMatrices:alignedData forTaxa:names usingMergeMethod:mergeMethod];
+        for (RbData* d in [concatenatedMatrices objectEnumerator])
+            [self addMatrix:d];
+        NSLog(@"%@", concatenatedMatrices);
+        [concatenatedMatrices release];
+        }
+    NSLog(@"%@", dataMatrices);
+    
+    [self makeDataInspector];
 }
 
 - (void)dealloc {
@@ -115,7 +367,7 @@
 
 - (NSMutableAttributedString*)sendTip {
 
-    NSString* myTip = [NSString stringWithString:@" Sequence Concatenation Tool "];
+    NSString* myTip = @" Sequence Concatenation Tool ";
     if ([self isResolved] == YES)
         myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", [self numDataMatrices]];
     else 
@@ -174,59 +426,24 @@
 		}
 	else 
 		{
+NSLog(@" 1 ");
 		// we have parent data-containing tool(s)
         
         // for the hell of it, we'll delete everything and freshly concatenate the sequences
-		[self removeAllDataMatrices];
-
-        // check to see if our current data is simply a copy of the data in the parents, in which case
-        // we don't need to do anything
-        NSMutableArray* parentDataMatrices = [NSMutableArray arrayWithCapacity:1];
-        for (int i=0; i<[dataOutlets count]; i++)
-            {
-            Outlet* ol = [dataOutlets objectAtIndex:i];
-            ToolData* t = (ToolData*)[ol toolOwner];
-            if ( [ol toolColor] == [NSColor greenColor] )
-                {
-                [parentDataMatrices addObjectsFromArray:[t getAlignedData]];
-                }
-            }
-            
+NSLog(@" 2 ");
+		//[self removeAllDataMatrices];
+NSLog(@" 3 ");
         
+        // concatenate
+        [self concatenateWithOverlap:[controlWindow matchingMethod] andMergeMethod:[controlWindow mergeMethod]];
+NSLog(@" 4 ");
         
-        int numFound = 0;
-        for (int i=0; i<[dataMatrices count]; i++)
-            {
-            RbData* myDataMatrix = [dataMatrices objectAtIndex:i];
-            for (int j=0; j<[parentDataMatrices count]; j++)
-                {
-                RbData* parentDataMatrix = [parentDataMatrices objectAtIndex:j];
-                if ( parentDataMatrix == [myDataMatrix copiedFrom] )
-                    {
-                    numFound++;
-                    break;
-                    }
-                }
-            }
-            
-        // remove all of the data matrices if each and every data matrix in this tool is not
-        // a copy of the data matrices in the parents
-        if ( [parentDataMatrices count] != numFound || [parentDataMatrices count] != [dataMatrices count] )
-            {
-            [self removeAllDataMatrices];
-            for (int i=0; i<[parentDataMatrices count]; i++)
-                {
-				RbData* d = [parentDataMatrices objectAtIndex:i];
-				RbData* nd = [[RbData alloc] initWithRbData:d];
-				[self addMatrix:nd];
-                }
-            }
-            
         if ( [dataMatrices count] > 0 )
             {
             [self setIsResolved:YES];
             [self makeDataInspector];
             }
+NSLog(@" 5 ");
 		}
                 
     [self stopProgressIndicator];

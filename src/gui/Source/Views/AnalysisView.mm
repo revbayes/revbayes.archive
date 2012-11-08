@@ -583,11 +583,13 @@
             [triangle stroke];
             if ( [element isKindOfClass:[ToolData class]] == YES )
                 {
+                NSLog(@"Drawing %@ tool", element);
                 int n = 0;
                 if ( [theOutlet toolColor] == [NSColor greenColor] )
-                    n = [element numAligned];
+                    n = [(ToolData*)element numAligned];
                 else if ( [theOutlet toolColor] == [NSColor cyanColor] )
-                    n = [element numUnaligned];
+                    n = [(ToolData*)element numUnaligned];
+                NSLog(@"   number = %d", n);
                 [[[NSColor blackColor] colorWithAlphaComponent:0.4] set];
                 NSBezierPath* numPath = [self makePathForNumber:n];
                 NSRect numBounds = [numPath bounds];

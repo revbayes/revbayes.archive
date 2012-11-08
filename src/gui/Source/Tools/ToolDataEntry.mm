@@ -110,6 +110,10 @@
 
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
+
+        hasInspectorInfo = NO;
+        NSLog(@"data matrix count = %ld", [dataMatrices count]);
+        NSLog(@"data type = %d", [[dataMatrices objectAtIndex:0] isHomologyEstablished]);
 		}
 	return self;
 }

@@ -220,7 +220,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( Environment& env ) {
         // We allow direct references without lookup nodes
         // We also allow constant expressions
         theVariable = expression->evaluateContent( env );
-        PRINTF ( "Created %s with function \"%s\" and value %s \n", theVariable->getDagNode()->getType().c_str(), theVariable->getDagNode()->getValue().getTypeSpec().toString().c_str());
+        //PRINTF ( "Created %s with function \"%s\" and value %s \n", theVariable->getDagNode()->getType().c_str(), theVariable->getDagNode()->getValue().getTypeSpec().toString().c_str());
         
         // if the right-hand-side was a lookup to a variable (e.g. b := a)
         // we therefore create a new reference function which will lookup the value of the original node each time. Hence, the new node (left-hand-side) is just a reference of the original node (right-hand-side).

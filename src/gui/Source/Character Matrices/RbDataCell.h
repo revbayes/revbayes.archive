@@ -5,6 +5,7 @@
 #define AA          2
 #define STANDARD    3
 #define CONTINUOUS  4
+#define MIXED       5
 
 
 

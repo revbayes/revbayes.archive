@@ -2,7 +2,6 @@
 #import "Tool.h"
 #include <vector>
 @class GuiTree;
-@class RbData;
 @class WindowControllerParsimony;
 
 
@@ -29,6 +28,5 @@
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (void)showControlPanel;
-- (RbData*)unconditionallyMergeData:(NSMutableArray*)a;
 
 @end

@@ -44,6 +44,7 @@
 - (BOOL)isCharacterExcluded:(int)idx;
 - (BOOL)isTaxonExcluded:(int)idx;
 - (BOOL)isCharacterMissAmbig:(int)idx;
+- (BOOL)isTaxonNamePresent:(NSString*)theName;
 - (int)maxNumCharacters;
 - (int)numExcludedCharacters;
 - (int)numExcludedTaxa;

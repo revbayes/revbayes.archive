@@ -459,12 +459,42 @@
     // node p successively closer to the root
     BOOL continueRotatingTree = YES;
     do {
-        q = root;
+        // set q to be the root of the tree
+        Node* d = root;
         
+        // set u to be the only marked node above q
+        Node* u = nil;
+        int numFlaggedDescendants = 0;
+        for (int i=0; i<[d numberOfDescendants]; i++)
+            {
+            Node* n = [d descendantIndexed: i];
+            if ( [n flag] == YES && n != p )
+                {
+                u = n;
+                numFlaggedDescendants++;
+                }
+            }
+            
+        // rearrange nodes, making u the root and d the descendant
+        if (u == nil || numFlaggedDescendants != 1)
+            {
+            continueRotatingTree = NO;
+            }
+        else
+            {
+            [d removeDescendant:u];
+            [u addDescendant:d];
+            [d setAncestor:u];
+            [u setAncestor:nil];
+            [d setFlag:NO];
+            root = u;
+            }
         
-        root = nil;
         } while (continueRotatingTree == YES);
-    
+        
+    // determine the downpass sequence
+    initializedDownPass = NO;
+    [self initializeDownPassSequence];
 }
 
 - (void)setAllFlagsTo:(BOOL)tf {
