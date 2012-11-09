@@ -23,10 +23,10 @@
 #include <iomanip>
 #include <climits>
 
-#include "nxscharactersblock.h"
-#include "nxsreader.h"
-#include "nxsassumptionsblock.h"
-#include "nxssetreader.h"
+#include "ncl/nxscharactersblock.h"
+#include "ncl/nxsreader.h"
+#include "ncl/nxsassumptionsblock.h"
+#include "ncl/nxssetreader.h"
 #include <algorithm>
 #include <iterator>
 using namespace std;

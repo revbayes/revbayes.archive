@@ -31,8 +31,6 @@
 class NxsCharactersBlockAPI;
 class NxsTaxaBlockAPI;
 
-using std::vector;
-
 class NxsAssumptionsBlockAPI
   : public NxsBlock
 	{
@@ -125,7 +123,7 @@ class NxsAssumptionsBlock
 		const NxsUnsignedSet *GetCharSet(NxsString nm) const; /*v2.1to2.2 4 */
 
 		int					GetNumCharPartitions(); /*v2.1to2.2 6 */
-		void				GetCharPartitionNames(vector<std::string> &names); /*v2.1to2.2 6 */
+		void				GetCharPartitionNames(std::vector<std::string> &names); /*v2.1to2.2 6 */
 		const NxsPartition		*GetCharPartition(std::string nm) const;
 
 		int					GetNumTaxSets(); /*v2.1to2.2 6 */

@@ -19,9 +19,9 @@
 #include <iomanip>
 #include <climits>
 
-#include "nxsassumptionsblock.h"
-#include "nxssetreader.h"
-#include "nxsreader.h"
+#include "ncl/nxsassumptionsblock.h"
+#include "ncl/nxssetreader.h"
+#include "ncl/nxsreader.h"
 using namespace std;
 
 class BogusToIndMapper: public NxsLabelToIndicesMapper

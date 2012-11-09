@@ -59,6 +59,7 @@ public:
 
 
 #include "RbException.h"
+#include "RbNullObject.h"
 
 
 template <typename valueType>
@@ -180,6 +181,10 @@ const RbPtr<valueType>& RlValue<valueType>::getSingleValue( void ) const {
 template <typename valueType>
 const TypeSpec& RlValue<valueType>::getTypeSpec( void ) const {
     
+    if (value[0] == NULL) {
+        return RbNullObject::getInstance().getTypeSpec();
+    }
+    
     return value[0]->getTypeSpec();
 }
 
@@ -201,7 +206,7 @@ bool RlValue<valueType>::isNULL( void ) const {
 template <typename valueType>
 bool RlValue<valueType>::isTypeSpec( const TypeSpec &ts ) const {
     
-    if ( value.size() < 1) {
+    if ( value.size() < 1 || value[0] == NULL) {
         throw RbException("Trying to access NULL element!!!");
     }
     return value[0]->isTypeSpec( ts );
