@@ -13,6 +13,7 @@
 #import "GuiTree.h"
 #import "WindowControllerParsimony.h"
 
+#include <iomanip>
 #include <iostream>
 #include <vector>
 
@@ -119,6 +120,8 @@
     int numNodes = 2 * numTaxa - 2;
     numCharacters = [d numCharacters];
     
+    NSLog(@"nt=%d nc=%d nn=%d", numTaxa, numCharacters, numNodes);
+    
     // set up vectors of unsigned ints holding the data for parsimony calculations
     stateSets = new unsigned*[numNodes];
     stateSets[0] = new unsigned[numNodes*numCharacters];
@@ -135,8 +138,26 @@
         for (int j=0; j<numCharacters; j++)
             {
             RbDataCell* c = [d cellWithRow:i andColumn:j];
-            stateSets[i][j] = [c unsignedRepresentation];
+            if ( [c isGapState] == YES || [c isAmbig] == YES )
+                {
+                unsigned x = 0;
+                for (int k=0; k<[c numStates]; k++)
+                    x += (int)(pow(2.0, (double)k));
+                stateSets[i][j] = x;
+                }
+            else
+                {
+                stateSets[i][j] = [c unsignedRepresentation];
+                }
             }
+        }
+    
+    for (int i=0; i<numNodes; i++)
+        {
+        std::cout << std::setw(3) << i << " -- ";
+        for (int j=0; j<numCharacters; j++)
+            std::cout << std::setw(3) << stateSets[i][j];
+        std::cout << std::endl;
         }
     
     // allocate the nodes
@@ -238,12 +259,50 @@
     // NOTE: We assume that the tree is binary. This is a reasonable assumption, as the exhaustive search enumerates
     //       all of the binary trees.
     int len = 0;
-    
+        
     for (int n=0; n<[t numberOfNodes]; n++)
         {
         Node* p = [t downPassNodeIndexed:n];
-        if ([p isLeaf] == NO)
+        if ([p numberOfDescendants] > 0)
             {
+#           if 1
+            // left-most descendant first
+            Node* pU = [p descendantIndexed:0];
+            unsigned* s  = &stateSets[[p  index]][0];
+            unsigned* sU = &stateSets[[pU index]][0];
+            for (int c=0; c<numCharacters; c++)
+                {
+                (*s) = (*sU);
+                s++;
+                sU++;
+                }
+                
+            // other descendants
+            for (int i=1; i<[p numberOfDescendants]; i++)
+                {
+                pU = [p descendantIndexed:i];
+                s  = &stateSets[[p  index]][0];
+                sU = &stateSets[[pU index]][0];
+                for (int c=0; c<numCharacters; c++)
+                    {
+                    if ( ((*s) & (*sU)) == 0 )
+                        {
+                        len++;
+                        unsigned v = ((*s) | (*sU));
+                        (*s) = v;
+                        }
+                    else
+                        {
+                        (*s) &= (*sU);
+                        }
+                    s++;
+                    sU++;
+                    }
+                }
+                
+#           else
+            if ([p numberOfDescendants] != 2)
+                NSLog(@"Warning: %d descendant nodes! (%d)", [p numberOfDescendants], [t isRoot:p]);
             Node* pL = [p descendantIndexed:0];
             Node* pR = [p descendantIndexed:1];
             unsigned* sL = stateSetsPtr[[pL index]];
@@ -278,6 +337,7 @@
                     sR++;
                     }
                 }
+#           endif
             }
         }
 
@@ -320,6 +380,7 @@
                 
                 if ([availableTips count] == 0)
                     {
+                    [t setInitializedDownPass:NO];
                     [t initializeDownPassSequence];
                     int len = [self parsimonyScoreForTree:t];
                     if (len < scoreOfBestTree)
@@ -328,6 +389,7 @@
                         scoreOfBestTree = len;
                         NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:currentTree];
                         [bestTrees addObject:copiedTree];
+                        //[self printNodeInformationForTree:t atSite:0];
                         }
                     else if (len == scoreOfBestTree)
                         {
@@ -335,7 +397,6 @@
                         [bestTrees addObject:copiedTree];
                         }
                     numTreesVisited++;
-                    //NSLog(@"Visiting tree %d -- %d (%d)", numTreesVisited, len, scoreOfBestTree);
                     [myAnalysisView setNeedsDisplay:YES];
                     }
                 
@@ -410,6 +471,22 @@
 	float s[8] = { 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 2.0, 4.0 };
 	for (int i=0; i<8; i++)
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
+}
+
+- (void)printNodeInformationForTree:(GuiTree*)t atSite:(int)site {
+
+    for (int n=0; n<[t numberOfNodes]; n++)
+        {
+        Node* p = [t downPassNodeIndexed:n];
+        [p print];
+        std::cout << "   state set = " << stateSets[[p index]][site] << " ( ";
+        for (int i=0; i<[p numberOfDescendants]; i++)
+            {
+            Node* q = [p descendantIndexed:i];
+            std::cout << stateSets[[q index]][site] << " ";
+            }
+        std::cout << ")" << std::endl;
+        }
 }
 
 - (NSMutableAttributedString*)sendTip {

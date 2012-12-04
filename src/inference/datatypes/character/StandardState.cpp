@@ -76,32 +76,38 @@ bool StandardState::operator<(const CharacterState &x) const {
 
 
 void StandardState::operator++( void ) {
+
     state <<= 1;
 }
 
 
 void StandardState::operator++( int i ) {
+
     state <<= 1;
 }
 
 
 void StandardState::operator--( void ) {
+
     state >>= 1;
 }
 
 
 void StandardState::operator--( int i ) {
+
     state >>= 1;
 }
 
 
 void StandardState::addState(size_t pos) {
+
     state |= 1 << pos;
 }
 
 
 
 StandardState* StandardState::clone( void ) const {
+
     return new StandardState( *this );
 }
 

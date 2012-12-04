@@ -24,6 +24,24 @@
 
 }
 
+- (BOOL)tabView:(NSTabView*)tabView shouldSelectTabViewItem:(NSTabViewItem*)tabViewItem {
+
+	NSString* methodLabel = [NSString stringWithString:[tabViewItem label]];
+	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
+        return YES;
+    
+    
+    NSAlert* alert = [NSAlert alertWithMessageText:@"Unavailable Alignment Method" 
+                                     defaultButton:@"OK"
+                                   alternateButton:nil 
+                                       otherButton:nil 
+                         informativeTextWithFormat:@"This alignment method is not yet implemented."];
+    [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+
+
+    return NO;
+}
+
 - (IBAction)helpButtonAction:(id)sender {
 
 }

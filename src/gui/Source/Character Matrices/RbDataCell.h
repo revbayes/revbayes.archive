@@ -21,13 +21,13 @@
 	NSNumber*            val;
 }
 
-@property (readwrite) BOOL isDiscrete;
-@property (readwrite) int row;
-@property (readwrite) int column;
-@property (readwrite) int dataType;
-@property (readwrite) int numStates;
-@property (readwrite) BOOL isAmbig;
-@property (readwrite) BOOL isGapState;
+@property (readwrite)        BOOL      isDiscrete;
+@property (readwrite)        int       row;
+@property (readwrite)        int       column;
+@property (readwrite)        int       dataType;
+@property (readwrite)        int       numStates;
+@property (readwrite)        BOOL      isAmbig;
+@property (readwrite)        BOOL      isGapState;
 @property (readwrite,retain) NSNumber* val;
 
 - (float)getContinuousState;

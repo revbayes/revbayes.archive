@@ -14,6 +14,7 @@
 
 }
 
+@property (readwrite)        BOOL      initializedDownPass;
 @property (readwrite,retain) NSString* info;
 
 - (void)addTaxonToRandomBranch;

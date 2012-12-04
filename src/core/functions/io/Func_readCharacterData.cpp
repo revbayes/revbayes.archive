@@ -129,7 +129,7 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vect
             reader.addWarning("Unknown file type");
             }
         }
-#   if 0
+#   if 1
     std::cout << "File map (" << fileMap.size() << ")" << std::endl;
     for (std::map<std::string,std::string>::iterator it = fileMap.begin(); it != fileMap.end(); it++)
         std::cout << it->first << " -- " << it->second << std::endl;
@@ -191,7 +191,7 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( const std::vect
     
     RlVector<RlCharacterData> *retList;
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
-    if ( m.size() > 1 )
+    if ( m.size() > 0 )
         {
         retList = new RlVector<RlCharacterData>();
         for (std::vector<CharacterData*>::iterator it = m.begin(); it != m.end(); it++)

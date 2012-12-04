@@ -9,6 +9,7 @@
 @implementation GuiTree
 
 @synthesize info;
+@synthesize initializedDownPass;
 
 - (void)addTaxonToRandomBranch {
 

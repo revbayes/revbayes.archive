@@ -280,14 +280,11 @@
         return;
         }
     
-NSLog(@" 1 ");
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
     DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
     CharacterData* cd     = dynamic_cast<CharacterData*>( dv );
 
-std::cout << dnc << std::endl;
-std::cout << cd << std::endl;
     if ( dnc != NULL )
         {
         if ( dnc != NULL)

@@ -75,6 +75,7 @@ void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpl
 /** Reads the blocks stored by NCL and converts them to RevBayes character matrices */
 std::vector<CharacterData* > NclReader::convertFromNcl(std::vector<std::string>& fnv) {
     
+std::cout << "begin convertFromNcl" << std::endl;
 	std::vector<CharacterData* > cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
@@ -86,6 +87,7 @@ std::vector<CharacterData* > NclReader::convertFromNcl(std::vector<std::string>&
 		const unsigned nCharBlocks          = nexusReader.GetNumCharactersBlocks(taxaBlock);
         const unsigned nUnalignedCharBlocks = nexusReader.GetNumUnalignedBlocks(taxaBlock);
         
+        std::cout << "nCharBlocks = " << nCharBlocks << std::endl;
         // make alignment objects
 		for (unsigned cBlck=0; cBlck<nCharBlocks; cBlck++)
             {
@@ -93,6 +95,7 @@ std::vector<CharacterData* > NclReader::convertFromNcl(std::vector<std::string>&
 			NxsCharactersBlock* charBlock = nexusReader.GetCharactersBlock(taxaBlock, cBlck);
 			std::string charBlockTitle = taxaBlock->GetTitle();
 			int dt = charBlock->GetDataType();
+            std::cout << "dt = " << dt << " std = " << NxsCharactersBlock::standard << std::endl;
 			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::nucleotide)
                 {
                 m = createDnaMatrix(charBlock);
@@ -176,6 +179,7 @@ std::vector<CharacterData* > NclReader::convertFromNcl(std::vector<std::string>&
 
         
         }
+std::cout << "end convertFromNcl" << std::endl;
     
 	return cmv;
 }
@@ -589,8 +593,8 @@ CharacterData* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
     const NxsDiscreteDatatypeMapper* mapper = charblock->GetDatatypeMapperForChar(0);
     std::string sym = charblock->GetSymbols();
     int nStates = mapper->GetNumStates();
-    if (nStates > 10)
-        return NULL;
+    //if (nStates > 10)
+    //    return NULL;
     
     // instantiate the character matrix
 	CharacterData* cMat = new CharacterData( StandardState::getClassName() );
@@ -610,6 +614,7 @@ CharacterData* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
             {	
             // add the character state to the matrix
+            std::string labels = charblock->GetSymbols();
             StandardState* stdState = new StandardState(sym);
             for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
@@ -1065,7 +1070,9 @@ std::vector<CharacterData*> NclReader::readMatrices(const char* fileName, const 
 		if (fileFormat == "nexus")
             {
 			// NEXUS file format
+            std::cout << "fileName = " << fileName << std::endl;
 			nexusReader.ReadFilepath(fileName, MultiFormatReader::NEXUS_FORMAT);
+            std::cout << "******" << std::endl;
             }
 		else if (fileFormat == "fasta")
             {

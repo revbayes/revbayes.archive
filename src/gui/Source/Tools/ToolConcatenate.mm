@@ -97,6 +97,7 @@
             if (dataTypePresent[i] == YES)
                 {
                 RbData* newD = [[RbData alloc] init];
+                [newD setIsHomologyEstablished:YES];
                 for (NSString* name in [names objectEnumerator])
                     {
                     RbTaxonData* td = [[RbTaxonData alloc] init];
@@ -124,7 +125,9 @@
                                     [td addObservation:newC];
                                     }
                                 }
-                                // end
+                            if ([d isHomologyEstablished] == NO)
+                                [newD setIsHomologyEstablished:NO];
+                            // end
                             }
                         }
                     [newD addTaxonData:td];
@@ -147,6 +150,7 @@
         {
         // unconditionally merge
         RbData* newD = [[RbData alloc] init];
+        [newD setIsHomologyEstablished:YES];
         [newD setNumTaxa:(int)([names count])];
         [newD setName:@"Concatenated Data Matrix"];
         int nc = -1;
@@ -176,6 +180,8 @@
                         [td addObservation:newC];
                         }
                     }
+                if ([d isHomologyEstablished] == NO)
+                    [newD setIsHomologyEstablished:NO];
                 }
             [newD addTaxonData:td];
             if (nc < 0)

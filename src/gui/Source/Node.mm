@@ -1,5 +1,6 @@
 #import "Node.h"
-
+#include <iomanip>
+#include <iostream>
 
 
 @implementation Node
@@ -101,6 +102,26 @@
 
 - (void)print {
 
+#   if 1
+    std::cout << index << " ";
+    if (ancestor != nil)
+        std::cout << [ancestor index] << " (";
+    else
+        std::cout << "NIL (";
+    for (int i=0; i<[descendants count]; i++)
+        {
+        std::cout << [(Node*)[descendants objectAtIndex:i] index];
+        if (i + 1 < [descendants count])
+            std::cout << " ";
+        }
+    std::cout << ") ";
+    if (isLeaf == YES)
+        {
+        const char* myName = [name UTF8String];
+        std::cout << myName;
+        }
+    std::cout << std::endl;
+#   else
     NSString* s = [NSString stringWithFormat:@"%d (%p) %lf %p (", index, self, branchLength, ancestor];
     for (int i=0; i<[descendants count]; i++)
         {
@@ -112,6 +133,7 @@
     if (isLeaf == YES)
         s = [s stringByAppendingFormat:@" %@", name];
     NSLog(@"%@", s);
+#   endif
 }
 
 - (void)removeDescendant:(Node*)des {

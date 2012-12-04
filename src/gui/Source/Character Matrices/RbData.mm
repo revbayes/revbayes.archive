@@ -441,14 +441,15 @@
     if ( [self isHomologyEstablished] == YES )
         {
         // write out as NEXUS file
-        if ( dataType == STANDARD )
+        if ( dataType == STANDARD || dataType == MIXED )
             {
+            NSLog(@"Writing file to temporary directory %@", fn); // JPH
             // write a morphological data file
             NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
             [outStr appendString:@"#NEXUS\n\n"];
             [outStr appendString:@"begin data;\n"];
             [outStr appendFormat:@"   dimensions ntax=%d nchar=%d;\n", numTaxa, numCharacters];
-            [outStr appendString:@"   format symbols=\"0 1 2 3 4 5 6 7 8 9\" missing=N gap=-;\n"];
+            [outStr appendString:@"   format symbols=\"0123456789ACGTU\" missing=? gap=-;\n"];
             [outStr appendString:@"   matrix\n"];
             for (int i=0; i<numTaxa; i++)
                 {

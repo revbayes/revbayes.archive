@@ -27,6 +27,7 @@
 - (void)exhaustiveSearch;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
+- (void)printNodeInformationForTree:(GuiTree*)t atSite:(int)site;
 - (void)showControlPanel;
 
 @end
