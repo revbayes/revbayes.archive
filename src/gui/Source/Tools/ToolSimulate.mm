@@ -394,4 +394,13 @@
     delete [] m;
 }
 
+- (NSString*)toolName {
+
+    return @"Data Simulation";
+}
+
+- (void)updateForChangeInUpstreamState {
+
+}
+
 @end

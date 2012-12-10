@@ -46,8 +46,6 @@
 
     if (alignmentMethod == ALN_CLUSTAL)
         [self helperRunClustal:self];
-    else
-        NSRunAlertPanel(@"Problem aligning sequences", @"Currently only able to align sequences using Clustal", @"OK", nil, nil);
 }
 
 - (void)awakeFromNib {
@@ -102,18 +100,22 @@
 	[super encodeWithCoder:aCoder];
 }
 
-- (void)execute {
+- (BOOL)execute {
 
     if ( [self numDataMatrices] == 0 )
         {
-        [self helperRunClustal:self];
+        BOOL isSuccessful = [self helperRunClustal:self];
+        if (isSuccessful == NO)
+            return NO;
         }
 
-    [super execute];
+    return [super execute]; // instantiate data in the core
 }
 
-- (void)helperRunClustal:(id)sender {
+- (BOOL)helperRunClustal:(id)sender {
 
+    [self setIsResolved:NO];
+    
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = nil;
     for (int i=0; i<[inlets count]; i++)
@@ -129,7 +131,7 @@
             }
         }
     if ( dataTool == nil )
-        return;
+        return NO;
 
     // calculate how many unaligned data matrices exist
     NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
@@ -139,7 +141,7 @@
             [unalignedData addObject:[dataTool dataMatrixIndexed:i]];
         }
     if ( [unalignedData count] == 0 )
-        return;
+        return NO;
         
     // remove all of the files from the temporary directory
     [self removeFilesFromTemporaryDirectory];
@@ -225,20 +227,19 @@
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
-        return;
+        return NO;
         }
 
-    
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-#   if 1
+
     // retrieve the value (character data matrix or matrices) from the workspace
     RbLanguageObject* dv = Workspace::userWorkspace()->getValue(variableName).getSingleValue()->clone();
     if ( dv == NULL )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
-        return;
+        return NO;
         }
 
     RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
@@ -269,66 +270,13 @@
         goto errorExit;
         }
 
-#   else
-
-    // retrieve the value (character data matrix or matrices) from the workspace
-    const RbLanguageObject& dv = Workspace::userWorkspace().getValue(variableName);
-    if ( RbNullObject::getInstance() == dv )
-        {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        return;
-        }
-    
-    // instantiate data matrices for the gui, by reading the matrices that were 
-    // read in by the core
-    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( dv );
-    CharacterData* cd     = dynamic_cast<CharacterData*>( dv );
-
-    if ( dnc != NULL )
-        {
-        if ( dnc != NULL)
-            {
-            [self removeAllDataMatrices];
-            for (int i=0; i<dnc.size(); i++)
-                {
-                const VariableSlot* vs = static_cast<const VariableSlot*>( (&dnc.getElement(i)) );
-                const RbLanguageObject& theDagNode = vs->getDagNode()->getValue();
-                const CharacterData& cd = static_cast<const CharacterData&>( theDagNode );
-                RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
-                [self addMatrix:newMatrix];
-                }
-            }
-        else
-            {
-            [self readDataError:@"Failure reading in a set of character matrices" forVariableNamed:nsVariableName];
-            goto errorExit;
-            }
-        }
-    else if ( cd != NULL )
-        {
-        if ( cd != NULL)
-            {
-            [self removeAllDataMatrices];
-            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
-            [self addMatrix:newMatrix];
-            }
-        else
-            {
-            [self readDataError:@"Failed to read character matrix" forVariableNamed:nsVariableName];
-            goto errorExit;
-            }
-        }
-    else
-        {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        goto errorExit;
-        }
-#   endif
-
+    // erase the data in the core
+    if ( Workspace::userWorkspace()->existsVariable(variableName) )
+        Workspace::userWorkspace()->eraseVariable(variableName);
+        
     // set the name of the variable in the tool
-    [self setDataWorkspaceName:[NSString stringWithUTF8String:(variableName.c_str())]];
-    
+    [self setDataWorkspaceName:@""];
+
     // set the alignment method for every data matrix
     for (int i=0; i<[dataMatrices count]; i++)
         {
@@ -354,9 +302,7 @@
         }
     
     [self makeDataInspector];
-
-    if ( Workspace::userWorkspace()->existsVariable(variableName) )
-        std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
+    [self setIsResolved:YES];
 
     errorExit:
     
@@ -366,6 +312,7 @@
     [self stopProgressIndicator];
 
     [myAnalysisView updateToolsDownstreamFromTool:self];
+    return YES;
 }
 
 - (id)init {
@@ -513,7 +460,14 @@
      
     [incomingText release];
 }
+
+- (BOOL)resolveStateOnWindowOK {
+
+    [self alignSequences];
     
+    return YES;
+}
+
 - (void)showControlPanel {
 
     NSPoint p = [self originForControlWindow:[controlWindow window]];
@@ -527,9 +481,12 @@
 
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
 
-    NSLog(@"updateForChangeInState in %@", self);
+    return @"Alignment";
+}
+
+- (void)updateForChangeInUpstreamState {
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = nil;
@@ -561,7 +518,6 @@
     if ( [unalignedData count] == 0 || [unalignedData count] != [self numDataMatrices] )
         {
         [self removeAllDataMatrices];
-        //[self alignSequences];
         return;
         }
         
@@ -583,7 +539,6 @@
     if (numNotTraced > 0)
         {
         [self removeAllDataMatrices];
-        //[self alignSequences];
         return;
         }
 }

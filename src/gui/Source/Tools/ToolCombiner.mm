@@ -80,6 +80,11 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (BOOL)resolveStateOnWindowOK {
+
+    return YES;
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Character Matrix Combiner Tool ";
@@ -122,7 +127,12 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
+
+    return @"Data Combiner";
+}
+
+- (void)updateForChangeInUpstreamState {
 
     [self startProgressIndicator];
     
@@ -149,6 +159,7 @@
 		{
 		// we don't have a parent tool that contains data
 		[self removeAllDataMatrices];
+        isDirty = YES;
 		}
 	else 
 		{
@@ -157,6 +168,7 @@
         // check to see if our current data is simply a copy of the data in the parents, in which case
         // we don't need to do anything
         NSMutableArray* parentDataMatrices = [NSMutableArray arrayWithCapacity:1];
+        BOOL areParentsDirty = [self areAnyParentsDirty];
         for (int i=0; i<[dataOutlets count]; i++)
             {
             Outlet* ol = [dataOutlets objectAtIndex:i];
@@ -187,7 +199,7 @@
             
         // remove all of the data matrices if each and every data matrix in this tool is not
         // a copy of the data matrices in the parents
-        if ( [parentDataMatrices count] != numFound || [parentDataMatrices count] != [dataMatrices count] )
+        if ( [parentDataMatrices count] != numFound || [parentDataMatrices count] != [dataMatrices count] || areParentsDirty == YES )
             {
             [self removeAllDataMatrices];
             for (int i=0; i<[parentDataMatrices count]; i++)
@@ -196,6 +208,7 @@
 				RbData* nd = [[RbData alloc] initWithRbData:d];
 				[self addMatrix:nd];
                 }
+            isDirty = YES;
             }
             
         if ( [dataMatrices count] > 0 )
@@ -204,7 +217,7 @@
             [self makeDataInspector];
             }
 		}
-        
+                
     [self stopProgressIndicator];
 }
 

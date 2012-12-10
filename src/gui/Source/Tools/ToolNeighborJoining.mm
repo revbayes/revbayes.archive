@@ -108,4 +108,9 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
+- (NSString*)toolName {
+
+    return @"Neighbor Joining";
+}
+
 @end

@@ -162,4 +162,9 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
+- (NSString*)toolName {
+
+    return @"MCMC";
+}
+
 @end

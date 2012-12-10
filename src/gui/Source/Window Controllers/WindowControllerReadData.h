@@ -50,7 +50,6 @@ class CharacterData;
 @property (retain) NSString* pathName;
 @property (readwrite) BOOL isDataFormatAutomaticallyDetermined;
 
-- (void)addBlankDataMatrix;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)changeDataType:(id)sender;
 - (IBAction)changeBlankDataType:(id)sender;
@@ -58,7 +57,8 @@ class CharacterData;
 - (IBAction)changeFileFormatDeterminationMethod:(id)sender;
 - (IBAction)helpButtonAction:(id)sender;
 - (id)initWithTool:(ToolReadData*)t;
-- (unsigned)missingForNumStates:(int)n;
+- (BOOL)isBlankMatrixOfDataType:(NSString*)dt;
+- (BOOL)makeBlankMatrix;
 - (IBAction)okButtonAction:(id)sender;
 - (void)setControlsEnabledState;
 - (void)setControlWindowSize;

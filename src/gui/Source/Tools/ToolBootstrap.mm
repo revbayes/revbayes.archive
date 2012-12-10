@@ -105,7 +105,12 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
+
+    return @"Bootstrap";
+}
+
+- (void)updateForChangeInUpstreamState {
 
 }
 

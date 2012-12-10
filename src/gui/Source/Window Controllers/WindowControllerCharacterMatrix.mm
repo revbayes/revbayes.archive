@@ -574,7 +574,6 @@
 
 - (void)splitViewDidResizeSubviews:(NSNotification*)aNotification {
 
-    NSLog(@"splitViewDidResizeSubviews");
 	NSMatrix* taxaMatrix = [taxaMatrices objectAtIndex:[matrixSelector indexOfSelectedItem]];
 	float nameWidth = [self lengthOfLongestName:[taxaMatrices objectAtIndex:[matrixSelector indexOfSelectedItem]]];
 	

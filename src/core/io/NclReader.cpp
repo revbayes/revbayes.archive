@@ -34,6 +34,22 @@
 #include "UserInterface.h"
 
 
+void NclReader::cleanName(std::string& tName) {
+
+    std::string temp = tName;
+    tName = "";
+    for (int i=0; i<temp.size(); i++)
+        {
+        if (temp[i] == ' ')
+            tName += '_';
+        else if (temp[i] == '\'')
+            ;
+        else if (temp[i] == '\"')
+            ;
+        else
+            tName += temp[i];
+        }
+}
 
 /** Constructs a tree from NCL */
 void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb, std::map<const TopologyNode*, std::map<std::string, RbLanguageObject*> >& nodeParameters) {
@@ -75,7 +91,6 @@ void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpl
 /** Reads the blocks stored by NCL and converts them to RevBayes character matrices */
 std::vector<CharacterData* > NclReader::convertFromNcl(std::vector<std::string>& fnv) {
     
-std::cout << "begin convertFromNcl" << std::endl;
 	std::vector<CharacterData* > cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
@@ -87,7 +102,6 @@ std::cout << "begin convertFromNcl" << std::endl;
 		const unsigned nCharBlocks          = nexusReader.GetNumCharactersBlocks(taxaBlock);
         const unsigned nUnalignedCharBlocks = nexusReader.GetNumUnalignedBlocks(taxaBlock);
         
-        std::cout << "nCharBlocks = " << nCharBlocks << std::endl;
         // make alignment objects
 		for (unsigned cBlck=0; cBlck<nCharBlocks; cBlck++)
             {
@@ -95,7 +109,6 @@ std::cout << "begin convertFromNcl" << std::endl;
 			NxsCharactersBlock* charBlock = nexusReader.GetCharactersBlock(taxaBlock, cBlck);
 			std::string charBlockTitle = taxaBlock->GetTitle();
 			int dt = charBlock->GetDataType();
-            std::cout << "dt = " << dt << " std = " << NxsCharactersBlock::standard << std::endl;
 			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::nucleotide)
                 {
                 m = createDnaMatrix(charBlock);
@@ -179,7 +192,6 @@ std::cout << "begin convertFromNcl" << std::endl;
 
         
         }
-std::cout << "end convertFromNcl" << std::endl;
     
 	return cmv;
 }
@@ -243,6 +255,7 @@ CharacterData* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
         // get the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        cleanName(tName);
         
         // allocate a vector of Standard states
         TaxonData dataVec = TaxonData(AminoAcidState::getClassName(), tName);
@@ -298,6 +311,7 @@ CharacterData* NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* char
         // add the taxon name
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        cleanName(tName);
         
         // allocate a vector of amino acid states
         TaxonData dataVec = TaxonData(AminoAcidState::getClassName(), tName);
@@ -344,6 +358,7 @@ CharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) 
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        cleanName(tName);
         
         // allocate a vector of Standard states
         TaxonData dataVec = TaxonData(ContinuousCharacterState::getClassName(), tName);
@@ -393,6 +408,7 @@ CharacterData* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        cleanName(tName);
         
         // allocate a vector of DNA states
         TaxonData dataVec = TaxonData(DnaState::getClassName(),tName);
@@ -450,6 +466,7 @@ CharacterData* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock)
         // add the taxon name
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        cleanName(tName);
         
         // allocate a vector of DNA states
         TaxonData dataVec = TaxonData(DnaState::getClassName(), tName);
@@ -496,6 +513,7 @@ CharacterData* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        cleanName(tName);
         
         // allocate a vector of RNA states
         TaxonData dataVec = TaxonData(RnaState::getClassName(),tName);
@@ -553,6 +571,7 @@ CharacterData* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock)
         // add the taxon name
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        cleanName(tName);
         
         // allocate a vector of DNA states
         TaxonData dataVec = TaxonData(RnaState::getClassName(), tName);
@@ -606,6 +625,7 @@ CharacterData* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        cleanName(tName);
         
         // allocate a vector of Standard states
         TaxonData dataVec = TaxonData(StandardState::getClassName(),tName);
@@ -1070,9 +1090,7 @@ std::vector<CharacterData*> NclReader::readMatrices(const char* fileName, const 
 		if (fileFormat == "nexus")
             {
 			// NEXUS file format
-            std::cout << "fileName = " << fileName << std::endl;
 			nexusReader.ReadFilepath(fileName, MultiFormatReader::NEXUS_FORMAT);
-            std::cout << "******" << std::endl;
             }
 		else if (fileFormat == "fasta")
             {

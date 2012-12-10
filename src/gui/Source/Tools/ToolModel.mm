@@ -439,7 +439,12 @@
         [element updateChildren];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
+
+    return @"Model Specification";
+}
+
+- (void)updateForChangeInUpstreamState {
 
     [self startProgressIndicator];
 

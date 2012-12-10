@@ -1398,7 +1398,7 @@
         while ( (element = [toolEnumerator nextObject]) )
             {
             if ( [element isVisited] == YES )
-                [element updateForChangeInState];
+                [element updateForChangeInUpstreamState];
             }
                 
         }
@@ -1726,6 +1726,14 @@
     return p;
 }
 
+- (void)markAllToolsAsClean {
+
+    NSEnumerator* toolEnumerator = [itemsPtr objectEnumerator];
+    id element;
+    while ( (element = [toolEnumerator nextObject]) )
+        [element setIsDirty:NO];
+}
+
 - (void)mouseUp:(NSEvent*)event {
 
 	if (selection.selectedItem != nil)
@@ -2047,10 +2055,13 @@
         }
 
 	// update the tool's state
-	toolEnumerator = [pastedTools objectEnumerator];
-	while ( (element = [toolEnumerator nextObject]) )
+    NSMutableArray* depthFirstOrder = [NSMutableArray arrayWithCapacity:0];
+    [self initializeDepthFirstOrderForTools:depthFirstOrder];
+    toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
+    while ( (element = [toolEnumerator nextObject]) )
         {
-		[element updateForChangeInState];
+        if ([pastedTools containsObject:element] == YES)
+            [element updateForChangeInUpstreamState];
 		}
         
 	// update the display
@@ -2555,7 +2566,7 @@
     NSMutableArray* depthFirstOrder = [NSMutableArray arrayWithCapacity:0];
     [self initializeDepthFirstOrderForTools:depthFirstOrder];
     
-    // mark mark all tools as having not been visited
+    // mark all tools as having not been visited and as clean
     NSEnumerator* toolEnumerator = [itemsPtr objectEnumerator];
     id element;
     while ( (element = [toolEnumerator nextObject]) )
@@ -2580,7 +2591,7 @@
     while ( (element = [toolEnumerator nextObject]) )
         {
         if ( [element isVisited] == YES )
-            [element updateForChangeInState];
+            [element updateForChangeInUpstreamState];
         }
 }
 

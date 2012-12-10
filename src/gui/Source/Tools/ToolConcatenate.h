@@ -20,7 +20,7 @@
 
 - (void)assembleNames:(NSMutableArray*)names usingMethod:(int)overlapMethod fromMatrices:(NSMutableArray*)alignedData;
 - (void)closeControlPanel;
-- (void)concatenateWithOverlap:(int)overlapMethod andMergeMethod:(int)mergeMethod;
+- (BOOL)concatenateWithOverlap:(int)overlapMethod andMergeMethod:(int)mergeMethod;
 - (NSMutableArray*)concatenateMatrices:alignedData forTaxa:(NSMutableArray*)names usingMergeMethod:(int)mergeMethod;
 - (int)numberOfIncomingAlignments;
 - (int)mininumNumberOfIncomingSequences;

@@ -29,6 +29,7 @@
 - (void)addTaxonData:(RbTaxonData*)td;
 - (void)addTaxonName:(NSString*)n;
 - (RbDataCell*)cellWithRow:(int)r andColumn:(int)c;
+- (void)cleanName:(NSString*)nameStr;
 - (void)clear;
 - (RbData*)copiedFrom;
 - (int)dataSize;

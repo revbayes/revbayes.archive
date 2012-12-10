@@ -49,6 +49,20 @@
 	[analysisViewPtr setNeedsDisplay:YES];
 }
 
+- (void)analysisError:(Tool*)badTool {
+
+    NSString* alertStr = [NSString stringWithFormat:@"Problem with \"%@\" tool", [badTool toolName]];
+
+    NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Analysis prematurely quit" 
+                                     defaultButton:@"OK" 
+                                   alternateButton:nil 
+                                       otherButton:nil 
+                         informativeTextWithFormat:alertStr];
+    [alert beginSheetModalForWindow:[analysisViewPtr window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+    //rbTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(removeFlags) userInfo:nil repeats:YES];
+    //isRbTimerActive = YES;
+}
+
 - (void)awakeFromNib {
 
 	// set the behavior of the analysis tool view and tool kit view
@@ -133,6 +147,7 @@
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"boundsChangeNotification"                  object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NSTableViewSelectionDidChangeNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"badAnalysis"                               object:nil];
 	[splitViewDelegate release];
     [analyses release];
 	[super dealloc];
@@ -148,11 +163,11 @@
         NSArray* cntArray = [NSArray arrayWithObjects:@"One",@"Two",@"Three",@"Four",@"Five",@"Six",@"Seven",@"Eight",@"Nine",@"Ten",@"Eleven",@"Twelve",nil];
         NSString* alertMsg;
         if ([a count] == 1)
-            alertMsg = [NSString stringWithString:@"A tool has been incompletely specified or lacks connections."];
+            alertMsg = @"A tool has been incompletely specified or lacks connections.";
         else if ([a count] <= 12)
             alertMsg = [NSString stringWithFormat:@"%@ tools have been incompletely specified or lack connections.", [cntArray objectAtIndex:([a count]-1)]];
         else 
-            alertMsg = [NSString stringWithFormat:@"Some tools (%d) have been incompletely specified or lack connections.", [a count]];
+            alertMsg = [NSString stringWithFormat:@"Some tools (%d) have been incompletely specified or lack connections.", (int)[a count]];
         NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Incomplete Analysis" 
                                          defaultButton:@"OK" 
                                        alternateButton:nil 
@@ -166,13 +181,14 @@
         }
 #   endif
 
-
+    goodAnalysis = YES;
     [NSThread detachNewThreadSelector:@selector(executeAnalysis) toTarget:self withObject:nil];
 }
 
 - (void)executeAnalysis {
 
     [executeButton setEnabled:NO];
+    
     // set the isCurrentlyExecuting flag for each tool to "NO"
 	NSEnumerator* toolEnumerator = [tools objectEnumerator];
     Tool* t = nil;
@@ -185,21 +201,30 @@
         
     // mark tools downstream from removed tools/connections as visited
     toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
+    Tool* badTool = nil;
     while ( (t = [toolEnumerator nextObject]) )
         {
         [t setIsCurrentlyExecuting:YES];
         [analysisViewPtr setNeedsDisplay:YES];
-        [t execute];
+        BOOL isSuccessful = [t execute];
         [analysisViewPtr setNeedsDisplay:YES];
         [t setIsCurrentlyExecuting:NO];
         [analysisViewPtr setNeedsDisplay:YES];
+        if (isSuccessful == NO)
+            {
+			//[t setFlagCount:1];
+            badTool = t;
+            goodAnalysis = NO;
+            break;
+            }
         }
     [executeButton setEnabled:YES];
+    
+    if (goodAnalysis == NO)
+        [self analysisError:badTool];
 }
 
 - (NSFileWrapper*)fileWrapperOfType:(NSString*)typeName error:(NSError**)outError {
-
-    NSLog(@"begin saving file");
 
 	// create the file wrapper directory
 	NSFileWrapper* fw = [[NSFileWrapper alloc] initDirectoryWithFileWrappers:nil];
@@ -224,9 +249,6 @@
 		return nil;
 		}
 	[fw addRegularFileWithContents:settingsData preferredFilename:@"settings"];
-    NSLog(@"end saving file");
-	
-    NSLog(@"finished saving data file");
     
 	// return the file wrapper object
 	return [fw autorelease];
@@ -262,6 +284,10 @@
 		[defaultCenter addObserver:self
 						  selector:@selector(toolSourceChanged:)
 							  name:@"NSTableViewSelectionDidChangeNotification"
+						    object:nil];
+		[defaultCenter addObserver:self
+						  selector:@selector(analysisError)
+							  name:@"badAnalysis"
 						    object:nil];
 
 		// allocate an array holding the pointers to the tools
@@ -373,6 +399,7 @@
 
 - (void)removeFlags {
 
+    NSLog(@"removeFlags");
 	BOOL killTimer = NO;
 	NSEnumerator* enumerator = [tools objectEnumerator];
 	id element;
@@ -389,7 +416,6 @@
 	if (killTimer == YES)
 		{
 		[rbTimer invalidate];
-		isRbTimerActive = NO;
 		}
 	[analysisViewPtr setNeedsDisplay:YES];
 }
@@ -419,6 +445,14 @@
 
     snapToGrid = x;
     [analysisViewPtr setSnapToGrid:x];
+}
+
+- (void)setExecutionFlagForAllToolsTo:(BOOL)tf {
+
+	NSEnumerator* toolEnumerator = [tools objectEnumerator];
+    Tool* t = nil;
+	while ( (t = [toolEnumerator nextObject]) )
+        [t setIsCurrentlyExecuting:tf];
 }
 
 - (BOOL)showGrid {

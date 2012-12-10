@@ -20,7 +20,7 @@
 
 - (void)addTaxonName:(NSString*)n {
 
-    [n stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+    [self cleanName:n];
 	[taxonNames addObject:n];
 }
 
@@ -32,6 +32,13 @@
     if (c >= [td numCharacters])
         return nil;
     return [td dataCellIndexed:c];
+}
+
+- (void)cleanName:(NSString*)nameStr {
+
+    nameStr = [nameStr stringByReplacingOccurrencesOfString:@"\'" withString:@""];
+    nameStr = [nameStr stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+    nameStr = [nameStr stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 }
 
 - (void)clear {
@@ -56,7 +63,6 @@
 
 - (void)dealloc {
 
-    NSLog(@"delete %@", self);
 	[data release];
 	[name release];
     [alignmentMethod release];
@@ -78,7 +84,6 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
-    NSLog(@"encoding RbData (%@) with %d taxa and %d characters", self, numTaxa, numCharacters);
     [aCoder encodeInt:dataType               forKey:@"dataType"];
     [aCoder encodeBool:isHomologyEstablished forKey:@"isHomologyEstablished"];
     [aCoder encodeObject:alignmentMethod     forKey:@"alignmentMethod"];
@@ -106,7 +111,6 @@
 
 	if ( [self isCharacterExcluded:idx] == NO )
         {
-        NSLog(@"excluding character with index = %d for matrix %@", idx, self);
         NSNumber* n = [[NSNumber alloc] initWithInt:idx];
 		[excludedCharacters addObject:n];
         [n release];
@@ -130,8 +134,6 @@
 }
 
 - (void)includeAllCharacters {
-
-    NSLog(@"including all characters");
 
     [excludedCharacters removeAllObjects];
 }
@@ -215,12 +217,12 @@
         alignmentMethod = [[NSString alloc] initWithString:@""];
 		
 		// allocate sets keeping track of excluded taxa and characters
-		excludedTaxa        = [[NSMutableSet alloc] init];
-		excludedCharacters  = [[NSMutableSet alloc] init];
+		excludedTaxa       = [[NSMutableSet alloc] init];
+		excludedCharacters = [[NSMutableSet alloc] init];
         
         // initialize some variables
-		numTaxa            = 0;
-		numCharacters      = 0;
+		numTaxa       = 0;
+		numCharacters = 0;
 
 		// copy information
 		if (d != nil)
@@ -237,7 +239,9 @@
                 copiedFrom = [d copiedFrom];
 			for (int i=0; i<[d numTaxa]; i++)
 				{
-				NSString* tn = [NSString stringWithString:[d taxonWithIndex:i]];
+				//NSString* tn = [NSString stringWithString:[d taxonWithIndex:i]];
+				NSString* tn = [[NSString alloc] initWithString:[d taxonWithIndex:i]];
+                [self cleanName:tn];
 				[taxonNames addObject:tn];
 				if ( [d isTaxonExcluded:i] == YES )
 					[excludedTaxa addObject:[NSNumber numberWithInt:i]];
@@ -457,6 +461,7 @@
                 [outStr appendString:@"   "];
                 NSString* tn = [td taxonName];
                 NSString* tn2 = [tn stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+                [self cleanName:tn2];
                 [outStr appendString:tn2];
                 [outStr appendString:@"   "];
                 for (int j=0; j<[td numCharacters]; j++)

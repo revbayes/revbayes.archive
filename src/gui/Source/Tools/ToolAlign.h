@@ -64,12 +64,11 @@ class CharacterData;
 - (void)closeControlPanel;
 - (void)decrementTaskCount;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
-- (void)execute;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (NSMutableAttributedString*)sendTip;
 - (void)showControlPanel;
-- (void)helperRunClustal:(id)sender;
+- (BOOL)helperRunClustal:(id)sender;
 - (void)receiveData:(NSNotification*)aNotification;
 - (void)taskCompleted;
 

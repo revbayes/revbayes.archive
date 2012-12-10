@@ -16,6 +16,7 @@
 @synthesize isCurrentlyExecuting;
 @synthesize isLoop;
 @synthesize isVisited;
+@synthesize isDirty;
 @synthesize workspaceName;
 
 - (void)addInletOfColor:(NSColor*)c {
@@ -34,6 +35,18 @@
 	[outlets addObject:ol];
     [ol release];
 	[self setOutletLocations];
+}
+
+- (BOOL)areAnyParentsDirty {
+
+    for (int i=0; i<[self numInlets]; i++)
+        {
+        Inlet* theInlet = [self inletIndexed:i];
+        Tool* t = [self getParentToolOfInlet:theInlet];
+        if ( [t isDirty] == YES)
+            return YES;
+        }
+    return NO;
 }
 
 - (void)awakeFromNib {
@@ -70,13 +83,11 @@
     [super encodeWithCoder:aCoder];
 }
 
-- (void)execute {
-
-    NSLog(@"Executing tool %@", self);
+- (BOOL)execute {
     
     [self startProgressIndicator];
-    
     [self stopProgressIndicator];
+    return YES;
 }
 
 - (InOutlet*)findInOutletWithColor:(NSColor*)c {
@@ -150,6 +161,7 @@
 		flagCount         = 0;
 		touchOnRevival    = NO;
         isLoop            = NO;
+        isDirty           = NO;
 		}
     return self;
 }
@@ -165,6 +177,7 @@
 		flagCount         = 0;
 		touchOnRevival    = NO;
         isLoop            = NO;
+        isDirty           = NO;
         }
     return self;
 }
@@ -183,6 +196,7 @@
         [inlets retain];
         [outlets retain];
         [workspaceName retain];
+        isDirty           = NO;
 		}
 	return self;
 }
@@ -474,6 +488,11 @@
 #   endif
 }
 
+- (BOOL)resolveStateOnWindowOK {
+
+    return YES;
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" This is a tool ";
@@ -551,7 +570,6 @@
     [progressIndicator setIndeterminate:YES];
     [progressIndicator setColor:[NSColor blueColor]];
     [progressIndicator startAnimation:self];
-    NSLog(@"startProgressIndicator");
 }
 
 - (void)stopProgressIndicator {
@@ -559,16 +577,19 @@
     [progressIndicator stopAnimation:self];
     [progressIndicator removeFromSuperview];
     progressIndicator = nil;
-    NSLog(@"stopProgressIndicator");
+}
+
+- (NSString*)toolName {
+
+    return @"Unnamed tool";
 }
 
 - (void)updateDownstreamTools {
 
-    NSLog(@"updateDownstreamTools (%@)", self);
     [myAnalysisView updateToolsDownstreamFromTool:self];
 }
 
-- (void)updateForChangeInState {
+- (void)updateForChangeInUpstreamState {
 
 }
 

@@ -27,17 +27,7 @@
 - (IBAction)okButtonAction:(id)sender {
 
     [myTool closeControlPanel];
-    
-    int overlapMethod, mergeMethod;
-    if ( [[minOrMaxOverlapButton titleOfSelectedItem] isEqualToString:@"Minimal overlap among sequences"] == YES )
-        overlapMethod = MINIMAL_OVERLAP_METHOD;
-    else
-        overlapMethod = MAXIMAL_OVERLAP_METHOD;
-    if ( [[seqMatchMethodButton titleOfSelectedItem] isEqualToString:@"Merge by data type"] == YES )
-        mergeMethod = MERGE_BY_DATA_TYPE;
-    else
-        mergeMethod = MERGE_UNCONDITIONALLY;
-    [myTool concatenateWithOverlap:overlapMethod andMergeMethod:mergeMethod];
+    [myTool resolveStateOnWindowOK];
 }
 
 - (int)mergeMethod {

@@ -964,7 +964,12 @@
 //    [dataInspector showWindow:self];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
+
+    return @"MCMC Diagnostics";
+}
+
+- (void)updateForChangeInUpstreamState {
     
     // set the tool state to unresolved
     [self setIsResolved:NO];
@@ -1006,8 +1011,6 @@
         [self setIsResolved:YES];
     }
     
-    // call the update for the super class, to pass on the call to downstream tools
-	[super updateForChangeInState];
 }
 
 

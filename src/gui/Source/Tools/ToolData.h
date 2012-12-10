@@ -22,7 +22,6 @@ class CharacterData;
 - (NSMutableArray*)dataMatrices;
 - (RbData*)dataMatrixIndexed:(int)i;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
-- (void)execute;
 - (NSMutableArray*)getAlignedData;
 - (NSMutableArray*)getUnalignedData;
 - (id)initWithCoder:(NSCoder*)aDecoder;

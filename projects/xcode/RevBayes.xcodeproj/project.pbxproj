@@ -693,7 +693,6 @@
 		22F4079C15F93BB6001A7016 /* Unselected_Information_Blue.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22F4052E15F93BB6001A7016 /* Unselected_Information_Blue.icns */; };
 		22F4079D15F93BB6001A7016 /* Unselected_Magnifier.icns in Resources */ = {isa = PBXBuildFile; fileRef = 22F4052F15F93BB6001A7016 /* Unselected_Magnifier.icns */; };
 		22F4079E15F93BB6001A7016 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22F4053015F93BB6001A7016 /* main.mm */; };
-		22F4079F15F93BB6001A7016 /* RevBayesGUI-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F4053115F93BB6001A7016 /* RevBayesGUI-Info.plist */; };
 		22F407A015F93BB6001A7016 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F4053515F93BB6001A7016 /* Info.plist */; };
 		22F407A115F93BB6001A7016 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22F4053815F93BB6001A7016 /* InfoPlist.strings */; };
 		22F407A215F93BB6001A7016 /* rbhelp100.html in Resources */ = {isa = PBXBuildFile; fileRef = 22F4053B15F93BB6001A7016 /* rbhelp100.html */; };
@@ -4087,7 +4086,7 @@
 		85CD0225133948C300318200 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0410;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = 85CD0228133948C400318200 /* Build configuration list for PBXProject "RevBayes" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -4327,7 +4326,6 @@
 				22F4079B15F93BB6001A7016 /* Unselected_Information.icns in Resources */,
 				22F4079C15F93BB6001A7016 /* Unselected_Information_Blue.icns in Resources */,
 				22F4079D15F93BB6001A7016 /* Unselected_Magnifier.icns in Resources */,
-				22F4079F15F93BB6001A7016 /* RevBayesGUI-Info.plist in Resources */,
 				22F407A015F93BB6001A7016 /* Info.plist in Resources */,
 				22F407A115F93BB6001A7016 /* InfoPlist.strings in Resources */,
 				22F407A215F93BB6001A7016 /* rbhelp100.html in Resources */,
@@ -5148,6 +5146,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -5164,6 +5163,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;

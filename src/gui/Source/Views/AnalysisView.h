@@ -29,6 +29,7 @@
 - (BOOL)isPoint:(NSPoint)p inLineSegmentDefinedByPoint:(NSPoint)a andPoint:(NSPoint)b;
 - (void)keyDown:(NSEvent*)event;
 - (NSBezierPath*)makePathForNumber:(int)n;
+- (void)markAllToolsAsClean;
 - (void)mouseDown:(NSEvent*)event;
 - (NSPoint)newPointDistance:(float)d betweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;
 - (BOOL)readFromPasteboard:(NSPasteboard*)pb;

@@ -91,7 +91,8 @@
         RbData* m = [[RbData alloc] init];
         [self initializeDataMatrix:m];
         [self addMatrix:m];
-        [self instantiateDataInCore];
+        //[self instantiateDataInCore];
+        [self makeDataInspector];
         hasInspectorInfo = NO;
 		
 		// initialize the control window and the data inspector
@@ -182,7 +183,12 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
+
+    return @"Morphological Data Entry";
+}
+
+- (void)updateForChangeInUpstreamState {
 
 }
 

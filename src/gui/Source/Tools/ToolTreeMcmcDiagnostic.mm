@@ -98,5 +98,9 @@
     return attrString;
 }
 
+- (NSString*)toolName {
+
+    return @"MCMC Tree Diagnostics";
+}
 
 @end

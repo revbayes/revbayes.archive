@@ -17,6 +17,7 @@
     BOOL                          isVisited;
     BOOL                          isCurrentlyExecuting;
     BOOL                          isLoop;
+    BOOL                          isDirty;
     YRKSpinningProgressIndicator* progressIndicator;
     NSString*                     workspaceName;
 }
@@ -25,15 +26,17 @@
 @property (readwrite)        BOOL      touchOnRevival;
 @property (readwrite)        BOOL      isCurrentlyExecuting;
 @property (readwrite)        BOOL      isLoop;
+@property (readwrite)        BOOL      isDirty;
 @property (readwrite)        BOOL      isVisited;
 @property (readwrite,retain) NSString* workspaceName;
 
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;
+- (BOOL)areAnyParentsDirty;
 - (NSColor*)colorOfInletIndexed:(int)idx;
 - (NSColor*)colorOfOutletIndexed:(int)idx;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
-- (void)execute;
+- (BOOL)execute;
 - (InOutlet*)findInOutletWithColor:(NSColor*)c;
 - (Tool*)getParentToolOfInlet:(Inlet*)inlt;
 - (Tool*)getParentToolOfInletIndexed:(int)idx;
@@ -59,6 +62,7 @@
 - (void)removeAllOutlets;
 - (void)removeFilesFromTemporaryDirectory;
 - (void)removeInletOfColor:(NSColor*)c;
+- (BOOL)resolveStateOnWindowOK;
 - (NSMutableAttributedString*)sendTip;
 - (void)setAnalysisView:(AnalysisView*)av;
 - (void)setImageWithSize:(NSSize)s;
@@ -68,7 +72,10 @@
 - (void)showInspectorPanel;
 - (void)startProgressIndicator;
 - (void)stopProgressIndicator;
-- (void)updateForChangeInState;
+- (NSString*)toolName;
+- (void)updateForChangeInUpstreamState;
 - (void)updateDownstreamTools;
+
+
 
 @end

@@ -19,7 +19,6 @@
 - (void)closeControlPanel;
 - (void)closeInspectorPanel;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
-- (void)execute;
 - (GuiTree*)getTreeIndexed:(int)idx;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

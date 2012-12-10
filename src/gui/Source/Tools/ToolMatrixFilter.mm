@@ -1,3 +1,4 @@
+#import "AnalysisView.h"
 #import "Inlet.h"
 #import "InOutlet.h"
 #import "RbData.h"
@@ -90,6 +91,14 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (BOOL)resolveStateOnWindowOK {
+
+    [myAnalysisView markAllToolsAsClean];
+    [self setIsDirty:YES];
+    [myAnalysisView updateToolsDownstreamFromTool:self];
+    return YES;
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Matrix Filter Tool ";
@@ -121,9 +130,12 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
 
-    NSLog(@"updateForChangeInState in %@", self);
+    return @"Matrix Filter";
+}
+
+- (void)updateForChangeInUpstreamState {
 
     [self startProgressIndicator];
     

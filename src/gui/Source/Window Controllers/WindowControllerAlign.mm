@@ -87,18 +87,20 @@
 
 - (IBAction)okButtonAction:(id)sender {
 
+
+
 	NSString* methodLabel = [NSString stringWithString:[[alignmentMethodSelectorTab selectedTabViewItem] label]];
 	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
         {
         // close the window
-        [myTool closeControlPanel];
         
+        [myTool closeControlPanel];
         [myTool setAlignmentMethod:alignmentMethod];
 
-        // the user wants us to use the CLUSTAL program
-        // set the clustal parameters
         if ( alignmentMethod == ALN_CLUSTAL )
             {
+            // the user wants us to use the CLUSTAL program
+            // set the clustal parameters
             [myTool setClustalAlign:                clustalAlign];
             [myTool setClustalWordLength:           clustalWordLength];            
             [myTool setClustalWindow:               clustalWindow];
@@ -114,8 +116,7 @@
             [myTool setClustalNumberOfIterations:   clustalNumberOfIterations];  
             }
         
-        // run clustal
-        [myTool alignSequences];
+        [myTool resolveStateOnWindowOK];
         }
     else
         {

@@ -21,86 +21,6 @@
 @synthesize pathName;
 @synthesize isDataFormatAutomaticallyDetermined;
 
-- (void)addBlankDataMatrix {
-
-    // allocate the matrix
-    RbData* m = [[RbData alloc] init];
-    
-    // set the dimensions
-    [m setNumTaxa:[self numberOfTaxa]];
-    [m setNumCharacters:[self numberOfCharacters]];
-    
-    // set the name
-    [m setName:@"Blank Data Matrix"];
-    
-    // set the data type
-    if ( [[dataTypeButton2 titleOfSelectedItem] isEqualToString:@"DNA"] == YES )
-        [m setDataType:DNA];
-    else if ( [[dataTypeButton2 titleOfSelectedItem] isEqualToString:@"RNA"] == YES )
-        [m setDataType:RNA];
-    else if ( [[dataTypeButton2 titleOfSelectedItem] isEqualToString:@"Protein"] == YES )
-        [m setDataType:AA];
-    else if ( [[dataTypeButton2 titleOfSelectedItem] isEqualToString:@"Standard"] == YES )
-        [m setDataType:STANDARD];
-    else if ( [[dataTypeButton2 titleOfSelectedItem] isEqualToString:@"Continuous"] == YES )
-        [m setDataType:CONTINUOUS];
-        
-    // set a flag if the data is discrete or continuous
-    BOOL isDiscrete = YES;
-    if ( [[dataTypeButton2 titleOfSelectedItem] isEqualToString:@"Continuous"] == YES )
-        isDiscrete = NO;
-        
-    // fill in the matrix with missing data entries
-    for (int i=0; i<[m numTaxa]; i++)
-        {
-        NSString* tn = [NSString stringWithFormat:@"Taxon_%d", i+1];
-        [m addTaxonName:tn];
-        RbTaxonData* td = [[RbTaxonData alloc] init];
-        [td setTaxonName:tn];
-        for (int j=0; j<[m numCharacters]; j++)
-            {
-            RbDataCell* cell = [[RbDataCell alloc] init];
-            if ( isDiscrete == YES )
-                {
-                [cell setIsDiscrete:YES];
-                [cell setDataType:[m dataType]];
-                if ( [m dataType] == DNA || [m dataType] == RNA )
-                    {
-                    [cell setNumStates:4];
-                    [cell setVal:[NSNumber numberWithUnsignedInt:[self missingForNumStates:4]]];
-                    }
-                else if ( [m dataType] == AA )
-                    {
-                    [cell setNumStates:20];
-                    [cell setVal:[NSNumber numberWithUnsignedInt:[self missingForNumStates:20]]];
-                   }
-                else if ( [m dataType] == STANDARD )
-                    {
-                    [cell setNumStates:2];
-                    [cell setVal:[NSNumber numberWithUnsignedInt:[self missingForNumStates:2]]];
-                    }
-                
-                    
-                }
-            else 
-                {
-                NSNumber* n = [NSNumber numberWithDouble:0.0];
-                [cell setVal:n];
-                [cell setIsDiscrete:NO];
-                [cell setDataType:CONTINUOUS];
-                [cell setNumStates:0];
-                }
-            [cell setRow:i];
-            [cell setColumn:j];
-            [td addObservation:cell];
-            [cell release];
-            }
-        [m addTaxonData:td];
-        }
-        
-    // add the matrix to the tool
-    [myTool addMatrix:m];
-}
 
 - (void)awakeFromNib {
 	
@@ -175,15 +95,19 @@
 	return self;
 }
 
-- (unsigned)missingForNumStates:(int)n {
+- (BOOL)isBlankMatrixOfDataType:(NSString*)dt {
 
-	unsigned val = 0;
-	for (int i=0; i<n; i++)
-		{
-        unsigned mask = 1 << i ;
-        val |= mask;
-		}
-	return val;
+    if ( [[dataTypeButton2 titleOfSelectedItem] isEqualToString:dt] == YES )
+        return YES;
+    return NO;
+}
+
+- (BOOL)makeBlankMatrix {
+
+	NSString* tabViewLabel = [NSString stringWithString:[[matrixTypeTab selectedTabViewItem] label]];
+	if ( [tabViewLabel isEqualToString:@"Data Matrix"] == YES )
+        return NO;
+    return YES;
 }
 
 - (IBAction)okButtonAction:(id)sender {
@@ -195,28 +119,14 @@
 	[self setToolValues];
 
 	// perform the action
-	NSString* tabViewLabel = [NSString stringWithString:[[matrixTypeTab selectedTabViewItem] label]];
-	if ( [tabViewLabel isEqualToString:@"Data Matrix"] == YES )
+    [myTool closeControlPanel];
+    BOOL isSuccessful = [myTool resolveStateOnWindowOK];
+    if (isSuccessful == YES)
         {
-		// user selected "OK" for a data matrix (to be read into computer memory)
-        [myTool closeControlPanel];
-		BOOL isSuccessful = [myTool readDataFile];
-		if (isSuccessful == YES)
-			{
-			}
-		else 
-			{
-			}
-		}
-	else 
-		{
-		// user selected "OK" for a blank data matrix
-		[myTool closeControlPanel];
-		[myTool removeAllDataMatrices];
-        [self addBlankDataMatrix];
-		[myTool updateForChangeInState];
-        [myTool setIsResolved:YES];
-		}
+        }
+    else 
+        {
+        }
 }
 
 - (void)setControlWindowSize {

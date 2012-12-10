@@ -40,12 +40,13 @@
 	[super encodeWithCoder:aCoder];
 }
 
-- (void)execute {
+- (BOOL)execute {
 
-    [self exhaustiveSearch];
+    BOOL isSuccessful = [self exhaustiveSearch];
+    return isSuccessful;
 }
 
-- (void)exhaustiveSearch {
+- (BOOL)exhaustiveSearch {
 
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
@@ -61,7 +62,7 @@
             }
         }
     if ( dataTool == nil )
-        return;
+        return NO;
 
     // calculate how many aligned data matrices exist
     NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
@@ -75,13 +76,7 @@
     RbData* d = nil;
     if ( [alignedData count] == 0 )
         {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Parsimony tool data input" 
-                                         defaultButton:@"OK" 
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:@"This tool is not connected to a data matrix."];
-        [alert beginSheetModalForWindow:[myAnalysisView window] modalDelegate:myAnalysisView didEndSelector:nil contextInfo:NULL];
-        return;
+        return NO;
         }
     else if ( [alignedData count] == 1 )
         {
@@ -89,13 +84,7 @@
         }
     else
         {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Parsimony tool data input" 
-                                         defaultButton:@"OK" 
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:@"This tool can only be connected to a single data matrix."];
-        [alert beginSheetModalForWindow:[myAnalysisView window] modalDelegate:myAnalysisView didEndSelector:nil contextInfo:NULL];
-        return;
+        return NO;
         }
         
     // check to see if a tree container is downstream of this tool. If so, then purge
@@ -116,12 +105,11 @@
         }
                 
     // how many taxa/nodes/characters
-    int numTaxa = [d numTaxa];
+    int numTaxa = [d numTaxa] - [d numExcludedTaxa];
     int numNodes = 2 * numTaxa - 2;
-    numCharacters = [d numCharacters];
-    
-    NSLog(@"nt=%d nc=%d nn=%d", numTaxa, numCharacters, numNodes);
-    
+    numCharacters = [d numCharacters] - [d numExcludedCharacters];
+    NSLog(@"numTaxa=%d numCharacters=%d numNodes=%d", numTaxa, numCharacters, numNodes);
+        
     // set up vectors of unsigned ints holding the data for parsimony calculations
     stateSets = new unsigned*[numNodes];
     stateSets[0] = new unsigned[numNodes*numCharacters];
@@ -133,30 +121,40 @@
     for (int i=0; i<numNodes; i++)
         for (int j=0; j<numCharacters; j++)
             stateSets[i][j] = 0;
-    for (int i=0; i<numTaxa; i++)
+    for (int i=0, i1=0; i<[d numTaxa]; i++)
         {
-        for (int j=0; j<numCharacters; j++)
+        if ([d isTaxonExcluded:i] == NO)
             {
-            RbDataCell* c = [d cellWithRow:i andColumn:j];
-            if ( [c isGapState] == YES || [c isAmbig] == YES )
+            for (int j=0, j1=0; j<[d numCharacters]; j++)
                 {
-                unsigned x = 0;
-                for (int k=0; k<[c numStates]; k++)
-                    x += (int)(pow(2.0, (double)k));
-                stateSets[i][j] = x;
+                if ([d isCharacterExcluded:j] == NO)
+                    {
+                    RbDataCell* c = [d cellWithRow:i andColumn:j];
+                    if ( [c isGapState] == YES || [c isAmbig] == YES )
+                        {
+                        unsigned x = 0;
+                        for (int s=0; s<[c numStates]; s++)
+                            x += (int)(pow(2.0, (double)s));
+                        stateSets[i1][j1] = x;
+                        }
+                    else
+                        {
+                        stateSets[i1][j1] = [c unsignedRepresentation];
+                        }
+                    j1++;
+                    }
                 }
-            else
-                {
-                stateSets[i][j] = [c unsignedRepresentation];
-                }
+            i1++;
             }
         }
     
-    for (int i=0; i<numNodes; i++)
+    for (int j=0; j<numCharacters; j++)
         {
-        std::cout << std::setw(3) << i << " -- ";
-        for (int j=0; j<numCharacters; j++)
-            std::cout << std::setw(3) << stateSets[i][j];
+        std::cout << std::setw(4) << j << " -- ";
+        for (int i=0; i<numTaxa; i++)
+            {
+            std::cout << std::setw(2) << stateSets[i][j];
+            }
         std::cout << std::endl;
         }
     
@@ -164,20 +162,24 @@
     NSMutableArray* nodeContainer = [NSMutableArray arrayWithCapacity:numNodes];
     NSMutableArray* availableTips = [NSMutableArray arrayWithCapacity:1];
     NSMutableArray* availableInts = [NSMutableArray arrayWithCapacity:1];
-    for (int i=0; i<numNodes; i++)
+    for (int i=0, k=0; i<[d numTaxa]; i++)
         {
-        Node* nde = [[Node alloc] init];
-        [nde setIndex:i];
-        if (i < numTaxa)
+        if ([d isTaxonExcluded:i] == NO)
             {
+            Node* nde = [[Node alloc] init];
+            [nde setIndex:k++];
             [nde setName:[d taxonWithIndex:i]];
             [nde setIsLeaf:YES];
             [availableTips addObject:nde];
+            [nodeContainer addObject:nde];
+            [nde release];
             }
-        else 
-            {
-            [availableInts addObject:nde];
-            }
+        }
+    for (int i=numTaxa; i<numNodes; i++)
+        {
+        Node* nde = [[Node alloc] init];
+        [nde setIndex:i];
+        [availableInts addObject:nde];
         [nodeContainer addObject:nde];
         [nde release];
         }
@@ -227,7 +229,7 @@
             }
         }
     if ( treeSetTool == nil )
-        return;
+        return YES;
         
     for (int i=0; i<[bestTrees count]; i++)
         {
@@ -252,6 +254,8 @@
 
     if ( [alignedData count] > 1 )
         [d release];
+    
+    return YES;
 }
 
 - (int)parsimonyScoreForTree:(GuiTree*)t {
@@ -517,6 +521,41 @@
 	[controlWindow showWindow:self];    
 	[[controlWindow window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[controlWindow window]];
+}
+
+- (NSString*)toolName {
+
+    return @"Parsimony";
+}
+
+- (void)updateForChangeInUpstreamState {
+
+    isResolved = YES;
+    // find the parent of this tool, which should be an instance of ToolData
+    ToolData* dataTool = nil;
+    for (int i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (int j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        isResolved = NO;
+
+    // calculate how many aligned data matrices exist
+    NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            [alignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+    if ( [alignedData count] != 1 )
+        isResolved = NO;
 }
 
 @end

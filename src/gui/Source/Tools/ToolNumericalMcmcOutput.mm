@@ -445,6 +445,11 @@
     [dataInspector showWindow:self];
 }
 
+- (NSString*)toolName {
+
+    return @"MCMC Numerical Output";
+}
+
 - (void)windowDidLoad {
     
 }

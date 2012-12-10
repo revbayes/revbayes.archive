@@ -57,7 +57,8 @@ class NclReader{
                                                 NclReader(void) { }                                                             //!< Default constructor
                                                 NclReader(const NclReader& r) { }                                               //!< Copy constructor
         virtual                                ~NclReader(void) { }                                                             //!< Destructor
-        
+    
+        void                                    cleanName(std::string& tName);
         CharacterData*                          createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
         CharacterData*                          createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
         CharacterData*                          createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data

@@ -20,6 +20,8 @@
 #import "AnalysisView.h"
 #import "InOutlet.h"
 #import "RbData.h"
+#import "RbDataCell.h"
+#import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolReadData.h"
 #import "WindowControllerReadData.h"
@@ -38,6 +40,91 @@
 @synthesize numberOfCharacters;
 @synthesize numberOfTaxa;
 @synthesize pathName;
+
+- (void)addBlankDataMatrix {
+
+    // allocate the matrix
+    RbData* m = [[RbData alloc] init];
+    
+    // set the dimensions
+    [m setNumTaxa:[self numberOfTaxa]];
+    [m setNumCharacters:[self numberOfCharacters]];
+    
+    // set the name
+    [m setName:@"Blank Data Matrix"];
+    
+    // set the data type
+    if ( [controlWindow isBlankMatrixOfDataType:@"DNA"] == YES )
+        [m setDataType:DNA];
+    else if ( [controlWindow isBlankMatrixOfDataType:@"RNA"] == YES )
+        [m setDataType:RNA];
+    else if ( [controlWindow isBlankMatrixOfDataType:@"Protein"] == YES )
+        [m setDataType:AA];
+    else if ( [controlWindow isBlankMatrixOfDataType:@"Standard"] == YES )
+        [m setDataType:STANDARD];
+    else if ( [controlWindow isBlankMatrixOfDataType:@"Continuous"] == YES )
+        [m setDataType:CONTINUOUS];
+        
+    // set a flag if the data is discrete or continuous
+    BOOL isDiscrete = YES;
+    if ( [controlWindow isBlankMatrixOfDataType:@"Continuous"] == YES )
+        isDiscrete = NO;
+        
+    // fill in the matrix with missing data entries
+    for (int i=0; i<[m numTaxa]; i++)
+        {
+        NSString* tn = [NSString stringWithFormat:@"Taxon_%d", i+1];
+        [m addTaxonName:tn];
+        RbTaxonData* td = [[RbTaxonData alloc] init];
+        [td setTaxonName:tn];
+        for (int j=0; j<[m numCharacters]; j++)
+            {
+            RbDataCell* cell = [[RbDataCell alloc] init];
+            if ( isDiscrete == YES )
+                {
+                [cell setIsDiscrete:YES];
+                [cell setDataType:[m dataType]];
+                if ( [m dataType] == DNA || [m dataType] == RNA )
+                    {
+                    [cell setNumStates:4];
+                    [cell setVal:[NSNumber numberWithUnsignedInt:[self missingForNumStates:4]]];
+                    }
+                else if ( [m dataType] == AA )
+                    {
+                    [cell setNumStates:20];
+                    [cell setVal:[NSNumber numberWithUnsignedInt:[self missingForNumStates:20]]];
+                   }
+                else if ( [m dataType] == STANDARD )
+                    {
+                    [cell setNumStates:2];
+                    [cell setVal:[NSNumber numberWithUnsignedInt:[self missingForNumStates:2]]];
+                    }
+                
+                    
+                }
+            else 
+                {
+                NSNumber* n = [NSNumber numberWithDouble:0.0];
+                [cell setVal:n];
+                [cell setIsDiscrete:NO];
+                [cell setDataType:CONTINUOUS];
+                [cell setNumStates:0];
+                }
+            [cell setRow:i];
+            [cell setColumn:j];
+            [td addObservation:cell];
+            [cell release];
+            }
+        [m addTaxonData:td];
+        }
+        
+    // add the matrix to the tool
+    [self removeAllDataMatrices];
+    [self addMatrix:m];
+
+    [self makeDataInspector];
+    [self setIsResolved:YES];
+}
 
 - (void)awakeFromNib {
 
@@ -189,6 +276,17 @@
     return YES;
 }
 
+- (unsigned)missingForNumStates:(int)n {
+
+	unsigned val = 0;
+	for (int i=0; i<n; i++)
+		{
+        unsigned mask = 1 << i ;
+        val |= mask;
+		}
+	return val;
+}
+
 - (BOOL)readDataFile {
 
     // make an array containing the valid file types that can be chosen
@@ -248,7 +346,6 @@
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-    std::cout << "line=" << line << std::endl;
     int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -307,11 +404,28 @@
     [self makeDataInspector];
 
     [self stopProgressIndicator];
-        
     [self setIsResolved:YES];
-    [myAnalysisView updateToolsDownstreamFromTool:self];
 
 	return YES;
+}
+
+- (BOOL)resolveStateOnWindowOK {
+
+    if ([controlWindow makeBlankMatrix] == NO)
+        {
+        BOOL isSuccessful = [self readDataFile];
+        if ( isSuccessful == YES )
+            [myAnalysisView updateToolsDownstreamFromTool:self];
+        return isSuccessful;
+        }
+    else
+        {
+        // make a blank matrix
+        [self addBlankDataMatrix];
+        [myAnalysisView updateToolsDownstreamFromTool:self];
+        return YES;
+        }
+    return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {
@@ -344,9 +458,13 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
 
-    NSLog(@"updateForChangeInState in %@", self);
+    return @"Read Data";
+}
+
+- (void)updateForChangeInUpstreamState {
+
 }
 
 @end

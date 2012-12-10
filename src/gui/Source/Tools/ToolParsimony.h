@@ -23,8 +23,7 @@
 - (void)addTaxonFromList:(NSMutableArray*)availableTaxa toTree:(NSMutableArray*)nodes usingSpareNodes:(NSMutableArray*)spares treeObject:(GuiTree*)t;
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
-- (void)execute;
-- (void)exhaustiveSearch;
+- (BOOL)exhaustiveSearch;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (void)printNodeInformationForTree:(GuiTree*)t atSite:(int)site;

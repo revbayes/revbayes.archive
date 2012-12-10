@@ -542,8 +542,9 @@
 	[excludedTaxaMatrices removeAllObjects];
 
     [myTool closeControlPanel];
-    
     [myTool makeDataInspector];
+    
+    [myTool resolveStateOnWindowOK];
 }
 
 - (void)setControlWindowSize {

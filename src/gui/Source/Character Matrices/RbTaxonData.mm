@@ -13,6 +13,13 @@
     [data addObject:dc];
 }
 
+- (void)cleanName:(NSString*)nameStr {
+
+    nameStr = [nameStr stringByReplacingOccurrencesOfString:@"\'" withString:@""];
+    nameStr = [nameStr stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+    nameStr = [nameStr stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+}
+
 - (RbDataCell*)dataCellIndexed:(int)idx {
 
 	return [data objectAtIndex:idx];
@@ -37,8 +44,8 @@
     if ( (self = [super init]) ) 
         {
 		// allocate an array holding the data
-		data       = [[NSMutableArray alloc] init];
-		taxonName  = [[NSString alloc] init];
+		data      = [[NSMutableArray alloc] init];
+		taxonName = [[NSString alloc] init];
 		
         // initialize some variables
 		dataType = 0;
@@ -50,9 +57,9 @@
 
     if ( (self = [super init]) ) 
 		{
-        dataType            = [aDecoder decodeIntForKey:@"dataType"];
-		data                = [aDecoder decodeObjectForKey:@"data"];
-		taxonName           = [aDecoder decodeObjectForKey:@"taxonName"];
+        dataType  = [aDecoder decodeIntForKey:@"dataType"];
+		data      = [aDecoder decodeObjectForKey:@"data"];
+		taxonName = [aDecoder decodeObjectForKey:@"taxonName"];
 		[data retain];
 		[taxonName retain];
 		}
@@ -64,21 +71,25 @@
     if ( (self = [super init]) ) 
 		{
 		// allocate an array holding the data
-		data      = [[NSMutableArray alloc] init];
-		taxonName = [[NSString alloc] init];
+		data = [[NSMutableArray alloc] init];
 		
 		// copy information
 		if (d != nil)
 			{
-			dataType      = [d dataType];
-			taxonName     = [NSString stringWithString:[d taxonName]];
+			dataType  = [d dataType];
+			taxonName = [[NSString alloc] initWithString:[d taxonName]];
+            [self cleanName:taxonName];
 			for (int i=0; i<[d numCharacters]; i++)
 				{
-				RbDataCell* c = [d dataCellIndexed:i]; 
+				RbDataCell* c    = [d dataCellIndexed:i]; 
 				RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
 				[data addObject:newC];
 				}
 			}
+        else
+            {
+            taxonName = [[NSString alloc] init];
+            }
 		}
     return self;
 }
@@ -88,14 +99,14 @@
     if ( (self = [super init]) ) 
 		{
 		// allocate an array holding the data
-		data      = [[NSMutableArray alloc] init];
-		taxonName = [[NSString alloc] init];
+		data = [[NSMutableArray alloc] init];
 		
 		// copy information
 		if (mr != nil)
 			{
 			dataType  = STANDARD; // the MatrixRowInformation class only deals with standard data type
-			taxonName = [NSString stringWithString:[mr valueForKey:@"Taxon Name"]];
+			taxonName = [[NSString alloc] initWithString:[mr valueForKey:@"Taxon Name"]];
+            [self cleanName:taxonName];
 			for (int i=0; i<[mr numberOfColumns]-1; i++)
 				{
                 int intVal = [mr integerRepresentationForCharacter:i];
@@ -111,6 +122,10 @@
                 [data addObject:dc];
 				}
 			}
+        else
+            {
+            taxonName = [[NSString alloc] init];
+            }
 		}
     return self;
 }
@@ -120,15 +135,28 @@
     return (int)[data count];
 }
 
+- (void)print {
+
+    NSString* prtStr = [NSString stringWithString:taxonName];
+    [prtStr stringByAppendingFormat:@"\nDataType=%d\n", dataType];
+    for (RbDataCell* c in [data objectEnumerator])
+        {
+        char state = [c getDiscreteState];
+        [prtStr stringByAppendingFormat:@"%c", state];
+        }
+    NSLog(@"%@", prtStr);
+}
+
 - (void)setTaxonName:(NSString*)tn {
 
     if (tn != taxonName)
         {
         tn = [tn stringByReplacingOccurrencesOfString:@"\'" withString:@""];
         tn = [tn stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+        tn = [tn stringByReplacingOccurrencesOfString:@" " withString:@"_"];
         [tn retain];
-        [taxonName release];
         taxonName = tn;
+        //[taxonName release];
         }
 }
 

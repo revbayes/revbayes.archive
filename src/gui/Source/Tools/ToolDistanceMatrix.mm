@@ -441,4 +441,9 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
+- (NSString*)toolName {
+
+    return @"Disance Matrix";
+}
+
 @end

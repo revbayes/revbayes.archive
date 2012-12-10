@@ -3,6 +3,7 @@
 @class AnalysisSplitViewDelegate;
 @class AnalysisTools;
 @class AnalysisView;
+@class Tool;
 
 
 
@@ -23,12 +24,14 @@
 	BOOL                                  showGrid;
 	NSTimer*                              rbTimer;
 	BOOL                                  isRbTimerActive;
+    BOOL                                  goodAnalysis;
 }
 
-@property (readonly) AnalysisView* analysisViewPtr;
-@property (readwrite) BOOL isRbTimerActive;
+@property (readonly)  AnalysisView* analysisViewPtr;
+@property (readwrite) BOOL          isRbTimerActive;
 
 - (IBAction)addAnalysis:(id)sender;
+- (void)analysisError:(Tool*)badTool;
 - (NSMutableArray*)checkAnalysis;
 - (IBAction)copyAnalysis:(id)sender;
 - (IBAction)executeButton:(id)sender;
@@ -42,6 +45,7 @@
 - (void)removeFlags;
 - (void)scaleToolsByScale:(float)s andFactor:(float)f;
 - (void)selectAllTools;
+- (void)setExecutionFlagForAllToolsTo:(BOOL)tf;
 - (void)setShowGrid:(BOOL)x;
 - (void)setSnapToGrid:(BOOL)x;
 - (BOOL)showGrid;

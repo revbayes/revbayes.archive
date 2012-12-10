@@ -32,10 +32,12 @@
 @property (readwrite)        int       numberOfTaxa;
 @property (readwrite)        int       matrixType;
 
+- (void)addBlankDataMatrix;
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
+- (unsigned)missingForNumStates:(int)n;
 - (BOOL)readDataFile;
 - (NSMutableAttributedString*)sendTip;
 - (void)showControlPanel;

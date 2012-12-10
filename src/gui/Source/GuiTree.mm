@@ -492,7 +492,8 @@
             }
         
         } while (continueRotatingTree == YES);
-        
+    
+    [self print];
     // determine the downpass sequence
     initializedDownPass = NO;
     [self initializeDownPassSequence];

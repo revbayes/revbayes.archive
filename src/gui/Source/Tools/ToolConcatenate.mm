@@ -101,6 +101,7 @@
                 for (NSString* name in [names objectEnumerator])
                     {
                     RbTaxonData* td = [[RbTaxonData alloc] init];
+                    int k = 0;
                     for (RbData* d in [alignedData objectEnumerator])
                         {
                         if ([d dataType] == i)
@@ -113,7 +114,10 @@
                                     {
                                     RbDataCell* c = [tdToCopy dataCellIndexed:i];
                                     RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
+                                    if ([d isCharacterExcluded:i] == YES)
+                                        [newD excludeCharacterIndexed:k];
                                     [td addObservation:newC];
+                                    k++;
                                     }
                                 }
                             else
@@ -122,7 +126,10 @@
                                     {
                                     RbDataCell* newC = [[RbDataCell alloc] init];
                                     [newC setDiscreteStateTo:(-1)];
+                                    if ([d isCharacterExcluded:i] == YES)
+                                        [newD excludeCharacterIndexed:k];
                                     [td addObservation:newC];
+                                    k++;
                                     }
                                 }
                             if ([d isHomologyEstablished] == NO)
@@ -159,6 +166,7 @@
             RbTaxonData* td = [[RbTaxonData alloc] init];
             [td setTaxonName:name];
             [newD addTaxonName:name];
+            int k = 0;
             for (RbData* d in [alignedData objectEnumerator])
                 {
                 RbTaxonData* tdToCopy = [d getDataForTaxonWithName:name];
@@ -168,7 +176,10 @@
                         {
                         RbDataCell* c = [tdToCopy dataCellIndexed:i];
                         RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
+                        if ([d isCharacterExcluded:i] == YES)
+                            [newD excludeCharacterIndexed:k];
                         [td addObservation:newC];
+                        k++;
                         }
                     }
                 else
@@ -177,7 +188,10 @@
                         {
                         RbDataCell* newC = [[RbDataCell alloc] init];
                         [newC setDiscreteStateTo:(-1)];
+                        if ([d isCharacterExcluded:i] == YES)
+                            [newD excludeCharacterIndexed:k];
                         [td addObservation:newC];
+                        k++;
                         }
                     }
                 if ([d isHomologyEstablished] == NO)
@@ -224,7 +238,7 @@
     return arrayWithMatrices;
 }
 
-- (void)concatenateWithOverlap:(int)overlapMethod andMergeMethod:(int)mergeMethod  {
+- (BOOL)concatenateWithOverlap:(int)overlapMethod andMergeMethod:(int)mergeMethod  {
 
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
@@ -240,8 +254,11 @@
             }
         }
     if ( dataTool == nil )
-        return;
-    [self removeDataInspector];
+        {
+        [self removeAllDataMatrices];
+        [self removeDataInspector];
+        return NO;
+        }
 
     // calculate how many aligned data matrices exist
     NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
@@ -255,28 +272,36 @@
     if ( [alignedData count] == 0 )
         {
         // no data object to concatenate
-        return;
+        [self removeAllDataMatrices];
+        [self removeDataInspector];
+        return NO;
         }
     else if ( [alignedData count] == 1 )
         {
         // only a single data matrix to concatenate
+        [self removeAllDataMatrices];
+        [self removeDataInspector];
+
         RbData* d = [[RbData alloc] initWithRbData:[alignedData objectAtIndex:0]];
         [self addMatrix:d];
         }
     else
         {
         // concatenating at least two matrices
+        [self removeAllDataMatrices];
+        [self removeDataInspector];
+
         NSMutableArray* names = [NSMutableArray arrayWithCapacity:0];
         [self assembleNames:names usingMethod:overlapMethod fromMatrices:alignedData];
         NSMutableArray* concatenatedMatrices = [self concatenateMatrices:alignedData forTaxa:names usingMergeMethod:mergeMethod];
         for (RbData* d in [concatenatedMatrices objectEnumerator])
             [self addMatrix:d];
-        NSLog(@"%@", concatenatedMatrices);
         [concatenatedMatrices release];
         }
-    NSLog(@"%@", dataMatrices);
     
     [self makeDataInspector];
+    
+    return YES;
 }
 
 - (void)dealloc {
@@ -371,6 +396,18 @@
     return 0;
 }
 
+- (BOOL)resolveStateOnWindowOK {
+
+    int overlapMethod = [controlWindow matchingMethod];
+    int mergeMethod   = [controlWindow mergeMethod];
+    isResolved = NO;
+    BOOL isSuccessful = [self concatenateWithOverlap:overlapMethod andMergeMethod:mergeMethod];
+    if (isSuccessful == NO)
+        return NO;
+    isResolved = YES;
+    return YES;
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Sequence Concatenation Tool ";
@@ -402,7 +439,12 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
+
+    return @"Concatenate Data";
+}
+
+- (void)updateForChangeInUpstreamState {
 
     [self startProgressIndicator];
     
@@ -432,24 +474,19 @@
 		}
 	else 
 		{
-NSLog(@" 1 ");
 		// we have parent data-containing tool(s)
         
         // for the hell of it, we'll delete everything and freshly concatenate the sequences
-NSLog(@" 2 ");
-		//[self removeAllDataMatrices];
-NSLog(@" 3 ");
+		[self removeAllDataMatrices];
         
         // concatenate
         [self concatenateWithOverlap:[controlWindow matchingMethod] andMergeMethod:[controlWindow mergeMethod]];
-NSLog(@" 4 ");
         
         if ( [dataMatrices count] > 0 )
             {
             [self setIsResolved:YES];
             [self makeDataInspector];
             }
-NSLog(@" 5 ");
 		}
                 
     [self stopProgressIndicator];

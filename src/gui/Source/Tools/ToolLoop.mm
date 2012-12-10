@@ -128,7 +128,12 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)updateForChangeInState {
+- (NSString*)toolName {
+
+    return @"Loop";
+}
+
+- (void)updateForChangeInUpstreamState {
 
 }
 

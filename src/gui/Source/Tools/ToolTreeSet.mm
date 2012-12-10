@@ -45,13 +45,11 @@
 	[super encodeWithCoder:aCoder];
 }
 
-- (void)execute {
+- (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
+    // TO DO: Instantiate trees in core
     
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
+    return YES;
 }
 
 - (GuiTree*)getTreeIndexed:(int)idx {
@@ -205,6 +203,22 @@
 	[treeInspector showWindow:self];    
 	[[treeInspector window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[treeInspector window]];
+}
+
+- (NSString*)toolName {
+
+    return @"Tree Set";
+}
+
+- (void)updateForChangeInUpstreamState {
+
+    isResolved = NO;
+    Tool* parentTool = [self getParentToolOfInletIndexed:0];
+    if (parentTool != nil)
+        {
+        if ([parentTool isResolved] == YES)
+            isResolved = YES;
+        }
 }
 
 - (BOOL)writeTreesFile {

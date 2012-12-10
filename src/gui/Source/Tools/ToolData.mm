@@ -87,26 +87,76 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
-    NSLog(@"encodeWithCoder %@", self);
 	[aCoder encodeObject:dataMatrices      forKey:@"dataMatrices"];
     [aCoder encodeObject:dataWorkspaceName forKey:@"dataWorkspaceName"];
        
 	[super encodeWithCoder:aCoder];
 }
 
-- (void)execute {
+- (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
+    if (isResolved == NO)
+        return NO;
     
-    [self startProgressIndicator];
+    //[self startProgressIndicator];
+    [self instantiateDataInCore];
+    //[self stopProgressIndicator];
     
+    return YES;
+}
+
+- (id)init {
+
+    self = [self initWithScaleFactor:1.0];
+    return self;
+}
+
+- (id)initWithScaleFactor:(float)sf {
+
+    if ( (self = [super initWithScaleFactor:sf]) ) 
+		{
+		dataMatrices      = [[NSMutableArray alloc] init];
+        dataWorkspaceName = [[NSString alloc] initWithString:@""];
+        dataInspector     = nil;
+        
+        // check to see if there are any data matrices stored in the tool
+        if ([dataMatrices count] > 0)
+            hasInspectorInfo = YES;
+		}
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder*)aDecoder {
+
+    if ( (self = [super initWithCoder:aDecoder]) ) 
+		{
+        dataMatrices      = [aDecoder decodeObjectForKey:@"dataMatrices"];
+        dataWorkspaceName = [aDecoder decodeObjectForKey:@"dataWorkspaceName"];
+        dataInspector     = nil;
+        [dataMatrices retain];
+        [dataWorkspaceName retain];
+
+        // check to see if there are any data matrices stored in the tool
+        if ([dataMatrices count] > 0)
+            hasInspectorInfo = YES;
+
+        // make certain that the data matrices are instantiated in the core
+        [self makeDataInspector];
+        //[self instantiateDataInCore];
+		}
+	return self;
+}
+
+- (void)initializeImage {
+
+}
+
+- (void)instantiateDataInCore {
+
     // check that we have data to instantiate in the core
     if ( [self numDataMatrices] == 0 )
-        {
-        [self stopProgressIndicator];
         return;
-        }
-        
+    
     // check to see if we already have data in the core, in which case we erase the data
     if ( [[self dataWorkspaceName] isEqualToString:@""] == NO )
         {
@@ -151,7 +201,6 @@
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-    std::cout << line << std::endl;
     int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -165,134 +214,13 @@
 
     // remove all of the files from the temporary directory
     [self removeFilesFromTemporaryDirectory];
-    
-    [self stopProgressIndicator];
-}
-
-- (id)init {
-
-    self = [self initWithScaleFactor:1.0];
-    return self;
-}
-
-- (id)initWithScaleFactor:(float)sf {
-
-    if ( (self = [super initWithScaleFactor:sf]) ) 
-		{
-		dataMatrices      = [[NSMutableArray alloc] init];
-        dataWorkspaceName = [[NSString alloc] initWithString:@""];
-        dataInspector     = nil;
-        
-        // check to see if there are any data matrices stored in the tool
-        if ([dataMatrices count] > 0)
-            hasInspectorInfo = YES;
-		}
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder*)aDecoder {
-
-    if ( (self = [super initWithCoder:aDecoder]) ) 
-		{
-        dataMatrices      = [aDecoder decodeObjectForKey:@"dataMatrices"];
-        dataWorkspaceName = [aDecoder decodeObjectForKey:@"dataWorkspaceName"];
-        dataInspector     = nil;
-        [dataMatrices retain];
-        [dataWorkspaceName retain];
-
-        // check to see if there are any data matrices stored in the tool
-        if ([dataMatrices count] > 0)
-            hasInspectorInfo = YES;
-
-        // make certain that the data matrices are instantiated in the core
-        [self instantiateDataInCore];
-		}
-	return self;
-}
-
-- (void)initializeImage {
-
-}
-
-- (void)instantiateDataInCore {
-
-    // get a path to a temporary directory
-    NSString* myTemporaryDirectory = NSTemporaryDirectory();
-    
-    const char* cStr = [dataWorkspaceName UTF8String];
-    std::string variableName = cStr;
-
-    if ( [dataMatrices count] == 1 )
-        {
-        // there is only a single matrix that the core needs to
-        // read in
-        RbData* d = [dataMatrices objectAtIndex:0];
-        
-        NSMutableString* fn = [NSMutableString stringWithString:myTemporaryDirectory];
-        [fn appendString:[d name]];
-        [d writeToFile:fn];
-
-        const char* cmdAsCStr = [fn UTF8String];
-        std::string cmdAsStlStr = cmdAsCStr;
-        std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-            int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
-        if (coreResult != 0)
-            NSLog(@"Error: Could not create data in workspace");
-        if ( !Workspace::userWorkspace()->existsVariable(variableName) )
-            NSLog(@"Error: Could not create data in workspace");
-        }
-    else if ( [dataMatrices count] > 1 )
-        {
-        // if there are more than one data matrix in this tool, then we
-        // save all of the data matrices to a directory that we create in the
-        // temporary directory, and then have the core read them all
-        NSMutableString* tempDir = [NSMutableString stringWithString:myTemporaryDirectory];
-        [tempDir appendString:@"tempDir"];
-        [tempDir appendString:@"/"];
-        NSFileManager* fileManager= [NSFileManager defaultManager]; 
-        BOOL isDir = NO;
-        if ( ![fileManager fileExistsAtPath:tempDir isDirectory:&isDir] )
-            if ( ![fileManager createDirectoryAtPath:tempDir withIntermediateDirectories:YES attributes:nil error:NULL] )
-                NSLog(@"Error: Create folder failed %@", tempDir);
-
-        for (int i=0; i<[dataMatrices count]; i++)
-            {
-            RbData* d = [dataMatrices objectAtIndex:i];
-
-            NSMutableString* fn = [NSMutableString stringWithString:tempDir];
-            [fn appendString:[d name]];
-            [d writeToFile:fn];
-            //NSLog(@"file name = %@", fn);
-            }
-            
-        const char* cmdAsCStr = [tempDir UTF8String];
-        std::string cmdAsStlStr = cmdAsCStr;
-        std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-            int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
-        if (coreResult != 0)
-            NSLog(@"Error: Could not create data in workspace");
-        if ( !Workspace::userWorkspace()->existsVariable(variableName) )
-            NSLog(@"Error: Could not create data in workspace");
-        }
-    [self removeFilesFromTemporaryDirectory];
-    
-    [self makeDataInspector];
-
-    if ( Workspace::userWorkspace()->existsVariable(variableName) )
-        std::cout << "Successfully created data variable named \"" << variableName << "\" in workspace" << std::endl;
 }
 
 - (void)makeDataInspector {
 
-    NSLog(@"ToolData a");
     [self removeDataInspector];
-    NSLog(@"ToolData b");
     dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
-    NSLog(@"dataInspector = %@", dataInspector);
-    NSLog(@"ToolData c");
-    NSLog(@"%@", [dataInspector window]);
     [dataInspector window];
-    NSLog(@"ToolData d");
 }
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const CharacterData&)cd {
@@ -324,6 +252,7 @@
         {        
         const TaxonData& td = cd.getTaxonData(i);
         NSString* taxonName = [NSString stringWithCString:td.getTaxonName().c_str() encoding:NSUTF8StringEncoding];
+        [m cleanName:taxonName];
         [m addTaxonName:taxonName];
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
@@ -379,7 +308,6 @@
 
 - (int)numAlignedMatrices {
 
-    NSLog(@"numAlignedMatrices = %@", dataMatrices);
     int n = 0;
     NSEnumerator* matrixEnumerator = [dataMatrices objectEnumerator];
     RbData* d = nil;
@@ -393,7 +321,6 @@
 
 - (int)numUnalignedMatrices {
 
-    NSLog(@"numUnalignedMatrices = %@", dataMatrices);
     int n = 0;
     NSEnumerator* matrixEnumerator = [dataMatrices objectEnumerator];
     RbData* d = nil;
@@ -420,6 +347,7 @@
     numAligned = 0;
     numUnaligned = 0;
     hasInspectorInfo = NO;
+    isResolved = NO;
     [self removeDataInspector];
 }
 
@@ -438,7 +366,7 @@
     [dataInspector showWindow:self];
 }
 
-- (void)updateForChangeInState {
+- (void)updateForChangeInUpstreamState {
 
 }
 
