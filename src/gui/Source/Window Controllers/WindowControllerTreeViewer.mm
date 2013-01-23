@@ -27,6 +27,14 @@
     [treeView setNeedsDisplay:YES];
 }
 
+- (IBAction)changedDrawMonophyleticTreeCheck:(id)sender {
+
+    if ([drawMonophyleticTreeCheck state] == NSOnState)
+        [drawMonophyleticTreeCheck setTitle:@"Yes"];
+    else
+        [drawMonophyleticTreeCheck setTitle:@"No"];
+}
+
 - (IBAction)changeOutgroup:(id)sender {
 
     int n = [myTool numberOfTreesInSet];
@@ -74,6 +82,13 @@
 
 }
 
+- (IBAction)incrementFontSize:(id)sender {
+
+    int x = [fontStepper intValue];
+    [self setFontSize:(float)x];
+    [treeView setNeedsDisplay:YES];
+}
+
 - (id)init {
 
     return [self initWithTool:nil];
@@ -92,16 +107,18 @@
 
 - (void)initializeTreeInformation {
 
+    selectedTree = 0;
     int n = [myTool numberOfTreesInSet];
     if (n == 0)
         {
         [[self window] setTitle:@"Tree Set (Contains No Trees)"];
-        [treeCounter setStringValue:@"Tree: xxx"];
+        [treeCounter setStringValue:@"N/A"];
         [treeCounter setHidden:YES];
-        [treeStepper setHidden:YES];
         [fontLabel setHidden:YES];
         [fontEntry setHidden:YES];
         [self populateOutgroupList];
+        [leftTree setEnabled:NO];
+        [rightTree setEnabled:NO];
         }
     else
         {
@@ -109,24 +126,44 @@
             [[self window] setTitle:@"Tree Set (Contains One Tree)"];
         else
             [[self window] setTitle:[NSString stringWithFormat:@"Tree Set (Contains %d Trees)", n]];
-        [treeCounter setStringValue:[NSString stringWithFormat:@"Tree: %d", 1]];
+        [treeCounter setStringValue:[NSString stringWithFormat:@"%d", 1]];
         [fontLabel setHidden:NO];
         [fontEntry setHidden:NO];
         if (n == 1)
             {
             [treeCounter setHidden:YES];
-            [treeStepper setHidden:YES];
+            [leftTree setEnabled:NO];
+            [rightTree setEnabled:NO];
+            [leftTree setHidden:YES];
+            [rightTree setHidden:YES];
+            [treeStepLabel setHidden:YES];
             }
         else 
             {
             [treeCounter setHidden:NO];
-            [treeStepper setHidden:NO];
+            [leftTree setEnabled:NO];
+            [rightTree setEnabled:YES];
+            [leftTree setHidden:NO];
+            [rightTree setHidden:NO];
+            [treeStepLabel setHidden:NO];
             }
-        [treeStepper setMinValue:0];
-        [treeStepper setMaxValue:(n-1)];
-        [treeStepper setIncrement:1];
         [self populateOutgroupList];
         }
+}
+
+- (IBAction)leftTreeAction:(id)sender {
+
+    [self setSelectedTree:(selectedTree-1)];
+    [treeCounter setStringValue:[NSString stringWithFormat:@"%d", selectedTree+1]];
+    [treeView setNeedsDisplay:YES];
+    if (selectedTree == 0)
+        [leftTree setEnabled:NO];
+    else
+        [leftTree setEnabled:YES];
+    if (selectedTree+1 >= [myTool numberOfTreesInSet])
+        [rightTree setEnabled:NO];
+    else
+        [rightTree setEnabled:YES];
 }
 
 - (void)populateOutgroupList {
@@ -149,11 +186,19 @@
         }
 }
 
-- (IBAction)stepAction:(id)sender {
+- (IBAction)rightTreeAction:(id)sender {
 
-    [self setSelectedTree:([treeStepper intValue])];
-    [treeCounter setStringValue:[NSString stringWithFormat:@"Tree: %d", selectedTree+1]];
+    [self setSelectedTree:(selectedTree+1)];
+    [treeCounter setStringValue:[NSString stringWithFormat:@"%d", selectedTree+1]];
     [treeView setNeedsDisplay:YES];
+    if (selectedTree == 0)
+        [leftTree setEnabled:NO];
+    else
+        [leftTree setEnabled:YES];
+    if (selectedTree+1 >= [myTool numberOfTreesInSet])
+        [rightTree setEnabled:NO];
+    else
+        [rightTree setEnabled:YES];
 }
 
 - (void)windowDidLoad {

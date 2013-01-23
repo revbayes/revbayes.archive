@@ -15,6 +15,7 @@
 }
 
 - (IBAction)cancelButtonAction:(id)sender;
+- (IBAction)changeMergeMethod:(id)sender;
 - (id)initWithTool:(ToolConcatenate*)t;
 - (IBAction)okButtonAction:(id)sender;
 - (int)mergeMethod;

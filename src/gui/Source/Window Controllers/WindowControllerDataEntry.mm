@@ -81,7 +81,6 @@
             {
             RbDataCell* c = [d cellWithRow:i andColumn:j];
             char charVal = [c getDiscreteState];
-            NSLog(@"%d %d -- %c", i, j, charVal);
             [ri setValue:[NSString stringWithFormat:@"%c", charVal] forKey:[NSString stringWithFormat:@"%d", j+1]];
             
             }
@@ -177,7 +176,6 @@
 
 	if ( (self = [super initWithWindowNibName:@"ControlWindowDataEntry"]) )
         {
-        NSLog(@"start initWithTool for %@", self);
         myTool = t;
         rowData = [[NSMutableArray alloc] init];
         
@@ -185,15 +183,9 @@
         numCharacters = [d numCharacters];
         numTaxa = 0; // this will be incremented, below, when we add the rows to the matrix one-by-one
         
-        NSLog(@"d = %@", d);
-        NSLog(@"numCharacters = %d", numCharacters);
-        NSLog(@"numTaxa = %d", numTaxa);
-        
         for (int i=0; i<[d numTaxa]; i++)
             [self addRow:self];
             
-        NSLog(@"1");
-
         for (int i=0; i<[rowData count]; i++)
             {
             MatrixRowInformation* r = [rowData objectAtIndex:i];
@@ -203,7 +195,6 @@
             for (int j=0; j<numCharacters; j++)
                 [r addEntryToEnd];
             }
-        NSLog(@"end initWithTool for %@", self);
         }
     return self;
 }
@@ -227,7 +218,6 @@
 
 - (void)saveMatrixToTool {
 
-    NSLog(@"saveMatrixToTool %d %d", numTaxa, numCharacters);
     RbData* d = [myTool dataMatrix];
     [d setStandardMatrixToHave:numTaxa andToHave:numCharacters];
     
@@ -237,6 +227,7 @@
         MatrixRowInformation* rd = [rowData objectAtIndex:i];
         NSString* str = [NSString stringWithString:[[rowData objectAtIndex:i] valueForKey:@"Taxon Name"]];
         [d setNameOfTaxonWithIndex:i to:str];
+        [td setTaxonName:str];
         for (int j=0; j<[td numCharacters]; j++)
             {
             RbDataCell* dc = [td dataCellIndexed:j];

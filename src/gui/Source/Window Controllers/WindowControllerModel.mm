@@ -134,7 +134,7 @@
             }
         else 
             {
-            NSString* s = [NSString stringWithFormat:@"%d data sources", [src count]];
+            NSString* s = [NSString stringWithFormat:@"%d data sources", (int)[src count]];
             [connectedSourcesSelector addItemWithTitle:s];
             for (int i=0; i<[src count]; i++)
                 {

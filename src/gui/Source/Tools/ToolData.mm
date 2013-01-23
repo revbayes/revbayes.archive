@@ -141,8 +141,8 @@
             hasInspectorInfo = YES;
 
         // make certain that the data matrices are instantiated in the core
-        [self makeDataInspector];
-        //[self instantiateDataInCore];
+        if ([dataMatrices count] > 0)
+            [self makeDataInspector];
 		}
 	return self;
 }

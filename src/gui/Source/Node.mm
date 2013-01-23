@@ -91,7 +91,7 @@
         ancestor     = [aDecoder decodeObjectForKey:@"ancestor"];
         descendants  = [aDecoder decodeObjectForKey:@"descendants"];
 		[name retain];
-        [ancestor retain];
+        [ancestor retain]; // does this need a retain, given that it is not an object, but a pointer to one?
         [descendants retain];
 
         isBranchSelected = NO;

@@ -167,6 +167,7 @@
     [aCoder encodeBool:initializedDownPass forKey:@"initializedDownPass"];
     [aCoder encodeInt:numberOfTaxa         forKey:@"numberOfTaxa"];
     [aCoder encodeObject:info              forKey:@"info"];
+    [aCoder encodeObject:root              forKey:@"root"];
 }
 
 - (int)getNumberOfTaxa {
@@ -226,11 +227,12 @@
 
     if ( (self = [super init]) ) 
 		{
-		nodes = [aDecoder decodeObjectForKey:@"name"];
-        downPassSequence = [aDecoder decodeObjectForKey:@"downPassSequence"];
+		nodes               = [aDecoder decodeObjectForKey:@"nodes"];
+        downPassSequence    = [aDecoder decodeObjectForKey:@"downPassSequence"];
         initializedDownPass = [aDecoder decodeBoolForKey:@"initializedDownPass"];
-        numberOfTaxa = [aDecoder decodeIntForKey:@"numberOfTaxa"];
-        info = [aDecoder decodeObjectForKey:@"info"];
+        numberOfTaxa        = [aDecoder decodeIntForKey:@"numberOfTaxa"];
+        info                = [aDecoder decodeObjectForKey:@"info"];
+        root                = [aDecoder decodeObjectForKey:@"root"];
 		[nodes retain];
         [downPassSequence retain];
         [info retain];

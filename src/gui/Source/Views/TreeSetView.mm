@@ -67,11 +67,9 @@
         double xEnd   = bounds.size.height * factor - biggestNameRect.size.width;
         double h      = xEnd - xStart;
 
-        NSLog(@"[t numberOfNodes] = %d", [t numberOfNodes]);
         for (int n=0; n<[t numberOfNodes]; n++)
 			{
             Node* p = [t downPassNodeIndexed:n];
-            NSLog(@"p = %@ (%f %f)", p, [p x], [p y]);
             
 			NSPoint a, b;
 			a.x = xOffset + bounds.size.width * factor * [p x];

@@ -309,28 +309,37 @@
                 double v = (([p y] - [[p ancestor] y]) * treeLength * siteRate) / branchLengthSum;
                 double curT = 0.0;
                 int curState = [[p ancestor] state];
-                while (curT < v)
+                if (v < 0.00001)
                     {
-                    double rate = -q[curState][curState];
-                    curT += RbStatistics::Exponential::rv(rate, *rng);
-                    if (curT < v)
+                    // very short (zero) length branch
+                    [p setState:curState];
+                    }
+                else
+                    {
+                    // worth simulating along the branch
+                    while (curT < v)
                         {
-                        double u = RbStatistics::Uniform::rv(*rng);
-                        double sum = 0.0;
-                        for (int j=0; j<4; j++)
+                        double rate = -q[curState][curState];
+                        curT += RbStatistics::Exponential::rv(rate, *rng);
+                        if (curT < v)
                             {
-                            if (curState != j)
+                            double u = RbStatistics::Uniform::rv(*rng);
+                            double sum = 0.0;
+                            for (int j=0; j<4; j++)
                                 {
-                                sum += q[curState][j] / rate;
-                                if (u < sum)
+                                if (curState != j)
                                     {
-                                    curState = j;
-                                    break;
+                                    sum += q[curState][j] / rate;
+                                    if (u < sum)
+                                        {
+                                        curState = j;
+                                        break;
+                                        }
                                     }
                                 }
                             }
+                        [p setState:curState];
                         }
-                    [p setState:curState];
                     }
                 }
                 

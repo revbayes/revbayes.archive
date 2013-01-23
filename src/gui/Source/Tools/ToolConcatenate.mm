@@ -15,6 +15,7 @@
 
 @synthesize useMinimalSet;
 @synthesize matchUsingNames;
+@synthesize mergeMethod;
 
 - (void)awakeFromNib {
 
@@ -159,7 +160,6 @@
         RbData* newD = [[RbData alloc] init];
         [newD setIsHomologyEstablished:YES];
         [newD setNumTaxa:(int)([names count])];
-        [newD setName:@"Concatenated Data Matrix"];
         int nc = -1;
         for (NSString* name in [names objectEnumerator])
             {
@@ -231,7 +231,7 @@
             [newD setDataType:MIXED];
         
         [newD setNumCharacters:nc];
-        [newD print];
+        //[newD print];
         [arrayWithMatrices addObject:newD];
         }
         
@@ -314,6 +314,7 @@
 
 	[aCoder encodeBool:useMinimalSet   forKey:@"useMinimalSet"];
 	[aCoder encodeBool:matchUsingNames forKey:@"matchUsingNames"];
+    [aCoder encodeInt:mergeMethod      forKey:@"mergeMethod"];
 
 	[super encodeWithCoder:aCoder];
 }
@@ -341,6 +342,7 @@
 		// initialize some variables
         useMinimalSet   = YES;
         matchUsingNames = YES;
+        mergeMethod     = MERGE_BY_DATA_TYPE;
 		
 		// initialize the control window
 		controlWindow = [[WindowControllerConcatenate alloc] initWithTool:self];
@@ -358,6 +360,7 @@
         
         useMinimalSet   = [aDecoder decodeBoolForKey:@"useMinimalSet"];
         matchUsingNames = [aDecoder decodeBoolForKey:@"matchUsingNames"];
+        mergeMethod     = [aDecoder decodeIntForKey:@"mergeMethod"];
 
 		// initialize the control window
 		controlWindow = [[WindowControllerConcatenate alloc] initWithTool:self];

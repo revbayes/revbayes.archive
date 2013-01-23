@@ -5,9 +5,33 @@
 
 @implementation WindowControllerConcatenate
 
+- (void)awakeFromNib {
+
+    if ( [myTool mergeMethod] == MERGE_BY_DATA_TYPE)
+        {
+        [seqMatchMethodButton selectItemWithTitle:@"Merge by data type"];
+        }
+    else
+        {
+        [seqMatchMethodButton selectItemWithTitle:@"Unconditionally merge matrices"];
+        }
+}
+
 - (IBAction)cancelButtonAction:(id)sender {
 
     [myTool closeControlPanel];
+}
+
+- (IBAction)changeMergeMethod:(id)sender {
+
+    if ( [[seqMatchMethodButton titleOfSelectedItem] isEqualToString:@"Merge by data type"] == YES )
+        {
+        [myTool setMergeMethod:MERGE_BY_DATA_TYPE];
+        }
+    else
+        {
+        [myTool setMergeMethod:MERGE_UNCONDITIONALLY];
+        }
 }
 
 - (id)init {

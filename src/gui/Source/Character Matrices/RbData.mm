@@ -453,7 +453,7 @@
             [outStr appendString:@"#NEXUS\n\n"];
             [outStr appendString:@"begin data;\n"];
             [outStr appendFormat:@"   dimensions ntax=%d nchar=%d;\n", numTaxa, numCharacters];
-            [outStr appendString:@"   format symbols=\"0123456789ACGTU\" missing=? gap=-;\n"];
+            [outStr appendString:@"   format symbols=\"0123456789ACGTU\" missing=? equate=\"N=?\" gap=-;\n"];
             [outStr appendString:@"   matrix\n"];
             for (int i=0; i<numTaxa; i++)
                 {

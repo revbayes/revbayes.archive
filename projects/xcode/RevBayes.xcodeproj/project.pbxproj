@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2288D33116B084180067F460 /* WindowControllerSimulateQuery.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2288D33016B084180067F460 /* WindowControllerSimulateQuery.mm */; };
 		22F4027E15F93BAB001A7016 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22F4003215F93BAA001A7016 /* BurninEstimatorContinuous.cpp */; };
 		22F4027F15F93BAB001A7016 /* BurninEstimatorContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22F4003215F93BAA001A7016 /* BurninEstimatorContinuous.cpp */; };
 		22F4028015F93BAB001A7016 /* ConvergenceDiagnosticContinuous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 22F4003415F93BAA001A7016 /* ConvergenceDiagnosticContinuous.cpp */; };
@@ -923,6 +924,7 @@
 		22F4088315F93BB6001A7016 /* RegistrationPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F406C515F93BB6001A7016 /* RegistrationPanel.xib */; };
 		22F4088415F93BB6001A7016 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F406C615F93BB6001A7016 /* TextEditorWindow.xib */; };
 		22F4088515F93BB6001A7016 /* TreeViewer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F406C715F93BB6001A7016 /* TreeViewer.xib */; };
+		22FBC5A216B07F8400894404 /* SimulateQuery.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22FBC5A116B07F8400894404 /* SimulateQuery.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -941,6 +943,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2288D32F16B084180067F460 /* WindowControllerSimulateQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowControllerSimulateQuery.h; sourceTree = "<group>"; };
+		2288D33016B084180067F460 /* WindowControllerSimulateQuery.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowControllerSimulateQuery.mm; sourceTree = "<group>"; };
 		22F4003215F93BAA001A7016 /* BurninEstimatorContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BurninEstimatorContinuous.cpp; sourceTree = "<group>"; };
 		22F4003315F93BAA001A7016 /* BurninEstimatorContinuous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BurninEstimatorContinuous.h; sourceTree = "<group>"; };
 		22F4003415F93BAA001A7016 /* ConvergenceDiagnosticContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvergenceDiagnosticContinuous.cpp; sourceTree = "<group>"; };
@@ -2057,6 +2061,7 @@
 		22F406C515F93BB6001A7016 /* RegistrationPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RegistrationPanel.xib; sourceTree = "<group>"; };
 		22F406C615F93BB6001A7016 /* TextEditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditorWindow.xib; sourceTree = "<group>"; };
 		22F406C715F93BB6001A7016 /* TreeViewer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TreeViewer.xib; sourceTree = "<group>"; };
+		22FBC5A116B07F8400894404 /* SimulateQuery.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SimulateQuery.xib; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -3930,6 +3935,8 @@
 				22F4069615F93BB6001A7016 /* WindowControllerRegistration.mm */,
 				22F4069715F93BB6001A7016 /* WindowControllerSimulate.h */,
 				22F4069815F93BB6001A7016 /* WindowControllerSimulate.mm */,
+				2288D32F16B084180067F460 /* WindowControllerSimulateQuery.h */,
+				2288D33016B084180067F460 /* WindowControllerSimulateQuery.mm */,
 				22F4069915F93BB6001A7016 /* WindowControllerTreeSet.h */,
 				22F4069A15F93BB6001A7016 /* WindowControllerTreeSet.mm */,
 				22F4069B15F93BB6001A7016 /* WindowControllerTreeViewer.h */,
@@ -3979,6 +3986,7 @@
 				22F406C315F93BB6001A7016 /* PreferencesPanel.xib */,
 				22F406C415F93BB6001A7016 /* ProgressBarWindow.xib */,
 				22F406C515F93BB6001A7016 /* RegistrationPanel.xib */,
+				22FBC5A116B07F8400894404 /* SimulateQuery.xib */,
 				22F406C615F93BB6001A7016 /* TextEditorWindow.xib */,
 				22F406C715F93BB6001A7016 /* TreeViewer.xib */,
 			);
@@ -4405,6 +4413,7 @@
 				22F4088315F93BB6001A7016 /* RegistrationPanel.xib in Resources */,
 				22F4088415F93BB6001A7016 /* TextEditorWindow.xib in Resources */,
 				22F4088515F93BB6001A7016 /* TreeViewer.xib in Resources */,
+				22FBC5A216B07F8400894404 /* SimulateQuery.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5045,6 +5054,7 @@
 				22F4085B15F93BB6001A7016 /* WindowControllerTreeSet.mm in Sources */,
 				22F4085C15F93BB6001A7016 /* WindowControllerTreeViewer.mm in Sources */,
 				22F4085D15F93BB6001A7016 /* YRKSpinningProgressIndicator.mm in Sources */,
+				2288D33116B084180067F460 /* WindowControllerSimulateQuery.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -246,7 +246,6 @@
         if (newRoot == nil)
             NSLog(@"problem finding root!");
         [newTree setRoot:newRoot];
-        NSLog(@"scoreOfBestTree=%d", scoreOfBestTree);
         NSString* treeStr = [NSString stringWithFormat:@"Parsimony length = %d", scoreOfBestTree];
         [newTree setInfo:treeStr];
         [treeSetTool addTreeToSet:newTree];

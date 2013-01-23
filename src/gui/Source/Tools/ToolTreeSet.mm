@@ -89,7 +89,7 @@
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder*)aDecoder {
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{

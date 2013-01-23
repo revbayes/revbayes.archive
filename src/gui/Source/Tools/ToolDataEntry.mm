@@ -91,9 +91,9 @@
         RbData* m = [[RbData alloc] init];
         [self initializeDataMatrix:m];
         [self addMatrix:m];
-        //[self instantiateDataInCore];
         [self makeDataInspector];
         hasInspectorInfo = NO;
+        isResolved = YES;
 		
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
@@ -113,8 +113,7 @@
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
 
         hasInspectorInfo = NO;
-        NSLog(@"data matrix count = %ld", [dataMatrices count]);
-        NSLog(@"data type = %d", [[dataMatrices objectAtIndex:0] isHomologyEstablished]);
+        isResolved = YES;
 		}
 	return self;
 }
