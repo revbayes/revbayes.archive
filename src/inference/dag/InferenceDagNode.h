@@ -61,6 +61,10 @@ public:
     void                                                restore(void);                                                                  //!< Restore value of this and affected nodes
     void                                                setName(const std::string &n) { name = n; }                                     //!< Replace the name of the variable
     void                                                touch(void);                                                                    //!< Tell affected nodes value is reset
+
+    virtual void                                        keepMe(void) = 0;                                                               //!< Keep value of myself
+    virtual void                                        restoreMe(void) = 0;                                                            //!< Restore value of this nodes
+    virtual void                                        touchMe(void) = 0;                                                              //!< Touch myself (flag for recalculation)
     
     
 protected:
@@ -68,11 +72,8 @@ protected:
     InferenceDagNode(const InferenceDagNode& x);                                                                                        //!< Copy constructor
     
     virtual void                                        keepAffected(void);                                                             //!< Keep value of affected nodes
-    virtual void                                        keepMe(void) = 0;                                                               //!< Keep value of myself
     virtual void                                        restoreAffected(void);                                                          //!< Restore value of affected nodes recursively
-    virtual void                                        restoreMe(void) = 0;                                                            //!< Restore value of this nodes
     virtual void                                        touchAffected(void);                                                            //!< Touch affected nodes (flag for recalculation)
-    virtual void                                        touchMe(void) = 0;                                                              //!< Touch myself (flag for recalculation)
     
     
     // Member variables keeping track of references
