@@ -29,7 +29,7 @@
     [simulateView setNeedsDisplay:YES];
 }
 
-- (void)awakeFromNib {
+- (void)awakeFromNib {    
 
     [self setEditingTree:NO];
     [editButton setTitle:@"Edit Tree"];
@@ -116,20 +116,20 @@
 
 	if ( (self = [super initWithWindowNibName:@"ControlWindowSimulate"]) )
         {
-        myTool       = t;
-        fontSize     = 14.0;
-        treeLength   = [myTool treeLength];
-        alpha        = [myTool alpha];
-        rAC          = [myTool rAC];
-        rAG          = [myTool rAG];
-        rAT          = [myTool rAT];
-        rCG          = [myTool rCG];
-        rCT          = [myTool rCT];
-        rGT          = [myTool rGT];
-        piA          = [myTool piA];
-        piC          = [myTool piC];
-        piG          = [myTool piG];
-        piT          = [myTool piT];
+        myTool         = t;
+        fontSize       = 14.0;
+        treeLength     = [myTool treeLength];
+        alpha          = [myTool alpha];
+        rAC            = [myTool rAC];
+        rAG            = [myTool rAG];
+        rAT            = [myTool rAT];
+        rCG            = [myTool rCG];
+        rCT            = [myTool rCT];
+        rGT            = [myTool rGT];
+        piA            = [myTool piA];
+        piC            = [myTool piC];
+        piG            = [myTool piG];
+        piT            = [myTool piT];
         sequenceLength = [myTool sequenceLength];
         myRemoteTree   = [myTool exposeTreePtr];
         
@@ -140,9 +140,9 @@
 
         NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];		 
 		[defaultCenter addObserver:self
-						  selector:@selector(windowDidResize)
+						  selector:@selector(windowDidResize:)
 							  name:@"NSWindowDidResizeNotification"
-							object:nil];
+							object:self];
         }
 	return self;
 }
@@ -153,7 +153,7 @@
 }
 
 - (IBAction)okButtonAction:(id)sender {
-
+    
     [myTool setTreeLength:treeLength];
     [myTool setAlpha:alpha];
     [myTool setRAC:rAC];
@@ -219,6 +219,11 @@
 		}
 }
 
+- (void)setMyTree:(GuiTree*)t {
+
+    myRemoteTree = t;
+}
+
 - (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem {
 
 	[self setControlWindow];
@@ -229,11 +234,14 @@
     [super windowDidLoad];
 }
 
-- (void)windowDidResize {
+- (void)windowDidResize:(NSNotification*)notification {
     
-	NSString* tabViewLabel = [NSString stringWithString:[[theTabView selectedTabViewItem] label]];
-	if ( [tabViewLabel isEqualToString:@"Tree Model"] == YES )
-        lastTreeWindowSize = [[self window] frame];
+    if ( [notification object] == [self window] )
+        {
+        NSString* tabViewLabel = [NSString stringWithString:[[theTabView selectedTabViewItem] label]];
+        if ( [tabViewLabel isEqualToString:@"Tree Model"] == YES )
+            lastTreeWindowSize = [[self window] frame];
+        }
 }
 
 @end

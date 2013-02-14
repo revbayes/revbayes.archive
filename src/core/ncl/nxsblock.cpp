@@ -17,9 +17,9 @@
 //	59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 
-#include "ncl/nxsdefs.h"
-#include "ncl/nxsblock.h"
-#include "ncl/nxsreader.h"
+#include "nxsdefs.h"
+#include "nxsblock.h"
+#include "nxsreader.h"
 #include <cstdlib>
 using namespace std;
 

@@ -54,7 +54,7 @@
             }
 			        
         // initialize coordinates
-        [t setCoordinates];
+        [t setCoordinates:[myWindowController drawMonophyleticWrOutgroup]];
 
         // draw the tree
         //float oldDefaultLineWidth = [NSBezierPath defaultLineWidth];
@@ -74,20 +74,44 @@
 			NSPoint a, b;
 			a.x = xOffset + bounds.size.width * factor * [p x];
 			a.y = yOffset + h * [p y];
-			b.x = xOffset + bounds.size.width * factor * [p x];
-			b.y = yOffset + h * [[p ancestor] y];
+            if ([t isRoot:p] == YES)
+                {
+                b.x = xOffset + bounds.size.width * factor * [p x];
+                b.y = yOffset;
+                }
+            else
+                {
+                b.x = xOffset + bounds.size.width * factor * [p x];
+                b.y = yOffset + h * [[p ancestor] y];
+                if ([t isRoot:[p ancestor]] == YES &&
+                    [myWindowController drawMonophyleticWrOutgroup] == YES &&
+                    p == [[p ancestor] descendantIndexed:0])
+                    b.y = yOffset;
+                }
 			[NSBezierPath strokeLineFromPoint:a toPoint:b];
+            
 			if ([p isLeaf] == NO)
 				{
                 Node* q = [p descendantIndexed:([p numberOfDescendants]-1)];
 				NSPoint l, r, m;
-				m.x = xOffset + bounds.size.width * factor * [p x];
-				m.y = a.y;
-				l.x = xOffset + bounds.size.width * factor * [[p descendantIndexed:0] x] - 0.5*1.0;
-				l.y = a.y;
-				r.x = xOffset + bounds.size.width * factor * [q x] + 0.5*1.0;
-				r.y = a.y;
-				
+                if ([t isRoot:p] == YES && [myWindowController drawMonophyleticWrOutgroup] == YES)
+                    {
+                    m.x = xOffset + bounds.size.width * factor * [p x];
+                    m.y = a.y;
+                    l.x = xOffset + bounds.size.width * factor * [[p descendantIndexed:1] x] - 0.5*1.0;
+                    l.y = a.y;
+                    r.x = xOffset + bounds.size.width * factor * [q x] + 0.5*1.0;
+                    r.y = a.y;
+                    }
+                else
+                    {
+                    m.x = xOffset + bounds.size.width * factor * [p x];
+                    m.y = a.y;
+                    l.x = xOffset + bounds.size.width * factor * [[p descendantIndexed:0] x] - 0.5*1.0;
+                    l.y = a.y;
+                    r.x = xOffset + bounds.size.width * factor * [q x] + 0.5*1.0;
+                    r.y = a.y;
+                    }
 				[NSBezierPath strokeLineFromPoint:l toPoint:m];
 				[NSBezierPath strokeLineFromPoint:r toPoint:m];
 				}
@@ -116,7 +140,17 @@
                 [NSGraphicsContext restoreGraphicsState];
                 }
 			}
-		
+		if ([myWindowController drawMonophyleticWrOutgroup] == YES)
+            {
+			NSPoint a, b;
+            Node* p = [t getRoot];
+            a.x = xOffset + bounds.size.width * factor * [[p descendantIndexed:0] x];
+			a.y = yOffset;
+            b.x = xOffset + bounds.size.width * factor * [p x];
+			b.y = yOffset;
+			[NSBezierPath strokeLineFromPoint:a toPoint:b];
+            }
+        
 		[NSBezierPath setDefaultLineWidth:1.0];
         
         // set the label for the tree, if there is information

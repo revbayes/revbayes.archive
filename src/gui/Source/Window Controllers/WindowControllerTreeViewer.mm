@@ -11,6 +11,7 @@
 
 @synthesize selectedTree;
 @synthesize fontSize;
+@synthesize drawMonophyleticWrOutgroup;
 
 - (GuiTree*)activeTree {
 
@@ -33,6 +34,7 @@
         [drawMonophyleticTreeCheck setTitle:@"Yes"];
     else
         [drawMonophyleticTreeCheck setTitle:@"No"];
+    [treeView setNeedsDisplay:YES];
 }
 
 - (IBAction)changeOutgroup:(id)sender {
@@ -42,30 +44,29 @@
         {
         // get the name of the desired outgroup name
         NSString* outgroupName = [[outgroupList selectedItem] title];
-        NSLog(@"outgroupName=%@", outgroupName);
         
         for (int i=0; i<n; i++)
             {
             // get the tree
             GuiTree* t = [myTool getTreeIndexed:i];
+            [t initializeDownPassSequence];
             
             // find the node in the tree with the outgroup name
-            Node* outgroupNode = nil;
-            for (int j=0; j<[t numberOfNodes]; j++)
+            Node* outgroupNode = [t nodeWithName:outgroupName];
+            if (outgroupNode == nil)
                 {
-                Node* p = [t downPassNodeIndexed:j];
-                NSString* nodeName = [p name];
-                if ( [nodeName isEqualToString:outgroupName] == YES )
-                    {
-                    outgroupNode = p;
-                    break;
-                    }
+                NSAlert* alert = [NSAlert alertWithMessageText:@"Problem Rerooting tree" 
+                                                 defaultButton:@"OK"
+                                               alternateButton:nil 
+                                                   otherButton:nil 
+                                     informativeTextWithFormat:@"Cannot find outgroup node."];
+                [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
                 }
-                
-            // reroot the tree
-            if (outgroupNode != nil)
+            else
                 {
+                // reroot the tree
                 [t rootTreeOnNode:outgroupNode];
+                [t setCoordinates:[self drawMonophyleticWrOutgroup]];
                 }
             }
         }
@@ -149,6 +150,7 @@
             }
         [self populateOutgroupList];
         }
+    [self changeOutgroup:self];
 }
 
 - (IBAction)leftTreeAction:(id)sender {

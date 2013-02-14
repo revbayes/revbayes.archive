@@ -183,6 +183,11 @@
     return n;
 }
 
+- (Node*)getRoot {
+
+    return root;
+}
+
 - (id)init {
 
     if ( (self = [super init]) ) 
@@ -346,6 +351,19 @@
     [self setXCoordinates];
 }
 
+- (Node*)nodeWithName:(NSString*)str {
+
+    // find the node in the tree with the name str
+    for (int j=0; j<[self numberOfNodes]; j++)
+        {
+        Node* p = [self downPassNodeIndexed:j];
+        NSString* nodeName = [p name];
+        if ( [nodeName isEqualToString:str] == YES )
+            return p;
+        }
+    return nil;
+}
+
 - (int)numberOfNodes {
 
     return (int)[nodes count];
@@ -495,7 +513,10 @@
         
         } while (continueRotatingTree == YES);
     
-    [self print];
+    // make certain that the outgroup is the left-most node
+    [root removeDescendant:p];
+    [root addDescendantAtLeftMostPosition:p];
+    
     // determine the downpass sequence
     initializedDownPass = NO;
     [self initializeDownPassSequence];
@@ -509,7 +530,7 @@
         [p setFlag:tf];
 }
 
-- (void)setCoordinates {
+- (void)setCoordinates:(BOOL)drawMonophyleticWrOutgroup {
 		
 	if (initializedDownPass == NO)
 		[self initializeDownPassSequence];
@@ -535,6 +556,8 @@
             }
         }
     int depthOfRoot = [root depthFromTip];
+    if (drawMonophyleticWrOutgroup == YES)
+        depthOfRoot++;
 
     // set depth (y values)
 	enumerator = [downPassSequence objectEnumerator];
@@ -566,9 +589,12 @@
 			}
 		else 
 			{
+            int startI = 0;
+            if (p == root && drawMonophyleticWrOutgroup == YES)
+                startI = 1;
 			double xMin = 1000000000.0;
 			double xMax = 0.0;
-            for (int i=0; i<[p numberOfDescendants]; i++)
+            for (int i=startI; i<[p numberOfDescendants]; i++)
                 {
                 Node* q = [p descendantIndexed:i];
 				double qX = [q x];

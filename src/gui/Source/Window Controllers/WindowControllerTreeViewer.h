@@ -24,10 +24,12 @@
     ToolTreeSet*                    myTool;
     int                             selectedTree;
     float                           fontSize;
+    BOOL                            drawMonophyleticWrOutgroup;
 }
 
-@property (readwrite) int selectedTree;
+@property (readwrite) int   selectedTree;
 @property (readwrite) float fontSize;
+@property (readwrite) BOOL  drawMonophyleticWrOutgroup;
 
 - (IBAction)changeFontSize:(id)sender;
 - (IBAction)changedDrawMonophyleticTreeCheck:(id)sender;

@@ -24,6 +24,11 @@
     [descendants addObject:des];
 }
 
+- (void)addDescendantAtLeftMostPosition:(Node*)des {
+
+    [descendants insertObject:des atIndex:0];
+}
+
 - (int)numberOfDescendants {
 
     return (int)[descendants count];

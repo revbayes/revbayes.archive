@@ -36,6 +36,7 @@
 @property (readwrite)        int       state;
 
 - (void)addDescendant:(Node*)des;
+- (void)addDescendantAtLeftMostPosition:(Node*)des;
 - (int)numberOfDescendants;
 - (Node*)ancestor;
 - (Node*)descendantIndexed:(int)idx;

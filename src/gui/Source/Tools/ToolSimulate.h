@@ -2,11 +2,13 @@
 #import "ToolData.h"
 @class GuiTree;
 @class WindowControllerSimulate;
+@class WindowControllerSimulateQuery;
 
 
 
 @interface ToolSimulate : ToolData <NSCoding> {
 
+    WindowControllerSimulateQuery*  queryWindow;
     WindowControllerSimulate*       controlWindow;
     GuiTree*                        myTree;
     double                          treeLength;
@@ -40,11 +42,13 @@
 
 - (char)charState:(int)x;
 - (void)closeControlPanel;
-- (void)encodeWithCoder:(NSCoder *)aCoder;
+- (void)closeQueryPanel;
+- (void)encodeWithCoder:(NSCoder*)aCoder;
 - (void)execute;
 - (GuiTree*)exposeTreePtr;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
+- (void)makeTreeOfSize:(int)nt;
 - (NSMutableAttributedString*)sendTip;
 - (void)simulate;
 

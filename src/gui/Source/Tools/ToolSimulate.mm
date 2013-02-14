@@ -5,6 +5,7 @@
 #import "RevBayes.h"
 #import "ToolSimulate.h"
 #import "WindowControllerSimulate.h"
+#import "WindowControllerSimulateQuery.h"
 
 #include <iostream>
 #include "CharacterData.h"
@@ -58,8 +59,16 @@
 	[controlWindow close];
 }
 
+- (void)closeQueryPanel {
+
+    [NSApp stopModal];
+	[queryWindow close];
+}
+
 - (void)dealloc {
 
+    if (queryWindow != nil)
+        [queryWindow release];
     [controlWindow release];
     [myTree release];
 	[super dealloc];
@@ -68,19 +77,20 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];
-    [aCoder encodeDouble:treeLength forKey:@"treeLength"];
-    [aCoder encodeDouble:alpha forKey:@"alpha"];
-    [aCoder encodeDouble:rAC forKey:@"rAC"];
-    [aCoder encodeDouble:rAG forKey:@"rAG"];
-    [aCoder encodeDouble:rAT forKey:@"rAT"];
-    [aCoder encodeDouble:rCG forKey:@"rCG"];
-    [aCoder encodeDouble:rCT forKey:@"rCT"];
-    [aCoder encodeDouble:rGT forKey:@"rGT"];
-    [aCoder encodeDouble:piA forKey:@"piA"];
-    [aCoder encodeDouble:piC forKey:@"piC"];
-    [aCoder encodeDouble:piG forKey:@"piG"];
-    [aCoder encodeDouble:piT forKey:@"piT"];
+    [aCoder encodeDouble:treeLength  forKey:@"treeLength"];
+    [aCoder encodeDouble:alpha       forKey:@"alpha"];
+    [aCoder encodeDouble:rAC         forKey:@"rAC"];
+    [aCoder encodeDouble:rAG         forKey:@"rAG"];
+    [aCoder encodeDouble:rAT         forKey:@"rAT"];
+    [aCoder encodeDouble:rCG         forKey:@"rCG"];
+    [aCoder encodeDouble:rCT         forKey:@"rCT"];
+    [aCoder encodeDouble:rGT         forKey:@"rGT"];
+    [aCoder encodeDouble:piA         forKey:@"piA"];
+    [aCoder encodeDouble:piC         forKey:@"piC"];
+    [aCoder encodeDouble:piG         forKey:@"piG"];
+    [aCoder encodeDouble:piT         forKey:@"piT"];
     [aCoder encodeInt:sequenceLength forKey:@"sequenceLength"];
+    [aCoder encodeObject:myTree      forKey:@"myTree"];
 }
 
 - (void)execute {
@@ -116,9 +126,7 @@
         [self setOutletLocations];
         
         // initialize the model tree
-        myTree = [[GuiTree alloc] initWithTipSize:10];
-        [myTree initializeDownPassSequence];
-        [myTree setCoordinates];
+        myTree = nil;
         
         // set parameters
         treeLength     = 5.0;
@@ -137,11 +145,12 @@
 
 		// initialize the control window
 		controlWindow = [[WindowControllerSimulate alloc] initWithTool:self];
+        queryWindow = nil;
 		}
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (id)initWithCoder:(NSCoder*)aDecoder {
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
@@ -162,9 +171,16 @@
         piG            = [aDecoder decodeDoubleForKey:@"piG"];
         piT            = [aDecoder decodeDoubleForKey:@"piT"];
         sequenceLength = [aDecoder decodeIntForKey:@"sequenceLength"];
+        myTree         = [aDecoder decodeObjectForKey:@"myTree"];
+        [myTree retain];
+        [myTree print];
 
 		// initialize the control window
 		controlWindow  = [[WindowControllerSimulate alloc] initWithTool:self];
+        queryWindow    = nil;
+
+        [myTree setCoordinates:NO];
+        [controlWindow setMyTree:myTree];
 		}
 	return self;
 }
@@ -183,6 +199,18 @@
 	float s[8] = { 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 2.0, 4.0 };
 	for (int i=0; i<8; i++)
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
+}
+
+- (void)makeTreeOfSize:(int)nt {
+
+    if (myTree != nil)
+        [myTree release];
+
+    myTree = [[GuiTree alloc] initWithTipSize:nt];
+    [myTree initializeDownPassSequence];
+    [myTree setCoordinates:NO];
+    if (controlWindow != nil)
+        [controlWindow setMyTree:myTree];
 }
 
 - (NSMutableAttributedString*)sendTip {
@@ -208,11 +236,42 @@
 
 - (void)showControlPanel {
 
-    NSPoint p = [self originForControlWindow:[controlWindow window]];
-    [[controlWindow window] setFrameOrigin:p];
-	[controlWindow showWindow:self];    
-	[[controlWindow window] makeKeyAndOrderFront:nil];
-    [NSApp runModalForWindow:[controlWindow window]];
+    if (queryWindow != nil)
+        {
+        [queryWindow release];
+        queryWindow = nil;
+        }
+    
+    if (queryWindow == nil)
+        {
+        queryWindow = [[WindowControllerSimulateQuery alloc] initWithTool:self];
+        NSPoint p = [self originForControlWindow:[queryWindow window]];
+        [[queryWindow window] setFrameOrigin:p];
+        [queryWindow showWindow:self];    
+        [[queryWindow window] makeKeyAndOrderFront:nil];
+        [NSApp runModalForWindow:[queryWindow window]];
+        }
+    
+    if ( [queryWindow closedWithCancel] == YES )
+        {
+        [queryWindow release];
+        queryWindow = nil;
+        }
+    else
+        {
+        if (myTree == nil)
+            [self makeTreeOfSize:[queryWindow numTaxa]];
+        else if (myTree != nil && [queryWindow whichTreeSourceMethod] == TREE_FROM_SIM)
+            [self makeTreeOfSize:[queryWindow numTaxa]];
+        NSPoint p = [self originForControlWindow:[controlWindow window]];
+        [[controlWindow window] setFrameOrigin:p];
+        [controlWindow showWindow:self];    
+        [[controlWindow window] makeKeyAndOrderFront:nil];
+        [NSApp runModalForWindow:[controlWindow window]];
+        
+        [queryWindow release];
+        queryWindow = nil;
+        }
 }
 
 - (void)simulate {

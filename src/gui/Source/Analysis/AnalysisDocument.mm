@@ -145,7 +145,7 @@
 
 - (void)dealloc {
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"boundsChangeNotification"                  object:nil];
+    //[[NSNotificationCenter defaultCenter] removeObserver:self name:@"boundsChangeNotification"                  object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NSTableViewSelectionDidChangeNotification" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"badAnalysis"                               object:nil];
 	[splitViewDelegate release];
@@ -277,10 +277,10 @@
     if ( (self = [super init]) ) 
 		{
 		NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-		[defaultCenter addObserver:self
+		/*[defaultCenter addObserver:self
 						  selector:@selector(viewResized:)
 							  name:@"boundsChangeNotification"
-						    object:analysisViewPtr];
+						    object:analysisViewPtr];*/
 		[defaultCenter addObserver:self
 						  selector:@selector(toolSourceChanged:)
 							  name:@"NSTableViewSelectionDidChangeNotification"

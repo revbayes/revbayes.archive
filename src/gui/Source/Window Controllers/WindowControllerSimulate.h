@@ -64,6 +64,7 @@
 - (IBAction)okButtonAction:(id)sender;
 - (GuiTree*)myTree;
 - (void)setControlWindow;
-- (void)windowDidResize;
+- (void)setMyTree:(GuiTree*)t;
+- (void)windowDidResize:(NSNotification*)notification;
 
 @end
