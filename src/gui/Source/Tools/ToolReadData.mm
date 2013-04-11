@@ -310,6 +310,10 @@
             fileToOpen = [[filesToOpen objectAtIndex:i] path];
             }
         }
+    else
+        {
+        return NO;
+        }
             
     [self startProgressIndicator];
     
@@ -363,6 +367,7 @@
         return NO;
         }
     
+    NSLog(@"isDataFormatAutomaticallyDetermined=%d", [controlWindow isDataFormatAutomaticallyDetermined]);
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
     RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
@@ -375,6 +380,11 @@
             const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
             const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
             RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
+            if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
+                {
+                if ([controlWindow dataAlignment] == 1)
+                    [newMatrix setIsHomologyEstablished:NO];
+                }
             [newMatrix setAlignmentMethod:@"Unknown"];
             [self addMatrix:newMatrix];
             }
@@ -384,6 +394,11 @@
         [self removeAllDataMatrices];
         RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
         [newMatrix setAlignmentMethod:@"Unknown"];
+        if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
+            {
+            if ([controlWindow dataAlignment] == 1)
+                [newMatrix setIsHomologyEstablished:NO];
+            }
         [self addMatrix:newMatrix];
         }
     else

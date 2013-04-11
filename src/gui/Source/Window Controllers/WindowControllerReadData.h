@@ -38,17 +38,17 @@ class CharacterData;
     BOOL                               isDataFormatAutomaticallyDetermined;
 }
 
-@property (readwrite) int dataAlignment;
-@property (readwrite) int dataFormat;
-@property (readwrite) int dataInterleaved;
-@property (readwrite) int dataType;
-@property (readwrite) int dataTypeSimulated;
-@property (readwrite) int numberOfCharacters;
-@property (readwrite) int numberOfTaxa;
-@property (readwrite) int numberOfStates;
+@property (readwrite) int    dataAlignment;
+@property (readwrite) int    dataFormat;
+@property (readwrite) int    dataInterleaved;
+@property (readwrite) int    dataType;
+@property (readwrite) int    dataTypeSimulated;
+@property (readwrite) int    numberOfCharacters;
+@property (readwrite) int    numberOfTaxa;
+@property (readwrite) int    numberOfStates;
 @property (retain) NSString* fileName;
 @property (retain) NSString* pathName;
-@property (readwrite) BOOL isDataFormatAutomaticallyDetermined;
+@property (readwrite) BOOL   isDataFormatAutomaticallyDetermined;
 
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)changeDataType:(id)sender;

@@ -25,6 +25,7 @@
 - (void)awakeFromNib {
 	
 	[matrixTypeTab selectTabViewItemAtIndex:[myTool matrixType]];
+    [fileFormatDeterminationMethod selectItemWithTag:isDataFormatAutomaticallyDetermined];
 	[self setControlsEnabledState];
 	[self setControlWindowSize];
 }
@@ -91,6 +92,7 @@
         [self setNumberOfStates:2];
 		[self setFileName:[myTool fileName]];
 		[self setPathName:[myTool pathName]];
+        [self setIsDataFormatAutomaticallyDetermined:YES];
         }
 	return self;
 }
@@ -126,6 +128,8 @@
         }
     else 
         {
+        NSLog(@"Unsuccessful reading of data");
+        // should catch this error
         }
 }
 
