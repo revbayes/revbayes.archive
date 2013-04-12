@@ -383,12 +383,37 @@
             // DNA
             if ( NULL == newMatrix ) 
             {
-                const RevLanguage::CharacterData<RevLanguage::DnaState> *cd = static_cast<const RevLanguage::CharacterData<RevLanguage::DnaState> *>( &theDagNode );
+                const RevLanguage::CharacterData<RevLanguage::DnaState> *cd = dynamic_cast<const RevLanguage::CharacterData<RevLanguage::DnaState> *>( &theDagNode );
                 if ( cd != NULL ) 
                 {
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
+                    std::string type = "DNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue():type];
                 }
             }
+            
+            // RNA
+            if ( NULL == newMatrix ) 
+            {
+                const RevLanguage::CharacterData<RevLanguage::RnaState> *cd = dynamic_cast<const RevLanguage::CharacterData<RevLanguage::RnaState> *>( &theDagNode );
+                if ( cd != NULL ) 
+                {
+                    std::string type = "RNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue():type];
+                }
+            }
+            
+            // Amino-Acid
+            if ( NULL == newMatrix ) 
+            {
+                const RevLanguage::CharacterData<RevLanguage::AminoAcidState> *cd = dynamic_cast<const RevLanguage::CharacterData<RevLanguage::AminoAcidState> *>( &theDagNode );
+                if ( cd != NULL ) 
+                {
+                    std::string type = "Protein";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue():type];
+                }
+            }
+            
+            
             if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
             {
                 if ([controlWindow dataAlignment] == 1)

@@ -1,5 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import "Tool.h"
+#include <string>
+
 @class RbData;
 @class WindowControllerCharacterMatrix;
 
@@ -30,7 +32,7 @@ namespace RevBayesCore {
 - (id)initWithScaleFactor:(float)sf;
 - (void)instantiateDataInCore;
 - (void)makeDataInspector;
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd;
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd:(std::string&)dt;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
 - (int)numDataMatrices;
 - (int)numAlignedMatrices;

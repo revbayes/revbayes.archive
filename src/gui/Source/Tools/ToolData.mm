@@ -223,7 +223,7 @@
     [dataInspector window];
 }
 
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd {
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd:(const std::string&)dt {
 
     std::string fn = cd.getFileName();
     
@@ -239,16 +239,16 @@
     [m setName:nsfn];
     // TODO: Need to be able to extract the data type from a character matrix (Sebastian)
     std::cerr << "Missing implementation in ToolData.\n";
-//    if ( cd.getDataType() == DnaState::getClassName() )
-//        [m setDataType:DNA];
-//    else if ( cd.getDataType() == RnaState::getClassName() )
-//        [m setDataType:RNA];
-//    else if ( cd.getDataType() == AminoAcidState::getClassName() )
-//        [m setDataType:AA];
-//    else if ( cd.getDataType() == StandardState::getClassName() )
-//        [m setDataType:STANDARD];
-//    else if ( cd.getDataType() == ContinuousCharacterState::getClassName() )
-//        [m setDataType:CONTINUOUS];
+    if ( dt == "DNA" )
+        [m setDataType:DNA];
+    else if ( dt == "RNA" )
+        [m setDataType:RNA];
+    else if ( dt == "Protein" )
+        [m setDataType:AA];
+    else if ( dt == "Standard" )
+        [m setDataType:STANDARD];
+    else if ( dt == "Continuous" )
+        [m setDataType:CONTINUOUS];
 
     for (int i=0; i<cd.getNumberOfTaxa(); i++)
     {        
