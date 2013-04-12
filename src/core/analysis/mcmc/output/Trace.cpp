@@ -1,0 +1,166 @@
+//
+//  Trace.m
+//  RevBayesGui
+//
+//  Created by Sebastian Hoehna on 3/24/11.
+//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//
+
+
+#include "GewekeTest.h"
+#include "StationarityTest.h"
+#include "Trace.h"
+#include "TraceAnalysisContinuous.h"
+
+#include "RbUtil.h"
+
+#include <sstream>
+#include <string>
+#include <vector>
+
+using namespace RevBayesCore;
+
+Trace::Trace() {
+    invalidate();
+}
+
+/**
+ * Copy constructor
+ *
+ */
+Trace::Trace(const Trace& t) {
+    fileName                        = t.fileName;
+    parmName                        = t.parmName;
+    
+    burnin                          = t.burnin;
+    ess                             = t.ess;
+    mean                            = t.mean;
+    median                          = t.median;
+    sem                             = t.sem;
+    stepSize                        = t.stepSize;
+    
+    converged                       = t.converged;
+    passedStationarityTest          = t.passedStationarityTest;
+    passedGewekeTest                = t.passedGewekeTest;
+    //    passedHeidelbergerWelchStatistic = NOT_CHECKED;
+    //    passedRafteryLewisStatistic = NOT_CHECKED;
+    passedEssThreshold              = t.passedEssThreshold;
+    passedSemThreshold              = t.passedSemThreshold;
+    passedIidBetweenChainsStatistic = t.passedIidBetweenChainsStatistic;
+    passedGelmanRubinTest           = t.passedGelmanRubinTest;
+    
+    values                          = t.values;
+}
+
+
+Trace::~Trace() {
+    values.clear();
+}
+
+
+void Trace::addObject(double d) {
+    values.push_back(d);
+    
+    // invalidate for recalculation of meta data
+    invalidate();
+}
+
+
+void Trace::computeStatistics( void ) { 
+    
+    // check if we need to set the burnin
+    if ( burnin < 0 ) {
+        burnin = size();
+        burnin *= stepSize;
+        burnin *= 0.1;
+    }
+    
+    TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();
+    analysis->analyseCorrelation(values, burnin);
+    ess = analysis->getEss();
+    mean = analysis->getMean();
+    sem = analysis->getStdErrorOfMean();
+    
+    
+    
+    // test stationarity within chain
+    int nBlocks = 10;
+    StationarityTest testS = StationarityTest(nBlocks, 0.01);
+    passedStationarityTest = testS.assessConvergenceSingleChain(values, burnin);
+    
+    // Geweke's test for convergence within a chain
+    GewekeTest testG = GewekeTest(0.01);
+    passedGewekeTest = testG.assessConvergenceSingleChain(values, burnin);
+        
+}
+
+
+/** Clone function */
+Trace* Trace::clone() const {
+    
+    return new Trace(*this);
+}
+
+
+void Trace::invalidate() {
+    // set values to defaults and mark for recalculation
+    burnin                          = -1;
+    ess                             = -1;
+    mean                            = 0.0;
+    median                          = 0.0;
+    sem                             = -1;
+    stepSize                        = 1;
+    
+    converged                       = NOT_CHECKED;
+    passedStationarityTest          = NOT_CHECKED;
+    passedGewekeTest                = NOT_CHECKED;
+    //    passedHeidelbergerWelchStatistic = NOT_CHECKED;
+    //    passedRafteryLewisStatistic = NOT_CHECKED;
+    passedEssThreshold              = NOT_CHECKED;
+    passedSemThreshold              = NOT_CHECKED;
+    passedIidBetweenChainsStatistic = NOT_CHECKED;
+    passedGelmanRubinTest           = NOT_CHECKED;
+    
+    
+}
+
+
+void Trace::removeObjectAtIndex (int index) {
+    // create a iterator for the vector
+    std::vector<double>::iterator it = values.begin();
+    
+    //jump to the position to remove
+    it += index;
+    
+    // remove the element
+    values.erase(it);
+    
+    // invalidate for recalculation of meta data
+    invalidate();
+}
+
+void Trace::removeLastObject() {
+    // remove object from list
+    values.pop_back();
+    
+    // invalidate for recalculation of meta data
+    invalidate();
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Trace& x) {
+    o << x.getParameterName();
+    o << " (";
+    const std::vector<double>& values = x.getValues();
+    for (std::vector<double>::const_iterator it = values.begin(); it != values.end(); ++it) {
+        if ( it != values.begin() ) {
+            o << ", ";
+        }
+        o << *it;
+    }
+    o << ")";
+    
+    return o;
+}
+
+

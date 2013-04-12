@@ -1,0 +1,85 @@
+/**
+ * @file
+ * This file contains the implementation of RlBoolean, which is
+ * a RevBayes wrapper around a regular bool.
+ *
+ * @brief Implementation of RlBoolean
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date: 2012-09-04 20:14:58 +0200 (Tue, 04 Sep 2012) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ * @extends RbObject
+ *
+ * $Id: RlBoolean.cpp 1793 2012-09-04 18:14:58Z hoehna $
+ */
+
+
+#include "ConstantNode.h"
+#include "RlAminoAcidState.h"
+#include "RbUtil.h"
+#include "TypeSpec.h"
+
+#include <sstream>
+
+using namespace RevLanguage;
+
+/** Default constructor */
+AminoAcidState::AminoAcidState(void) : RlModelVariableWrapper<RevBayesCore::AminoAcidState>() {
+    
+}
+
+/** Construct from bool */
+AminoAcidState::AminoAcidState(const RevBayesCore::AminoAcidState &d) : RlModelVariableWrapper<RevBayesCore::AminoAcidState>( new RevBayesCore::AminoAcidState(d) ) {
+    
+}
+
+
+/** Clone object */
+AminoAcidState* AminoAcidState::clone(void) const {
+    
+	return new AminoAcidState(*this);
+}
+
+
+/** Convert to type. The caller manages the returned object. */
+RbLanguageObject* AminoAcidState::convertTo(const TypeSpec& type) const {
+    
+    return RbLanguageObject::convertTo(type);
+}
+
+
+/** Get class name of object */
+const std::string& AminoAcidState::getClassName(void) { 
+    
+    static std::string rbClassName = "AminoAcid";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& AminoAcidState::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& AminoAcidState::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}
+
+
+
+/** Is convertible to type? */
+bool AminoAcidState::isConvertibleTo(const TypeSpec& type) const {
+    
+    return RbLanguageObject::isConvertibleTo(type);
+}
+

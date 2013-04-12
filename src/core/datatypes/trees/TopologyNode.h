@@ -1,0 +1,123 @@
+/**
+ * @file
+ * This file contains the declaration of a TopologyNode. Tree nodes are member objects and therefore can hold
+ * all the variables one might to associate to the tree. The tree nodes are used to create the structure
+ * of a tree. They provide access to their parent and children.
+ *
+ * The usage of tree nodes is to create and give easy access to parts of the dag, namely variables hold
+ * by the nodes which need access to ancestral variables.
+ *
+ * We do not distinguish between branch parameter and node parameters. A branch parameter is simply set as
+ * a node parameter of the descending node.
+ *
+ * A tree node can have a distribution associated with it, for instance in the situation when we condition
+ * on a group of taxa being monophyletic.
+ *
+ *
+ * NOTE: This class might be a temporary solution being the unified solution for all tree nodes. In the future
+ * we might make this class abstract and implement at least the two types of tree nodes: bifurcating tree nodes
+ * which are restricted two have exactly two descendants and multifurcating tree nodes which can have any number
+ * of tree nodes. Perhaps there might be also tip nodes as a derived class and a root node, which is the 
+ * correct OO design approach but comes with a lot of overhead. A fast conversion method would be needed.
+ *
+ * @brief Declaration of TopologyNode
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date: 2012-07-17 10:31:20 +0200 (Tue, 17 Jul 2012) $
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-12-04, version 1.0
+ * @extends MemberObject
+ *
+ * $Id: TopologyNode.h 1682 2012-07-17 08:31:20Z hoehna $
+ */
+
+#ifndef TopologyNode_H
+#define TopologyNode_H
+
+#include <vector>
+#include <string>
+
+namespace RevBayesCore {
+    
+    class Tree;
+    class Clade;
+    
+    class TopologyNode  {
+        
+    public:
+        TopologyNode(int indx=0);                                                   //!< Default constructor with optional index
+        TopologyNode(const std::string& n, int indx=0);                             //!< Constructor with name and optional index
+        TopologyNode(const TopologyNode &n);                                        //!< Copy constructor
+        virtual                                    ~TopologyNode(void);                                                         //!< Destructor
+        TopologyNode&                               operator=(const TopologyNode& n);
+
+    
+        // Basic utility functions
+        TopologyNode*                               clone(void) const;                                                      //!< Clone object
+        bool                                        equals(const TopologyNode& node) const;                                 //!< Test whether this is the same node
+
+        // public methods
+        void                                        addParameter(const std::string &n, const std::vector<double> &p, bool io);
+        void                                        addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
+        void                                        clearBranchParameters(void);
+        const std::string&                          computeNewick(void);                                                        //!< Compute the newick RlString for this clade
+        size_t                                      getIndex(void) const;                                                       //!< Get index of node
+        void                                        initiateFlaggingForNewickRecomputation(void);
+        bool                                        isRoot(void) const;                                                         //!< Is node root?
+        bool                                        isTip(void) const;                                                          //!< Is node tip?
+        const std::string&                          getName(void) const;                                                        //!< Get name of node
+        void                                        setIndex(size_t idx);                                                 //!< Set the index of the node
+        void                                        setName(const std::string& n);                                              //!< Set the name of this node
+   
+        // public TopologyNode functions
+        void                                        addChild(TopologyNode* c);                                              //!< Adds a child node
+        bool                                        containsClade(const TopologyNode* c) const;
+        bool                                        containsClade(const Clade &c) const;
+        void                                        flagNewickRecomputation(void);                                          //!< Flag the newick RlString for recomputation
+        double                                      getAge(void) const;                                                     //!< Get the age (time ago from present) for this node
+        double                                      getBranchLength(void) const;                                            //!< Get the branch length leading towards this node
+        const TopologyNode&                         getChild(size_t i) const;                                               //!< Returns the i-th child
+        TopologyNode&                               getChild(size_t i);                                                     //!< Returns the i-th child (non-const to return non-const node)
+        const std::vector<TopologyNode*>&           getChildren(void) const;
+        std::vector<int>                            getChildrenIndices(void) const;                                         //!< Return children indices
+        size_t                                      getNumberOfChildren(void) const;                                        //!< Returns the number of children
+        TopologyNode&                               getParent(void);                                                        //!< Returns the node's parent
+        const TopologyNode&                         getParent(void) const;                                                  //!< Returns the node's parent
+        std::vector<std::string>                    getTaxaStringVector(void) const;
+        double                                      getTime(void) const;                                                    //!< Get the time of the node
+        double                                      getTmrca(const TopologyNode &n) const;
+        void                                        removeAllChildren(void);                                                //!< Removes all of the children of the node
+        void                                        removeChild(TopologyNode* p);                                           //!< Removes a specific child
+//        virtual void                                setAge(double a) = 0;                                                       //!< Set the age (time ago from present) for this node
+//        virtual void                                setBranchLength(double bl) = 0;                                             //!< Set the branch length
+        void                                        setParent(TopologyNode* p);                                             //!< Sets the node's parent
+//        virtual void                                setTime(double t) = 0;                                                      //!< Set the time
+        void                                        setTopology(Tree *t);
+
+    protected:    
+        // helper methods
+        std::string                                 buildNewickString(void);                                                    //!< compute the newick RlString for a tree rooting at this node
+        //        void                                refreshNewickString(void);                                                  //!< recompute the newick RlString
+    
+        // protected members
+        std::vector<TopologyNode*>                  children;                                                                   //!< Vector holding the node's children. Note that the parent owns the children but not the other way around. 
+        TopologyNode*                               parent;                                                                     //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
+        Tree*                                       topology;                                                                   //!< A pointer to the tree for convinience access
+
+        std::string                                 name;                                                                       //!< Name of the node, i.e. identifier/taxon name
+        size_t                                      index;                                                                      //!< Node index
+        bool                                        interiorNode;
+        bool                                        rootNode;
+        bool                                        tipNode;
+        std::string                                 newick;
+        bool                                        newickNeedsRefreshing;
+        std::vector<std::string>                    nodeComments;
+        std::vector<std::string>                    branchComments;
+      
+    };
+    
+}
+
+#endif

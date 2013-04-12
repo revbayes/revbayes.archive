@@ -1,0 +1,94 @@
+/**
+ * @file
+ * This file contains the implementation of Func_quit, which is
+ * the function used to quit RevBayes.
+ *
+ * @brief Implementation of Func_quit
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @interface RbFunction
+ * @package functions
+ * @since Version 1.0, 2012-09-07
+ *
+ * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
+ */
+
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "Func_quit.h"
+#include "RbException.h"
+#include "RlUtils.h"
+#include "TypeSpec.h"
+
+#include <fstream>
+
+using namespace RevLanguage;
+
+/** Default constructor */
+Func_quit::Func_quit( void ) : Function() {
+    
+}
+
+
+/** Clone object */
+Func_quit* Func_quit::clone( void ) const {
+    
+    return new Func_quit( *this );
+}
+
+
+/** Execute function */
+RbLanguageObject* Func_quit::execute( void ) {
+    
+    throw RbException( RbException::QUIT );
+    
+    return NULL;
+}
+
+
+/** Get argument rules */
+const ArgumentRules& Func_quit::getArgumentRules( void ) const {
+    
+    static ArgumentRules argumentRules = ArgumentRules();
+    
+    return argumentRules;
+}
+
+
+/** Get class name of object */
+const std::string& Func_quit::getClassName(void) { 
+    
+    static std::string rbClassName = "quit function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_quit::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_quit::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}
+
+
+/** Get return type */
+const TypeSpec& Func_quit::getReturnType( void ) const {
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
+    
+    return returnTypeSpec;
+}
+

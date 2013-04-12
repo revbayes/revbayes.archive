@@ -1,0 +1,132 @@
+/**
+ * @file
+ * This file contains the declaration of the interface for all functions.
+ *
+ * Functions either be values inside DAG nodes, i.e. the random variable of some distribution,
+ * or be associated with a deterministic node.
+ *
+ * First, some distributions are requiring a function as a parameter, e.g. a rate function. Thus,
+ * we need to implement functions as objects storable in DAG nodes.
+ *
+ * Second, all deterministic nodes hold a function. The value of the deterministic node is returned via
+ * a call to get value in the function (and potentially delegate to update the value if it is dirty).
+ *
+ * Every functions owns it's value and hence this class is templated. Owning the value
+ * has the advantage that calls to update can modify the value instead of creating a new object.
+ * This is benefitial in functions generating large objects.
+ *
+ * @brief Declaration of functions.
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date: 2012-06-20 22:57:09 +0200 (Wed, 20 Jun 2012) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2012-09-02, version 1.0
+ *
+ * $Id: Function.h 1643 2012-06-20 20:57:09Z hoehna $
+ */
+
+#ifndef TypedFunction_H
+#define TypedFunction_H
+
+#include "Function.h"
+
+#include <iostream>
+
+namespace RevBayesCore {
+    
+    template <class valueType>
+    class DeterministicNode;
+    
+    template<class valueType>
+    class TypedFunction : public Function {
+        
+    public:
+        // constructors and destructor
+        virtual                            ~TypedFunction(void);
+        
+        // public methods
+        valueType&                          getValue(void);
+        const valueType&                    getValue(void) const;
+        void                                setDeterministicNode(DeterministicNode<valueType> *n);                      //!< Set the stochastic node holding this distribution
+
+        // pure virtual public methors
+        virtual TypedFunction*              clone(void) const = 0;                                                      //!< Clone the function
+        virtual void                        update(void) = 0;                                                           //!< Clone the function
+    
+    protected:
+        TypedFunction(valueType *v);
+        TypedFunction(const TypedFunction &f);
+        
+        // members 
+        DeterministicNode<valueType>*       dagNode;                                                                    //!< The deterministic node holding this function. This is needed for delegated calls to the DAG, such as getAffected(), addTouchedElementIndex()...
+        valueType*                          value;
+    
+    private:
+        mutable bool                        dirty;
+    };
+    
+    // Global functions using the class
+    template <class valueType>
+    std::ostream&                           operator<<(std::ostream& o, const TypedFunction<valueType>& x);                                //!< Overloaded output operator
+    
+}
+
+#include "Cloneable.h"
+#include "Cloner.h"
+#include "IsDerivedFrom.h"
+
+template <class valueType>
+RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(), value( v ), dirty(true) {
+    
+}
+
+template <class valueType>
+RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *value ) ), dirty(true) {
+
+}
+
+template <class valueType>
+RevBayesCore::TypedFunction<valueType>::~TypedFunction( void ) {
+    delete value;
+}
+
+template <class valueType>
+const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const {
+    if (dirty) {
+        const_cast<TypedFunction<valueType>* >( this )->update();
+        this->dirty = false;
+    }
+    
+    return *value;
+}
+
+template <class valueType>
+valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) {
+    if (dirty) {
+        update();
+        this->dirty = false;
+    }
+    
+    return *value;
+}
+
+
+
+template <class valueType>
+void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicNode<valueType> *n) {
+    
+    dagNode = n;
+}
+
+
+template <class valueType>
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedFunction<valueType>& f) {
+    
+    o << "f(x)";
+    
+    return o;
+}
+
+#endif

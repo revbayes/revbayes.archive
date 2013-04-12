@@ -1,0 +1,95 @@
+/**
+ * @file
+ * This file contains the implementation of Func_clear, which is
+ * the function used to clear the workspace.
+ *
+ * @brief Implementation of Func_source
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @interface RbFunction
+ * @package functions
+ * @since Version 1.0, 2012-09-07
+ *
+ * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
+ */
+
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "Func_clear.h"
+#include "RbException.h"
+#include "RlUtils.h"
+#include "TypeSpec.h"
+#include "Workspace.h"
+
+#include <fstream>
+
+using namespace RevLanguage;
+
+/** Default constructor */
+Func_clear::Func_clear( void ) : Function() {
+    
+}
+
+
+/** Clone object */
+Func_clear* Func_clear::clone( void ) const {
+    
+    return new Func_clear( *this );
+}
+
+
+/** Execute function */
+RbLanguageObject* Func_clear::execute( void ) {
+    
+    Workspace::userWorkspace().clear();
+    
+    return NULL;
+}
+
+
+/** Get argument rules */
+const ArgumentRules& Func_clear::getArgumentRules( void ) const {
+    
+    static ArgumentRules argumentRules = ArgumentRules();
+    
+    return argumentRules;
+}
+
+
+/** Get class name of object */
+const std::string& Func_clear::getClassName(void) { 
+    
+    static std::string rbClassName = "clear function";
+    
+	return rbClassName; 
+}
+
+/** Get class type spec describing type of object */
+const TypeSpec& Func_clear::getClassTypeSpec(void) { 
+    
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    
+	return rbClass; 
+}
+
+/** Get type spec */
+const TypeSpec& Func_clear::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}
+
+
+/** Get return type */
+const TypeSpec& Func_clear::getReturnType( void ) const {
+    
+    static TypeSpec returnTypeSpec = RbVoid_name;
+    
+    return returnTypeSpec;
+}
+
