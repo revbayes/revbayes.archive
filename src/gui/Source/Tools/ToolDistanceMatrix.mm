@@ -8,7 +8,7 @@
 #import "ToolDistanceMatrix.h"
 #import "WindowControllerDistanceMatrix.h"
 
-#include "DistanceMatrix.h"
+//#include "DistanceMatrix.h"
 #include "Parser.h"
 #include "RbNullObject.h"
 #include "Workspace.h"
@@ -85,7 +85,7 @@
         }
 
     // get a variable name from the workspace for the data 
-    std::string dataName = Workspace::userWorkspace()->generateUniqueVariableName();
+    std::string dataName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
 		    
     // format a string command to read the data file(s) and send the
     // formatted string to the parser
@@ -93,14 +93,14 @@
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = dataName + " <- read(\"" + cmdAsStlStr + "\")";
     std::cout << line << std::endl;
-    int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
+    int coreResult = RevLanguage::Parser::getParser().processCommand(line, Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self stopProgressIndicator];
         return;
         }
         
-    std::string distName = Workspace::userWorkspace()->generateUniqueVariableName();
+    std::string distName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
 
     // get string for specifying distance commands
     std::string cmdStr = distName;
@@ -155,8 +155,8 @@
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RbPtr<RbLanguageObject>& dv = Workspace::userWorkspace()->getValue(distName).getSingleValue();
-    if ( NULL == dv )
+    const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(distName);
+    if ( RevLanguage::RbNullObject::getInstance() == dv )
         {
         //[self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not find matrix in work space", @"OK", nil, nil);
@@ -166,7 +166,7 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    DistanceMatrix *dm = dynamic_cast<DistanceMatrix *>( (RbLanguageObject *) dv );
+    DistanceMatrix *dm = dynamic_cast<DistanceMatrix *>( dv );
     if ( NULL == dm )
         {
         NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not convert matrix in work space", @"OK", nil, nil);
@@ -202,8 +202,8 @@
         }
     
     // remove the variables from the core
-    Workspace::userWorkspace()->eraseVariable(dataName);
-    Workspace::userWorkspace()->eraseVariable(distName);
+    RevLanguage::Workspace::userWorkspace().eraseVariable(dataName);
+    RevLanguage::Workspace::userWorkspace().eraseVariable(distName);
 
     [self stopProgressIndicator];
 }

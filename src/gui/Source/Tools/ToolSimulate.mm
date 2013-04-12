@@ -280,7 +280,7 @@
         return;
     
     // get a pointer to the random number generator
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    RevBayesCore::RandomNumberGenerator* rng = RevBayesCore::GLOBAL_RNG;
     
     // initialize some local parameters
     double r[6], f[4];
@@ -345,13 +345,13 @@
     // simulate the sequences
     for (int c=0; c<sequenceLength; c++)
         {
-        double siteRate = RbStatistics::Gamma::rv(alpha, alpha, *rng);
+        double siteRate = RevBayesCore::RbStatistics::Gamma::rv(alpha, alpha, *rng);
         for (int n=[myTree numberOfNodes]-1; n>=0; n--)
             {
             Node* p = [myTree downPassNodeIndexed:n];
             if ( [myTree isRoot:p] == YES )
                 {
-                double u = RbStatistics::Uniform::rv(*rng);
+                double u = RevBayesCore::RbStatistics::Uniform::rv(*rng);
                 double sum = 0.0;
                 for (int i=0; i<4; i++)
                     {
@@ -379,10 +379,10 @@
                     while (curT < v)
                         {
                         double rate = -q[curState][curState];
-                        curT += RbStatistics::Exponential::rv(rate, *rng);
+                        curT += RevBayesCore::RbStatistics::Exponential::rv(rate, *rng);
                         if (curT < v)
                             {
-                            double u = RbStatistics::Uniform::rv(*rng);
+                            double u = RevBayesCore::RbStatistics::Uniform::rv(*rng);
                             double sum = 0.0;
                             for (int j=0; j<4; j++)
                                 {
@@ -417,7 +417,7 @@
         }
         
     // create the character matrix
-	CharacterData* cMat = new CharacterData( DnaState::getClassName() );
+	RevBayesCore::CharacterData<DnaState>* cMat = new RevBayesCore::CharacterData<DnaState>();
     cMat->setIsHomologyEstablished(true);
     
     for (int n=0, taxonIndex=0; n<[myTree numberOfNodes]; n++)

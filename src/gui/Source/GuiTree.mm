@@ -14,7 +14,7 @@
 - (void)addTaxonToRandomBranch {
 
     // find the global random number generator
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    RevBayesCore::RandomNumberGenerator* rng = RevBayesCore::GLOBAL_RNG;
 
     // pick a branch at random to add the new branch
     Node* p = nil;
@@ -60,7 +60,7 @@
 - (void)buildRandomTreeWithSize:(int)n {
 
     // find the global random number generator
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    RevBayesCore::RandomNumberGenerator* rng = RevBayesCore::GLOBAL_RNG;
 
     // fill in the vector of nodes
     [nodes removeAllObjects];

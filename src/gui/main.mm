@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 
     RbSettings::userSettings().initializeUserSettings();
     Help::getHelp().initializeHelp("~/help/");
-    Workspace::globalWorkspace()->initializeGlobalWorkspace();
+    RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 
     return NSApplicationMain( argc, (const char **) argv );
 }

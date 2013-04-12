@@ -64,7 +64,7 @@
 -(void)tableView:(NSTableView *)tableView mouseDownInHeaderOfTableColumn:(NSTableColumn *)tableColumn {
     NSInteger index     = [table columnWithIdentifier:[tableColumn identifier]];;
     if (index >= 0 && index < (int)[myTool data]->size()) {
-        Trace* t            = [myTool data]->at((int) index);
+        RevBayesCore::Trace* t            = [myTool data]->at((int) index);
         
         [burninLabel setStringValue:[NSString stringWithFormat:@"%lu", (unsigned long)(t->getBurnin())]];
         [convergenceLabel setStringValue:[NSString stringWithFormat:@"%lu", 0]];
@@ -80,7 +80,7 @@
 - (int)numberOfRowsInTableView:(NSTableView *)tableView
 {
     // HACK: check if the number of columns is correct; if not, reset columns
-    std::vector<Trace* >* data  = [myTool data];
+    std::vector<RevBayesCore::Trace* >* data  = [myTool data];
     int dataSize                = (int) data->size();
     
     if ([[table tableColumns] count] != dataSize) 
@@ -88,7 +88,7 @@
         [self setTableColumns];
     }
     
-    Trace* t = data->at(0);
+    RevBayesCore::Trace* t = data->at(0);
     
     return t->size();
 }
@@ -119,11 +119,11 @@
     float minWidth = 100;
     
     // adding a column for each trace
-    std::vector<Trace* >* data = [myTool data];
+    std::vector<RevBayesCore::Trace* >* data = [myTool data];
     
     for (int i=0; i<data->size(); i++) {
         // get the trace i
-        Trace* t = data->at(i);
+        RevBayesCore::Trace* t = data->at(i);
         // get the name for the trace
         NSString* identifier = [[NSString alloc] initWithCString:t->getParameterName().c_str() encoding:NSUTF8StringEncoding];
         [identifier autorelease];
@@ -150,11 +150,11 @@
         [self setTableColumns];
     }
     
-    std::vector<Trace* >* d = [myTool data];
+    std::vector<RevBayesCore::Trace* >* d = [myTool data];
     
     for (int i=0; i<d->size(); i++) 
     {
-        Trace* t = d->at(i);
+        RevBayesCore::Trace* t = d->at(i);
         NSString* parmName = [[NSString alloc] initWithCString:t->getParameterName().c_str() encoding:NSUTF8StringEncoding];
         [parmName autorelease];
         if ([parmName isEqualToString:[[tableColumn headerCell] objectValue]] == YES)

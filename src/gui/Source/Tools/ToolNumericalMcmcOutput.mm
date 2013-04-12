@@ -13,7 +13,6 @@
 #import "RevBayes.h"
 #import "Trace.h"
 #import "WindowControllerNumberMatrix.h"
-#import "XmlParser.h"
 
 
 
@@ -85,15 +84,16 @@
 	[super encodeWithCoder:aCoder];
     
     [aCoder encodeInt:(int)data->size()           forKey:@"nTraces"];
-    for (int i=0; i<(int)data->size(); i++) {
-        XmlDocument* doc = new XmlDocument();
-        NSString* traceName = [NSString stringWithFormat:@"Trace%lu",i];
-        XmlElement* element = data->at(i)->encode(doc,[traceName cStringUsingEncoding:NSUTF8StringEncoding]);
-        doc->addXmlElement(element);
-        NSString* tmp_str = [NSString stringWithUTF8String:doc->print().c_str()];
-        NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
-        [aCoder encodeObject:tmp_str forKey:key];
-    }
+    // TODO: Write proper dumping of the states (Sebastian)
+//    for (int i=0; i<(int)data->size(); i++) {
+//        XmlDocument* doc = new XmlDocument();
+//        NSString* traceName = [NSString stringWithFormat:@"Trace%lu",i];
+//        XmlElement* element = data->at(i)->encode(doc,[traceName cStringUsingEncoding:NSUTF8StringEncoding]);
+//        doc->addXmlElement(element);
+//        NSString* tmp_str = [NSString stringWithUTF8String:doc->print().c_str()];
+//        NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
+//        [aCoder encodeObject:tmp_str forKey:key];
+//    }
 }
 
 - (void)execute {
@@ -114,7 +114,7 @@
 - (id)initWithScaleFactor:(float)sf {
     
     if ( (self = [super initWithScaleFactor:sf andWindowNibName:@"ControlWindowNumericalMcmcOutput"]) ) 
-        {
+    {
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
@@ -129,11 +129,12 @@
 		source = [[NSString alloc] initWithString:@"MCMC"];
         
         // initialize the data
-        data = new std::vector<Trace* >;
+        data = new std::vector<RevBayesCore::Trace* >;
         
         // note that the state of this tool is, by default, resolved
         [self setIsResolved:YES];
-        }
+    }
+    
     return self;
 }
 
@@ -148,18 +149,19 @@
         // initialize the settings
         
         // initialize the data
-        data = new std::vector<Trace* >;
+        data = new std::vector<RevBayesCore::Trace* >;
         int traces = [aDecoder decodeIntForKey:@"nTraces"];
         for (int i=0; i<traces; i++) {
             NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
             NSString* xmlString = [aDecoder decodeObjectForKey:key];
             
-            XmlParser* parser = new XmlParser();
-            const XmlDocument* doc = parser->parse([xmlString cStringUsingEncoding:NSUTF8StringEncoding]);
-            
-            const XmlElementAttributed* element = static_cast<const XmlElementAttributed*>( doc->getFirstXmlElement() );
-            Trace* t =new Trace( doc, element );
-            data->push_back(t);
+            // TODO: Write proper reading from memory dumps (Sebastian)
+//            XmlParser* parser = new XmlParser();
+//            const XmlDocument* doc = parser->parse([xmlString cStringUsingEncoding:NSUTF8StringEncoding]);
+//            
+//            const XmlElementAttributed* element = static_cast<const XmlElementAttributed*>( doc->getFirstXmlElement() );
+//            Trace* t =new Trace( doc, element );
+//            data->push_back(t);
         }
     
     }
@@ -309,7 +311,7 @@
                 
                 for (int j=0; j<[columns count]; j++) {
 //                    Trace* t = [[Trace alloc] init];
-                    Trace* t = new Trace();
+                    RevBayesCore::Trace* t = new RevBayesCore::Trace();
                     
                     NSString* parmName = [columns objectAtIndex:j];
                     t->setParameterName([parmName cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -326,7 +328,7 @@
             // adding values to the traces
             for (int j=0; j<[columns count]; j++) {
 //                Trace* t = [data objectAtIndex:j];
-                Trace* t = data->at(j);
+                RevBayesCore::Trace* t = data->at(j);
                 NSNumber* tmp = [columns objectAtIndex:j];
                 double d = [tmp doubleValue];
                 t->addObject(d);
