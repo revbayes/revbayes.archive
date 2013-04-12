@@ -2,8 +2,10 @@
 #import "Tool.h"
 @class RbData;
 @class WindowControllerCharacterMatrix;
-class CharacterData;
 
+namespace RevBayesCore {
+    class AbstractCharacterData;
+}
 
 @interface ToolData : Tool <NSCoding> {
 
@@ -28,7 +30,7 @@ class CharacterData;
 - (id)initWithScaleFactor:(float)sf;
 - (void)instantiateDataInCore;
 - (void)makeDataInspector;
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const CharacterData&)cd;
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
 - (int)numDataMatrices;
 - (int)numAlignedMatrices;

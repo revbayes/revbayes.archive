@@ -139,6 +139,60 @@ void StringUtilities::toLower(std::string& str) {
 
 
 /** Global operator for appending double to std::string */
+std::string operator+( const std::string& A, double B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string operator+( const std::string& A, int B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string operator+( const std::string& A, size_t B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string operator+( double A, const std::string& B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string operator+( int A, const std::string& B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string operator+( size_t A, const std::string& B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
 std::string RevLanguage::operator+( const std::string& A, double B ) {
     
     std::stringstream o;
@@ -149,6 +203,15 @@ std::string RevLanguage::operator+( const std::string& A, double B ) {
 
 /** Global operator for appending double to std::string */
 std::string RevLanguage::operator+( const std::string& A, int B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevLanguage::operator+( const std::string& A, size_t B ) {
     
     std::stringstream o;
     o << A << B;
@@ -172,6 +235,70 @@ std::string RevLanguage::operator+( int A, const std::string& B ) {
     o << A << B;
     return o.str();
 }
+
+
+/** Global operator for appending double to std::string */
+std::string RevLanguage::operator+( size_t A, const std::string& B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( const std::string& A, double B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( const std::string& A, int B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( const std::string& A, size_t B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( double A, const std::string& B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( int A, const std::string& B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
+
+/** Global operator for appending double to std::string */
+std::string RevBayesCore::operator+( size_t A, const std::string& B ) {
+    
+    std::stringstream o;
+    o << A << B;
+    return o.str();
+}
+
 
 
 

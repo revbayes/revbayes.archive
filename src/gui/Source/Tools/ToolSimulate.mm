@@ -417,7 +417,7 @@
         }
         
     // create the character matrix
-	RevBayesCore::CharacterData<DnaState>* cMat = new RevBayesCore::CharacterData<DnaState>();
+	RevBayesCore::CharacterData<RevBayesCore::DnaState>* cMat = new RevBayesCore::CharacterData<RevBayesCore::DnaState>();
     cMat->setIsHomologyEstablished(true);
     
     for (int n=0, taxonIndex=0; n<[myTree numberOfNodes]; n++)
@@ -429,15 +429,15 @@
             const char* tName2 = [tName1 UTF8String];
             std::string tName = tName2;
 
-            TaxonData dataVec = TaxonData(DnaState::getClassName(),tName);
+            RevBayesCore::TaxonData<RevBayesCore::DnaState> dataVec = RevBayesCore::TaxonData<RevBayesCore::DnaState>(tName);
             for (int c=0; c<sequenceLength; c++)
-                {
-                DnaState* dnaState = new DnaState();
+            {
+                RevBayesCore::DnaState* dnaState = new RevBayesCore::DnaState();
                 int charIdx = m[[p index]][c];
                 char nuc = [self charState:charIdx];
                 dnaState->setState(nuc);
                 dataVec.addCharacter( dnaState );
-                }
+            }
             cMat->addTaxonData( dataVec );
                 
             taxonIndex++;

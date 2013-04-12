@@ -8,7 +8,7 @@
 #import "ToolDistanceMatrix.h"
 #import "WindowControllerDistanceMatrix.h"
 
-//#include "DistanceMatrix.h"
+#include "DistanceMatrix.h"
 #include "Parser.h"
 #include "RbNullObject.h"
 #include "Workspace.h"
@@ -93,7 +93,7 @@
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = dataName + " <- read(\"" + cmdAsStlStr + "\")";
     std::cout << line << std::endl;
-    int coreResult = RevLanguage::Parser::getParser().processCommand(line, Workspace::userWorkspace());
+    int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self stopProgressIndicator];
@@ -148,7 +148,7 @@
     std::cout << cmdStr << std::endl;
 
     // have the core process the command
-    coreResult = Parser::getParser().processCommand(cmdStr, Workspace::userWorkspace());
+    coreResult = RevLanguage::Parser::getParser().processCommand(cmdStr, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
         // possibly return, after erasing the temporary variable names
@@ -166,7 +166,7 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    DistanceMatrix *dm = dynamic_cast<DistanceMatrix *>( dv );
+    const RevBayesCore::DistanceMatrix *dm = dynamic_cast<const RevBayesCore::DistanceMatrix *>( &dv );
     if ( NULL == dm )
         {
         NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not convert matrix in work space", @"OK", nil, nil);
@@ -295,7 +295,7 @@
         }
         
     // make a unique name for this distance matrix
-    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+    std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
     [self setWorkspaceName:nsVariableName];
         
@@ -308,7 +308,7 @@
     line += ", \"jc69\", \"equal\", \"equal\", 0.5, 0.0)";
     std::cout << "line = \"" << line << "\"" << std::cout;
     
-    int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
+    int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self stopProgressIndicator];

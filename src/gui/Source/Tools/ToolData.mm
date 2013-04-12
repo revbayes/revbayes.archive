@@ -162,8 +162,8 @@
         {
         const char* tempSeeStr = [[self dataWorkspaceName] UTF8String];
         std::string tempStr = tempSeeStr;
-        if ( Workspace::userWorkspace()->existsVariable(tempStr) == true )
-            Workspace::userWorkspace()->eraseVariable(tempStr);
+        if ( RevLanguage::Workspace::userWorkspace().existsVariable(tempStr) == true )
+            RevLanguage::Workspace::userWorkspace().eraseVariable(tempStr);
         [self setDataWorkspaceName:@""];
         }
         
@@ -193,7 +193,7 @@
         }
     
     // check the workspace and make certain that we use an unused name for the data variable
-    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+    std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
 		    
     // format a string command to read the data file(s) and send the
@@ -201,7 +201,7 @@
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-    int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
+    int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -223,7 +223,7 @@
     [dataInspector window];
 }
 
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const CharacterData&)cd {
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd {
 
     std::string fn = cd.getFileName();
     
@@ -237,33 +237,34 @@
         
     [m setNumCharacters:(int)(cd.getNumberOfCharacters())];
     [m setName:nsfn];
-    if ( cd.getDataType() == DnaState::getClassName() )
-        [m setDataType:DNA];
-    else if ( cd.getDataType() == RnaState::getClassName() )
-        [m setDataType:RNA];
-    else if ( cd.getDataType() == AminoAcidState::getClassName() )
-        [m setDataType:AA];
-    else if ( cd.getDataType() == StandardState::getClassName() )
-        [m setDataType:STANDARD];
-    else if ( cd.getDataType() == ContinuousCharacterState::getClassName() )
-        [m setDataType:CONTINUOUS];
+    // TODO: Need to be able to extract the data type from a character matrix (Sebastian)
+//    if ( cd.getDataType() == DnaState::getClassName() )
+//        [m setDataType:DNA];
+//    else if ( cd.getDataType() == RnaState::getClassName() )
+//        [m setDataType:RNA];
+//    else if ( cd.getDataType() == AminoAcidState::getClassName() )
+//        [m setDataType:AA];
+//    else if ( cd.getDataType() == StandardState::getClassName() )
+//        [m setDataType:STANDARD];
+//    else if ( cd.getDataType() == ContinuousCharacterState::getClassName() )
+//        [m setDataType:CONTINUOUS];
 
     for (int i=0; i<cd.getNumberOfTaxa(); i++)
-        {        
-        const TaxonData& td = cd.getTaxonData(i);
+    {        
+        const RevBayesCore::AbstractTaxonData& td = cd.getTaxonData(i);
         NSString* taxonName = [NSString stringWithCString:td.getTaxonName().c_str() encoding:NSUTF8StringEncoding];
         [m cleanName:taxonName];
         [m addTaxonName:taxonName];
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
         for (int j=0; j<cd.getNumberOfCharacters(i); j++)
-            {
-            const CharacterState& theChar = td.getCharacter(j);
+        {
+            const RevBayesCore::CharacterState& theChar = td.getCharacter(j);
             RbDataCell* cell = [[RbDataCell alloc] init];
             [cell setDataType:[m dataType]];
             if ( [m dataType] != CONTINUOUS )
-                {
-                unsigned int x = static_cast<const DiscreteCharacterState &>(theChar).getState();
+            {
+                unsigned int x = static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
                 NSNumber* n = [NSNumber numberWithUnsignedInt:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:YES];
@@ -274,22 +275,22 @@
                     [cell setIsGapState:YES];
                 else
                     [cell setIsGapState:NO];
-                }
+            }
             else 
-                {
-                double x = static_cast<const ContinuousCharacterState &>(theChar).getMean();
+            {
+                double x = static_cast<const RevBayesCore::ContinuousCharacterState &>(theChar).getMean();
                 NSNumber* n = [NSNumber numberWithDouble:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:NO];
                 [cell setNumStates:0];
-                }
+            }
             [cell setRow:i];
             [cell setColumn:j];
             [rbTaxonData addObservation:cell];
             [cell release];
-            }
-        [m addTaxonData:rbTaxonData];
         }
+        [m addTaxonData:rbTaxonData];
+    }
         
     //[m print];
         
@@ -336,8 +337,8 @@
 
     NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);
     std::string tempName = [vName UTF8String];
-    if ( Workspace::userWorkspace()->existsVariable(tempName) )
-        Workspace::userWorkspace()->eraseVariable(tempName);
+    if ( RevLanguage::Workspace::userWorkspace().existsVariable(tempName) )
+        RevLanguage::Workspace::userWorkspace().eraseVariable(tempName);
     [self removeAllDataMatrices];
 }
 

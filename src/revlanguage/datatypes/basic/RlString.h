@@ -28,17 +28,17 @@ namespace RevLanguage {
     class RlString : public RlModelVariableWrapper<std::string> {
 
         public:
-            RlString(void);                                                                       //!< Default: empty RlString
-            RlString(int i);                                                                      //!< Constructor from int
-            RlString(double i);                                                                   //!< Constructor from double
-            RlString(const std::string& v);                                                       //!< Constructor from RlString
+            RlString(void);                                                                         //!< Default: empty RlString
+            RlString(int i);                                                                        //!< Constructor from int
+            RlString(double i);                                                                     //!< Constructor from double
+            RlString(const std::string& v);                                                         //!< Constructor from RlString
 
             // Basic utility functions
-            RlString*                         clone(void) const;                                  //!< Copy
-            static const std::string&       getClassName(void);                                 //!< Get class name
-            static const TypeSpec&          getClassTypeSpec(void);                             //!< Get class type spec
-            const TypeSpec&                 getTypeSpec(void) const;                            //!< Get language type of the object
-            void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
+            RlString*                       clone(void) const;                                      //!< Copy
+            static const std::string&       getClassName(void);                                     //!< Get class name
+            static const TypeSpec&          getClassTypeSpec(void);                                 //!< Get class type spec
+            const TypeSpec&                 getTypeSpec(void) const;                                //!< Get language type of the object
+            void                            printValue(std::ostream& o) const;                      //!< Print value (for user)
     
     };
     

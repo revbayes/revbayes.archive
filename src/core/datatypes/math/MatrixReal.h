@@ -63,7 +63,7 @@ namespace RevBayesCore {
         size_t                                  getNumberOfRows(void) const;
         size_t                                  size(void) const;
         
-    private:
+    protected:
         std::vector<std::vector<double> >       elements;
         size_t                                  nRows;
         size_t                                  nCols;

@@ -29,14 +29,36 @@ namespace StringUtilities {
     void                        toLower(std::string& str);                                                          //!< Convert RlString's characters to lower case
     bool                        isNumber(std::string& s);                                                           //!< Checks if a RlString is a number
 }
-
-namespace RevLanguage {
     
-    std::string                  operator+(const std::string& A, double B);
-    std::string                  operator+(const std::string& A, int B);
-    std::string                  operator+(double A, const std::string& B);
-    std::string                  operator+(int A, const std::string& B);
+// TODO: Is there a better way for these global operators than duplicating the code for each namespace? (Sebastian)
+namespace RevLanguage {
+
+    std::string                     operator+(const std::string& A, double B);
+    std::string                     operator+(const std::string& A, int B);
+    std::string                     operator+(const std::string& A, size_t B);
+    std::string                     operator+(double A, const std::string& B);
+    std::string                     operator+(int A, const std::string& B);
+    std::string                     operator+(size_t A, const std::string& B);
 
 }
+
+namespace RevBayesCore {
+    
+    std::string                     operator+(const std::string& A, double B);
+    std::string                     operator+(const std::string& A, int B);
+    std::string                     operator+(const std::string& A, size_t B);
+    std::string                     operator+(double A, const std::string& B);
+    std::string                     operator+(int A, const std::string& B);
+    std::string                     operator+(size_t A, const std::string& B);
+    
+}
+
+std::string                     operator+(const std::string& A, double B);
+std::string                     operator+(const std::string& A, int B);
+std::string                     operator+(const std::string& A, size_t B);
+std::string                     operator+(double A, const std::string& B);
+std::string                     operator+(int A, const std::string& B);
+std::string                     operator+(size_t A, const std::string& B);
+
 
 #endif

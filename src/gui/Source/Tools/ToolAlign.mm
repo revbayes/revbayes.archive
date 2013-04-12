@@ -19,7 +19,6 @@
 #include "RbFileManager.h"
 #include "RbNullObject.h"
 #include "RlCharacterData.h"
-#include "RlVector.h"
 #include "VariableSlot.h"
 #include "Workspace.h"
 
@@ -77,7 +76,7 @@
 - (void)decrementTaskCount {
 
     // @John: I need to comment this out to get it working on my old OS X ... (Sebastian)
-    OSAtomicDecrement32(&taskCount);
+//    OSAtomicDecrement32(&taskCount);
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -214,7 +213,7 @@
     
     // check the workspace and make certain that we use an unused name for the
     // data variable
-    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+    std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
 		    
     // format a string command to read the data file(s) and send the
@@ -222,7 +221,7 @@
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-    int coreResult = Parser::getParser().processCommand(line, Workspace::userWorkspace());
+    int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -234,45 +233,46 @@
     // read in by the core
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    RbLanguageObject* dv = Workspace::userWorkspace()->getValue(variableName).getSingleValue()->clone();
-    if ( dv == NULL )
+    const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
+    if ( dv == RevLanguage::RbNullObject::getInstance() )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
         return NO;
         }
 
-    RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
-    RlCharacterData* cd = dynamic_cast<RlCharacterData*>( dv );
-    if ( dnc != NULL )
-        {
-        [self removeAllDataMatrices];
-        for (int i=0; i<dnc->size(); i++)
-            {
-            const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
-            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
-            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
-            [newMatrix setAlignmentMethod:@"Unknown"];
-            [self addMatrix:newMatrix];
-            }
-        }
-    else if ( cd != NULL )
-        {
-        [self removeAllDataMatrices];
-        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
-        [newMatrix setAlignmentMethod:@"Unknown"];
-        [self addMatrix:newMatrix];
-        }
-    else
-        {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        goto errorExit;
-        }
+    // TODO: New implementation (Sebastian)
+//    RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
+//    RlCharacterData* cd = dynamic_cast<RlCharacterData*>( dv );
+//    if ( dnc != NULL )
+//        {
+//        [self removeAllDataMatrices];
+//        for (int i=0; i<dnc->size(); i++)
+//            {
+//            const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
+//            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
+//            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
+//            [newMatrix setAlignmentMethod:@"Unknown"];
+//            [self addMatrix:newMatrix];
+//            }
+//        }
+//    else if ( cd != NULL )
+//        {
+//        [self removeAllDataMatrices];
+//        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
+//        [newMatrix setAlignmentMethod:@"Unknown"];
+//        [self addMatrix:newMatrix];
+//        }
+//    else
+//        {
+//        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+//        [self stopProgressIndicator];
+//        goto errorExit;
+//        }
 
     // erase the data in the core
-    if ( Workspace::userWorkspace()->existsVariable(variableName) )
-        Workspace::userWorkspace()->eraseVariable(variableName);
+    if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
+        RevLanguage::Workspace::userWorkspace().eraseVariable(variableName);
         
     // set the name of the variable in the tool
     [self setDataWorkspaceName:@""];
