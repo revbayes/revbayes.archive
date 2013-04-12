@@ -237,8 +237,6 @@
         
     [m setNumCharacters:(int)(cd.getNumberOfCharacters())];
     [m setName:nsfn];
-    // TODO: Need to be able to extract the data type from a character matrix (Sebastian)
-    std::cerr << "Missing implementation in ToolData.\n";
     if ( dt == "DNA" )
         [m setDataType:DNA];
     else if ( dt == "RNA" )
