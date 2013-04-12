@@ -14,6 +14,8 @@
 #import "Trace.h"
 #import "WindowControllerNumberMatrix.h"
 
+#include "RbException.h"
+
 
 
 @implementation ToolNumericalMcmcOutput
@@ -85,6 +87,7 @@
     
     [aCoder encodeInt:(int)data->size()           forKey:@"nTraces"];
     // TODO: Write proper dumping of the states (Sebastian)
+    std::cerr << "Missing implementation in ToolNumericalMcmcOutput::encodeWithEncoder.\n";
 //    for (int i=0; i<(int)data->size(); i++) {
 //        XmlDocument* doc = new XmlDocument();
 //        NSString* traceName = [NSString stringWithFormat:@"Trace%lu",i];
@@ -156,6 +159,7 @@
             NSString* xmlString = [aDecoder decodeObjectForKey:key];
             
             // TODO: Write proper reading from memory dumps (Sebastian)
+            std::cerr << "Missing implementation in ToolnumericalMcmcOutput::initWithCoder.\n";
 //            XmlParser* parser = new XmlParser();
 //            const XmlDocument* doc = parser->parse([xmlString cStringUsingEncoding:NSUTF8StringEncoding]);
 //            

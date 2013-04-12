@@ -95,9 +95,6 @@ bool RbMath::compDefinitelyLessThan(double a, double b, double epsilon) {
 /** Tests whether a double is finite */
 bool RbMath::isFinite(double x) {
     
-    // \TODO: No isfinite function in Microsoft math; isFinite leads to infinite recursion
-    // return isFinite(x);
-    // return !std::isinf(x);
     return x == x;
 }
 

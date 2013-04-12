@@ -125,7 +125,7 @@ RevLanguage::VectorRlPointer<rlType>::VectorRlPointer(const rlType &v) : TypedCo
 template <typename rlType>
 rlType& RevLanguage::VectorRlPointer<rlType>::operator[]( size_t index ) {
     
-    return *this->value->getValue()[index];
+    return *this->value[index];
 }
 
 
@@ -133,7 +133,7 @@ rlType& RevLanguage::VectorRlPointer<rlType>::operator[]( size_t index ) {
 template <typename rlType>
 const rlType& RevLanguage::VectorRlPointer<rlType>::operator[]( size_t index ) const {
     
-    return *this->value->getValue()[index];
+    return *this->value[index];
 }
 
 

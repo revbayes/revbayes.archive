@@ -39,6 +39,8 @@ double GeometricBrownianMotion::computeLnProbability( void ) {
     double t = time->getValue();
     double stdDev = t/blocks * sigma->getValue();
     
+    throw RbException("Missing implementation in GeometricBrownianMotion::computeLnProbability.");
+    
     // @todo: reimplement
     //    double prevValue = initialValue->getValue();
     //    // check for correct initial value

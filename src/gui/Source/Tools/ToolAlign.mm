@@ -242,6 +242,7 @@
         }
 
     // TODO: New implementation (Sebastian)
+    std::cerr << "Missing implementation in ToolAlign.\n";
 //    RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
 //    RlCharacterData* cd = dynamic_cast<RlCharacterData*>( dv );
 //    if ( dnc != NULL )

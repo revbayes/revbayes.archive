@@ -1,19 +1,20 @@
 #include <map>
 #include <vector>
 #include <string>
-#include "AminoAcidState.h"
 #include "CharacterState.h"
 #include "CharacterData.h"
-#include "ContinuousCharacterState.h"
-#include "DnaState.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RbNullObject.h"
+#include "RlAminoAcidState.h"
 #include "RlCharacterData.h"
-#include "RnaState.h"
-#include "StandardState.h"
+//#include "RlContinuousCharacterState.h"
+#include "RlDnaState.h"
+#include "RlRnaState.h"
+//#include "RlStandardState.h"
 #include "VariableSlot.h"
+#include "VectorRlPointer.h"
 #include "Workspace.h"
 
 #import "AnalysisView.h"
@@ -348,7 +349,7 @@
     // formatted string to the parser
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\")";
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -369,44 +370,40 @@
     NSLog(@"isDataFormatAutomaticallyDetermined=%d", [controlWindow isDataFormatAutomaticallyDetermined]);
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    // TODO: Fix the compiler issues (Sebastian)
-//    RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
-//    RlCharacterData* cd = dynamic_cast<RlCharacterData*>( dv );
-//    if ( dnc != NULL )
-//        {
-//        [self removeAllDataMatrices];
-//        for (int i=0; i<dnc->size(); i++)
-//            {
-//            const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
-//            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
-//            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
-//            if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
-//                {
-//                if ([controlWindow dataAlignment] == 1)
-//                    [newMatrix setIsHomologyEstablished:NO];
-//                }
-//            [newMatrix setAlignmentMethod:@"Unknown"];
-//            [self addMatrix:newMatrix];
-//            }
-//        }
-//    else if ( cd != NULL )
-//        {
-//        [self removeAllDataMatrices];
-//        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
-//        [newMatrix setAlignmentMethod:@"Unknown"];
-//        if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
-//            {
-//            if ([controlWindow dataAlignment] == 1)
-//                [newMatrix setIsHomologyEstablished:NO];
-//            }
-//        [self addMatrix:newMatrix];
-//        }
-//    else
-//        {
-//        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-//        [self stopProgressIndicator];
-//        return NO;
-//        }
+    const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *>( &dv );
+    if ( dnc != NULL )
+    {
+        [self removeAllDataMatrices];
+        for (int i=0; i<dnc->size(); i++)
+        {
+            const RevLanguage::RbLanguageObject& theDagNode = (*dnc)[ i ];
+            // TODO: Maybe find a better solution than these ugly type cast checks (Sebastian)
+            RbData* newMatrix = NULL;
+            
+            // DNA
+            if ( NULL == newMatrix ) 
+            {
+                const RevLanguage::CharacterData<RevLanguage::DnaState> *cd = static_cast<const RevLanguage::CharacterData<RevLanguage::DnaState> *>( &theDagNode );
+                if ( cd != NULL ) 
+                {
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
+                }
+            }
+            if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
+            {
+                if ([controlWindow dataAlignment] == 1)
+                    [newMatrix setIsHomologyEstablished:NO];
+            }
+            [newMatrix setAlignmentMethod:@"Unknown"];
+            [self addMatrix:newMatrix];
+        }
+    }
+    else
+    {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        return NO;
+    }
         
     // erase the data in the core
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )

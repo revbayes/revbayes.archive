@@ -269,7 +269,7 @@ int RevLanguage::TypedContainer<rbType>::findIndex(const RbLanguageObject& x) co
 //        if ( *i == x.getValue() ) {
 //            return index;
 //        }
-        throw RbException("Missing implementation of findIndex() in Container.");
+        throw RbException("Missing implementation of findIndex() in Container.\n");
     }
     
     return -1;
