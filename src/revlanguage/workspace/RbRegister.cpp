@@ -159,6 +159,7 @@
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readTreeTrace.h"
+#include "Func_writeFasta.h"
 #include "RlJcRateMatrixFunction.h"
 #include "RlTmrcaStatistic.h"
 #include "RlTreeAssemblyFunction.h"
@@ -592,9 +593,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );
-		
-        /* Add constructuor functions (alphabetical order) */
-//        addFunction( "taxonData", new ConstructorTaxonData<RlDnaState>() );
         
         
         
@@ -615,6 +613,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "readCharacterData",           new Func_readCharacterData()           );
         addFunction( "readTrees",                   new Func_readTrees()                   );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()               );
+        addFunction( "writeFasta",                  new Func_writeFasta()                  );
         
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
