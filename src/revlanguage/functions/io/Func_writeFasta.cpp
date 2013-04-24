@@ -15,10 +15,12 @@
  * $Id: Func_readCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
  */
 
+
 #include "ArgumentRule.h"
 #include "Func_writeFasta.h"
 #include "RbException.h"
 #include "RbNullObject.h"
+#include "RlAbstractCharacterData.h"
 #include "RlCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
@@ -40,7 +42,7 @@ RbLanguageObject* Func_writeFasta::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
-    const RevBayesCore::AbstractCharacterData &data = static_cast< const CharacterData<DnaState> & >( args[1].getVariable()->getValue() ).getValue();
+    const RevBayesCore::AbstractCharacterData &data = static_cast< const AbstractCharacterData & >( args[1].getVariable()->getValue() ).getValue();
     
     RevBayesCore::FastaWriter fw;
     fw.writeData(fn.getValue(), data);
@@ -59,7 +61,7 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const {
     
     if (!rulesSet) {
         argumentRules.push_back( new ArgumentRule( "filename", true, RlString::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "data", true, CharacterData<DnaState>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "data", true, AbstractCharacterData::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

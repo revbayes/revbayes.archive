@@ -42,6 +42,9 @@ namespace RevBayesCore {
             bool                                operator!=(const CharacterData& x) const;                                   //!< Less than operator
             bool                                operator<(const CharacterData& x) const;                                    //!< Less than operator
     
+            // implemented methods of the Cloneable interface
+            CharacterData<charType>*            clone(void) const;
+        
             // Container functions
             void                                clear(void);
 
@@ -96,11 +99,7 @@ namespace RevBayesCore {
 
     };
     
-
-// Global functions using the class
-template<class charType>
-std::ostream&                       operator<<(std::ostream& o, const CharacterData<charType>& x);                                //!< Overloaded output operator
-
+    
 }
 
 
@@ -271,12 +270,19 @@ void RevBayesCore::CharacterData<charType>::addTaxonData(const TaxonData<charTyp
 }
 
 
-/** clear the oblect */
+/** clear the object */
 template<class charType>
 void RevBayesCore::CharacterData<charType>::clear( void ) {
     
     sequenceNames.clear();
     taxonMap.clear();
+}
+
+
+/** clone the object */
+template<class charType>
+RevBayesCore::CharacterData<charType>* RevBayesCore::CharacterData<charType>::clone( void ) const {
+    return new CharacterData<charType>(*this);
 }
 
 
@@ -666,18 +672,6 @@ template<class charType>
 void RevBayesCore::CharacterData<charType>::setIsHomologyEstablished(bool tf) {
     
     isHomologyEstablished = tf;
-}
-
-
-template<class charType>
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const CharacterData<charType>& x) {
-    
-    o << "Origination:          " << x.getFileName() << std::endl;
-    o << "Number of taxa:       " << x.getNumberOfTaxa() << std::endl;
-    o << "Number of characters: " << x.getNumberOfCharacters() << std::endl;
-    o << "Datatype:             " << x.getDatatype() << std::endl;
-    
-    return o;
 }
 
 

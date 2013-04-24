@@ -17,6 +17,7 @@
 #define AbstractCharacterData_H
 
 #include "CharacterState.h"
+#include "Cloneable.h"
 #include "AbstractTaxonData.h"
 
 #include <map>
@@ -26,7 +27,7 @@
 
 namespace RevBayesCore {
 
-    class AbstractCharacterData {
+    class AbstractCharacterData : public Cloneable {
     
     public:    
         virtual                            ~AbstractCharacterData(void) {}
@@ -35,6 +36,9 @@ namespace RevBayesCore {
         AbstractCharacterData&              operator=(const AbstractCharacterData& x);                                  //!< Assignment operator
         virtual const AbstractTaxonData&    operator[](size_t i) const = 0;                                             //!< Subscript operator (const)
     
+        // methods of the Cloneable interface
+        AbstractCharacterData*              clone(void) const = 0;
+        
         // Container functions
         virtual void                        clear(void) = 0;
     
@@ -45,6 +49,7 @@ namespace RevBayesCore {
         virtual void                        excludeTaxon(size_t i) = 0;                                                 //!< Exclude taxon
         virtual void                        excludeTaxon(std::string& s) = 0;                                           //!< Exclude taxon
         virtual const CharacterState&       getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
+        virtual std::string                 getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual const std::string&          getFileName(void) const = 0;                                                //!< Returns the name of the file the data came from
         virtual bool                        getIsHomologyEstablished(void) const = 0;                                   //!< Returns whether the homology of the characters has been established
         virtual size_t                      getNumberOfCharacters(void) const = 0;                                      //!< Number of characters
@@ -71,6 +76,9 @@ namespace RevBayesCore {
 
     };
     
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const AbstractCharacterData& x);                                //!< Overloaded output operator
+
 }
 
 #endif

@@ -23,9 +23,41 @@ UnivariateFunction::UnivariateFunction( const UnivariateFunction &d ) : TypedFun
 }
 
 
+UnivariateFunction::UnivariateFunction(RevBayesCore::TypedDagNode<RevBayesCore::UnivariateFunction> *n) {
+    throw RbException("Missing implementation in constructor of UnivariateFunction");
+}
+
+
 
 UnivariateFunction::~UnivariateFunction() {
     
+}
+
+
+
+UnivariateFunction* UnivariateFunction::clone( void ) const {
+    // todo: implement this or find better solution (Sebastian)
+    throw RbException("Missing implemention in UnivariateFunction::clone");
+    
+    return NULL;
+}
+
+
+RevBayesCore::UnivariateFunction* UnivariateFunction::createFunction(void) const {
+    
+    // todo: implement this or find better solution (Sebastian)
+    throw RbException("Missing implemention in UnivariateFunction::createFunction");
+    
+    return NULL;
+}
+
+
+/* Get argument rules */
+const ArgumentRules& UnivariateFunction::getArgumentRules( void ) const {
+    
+    static ArgumentRules argumentRules = ArgumentRules();
+    
+    return argumentRules;
 }
 
 
@@ -46,3 +78,22 @@ const TypeSpec& UnivariateFunction::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+
+
+
+/* Get return type */
+const TypeSpec& UnivariateFunction::getReturnType( void ) const {
+    
+    static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
+    
+    return returnTypeSpec;
+}
+
+
+
+const TypeSpec& UnivariateFunction::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}

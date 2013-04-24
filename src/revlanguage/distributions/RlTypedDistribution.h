@@ -51,28 +51,6 @@ namespace RevLanguage {
     };
     
     
-    
-    
-    template <typename valueType>
-    inline valueType* TypedDistribution<valueType>::createRandomVariable(void) const { 
-        
-        RevBayesCore::TypedDistribution<typename valueType::valueType>* d = createDistribution();
-        RevBayesCore::TypedDagNode<typename valueType::valueType>* rv  = new RevBayesCore::StochasticNode<typename valueType::valueType>("", d);
-        
-        return new valueType(rv);
-    }
-    
-    template <>
-    inline UnivariateFunction* TypedDistribution<UnivariateFunction>::createRandomVariable(void) const { 
-        
-//        RevBayesCore::TypedDistribution<RevBayesCore::UnivariateFunction>* d = createDistribution();
-//        RevBayesCore::TypedDagNode<RevBayesCore::UnivariateFunction>* rv  = new RevBayesCore::StochasticNode<RevBayesCore::UnivariateFunction>("", d);
-//        
-//        return new UnivariateFunction(rv);
-        
-        return NULL;
-    }
-    
 }
 
 #include "StochasticNode.h"
@@ -97,6 +75,15 @@ RevLanguage::TypedDistribution<valueType>::~TypedDistribution() {
     
 }
 
+
+template <typename valueType>
+valueType* RevLanguage::TypedDistribution<valueType>::createRandomVariable(void) const { 
+    
+    RevBayesCore::TypedDistribution<typename valueType::valueType>* d = createDistribution();
+    RevBayesCore::TypedDagNode<typename valueType::valueType>* rv  = new RevBayesCore::StochasticNode<typename valueType::valueType>("", d);
+    
+    return new valueType(rv);
+}
 
 
 /* Get class name of object */

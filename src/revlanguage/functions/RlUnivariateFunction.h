@@ -22,6 +22,7 @@
 
 #include "Real.h"
 #include "RlTypedFunction.h"
+#include "TypedDagNode.h"
 #include "UnivariateFunction.h"
 
 namespace RevLanguage {
@@ -29,6 +30,8 @@ namespace RevLanguage {
     class UnivariateFunction : public TypedFunction<Real> {
         
     public:
+        UnivariateFunction(void);  
+        UnivariateFunction(RevBayesCore::TypedDagNode<RevBayesCore::UnivariateFunction> *n);  
         virtual                                         ~UnivariateFunction(void);                                                  //!< Destructor
         UnivariateFunction(const UnivariateFunction &x);                                                                            //!< Copy constuctor
         
@@ -36,17 +39,19 @@ namespace RevLanguage {
         typedef RevBayesCore::UnivariateFunction valueType;
       
         // Basic utility functions you have to override
-        virtual UnivariateFunction*                     clone(void) const = 0;                                                      //!< Clone object
+        virtual UnivariateFunction*                     clone(void) const;                                                          //!< Clone object
         static const std::string&                       getClassName(void);                                                         //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                     //!< Get class type spec
-        
+        virtual const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
+        virtual const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
+        virtual const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+
         
         // Distribution functions you have to override
-        virtual RevBayesCore::UnivariateFunction*       createFunction(void) const = 0;                                             //!< Create a random variable from this distribution
+        virtual RevBayesCore::UnivariateFunction*       createFunction(void) const;                                                 //!< Create a random variable from this distribution
         
         
-    protected:
-        UnivariateFunction(void);                                                                                                   //!< Basic constructor
+    protected:                                                                                                 //!< Basic constructor
         
     };
     
