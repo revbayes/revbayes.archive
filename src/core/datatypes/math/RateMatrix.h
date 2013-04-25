@@ -18,14 +18,11 @@
 
 #include "Cloneable.h"
 #include "MatrixReal.h"
-#include <complex>
 #include <vector>
 
 
 namespace RevBayesCore {
 
-    class EigenSystem;
-    class Simplex;
     class TransitionProbabilityMatrix;
 
 
@@ -43,19 +40,18 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >::const_iterator       end(void) const;
         std::vector<std::vector<double> >::iterator             end(void);
 
-        // RateMatrix functions
-        double                              averageRate(void) const;                                                            //!< Calculate the average rate
-        size_t                              getNumberOfStates(void) const;                                                      //!< Return the number of states
-        const std::vector<double>&          getStationaryFrequencies(void) const;                                                   //!< Return the stationary frequencies
-        void                                rescaleToAverageRate(double r);                                               //!< Rescale the rate matrix such that the average rate is "r"
-        void                                setDiagonal(void);                                                                  //!< Set the diagonal such that each row sums to zero
-        void                                setStationaryFrequencies(const std::vector<double>& f);                             //!< Directly set the stationary frequencies
-        size_t                              size(void) const;                                                                   //!< Get the size of the rate matrix, which is the same as the number of states
+        // public methods
+        size_t                              getNumberOfStates(void) const;                                                          //!< Return the number of states
+        void                                rescaleToAverageRate(double r);                                                         //!< Rescale the rate matrix such that the average rate is "r"
+        void                                setDiagonal(void);                                                                      //!< Set the diagonal such that each row sums to zero
+        size_t                              size(void) const;                                                                       //!< Get the size of the rate matrix, which is the same as the number of states
 
-        // pure virtual method you have to overwrite
+        // pure virtual methods you have to overwrite
+        virtual double                      averageRate(void) const = 0;                                                            //!< Calculate the average rate
         virtual void                        calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition probabilities for the rate matrix
         virtual RateMatrix*                 clone(void) const = 0;
-        virtual void                        update(void);                                                                      //!< Update the transition matrix and all its parameters
+        virtual const std::vector<double>&  getStationaryFrequencies(void) const = 0;                                               //!< Return the stationary frequencies
+        virtual void                        updateMatrix(void) = 0;                                                                 //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
     protected:
         // prevent instantiation
@@ -63,10 +59,14 @@ namespace RevBayesCore {
         RateMatrix(size_t n);                                                             //!< Construct rate matrix with n states
         RateMatrix&                         operator=(const RateMatrix& r);
 
+        // protected methods available for derived classes
+        bool                                checkTimeReversibity(double tolerance);
+        
+        // protected members available for derived classes
         size_t                              numStates;                                                                          //!< The number of character states
         MatrixReal*                         theRateMatrix;                                                                      //!< Holds the rate matrix
-        std::vector<double>                 theStationaryFreqs;                                                                 //!< Holds the stationary frequencies
-                       
+        bool                                needsUpdate;
+              
     };
 
     // Global functions using the class

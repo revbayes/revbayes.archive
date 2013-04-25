@@ -42,8 +42,7 @@ bool TestTransitionProbabilities::run( void ) {
     RateMatrix_JC jc(nStates);
     
     // initialize rate matrices
-    gtr.update();
-    gtr.updateEigenSystem();
+    gtr.updateMatrix();
     
     // JC examples
     
@@ -70,11 +69,8 @@ bool TestTransitionProbabilities::run( void ) {
     gtr.setStationaryFrequencies( pi );
     hky.setStationaryFrequencies( pi );
     
-    std::vector<double> r(6,1.0);
-    
     // update rate matrices
-    // delegate the call to our internal function
-    RbPhylogenetics::Gtr::computeRateMatrix(r, pi, &gtr );
+    gtr.updateMatrix();
     
     f81.calculateTransitionProbabilities(t, tpm);
     std::cout << "F81:\n" << tpm << std::endl;

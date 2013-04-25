@@ -16,26 +16,20 @@
 #ifndef RateMatrix_JC_H
 #define RateMatrix_JC_H
 
-#include "MatrixReal.h"
-#include "RateMatrix.h"
-#include <complex>
-#include <vector>
+#include "TimeReversibleRateMatrix.h"
 
 
 namespace RevBayesCore {
     
-    class EigenSystem;
-    class Simplex;
     class TransitionProbabilityMatrix;
     
     
-    class RateMatrix_JC : public RateMatrix {
+    class RateMatrix_JC : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_JC(const RateMatrix_JC& m);                                                //!< Copy constructor
-        RateMatrix_JC(size_t n);                                                               //!< Construct rate matrix with n states
-        RateMatrix_JC(void);                                                                   //!< Default constructor
-        ~RateMatrix_JC(void);                                                                  //!< Destructor
+        RateMatrix_JC(const RateMatrix_JC& m);                                                                                  //!< Copy constructor
+        RateMatrix_JC(size_t n);                                                                                                //!< Construct rate matrix with n states
+        virtual                             ~RateMatrix_JC(void);                                                               //!< Destructor
         
         // overloaded operators
         RateMatrix_JC&                      operator=(const RateMatrix_JC& r);
@@ -44,15 +38,13 @@ namespace RevBayesCore {
         void                                calculateStationaryFrequencies(void);                                               //!< Calculate the stationary frequencies for the rate matrix
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         RateMatrix_JC*                      clone(void) const;
+        void                                updateMatrix(void);
         
     private:
         
         
     };
-    
-    // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const RateMatrix_JC& x);                                           //!< Overloaded output operator
-    
+        
 }
 
 #endif

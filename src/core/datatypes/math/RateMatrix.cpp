@@ -17,8 +17,6 @@
  * $Id$
  */
 
-#include "EigenSystem.h"
-#include "MatrixComplex.h"
 #include "MatrixReal.h"
 #include "RateMatrix.h"
 #include "RbException.h"
@@ -34,24 +32,22 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix::RateMatrix(size_t n) {
+RateMatrix::RateMatrix(size_t n) : needsUpdate( true ) {
 
     numStates            = n;
     theRateMatrix        = new MatrixReal(numStates, numStates, 1.0 );
-    theStationaryFreqs   = std::vector<double>(numStates,1.0/n);
-    
-    setDiagonal();
-    rescaleToAverageRate( 1.0 );
+  
+    // I cannot call a pure virtual function from the constructor (Sebastian)
+//    updateMatrix();
 }
 
 
 
 /** Copy constructor */
-RateMatrix::RateMatrix(const RateMatrix& m) {
+RateMatrix::RateMatrix(const RateMatrix& m) : needsUpdate( true ){
 
     numStates            = m.numStates;
     theRateMatrix        = new MatrixReal( *m.theRateMatrix );
-    theStationaryFreqs   = m.theStationaryFreqs;
     
 }
 
@@ -69,9 +65,9 @@ RateMatrix& RateMatrix::operator=(const RateMatrix &r) {
         
         delete theRateMatrix;
         
-        numStates            = r.numStates;
-        theRateMatrix        = new MatrixReal( *r.theRateMatrix );
-        theStationaryFreqs   = r.theStationaryFreqs;
+        numStates           = r.numStates;
+        theRateMatrix       = new MatrixReal( *r.theRateMatrix );
+        needsUpdate         = true;
         
     }
     
@@ -116,16 +112,6 @@ std::vector<std::vector<double> >::iterator RateMatrix::end( void ) {
 }
 
 
-/** Calculate the average rate for the rate matrix */
-double RateMatrix::averageRate(void) const {
-
-    double ave = 0.0;
-    for (size_t i=0; i<numStates; i++)
-        ave += -theStationaryFreqs[i] * (*theRateMatrix)[i][i];
-    return ave;
-}
-
-
 
 /** This function checks that the rate matrix is time reversible. It takes as
     input the rate matrix, a, and the stationary frequencies of the process, f. 
@@ -135,26 +121,23 @@ double RateMatrix::averageRate(void) const {
     it reports that the rate matrix is time-reversible. If the flag isRev
     is set to true, then we do not need to check because then we have determined
     previously that the rate matrix is reversible. */ 
-//bool RateMatrix::checkTimeReversibity(double tolerance) {
-//	
-//	double diff = 0.0;
-//	for (size_t i=0; i<numStates; i++)
-//		for (size_t j=i+1; j<numStates; j++)
-//			diff += fabs( theStationaryFreqs[i] * (*theRateMatrix)[i][j] - theStationaryFreqs[j] * (*theRateMatrix)[j][i] );
+bool RateMatrix::checkTimeReversibity(double tolerance) {
+	
+    std::vector<double> theStationaryFreqs = getStationaryFrequencies();
+	double diff = 0.0;
+	for (size_t i=0; i<numStates; i++)
+		for (size_t j=i+1; j<numStates; j++)
+			diff += fabs( theStationaryFreqs[i] * (*theRateMatrix)[i][j] - theStationaryFreqs[j] * (*theRateMatrix)[j][i] );
 //    reversibilityChecked = true;
-//	if (diff < tolerance)
-//        return true;
-//	return false;
-//}
+	if (diff < tolerance)
+        return true;
+    
+	return false;
+}
 
 
 size_t RateMatrix::getNumberOfStates( void ) const {
     return numStates;
-}
-
-
-const std::vector<double>& RateMatrix::getStationaryFrequencies( void ) const {
-    return theStationaryFreqs;
 }
 
 
@@ -176,8 +159,9 @@ void RateMatrix::rescaleToAverageRate(double r) {
         for (size_t j=0; j<numStates; j++)
             (*theRateMatrix)[i][j] *= scaleFactor;
     
+    // set flags
+    needsUpdate = true;
     
-    update();
 }
 
 
@@ -194,37 +178,15 @@ void RateMatrix::setDiagonal(void) {
         }
         (*theRateMatrix)[i][i] = -sum;
     }
-    update();
-}
-
-
-///** Directly set whether or not the rate matrix is time reversible */
-//void RateMatrix::setTimeReversible(bool tf) {
-//
-//    reversibilityChecked = true;
-//    timeReversible = tf;
-//}
-
-
-/** Set the stationary frequencies directly. We assume that we know
-    what the stationary frequencies are when this function is called. We
-    would know the stationary frequencies for most phylogenetic models. */
-void RateMatrix::setStationaryFrequencies(const std::vector<double>& f) {
-
-    theStationaryFreqs = f;
-    update();
+    
+    // set flags
+    needsUpdate = true;
 }
 
 
 
 size_t RateMatrix::size( void ) const {
     return numStates;
-}
-
-
-void RateMatrix::update( void ) {
-    // we don't do anything in the default implementation
-    // see RateMatrix_GTR for the derived case
 }
 
 

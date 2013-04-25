@@ -83,7 +83,7 @@ RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function()
 }
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *value ) ), dirty(true) {
+RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value ) ), dirty(true) {
 
 }
 

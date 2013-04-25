@@ -43,36 +43,6 @@ void RbPhylogenetics::Gtr::computeRateMatrix(const std::vector<double> &r, const
         throw( RbException(o.str()) );
     }
     
-    RateMatrix_GTR& m = *rm;
-    
-    // set the off-diagonal portions of the rate matrix
-    for (size_t i=0, k=0; i<nStates; i++) {
-        for (size_t j=i+1; j<nStates; j++) {
-            m[i][j] = r[k] * f[j];
-            m[j][i] = r[k] * f[i];
-            k++;
-        }
-    }
-    
-    // set the diagonal elements of the rate matrix
-    m.setDiagonal();
-    
-    // Set the stationary frequencies for the rate matrix. Note that we
-    // can do this in two ways. First, we can call calculateStationaryFrequencies
-    // on the RateMatrix object. This function call calculates the stationary
-    // frequencies using only knowledge of the rate matrix. Second, we can set
-    // the stationary frequencies directly. This is what we do here, because the
-    // stationary frequencies have been build directly into the rate matrix.
-    m.setStationaryFrequencies( f );
-    
-    // rescale the rate matrix such that the average rate is 1.0
-    m.rescaleToAverageRate(1.0);
-    
-    // we know that the GTR model is time reversible (just look at the name of the
-    // model!), so we might as well set its reversibility flag directly
-    m.setTimeReversible(true);
-    
-    // Now that we have set the rate matrix, we should update its eigen system
-    m.updateEigenSystem();
+    rm->updateMatrix();
 }
 

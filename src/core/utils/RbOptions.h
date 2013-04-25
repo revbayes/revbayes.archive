@@ -25,7 +25,7 @@
 //#define DEBUG_BISON_FLEX
 //#define DEBUG_MCMC
 //#define DEBUG_HELP_SYSTEM
-#define TESTING
+//#define TESTING
 
 
 /* Test whether we need to debug everything. */

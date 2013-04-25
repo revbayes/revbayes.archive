@@ -16,43 +16,35 @@
 #ifndef RateMatrix_HKY_H
 #define RateMatrix_HKY_H
 
-#include "MatrixReal.h"
-#include "RateMatrix.h"
-#include <complex>
-#include <vector>
+#include "TimeReversibleRateMatrix.h"
 
 
 namespace RevBayesCore {
     
-    class EigenSystem;
-    class Simplex;
     class TransitionProbabilityMatrix;
     
     
-    class RateMatrix_HKY : public RateMatrix {
+    class RateMatrix_HKY : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_HKY(const RateMatrix_HKY& m);                                                //!< Copy constructor
-        RateMatrix_HKY(void);                                                                   //!< Default constructor
-        ~RateMatrix_HKY(void);                                                                  //!< Destructor
+        RateMatrix_HKY(void);                                                                                                   //!< Default constructor
+        RateMatrix_HKY(const RateMatrix_HKY& m);                                                                                //!< Copy constructor
+        virtual                             ~RateMatrix_HKY(void);                                                              //!< Destructor
         
         // overloaded operators
         RateMatrix_HKY&                     operator=(const RateMatrix_HKY& r);
         
         // RateMatrix functions
-        void                                calculateStationaryFrequencies(void);                                               //!< Calculate the stationary frequencies for the rate matrix
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         RateMatrix_HKY*                     clone(void) const;
         void                                setKappa(double k);
-        
+        void                                updateMatrix(void);
+
     private:
         double                              kappa;
         
     };
-    
-    // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const RateMatrix_HKY& x);                                           //!< Overloaded output operator
-    
+        
 }
 
 #endif

@@ -29,14 +29,14 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_F81::RateMatrix_F81(size_t n) : RateMatrix( n ){
+RateMatrix_F81::RateMatrix_F81(size_t n) : TimeReversibleRateMatrix( n ){
     
-    theStationaryFreqs = std::vector<double>(n,1.0/n);
+    updateMatrix();
 }
 
 
 /** Copy constructor */
-RateMatrix_F81::RateMatrix_F81(const RateMatrix_F81& m) : RateMatrix( m ) {
+RateMatrix_F81::RateMatrix_F81(const RateMatrix_F81& m) : TimeReversibleRateMatrix( m ) {
     
 }
 
@@ -65,7 +65,7 @@ void RateMatrix_F81::calculateTransitionProbabilities(double t, TransitionProbab
     
     // compute auxilliary variables
     double tmp = 1.0;
-	for (size_t i=0; i<numStates; i++) tmp -= theStationaryFreqs[i]*theStationaryFreqs[i];
+	for (size_t i=0; i<numStates; i++) tmp -= stationaryFreqs[i]*stationaryFreqs[i];
     double beta = 1.0 / tmp; 
     double xx = -beta * t;
     double e = exp( xx );
@@ -74,14 +74,14 @@ void RateMatrix_F81::calculateTransitionProbabilities(double t, TransitionProbab
     // calculate the transition probabilities
 	for (size_t i=0; i<numStates; i++) 
     {
-        double to_i = theStationaryFreqs[i] * oneminuse;
+        double to_i = stationaryFreqs[i] * oneminuse;
 		for (size_t j=0; j<numStates; j++) 
         {
             P[j][i] = to_i;    // it is easier to overwrite the case i -> i later than checking for every j
         }
          
         // from i to i
-        P[i][i] = theStationaryFreqs[i] + (1.0-theStationaryFreqs[i])*e;
+        P[i][i] = stationaryFreqs[i] + (1.0-stationaryFreqs[i])*e;
     }
 }
 
@@ -91,39 +91,25 @@ RateMatrix_F81* RateMatrix_F81::clone( void ) const {
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix_F81& x) {
-    std::streamsize previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
+void RateMatrix_F81::updateMatrix( void ) {
     
-    o << "[ ";
-    o << std::fixed;
-    o << std::setprecision(4);
-    
-    // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < x.size(); i++) {
-        if (i == 0)
-            o << "[ ";
-        else 
-            o << "  ";
+    if ( needsUpdate ) 
+    {
+        // compute the off-diagonal values
+        computeOffDiagonal();
         
-        for (size_t j = 0; j < x.size(); ++j) 
-        {
-            if (j != 0)
-                o << ", ";
-            o << x[i][j];
-        }
-        o <<  " ]";
+        // set the diagonal values
+        setDiagonal();
         
-        if (i == x.size()-1)
-            o << " ]";
-        else 
-            o << " ,\n";
+        // rescale 
+        rescaleToAverageRate( 1.0 );
         
+        // clean flags
+        needsUpdate = false;
     }
-    
-    o.setf(previousFlags);
-    o.precision(previousPrecision);
-    
-    return o;
 }
+
+
+
+
 

@@ -17,9 +17,6 @@
  * $Id: RateMatrix_JC.cpp 1921 2012-12-11 13:46:24Z hoehna $
  */
 
-#include "EigenSystem.h"
-#include "MatrixComplex.h"
-#include "MatrixReal.h"
 #include "RateMatrix_JC.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
@@ -34,14 +31,23 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_JC::RateMatrix_JC(size_t n) : RateMatrix( n ){
+RateMatrix_JC::RateMatrix_JC(size_t n) : TimeReversibleRateMatrix( n ){
     
-    theStationaryFreqs = std::vector<double>(n,1.0/n);
+    
+    // compute the off-diagonal values
+    computeOffDiagonal();
+            
+    // set the diagonal values
+    setDiagonal();
+            
+    // rescale 
+    rescaleToAverageRate( 1.0 );
+            
 }
 
 
 /** Copy constructor */
-RateMatrix_JC::RateMatrix_JC(const RateMatrix_JC& m) : RateMatrix( m ) {
+RateMatrix_JC::RateMatrix_JC(const RateMatrix_JC& m) : TimeReversibleRateMatrix( m ) {
     
 }
 
@@ -85,40 +91,7 @@ RateMatrix_JC* RateMatrix_JC::clone( void ) const {
 }
 
 
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix_JC& x) {
-    std::streamsize previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-    
-    o << "[ ";
-    o << std::fixed;
-    o << std::setprecision(4);
-    
-    // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < x.size(); i++) {
-        if (i == 0)
-            o << "[ ";
-        else 
-            o << "  ";
-        
-        for (size_t j = 0; j < x.size(); ++j) 
-        {
-            if (j != 0)
-                o << ", ";
-            o << x[i][j];
-        }
-        o <<  " ]";
-        
-        if (i == x.size()-1)
-            o << " ]";
-        else 
-            o << " ,\n";
-        
-    }
-    
-    o.setf(previousFlags);
-    o.precision(previousPrecision);
-    
-    return o;
+void RateMatrix_JC::updateMatrix( void ) {
+    // nothing to do
 }
 

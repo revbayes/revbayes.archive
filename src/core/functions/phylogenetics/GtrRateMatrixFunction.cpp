@@ -34,8 +34,12 @@ void GtrRateMatrixFunction::update( void ) {
     const std::vector<double>& r = exchangeabilityRates->getValue();
     const std::vector<double>& f = baseFrequencies->getValue();
     
-    // delegate the call to our internal function
-    RbPhylogenetics::Gtr::computeRateMatrix(r, f, static_cast< RateMatrix_GTR* >( value ) );
+    
+    // set the base frequencies
+    static_cast< RateMatrix_GTR* >(value)->setStationaryFrequencies( f );
+    static_cast< RateMatrix_GTR* >(value)->setExchangeabilityRates( r );
+    
+    value->updateMatrix();
 }
 
 

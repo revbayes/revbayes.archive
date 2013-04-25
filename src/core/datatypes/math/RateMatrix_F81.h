@@ -16,41 +16,35 @@
 #ifndef RateMatrix_F81_H
 #define RateMatrix_F81_H
 
-#include "MatrixReal.h"
-#include "RateMatrix.h"
+#include "TimeReversibleRateMatrix.h"
 #include <complex>
 #include <vector>
 
 
 namespace RevBayesCore {
     
-    class EigenSystem;
-    class Simplex;
     class TransitionProbabilityMatrix;
     
     
-    class RateMatrix_F81 : public RateMatrix {
+    class RateMatrix_F81 : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_F81(const RateMatrix_F81& m);                                                //!< Copy constructor
-        RateMatrix_F81(size_t n);                                                               //!< Construct rate matrix with n states
-        ~RateMatrix_F81(void);                                                                  //!< Destructor
+        RateMatrix_F81(size_t n);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_F81(const RateMatrix_F81& m);                                                                                //!< Copy constructor
+        virtual                             ~RateMatrix_F81(void);                                                              //!< Destructor
         
         // overloaded operators
         RateMatrix_F81&                     operator=(const RateMatrix_F81& r);
         
         // RateMatrix functions
-        void                                calculateStationaryFrequencies(void);                                               //!< Calculate the stationary frequencies for the rate matrix
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         RateMatrix_F81*                     clone(void) const;
-        
+        void                                updateMatrix(void);
+
     private:
         
     };
-    
-    // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const RateMatrix_F81& x);                                           //!< Overloaded output operator
-    
+        
 }
 
 #endif

@@ -92,12 +92,8 @@ void Tamura92RateMatrixFunction::update( void ) {
     // rescale the rate matrix such that the average rate is 1.0
    // m.rescaleToAverageRate(1.0);
     
-    // we know that the GTR model is time reversible (just look at the name of the
-    // model!), so we might as well set its reversibility flag directly
-    m.setTimeReversible(true);
-    
     // Now that we have set the rate matrix, we should update its eigen system
-    m.updateEigenSystem();
+//    m.updateEigenSystem();
     
     //std::cout <<"update:" << m << std::endl;
 

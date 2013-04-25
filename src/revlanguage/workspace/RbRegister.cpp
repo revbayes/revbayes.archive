@@ -47,10 +47,6 @@
 //#include "Set.h"
 #include "Vector.h"
 
-/* MemberObject types without auto-generated constructors(alphabetic order) */
-#include "RlRateMatrix_GTR.h"
-#include "RlRateMatrix_JC.h"
-
 
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "RlMcmc.h"
@@ -152,7 +148,6 @@
 /* Phylogeny functions */
 //#include "Func_concatenate.h"
 //#include "Func_distance.h"
-#include "Func_gtr.h"
 #include "Func_mapTree.h"
 //#include "Func_nj.h"
 #include "Func_readCharacterData.h"
@@ -160,9 +155,13 @@
 #include "Func_readTrees.h"
 #include "Func_readTreeTrace.h"
 #include "Func_writeFasta.h"
-#include "RlJcRateMatrixFunction.h"
 #include "RlTmrcaStatistic.h"
 #include "RlTreeAssemblyFunction.h"
+
+#include "RlF81RateMatrixFunction.h"
+#include "Func_gtr.h"
+#include "RlHkyRateMatrixFunction.h"
+#include "RlJcRateMatrixFunction.h"
 
 
 /* Inference functions */
@@ -597,10 +596,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         
 		// gtr function
+        addFunction( "F81",      new F81RateMatrixFunction() );
+        
+		// JC function
+        addFunction( "HKY",      new HkyRateMatrixFunction() );
+        
+		// gtr function
         addFunction( "gtr",      new Func_gtr() );
         
 		// JC function
-        addFunction( "JC",      new JcRateMatrixFunction() );
+        addFunction( "JC",       new JcRateMatrixFunction() );
 		
         
         /* Add phylogeny-related functions (alphabetical order) */

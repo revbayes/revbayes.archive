@@ -34,14 +34,16 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_HKY::RateMatrix_HKY(void) : RateMatrix( 4 ){
+RateMatrix_HKY::RateMatrix_HKY(void) : TimeReversibleRateMatrix( 4 ){
     
     kappa = 1.0;
+    
+    updateMatrix();
 }
 
 
 /** Copy constructor */
-RateMatrix_HKY::RateMatrix_HKY(const RateMatrix_HKY& m) : RateMatrix( m ) {
+RateMatrix_HKY::RateMatrix_HKY(const RateMatrix_HKY& m) : TimeReversibleRateMatrix( m ) {
     kappa = m.kappa;
 }
 
@@ -69,10 +71,10 @@ RateMatrix_HKY& RateMatrix_HKY::operator=(const RateMatrix_HKY &r) {
 void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
     
     // notation:
-    double pi_A = theStationaryFreqs[0];
-    double pi_C = theStationaryFreqs[1];
-    double pi_G = theStationaryFreqs[2];
-    double pi_T = theStationaryFreqs[3];
+    double pi_A = stationaryFreqs[0];
+    double pi_C = stationaryFreqs[1];
+    double pi_G = stationaryFreqs[2];
+    double pi_T = stationaryFreqs[3];
     
     // compute auxilliary variables
     double pi_AG = pi_A + pi_G;
@@ -118,42 +120,44 @@ RateMatrix_HKY* RateMatrix_HKY::clone( void ) const {
 
 void RateMatrix_HKY::setKappa( double k ) {
     kappa = k;
+    
+    // set flags
+    needsUpdate = true;
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix_HKY& x) {
-    std::streamsize previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
+void RateMatrix_HKY::updateMatrix( void ) {
     
-    o << "[ ";
-    o << std::fixed;
-    o << std::setprecision(4);
-    
-    // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < x.size(); i++) {
-        if (i == 0)
-            o << "[ ";
-        else 
-            o << "  ";
+    if ( needsUpdate ) 
+    {
+        MatrixReal &m = *theRateMatrix;
         
-        for (size_t j = 0; j < x.size(); ++j) 
-        {
-            if (j != 0)
-                o << ", ";
-            o << x[i][j];
-        }
-        o <<  " ]";
+        // compute the off-diagonal values
+        m[0][1] = stationaryFreqs[1];
+        m[0][2] = kappa*stationaryFreqs[2];
+        m[0][3] = stationaryFreqs[3];
         
-        if (i == x.size()-1)
-            o << " ]";
-        else 
-            o << " ,\n";
+        m[1][0] = stationaryFreqs[0];
+        m[1][2] = stationaryFreqs[2];
+        m[1][3] = kappa*stationaryFreqs[3];
         
+        m[2][0] = kappa*stationaryFreqs[0];
+        m[2][1] = stationaryFreqs[2];
+        m[2][3] = stationaryFreqs[3];
+        
+        m[3][0] = stationaryFreqs[0];
+        m[3][1] = kappa*stationaryFreqs[2];
+        m[3][2] = stationaryFreqs[3];
+        
+        // set the diagonal values
+        setDiagonal();
+        
+        // rescale 
+        rescaleToAverageRate( 1.0 );
+        
+        // clean flags
+        needsUpdate = false;
     }
-    
-    o.setf(previousFlags);
-    o.precision(previousPrecision);
-    
-    return o;
 }
+
 
