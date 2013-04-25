@@ -25,7 +25,6 @@ namespace RevBayesCore {
     class TransitionProbabilityMatrix {
 
     public:
-                                            TransitionProbabilityMatrix(void);                                  //!< Default constructor (never call this except from the workspace once)
                                             TransitionProbabilityMatrix(size_t n);                              //!< Constructor
 
         // overloaded operators
@@ -37,6 +36,7 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >::const_iterator       end(void) const;
         std::vector<std::vector<double> >::iterator             end(void);
 
+        size_t                              getNumberOfStates(void) const;
         size_t                              size(void) const;
  
     private:
@@ -44,6 +44,10 @@ namespace RevBayesCore {
         MatrixReal                          theMatrix;                                                          //!< Holds the transition probability matrix
     
     };
+    
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const TransitionProbabilityMatrix& x);                                           //!< Overloaded output operator
+
     
 }
 

@@ -37,7 +37,7 @@ namespace RevBayesCore {
         ~RateMatrix_GTR(void);                                                                  //!< Destructor
         
         // overloaded operators
-        RateMatrix_GTR&                         operator=(const RateMatrix_GTR& r);
+        RateMatrix_GTR&                     operator=(const RateMatrix_GTR& r);
         
         // RateMatrix functions
         bool                                areEigensDirty(void) const ;                                                        //!< Returns whether the eigensystem is in need of recalculation
@@ -45,7 +45,6 @@ namespace RevBayesCore {
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         RateMatrix_GTR*                     clone(void) const;
         bool                                isTimeReversible(void);                                                             //!< Return whether the rate matrix is time reversible
-        void                                setDiagonal(void);                                                                  //!< Set the diagonal such that each row sums to zero
         void                                setTimeReversible(bool tf);                                                   //!< Directly set whether the rate matrix is time reversible
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
         void                                update(void);

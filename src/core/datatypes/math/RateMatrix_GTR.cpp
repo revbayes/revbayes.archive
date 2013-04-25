@@ -42,6 +42,7 @@ RateMatrix_GTR::RateMatrix_GTR(size_t n) : RateMatrix( n ){
     theEigenSystem       = new EigenSystem(theRateMatrix);
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
+    
 }
 
 
@@ -239,40 +240,12 @@ bool RateMatrix_GTR::isTimeReversible(void) {
 }
 
 
-
-/** Set the diagonal of the rate matrix such that each row sums to zero */
-void RateMatrix_GTR::setDiagonal(void) {
-    
-    eigensDirty = true;
-    for (size_t i=0; i<numStates; i++)
-    {
-        double sum = 0.0;
-        for (size_t j=0; j<numStates; j++)
-        {
-            if (i != j)
-                sum += (*theRateMatrix)[i][j];
-        }
-        (*theRateMatrix)[i][i] = -sum;
-    }
-}
-
-
 /** Directly set whether or not the rate matrix is time reversible */
 void RateMatrix_GTR::setTimeReversible(bool tf) {
     
     reversibilityChecked = true;
     timeReversible = tf;
 }
-
-
-///** Set the stationary frequencies directly. We assume that we know
-// what the stationary frequencies are when this function is called. We
-// would know the stationary frequencies for most phylogenetic models. */
-//void RateMatrix_GTR::setStationaryFrequencies(const std::vector<double>& f) {
-//    
-//    eigensDirty = true;
-//    theStationaryFreqs = f;
-//}
 
 
 

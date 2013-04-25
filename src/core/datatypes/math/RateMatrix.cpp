@@ -37,8 +37,11 @@ using namespace RevBayesCore;
 RateMatrix::RateMatrix(size_t n) {
 
     numStates            = n;
-    theRateMatrix        = new MatrixReal(numStates, numStates, 0.0 );
-    theStationaryFreqs   = std::vector<double>(numStates);
+    theRateMatrix        = new MatrixReal(numStates, numStates, 1.0 );
+    theStationaryFreqs   = std::vector<double>(numStates,1.0/n);
+    
+    setDiagonal();
+    rescaleToAverageRate( 1.0 );
 }
 
 
@@ -49,7 +52,6 @@ RateMatrix::RateMatrix(const RateMatrix& m) {
     numStates            = m.numStates;
     theRateMatrix        = new MatrixReal( *m.theRateMatrix );
     theStationaryFreqs   = m.theStationaryFreqs;
-    avgRate              = m.avgRate;
     
 }
 
@@ -70,7 +72,6 @@ RateMatrix& RateMatrix::operator=(const RateMatrix &r) {
         numStates            = r.numStates;
         theRateMatrix        = new MatrixReal( *r.theRateMatrix );
         theStationaryFreqs   = r.theStationaryFreqs;
-        avgRate              = r.avgRate;
         
     }
     
@@ -180,21 +181,21 @@ void RateMatrix::rescaleToAverageRate(double r) {
 }
 
 
-///** Set the diagonal of the rate matrix such that each row sums to zero */
-//void RateMatrix::setDiagonal(void) {
-//    
-//    eigensDirty = true;
-//    for (size_t i=0; i<numStates; i++)
-//        {
-//        double sum = 0.0;
-//        for (size_t j=0; j<numStates; j++)
-//            {
-//            if (i != j)
-//                sum += (*theRateMatrix)[i][j];
-//            }
-//        (*theRateMatrix)[i][i] = -sum;
-//        }
-//}
+/** Set the diagonal of the rate matrix such that each row sums to zero */
+void RateMatrix::setDiagonal(void) {
+    
+    for (size_t i=0; i<numStates; i++)
+    {
+        double sum = 0.0;
+        for (size_t j=0; j<numStates; j++)
+        {
+            if (i != j)
+                sum += (*theRateMatrix)[i][j];
+        }
+        (*theRateMatrix)[i][i] = -sum;
+    }
+    update();
+}
 
 
 ///** Directly set whether or not the rate matrix is time reversible */
@@ -218,6 +219,12 @@ void RateMatrix::setStationaryFrequencies(const std::vector<double>& f) {
 
 size_t RateMatrix::size( void ) const {
     return numStates;
+}
+
+
+void RateMatrix::update( void ) {
+    // we don't do anything in the default implementation
+    // see RateMatrix_GTR for the derived case
 }
 
 

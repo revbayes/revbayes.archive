@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of RateMatrix_JC, which is
+ * This file contains the implementation of RateMatrix_F81, which is
  * class that holds a rate matrix in RevBayes.
  *
- * @brief Implementation of RateMatrix_JC
+ * @brief Implementation of RateMatrix_F81
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-12-11 14:46:24 +0100 (Tue, 11 Dec 2012) $
@@ -14,49 +14,45 @@
  * @interface Mcmc
  * @package distributions
  *
- * $Id: RateMatrix_JC.cpp 1921 2012-12-11 13:46:24Z hoehna $
+ * $Id: RateMatrix_F81.cpp 1921 2012-12-11 13:46:24Z hoehna $
  */
 
 #include "EigenSystem.h"
-#include "MatrixComplex.h"
 #include "MatrixReal.h"
-#include "RateMatrix_JC.h"
+#include "RateMatrix_F81.h"
 #include "RbException.h"
-#include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
-#include <fstream>
-#include <sstream>
-#include <string>
 #include <iomanip>
 
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_JC::RateMatrix_JC(size_t n) : RateMatrix( n ){
+RateMatrix_F81::RateMatrix_F81(size_t n) : RateMatrix( n ){
     
     theStationaryFreqs = std::vector<double>(n,1.0/n);
 }
 
 
 /** Copy constructor */
-RateMatrix_JC::RateMatrix_JC(const RateMatrix_JC& m) : RateMatrix( m ) {
+RateMatrix_F81::RateMatrix_F81(const RateMatrix_F81& m) : RateMatrix( m ) {
     
 }
 
 
 /** Destructor */
-RateMatrix_JC::~RateMatrix_JC(void) {
+RateMatrix_F81::~RateMatrix_F81(void) {
     
 }
 
 
-RateMatrix_JC& RateMatrix_JC::operator=(const RateMatrix_JC &r) {
+RateMatrix_F81& RateMatrix_F81::operator=(const RateMatrix_F81 &r) {
     
-    if (this != &r) {
+    if (this != &r) 
+    {
         RateMatrix::operator=( r );
-                
+        
     }
     
     return *this;
@@ -65,28 +61,37 @@ RateMatrix_JC& RateMatrix_JC::operator=(const RateMatrix_JC &r) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_JC::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_F81::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+    
+    // compute auxilliary variables
+    double tmp = 1.0;
+	for (size_t i=0; i<numStates; i++) tmp -= theStationaryFreqs[i]*theStationaryFreqs[i];
+    double beta = 1.0 / tmp; 
+    double xx = -beta * t;
+    double e = exp( xx );
+    double oneminuse = 1.0 - e;
     
     // calculate the transition probabilities
-    double p_ii = 1.0/numStates + (1.0-1.0/numStates) * exp(-t);
-    double p_ij = 1.0/numStates - 1.0/numStates * exp(-t);
-	for (size_t i=0; i<numStates; i++) {
-        P[i][i] = p_ii;
-		for (size_t j=i+1; j<numStates; j++) {
-            P[i][j] = p_ij;
-            P[j][i] = p_ij;
+	for (size_t i=0; i<numStates; i++) 
+    {
+        double to_i = theStationaryFreqs[i] * oneminuse;
+		for (size_t j=0; j<numStates; j++) 
+        {
+            P[j][i] = to_i;    // it is easier to overwrite the case i -> i later than checking for every j
         }
+         
+        // from i to i
+        P[i][i] = theStationaryFreqs[i] + (1.0-theStationaryFreqs[i])*e;
     }
 }
 
 
-RateMatrix_JC* RateMatrix_JC::clone( void ) const {
-    return new RateMatrix_JC( *this );
+RateMatrix_F81* RateMatrix_F81::clone( void ) const {
+    return new RateMatrix_F81( *this );
 }
 
 
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix_JC& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix_F81& x) {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
     

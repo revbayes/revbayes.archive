@@ -37,6 +37,7 @@
 #include "TestRateHeterogeneousGtrModel.h"
 #include "TestSkyline.h"
 #include "TestSlidingMove.h"
+#include "TestTransitionProbabilities.h"
 #include "TestTreeTraceSummary.h"
 #include "TestUCLNRelaxedClock.h"
 #include "TestVariableBirthDeath.h"
@@ -61,6 +62,14 @@ Test::~Test() {
 bool Test::performTests(void) {
     time_t start,end;
     time (&start);
+    
+    /* The transition probability test */
+    try {
+        TestTransitionProbabilities test = TestTransitionProbabilities();
+        test.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
     
     /* The distribution test */
     try {
@@ -131,9 +140,9 @@ bool Test::performTests(void) {
     try {
         TestGtrUnrooted testGtr = TestGtrUnrooted("data/primates_mtDNA.nex", "trees/primates.tree", 200);
         
-        testGtr.run();
+//        testGtr.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrUnrooted.tree");
-        testTrace.run();
+//        testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -171,9 +180,9 @@ bool Test::performTests(void) {
 //        TestGtrModel testGtr = TestGtrModel("data/anolis.nex", "trees/anolis_MAP.dnd", 10000);
   //      TestGtrModel testGtr = TestGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
 
-        testGtr.run();
+//        testGtr.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrModel.tree");
-        testTrace.run();
+//        testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

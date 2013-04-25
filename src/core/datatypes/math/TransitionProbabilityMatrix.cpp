@@ -20,18 +20,10 @@
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
-#include <fstream>
-#include <sstream>
-#include <string>
+#include <iomanip>
 
 
 using namespace RevBayesCore;
-
-/** Constructor passes member rules and method inits to base class */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : theMatrix(2,2,0.0) {
-
-    numStates = 2;
-}
 
 
 /** Construct rate matrix with n states */
@@ -79,8 +71,50 @@ std::vector<std::vector<double> >::iterator TransitionProbabilityMatrix::end( vo
 }
 
 
+size_t TransitionProbabilityMatrix::getNumberOfStates( void ) const {
+    return numStates;
+}
+
+
 size_t TransitionProbabilityMatrix::size(void) const {
     return theMatrix.size();
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const TransitionProbabilityMatrix& x) {
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << "[ ";
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i < x.getNumberOfStates(); i++) {
+        if (i == 0)
+            o << "[ ";
+        else 
+            o << "  ";
+        
+        for (size_t j = 0; j < x.getNumberOfStates(); ++j) 
+        {
+            if (j != 0)
+                o << ", ";
+            o << x[i][j];
+        }
+        o <<  " ]";
+        
+        if (i == x.size()-1)
+            o << " ]";
+        else 
+            o << " ,\n";
+        
+    }
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
+    return o;
 }
 
 
