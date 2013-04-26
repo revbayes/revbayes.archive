@@ -13,10 +13,17 @@
 
 using namespace RevBayesCore;
 
-ConstantBirthDeathProcess::ConstantBirthDeathProcess(const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), speciation( s ), extinction( e ), rho( r ), samplingStrategy( ss ), condition( cdt ), numTaxa( nTaxa ), taxonNames( tn ), constraints( c ) {
+ConstantBirthDeathProcess::ConstantBirthDeathProcess(const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *r,
+                                                     const TypedDagNode< std::vector<double> >* met, const TypedDagNode< std::vector<double> >* mep, 
+                                                     const std::string& ss, const std::string &cdt, unsigned int nTaxa, const std::vector<std::string> &tn, 
+                                                     const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
+speciation( s ), extinction( e ), rho( r ), massExtinctionTimes( met ), massExtinctionSurvivalProrbabilities( mep ), samplingStrategy( ss ), condition( cdt ), numTaxa( nTaxa ), taxonNames( tn ), constraints( c ) {
+
     addParameter( speciation );
     addParameter( extinction );
     addParameter( rho );
+    addParameter( massExtinctionTimes );
+    addParameter( massExtinctionSurvivalProrbabilities );
     
     double lnFact = 0.0;
     for (size_t i = 2; i < numTaxa; i++) {
@@ -207,6 +214,17 @@ double ConstantBirthDeathProcess::p1(double t, double T, double r) const {
     // subtract the probability that we might not have sampled this species (or any descendant)
     b -= log(r);
     
+    // add mass-extinction
+    const std::vector<double> &met = massExtinctionTimes->getValue();
+    const std::vector<double> &mep = massExtinctionSurvivalProrbabilities->getValue();
+    for (size_t j=0; j<met.size(); ++j ) 
+    {
+        if ( t < met[j] && T > met[j] ) 
+        {
+            b -= log(mep[j]);
+        }
+    }
+    
     double p = 2.0 * a + b;
     
     return p;
@@ -216,11 +234,50 @@ double ConstantBirthDeathProcess::p1(double t, double T, double r) const {
 
 double ConstantBirthDeathProcess::pSurvival(double start, double end, double T, double r) const {
     
-    double div = speciation->getValue() - extinction->getValue();
-    double xxx = ( exp( div * (start-end) ) - 1.0 ) / (-div);
-    double den = 1.0 + extinction->getValue() * ( xxx ) - ( r - 1.0 )/r * exp( div * (start-end) );
+    // compute the rate
+    double mu = extinction->getValue();
+    double lambda = speciation->getValue();
+    double rate = mu - lambda;
+    
+    // do the integration of int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds )
+    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx ) - sum_{for all t < m_i < s in massExtinctionTimes }( log(massExtinctionSurvivalProbability[i]) )
+    
+    // we compute the integral stepwise for each epoch between mass-extinction events
+    // add mass-extinction
+    double accumulatedMassExtinction = 1.0;
+    double prev_time = start;
+    double den = 1.0;
+    const std::vector<double> &met = massExtinctionTimes->getValue();
+    const std::vector<double> &mep = massExtinctionSurvivalProrbabilities->getValue();
+    if ( met.size() > 0 ) 
+    {
+        for (size_t j=0; j<met.size(); ++j ) 
+        {
+            if ( start < met[j] && end > met[j] ) 
+            {
+                // compute the integral for this time episode until the mass-extinction event
+                den += exp(-rate*start) * mu / (rate * accumulatedMassExtinction ) * ( exp(rate* met[j]) - exp(rate*prev_time));
+                // store the current time so that we remember from which episode we need to integrate next
+                prev_time = met[j];
+                accumulatedMassExtinction *= mep[j];
+                // integrate over the tiny time interval of the mass-extinction event itself and add it to the integral
+                den -= (mep[j]-1) / accumulatedMassExtinction * exp( rate*(met[j] - start) );
+            }
+        }
+    }
+    
+    // add the integral of the final epoch until the present time
+    den += exp(-rate*start) * mu / (rate * accumulatedMassExtinction ) * ( exp(rate*end) - exp(rate*prev_time));
+    
+    // add sampling
+    if ( (start < T) && (end >= T) )
+    {
+        accumulatedMassExtinction *= r;
+        den -= (r-1)*exp( rate*(T-start) ) / accumulatedMassExtinction;
+    }
     
     return (1.0 / den);
+    
 }
 
 
@@ -353,5 +410,14 @@ void ConstantBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode
     }
     else if (oldP == extinction) {
         extinction = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == rho) {
+        rho = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == massExtinctionTimes) {
+        massExtinctionTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+    }
+    else if (oldP == massExtinctionSurvivalProrbabilities) {
+        massExtinctionSurvivalProrbabilities = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
     }
 }

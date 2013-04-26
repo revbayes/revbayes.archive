@@ -52,6 +52,8 @@ namespace RevLanguage {
         RbPtr<const Variable>                           diversification;
         RbPtr<const Variable>                           turnover;
         RbPtr<const Variable>                           rho;
+        RbPtr<const Variable>                           massExtinctionTimes;
+        RbPtr<const Variable>                           massExtinctionSurvivalProbabilities;
         RbPtr<const Variable>                           samplingStrategy;
         RbPtr<const Variable>                           condition;
         RbPtr<const Variable>                           numTaxa;

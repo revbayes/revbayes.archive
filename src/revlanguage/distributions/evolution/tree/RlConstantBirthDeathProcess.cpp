@@ -45,12 +45,14 @@ RevBayesCore::ConstantBirthDeathProcess* ConstantBirthDeathProcess::createDistri
     RevBayesCore::TypedDagNode<double>* m = static_cast<const RealPos &>( diversification->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( turnover->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<double>* r = static_cast<const Probability &>( rho->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode< std::vector<double> > *met = static_cast<const Vector<RealPos> &>( massExtinctionTimes->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode< std::vector<double> > *mep = static_cast<const Vector<RealPos> &>( massExtinctionSurvivalProbabilities->getValue() ).getValueNode();
     const std::string &strategy = static_cast<const RlString &>( samplingStrategy->getValue() ).getValue();
     const std::string& cond = static_cast<const RlString &>( condition->getValue() ).getValue();
     int n = static_cast<const Natural &>( numTaxa->getValue() ).getValue();
     const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
     const std::vector<RevBayesCore::Clade> &c = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
-    RevBayesCore::ConstantBirthDeathProcess*   d = new RevBayesCore::ConstantBirthDeathProcess(m, s, r, strategy, cond, n, names, c);
+    RevBayesCore::ConstantBirthDeathProcess*   d = new RevBayesCore::ConstantBirthDeathProcess(m, s, r, met, mep, strategy, cond, n, names, c);
     
     return d;
 }
@@ -86,6 +88,8 @@ const MemberRules& ConstantBirthDeathProcess::getMemberRules(void) const {
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "diversification", true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "turnover"  , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"  , true, Probability::getClassTypeSpec(), new Probability(1.0) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "massExtinctionTimes"  , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "massExtinctionSurvivalProbabilities"  , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
         Vector<RlString> optionsStrategy;
         optionsStrategy.push_back( RlString("uniform") );
         optionsStrategy.push_back( RlString("diversified") );
@@ -179,6 +183,15 @@ void ConstantBirthDeathProcess::setConstMemberVariable(const std::string& name, 
     }
     else if ( name == "rho" ) {
         rho = var;
+    }
+    else if ( name == "samplingStrategy" ) {
+        samplingStrategy = var;
+    }
+    else if ( name == "massExtinctionTimes" ) {
+        massExtinctionTimes = var;
+    }
+    else if ( name == "massExtinctionSurvivalProbabilities" ) {
+        massExtinctionSurvivalProbabilities = var;
     }
     else if ( name == "nTaxa" ) {
         numTaxa = var;
