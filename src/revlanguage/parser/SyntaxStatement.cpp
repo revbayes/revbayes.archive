@@ -21,7 +21,7 @@
 #include "Signals.h"
 #include "SyntaxForLoop.h"
 #include "SyntaxStatement.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "Workspace.h"
 
 #include <cassert>
@@ -337,9 +337,9 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
  * whether the result is true or false, or can be interpreted as a RlBoolean
  * true or false value.
  */
-bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment& env ) const {
+bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const {
     
-    RbPtr<Variable> temp = expression->evaluateContent( env );
+    RbPtr<Variable> temp = expr->evaluateContent( env );
     
     if ( temp == NULL )
         return false;
@@ -370,17 +370,20 @@ void SyntaxStatement::printValue(std::ostream& o) const {
     o << "statementType = " << stmtName[statementType] << std::endl;
     if (expression == NULL)
         o << "expression    = NULL" << std::endl;
-    else {
+    else 
+    {
         o << "expression    = [" << expression << "] ";
         expression->printValue(o);
         o << std::endl;
     }
     if (statements1 == NULL)
         o << "statements1   = NULL" << std::endl;
-    else {
+    else 
+    {
         o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
         int count=1;
-        for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++, count++) {
+        for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++, count++) 
+        {
             o << "   stmt " << count << " = [" << (*i) << "] ";
             (*i)->printValue(o);
             o << std::endl;
@@ -388,10 +391,12 @@ void SyntaxStatement::printValue(std::ostream& o) const {
     }
     if (statements2 == NULL)
         o << "statements2   = NULL" << std::endl;
-    else {
+    else 
+    {
         o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
         int count=1;
-        for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++, count++) {
+        for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++, count++) 
+        {
             o << "   stmt " << count << " = [" << (*i) << "] ";
             (*i)->printValue(o);
             o << std::endl;
@@ -402,12 +407,14 @@ void SyntaxStatement::printValue(std::ostream& o) const {
     if (expression != NULL)
         expression->printValue(o);
     if (statements1 != NULL) {
-        for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++) {
+        for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++) 
+        {
             (*i)->printValue(o);
         }
     }
     if (statements2 != NULL) {
-        for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++) {
+        for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++) 
+        {
             (*i)->printValue(o);
         }
     }

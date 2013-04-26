@@ -6,7 +6,7 @@
 
 using namespace RevBayesCore;
 
-BrownianMotion::BrownianMotion(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *t, int n) : RandomWalkProcess( new LinearStepFunction( NULL, std::vector<double>(), 0, 1 ) ), initialValue( m ), sigma( s ), time( t ), n( n ) {
+BrownianMotion::BrownianMotion(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *t, int k) : RandomWalkProcess( new LinearStepFunction( NULL, std::vector<double>(), 0, 1 ) ), initialValue( m ), sigma( s ), time( t ), n( k ) {
     // add the parameters as a parent
     addParameter( sigma );
     addParameter( time );

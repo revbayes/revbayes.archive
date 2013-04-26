@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-GeometricDistribution::GeometricDistribution(const TypedDagNode<double> *p) : TypedDistribution<int>( new int( 1 ) ), p( p ) {
+GeometricDistribution::GeometricDistribution(const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 1 ) ), p( q ) {
     // add the parameters to the parents set
     addParameter( p );
     

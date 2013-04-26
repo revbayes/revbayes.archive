@@ -9,7 +9,7 @@
 #include "CummulativeDistributionFunction.h"
 
 
-RevBayesCore::CummulativeDistributionFunction::CummulativeDistributionFunction(const TypedDagNode<double> *x, ContinuousDistribution* d) : ContinuousFunction( new double(0.0) ), x( x ), dist( d ) {
+RevBayesCore::CummulativeDistributionFunction::CummulativeDistributionFunction(const TypedDagNode<double> *z, ContinuousDistribution* d) : ContinuousFunction( new double(0.0) ), x( z ), dist( d ) {
     addParameter( x );
     
 }

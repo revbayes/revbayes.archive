@@ -108,12 +108,12 @@ namespace RevBayesCore {
         std::vector<double> meanBranchLengths;
         for (std::vector<std::vector<double> >::iterator it = ages.begin(); it != ages.end(); ++it) {
             double meanBranchLength = 0;
-            const std::vector<double> &samples = *it;
-            for (std::vector<double>::const_iterator j = samples.begin(); j != samples.end(); ++j) {
+            const std::vector<double> &bl_samples = *it;
+            for (std::vector<double>::const_iterator j = bl_samples.begin(); j != bl_samples.end(); ++j) {
                 meanBranchLength += *j;
             }
-            if ( samples.size() > 0 ) {
-                meanBranchLength /= double(samples.size());
+            if ( bl_samples.size() > 0 ) {
+                meanBranchLength /= double(bl_samples.size());
             }
             meanBranchLengths.push_back( meanBranchLength );
         }
@@ -185,12 +185,12 @@ namespace RevBayesCore {
         std::vector<double> meanAges;
         for (std::vector<std::vector<double> >::iterator it = ages.begin(); it != ages.end(); ++it) {
             double meanAge = 0;
-            const std::vector<double> &samples = *it;
-            for (std::vector<double>::const_iterator j = samples.begin(); j != samples.end(); ++j) {
+            const std::vector<double> &bl_samples = *it;
+            for (std::vector<double>::const_iterator j = bl_samples.begin(); j != bl_samples.end(); ++j) {
                 meanAge += *j;
             }
-            if ( samples.size() > 0 ) {
-                meanAge /= double(samples.size());
+            if ( bl_samples.size() > 0 ) {
+                meanAge /= double(bl_samples.size());
             }
             meanAges.push_back( meanAge );
         }

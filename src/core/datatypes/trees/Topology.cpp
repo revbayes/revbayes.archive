@@ -205,7 +205,7 @@ size_t Topology::getNumberOfTips( void ) const {
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the root is always the last and the tips the first in the nodes vector. */
-const TopologyNode& Topology::getInteriorNode( int indx ) const {
+const TopologyNode& Topology::getInteriorNode( size_t indx ) const {
     
     // \TODO: Bound checking, maybe draw from downpass array instead
     return *nodes[ indx + getNumberOfTips() ];

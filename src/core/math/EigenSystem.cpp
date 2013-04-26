@@ -99,7 +99,7 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 						a[i][j] = a[i][k];
 						a[i][k] = tempD;
 						}
-					for (int i=m; i<n; i++)
+					for (size_t i=m; i<n; i++)
 						{
 						double tempD = a[j][i];
 						a[j][i] = a[k][i];
@@ -132,7 +132,7 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 						a[i][j] = a[i][m];
 						a[i][m] = tempD;
 						}
-					for (int i=m; i<n; i++)
+					for (size_t i=m; i<n; i++)
 						{
 						double tempD = a[j][i];
 						a[j][i] = a[m][i];
@@ -185,7 +185,7 @@ void EigenSystem::balance(MatrixReal& a, std::vector<double>& scale, int* low, i
 				g = 1.0 / f;
 				scale[i] *= f;
 				continueLoop = true;
-				for (int j=m; j<n; j++) 
+				for (size_t j=m; j<n; j++) 
 					a[i][j] *= g;
 				for (int j=0; j<=k; j++) 
 					a[j][i] *= f;
@@ -210,25 +210,25 @@ void EigenSystem::balback(int low, int high, std::vector<double>& scale, MatrixR
 	for (int i=low; i<=high; i++)
 		{
 		double s = scale[i];
-		for (int j=0; j<n; j++) 
+		for (size_t j=0; j<n; j++) 
 			eivec[i][j] *= s;
 		}
 	for (int i=low-1; i>=0; i--)
 		{
 		int k = (int)scale[i];
 		if ( k != i )
-			for (int j=0; j<n; j++) 
+			for (size_t j=0; j<n; j++) 
 				{
 				double tempD = eivec[i][j];
 				eivec[i][j] = eivec[k][j];
 				eivec[k][j] = tempD;
 				}
 		}
-	for (int i=high+1; i<n; i++)
+	for (size_t i=high+1; i<n; i++)
 		{
-		int k = (int)scale[i];
+		size_t k = scale[i];
 		if ( k != i )
-		for (int j=0; j<n; j++) 
+		for (size_t j=0; j<n; j++) 
 			{
 			double tempD = eivec[i][j];
 			eivec[i][j] = eivec[k][j];
@@ -246,7 +246,7 @@ void EigenSystem::balback(int low, int high, std::vector<double>& scale, MatrixR
 bool EigenSystem::checkForComplexEigenvalues(void) {
 
 	bool areThereComplexEigens = false;
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		{
 		if (imaginaryEigenvalues[i] != 0.0)
 			{
@@ -274,32 +274,32 @@ void EigenSystem::complexLUBackSubstitution(MatrixComplex& a, int* indx, std::ve
 	
 	std::complex<double> sum(0.0,0.0);
 	for (int i=0; i<n; i++) 
-		{
+    {
 		ip = indx[i];
 		sum = b[ip];
 		b[ip] = b[i];
 		if ( ii >= 0 ) 
-			{
+        {
 			for (j = ii; j <= i - 1; j++)
 				sum -= (a[i][j] * b[j]);
 				// was originally sum = a[i][j] - b[j]; this must be wrong!!
 				//sum = ComplexSubtraction (sum, ComplexMultiplication (a[i][j], b[j]));
-			} 
+        } 
 		else if ( (sum.real() != 0.0) || (sum.imag() != 0.0) )
 			ii = i;
 		b[i] = sum;
-		}
+    }
 	for (int i=(int)(n-1); i>=0; i--) 
-		{
+    {
 		sum = b[i];
 		for (j=i+1; j<n; j++)
-			{
+        {
 			sum -= (a[i][j] * b[j]);
 			//sum = ComplexSubtraction (sum, ComplexMultiplication (a[i][j], b[j]));
-			}
+        }
 		b[i] = sum / a[i][i];
 		//b[i] = ComplexDivision (sum, a[i][i]);
-		}
+    }
 }
 
 /*!
@@ -317,50 +317,50 @@ bool EigenSystem::complexLUDecompose(MatrixComplex& a, double* vv, int* indx, do
 	double d = 1.0;
 	int imax = 0;
 	for (int i=0; i<n; i++) 
-		{
+    {
 		double big = 0.0;
 		for (int j=0; j<n; j++) 
-			{
+        {
 			double temp;
 			if ((temp = abs(a[i][j])) > big)
 				big = temp;
-			}
+        }
 		if ( big == 0.0 ) 
 			return true;
 		vv[i] = 1.0 / big;
-		}
+    }
 
 	for (int j=0; j<n; j++) 
-		{
+    {
 		for (int i=0; i<j; i++) 
-			{
+        {
 			std::complex<double>sum = a[i][j];
 			for (int k=0; k<i; k++) 
-				{
+            {
 				std::complex<double> x = a[i][k] * a[k][j];
 				sum -= x;
-				}
+            }
 			a[i][j] = sum;
-			}
+        }
 		double big = 0.0;
 		for (int i = j; i < n; i++) 
-			{
+        {
 			std::complex<double> sum = a[i][j];
 			for (int k=0; k<j; k++)
-				{
+            {
 				std::complex<double> x = a[i][k] * a[k][j];
 				sum -= x;
-				}
+            }
 			a[i][j] = sum;
 			double dum = vv[i] * abs(sum);
 			if ( dum >= big ) 
-				{
+            {
 				big = dum;
 				imax = i;
-				}
-			}
+            }
+        }
 		if ( j != imax ) 
-			{
+        {
 			for (int k=0; k<n; k++) 
 				{
 				std::complex<double> cdum = a[imax][k];

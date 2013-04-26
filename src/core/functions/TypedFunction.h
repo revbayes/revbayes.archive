@@ -124,7 +124,7 @@ void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicN
 template <class valueType>
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedFunction<valueType>& f) {
     
-    o << "f(x)";
+    o << "f(x) = " << f.getValue();
     
     return o;
 }

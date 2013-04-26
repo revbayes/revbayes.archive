@@ -9,7 +9,7 @@
 #include "Parser.h"
 #include "RbSettings.h"
 #include "Workspace.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "RbVersion.h"
 #include <iostream>
 #include <string>

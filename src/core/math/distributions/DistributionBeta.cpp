@@ -194,9 +194,9 @@ double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator& rng) 
 
     if (aa <= 0. || bb <= 0. || (!RbMath::isFinite(aa) && !RbMath::isFinite(bb)))
         {
-        std::ostringstream s;
-        s << "Cannot draw random variable from beta distribution for a = " << aa << " and b = " << bb;
-        throw (RbException(s));
+        std::ostringstream ss;
+        ss << "Cannot draw random variable from beta distribution for a = " << aa << " and b = " << bb;
+        throw (RbException(ss));
         }
 
     if (!RbMath::isFinite(aa))

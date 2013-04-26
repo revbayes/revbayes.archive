@@ -114,7 +114,7 @@ void Move::printSummary( std::ostream &o ) const {
     const std::string &n = getMoveName();
     size_t spaces = 40 - n.length();
     o << n;
-    for (int i = 0; i < spaces; ++i) {
+    for (size_t i = 0; i < spaces; ++i) {
         o << " ";
     }
     o << " ";
@@ -123,7 +123,7 @@ void Move::printSummary( std::ostream &o ) const {
     const std::string &dn_name = (*nodes.begin())->getName();
     spaces = 20 - dn_name.length();
     o << dn_name;
-    for (int i = 0; i < spaces; ++i) {
+    for (size_t i = 0; i < spaces; ++i) {
         o << " ";
     }
     o << " ";

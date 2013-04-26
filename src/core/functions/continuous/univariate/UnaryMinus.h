@@ -44,7 +44,7 @@ namespace RevBayesCore {
 
 
 template<class valueType>
-RevBayesCore::UnaryMinus<valueType>::UnaryMinus(const TypedDagNode<valueType> *a) : TypedFunction<valueType>( new valueType() ), a( a ) {
+RevBayesCore::UnaryMinus<valueType>::UnaryMinus(const TypedDagNode<valueType> *b) : TypedFunction<valueType>( new valueType() ), a( b ) {
     this->addParameter( a );
 
 }

@@ -217,25 +217,25 @@ std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, Ran
  * \return Returns a vector of integers containing the random variable.
  * \throws Does not throw an error.
  */
-std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, int n, RandomNumberGenerator& rng) {
+std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, size_t n, RandomNumberGenerator& rng) {
     
     std::vector<int> x(n,0);
-    for (unsigned int i=0; i<n; i++)
-        {
+    for (size_t i=0; i<n; i++)
+    {
         double u = rng.uniform01();
         double sum = 0.0;
         for (size_t j=0; j<p.size(); j++)
+        {
+            sum += p[j];
+            if (u < sum)
             {
-                sum += p[j];
-                if (u < sum)
-                {
-                    break;
-                    x[i]++;
-                }
-                else {
-                    x[i]++;
-                }
+                break;
+                x[i]++;
+            }
+            else {
+                x[i]++;
             }
         }
+    }
 	return x;
 }

@@ -70,7 +70,7 @@ void Trace::computeStatistics( void ) {
     
     // check if we need to set the burnin
     if ( burnin < 0 ) {
-        burnin = size();
+        burnin = int(size());
         burnin *= stepSize;
         burnin *= 0.1;
     }

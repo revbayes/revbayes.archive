@@ -273,7 +273,7 @@ void VariableSlot::printValue(std::ostream& o) const {
 }
 
 
-void VariableSlot::resetNames(std::string const &l, int level, int &index) {
+void VariableSlot::resetNames(std::string const &l, size_t level, int &index) {
     
     int size = lengths[level];
     

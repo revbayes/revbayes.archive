@@ -52,7 +52,7 @@ RevBayesCore::ConstantBirthDeathProcess* ConstantBirthDeathProcess::createDistri
     int n = static_cast<const Natural &>( numTaxa->getValue() ).getValue();
     const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
     const std::vector<RevBayesCore::Clade> &c = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
-    RevBayesCore::ConstantBirthDeathProcess*   d = new RevBayesCore::ConstantBirthDeathProcess(m, s, r, met, mep, strategy, cond, n, names, c);
+    RevBayesCore::ConstantBirthDeathProcess*   d = new RevBayesCore::ConstantBirthDeathProcess(m, s, met, mep, r, strategy, cond, n, names, c);
     
     return d;
 }

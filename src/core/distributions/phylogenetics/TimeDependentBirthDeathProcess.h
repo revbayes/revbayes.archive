@@ -45,14 +45,14 @@ namespace RevBayesCore {
     private:
         
         // helper functions
-        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, int index, const std::vector<double> times, double T);
+        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> times, double T);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         double                                              divRate(double t);
         void                                                initialize(void);
         bool                                                matchesConstraints(void);
         double                                              p1(double t, double T) const;
         double                                              pSurvival(double start, double end, double T) const;
-        double                                              pWaiting(double start, double end, double T, int n) const;
+        double                                              pWaiting(double start, double end, double T, size_t n) const;
         double                                              simOrigin(void);
         double                                              simSpeciation(double origin);
         void                                                simulateTree(void);
@@ -74,7 +74,7 @@ namespace RevBayesCore {
         bool                                                approximate;
 //        double                                              PRESENT;
         bool                                                init;
-        mutable TrapezoidalRule                             integrator;
+//        mutable TrapezoidalRule                             integrator;
 //        TrapezoidalRule                                     survivingRateIntegration;
 //        TrapezoidalRule                                     waitingRateIntegration;
         

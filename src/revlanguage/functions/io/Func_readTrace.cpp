@@ -27,7 +27,7 @@
 #include "StringUtilities.h"
 #include "Trace.h"
 #include "RlTrace.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "VectorRlPointer.h"
 
 #include <map>

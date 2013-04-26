@@ -397,7 +397,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 
     /*********************  0. Initialization  **********************/
     /* Get my own copy of the argument vector */
-    std::vector<Argument> args = passedArgs;
+    std::vector<Argument> pArgs = passedArgs;
     
     /* Get the argument rules */
     const ArgumentRules& theRules = getArgumentRules();
@@ -406,12 +406,12 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
     size_t nRules = theRules.size();
 
     /* Clear previously processed arguments */
-    this->args.clear();
+    args.clear();
     
     /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
     std::vector<bool>   taken           = std::vector<bool>( passedArgs.size(), false );
     std::vector<bool>   filled          = std::vector<bool>( nRules, false );
-    std::vector<int>    passedArgIndex  = std::vector<int> ( nRules, -1 );
+    std::vector<size_t> passedArgIndex  = std::vector<size_t>( nRules, 1000 );
     std::vector<Argument> ellipsisArgs;
 
     /*********************  1. Do exact matching  **********************/
@@ -535,25 +535,29 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
         const ArgumentRule& theRule = theRules[i];
         RbPtr<Variable> theVar = theRule.getDefaultVariable().clone();
         theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
-        size_t idx = args.size();
-        passedArgIndex[i] = static_cast<int>( idx );
-        args.push_back( Argument( theVar, "" ) );
+        size_t idx = pArgs.size();
+        passedArgIndex[i] = idx;
+        pArgs.push_back( Argument( theVar, "" ) );
     }
 
     argsProcessed = true;
     
     /*********************  5. Insert arguments into argument list  **********************/
-    for (size_t j=0; j<nRules; j++) {
-        if ( passedArgIndex[j] >= 0 ) {
-            setArgument(theRules[j].getArgumentLabel(), args[passedArgIndex[j]], theRules[j].isConstant() );
+    for (size_t j=0; j<nRules; j++) 
+    {
+        if ( passedArgIndex[j] < 1000 ) 
+        {
+            setArgument(theRules[j].getArgumentLabel(), pArgs[passedArgIndex[j]], theRules[j].isConstant() );
         }
-//        else {
-//            std::cerr << "Optional argument for " << theRules[j].getArgumentLabel() << std::endl;
-//        }
+        else 
+        {
+            std::cerr << "Optional argument for " << theRules[j].getArgumentLabel() << std::endl;
+        }
     }
     
     /*********************  6. Insert ellipsis arguments  **********************/
-    for (std::vector<Argument>::iterator i = ellipsisArgs.begin(); i != ellipsisArgs.end(); i++) {
+    for (std::vector<Argument>::iterator i = ellipsisArgs.begin(); i != ellipsisArgs.end(); i++) 
+    {
         setArgument((*i).getLabel(), *i, true);
     }
 

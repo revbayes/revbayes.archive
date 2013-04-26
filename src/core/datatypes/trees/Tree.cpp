@@ -123,7 +123,7 @@ size_t Tree::getNumberOfTips(void) const {
     return topology->getNumberOfTips();
 }
 
-const TopologyNode& Tree::getInteriorNode(int indx) const {
+const TopologyNode& Tree::getInteriorNode(size_t indx) const {
     return topology->getInteriorNode( indx );
 }
 

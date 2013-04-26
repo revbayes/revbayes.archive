@@ -64,7 +64,7 @@ TimeDependentBirthDeathProcess::~TimeDependentBirthDeathProcess() {
 
 
 
-void TimeDependentBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, int index, const std::vector<double> times, double T) {
+void TimeDependentBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> times, double T) {
     
     if (index < numTaxa-1) {
         // Get the rng
@@ -167,7 +167,7 @@ double TimeDependentBirthDeathProcess::computeLnProbability( void ) {
     
     // retrieved the speciation times
     std::vector<double> times;
-    for (int i = 0; i <= value->getNumberOfInteriorNodes(); ++i) {
+    for (size_t i = 0; i <= value->getNumberOfInteriorNodes(); ++i) {
         double t = value->getInteriorNode( i ).getTime();
         times.push_back(t);
     }
@@ -222,7 +222,7 @@ double TimeDependentBirthDeathProcess::computeLnProbability( void ) {
         }
     }
     
-    int numInitialSpecies = 1;
+    size_t numInitialSpecies = 1;
     double lnProbTimes = 0;
     // check if we condition on the root or origin
     if ( times[0] == 0.0 ) {
@@ -233,7 +233,7 @@ double TimeDependentBirthDeathProcess::computeLnProbability( void ) {
     }
 
     // for every speciation event
-    for (int i=(numInitialSpecies-1); i < numTaxa-1; ++i) {
+    for (size_t i=(numInitialSpecies-1); i < numTaxa-1; ++i) {
         // Multiply with the probability of no speciation between t_i and t_(i+1) if i species are alive in this interval and
         //multiply the probability density of observing a speciation event exactly at time t_(i+1)
         lnProbTimes += pWaiting(times[i-1],times[i],T,i+numInitialSpecies-1) + log(pSurvival(times[i],T,T)) + log(lambda->getValue().evaluate(times[i]));
@@ -309,7 +309,7 @@ double TimeDependentBirthDeathProcess::pSurvival(double start, double end, doubl
 
 
 
-double TimeDependentBirthDeathProcess::pWaiting(double start, double end, double T, int n) const {
+double TimeDependentBirthDeathProcess::pWaiting(double start, double end, double T, size_t n) const {
     
     double samplingProb = 1.0;
     if (start < T && end >= T ) {
@@ -390,7 +390,7 @@ void TimeDependentBirthDeathProcess::simulateTree( void ) {
     buildRandomBinaryTree(nodes);
     
     // set tip names
-    for (int i=0; i<numTaxa; i++) {
+    for (size_t i=0; i<numTaxa; i++) {
         size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
         
         // get the node from the list

@@ -84,24 +84,24 @@ void GeometricBrownianMotion::redrawValue( void ) {
 
 LinearStepFunction* GeometricBrownianMotion::simulate( void ) {
     
-    std::vector<double> values;
+    std::vector<double> v;
     
     double t = time->getValue();
     double stdDev = t/blocks * sigma->getValue();
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
     double prevValue = initialValue->getValue();
-    values.push_back( prevValue );
+    v.push_back( prevValue );
     
     for (int i = 1; i <= blocks; ++i) {
         double val = RbStatistics::Lognormal::rv(log(prevValue), stdDev, *rng);
-        values.push_back( prevValue );
+        v.push_back( prevValue );
         
         // store value
         prevValue = val;
     }
     
-    return new LinearStepFunction(new ConstantNode<double>("", new double(0.0)), values, 0.0, t);
+    return new LinearStepFunction(new ConstantNode<double>("", new double(0.0)), v, 0.0, t);
 }
 
 

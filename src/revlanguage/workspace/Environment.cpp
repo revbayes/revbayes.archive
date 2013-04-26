@@ -280,14 +280,14 @@ void Environment::eraseVariable( const std::string& name ) {
     variableTable.erase( it );
     
     // remove the name from the var name list
-    for (std::vector<std::string>::iterator it=varNames.begin(); it!=varNames.end(); it++) 
+    for (std::vector<std::string>::iterator n=varNames.begin(); n!=varNames.end(); n++) 
+    {
+        if (*n == name) 
         {
-        if (*it == name) 
-            {
-            varNames.erase(it);
+            varNames.erase(n);
             break;
-            }
         }
+    }
 }
 
 

@@ -54,8 +54,8 @@ void TraceAnalysisContinuous::analyseMean(const std::vector<std::vector<double> 
     for (int j=0; j<chains; j++) {
         // get the chain
         const std::vector<double>& chain = values.at(j);
-        int burnin = burnins.at(j);
-        int chainSize = (int) chain.size() - burnin;
+        int b = burnins.at(j);
+        int chainSize = (int) chain.size() - b;
         // add this chain size to the total sample size
         sampleSize += chainSize;
         for (int i=burnin; i<chainSize; i++) {
@@ -81,9 +81,9 @@ void TraceAnalysisContinuous::analyseMean(const std::vector<double>& values, int
  */
 void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values) {
     // make sure the burnin is valid
-    int burnin = 0;
+    int b = 0;
     
-    analyseCorrelation(values,burnin);
+    analyseCorrelation(values,b);
 }
 
 /**
@@ -93,10 +93,10 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
  *
  * @attention This method assumes that the mean was either made invalid before execution or is calculated apropriately for this burnin.
  */
-void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, int burnin) {
+void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, int b) {
     // if we have not yet calculated the mean, do this now
     if (mean == RbConstants::Double::max) {
-        analyseMean(values,burnin);
+        analyseMean(values,b);
     }
     
     int samples = (int) values.size() - burnin;

@@ -40,7 +40,7 @@ namespace RevBayesCore {
         
         // Hidden member variables
         double                                          movesPerIteration;
-        int                                             currentMove;
+        size_t                                          currentMove;
         double                                          usedPropOfCurrentMove;
     };
     

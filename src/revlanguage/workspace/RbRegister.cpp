@@ -20,7 +20,7 @@
 
 #include "ArgumentRule.h"
 #include "RbException.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "Workspace.h"
 
 /* Primitive types (alphabetic order) */
@@ -34,17 +34,11 @@
 #include "RealPos.h"
 
 #include "RlAminoAcidState.h"
-//#include "RlCharacterData.h"
 #include "RlClade.h"
-//#include "RlContinuousCharacterState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
-//#include "RlStandardState.h"
-//#include "RlTaxonData.h"
 
 /* Container types (alphabetic order) */
-//#include "Matrix.h"
-//#include "Set.h"
 #include "Vector.h"
 
 
@@ -56,13 +50,11 @@
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
-//#include "Dist_cat.h"
 #include "RlDirichletDistribution.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
 #include "RlGeometricBrownianMotion.h"
 #include "RlLognormalDistribution.h"
-//#include "Dist_multinomial.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
 #include "RlUniformDistribution.h"
@@ -70,7 +62,6 @@
 
 // tree priors
 #include "RlConstantBirthDeathProcess.h"
-#include "RlTimeDependentBirthDeathProcess.h"
 
 // sequence models
 #include "RlCharacterStateEvolutionAlongTree.h"
@@ -115,41 +106,24 @@
 #include "Func__ne.h"
 #include "Func__or.h"
 #include "Func__unot.h"
-//#include "Func__uplus.h"
 
 /* Builtin functions */
 #include "Func_clear.h"
-//#include "Func_convertToSingleElement.h"
-//#include "Func_dppConFromExpNumClusters.h"
 #include "Func_ls.h"
-//#include "Func_normalizeVector.h"
-//#include "Func_print.h"
 #include "Func_quit.h"
-//#include "Func_rep.h"
 #include "Func_seed.h"
 #include "Func_simplex.h"
-//#include "Func_structure.h"
 #include "Func_type.h"
-//#include "Func_unique.h"
-//#include "Func_size.h"
-//#include "Func_sort.h"
 #include "Func_Source.h"
 
 /* Builtin templated functions */
-//#include "Func_set.h"
-//#include "Func_transpose.h"
 #include "Func_vector.h"
 #include "Func_rlvector.h"
-//#include "Func_rlvector.h"
 
 /* Constructor functions */
-//#include "ConstructorTaxonData.h"
 
 /* Phylogeny functions */
-//#include "Func_concatenate.h"
-//#include "Func_distance.h"
 #include "Func_mapTree.h"
-//#include "Func_nj.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
@@ -186,13 +160,11 @@
 
 /* Math functions */
 #include "Func_abs.h"
-//#include "Func_cos.h"
 #include "Func_exp.h"
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_mean.h"
 #include "Func_power.h"
-//#include "Func_sin.h"
 #include "Func_sqrt.h"
 
 
@@ -207,62 +179,29 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
     try {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
 
-//        /* Add special abstract types that do not correspond directly to classes */
-//        addType( new RbAbstract( TypeSpec(RbVoid_name) ) );
-//
-//        /* Add abstract types */
-//        addType( new RbAbstract( RbObject::getClassTypeSpec() ) );
-//        addType( new RbAbstract( RbLanguageObject::getClassTypeSpec() ) );
-//        addType( new RbAbstract( RbInternal::getClassTypeSpec() ) );
-//        addType( new RbAbstract( MemberObject::getClassTypeSpec() ) );
-////        addType( new RbAbstract( Move::getClassTypeSpec() ) );
-////        addType( new RbAbstract( Distribution::getClassTypeSpec() ) );
-//
-//        /* Add primitive types (alphabetic order) */
-//        addType( new RlAminoAcidState()                 );
+        /* Add primitive types (alphabetic order) */
         addType( new RlBoolean()                      );
         addType( new Complex()                        );
-//        addType( new RlContinuousCharacterState()       );
         addType( new Integer()                        );
         addType( new Natural()                        );
         addType( new Probability()                    );
-////        addType( new RateMatrix()                     );
         addType( new RlString()                       );
         addType( new Real()                           );
         addType( new RealPos()                        );
-//        addType( new RlRnaState()                       );
-//        addType( new RlStandardState()                  );
-////        addType( new TransitionProbabilityMatrix()    );
-//        
 
         /* Add container types (alphabetic order) */
-////        addType( new Matrix<Complex>()              );
-////        addType( new Matrix<Real>()                 );
-////        addTypeWithConstructor( "set",         new Set<Integer>()          );
-////        addTypeWithConstructor( "set",         new Set<Natural>()          );
-////        addTypeWithConstructor( "set",         new Set<NucleotideState>()  );
-////        addTypeWithConstructor( "set",         new Set<Real>()             );
-////        addTypeWithConstructor( "set",         new Set<RealPos>()          );
-////        addType( RbPtr<MemberObject>( new Vector( RbObject::getClassTypeSpec() ) )  );
         addType( new Vector<RlBoolean>()          );
         addType( new Vector<Integer>()            );
         addType( new Vector<Natural>()            );
         addType( new Vector<Real>()               );
         addType( new Vector<RealPos>()            );
         addType( new Vector<RlString>()           );
-//
-//        /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-//        addType( new Simplex()                      );
-//        addType( new RlTopology()                   );
-//        addType( new TopologyNode()                 );
-//
-//        /* Add MemberObject types with auto-generated constructors (alphabetic order) */
+
+        /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
         addTypeWithConstructor( "mcmc",             new Mcmc()  );
         addTypeWithConstructor( "model",            new Model() );
         addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
-//        addTypeWithConstructor( "simulate",      RbPtr<MemberObject>( new Simulate() )         );
-//
         
         
         //////////////////
@@ -299,10 +238,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange() );
         addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange_nonClock() );
 
-//
-//        /* Add phylogenetic types with auto-generated constructors (alphabetic order) */
-//
-//
+
+        
         ///////////////////////
         /* Add Distributions */
         ///////////////////////
@@ -325,13 +262,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "geomBM", new GeometricBrownianMotion() );
         
 
-//        // logistic distribution
-//        addDistribution( "logistic", new LogisticDistribution() );
-//        
-//        // multinomial distribution
-//        addDistribution( "multinomial", new MultinomialDistribution() );
-//        
-
         // exponential distribution
         addDistribution( "exponential", new ExponentialDistribution() );
         
@@ -352,11 +282,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantBirthDeathProcess() );
-        
-        // time-dependent rate birth-death process distribution
-        addDistribution( "tdBDP", new TimeDependentBirthDeathProcess() );
-        addDistribution( "time-dependentBDP", new TimeDependentBirthDeathProcess() );
-        
+                
         // character state evolution model
         addDistribution( "charStateModel", new CharacterStateEvolutionAlongTree<DnaState,TimeTree>() );
         addDistribution( "charStateModel", new CharacterStateEvolutionAlongTree<DnaState,BranchLengthTree>() );
@@ -370,8 +296,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         
         
-//        
-//        /* Now we have added all primitive and complex data types and can start type checking */
+        
+        /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace().typesInitialized = true;
         Workspace::userWorkspace().typesInitialized   = true;
 
@@ -384,9 +310,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
         
         /* Add basic unary arithmetic templated functions */
-//        addFunction( "_uplus",    new Func__uplus <         Integer,        Integer >() );
-//        addFunction( "_uplus",    new Func__uplus <            Real,           Real >() );
-////        addFunction( "_uplus",    new Func__uplus <    Matrix<Real>,   Matrix<Real> >() );
         
         /* Add basic logical functions */
         addFunction( "_and",      new Func__and()  );
@@ -425,30 +348,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Add builtin functions (alphabetical order) */
         addFunction( "clear",                    new Func_clear()                    );
-//        addFunction( "dppConFromExpNumClusters", new Func_dppConFromExpNumClusters() );
         addFunction( "ls",                       new Func_ls()                       );
-////        addFunction( "normalize",                new Func_normalizeVector()          );
-//        addFunction( "print",                    new Func_print()                    );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
-//        addFunction( "rep",                      new Func_rep<Natural>()             );
-//        addFunction( "rep",                      new Func_rep<Integer>()             );
-//        addFunction( "rep",                      new Func_rep<Real>()                );
-//        addFunction( "rep",                      new Func_rep<RealPos>()             );
-//        addFunction( "rep",                      new Func_rep<Vector<Real> >()     );
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "simplex",                  new Func_simplex()                  );
-////        addFunction( "simplex",                  new Func_simplex<Vector>() );
-//        addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
-////        addFunction( "unique",                   new Func_unique<Vector>()  );
-////        addFunction( "size",                     new Func_size<DagNodeContainer>()   );
-////        addFunction( "size",                     new Func_size<Vector>()    );
-////        addFunction( "sort",                     new Func_sort<Vector>()    );
-//        
-//
-//        
-//        
         
         
         /////////////////////////////////////
@@ -534,34 +439,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
         addFunction( "_exp",      new Func_power() );
-//
-//        /* Add basic logic templated functions */
-///*        ArgumentRules ltNaturalFuncArgRules;
-//        ltNaturalFuncArgRules.push_back( new ConstArgumentRule("first", Natural::getClassTypeSpec() ) );
-//        ltNaturalFuncArgRules.push_back( new ConstArgumentRule("second", Natural::getClassTypeSpec() ) );
-//        RlBoolean* funcLTNaturalRetVar = new RlBoolean();
-//        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltNaturalFuncArgRules, funcLTNaturalRetVar ) );
-//        
-//        ArgumentRules ltIntFuncArgRules;
-//        ltIntFuncArgRules.push_back( new ConstArgumentRule("first", Integer::getClassTypeSpec() ) );
-//        ltIntFuncArgRules.push_back( new ConstArgumentRule("second", Integer::getClassTypeSpec() ) );
-//        RlBoolean* funcLTIntRetVar = new RlBoolean();
-//        addFunction( "_lt",      new ParserFunction( new Func__lt<int, int, bool>(), "<", ltIntFuncArgRules, funcLTIntRetVar ) );
-//        
-//        ArgumentRules ltRealPosFuncArgRules;
-//        ltRealPosFuncArgRules.push_back( new ConstArgumentRule("first", RealPos::getClassTypeSpec() ) );
-//        ltRealPosFuncArgRules.push_back( new ConstArgumentRule("second", RealPos::getClassTypeSpec() ) );
-//        RlBoolean* funcLTRealPosRetVar = new RlBoolean();
-//        addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealPosFuncArgRules, funcLTRealPosRetVar ) );
-//        
-//        ArgumentRules ltRealFuncArgRules;
-//        ltRealFuncArgRules.push_back( new ConstArgumentRule("first", Real::getClassTypeSpec() ) );
-//        ltRealFuncArgRules.push_back( new ConstArgumentRule("second", Real::getClassTypeSpec() ) );
-//        RlBoolean* funcLTRealRetVar = new RlBoolean();
-//        addFunction( "_lt",      new ParserFunction( new Func__lt<double, double, bool>(), "<", ltRealFuncArgRules, funcLTRealRetVar ) );
-//*/		
-//        
-//
+
         /* Add math functions (alphabetical order) */
 		
 		// absolute function
@@ -583,7 +461,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		addFunction( "mean",        new Func_mean()  );
 		
 		
-//        addFunction( "mean",      new Func_mean()  );
         addFunction( "power",     new Func_power() );
 
 
@@ -609,9 +486,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		
         
         /* Add phylogeny-related functions (alphabetical order) */
-//        addFunction( "concatenate",                 new Func_concatenate()                 );
-//        addFunction( "distances",                   new Func_distance()                    );
-        //        addFunction( "nj",                          new Func_nj()                          );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
@@ -622,19 +496,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
-//        addFunction( "ctmmtp",                      new Func_CtmmTransitionProbabilities() );
-//        addFunction( "ctmmTransitionProbabilities", new Func_CtmmTransitionProbabilities() );
-//
-//        /* Add builtin templated functions */
-////        addFunction( "transpose", new Func_transpose<       Matrix<Real>                                                    >() );
-//        addFunction( "set",       new Func_set<RlBoolean>() );
-//        addFunction( "set",       new Func_set<Integer>() );
-//        addFunction( "set",       new Func_set<Natural>() );
-//        addFunction( "set",       new Func_set<Real>() );
-//        addFunction( "set",       new Func_set<RealPos>() );
-////        addFunction( "set",       new Func_set<Complex>() );
-//        addFunction( "set",       new Func_set<string>() );
-//        addFunction( "set",       new Func_set<RlDnaState>() );
+
+        /* Add builtin templated functions */
         addFunction( "v",         new Func_rlvector<Monitor>() );
         addFunction( "v",         new Func_rlvector<Move>() );
         addFunction( "v",         new Func_vector<Natural>() );
@@ -643,15 +506,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_vector<RealPos>() );
         addFunction( "v",         new Func_vector<RlBoolean>() );
         addFunction( "v",         new Func_vector<Clade>() );
-//        addFunction( "v",         new Func_vector<Vector<Integer> > () );
-//        addFunction( "v",         new Func_vector<Vector<Natural> >() );
-//        
-//        addFunction( "v",         new Func_rlvector<ParserMonitor>() );
-//        addFunction( "v",         new Func_rlvector<ParserMove>() );
-////        addFunction( "v",         new Func_vector<          Vector<Natural>,              Matrix<Natural>                 >() );
-////        addFunction( "v",         new Func_vector<          Vector<Real>,                 Matrix<Real>                    >() );
-////        addFunction( "v",         new Func_vector<          Vector<RealPos>,              Matrix<RealPos>                 >() );
-////        addFunction( "v",         new Func_vector<          Vector<Complex>,              Matrix<Complex>                 >() );
         
         /////////////////////////////////////////
         // Add RevLanguage only functions here //

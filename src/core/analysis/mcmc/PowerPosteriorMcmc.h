@@ -54,7 +54,6 @@ namespace RevBayesCore {
         Model                                               model;
         std::vector<Move*>                                  moves;
         std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
-        unsigned int                                        tuningInterval;
     
         std::vector<double>                                 beta;
         size_t                                              sampleFreq;

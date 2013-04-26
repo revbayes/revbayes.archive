@@ -118,7 +118,7 @@ void UniformTopologyDistribution::simulateTree( void ) {
     buildRandomBinaryTree(nodes);
     
     // set tip names
-    for (int i=0; i<numTaxa; i++) {
+    for (size_t i=0; i<numTaxa; i++) {
         size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
         
         // get the node from the list

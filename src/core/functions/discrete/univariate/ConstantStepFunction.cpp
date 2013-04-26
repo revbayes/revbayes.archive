@@ -38,7 +38,7 @@ double  ConstantStepFunction::evaluate(double x) const {
 
 
 
-double ConstantStepFunction::integrate(double l, double u, NumericalIntegration &i) const {
+double ConstantStepFunction::integrate(double l, double u, NumericalIntegration &integr) const {
     
     double a = 0.0;
     

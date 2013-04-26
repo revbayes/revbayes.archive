@@ -24,7 +24,7 @@
 #include "SyntaxFormal.h"
 #include "SyntaxFunctionCall.h"
 #include "SyntaxVariable.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "Workspace.h"
 
 #include <cstdlib>
@@ -405,8 +405,8 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment *env) 
                 msg << "Syntax error while reading character '" << command[yylloc.first_column-1] << "' at position " << yylloc.first_column << " in command:" << std::endl;
             else {
                 msg << "Syntax error while reading characters \"";
-                for (int i = yylloc.first_column; i <= yylloc.last_column; ++i) {
-                    msg << command[i-1];
+                for (int j = yylloc.first_column; j <= yylloc.last_column; ++j) {
+                    msg << command[j-1];
                 }
                 msg << "\" at position " << yylloc.first_column << " to " << yylloc.last_column << " in command:" << std::endl; 
             }

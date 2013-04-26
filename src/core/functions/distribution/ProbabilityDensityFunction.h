@@ -46,7 +46,7 @@ namespace RevBayesCore {
 }
 
 template <class valueType>
-RevBayesCore::ProbabilityDensityFunction<valueType>::ProbabilityDensityFunction(const TypedDagNode<valueType> *x, TypedDistribution<valueType>* d) : ContinuousFunction( new double(0.0) ), x( x ), dist( d ) {
+RevBayesCore::ProbabilityDensityFunction<valueType>::ProbabilityDensityFunction(const TypedDagNode<valueType> *z, TypedDistribution<valueType>* d) : ContinuousFunction( new double(0.0) ), x( z ), dist( d ) {
     addParameter( x );
     
 }

@@ -43,7 +43,7 @@ namespace RevBayesCore {
     private:
         
         // helper functions
-        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, int index, const std::vector<double> &times, double T);
+        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         bool                                                matchesConstraints(void);
         double                                              p1(double t, double T, double r) const;

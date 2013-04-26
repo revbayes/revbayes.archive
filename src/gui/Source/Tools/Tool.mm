@@ -417,7 +417,7 @@
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     NSDirectoryEnumerator* en = [fm enumeratorAtPath:temporaryDirectory];    
     NSString* file;
-    while ( file = [en nextObject] ) 
+    while ( (file = [en nextObject]) ) 
         {
         NSError* err = nil;
         BOOL res = [fm removeItemAtPath:[temporaryDirectory stringByAppendingPathComponent:file] error:&err];

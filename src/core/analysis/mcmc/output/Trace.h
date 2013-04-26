@@ -35,7 +35,7 @@ namespace RevBayesCore {
         double                      objectAt(int index)                             { return values.at(index); }
         void                        removeLastObject();
         void                        removeObjectAtIndex(int index);
-        int                         size() { return (int)values.size(); }
+        size_t                      size() { return values.size(); }
     
     
         // getters and setters

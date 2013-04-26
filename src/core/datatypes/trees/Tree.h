@@ -65,7 +65,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfInteriorNodes(void) const;                                   //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfNodes(void) const;                                           //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the Tree
-        const TopologyNode&                                 getInteriorNode(int indx) const;                                        //!< Get a pointer to interior node i
+        const TopologyNode&                                 getInteriorNode(size_t indx) const;                                     //!< Get a pointer to interior node i
         const std::string&                                  getNewickRepresentation() const;                                        //!< Get the newick representation of this Tree
         TopologyNode&                                       getRoot(void);                                                          //!< Get a pointer to the root node of the Tree
         const TopologyNode&                                 getRoot(void) const;                                                    //!< Get a pointer to the root node of the Tree

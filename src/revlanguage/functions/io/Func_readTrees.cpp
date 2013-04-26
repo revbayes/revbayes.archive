@@ -30,7 +30,7 @@
 #include "RlUtils.h"
 #include "StringUtilities.h"
 #include "TimeTree.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "Vector.h"
 
 #include <map>
@@ -95,8 +95,8 @@ RbLanguageObject* Func_readTrees::execute( void ) {
     reader.clearWarnings();
     
     Vector<TimeTree> *trees = new Vector<TimeTree>();
-    for (std::vector<std::string>::iterator fn = vectorOfFileNames.begin(); fn != vectorOfFileNames.end(); ++fn) {
-        std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( *fn );
+    for (std::vector<std::string>::iterator it = vectorOfFileNames.begin(); it != vectorOfFileNames.end(); ++it) {
+        std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( *it );
         for (std::vector<RevBayesCore::TimeTree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) {
             trees->push_back( TimeTree(*t) );
         }

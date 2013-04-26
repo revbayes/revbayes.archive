@@ -64,9 +64,9 @@ double RbMath::binomialDeviance(double x, double np)
     int j;
     
     if(!isFinite(x) || !isFinite(np) || np == 0.0) {
-        std::ostringstream s;
-        s << "Cannot compute the binomial deviance function for x = " << x << " and np = " << np;
-        throw (RbException(s));
+        std::ostringstream ss;
+        ss << "Cannot compute the binomial deviance function for x = " << x << " and np = " << np;
+        throw (RbException(ss));
     }
     
     if (fabs(x-np) < 0.1*(x+np)) {

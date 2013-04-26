@@ -47,7 +47,7 @@ namespace RevBayesCore {
         
         // member variables
         StochasticNode<TimeTree>*       variable;
-        int                             blocks;
+        size_t                          blocks;
         std::vector<double>             interval;
         
         // stored objects to undo proposal

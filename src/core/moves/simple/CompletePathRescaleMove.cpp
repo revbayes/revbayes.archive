@@ -66,7 +66,7 @@ double CompletePathRescaleMove::performSimpleMove( void ) {
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
     double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         vals[i] *= scalingFactor;
     }
     

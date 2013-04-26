@@ -98,7 +98,7 @@ template <class valueType>
 double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProbability( void ) {
     
 	// Todo compute prob
-	double v1 = 1.0 / (1.0 + concentration->getValue());
+//	double v1 = 1.0 / (1.0 + concentration->getValue());
 	
 	
     return 0.0;

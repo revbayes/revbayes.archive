@@ -18,7 +18,7 @@
 
 #include "HelpNode.h"
 #include "StringUtilities.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include <iostream>
 
 

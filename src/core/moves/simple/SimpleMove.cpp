@@ -56,8 +56,8 @@ double SimpleMove::performMove( double &probRatio ) {
         std::set<DagNode* > affectedNodes;
         theNode->getAffectedNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
-            DagNode* theNode = *i;
-            probRatio += theNode->getLnProbabilityRatio();
+            DagNode* theAffectedNode = *i;
+            probRatio += theAffectedNode->getLnProbabilityRatio();
         }
     }
     

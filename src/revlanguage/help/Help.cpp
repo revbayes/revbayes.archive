@@ -20,7 +20,7 @@
 #include "RbFileManager.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include <iostream>
 #include <sstream>
 
@@ -65,8 +65,8 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         // succinct
         if ( h->hasChildWithTag("succinct") == true )
         {
-            HelpNode* hn = h->getChildWithTag("succinct");
-            tempStr += ": " + hn->getHelpEntry();
+            HelpNode* shn = h->getChildWithTag("succinct");
+            tempStr += ": " + shn->getHelpEntry();
         }
         hStr += formatStringWithBreaks(tempStr, RevBayesCore::RbUtils::PAD, columnWidth);
         hStr += "\n";

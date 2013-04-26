@@ -183,8 +183,11 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
               std::multimap<std::string, Function *>::iterator> retVal;
     
     size_t count = table.count(name);
-    if (count == 0) {
-        if (parentTable != NULL) {// \TODO: We shouldn't allow const casts!!!
+    if (count == 0) 
+    {
+        if (parentTable != NULL) 
+        {
+            // \TODO: We shouldn't allow const casts!!!
             FunctionTable* pt = const_cast<FunctionTable*>(parentTable);
             return pt->findFunction(name, args);
         }
@@ -198,8 +201,10 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
             std::ostringstream msg;
             msg << "Argument mismatch for call to function '" << name << "'(";
             // print the passed arguments
-            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) {
-                if (it != args.begin()) {
+            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
+            {
+                if (it != args.begin()) 
+                {
                     msg << ",";
                 }
                 msg << " " << it->getVariable()->getValue().getTypeSpec() << " \"" << it->getLabel() << "\"";
@@ -211,25 +216,32 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         }
         return *retVal.first->second;
     }
-    else {
+    else 
+    {
         std::vector<unsigned int>* matchScore = new std::vector<unsigned int>();
         std::vector<unsigned int> bestScore;
         Function* bestMatch = NULL;
 
         bool ambiguous = false;
         std::multimap<std::string, Function *>::iterator it;
-        for (it=retVal.first; it!=retVal.second; it++) {
+        for (it=retVal.first; it!=retVal.second; it++) 
+        {
             matchScore->clear();
-            if ( (*it).second->checkArguments(args, matchScore) == true ) {
-                if ( bestMatch == NULL ) {
+            if ( (*it).second->checkArguments(args, matchScore) == true ) 
+            {
+                if ( bestMatch == NULL ) 
+                {
                     bestScore = *matchScore;
                     bestMatch = it->second;
                     ambiguous = false;
                 }
-                else {
+                else 
+                {
                     size_t j;
-                    for (j=0; j<matchScore->size() && j<bestScore.size(); j++) {
-                        if ((*matchScore)[j] < bestScore[j]) {
+                    for (j=0; j<matchScore->size() && j<bestScore.size(); j++) 
+                    {
+                        if ((*matchScore)[j] < bestScore[j]) 
+                        {
                             bestScore = *matchScore;
                             bestMatch = it->second;
                             ambiguous = false;
@@ -238,43 +250,50 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                         else if ((*matchScore)[j] > bestScore[j])
                             break;
                     }
-                    if (j==matchScore->size() || j==bestScore.size()) {
+                    if (j==matchScore->size() || j==bestScore.size()) 
+                    {
                         ambiguous = true;   // Continue checking, there might be better matches ahead
                     }
                 }
             }
         }
         /* Delete all processed arguments except those of the best matching function, if it is ambiguous */
-        for ( it = retVal.first; it != retVal.second; it++ ) {
+        for ( it = retVal.first; it != retVal.second; it++ ) 
+        {
             if ( !( (*it).second == bestMatch && ambiguous == false ) )
                 (*it).second->clear();
         }
-        if ( bestMatch == NULL || ambiguous == true ) {
+        if ( bestMatch == NULL || ambiguous == true ) 
+        {
             std::ostringstream msg;
             if ( bestMatch == NULL )
                 msg << "No overloaded function '" << name << "' matches for arguments (";
             else
                 msg << "Ambiguous call to function '" << name << "' with arguments (";
             // print the passed arguments
-            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) {
-                if (it != args.begin()) {
+            for (std::vector<Argument>::const_iterator j = args.begin(); j != args.end(); j++) 
+            {
+                if (j != args.begin()) 
+                {
                     msg << ",";
                 }
 //                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
-                const RbPtr<const Variable>& theVar = it->getVariable();
+                const RbPtr<const Variable>& theVar = j->getVariable();
                 msg << " " << theVar->getValue().getTypeSpec();
                 
             }
             msg << " )" << std::endl;
             
             msg << "Potentially matching functions are:" << std::endl;
-            for ( it = retVal.first; it != retVal.second; it++ ) {
+            for ( it = retVal.first; it != retVal.second; it++ ) 
+            {
                 (*it).second->printValue( msg );
                 msg << std::endl;
             }
             throw RbException( msg );
         }
-        else {
+        else 
+        {
             return *bestMatch;
         }
     }

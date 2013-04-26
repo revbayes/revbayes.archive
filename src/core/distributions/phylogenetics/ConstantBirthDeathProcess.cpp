@@ -49,7 +49,7 @@ ConstantBirthDeathProcess::~ConstantBirthDeathProcess() {
 
 
 
-void ConstantBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, int index, const std::vector<double> &times, double T) {
+void ConstantBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T) {
     
     if (index < numTaxa-1) {
         // Get the rng
@@ -136,7 +136,7 @@ double ConstantBirthDeathProcess::computeLnProbability( void ) {
     
     // retrieved the speciation times
     std::vector<double> times;
-    for (int i = 0; i < value->getNumberOfInteriorNodes()+1; ++i) {
+    for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i) {
         const TopologyNode& n = value->getInteriorNode( i );
         double t = n.getTime();
         times.push_back(t);
@@ -164,7 +164,7 @@ double ConstantBirthDeathProcess::computeLnProbability( void ) {
     }
     
     double lambda = speciation->getValue();
-    for (int i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
+    for (size_t i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
         if ( lnProbTimes == RbConstants::Double::nan || lnProbTimes == RbConstants::Double::inf || lnProbTimes == RbConstants::Double::neginf) {
             return RbConstants::Double::nan;
         }
@@ -175,7 +175,6 @@ double ConstantBirthDeathProcess::computeLnProbability( void ) {
     if ( samplingStrategy == "diversified" ) {
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
         double lastEvent = times[times.size()-2];
-        double lambda = speciation->getValue();
         double mu = extinction->getValue();
         double div = lambda - mu;
         
@@ -345,7 +344,7 @@ void ConstantBirthDeathProcess::simulateTree( void ) {
     buildRandomBinaryTree(nodes);
     
     // set tip names
-    for (int i=0; i<numTaxa; i++) {
+    for (size_t i=0; i<numTaxa; i++) {
         size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
         
         // get the node from the list
@@ -393,8 +392,8 @@ void ConstantBirthDeathProcess::simulateTree( void ) {
     nodes.push_back( root );
     attachTimes(psi, nodes, 0, t, t_or);
     for (size_t i = 0; i < numTaxa; ++i) {
-        TopologyNode& n = tau->getTipNode(i);
-        psi->setAge( n.getIndex(), 0.0 );
+        TopologyNode& node = tau->getTipNode(i);
+        psi->setAge( node.getIndex(), 0.0 );
     }
     
     // finally store the new value

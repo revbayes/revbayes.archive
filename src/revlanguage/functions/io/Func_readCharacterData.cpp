@@ -32,7 +32,7 @@
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "VectorRlPointer.h"
 
 #include <map>

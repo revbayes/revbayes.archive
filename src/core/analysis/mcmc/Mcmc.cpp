@@ -161,7 +161,7 @@ void Mcmc::burnin(int generations, int tuningInterval) {
     SequentialMoveSchedule schedule = SequentialMoveSchedule(moves);
     //RandomMoveSchedule schedule = RandomMoveSchedule(moves);
     
-    for (unsigned int k=1; k<=generations; k++) {
+    for (int k=1; k<=generations; k++) {
         
         if ( k % (generations/20) == 0 ) {
             std::cout << "**";
@@ -169,7 +169,7 @@ void Mcmc::burnin(int generations, int tuningInterval) {
         }
         
         size_t proposals = round( schedule.getNumberMovesPerIteration() );
-        for (int i=0; i<proposals; i++) {
+        for (size_t i=0; i<proposals; i++) {
             /* Get the move */
             Move* theMove = schedule.nextMove();
             
@@ -412,11 +412,11 @@ void Mcmc::run(int generations) {
     SequentialMoveSchedule schedule = SequentialMoveSchedule(moves);
     //RandomMoveSchedule schedule = RandomMoveSchedule(moves);
     
-    for (unsigned int k=1; k<=generations; k++) {
+    for (int k=1; k<=generations; k++) {
         gen++;
         
         size_t proposals = round( schedule.getNumberMovesPerIteration() );
-        for (int i=0; i<proposals; i++) {
+        for (size_t i=0; i<proposals; i++) {
             /* Get the move */
             Move* theMove = schedule.nextMove();
             
