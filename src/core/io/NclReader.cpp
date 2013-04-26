@@ -33,7 +33,7 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 
 using namespace RevBayesCore;
 

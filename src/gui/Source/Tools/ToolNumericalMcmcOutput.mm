@@ -155,8 +155,8 @@
         data = new std::vector<RevBayesCore::Trace* >;
         int traces = [aDecoder decodeIntForKey:@"nTraces"];
         for (int i=0; i<traces; i++) {
-            NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
-            NSString* xmlString = [aDecoder decodeObjectForKey:key];
+//            NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
+//            NSString* xmlString = [aDecoder decodeObjectForKey:key];
             
             // TODO: Write proper reading from memory dumps (Sebastian)
             std::cerr << "Missing implementation in ToolnumericalMcmcOutput::initWithCoder.\n";

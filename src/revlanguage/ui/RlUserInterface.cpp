@@ -19,7 +19,7 @@
 
 #include "RbUtil.h"
 #include "StringUtilities.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 
 using namespace RevLanguage;
 

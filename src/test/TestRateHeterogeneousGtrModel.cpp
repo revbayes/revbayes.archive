@@ -118,7 +118,7 @@ bool TestRateHeterogeneousGtrModel::run( void ) {
     std::cout << "er:\t" << er->getValue() << std::endl;
     std::cout << "rates:\t" << site_rates->getValue() << std::endl;
     
-    unsigned int numChar = data[0]->getNumberOfCharacters();
+    size_t numChar = data[0]->getNumberOfCharacters();
     std::vector<const TypedDagNode <double> * > perSiteRates ;
     std::vector<Move*> moves;
     for (unsigned int i = 0 ; i < numChar; i++) {
@@ -136,7 +136,9 @@ bool TestRateHeterogeneousGtrModel::run( void ) {
     std::cout << "Q:\t" << q->getValue() << std::endl;
     
     std::vector<std::string> names = data[0]->getTaxonNames();
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
+    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     
     //    tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;

@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class ConstantBirthDeathProcess : public TypedDistribution<TimeTree> {
         
     public:
-        ConstantBirthDeathProcess(const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *r, const TypedDagNode<std::vector<double> > *met, const TypedDagNode<std::vector<double> > *mep, const std::string& ss, const std::string &cdt, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);        
+        ConstantBirthDeathProcess(const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<std::vector<double> > *met, const TypedDagNode<std::vector<double> > *mep, const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);        
         ConstantBirthDeathProcess(const ConstantBirthDeathProcess &n);                                                                                          //!< Copy constructor
         virtual                                            ~ConstantBirthDeathProcess(void);                                                                    //!< Virtual destructor
         

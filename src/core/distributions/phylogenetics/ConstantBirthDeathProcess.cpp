@@ -13,10 +13,10 @@
 
 using namespace RevBayesCore;
 
-ConstantBirthDeathProcess::ConstantBirthDeathProcess(const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *r,
+ConstantBirthDeathProcess::ConstantBirthDeathProcess(const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                      const TypedDagNode< std::vector<double> >* met, const TypedDagNode< std::vector<double> >* mep, 
-                                                     const std::string& ss, const std::string &cdt, unsigned int nTaxa, const std::vector<std::string> &tn, 
-                                                     const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
+                                                     const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, unsigned int nTaxa, 
+                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
 speciation( s ), extinction( e ), rho( r ), massExtinctionTimes( met ), massExtinctionSurvivalProrbabilities( mep ), samplingStrategy( ss ), condition( cdt ), numTaxa( nTaxa ), taxonNames( tn ), constraints( c ) {
 
     addParameter( speciation );

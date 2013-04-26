@@ -57,7 +57,9 @@ bool TestGtrModelFixedTree::run( void ) {
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     std::vector<std::string> names = data[0]->getTaxonNames();
-    StochasticNode<TimeTree> *tree = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
+    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
+    StochasticNode<TimeTree> *tree = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     
     tree->setValue( trees[0] );
 

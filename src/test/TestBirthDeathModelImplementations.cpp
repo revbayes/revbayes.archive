@@ -61,7 +61,9 @@ bool TestBirthDeathModelImplementations::run( void ) {
     div->setValue( new double(1.0) );
     turnover->setValue( new double(1.0) );
     TimeTree* t = trees[0];
-    StochasticNode<TimeTree> *tauCBD = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess( div, turnover, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
+    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
+    StochasticNode<TimeTree> *tauCBD = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess( div, turnover, met, mep, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
     //    std::cout << "tau:\t" << tauCBD->getValue() << std::endl;
     
     // attach the data

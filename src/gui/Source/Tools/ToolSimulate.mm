@@ -444,7 +444,7 @@
             }
         }
         
-    RbData* simData = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cMat)];
+    RbData* simData = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cMat):cMat->getDatatype()];
     [simData setName:@"Simulated Data Matrix"];
     [simData setAlignmentMethod:@"Simulated"];
     if ([self numDataMatrices] > 0)

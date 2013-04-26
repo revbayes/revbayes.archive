@@ -1,4 +1,3 @@
-#include "Argument.h"
 #include "BranchLengthTree.h"
 #include "Clade.h"
 #include "ConstantBirthDeathProcess.h"
@@ -13,14 +12,12 @@
 #include "NearestNeighborInterchange.h"
 #include "NewickConverter.h"
 #include "RbFileManager.h"
-#include "RlString.h"
 #include "StringUtilities.h"
 #include "TestNNI.h"
 #include "TreeTrace.h"
 #include "Tree.h"
 #include "TreeSummary.h"
 #include "UniformDistribution.h"
-#include "Variable.h"
 
 using namespace RevBayesCore;
 
@@ -34,21 +31,21 @@ TestNNI::~TestNNI() {
 
 
 TreeTrace<TimeTree> TestNNI::readTreeTrace(const std::string &fname) {
-    RevLanguage::Func_readTreeTrace reader;
-    std::vector<RevLanguage::Argument> args;
-    RevLanguage::RbPtr<RevLanguage::Variable> var = new RevLanguage::Variable(new RevLanguage::RlString(fname) );
-    args.push_back( RevLanguage::Argument(var,"filename") );
-    RevLanguage::RbPtr<RevLanguage::Variable> var2 = new RevLanguage::Variable(new RevLanguage::RlString("clock") );
-    args.push_back( RevLanguage::Argument(var2,"treetype") );
-    reader.processArguments(args);
-    
-    RevLanguage::RbLanguageObject* trace = reader.execute();
-    
-    TreeTrace<TimeTree> rv = static_cast<RevLanguage::TreeTrace<RevLanguage::TimeTree>* >( trace )->getValue();
-    
-    delete trace;
-    
-    return rv;
+//    RevLanguage::Func_readTreeTrace reader;
+//    std::vector<RevLanguage::Argument> args;
+//    RevLanguage::RbPtr<RevLanguage::Variable> var = new RevLanguage::Variable(new RevLanguage::RlString(fname) );
+//    args.push_back( RevLanguage::Argument(var,"filename") );
+//    RevLanguage::RbPtr<RevLanguage::Variable> var2 = new RevLanguage::Variable(new RevLanguage::RlString("clock") );
+//    args.push_back( RevLanguage::Argument(var2,"treetype") );
+//    reader.processArguments(args);
+//    
+//    RevLanguage::RbLanguageObject* trace = reader.execute();
+//    
+//    TreeTrace<TimeTree> rv = static_cast<RevLanguage::TreeTrace<RevLanguage::TimeTree>* >( trace )->getValue();
+//    
+//    delete trace;
+//    
+//    return rv;
 }
 
 
@@ -68,8 +65,10 @@ bool TestNNI::run( void ) {
     names.push_back("B");
     names.push_back("C");
     names.push_back("D");
-
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, rho, "uniform", "survival", 4, names, std::vector<Clade>()) );
+    
+    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
+    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", 4, names, std::vector<Clade>()) );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     

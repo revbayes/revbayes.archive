@@ -17,7 +17,7 @@
 
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include <iostream>
 #include <string>
 #include <sys/stat.h>
