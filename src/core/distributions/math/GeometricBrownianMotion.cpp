@@ -35,11 +35,12 @@ GeometricBrownianMotion* GeometricBrownianMotion::clone( void ) const {
 
 
 double GeometricBrownianMotion::computeLnProbability( void ) {
-    double lnProb = 0;
-    double t = time->getValue();
-    double stdDev = t/blocks * sigma->getValue();
+//    double lnProb = 0;
+//    double t = time->getValue();
+//    double stdDev = t/blocks * sigma->getValue();
     
     throw RbException("Missing implementation in GeometricBrownianMotion::computeLnProbability.");
+    return -1;
     
     // @todo: reimplement
     //    double prevValue = initialValue->getValue();
@@ -53,7 +54,7 @@ double GeometricBrownianMotion::computeLnProbability( void ) {
     //        prevValue = val;
     //    }
     
-    return lnProb;
+//    return lnProb;
 }
 
 

@@ -32,7 +32,7 @@ namespace RevBayesCore {
 - (id)initWithScaleFactor:(float)sf;
 - (void)instantiateDataInCore;
 - (void)makeDataInspector;
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd:(std::string&)dt;
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd:(const std::string&)dt;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
 - (int)numDataMatrices;
 - (int)numAlignedMatrices;

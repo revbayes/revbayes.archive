@@ -153,7 +153,7 @@
 
 	NSEnumerator* enumerator = [nodes objectEnumerator];
 	Node* p;
-	while (p = [enumerator nextObject]) 
+	while ( (p = [enumerator nextObject]) ) 
         {
         [p setIsNodeSelected:NO];
         [p setIsBranchSelected:NO];
@@ -336,7 +336,7 @@
         double curDepth = [root y];
         NSEnumerator* enumerator = [downPassSequence objectEnumerator];
         Node* p;
-        while (p = [enumerator nextObject]) 
+        while ( (p = [enumerator nextObject]) ) 
             {
             if ([p isLeaf] == NO)
                 {
@@ -526,7 +526,7 @@
 
 	NSEnumerator* enumerator = [downPassSequence objectEnumerator];
 	Node* p = nil;
-	while (p = [enumerator nextObject]) 
+	while ( (p = [enumerator nextObject]) ) 
         [p setFlag:tf];
 }
 
@@ -538,7 +538,7 @@
     // initialize the depth of the nodes
 	NSEnumerator* enumerator = [downPassSequence objectEnumerator];
 	Node* p;
-	while (p = [enumerator nextObject]) 
+	while ( (p = [enumerator nextObject]) ) 
         {
         if ([p isLeaf] == YES)
             {
@@ -561,7 +561,7 @@
 
     // set depth (y values)
 	enumerator = [downPassSequence objectEnumerator];
-	while (p = [enumerator nextObject]) 
+	while ( (p = [enumerator nextObject]) ) 
         {
         [p setY:(1.0 - (float)[p depthFromTip]/depthOfRoot)];
         }
@@ -571,7 +571,7 @@
 	double maximumX = 0.0;
 	double maximumY = 0.0;
 	enumerator = [downPassSequence objectEnumerator];
-	while (p = [enumerator nextObject]) 
+	while ( (p = [enumerator nextObject]) ) 
 		{
 		if ( [p isLeaf] == YES )
 			{
@@ -610,7 +610,7 @@
 		}
 
 	enumerator = [downPassSequence objectEnumerator];
-	while (p = [enumerator nextObject]) 
+	while ( (p = [enumerator nextObject]) ) 
         {
         [p setX:([p x]/maximumX)];
         }
@@ -626,7 +626,7 @@
 	double maximumX = 0.0;
 	NSEnumerator*  enumerator = [downPassSequence objectEnumerator];
     Node* p = nil;
-	while (p = [enumerator nextObject]) 
+	while ( (p = [enumerator nextObject]) ) 
 		{
 		if ( [p isLeaf] == YES )
 			{
@@ -660,7 +660,7 @@
 		}
 
 	enumerator = [downPassSequence objectEnumerator];
-	while (p = [enumerator nextObject]) 
+	while ( (p = [enumerator nextObject]) ) 
         {
         [p setX:([p x]/maximumX)];
         }
