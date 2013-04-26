@@ -152,7 +152,7 @@ template<class charType, class treeType>
 void RevBayesCore::BranchRateTimeBHCharEvoModel<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t left, size_t right) {    
     
     // get the index in the node sequence
-    unsigned int nodeIndex = node.getIndex();
+    size_t nodeIndex = node.getIndex();
     
     // compute the transition probability matrix
     rateMatrix->getValue()[nodeIndex].calculateTransitionProbabilities( node.getBranchLength() * branchRates->getValue()[nodeIndex], transitionProbabilities);
@@ -195,7 +195,7 @@ template<class charType, class treeType>
 void RevBayesCore::BranchRateTimeBHCharEvoModel<charType, treeType>::computeTipLikelihood(const TopologyNode &node) {    
     
     // get the index in the node sequence
-    unsigned int nodeIndex = node.getIndex();
+    size_t nodeIndex = node.getIndex();
     
     std::vector<std::vector<double> > &p_node = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
     

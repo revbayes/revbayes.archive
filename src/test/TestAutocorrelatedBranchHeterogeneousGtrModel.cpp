@@ -96,8 +96,6 @@ bool TestAutocorrelatedBranchHeterogeneousGtrModel::run( void ) {
     tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
-    //Declaring a vector of GTR matrices
-    size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
     std::vector<StochasticNode < std::vector<double> >* > pis;
     //  std::vector<StochasticNode < std::vector<double> >* > ers;
     std::vector< const TypedDagNode < RateMatrix>* > qs;
