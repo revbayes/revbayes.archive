@@ -61,7 +61,7 @@ RateMatrix_JC::~RateMatrix_JC(void) {
 RateMatrix_JC& RateMatrix_JC::operator=(const RateMatrix_JC &r) {
     
     if (this != &r) {
-        RateMatrix::operator=( r );
+        TimeReversibleRateMatrix::operator=( r );
                 
     }
     

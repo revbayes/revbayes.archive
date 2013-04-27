@@ -57,7 +57,7 @@ RateMatrix_HKY::~RateMatrix_HKY(void) {
 RateMatrix_HKY& RateMatrix_HKY::operator=(const RateMatrix_HKY &r) {
     
     if (this != &r) {
-        RateMatrix::operator=( r );
+        TimeReversibleRateMatrix::operator=( r );
         
         kappa = r.kappa;
     }

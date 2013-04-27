@@ -51,7 +51,7 @@ RateMatrix_F81& RateMatrix_F81::operator=(const RateMatrix_F81 &r) {
     
     if (this != &r) 
     {
-        RateMatrix::operator=( r );
+        TimeReversibleRateMatrix::operator=( r );
         
     }
     

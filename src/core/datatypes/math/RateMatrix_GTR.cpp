@@ -63,7 +63,7 @@ RateMatrix_GTR::~RateMatrix_GTR(void) {
 RateMatrix_GTR& RateMatrix_GTR::operator=(const RateMatrix_GTR &r) {
     
     if (this != &r) {
-        RateMatrix::operator=( r );
+        TimeReversibleRateMatrix::operator=( r );
         
         delete theEigenSystem;
         

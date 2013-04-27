@@ -137,6 +137,9 @@
 #include "RlHkyRateMatrixFunction.h"
 #include "RlJcRateMatrixFunction.h"
 
+#include "RlJonesRateMatrixFunction.h"
+
+
 
 /* Inference functions */
 #include "OptimalBurninFunction.h"
@@ -483,6 +486,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
 		// JC function
         addFunction( "JC",       new JcRateMatrixFunction() );
+        
+        // pre-defined rate matrices
+        addFunction( "Jones",   new JonesRateMatrixFunction() );
 		
         
         /* Add phylogeny-related functions (alphabetical order) */

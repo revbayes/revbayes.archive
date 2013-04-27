@@ -108,7 +108,7 @@ AminoAcidState* AminoAcidState::clone(void) const {
 
 
 unsigned int AminoAcidState::computeState(char val) const {
-    
+    /* A R N D C Q E G H I L K M F P S T W Y V */
     val = toupper( val );
     switch ( val ) {
         case '-':
@@ -181,6 +181,7 @@ unsigned int AminoAcidState::getState( void ) const {
 
 
 const std::string& AminoAcidState::getStateLabels( void ) const {
+    
     static const std::string stateLabels = "ARNDCQEGHILKMFPSTWYV";
    
     return stateLabels;
