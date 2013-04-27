@@ -13,8 +13,8 @@
  * $Id: RateMatrix.h 1901 2012-12-05 20:20:37Z boussau $
  */
 
-#ifndef RateMatrix_Jones_H
-#define RateMatrix_Jones_H
+#ifndef RateMatrix_Dayhoff_H
+#define RateMatrix_Dayhoff_H
 
 #include "RateMatrix_Empirical.h"
 
@@ -23,15 +23,15 @@ namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
     
-    class RateMatrix_Jones : public RateMatrix_Empirical {
+    class RateMatrix_Dayhoff : public RateMatrix_Empirical {
         
     public:
-        RateMatrix_Jones(void);                                                                                                //!< Construct rate matrix with n states
-        RateMatrix_Jones(const RateMatrix_Jones& m);                                                                                  //!< Copy constructor
-        virtual                             ~RateMatrix_Jones(void);                                                               //!< Destructor
+        RateMatrix_Dayhoff(void);                                                                                                //!< Construct rate matrix with n states
+        RateMatrix_Dayhoff(const RateMatrix_Dayhoff& m);                                                                                  //!< Copy constructor
+        virtual                             ~RateMatrix_Dayhoff(void);                                                               //!< Destructor
                 
         // RateMatrix functions
-        RateMatrix_Jones*                   clone(void) const;
+        RateMatrix_Dayhoff*                 clone(void) const;
         
     private:
         

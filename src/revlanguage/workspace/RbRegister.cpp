@@ -138,6 +138,14 @@
 #include "RlJcRateMatrixFunction.h"
 
 #include "RlJonesRateMatrixFunction.h"
+#include "RlDayhoffRateMatrixFunction.h"
+#include "RlMtRevRateMatrixFunction.h"
+#include "RlMtMamRateMatrixFunction.h"
+#include "RlWagRateMatrixFunction.h"
+#include "RlRtRevRateMatrixFunction.h"
+#include "RlCpRevRateMatrixFunction.h"
+#include "RlVtRateMatrixFunction.h"
+#include "RlBlosum62RateMatrixFunction.h"
 
 
 
@@ -488,7 +496,15 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "JC",       new JcRateMatrixFunction() );
         
         // pre-defined rate matrices
-        addFunction( "Jones",   new JonesRateMatrixFunction() );
+        addFunction( "Jones",    new JonesRateMatrixFunction()    );
+        addFunction( "Dayhoff",  new DayhoffRateMatrixFunction()  );
+        addFunction( "MtRev",    new MtRevRateMatrixFunction()    );
+        addFunction( "MtMam",    new MtMamRateMatrixFunction()    );
+        addFunction( "WAG",      new WagRateMatrixFunction()      );
+        addFunction( "RtRev",    new RtRevRateMatrixFunction()    );
+        addFunction( "CpRev",    new CpRevRateMatrixFunction()    );
+        addFunction( "VT",       new VtRateMatrixFunction()       );
+        addFunction( "Blosum62", new Blosum62RateMatrixFunction() );
 		
         
         /* Add phylogeny-related functions (alphabetical order) */

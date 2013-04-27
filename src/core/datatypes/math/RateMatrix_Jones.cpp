@@ -26,7 +26,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Jones::RateMatrix_Jones( void ) : RateMatrix_GTR( 20 ){
+RateMatrix_Jones::RateMatrix_Jones( void ) : RateMatrix_Empirical( 20 ){
     
     MatrixReal &m = *theRateMatrix;
     
@@ -139,11 +139,14 @@ RateMatrix_Jones::RateMatrix_Jones( void ) : RateMatrix_GTR( 20 ){
     // rescale 
     rescaleToAverageRate( 1.0 );
     
+    // update the eigensystem
+    updateEigenSystem();
+    
 }
 
 
 /** Copy constructor */
-RateMatrix_Jones::RateMatrix_Jones(const RateMatrix_Jones& m) : RateMatrix_GTR( m ) {
+RateMatrix_Jones::RateMatrix_Jones(const RateMatrix_Jones& m) : RateMatrix_Empirical( m ) {
     
 }
 
@@ -154,24 +157,9 @@ RateMatrix_Jones::~RateMatrix_Jones(void) {
 }
 
 
-RateMatrix_Jones& RateMatrix_Jones::operator=(const RateMatrix_Jones &r) {
-    
-    if (this != &r) {
-        RateMatrix_GTR::operator=( r );
-        
-    }
-    
-    return *this;
-}
-
 
 
 RateMatrix_Jones* RateMatrix_Jones::clone( void ) const {
     return new RateMatrix_Jones( *this );
-}
-
-
-void RateMatrix_Jones::updateMatrix( void ) {
-    // nothing to do
 }
 
