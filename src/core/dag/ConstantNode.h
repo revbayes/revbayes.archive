@@ -75,15 +75,19 @@ RevBayesCore::ConstantNode<valueType>::ConstantNode(const ConstantNode<valueType
 
 template<class valueType>
 RevBayesCore::ConstantNode<valueType>::~ConstantNode( void ) {
+    
     // we own the value so we need to delete it here
     delete value;
+    
 }
 
 
 /* Clone this node by creating an independent copy of the value. */
 template<class valueType>
 RevBayesCore::ConstantNode<valueType>* RevBayesCore::ConstantNode<valueType>::clone( void ) const {
+    
     return new ConstantNode<valueType>( *this );
+    
 }
 
 
@@ -99,7 +103,8 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::set<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ ) {
+    for( std::set<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ ) 
+    {
         (*i)->cloneDAG( newNodes );
     }
     
@@ -113,43 +118,51 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
  */
 template<class valueType>
 void RevBayesCore::ConstantNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
+    
     // do nothing
     throw RbException("You should never call getAffected() of a constant node!!!");
+    
 }
 
 
 template<class valueType>
 double RevBayesCore::ConstantNode<valueType>::getEntireLnLikelihood( void ) {
+    
     return 0.0;
 }
 
 
 template<class valueType>
 double RevBayesCore::ConstantNode<valueType>::getLnProbability( void ) {
+    
     return 0.0;
 }
 
 
 template<class valueType>
 double RevBayesCore::ConstantNode<valueType>::getLnProbabilityRatio( void ) {
+    
     return 0.0;
 }
 
 
 template<class valueType>
 valueType& RevBayesCore::ConstantNode<valueType>::getValue( void ) {
+    
     return *value;
 }
 
 
 template<class valueType>
 const valueType& RevBayesCore::ConstantNode<valueType>::getValue( void ) const {
+    
     return *value;
 }
 
 
 template<class valueType>
 bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const {
+    
     return true;
 }
 
@@ -174,8 +187,10 @@ void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode *restorer ) {
 
 template<class valueType>
 void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v) {
+    
     *value = v;
     this->touch();
+    
 }
 
 

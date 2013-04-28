@@ -202,6 +202,9 @@ void ConstantBirthDeathProcess::setConstMemberVariable(const std::string& name, 
     else if ( name == "constraints" ) {
         constraints = var;
     }
+    else if ( name == "condition" ) {
+        condition = var;
+    }
     else {
         Distribution::setConstMemberVariable(name, var);
     }

@@ -94,13 +94,15 @@ RevBayesCore::TypedDistribution<valueType>::TypedDistribution(valueType *v) : Di
 }
 
 template <class valueType>
-RevBayesCore::TypedDistribution<valueType>::TypedDistribution(const TypedDistribution &d) : Distribution(d), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *value ) ) {
+RevBayesCore::TypedDistribution<valueType>::TypedDistribution(const TypedDistribution &d) : Distribution(d), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *d.value ) ) {
     
 }
 
 template <class valueType>
 RevBayesCore::TypedDistribution<valueType>::~TypedDistribution( void ) {
+    
     delete value;
+    
 }
 
 
@@ -108,7 +110,8 @@ RevBayesCore::TypedDistribution<valueType>::~TypedDistribution( void ) {
 template <class valueType>
 RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valueType>::operator=(const TypedDistribution &d) {
     
-    if ( this != &d ) {
+    if ( this != &d ) 
+    {
         // call base class
         Distribution::operator=( d );
         
@@ -117,7 +120,6 @@ RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valu
     }
     
     return *this;
-    
 }
 
 
@@ -146,6 +148,7 @@ void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v ) {
     delete value;
     
     value = v;
+    
 }
 
 

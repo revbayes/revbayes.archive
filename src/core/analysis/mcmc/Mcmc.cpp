@@ -161,9 +161,11 @@ void Mcmc::burnin(int generations, int tuningInterval) {
     SequentialMoveSchedule schedule = SequentialMoveSchedule(moves);
     //RandomMoveSchedule schedule = RandomMoveSchedule(moves);
     
+    int printInterval = int(fmax(1,generations/20.0));
+    
     for (int k=1; k<=generations; k++) {
         
-        if ( k % (generations/20) == 0 ) {
+        if ( k % printInterval == 0 ) {
             std::cout << "**";
             std::cout.flush();
         }

@@ -88,7 +88,8 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
     // get the parameters from the distribution and add them as my parents in the DAG
     const std::set<const DagNode*> distParents = distribution->getParameters();
     
-    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it) {
+    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it) 
+    {
         this->addParent( *it );
     }
 }
@@ -117,12 +118,14 @@ void RevBayesCore::StochasticNode<valueType>::clamp(valueType *val) {
     setValue( val );
     
     clamped = true;
+    
 }
 
 
 
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>* RevBayesCore::StochasticNode<valueType>::clone( void ) const {
+    
     return new StochasticNode<valueType>( *this );
 }
 
@@ -146,12 +149,14 @@ void RevBayesCore::StochasticNode<valueType>::getAffected(std::set<DagNode *> &a
 
 template<class valueType>
 RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<valueType>::getDistribution( void ) {
+    
     return *distribution;
 }
 
 
 template<class valueType>
 const RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<valueType>::getDistribution( void ) const {
+    
     return *distribution;
 }
 
@@ -159,7 +164,8 @@ const RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<v
 template<class valueType>
 double RevBayesCore::StochasticNode<valueType>::getLnProbability( void ) {
     
-    if ( needsProbabilityRecalculation ) {
+    if ( needsProbabilityRecalculation ) 
+    {
         
         // compute and store log-probability
         lnProb = distribution->computeLnProbability();
@@ -181,24 +187,28 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void ) {
 
 template<class valueType>
 valueType& RevBayesCore::StochasticNode<valueType>::getValue( void ) {
+    
     return distribution->getValue();
 }
 
 
 template<class valueType>
 const valueType& RevBayesCore::StochasticNode<valueType>::getValue( void ) const {
+    
     return distribution->getValue();
 }
 
 
 template<class valueType>
 bool RevBayesCore::StochasticNode<valueType>::isClamped( void ) const {
+    
     return clamped;
 }
 
 
 template<class valueType>
 bool RevBayesCore::StochasticNode<valueType>::isStochastic( void ) const {
+    
     return true;
 }
 
@@ -210,10 +220,12 @@ bool RevBayesCore::StochasticNode<valueType>::isStochastic( void ) const {
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
     
-    if ( this->touched ) {
+    if ( this->touched ) 
+    {
         
         storedLnProb = 1.0E6;       // An almost impossible value for the density
-        if ( needsProbabilityRecalculation ) {
+        if ( needsProbabilityRecalculation ) 
+        {
             lnProb = distribution->computeLnProbability();
         }
         
@@ -229,6 +241,7 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
     
     // delegate call
     DynamicNode<valueType>::keepMe( affecter );
+    
 }
 
 
@@ -239,6 +252,7 @@ void RevBayesCore::StochasticNode<valueType>::redraw( void ) {
     
     // touch this node for probability recalculation
     this->touch();
+    
 }
 
 
@@ -246,7 +260,8 @@ void RevBayesCore::StochasticNode<valueType>::redraw( void ) {
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer) {
     
-    if ( this->touched ) {
+    if ( this->touched ) 
+    {
         
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
@@ -264,6 +279,7 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer) {
     
     // delegate call
     DynamicNode<valueType>::restoreMe( restorer );
+    
 }
 
 
@@ -272,10 +288,12 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool touc
     // set the value
     distribution->setValue( val );
     
-    if ( touch ) {
+    if ( touch ) 
+    {
         // touch this node for probability recalculation
         this->touch();
     }
+    
 }
 
 

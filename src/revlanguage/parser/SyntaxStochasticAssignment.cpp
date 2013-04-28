@@ -67,7 +67,8 @@ SyntaxStochasticAssignment::~SyntaxStochasticAssignment() {
 /** Assignment operator */
 SyntaxStochasticAssignment& SyntaxStochasticAssignment::operator=(const SyntaxStochasticAssignment& x) {
     
-    if ( this != &x ) {
+    if ( this != &x ) 
+    {
         
         functionCall = NULL;
         variable = NULL;
@@ -115,7 +116,8 @@ RbPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) 
         
     // Get distribution, which should be the return value of the rhs function
     const RbLanguageObject& exprValue = theVariable->getValue();
-    if ( !exprValue.isTypeSpec( Distribution::getClassTypeSpec() ) ) {
+    if ( !exprValue.isTypeSpec( Distribution::getClassTypeSpec() ) ) 
+    {
         throw RbException( "Expression on the right-hand-side of '~' did not return a distribution object." );
     }
     const Distribution &dist = dynamic_cast<const Distribution &>( exprValue );
@@ -128,10 +130,7 @@ RbPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) 
         
     // set the name of the DAG node. This will ensure nicer outputs about the DAG.
     theVariable->getValue().setName( theSlot->getName() );
-    
-    //    theSlot->getDagNode()->touch();
-    //    theSlot->getDagNode()->keep();
-    
+        
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
@@ -142,6 +141,7 @@ RbPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) 
 
 
 bool SyntaxStochasticAssignment::isAssignment( void ) const {
+    
     return true;
 }
 
@@ -157,6 +157,7 @@ void SyntaxStochasticAssignment::printValue(std::ostream& o) const {
     o << "expression    = ";
     expression->printValue(o);
     o << std::endl;
+    
 }
 
 
@@ -165,8 +166,10 @@ void SyntaxStochasticAssignment::printValue(std::ostream& o) const {
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
 void SyntaxStochasticAssignment::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+    
     expression->replaceVariableWithConstant(name, c);
     variable->replaceVariableWithConstant(name, c);
+    
 }
 
 

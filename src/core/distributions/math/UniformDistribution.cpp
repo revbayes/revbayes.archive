@@ -24,45 +24,57 @@ UniformDistribution::~UniformDistribution( void ) {
 
 
 double UniformDistribution::cdf( void ) const {
+    
     return RbStatistics::Uniform::cdf( min->getValue(), max->getValue(), *value);
 }
 
 
 UniformDistribution* UniformDistribution::clone( void ) const {
+    
     return new UniformDistribution( *this );
 }
 
 
 double UniformDistribution::computeLnProbability( void ) {
+    
     return RbStatistics::Uniform::lnPdf(min->getValue(), max->getValue(), *value);
 }
 
 
 double UniformDistribution::getMax( void ) const {
+    
     return max->getValue();
 }
 
 
 double UniformDistribution::getMin( void ) const {
+    
     return min->getValue();
 }
 
 
 double UniformDistribution::quantile(double p) const {
+    
     return RbStatistics::Uniform::quantile( min->getValue(), max->getValue(), p);
 }
 
 
 void UniformDistribution::redrawValue( void ) {
+    
     *value = RbStatistics::Uniform::rv(min->getValue(), max->getValue(), *GLOBAL_RNG);
+    
 }
 
 
 void UniformDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == min) {
+    
+    if (oldP == min) 
+    {
         min = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == max) {
+    else if (oldP == max) 
+    {
         max = static_cast<const TypedDagNode<double>* >( newP );
     }
+    
 }

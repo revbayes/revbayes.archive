@@ -28,7 +28,7 @@ void Model::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a model
     std::set<const RevBayesCore::DagNode*> s;
     for (std::set<RbPtr<const Variable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
         RevBayesCore::DagNode* n = (*it)->getValue().getValueNode();

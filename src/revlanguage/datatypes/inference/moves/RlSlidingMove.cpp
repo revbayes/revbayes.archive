@@ -42,7 +42,8 @@ void SlidingMove::constructInternalObject( void ) {
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
     RevBayesCore::TypedDagNode<double>* tmp = static_cast<const Real &>( x->getValue() ).getValueNode();
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
-    value = new RevBayesCore::SlidingMove(n, d, w, false);
+    value = new RevBayesCore::SlidingMove(n, d, false, w);
+    
 }
 
 
@@ -70,7 +71,8 @@ const MemberRules& SlidingMove::getMemberRules(void) const {
     static MemberRules slidingMoveMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet ) 
+    {
         slidingMoveMemberRules.push_back( new ArgumentRule( "x", false, Real::getClassTypeSpec() ) );
         slidingMoveMemberRules.push_back( new ArgumentRule( "delta", true, Real::getClassTypeSpec() , new Real(1.0) ) );
 
@@ -99,19 +101,24 @@ const TypeSpec& SlidingMove::getTypeSpec( void ) const {
 void SlidingMove::printValue(std::ostream &o) const {
     
     o << "SlidingMove";
+    
 }
 
 
 /** Set a member variable */
 void SlidingMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "x" ) {
+    if ( name == "x" ) 
+    {
         x = var;
     }
-    else if ( name == "delta" ) {
+    else if ( name == "delta" ) 
+    {
         delta = var;
     }
-    else {
+    else 
+    {
         Move::setConstMemberVariable(name, var);
     }
+    
 }

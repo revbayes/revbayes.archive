@@ -549,10 +549,10 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
         {
             setArgument(theRules[j].getArgumentLabel(), pArgs[passedArgIndex[j]], theRules[j].isConstant() );
         }
-        else 
-        {
-            std::cerr << "Optional argument for " << theRules[j].getArgumentLabel() << std::endl;
-        }
+//        else 
+//        {
+//            std::cerr << "Optional argument for " << theRules[j].getArgumentLabel() << std::endl;
+//        }
     }
     
     /*********************  6. Insert ellipsis arguments  **********************/

@@ -52,7 +52,7 @@ namespace RevLanguage {
         
         RbPtr<const Variable>                           tree;
         RbPtr<const Variable>                           q;
-        RbPtr<const Variable>                           clockRate;
+        RbPtr<const Variable>                           rate;
         RbPtr<const Variable>                           nSites;
         
     };
@@ -87,10 +87,11 @@ RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>* RevLanguage::
 
 template <class charType, class treeType>
 RevBayesCore::SimpleSiteHomogeneousCharEvoModel<typename charType::valueType, typename treeType::valueType>* RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::createDistribution( void ) const {
+    
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* cr = static_cast<const RealPos &>( clockRate->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* cr = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
     int n = static_cast<const Natural &>( nSites->getValue() ).getValueNode()->getValue();
     RevBayesCore::SimpleSiteHomogeneousCharEvoModel<typename charType::valueType, typename treeType::valueType>*   d = new RevBayesCore::SimpleSiteHomogeneousCharEvoModel<typename charType::valueType, typename treeType::valueType>(tau, rm, cr, true, n);
     
@@ -127,10 +128,11 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<ch
     static MemberRules distCharStateEvolutionMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree", true, treeType::getClassTypeSpec() ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"  , true, RateMatrix::getClassTypeSpec() ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "clockRate"  , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+    if ( !rulesSet ) 
+    {
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree"    , true, treeType::getClassTypeSpec() ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"       , true, RateMatrix::getClassTypeSpec() ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "rate"    , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"  , true, Natural::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -165,9 +167,9 @@ void RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::printVal
     } else {
         o << "?";
     }
-    o << ", clockRate=";
-    if ( clockRate != NULL ) {
-        o << clockRate->getName();
+    o << ", rate=";
+    if ( rate != NULL ) {
+        o << rate->getName();
     } else {
         o << "?";
     }
@@ -191,8 +193,8 @@ void RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::setConst
     else if ( name == "Q" ) {
         q = var;
     }
-    else if ( name == "clockRate" ) {
-        clockRate = var;
+    else if ( name == "rate" ) {
+        rate = var;
     }
     else if ( name == "nSites" ) {
         nSites = var;

@@ -6,41 +6,51 @@
 using namespace RevBayesCore;
 
 Model::Model(const DagNode *source) {
+    
     // add this node and build model graph
     addSourceNode( source );
     DagNode* newSource = nodesMap.find( source )->second;
     sources.insert( newSource );
+    
 }
 
 
 Model::Model(const std::set<const DagNode*> s) : sources() {
+    
     // iterate over all sources
-    for (std::set<const DagNode*>::const_iterator it = s.begin(); it != s.end(); ++it) {
+    for (std::set<const DagNode*>::const_iterator it = s.begin(); it != s.end(); ++it) 
+    {
         // add this node and build model graph
         addSourceNode( *it );
         DagNode* newSource = nodesMap.find( *it )->second;
         sources.insert( newSource );
     }
+    
 }
 
 
 Model::Model(const Model &m) : sources() {
+    
     // iterate over all sources
-    for (std::set<const DagNode*>::const_iterator it = m.sources.begin(); it != m.sources.end(); ++it) {
+    for (std::set<const DagNode*>::const_iterator it = m.sources.begin(); it != m.sources.end(); ++it) 
+    {
         // add this node and build model graph
         addSourceNode( *it );
         DagNode* newSource = nodesMap.find( *it )->second;
         sources.insert( newSource );
     }
+    
 }
 
 
 Model::~Model( void ) {
     
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    {
         DagNode *theNode = *it;
         delete theNode;
     }
+    
 }
 
 
@@ -57,7 +67,8 @@ void Model::addSourceNode(const DagNode *sourceNode) {
     std::map<const DagNode*, DagNode* >::iterator i = nodesMap.begin();
     
     nodes.clear();
-    while ( i != nodesMap.end() ) {
+    while ( i != nodesMap.end() ) 
+    {
         
         DagNode* theNewNode = (*i).second;
         

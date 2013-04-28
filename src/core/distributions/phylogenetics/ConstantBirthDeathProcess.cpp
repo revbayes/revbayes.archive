@@ -38,7 +38,7 @@ speciation( s ), extinction( e ), rho( r ), massExtinctionTimes( met ), massExti
 
 
 
-ConstantBirthDeathProcess::ConstantBirthDeathProcess(const ConstantBirthDeathProcess &v) : TypedDistribution<TimeTree>( v ), speciation( v.speciation ), extinction( v.extinction ), samplingStrategy( v.samplingStrategy ), condition( v.condition ), numTaxa( v.numTaxa ), taxonNames( v.taxonNames ), logTreeTopologyProb( v.logTreeTopologyProb ) {
+ConstantBirthDeathProcess::ConstantBirthDeathProcess(const ConstantBirthDeathProcess &v) : TypedDistribution<TimeTree>( v ), speciation( v.speciation ), extinction( v.extinction ), massExtinctionTimes( v.massExtinctionTimes ), massExtinctionSurvivalProrbabilities( v.massExtinctionSurvivalProrbabilities ), rho( v.rho ), samplingStrategy( v.samplingStrategy ), condition( v.condition ), numTaxa( v.numTaxa ), taxonNames( v.taxonNames ), logTreeTopologyProb( v.logTreeTopologyProb ) {
     // parameters are automatically copied
 }
 
