@@ -78,6 +78,7 @@ RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::SimpleSiteH
     
     delete this->value;
     this->value = simulate(this->tau->getValue().getRoot());
+    
 }
 
 
@@ -97,6 +98,7 @@ RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::~SimpleSite
 
 template<class charType, class treeType>
 RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>* RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::clone( void ) const {
+
     return new SimpleSiteHomogeneousCharEvoModel<charType, treeType>( *this );
 }
 
@@ -108,21 +110,25 @@ void RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::comput
     const std::vector<double> &f = rateMatrix->getValue().getStationaryFrequencies();
     this->lnProb = 0.0;
     std::vector<std::vector<std::vector<double> >::const_iterator > p_children;
-    for (std::vector<size_t>::const_iterator it = children.begin(); it != children.end(); ++it) {
+    for (std::vector<size_t>::const_iterator it = children.begin(); it != children.end(); ++it) 
+    {
         p_children.push_back( this->partialLikelihoods[this->activeLikelihood[*it]][*it].begin() );
     }
 
     std::vector<size_t>::const_iterator                 patternFreq     = this->patternCounts.begin();
     std::vector<size_t>::const_iterator                 end             = this->patternCounts.end();
     // iterate over all sites
-    for (; patternFreq != end; ++patternFreq) {
+    for (; patternFreq != end; ++patternFreq) 
+    {
         
         double tmp = 0.0;
         std::vector<double>::const_iterator f_j             = f.begin();
         std::vector<double>::const_iterator f_end           = f.end();
-        for (size_t i = 0; f_j != f.end(); ++f_j, ++i) {
+        for (size_t i = 0; f_j != f.end(); ++f_j, ++i) 
+        {
             double tmp2 = *f_j;
-            for (size_t j = 0; j < children.size(); ++j) {
+            for (size_t j = 0; j < children.size(); ++j) 
+            {
                 tmp2 *= (*p_children[j])[i];
             }
             
@@ -130,7 +136,8 @@ void RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::comput
         }
         this->lnProb += log(tmp) * *patternFreq;
         
-        for (size_t i = 0; i < children.size(); ++i) {
+        for (size_t i = 0; i < children.size(); ++i) 
+        {
             p_children[i] = ++p_children[i];
         }
     }
@@ -156,13 +163,15 @@ void RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::comput
     std::vector<std::vector<double> >::const_iterator   p_site_right    = p_right.begin();
     std::vector<std::vector<double> >::iterator         p_site          = p_node.begin();
     std::vector<std::vector<double> >::iterator         p_end           = p_node.end();
-    for (; p_site != p_end; ++p_site, ++p_site_left, ++p_site_right) {
+    for (; p_site != p_end; ++p_site, ++p_site_left, ++p_site_right) 
+    {
         
         // iterate over the possible starting states
         std::vector<double>::iterator                       p_a     = p_site->begin();
         std::vector<std::vector<double> >::const_iterator   tp_a    = transitionProbabilities.begin();
         std::vector<std::vector<double> >::const_iterator   tp_end  = transitionProbabilities.end();
-        for (; tp_a != tp_end; ++tp_a, ++p_a) {
+        for (; tp_a != tp_end; ++tp_a, ++p_a) 
+        {
             
             double sum = 0.0;
             
@@ -171,7 +180,8 @@ void RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::comput
             std::vector<double>::const_iterator p_site_right_d  = p_site_right->begin();
             std::vector<double>::const_iterator tp_a_d          = tp_a->begin();
             std::vector<double>::const_iterator tp_a_end        = tp_a->end();
-            for (; tp_a_d != tp_a_end; ++tp_a_d, ++p_site_left_d, ++p_site_right_d ) {
+            for (; tp_a_d != tp_a_end; ++tp_a_d, ++p_site_left_d, ++p_site_right_d ) 
+            {
                 sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
             }
             *p_a = sum;
@@ -201,38 +211,46 @@ void RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::comput
     std::vector<std::vector<double> >::iterator p_end       = p_node.end();
     std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
     std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
-    for (; p_site != p_end; ++p_site, ++char_site, ++gap_site) {
+    for (; p_site != p_end; ++p_site, ++char_site, ++gap_site) 
+    {
         
-        if ( *gap_site == true ) {
+        if ( *gap_site == true ) 
+        {
             std::vector<double>::iterator                       p_a     = p_site->begin();
             std::vector<std::vector<double> >::const_iterator   tp_a    = transitionProbabilities.begin();
             std::vector<std::vector<double> >::const_iterator   tp_end  = transitionProbabilities.end();
-            for (; tp_a != tp_end; ++tp_a, ++p_a) {
+            for (; tp_a != tp_end; ++tp_a, ++p_a) 
+            {
                 
                 double tmp = 0.0;
                 
                 std::vector<double>::const_iterator d   = tp_a->begin();
                 std::vector<double>::const_iterator end = tp_a->end();
-                for (; d != end; ++d) {
+                for (; d != end; ++d) 
+                {
                     tmp += *d;
                 }
                 *p_a = tmp;
             } 
         }
-        else {
+        else 
+        {
             unsigned int org_val = *char_site;
             std::vector<double>::iterator                       p_a     = p_site->begin();
             std::vector<std::vector<double> >::const_iterator   tp_a    = transitionProbabilities.begin();
             std::vector<std::vector<double> >::const_iterator   tp_end  = transitionProbabilities.end();
-            for (; tp_a != tp_end; ++tp_a, ++p_a) {
+            for (; tp_a != tp_end; ++tp_a, ++p_a) 
+            {
                 
                 double tmp = 0.0;
                 
                 unsigned int val = org_val;
                 std::vector<double>::const_iterator d   = tp_a->begin();
                 std::vector<double>::const_iterator end = tp_a->end();
-                for (; d != end; ++d) {
-                    if ( (val & 1) == 1 ) {
+                for (; d != end; ++d) 
+                {
+                    if ( (val & 1) == 1 ) 
+                    {
                         tmp += *d;
                     }
                     
@@ -250,6 +268,7 @@ void RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::comput
 
 template<class charType, class treeType>
 RevBayesCore::CharacterData<charType>* RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::simulate(const TopologyNode &node) {
+
     return new CharacterData<charType>();
 }
 
@@ -257,15 +276,20 @@ RevBayesCore::CharacterData<charType>* RevBayesCore::SimpleSiteHomogeneousCharEv
 
 template<class charType, class treeType>
 void RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == rateMatrix) {
+
+    if (oldP == rateMatrix) 
+    {
         rateMatrix = static_cast<const TypedDagNode<RateMatrix>* >( newP );
     }
-    else if (oldP == rateMultiplier) {
+    else if (oldP == rateMultiplier) 
+    {
         rateMultiplier = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else {
+    else 
+    {
         AbstractSiteHomogeneousCharEvoModel<charType, treeType>::swapParameter(oldP,newP);
     }
+    
 }
 
 

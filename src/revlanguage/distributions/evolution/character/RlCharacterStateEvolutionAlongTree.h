@@ -17,7 +17,9 @@
 #ifndef RlCharacterStateEvolutionAlongTree_H
 #define RlCharacterStateEvolutionAlongTree_H
 
+#include "AbstractCharacterData.h"
 #include "SimpleSiteHomogeneousCharEvoModel.h"
+#include "RlAbstractCharacterData.h"
 #include "RlCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
@@ -25,7 +27,7 @@
 namespace RevLanguage {
     
     template <class charType, class treeType>
-    class CharacterStateEvolutionAlongTree :  public TypedDistribution<CharacterData< charType > > {
+    class CharacterStateEvolutionAlongTree :  public TypedDistribution< AbstractCharacterData > {
         
     public:
         CharacterStateEvolutionAlongTree( void );
@@ -67,7 +69,7 @@ namespace RevLanguage {
 
 
 template <class charType, class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution<CharacterData<charType> >() {
+RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution< AbstractCharacterData >() {
     
 }
 

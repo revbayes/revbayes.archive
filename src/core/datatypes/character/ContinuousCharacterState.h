@@ -34,12 +34,12 @@ namespace RevBayesCore {
 
         bool                            operator==(const CharacterState& x) const;              //!< Equality
         bool                            operator!=(const CharacterState& x) const;              //!< Inequality
-        bool                            operator<(const CharacterState& d) const;           //!< Less than
+        bool                            operator<(const CharacterState& d) const;               //!< Less than
  
         ContinuousCharacterState*       clone(void) const;                                      //!< Get a copy of this object
 
         // character observation functions
-        std::string                     getDatatype(void) const;                            //!< Get the datatype as a common string.
+        std::string                     getDatatype(void) const;                                //!< Get the datatype as a common string.
         double                          getMean(void) const;                                    //!< Get the continuous observation
         size_t                          getNumberOfStates(void) const;                          //!< Get the number states for a character (return 0 in base class)
         std::string                     getStringValue(void) const;                             //!< Get a representation of the character as a string

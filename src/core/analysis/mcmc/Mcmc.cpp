@@ -300,10 +300,12 @@ void Mcmc::initialize( void ) {
     
         
     /* Open the output file and print headers */
-    for (size_t i=0; i<monitors.size(); i++) {
+    for (size_t i=0; i<monitors.size(); i++) 
+    {
                 
         // get the monitor
-        if ( typeid(*monitors[i]) == typeid(FileMonitor) ) {
+        if ( typeid(*monitors[i]) == typeid(FileMonitor) ) 
+        {
             
             FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors[i] );
             
@@ -313,7 +315,8 @@ void Mcmc::initialize( void ) {
             // print the header information
             theMonitor->printHeader();
         }
-        else if ( typeid(*monitors[i]) == typeid(ExtendedNewickTreeMonitor) ) {
+        else if ( typeid(*monitors[i]) == typeid(ExtendedNewickTreeMonitor) ) 
+        {
             
             ExtendedNewickTreeMonitor* theMonitor = static_cast<ExtendedNewickTreeMonitor*>( monitors[i] );
             
@@ -323,7 +326,8 @@ void Mcmc::initialize( void ) {
             // print the header information
             theMonitor->printHeader();
         }
-        else if ( typeid(*monitors[i]) == typeid(ExtendedNewickAdmixtureTreeMonitor) ) {
+        else if ( typeid(*monitors[i]) == typeid(ExtendedNewickAdmixtureTreeMonitor) ) 
+        {
             
             ExtendedNewickAdmixtureTreeMonitor* theMonitor = static_cast<ExtendedNewickAdmixtureTreeMonitor*>( monitors[i] );
             
@@ -334,7 +338,8 @@ void Mcmc::initialize( void ) {
             theMonitor->printHeader();
         }
         
-        else if ( typeid(*monitors[i]) == typeid(PathSampleMonitor) ) {
+        else if ( typeid(*monitors[i]) == typeid(PathSampleMonitor) ) 
+        {
             
             PathSampleMonitor* theMonitor = static_cast<PathSampleMonitor*>( monitors[i] );
             
@@ -354,14 +359,17 @@ void Mcmc::initialize( void ) {
     /* Get initial lnProbability of model */
     
     // first we touch all nodes so that the likelihood is dirty
-    for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+    for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+    {
         (*i)->touch();
     }
     
     lnProbability = 0.0;
-    do {
+    do 
+    {
         lnProbability = 0.0;
-        for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+        for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+        {
             DagNode* node = (*i);
             
             double lnProb = node->getLnProbability();
@@ -370,18 +378,28 @@ void Mcmc::initialize( void ) {
         }
         
         // now we keep all nodes so that the likelihood is stored
-        for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+        for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+        {
             (*i)->keep();
         }
         
-        if (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan) {
+        if (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan) 
+        {
             std::cerr << "Drawing new initial states ... " << std::endl;
-            for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++) {
-                if ( !(*i)->isClamped() && (*i)->isStochastic() ) {
+            for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++) 
+            {
+                if ( !(*i)->isClamped() && (*i)->isStochastic() ) 
+                {
                     std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
                     (*i)->redraw();
 //                    (*i)->touch(); Not necessary. The distribution will automaticall call touch().
                 }
+                else if ( (*i)->isClamped() ) 
+                {
+                    // make sure that the clamped node also recompute their probabilities
+                    (*i)->touch();
+                }
+                
             }
         }
         

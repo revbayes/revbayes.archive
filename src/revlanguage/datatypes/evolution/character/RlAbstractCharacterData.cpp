@@ -29,7 +29,7 @@ AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterDat
 
 
 AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : RlModelVariableWrapper<RevBayesCore::AbstractCharacterData>( d ) {
-    throw RbException("Missing implementation in constructor of AbstractCharacterData");
+
 }
 
 
@@ -40,6 +40,7 @@ AbstractCharacterData::AbstractCharacterData( const AbstractCharacterData &v) : 
 
 
 AbstractCharacterData* AbstractCharacterData::clone() const {
+    
     return new AbstractCharacterData( *this );
 }
 
@@ -47,48 +48,53 @@ AbstractCharacterData* AbstractCharacterData::clone() const {
 /* Map calls to member methods */
 RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "names") {
+    if (name == "names") 
+    {
         Vector<RlString> *n = new Vector<RlString>();
-        for (size_t i = 0; i < this->value->getValue().getNumberOfTaxa(); ++i) {
+        for (size_t i = 0; i < this->value->getValue().getNumberOfTaxa(); ++i) 
+        {
             n->push_back( this->value->getValue().getTaxonNameWithIndex( i ) );
         }
+        
         return n;
     }
-//    else if (name == "[]") {
-//        // get the member with give index
-//        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
-//        
-//        if (this->value->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) ) {
-//            throw RbException("Index out of bounds in []");
-//        }
-//        
-//        const RevBayesCore::AbstractTaxonData& element = this->value->getValue().getTaxonData(index.getValue() - 1);
-//        return new AbstractTaxonData( new RevBayesCore::AbstractTaxonData( element ) );
-//    }
-    else if (name == "size") {
+    else if (name == "size") 
+    {
         int n = (int)this->value->getValue().getNumberOfTaxa();
+        
         return new Natural(n);
     }
-    else if (name == "ntaxa") {
+    else if (name == "ntaxa") 
+    {
         int n = (int)this->value->getValue().getNumberOfTaxa();
+        
         return new Natural(n);
     }
-    else if (name == "nchar") {
+    else if (name == "nchar") 
+    {
         
         Vector<Natural> *numChar = new Vector<Natural>();
-        for (size_t i=0; i<this->value->getValue().getNumberOfTaxa(); i++) {
-            if ( this->value->getValue().isTaxonExcluded(i) == false ) {
+        for (size_t i=0; i<this->value->getValue().getNumberOfTaxa(); i++) 
+        {
+            
+            if ( this->value->getValue().isTaxonExcluded(i) == false ) 
+            {
+                
                 if (this->value->getValue().getIsHomologyEstablished() == true)
                     numChar->push_back( Natural( this->value->getValue().getNumberOfCharacters() ) );
                 else
                     numChar->push_back( Natural( this->value->getValue().getTaxonData(i).getNumberOfCharacters() ) );
+                
             }
+            
         }
         return numChar;
     }
-    //    else if (name == "chartype") {
-    //        return new RlString( this->value->getValue().getDataType() );
-    //    }
+    else if (name == "chartype") 
+    {
+        
+        return new RlString( this->value->getValue().getDatatype() );
+    }
     //    else if (name == "nexcludedtaxa")
     //    {
     //        int n = (int)deletedTaxa.size();
@@ -172,28 +178,39 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
     //        }
     //        return NULL;
     //    }
-    else if (name == "show") {
+    else if (name == "show") 
+    {
+        
         int nt = (int)this->value->getValue().getNumberOfTaxa();
-        for (int i=0; i<nt; i++) {
+        for (int i=0; i<nt; i++) 
+        {
+            
             const RevBayesCore::AbstractTaxonData& taxonData = this->value->getValue().getTaxonData(i);
             std::string taxonName = this->value->getValue().getTaxonNameWithIndex(i);
             int nc = (int)taxonData.getNumberOfCharacters();
             std::cout << "   " << taxonName << std::endl;
             std::cout << "   ";
-            for (int j=0; j<nc; j++) {
+            for (int j=0; j<nc; j++) 
+            {
+                
                 const RevBayesCore::CharacterState& o = taxonData[j];
                 std::string s = o.getStringValue();
                 
                 std::cout << s;
                 if ( (j+1) % 100 == 0 && (j+1) != nc )
                     std::cout << std::endl << "   ";
+                
             }
+            
             std::cout << std::endl;
         }
+        
         return NULL;
     }
-    else if (name == "ishomologous") {
+    else if (name == "ishomologous")
+    {
         bool ih = this->value->getValue().getIsHomologyEstablished();
+    
         return new RlBoolean(ih);
     } 
     
@@ -266,13 +283,9 @@ const MethodTable& AbstractCharacterData::getMethods(void) const {
         methods.addFunction("show",                new MemberFunction(RbVoid_name,        showdataArgRules           ) );
         methods.addFunction("ishomologous",        new MemberFunction(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
         
-        // add method for call "x[]" as a function
-//        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-//        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-//        methods.addFunction("[]",  new MemberFunction( AbstractTaxonData::getClassTypeSpec(), squareBracketArgRules) );
         
         
-        // add method for call "x[]" as a function
+        // add method for call "size" as a function
         ArgumentRules* sizeArgRules = new ArgumentRules();
         methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         

@@ -18,6 +18,7 @@
 #define RlRelaxedClockCharacterStateEvolution_H
 
 #include "SimpleBranchRateTimeCharEvoModel.h"
+#include "RlAbstractCharacterData.h"
 #include "RlCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
@@ -25,7 +26,7 @@
 namespace RevLanguage {
     
     template <class charType, class treeType>
-    class RelaxedClockCharacterStateEvolution :  public TypedDistribution<CharacterData< charType> > {
+    class RelaxedClockCharacterStateEvolution :  public TypedDistribution< AbstractCharacterData > {
         
     public:
         RelaxedClockCharacterStateEvolution( void );
@@ -65,7 +66,7 @@ namespace RevLanguage {
 
 
 template <class charType, class treeType>
-RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>::RelaxedClockCharacterStateEvolution() : TypedDistribution<CharacterData<charType> >() {
+RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>::RelaxedClockCharacterStateEvolution() : TypedDistribution< AbstractCharacterData >() {
     
 }
 
