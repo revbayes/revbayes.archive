@@ -55,6 +55,7 @@ Model::~Model( void ) {
 
 
 void Model::addSourceNode(const DagNode *sourceNode) {
+    
     if (sourceNode == NULL)
         throw RbException("Cannot instantiate a model with a NULL DAG node.");
     
@@ -89,20 +90,24 @@ Model* Model::clone( void ) const {
 
 
 const std::vector<DagNode *>& Model::getDagNodes( void ) const {
+    
     return nodes;
 }
 
 
 std::vector<DagNode *>& Model::getDagNodes( void ) {
+    
     return nodes;
 }
 
 
 const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const {
+    
     return nodesMap;
 }
 
 
 const std::map<const DagNode*, std::set<DagNode*> >& Model::getReplacementMap( void ) const {
+    
     return replacementMap;
 }

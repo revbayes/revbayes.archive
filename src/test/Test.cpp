@@ -198,8 +198,8 @@ bool Test::performTests(void) {
     
     /* A GTR+Gamma model test */
     try {
-        TestGtrGammaModel testGtr = TestGtrGammaModel("data/primates.nex", "trees/primates.tree", 1000);
-//        testGtr.run();
+        TestGtrGammaModel testGtr = TestGtrGammaModel("data/primates.nex", "trees/primates.tree", 100);
+        testGtr.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

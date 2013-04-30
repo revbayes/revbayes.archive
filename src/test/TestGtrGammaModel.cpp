@@ -17,6 +17,7 @@
 #include "NearestNeighborInterchange.h"
 #include "NodeTimeSlideBeta.h"
 #include "NodeTimeSlideUniform.h"
+#include "NormalizeVectorFunction.h"
 #include "QuantileFunction.h"
 #include "RbFileManager.h"
 #include "RootTimeSlide.h"
@@ -105,6 +106,8 @@ bool TestGtrGammaModel::run( void ) {
     
     DeterministicNode<std::vector<double> > *site_rates = new DeterministicNode<std::vector<double> >( "site_rates", new VectorFunction<double>(gamma_rates) );
     ConstantNode<std::vector<double> > *site_rate_probs = new ConstantNode<std::vector<double> >( "site_rate_probs", new std::vector<double>(4,1.0/4.0) );
+
+    DeterministicNode<std::vector<double> > *site_rates_norm = new DeterministicNode<std::vector<double> >( "site_rates_norm", new NormalizeVectorFunction(site_rates) );
     
     pi->setValue( new std::vector<double>(4,1.0/4.0) );
     er->setValue( new std::vector<double>(6,1.0/6.0) );
@@ -112,7 +115,8 @@ bool TestGtrGammaModel::run( void ) {
     std::cout << "pi:\t" << pi->getValue() << std::endl;
     std::cout << "er:\t" << er->getValue() << std::endl;
     std::cout << "rates:\t" << site_rates->getValue() << std::endl;
-    
+    std::cout << "rates:\t" << site_rates_norm->getValue() << std::endl;
+
     DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
     
     std::cout << "Q:\t" << q->getValue() << std::endl;
@@ -127,7 +131,7 @@ bool TestGtrGammaModel::run( void ) {
     
     // and the character model
     size_t numChar = data[0]->getNumberOfCharacters();
-    SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree>(tau, site_rates, q, true, numChar ); 
+    SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree>(tau, site_rates_norm, q, true, numChar ); 
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
     charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
     
@@ -135,18 +139,18 @@ bool TestGtrGammaModel::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
-    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
-    moves.push_back( new NarrowExchange( tau, 10.0 ) );
-    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
-    moves.push_back( new SubtreeScale( tau, 5.0 ) );
-    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
-    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
+//    moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
+//    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
+//    moves.push_back( new NarrowExchange( tau, 10.0 ) );
+//    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
+//    moves.push_back( new SubtreeScale( tau, 5.0 ) );
+//    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+//    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
+//    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
+//    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
+//    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
+//    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
+//    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
     
     moves.push_back( new ScaleMove(alpha, 1.0, true, 2.0) );
 //    moves.push_back( new ScaleMove(q1_value, 1.0, true, 2.0) );
@@ -160,22 +164,18 @@ bool TestGtrGammaModel::run( void ) {
     /* add the monitors */
     std::vector<Monitor*> monitors;
     std::set<DagNode*> monitoredNodes;
-    //    monitoredNodes.insert( er );
-    //    monitoredNodes.insert( pi );
-    monitoredNodes.insert( div );
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "TestGtrGammaModel.log", "\t" ) );
-    std::set<DagNode*> monitoredNodes1;
-    monitoredNodes1.insert( er );
-    monitoredNodes1.insert( pi );
-    monitoredNodes1.insert( q );
-    monitoredNodes1.insert( q1_value );
-    monitoredNodes1.insert( q2_value );
-    monitoredNodes1.insert( q3_value );
-    monitoredNodes1.insert( q4_value );
-    monitoredNodes1.insert( alpha );
-    monitoredNodes1.insert( treeHeight );
-    monitors.push_back( new FileMonitor( monitoredNodes1, 10, "TestGtrGammaModelSubstRates.log", "\t" ) );
-    monitors.push_back( new ScreenMonitor( monitoredNodes1, 10, "\t" ) );
+//    monitoredNodes.insert( er );
+//    monitoredNodes.insert( pi );
+//    monitoredNodes.insert( q );
+//    monitoredNodes.insert( q1_value );
+//    monitoredNodes.insert( q2_value );
+//    monitoredNodes.insert( q3_value );
+//    monitoredNodes.insert( q4_value );
+    monitoredNodes.insert( site_rates_norm );
+    monitoredNodes.insert( alpha );
+//    monitoredNodes.insert( treeHeight );
+    monitors.push_back( new FileMonitor( monitoredNodes, 10, "TestGtrGammaModelSubstRates.log", "\t" ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestGtrGammaModel.tree", "\t", false, false, false ) );

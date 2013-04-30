@@ -19,7 +19,9 @@ Function::Function(void)  : parameters( std::set<const DagNode*>() ) {
 
 
 void Function::addParameter(const DagNode *p) {
+    
     parameters.insert( p );
+
 }
 
 
@@ -30,6 +32,7 @@ void Function::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
 
 
 const std::set<const DagNode*>& Function::getParameters( void ) const {
+    
     return parameters;
 }
 
@@ -47,14 +50,19 @@ void Function::restore( DagNode *restorer ) {
 
 
 void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
+    
     std::set<const DagNode *>::iterator position = parameters.find(oldP);
-    if ( position != parameters.end() ) {
+    if ( position != parameters.end() ) 
+    {
         parameters.erase( position );
         parameters.insert( newP );
         swapParameterInternal( oldP, newP );
-    } else {
+    } 
+    else 
+    {
         throw RbException("Could not find the parameter to be swapped.");
     }
+    
 }
 
 

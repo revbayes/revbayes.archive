@@ -139,6 +139,7 @@ RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::
     
     // add the parameters to the parents list
     this->addParameter( tau );
+    this->addParameter( siteRates );
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
     
@@ -646,6 +647,10 @@ void RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel<charType, treeTy
     {
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
+    }
+    else if ( oldP == siteRates )
+    {
+        siteRates = static_cast< const TypedDagNode< std::vector< double > > * >( newP );
     }
     
 }
