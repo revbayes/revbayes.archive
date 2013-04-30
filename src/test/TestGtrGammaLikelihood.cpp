@@ -98,7 +98,7 @@ bool TestGtrGammaLikelihood::run( void ) {
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
     charactermodel->clamp( data[0] );
     
-    std::cout << "BEAST LnL:\t\t\t" << -6281.4026 << std::endl;
+    std::cout << "BEAST LnL:\t\t\t\t" << -6281.4026 << std::endl;
     std::cout << "RevBayes LnL:\t\t" << charactermodel->getLnProbability() << std::endl;
     
     std::cout << "Finished GTR+Gamma model test." << std::endl;

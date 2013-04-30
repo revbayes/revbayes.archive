@@ -107,9 +107,10 @@
 #include "Func__or.h"
 #include "Func__unot.h"
 
-/* Builtin functions */
+/* Built-in functions */
 #include "Func_clear.h"
 #include "Func_ls.h"
+#include "Func_normalizeVector.h"
 #include "Func_quit.h"
 #include "Func_seed.h"
 #include "Func_simplex.h"
@@ -478,6 +479,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // mean function
 		addFunction( "mean",        new Func_mean()  );
+        
+        // normalize vector function
+		addFunction( "normalize",   new Func_normalizeVector()  );
 		
 		
         addFunction( "power",     new Func_power() );

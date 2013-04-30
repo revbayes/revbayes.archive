@@ -15,6 +15,7 @@
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 #include "NormalizeVectorFunction.h"
+#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -33,11 +34,11 @@ Func_normalizeVector* Func_normalizeVector::clone( void ) const {
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 RbLanguageObject* Func_normalizeVector::execute( void ) {
     
-    const TypedDagNode< std::vector<double> > *params = static_cast< Vector<RealPos> & >( args[0].getValue() ).getValueNode();
+    const RevBayesCore::TypedDagNode< std::vector<double> > *params = static_cast< Vector<RealPos> & >( args[0].getVariable()->getValue() ).getValueNode();
     
     RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( params );
     RevBayesCore::TypedDagNode<std::vector<double> > *detNode = new RevBayesCore::DeterministicNode<std::vector<double> >("", func);
-    normalizeVector *theNormalizedVector = new normalizeVector( detNode );
+    Vector<RealPos> *theNormalizedVector = new Vector<RealPos>( detNode );
     
     return theNormalizedVector;
 }
