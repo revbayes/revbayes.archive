@@ -12,7 +12,7 @@
 using namespace RevBayesCore;
 
 
-UnivariateFunction::UnivariateFunction(double *v, const TypedDagNode<double> *x ) : ContinuousFunction( v ), x( x ) {
+UnivariateFunction::UnivariateFunction(double *v, const TypedDagNode<double> *z ) : ContinuousFunction( v ), x( z ) {
     addParameter( x );
 }
 
