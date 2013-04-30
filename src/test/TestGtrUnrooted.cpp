@@ -1,3 +1,4 @@
+#include "AbstractCharacterData.h"
 #include "BranchLengthTree.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
@@ -82,7 +83,7 @@ bool TestGtrUnrooted::run( void ) {
 	std::vector<const TypedDagNode<double> *> branchLength;
 	std::vector< ContinuousStochasticNode *> branchLength_nonConst;
     ConstantNode<double> *a = new ConstantNode<double>("a", new double(1.0) );
-	for( int i=0; i<numBranches; i++){
+	for( size_t i=0; i<numBranches; i++){
         std::ostringstream br_name;
         br_name << "brlen(" << i << ")";
 		ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new ExponentialDistribution(a));
@@ -104,8 +105,8 @@ bool TestGtrUnrooted::run( void ) {
     // and the character model
     //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
     //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleCharEvoModel<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState,BranchLengthTree>(psi, q, clockRate, true, data[0]->getNumberOfCharacters()) );
-    charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState,BranchLengthTree>(psi, q, clockRate, true, data[0]->getNumberOfCharacters()) );
+    charactermodel->clamp( data[0] );
     
     
     /* add the moves */

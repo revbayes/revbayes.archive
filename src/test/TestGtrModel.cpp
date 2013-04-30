@@ -99,8 +99,8 @@ bool TestGtrModel::run( void ) {
     // and the character model
 //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
 //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleCharEvoModel<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tau, q, clockRate, true, data[0]->getNumberOfCharacters()) );
-    charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tau, q, clockRate, true, data[0]->getNumberOfCharacters()) );
+    charactermodel->clamp( data[0] );
     
     
     /* add the moves */

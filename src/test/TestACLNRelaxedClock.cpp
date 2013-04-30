@@ -113,8 +113,8 @@ bool TestACLNRelaxedClock::run( void ) {
 	StochasticNode< std::vector< double > > *branchRates = new StochasticNode< std::vector< double > >("branchRates", new AutocorrelatedLognormalRateDistribution(tau, sigma, expRootRate) );
 
     
-    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, branchRates, true, data[0]->getNumberOfCharacters()) );
-	charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, branchRates, true, data[0]->getNumberOfCharacters()) );
+	charactermodel->clamp( data[0] );
     
 	/* add the moves */
     std::vector<Move*> moves;

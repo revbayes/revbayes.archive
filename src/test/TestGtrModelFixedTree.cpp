@@ -117,8 +117,8 @@ bool TestGtrModelFixedTree::run( void ) {
     ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
     
     // and the character model
-    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tree, q, clockRate, true, data[0]->getNumberOfCharacters()) );
-    charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tree, q, clockRate, true, data[0]->getNumberOfCharacters()) );
+    charactermodel->clamp( data[0] );
     
 //    std::cout << "Expected log-L:\t\t" << "-6779.900741" << std::endl;
     std::cout << "Expected log-L:\t\t" << "-6960.691961" << std::endl;

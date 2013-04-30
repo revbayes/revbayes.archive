@@ -128,7 +128,7 @@ bool TestUCLNRelaxedClockBHT92Model::run( void ) {
 	
 	std::vector<const TypedDagNode<double> *> branchRates;
 	std::vector< ContinuousStochasticNode *> branchRates_nonConst;
-	for( int i=0; i<numBranches; i++){
+	for( size_t i=0; i<numBranches; i++){
         std::ostringstream br_name;
         br_name << "br(" << i << ")";
 		ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new LognormalDistribution(a, b));
@@ -155,8 +155,8 @@ bool TestUCLNRelaxedClockBHT92Model::run( void ) {
     // and the character model
 	//    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleGTRBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, br_vector, true, data[0]->getNumberOfCharacters()) );
 
-	StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new BranchRateTimeBHCharEvoModel<DnaState, TimeTree>(tau, qs_node, rf, br_vector, true, data[0]->getNumberOfCharacters()) );
-	charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+	StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new BranchRateTimeBHCharEvoModel<DnaState, TimeTree>(tau, qs_node, rf, br_vector, true, data[0]->getNumberOfCharacters()) );
+	charactermodel->clamp( data[0] );
     	
     
     /* add the moves */

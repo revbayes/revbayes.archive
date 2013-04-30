@@ -127,8 +127,8 @@ bool TestUCLNRelaxedClock::run( void ) {
 	tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
 
-    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, br_vector, true, data[0]->getNumberOfCharacters()) );
-	charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, br_vector, true, data[0]->getNumberOfCharacters()) );
+	charactermodel->clamp( data[0] );
  
 	/* add the moves */
     std::vector<Move*> moves;

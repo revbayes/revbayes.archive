@@ -20,6 +20,7 @@
 #include "TestBrownianMotion.h"
 #include "TestDistributions.h"
 #include "TestDPPRelClock.h"
+#include "TestGtrGammaLikelihood.h"
 #include "TestGtrGammaModel.h"
 #include "TestGtrModel.h"
 #include "TestGtrModelFixedTree.h"
@@ -66,7 +67,7 @@ bool Test::performTests(void) {
     /* The transition probability test */
     try {
         TestTransitionProbabilities test = TestTransitionProbabilities();
-        test.run();
+//        test.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -183,6 +184,14 @@ bool Test::performTests(void) {
 //        testGtr.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrModel.tree");
 //        testTrace.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    /* A GTR+Gamma model test */
+    try {
+        TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
+        testGtrGamma.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

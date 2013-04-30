@@ -131,8 +131,8 @@ double RbStatistics::Gamma::cdf(double shape, double rate, double x) {
  */
 double RbStatistics::Gamma::quantile(double shape, double rate, double p) {
 
-	return RbStatistics::ChiSquare::quantile(p, 2.0 * shape) / (2.0 * rate); 
-//	return RbStatistics::Helper::pointChi2(p, 2.0 * shape) / (2.0 * rate); 
+//	return RbStatistics::ChiSquare::quantile(p, 2.0 * shape) / (2.0 * rate); 
+	return RbStatistics::Helper::pointChi2(p, 2.0 * shape) / (2.0 * rate); 
 }
 
 

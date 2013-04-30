@@ -133,8 +133,8 @@ bool TestBranchHeterogeneousTamura92Model::run( void ) {
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // and the character model
-   StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new BranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, qs_node, rf, true, data[0]->getNumberOfCharacters()) );
-   charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+   StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new BranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, qs_node, rf, true, data[0]->getNumberOfCharacters()) );
+   charactermodel->clamp( data[0] );
     
     std::cout <<"Hehe "<<std::endl;
 

@@ -127,8 +127,8 @@ bool TestGtrGammaModel::run( void ) {
     
     // and the character model
     size_t numChar = data[0]->getNumberOfCharacters();
-    SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree>(tau, gamma_rates, q, true, numChar ); 
-    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", charModel );
+    SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree>(tau, site_rates, q, true, numChar ); 
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
     charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
     
     std::cout << "LnL:\t\t" << charactermodel->getLnProbability() << std::endl;
