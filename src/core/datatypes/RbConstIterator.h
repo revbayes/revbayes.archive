@@ -59,28 +59,36 @@ RevBayesCore::RbConstIterator<valueType>::RbConstIterator(const typename std::ve
 
 template <typename valueType>
 RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator++(void) {
+    
     ++it;
+    
     return *this;
 }
 
 
 template <typename valueType>
 const RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator++(void) const {
+    
     ++it;
+    
     return *this;
 }
 
 
 template <typename valueType>
 RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator--(void) {
+    
     --it;
+    
     return *this;
 }
 
 
 template <typename valueType>
 const RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator--(void) const {
+    
     --it;
+    
     return *this;
 }
 

@@ -90,9 +90,11 @@ template <class valueType>
 RevBayesCore::RbVector<valueType>::RbVector(size_t n, const valueType &v) : values() {
     
     // fill the vector with n independent copies
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) 
+    {
         values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v ) );
     }
+    
 }
 
 
@@ -101,9 +103,11 @@ RevBayesCore::RbVector<valueType>::RbVector( const RbVector<valueType> &v ) : va
     
     // fill the vector with n independent copies
     size_t n = v.size();
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) 
+    {
         values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v[i] ) );
     }
+    
 }
 
 
@@ -112,35 +116,41 @@ RevBayesCore::RbVector<valueType>::~RbVector( void ) {
     
     // delete the independent copies
     size_t n = values.size();
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) 
+    {
         valueType* v = values[i];
         delete v;
     }
     
     values.clear();
+
 }
 
 
 template <class valueType>
 valueType& RevBayesCore::RbVector<valueType>::operator[](size_t i) {
+    
     return *values[i];
 }
 
 
 template <class valueType>
 const valueType& RevBayesCore::RbVector<valueType>::operator[](size_t i) const {
+    
     return *values[i];
 }
 
 
 template <class valueType>
 RevBayesCore::RbIterator<valueType> RevBayesCore::RbVector<valueType>::begin(void) {
+    
     return RbIterator<valueType>( values.begin() );
 }
 
 
 template <class valueType>
 RevBayesCore::RbConstIterator<valueType> RevBayesCore::RbVector<valueType>::begin(void) const {
+    
     return RbConstIterator<valueType>( values.begin() );
 }
 
@@ -150,68 +160,85 @@ void RevBayesCore::RbVector<valueType>::clear( void ) {
     
     // delete the independent copies
     size_t n = values.size();
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) 
+    {
         valueType* v = values[i];
         delete v;
     }
     
     values.clear();
+    
 }
 
 
 template <class valueType>
 RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void) const {
+    
     return new RbVector<valueType>( *this );
 }
 
 
 template <class valueType>
 RevBayesCore::RbIterator<valueType> RevBayesCore::RbVector<valueType>::end(void) {
+    
     return RbIterator<valueType>( values.end() );
 }
 
 
 template <class valueType>
 RevBayesCore::RbConstIterator<valueType> RevBayesCore::RbVector<valueType>::end(void) const {
+   
     return RbConstIterator<valueType>( values.end() );
 }
 
 
 template <class valueType>
 void RevBayesCore::RbVector<valueType>::insert(size_t i, const valueType &v) {
+    
     values[i] = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v );
+
 }
 
 
 template <class valueType>
 void RevBayesCore::RbVector<valueType>::insert(size_t i, valueType *v) {
+
     values[i] = v;
+
 }
 
 
 template <class valueType>
 void RevBayesCore::RbVector<valueType>::push_back(const valueType &v) {
+    
     values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v ) );
+
 }
 
 
 template <class valueType>
 void RevBayesCore::RbVector<valueType>::push_back(valueType *v) {
+    
     values.push_back( v );
+
 }
 
 
 template <class valueType>
 size_t RevBayesCore::RbVector<valueType>::size(void) const {
+    
     return values.size();
 }
 
 
 template <class valueType>
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x) {
+    
     o << "(";
-    for (RbConstIterator<valueType> it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
+    for (RbConstIterator<valueType> it = x.begin(); it != x.end(); ++it) 
+    {
+        if ( it != x.begin() ) 
+        {
             o << ", ";
         }
         o << *it;

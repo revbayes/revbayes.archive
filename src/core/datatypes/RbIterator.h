@@ -36,8 +36,6 @@ namespace RevBayesCore {
         const RbIterator&                                   operator++(void) const;                                                               //!< Increment index (prefix)
         RbIterator&                                         operator--(void);                                                               //!< Decrement index (prefix)
         const RbIterator&                                   operator--(void) const;                                                               //!< Decrement index (prefix)
-//        RbIterator                                          operator++(int dummy);                                                          //!< Increment index (postfix)
-//        RbIterator                                          operator--(int dummy);                                                          //!< Decrement index (postfix)
         bool                                                operator==(const RbIterator& x) const;                                   //!< Equals operator
         bool                                                operator!=(const RbIterator& x) const;                                   //!< Not-Equals operator
         bool                                                operator<(const RbIterator& x) const; 
@@ -63,28 +61,36 @@ RevBayesCore::RbIterator<valueType>::RbIterator(const typename std::vector<value
 
 template <typename valueType>
 RevBayesCore::RbIterator<valueType>& RevBayesCore::RbIterator<valueType>::operator++(void) {
+    
     ++it;
+    
     return *this;
 }
 
 
 template <typename valueType>
 const RevBayesCore::RbIterator<valueType>& RevBayesCore::RbIterator<valueType>::operator++(void) const {
+    
     ++it;
+    
     return *this;
 }
 
 
 template <typename valueType>
 RevBayesCore::RbIterator<valueType>& RevBayesCore::RbIterator<valueType>::operator--(void) {
+    
     --it;
+    
     return *this;
 }
 
 
 template <typename valueType>
 const RevBayesCore::RbIterator<valueType>& RevBayesCore::RbIterator<valueType>::operator--(void) const {
+    
     --it;
+    
     return *this;
 }
 

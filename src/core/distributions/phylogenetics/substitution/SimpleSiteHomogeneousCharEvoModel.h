@@ -49,7 +49,6 @@ namespace RevBayesCore {
         const std::vector<double>&                          getRootFrequencies(void);
         
     private:
-        CharacterData<charType>*                            simulate(const TopologyNode& node);
         
         // members
         const TypedDagNode<double>*                         rateMultiplier;
@@ -74,8 +73,7 @@ RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::SimpleSiteH
     this->addParameter( rateMatrix );
     this->addParameter( rateMultiplier );
     
-    delete this->value;
-    this->value = simulate(this->tau->getValue().getRoot());
+    this->redrawValue();
     
 }
 
@@ -114,15 +112,6 @@ void RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::update
     const RateMatrix &rm = rateMatrix->getValue();
     rm.calculateTransitionProbabilities( brlen * rateMultiplier->getValue(), this->transitionProbMatrix );
     
-}
-
-
-
-
-template<class charType, class treeType>
-RevBayesCore::CharacterData<charType>* RevBayesCore::SimpleSiteHomogeneousCharEvoModel<charType, treeType>::simulate(const TopologyNode &node) {
-
-    return new CharacterData<charType>();
 }
 
 

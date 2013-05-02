@@ -51,7 +51,6 @@ namespace RevBayesCore {
         void                                                touchSpecialization(DagNode *toucher);
 		
     private:
-        CharacterData<charType>*                            simulate(const TopologyNode& node);
         
         // members
         const TypedDagNode< RbVector<RateMatrix> > *        rateMatrix;
@@ -84,8 +83,7 @@ RevBayesCore::BranchRateTimeBHCharEvoModel<charType, treeType>::BranchRateTimeBH
     this->addParameter( rootFrequencies );
 	this->addParameter( branchRates );
 
-    delete this->value;
-    this->value = simulate(this->tau->getValue().getRoot());
+    this->redrawValue();
 
 }
 
@@ -127,13 +125,6 @@ void RevBayesCore::BranchRateTimeBHCharEvoModel<charType, treeType>::updateTrans
 }
 
 
-template<class charType, class treeType>
-RevBayesCore::CharacterData<charType>* RevBayesCore::BranchRateTimeBHCharEvoModel<charType, treeType>::simulate(const TopologyNode &node) {
-    
-    return new CharacterData<charType>();
-}
-
-
 
 template<class charType, class treeType>
 void RevBayesCore::BranchRateTimeBHCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
@@ -142,11 +133,11 @@ void RevBayesCore::BranchRateTimeBHCharEvoModel<charType, treeType>::swapParamet
     {
         rateMatrix = static_cast<const TypedDagNode< RbVector<RateMatrix> > * >( newP );
     }
-	if (oldP == branchRates) 
+	else if (oldP == branchRates) 
     {
         branchRates = static_cast<const TypedDagNode< std::vector< double >  > * >( newP );
     }
-	if (oldP == rootFrequencies) 
+	else if (oldP == rootFrequencies) 
     {
         rootFrequencies = static_cast<const TypedDagNode< std::vector< double > > * >( newP );
     }

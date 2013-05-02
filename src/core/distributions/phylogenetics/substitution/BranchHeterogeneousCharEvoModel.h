@@ -51,7 +51,6 @@ namespace RevBayesCore {
         void                                                touchSpecialization(DagNode *toucher);
 
     private:
-        CharacterData<charType>*                            simulate(const TopologyNode& node);
         
         // members
         const  TypedDagNode< RbVector<RateMatrix> >         *rateMatrix;
@@ -77,8 +76,7 @@ RevBayesCore::BranchHeterogeneousCharEvoModel<charType, treeType>::BranchHeterog
     this->addParameter( rateMatrix );
     this->addParameter( rootFrequencies );
     
-    delete this->value;
-    this->value = simulate(this->tau->getValue().getRoot());
+    this->redrawValue();
 }
 
 
@@ -116,13 +114,6 @@ void RevBayesCore::BranchHeterogeneousCharEvoModel<charType, treeType>::updateTr
     const RateMatrix &rm = rateMatrix->getValue()[nodeIdx];
     rm.calculateTransitionProbabilities( brlen , this->transitionProbMatrix );
     
-}
-
-
-template<class charType, class treeType>
-RevBayesCore::CharacterData<charType>* RevBayesCore::BranchHeterogeneousCharEvoModel<charType, treeType>::simulate(const TopologyNode &node) {
-    
-    return new CharacterData<charType>();
 }
 
 

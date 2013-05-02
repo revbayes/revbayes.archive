@@ -51,7 +51,6 @@ namespace RevBayesCore {
         void                                                touchSpecialization(DagNode *toucher);
 		
     private:
-        CharacterData<charType>*                            simulate(const TopologyNode& node);
         
         // members
         const TypedDagNode< RateMatrix >*					rateMatrix;
@@ -81,8 +80,7 @@ RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::SimpleBranch
 	this->addParameter( rateMatrix );
 
     
-    delete this->value;
-    this->value = simulate(this->tau->getValue().getRoot());
+    this->redrawValue();
 }
 
 
@@ -125,20 +123,13 @@ void RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::updateT
 
 
 template<class charType, class treeType>
-RevBayesCore::CharacterData<charType>* RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::simulate(const TopologyNode &node) {
-    return new CharacterData<charType>();
-}
-
-
-
-template<class charType, class treeType>
 void RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if (oldP == branchRates) 
     {
         branchRates = static_cast<const TypedDagNode< std::vector< double>  > * >( newP );
     }
-	if (oldP == rateMatrix) 
+	else if (oldP == rateMatrix) 
     {
         rateMatrix = static_cast< const TypedDagNode< RateMatrix > *>( newP );
         

@@ -62,11 +62,13 @@ bool DnaState::operator!=(const CharacterState& x) const {
 bool DnaState::operator<(const CharacterState &x) const {
     
     const DnaState* derivedX = static_cast<const DnaState*>(&x);
-    if ( derivedX != NULL ) {
+    if ( derivedX != NULL ) 
+    {
         unsigned int myState = state;
         unsigned int yourState = derivedX->state;
         
-        while ( myState != yourState && (myState & 1) == ( yourState & 1 )  ) {
+        while ( myState != yourState && (myState & 1) == ( yourState & 1 )  ) 
+        {
             myState >>= 1;
             yourState >>= 1;
         }
@@ -79,37 +81,49 @@ bool DnaState::operator<(const CharacterState &x) const {
 
 
 void DnaState::operator++( void ) {
+    
     state <<= 1;
+
 }
 
 
 void DnaState::operator++( int i ) {
+
     state <<= 1;
+
 }
 
 
 void DnaState::operator--( void ) {
+    
     state >>= 1;
+
 }
 
 
 void DnaState::operator--( int i ) {
+
     state >>= 1;
+
 }
 
 
 void DnaState::addState(size_t pos) {
+
     state |= 1 << pos;
+
 }
 
 
 
 DnaState* DnaState::clone( void ) const {
+    
     return new DnaState( *this );
 }
 
 
 std::string DnaState::getDatatype( void ) const {
+    
     return "DNA";
 }
 
@@ -129,11 +143,13 @@ unsigned int DnaState::getNumberObservedStates(void) const  {
 
 
 size_t DnaState::getNumberOfStates( void ) const {
+    
     return 4;
 }
 
 
 unsigned int DnaState::getState( void ) const {
+    
     return state;
 }
 
@@ -147,7 +163,8 @@ const std::string& DnaState::getStateLabels( void ) const {
 
 std::string DnaState::getStringValue(void) const  {
     
-    switch ( state ) {
+    switch ( state ) 
+    {
         case 0x0:
             return "-";
         case 0x1:
@@ -189,20 +206,25 @@ std::string DnaState::getStringValue(void) const  {
 
 
 bool DnaState::isAmbiguous( void ) const {
+    
     return getNumberObservedStates() > 1;
 }
 
 
 bool DnaState::isGapState( void ) const {
+    
     return state == 0x0;
 }
 
 
 void DnaState::setGapState(bool tf) {
-    if ( tf ) {
+    
+    if ( tf ) 
+    {
         state = 0x0;
     }
-    else {
+    else 
+    {
         state = 0xFF;
     }
 }
@@ -211,14 +233,19 @@ void DnaState::setGapState(bool tf) {
 void DnaState::setState(size_t pos, bool val) {
     
     state &= val << pos;
+    
 }
 
 void DnaState::setState(char val) {
-    if ( val == '?') {
+    
+    if ( val == '?') 
+    {
         throw RbException( "Unknown char" );
     }
+    
     val = toupper( val );
-    switch ( val ) {
+    switch ( val ) 
+    {
         case '-':
             state = 0x00;
             break;
@@ -275,6 +302,8 @@ void DnaState::setState(char val) {
 
 
 void DnaState::setToFirstState( void ) {
+    
     state = 0x1;
+
 }
 
