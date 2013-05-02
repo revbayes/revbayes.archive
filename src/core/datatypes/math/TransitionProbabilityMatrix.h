@@ -25,23 +25,33 @@ namespace RevBayesCore {
     class TransitionProbabilityMatrix {
 
     public:
-                                            TransitionProbabilityMatrix(size_t n);                              //!< Constructor
-
-        // overloaded operators
-        std::vector<double>&                operator[](size_t i);                                               //!< Subscript operator
-        const std::vector<double>&          operator[](size_t i) const;                                         //!< Subscript operator (const)
+        TransitionProbabilityMatrix(size_t n);                              //!< Constructor
+        TransitionProbabilityMatrix(const TransitionProbabilityMatrix &tpm);
+        virtual                            ~TransitionProbabilityMatrix();
         
-        std::vector<std::vector<double> >::const_iterator       begin(void) const;
-        std::vector<std::vector<double> >::iterator             begin(void);
-        std::vector<std::vector<double> >::const_iterator       end(void) const;
-        std::vector<std::vector<double> >::iterator             end(void);
+        
+        // overloaded operators
+        TransitionProbabilityMatrix&        operator=(const TransitionProbabilityMatrix& tpm);
+        double*                             operator[](size_t i);                                               //!< Subscript operator
+        const double*                       operator[](size_t i) const;                                         //!< Subscript operator (const)
+        
+//        std::vector<std::vector<double> >::const_iterator       begin(void) const;
+//        std::vector<std::vector<double> >::iterator             begin(void);
+//        std::vector<std::vector<double> >::const_iterator       end(void) const;
+//        std::vector<std::vector<double> >::iterator             end(void);
 
         size_t                              getNumberOfStates(void) const;
+        double                              getElement(size_t i, size_t j) const;
+        double&                             getElement(size_t i, size_t j);
+        double*                             getElements(void);
+        const double*                       getElements(void) const;
         size_t                              size(void) const;
  
     private:
+        
         size_t                              numStates;                                                          //!< The number of character states
-        MatrixReal                          theMatrix;                                                          //!< Holds the transition probability matrix
+        size_t                              nElements;
+        double*                             theMatrix;                                                          //!< Holds the transition probability matrix
     
     };
     

@@ -463,38 +463,38 @@ void RevBayesCore::AbstractHeterogeneousCharEvoModel<charType, treeType>::touchS
 template<class charType, class treeType>
 void RevBayesCore::AbstractHeterogeneousCharEvoModel<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t left, size_t right) {    
     
-    // get the index in the node sequence
-    size_t nodeIndex = node.getIndex();
-    
-    const std::vector<TransitionProbabilityMatrix *> &tpm = computeTransitionProbabilities(node);
-    std::vector< TransitionProbabilityMatrix *>::const_iterator transitionProbabilities = tpm.begin();
-    
-    for (size_t siteIndex = 0; siteIndex < numSites; ++numSites, ++transitionProbabilities) {
-        
-        std::vector<double> &p_left = this->partialLikelihoods[this->activeLikelihoodForNodes[left][siteIndex]][left][siteIndex];
-        std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihoodForNodes[right][siteIndex]][right][siteIndex];
-        std::vector<double> &p_node = this->partialLikelihoods[this->activeLikelihoodForNodes[nodeIndex][siteIndex]][nodeIndex][siteIndex];
-        
-        // iterate over the possible starting states
-        std::vector<double>::iterator                       p_a     = p_node.begin();
-        std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
-        std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
-        for (; tp_a != tp_end; ++tp_a, ++p_a) {
-            
-            double sum = 0.0;
-            
-            // iterate over all possible terminal states
-            std::vector<double>::const_iterator p_site_left_d   = p_left.begin();
-            std::vector<double>::const_iterator p_site_right_d  = p_right.begin();
-            std::vector<double>::const_iterator tp_a_d          = tp_a->begin();
-            std::vector<double>::const_iterator tp_a_end        = tp_a->end();
-            for (; tp_a_d != tp_a_end; ++tp_a_d, ++p_site_left_d, ++p_site_right_d ) {
-                sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
-            }
-            *p_a = sum;
-            
-        }
-    }
+//    // get the index in the node sequence
+//    size_t nodeIndex = node.getIndex();
+//    
+//    const std::vector<TransitionProbabilityMatrix *> &tpm = computeTransitionProbabilities(node);
+//    std::vector< TransitionProbabilityMatrix *>::const_iterator transitionProbabilities = tpm.begin();
+//    
+//    for (size_t siteIndex = 0; siteIndex < numSites; ++numSites, ++transitionProbabilities) {
+//        
+//        std::vector<double> &p_left = this->partialLikelihoods[this->activeLikelihoodForNodes[left][siteIndex]][left][siteIndex];
+//        std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihoodForNodes[right][siteIndex]][right][siteIndex];
+//        std::vector<double> &p_node = this->partialLikelihoods[this->activeLikelihoodForNodes[nodeIndex][siteIndex]][nodeIndex][siteIndex];
+//        
+//        // iterate over the possible starting states
+//        std::vector<double>::iterator                       p_a     = p_node.begin();
+//        std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
+//        std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
+//        for (; tp_a != tp_end; ++tp_a, ++p_a) {
+//            
+//            double sum = 0.0;
+//            
+//            // iterate over all possible terminal states
+//            std::vector<double>::const_iterator p_site_left_d   = p_left.begin();
+//            std::vector<double>::const_iterator p_site_right_d  = p_right.begin();
+//            std::vector<double>::const_iterator tp_a_d          = tp_a->begin();
+//            std::vector<double>::const_iterator tp_a_end        = tp_a->end();
+//            for (; tp_a_d != tp_a_end; ++tp_a_d, ++p_site_left_d, ++p_site_right_d ) {
+//                sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
+//            }
+//            *p_a = sum;
+//            
+//        }
+//    }
 }
 
 
@@ -503,35 +503,35 @@ void RevBayesCore::AbstractHeterogeneousCharEvoModel<charType, treeType>::comput
 template<class charType, class treeType>
 void RevBayesCore::AbstractHeterogeneousCharEvoModel<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t left, size_t right, size_t site) {    
     
-    // get the index in the node sequence
-    size_t nodeIndex = node.getIndex();
-    
-    const TransitionProbabilityMatrix &tpm = computeTransitionProbabilities(node,site);
-    
-    
-    std::vector<double> &p_left = this->partialLikelihoods[this->activeLikelihoodForNodes[left][site]][left][site];
-    std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihoodForNodes[right][site]][right][site];
-    std::vector<double> &p_node = this->partialLikelihoods[this->activeLikelihoodForNodes[nodeIndex][site]][nodeIndex][site];
-        
-    // iterate over the possible starting states
-    std::vector<double>::iterator                       p_a     = p_node.begin();
-    std::vector<std::vector<double> >::const_iterator   tp_a    = tpm.begin();
-    std::vector<std::vector<double> >::const_iterator   tp_end  = tpm.end();
-    for (; tp_a != tp_end; ++tp_a, ++p_a) {
-            
-        double sum = 0.0;
-            
-        // iterate over all possible terminal states
-        std::vector<double>::const_iterator p_site_left_d   = p_left.begin();
-        std::vector<double>::const_iterator p_site_right_d  = p_right.begin();
-        std::vector<double>::const_iterator tp_a_d          = tp_a->begin();
-        std::vector<double>::const_iterator tp_a_end        = tp_a->end();
-        for (; tp_a_d != tp_a_end; ++tp_a_d, ++p_site_left_d, ++p_site_right_d ) {
-            sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
-        }
-        *p_a = sum;
-        
-    }
+//    // get the index in the node sequence
+//    size_t nodeIndex = node.getIndex();
+//    
+//    const TransitionProbabilityMatrix &tpm = computeTransitionProbabilities(node,site);
+//    
+//    
+//    std::vector<double> &p_left = this->partialLikelihoods[this->activeLikelihoodForNodes[left][site]][left][site];
+//    std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihoodForNodes[right][site]][right][site];
+//    std::vector<double> &p_node = this->partialLikelihoods[this->activeLikelihoodForNodes[nodeIndex][site]][nodeIndex][site];
+//        
+//    // iterate over the possible starting states
+//    std::vector<double>::iterator                       p_a     = p_node.begin();
+//    std::vector<std::vector<double> >::const_iterator   tp_a    = tpm.begin();
+//    std::vector<std::vector<double> >::const_iterator   tp_end  = tpm.end();
+//    for (; tp_a != tp_end; ++tp_a, ++p_a) {
+//            
+//        double sum = 0.0;
+//            
+//        // iterate over all possible terminal states
+//        std::vector<double>::const_iterator p_site_left_d   = p_left.begin();
+//        std::vector<double>::const_iterator p_site_right_d  = p_right.begin();
+//        std::vector<double>::const_iterator tp_a_d          = tp_a->begin();
+//        std::vector<double>::const_iterator tp_a_end        = tp_a->end();
+//        for (; tp_a_d != tp_a_end; ++tp_a_d, ++p_site_left_d, ++p_site_right_d ) {
+//            sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
+//        }
+//        *p_a = sum;
+//        
+//    }
     
 }
 
@@ -610,62 +610,62 @@ void RevBayesCore::AbstractHeterogeneousCharEvoModel<charType, treeType>::comput
 template<class charType, class treeType>
 void RevBayesCore::AbstractHeterogeneousCharEvoModel<charType, treeType>::computeTipLikelihood(const TopologyNode &node) {    
     
-    // get the index in the node sequence
-    size_t nodeIndex = node.getIndex();
-    
-    const std::vector<TransitionProbabilityMatrix *> &tpm = computeTransitionProbabilities(node);
-    
-    std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    
-    std::vector<unsigned int> &char_node = this->charMatrix[nodeIndex];
-    
-    // compute the per site probabilities
-    std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
-    std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
-    std::vector< TransitionProbabilityMatrix *>::const_iterator transitionProbabilities = tpm.begin();
-    for (size_t siteIndex = 0; siteIndex < numSites; ++siteIndex, ++char_site, ++gap_site, ++transitionProbabilities) {
-        
-        std::vector<double> &p_site = this->partialLikelihoods[this->activeLikelihoodForNodes[nodeIndex][siteIndex]][nodeIndex][siteIndex];
-        
-        if ( *gap_site == true ) {
-            std::vector<double>::iterator                       p_a     = p_site.begin();
-            std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
-            std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
-            for (; tp_a != tp_end; ++tp_a, ++p_a) {
-                
-                double tmp = 0.0;
-                
-                std::vector<double>::const_iterator d   = tp_a->begin();
-                std::vector<double>::const_iterator end = tp_a->end();
-                for (; d != end; ++d) {
-                    tmp += *d;
-                }
-                *p_a = tmp;
-            } 
-        }
-        else {
-            unsigned int org_val = *char_site;
-            std::vector<double>::iterator                       p_a     = p_site.begin();
-            std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
-            std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
-            for (; tp_a != tp_end; ++tp_a, ++p_a) {
-                
-                double tmp = 0.0;
-                
-                unsigned int val = org_val;
-                std::vector<double>::const_iterator d   = tp_a->begin();
-                std::vector<double>::const_iterator end = tp_a->end();
-                for (; d != end; ++d) {
-                    if ( (val & 1) == 1 ) {
-                        tmp += *d;
-                    }
-                    
-                    val >>= 1;
-                }
-                *p_a = tmp;
-            }
-        }
-    }
+//    // get the index in the node sequence
+//    size_t nodeIndex = node.getIndex();
+//    
+//    const std::vector<TransitionProbabilityMatrix *> &tpm = computeTransitionProbabilities(node);
+//    
+//    std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
+//    
+//    std::vector<unsigned int> &char_node = this->charMatrix[nodeIndex];
+//    
+//    // compute the per site probabilities
+//    std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
+//    std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
+//    std::vector< TransitionProbabilityMatrix *>::const_iterator transitionProbabilities = tpm.begin();
+//    for (size_t siteIndex = 0; siteIndex < numSites; ++siteIndex, ++char_site, ++gap_site, ++transitionProbabilities) {
+//        
+//        std::vector<double> &p_site = this->partialLikelihoods[this->activeLikelihoodForNodes[nodeIndex][siteIndex]][nodeIndex][siteIndex];
+//        
+//        if ( *gap_site == true ) {
+//            std::vector<double>::iterator                       p_a     = p_site.begin();
+//            std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
+//            std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
+//            for (; tp_a != tp_end; ++tp_a, ++p_a) {
+//                
+//                double tmp = 0.0;
+//                
+//                std::vector<double>::const_iterator d   = tp_a->begin();
+//                std::vector<double>::const_iterator end = tp_a->end();
+//                for (; d != end; ++d) {
+//                    tmp += *d;
+//                }
+//                *p_a = tmp;
+//            } 
+//        }
+//        else {
+//            unsigned int org_val = *char_site;
+//            std::vector<double>::iterator                       p_a     = p_site.begin();
+//            std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
+//            std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
+//            for (; tp_a != tp_end; ++tp_a, ++p_a) {
+//                
+//                double tmp = 0.0;
+//                
+//                unsigned int val = org_val;
+//                std::vector<double>::const_iterator d   = tp_a->begin();
+//                std::vector<double>::const_iterator end = tp_a->end();
+//                for (; d != end; ++d) {
+//                    if ( (val & 1) == 1 ) {
+//                        tmp += *d;
+//                    }
+//                    
+//                    val >>= 1;
+//                }
+//                *p_a = tmp;
+//            }
+//        }
+//    }
     
 }
 
@@ -673,60 +673,60 @@ void RevBayesCore::AbstractHeterogeneousCharEvoModel<charType, treeType>::comput
 template<class charType, class treeType>
 void RevBayesCore::AbstractHeterogeneousCharEvoModel<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t site) {    
     
-    // get the index in the node sequence
-    size_t nodeIndex = node.getIndex();
-    
-    const std::vector<TransitionProbabilityMatrix *> &tpm = computeTransitionProbabilities(node);
-    
-    std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    
-    std::vector<unsigned int> &char_node = this->charMatrix[nodeIndex];
-    
-    // compute the per site probabilities
-    std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
-    std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
-    std::vector< TransitionProbabilityMatrix *>::const_iterator transitionProbabilities = tpm.begin();
-        
-    std::vector<double> &p_site = this->partialLikelihoods[this->activeLikelihoodForNodes[nodeIndex][site]][nodeIndex][site];
-        
-    if ( *gap_site == true ) {
-        std::vector<double>::iterator                       p_a     = p_site.begin();
-        std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
-        std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
-        for (; tp_a != tp_end; ++tp_a, ++p_a) {
-                
-            double tmp = 0.0;
-                
-            std::vector<double>::const_iterator d   = tp_a->begin();
-            std::vector<double>::const_iterator end = tp_a->end();
-            for (; d != end; ++d) {
-                tmp += *d;
-            }
-            *p_a = tmp;
-        } 
-    }
-    else {
-        unsigned int org_val = *char_site;
-        std::vector<double>::iterator                       p_a     = p_site.begin();
-        std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
-        std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
-        for (; tp_a != tp_end; ++tp_a, ++p_a) {
-                
-            double tmp = 0.0;
-                
-            unsigned int val = org_val;
-            std::vector<double>::const_iterator d   = tp_a->begin();
-            std::vector<double>::const_iterator end = tp_a->end();
-            for (; d != end; ++d) {
-                if ( (val & 1) == 1 ) {
-                    tmp += *d;
-                }
-                    
-                val >>= 1;
-            }
-            *p_a = tmp;
-        }
-    }
+//    // get the index in the node sequence
+//    size_t nodeIndex = node.getIndex();
+//    
+//    const std::vector<TransitionProbabilityMatrix *> &tpm = computeTransitionProbabilities(node);
+//    
+//    std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
+//    
+//    std::vector<unsigned int> &char_node = this->charMatrix[nodeIndex];
+//    
+//    // compute the per site probabilities
+//    std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
+//    std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
+//    std::vector< TransitionProbabilityMatrix *>::const_iterator transitionProbabilities = tpm.begin();
+//        
+//    std::vector<double> &p_site = this->partialLikelihoods[this->activeLikelihoodForNodes[nodeIndex][site]][nodeIndex][site];
+//        
+//    if ( *gap_site == true ) {
+//        std::vector<double>::iterator                       p_a     = p_site.begin();
+//        std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
+//        std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
+//        for (; tp_a != tp_end; ++tp_a, ++p_a) {
+//                
+//            double tmp = 0.0;
+//                
+//            std::vector<double>::const_iterator d   = tp_a->begin();
+//            std::vector<double>::const_iterator end = tp_a->end();
+//            for (; d != end; ++d) {
+//                tmp += *d;
+//            }
+//            *p_a = tmp;
+//        } 
+//    }
+//    else {
+//        unsigned int org_val = *char_site;
+//        std::vector<double>::iterator                       p_a     = p_site.begin();
+//        std::vector<std::vector<double> >::const_iterator   tp_a    = (*transitionProbabilities)->begin();
+//        std::vector<std::vector<double> >::const_iterator   tp_end  = (*transitionProbabilities)->end();
+//        for (; tp_a != tp_end; ++tp_a, ++p_a) {
+//                
+//            double tmp = 0.0;
+//                
+//            unsigned int val = org_val;
+//            std::vector<double>::const_iterator d   = tp_a->begin();
+//            std::vector<double>::const_iterator end = tp_a->end();
+//            for (; d != end; ++d) {
+//                if ( (val & 1) == 1 ) {
+//                    tmp += *d;
+//                }
+//                    
+//                val >>= 1;
+//            }
+//            *p_a = tmp;
+//        }
+//    }
     
     
 }

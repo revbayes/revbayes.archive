@@ -14,17 +14,17 @@ namespace RevBayesCore {
     WindowControllerCharacterMatrix*   dataInspector;	
 	NSMutableArray*                    dataMatrices;
     NSString*                          dataWorkspaceName;
-    int                                numAligned;
-    int                                numUnaligned;
+    size_t                             numAligned;
+    size_t                             numUnaligned;
 }
 
 @property (readwrite,retain) NSString* dataWorkspaceName;
-@property (readwrite)        int       numAligned;
-@property (readwrite)        int       numUnaligned;
+@property (readwrite)        size_t    numAligned;
+@property (readwrite)        size_t    numUnaligned;
 
 - (void)addMatrix:(RbData*)m;
 - (NSMutableArray*)dataMatrices;
-- (RbData*)dataMatrixIndexed:(int)i;
+- (RbData*)dataMatrixIndexed:(size_t)i;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (NSMutableArray*)getAlignedData;
 - (NSMutableArray*)getUnalignedData;
@@ -34,9 +34,9 @@ namespace RevBayesCore {
 - (void)makeDataInspector;
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd:(const std::string&)dt;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
-- (int)numDataMatrices;
-- (int)numAlignedMatrices;
-- (int)numUnalignedMatrices;
+- (size_t)numDataMatrices;
+- (size_t)numAlignedMatrices;
+- (size_t)numUnalignedMatrices;
 - (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName;
 - (void)removeAllDataMatrices;
 - (void)removeDataInspector;

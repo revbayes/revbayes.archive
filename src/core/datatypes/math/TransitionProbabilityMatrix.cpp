@@ -27,61 +27,108 @@ using namespace RevBayesCore;
 
 
 /** Construct rate matrix with n states */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : theMatrix(n,n,0.0) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : nElements( n*n ) {
 
+    theMatrix = new double[ nElements ];
+    for ( size_t i = 0; i < nElements; ++i) 
+    {
+        theMatrix[i] = 0.0;
+    }
+    
     numStates = n;
+}
+
+/** Construct rate matrix with n states */
+TransitionProbabilityMatrix::TransitionProbabilityMatrix( const TransitionProbabilityMatrix &tpm ) : nElements( tpm.nElements ), numStates( tpm.numStates ) {
+    
+    theMatrix = new double[ nElements ];
+    for ( size_t i = 0; i < nElements; ++i) 
+    {
+        theMatrix[i] = tpm.theMatrix[i];
+    }
+    
+}
+
+
+TransitionProbabilityMatrix::~TransitionProbabilityMatrix() {
+
+    delete [] theMatrix;
+
+}
+
+
+/** Construct rate matrix with n states */
+TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator=( const TransitionProbabilityMatrix &tpm ) {
+    
+    if ( this != &tpm ) 
+    {
+        nElements = tpm.nElements;
+        numStates = tpm.numStates;
+        
+        delete [] theMatrix;
+        theMatrix = new double[ nElements ];
+        for ( size_t i = 0; i < nElements; ++i) 
+        {
+            theMatrix[i] = tpm.theMatrix[i];
+        }
+    }
+    
+    return *this;
 }
 
 
 /** Index operator (const) */
-const std::vector<double>& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
+const double* TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
-//    if ( i >= numStates )
-//        throw RbException( "Index to TransitionProbabilityMatrix[][] out of bounds" );
-    return theMatrix[i];
+    return theMatrix + i*numStates;
 }
 
 
 /** Index operator */
-std::vector<double>& TransitionProbabilityMatrix::operator[]( const size_t i ) {
-
-//    if ( i >= numStates )
-//        throw RbException( "Index to TransitionProbabilityMatrix[][] out of bounds" );
-    return theMatrix[i];
+double* TransitionProbabilityMatrix::operator[]( const size_t i ) {
+    
+    return theMatrix + i*numStates;
 }
 
 
-std::vector<std::vector<double> >::const_iterator TransitionProbabilityMatrix::begin( void ) const {
-    return theMatrix.begin();
+double TransitionProbabilityMatrix::getElement(size_t i, size_t j) const {
+    
+    return *(theMatrix + numStates*i + j);
 }
 
 
-std::vector<std::vector<double> >::iterator TransitionProbabilityMatrix::begin( void ) {
-    return theMatrix.begin();
+double& TransitionProbabilityMatrix::getElement(size_t i, size_t j) {
+    
+    return *(theMatrix + numStates*i + j);
 }
 
 
-std::vector<std::vector<double> >::const_iterator TransitionProbabilityMatrix::end( void ) const {
-    return theMatrix.end();
+const double* TransitionProbabilityMatrix::getElements( void ) const {
+    
+    return theMatrix;
 }
 
 
-std::vector<std::vector<double> >::iterator TransitionProbabilityMatrix::end( void ) {
-    return theMatrix.end();
+double* TransitionProbabilityMatrix::getElements( void ) {
+    
+    return theMatrix;
 }
 
 
 size_t TransitionProbabilityMatrix::getNumberOfStates( void ) const {
+    
     return numStates;
 }
 
 
 size_t TransitionProbabilityMatrix::size(void) const {
-    return theMatrix.size();
+    
+    return nElements;
 }
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const TransitionProbabilityMatrix& x) {
+    
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
     
@@ -90,7 +137,8 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const TransitionProbabil
     o << std::setprecision(4);
     
     // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < x.getNumberOfStates(); i++) {
+    for (size_t i=0; i < x.getNumberOfStates(); i++) 
+    {
         if (i == 0)
             o << "[ ";
         else 

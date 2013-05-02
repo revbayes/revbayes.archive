@@ -20,14 +20,14 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
-	[aCoder encodeBool:isDiscrete forKey:@"isDiscrete"];
-	[aCoder encodeBool:isAmbig    forKey:@"isAmbig"];
-    [aCoder encodeBool:isGapState forKey:@"isGapState"];
-	[aCoder encodeInt:row         forKey:@"row"];
-	[aCoder encodeInt:column      forKey:@"column"];
-	[aCoder encodeInt:dataType    forKey:@"dataType"];
-	[aCoder encodeInt:numStates   forKey:@"numStates"];
-	[aCoder encodeObject:val      forKey:@"val"];
+	[aCoder encodeBool:isDiscrete    forKey:@"isDiscrete"];
+	[aCoder encodeBool:isAmbig       forKey:@"isAmbig"];
+    [aCoder encodeBool:isGapState    forKey:@"isGapState"];
+	[aCoder encodeInt:int(row)       forKey:@"row"];
+	[aCoder encodeInt:int(column)    forKey:@"column"];
+	[aCoder encodeInt:dataType       forKey:@"dataType"];
+	[aCoder encodeInt:int(numStates) forKey:@"numStates"];
+	[aCoder encodeObject:val         forKey:@"val"];
 }
 
 - (float)getContinuousState {
@@ -233,7 +233,7 @@
         if (x == -1)
             {
             unsigned binaryRep = 0;
-            for (int i=0; i<numStates; i++)
+            for (size_t i=0; i<numStates; i++)
                 {
                 unsigned mask = 1 << i ;
                 binaryRep |= mask;

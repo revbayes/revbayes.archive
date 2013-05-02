@@ -9,7 +9,7 @@
     NSMutableArray*          distributionList;
 }
 
-- (DistributionGui*)getDistributionWithIndex:(int)idx;
+- (DistributionGui*)getDistributionWithIndex:(size_t)idx;
 - (void)initializeDistributionList;
 - (DistributionGui*)newDistributionWithName:(NSString*)distName andParm:(Parm*)prm;
 - (int)numDistributions;

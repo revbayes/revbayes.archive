@@ -381,7 +381,7 @@
 
 - (void)print {
 
-    for (int i=0; i<[nodes count]; i++)
+    for (size_t i=0; i<[nodes count]; i++)
         [[nodes objectAtIndex:i] print];
 }
 

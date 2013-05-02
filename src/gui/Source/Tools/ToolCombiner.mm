@@ -169,7 +169,7 @@
         // we don't need to do anything
         NSMutableArray* parentDataMatrices = [NSMutableArray arrayWithCapacity:1];
         BOOL areParentsDirty = [self areAnyParentsDirty];
-        for (int i=0; i<[dataOutlets count]; i++)
+        for (size_t i=0; i<[dataOutlets count]; i++)
             {
             Outlet* ol = [dataOutlets objectAtIndex:i];
             ToolData* t = (ToolData*)[ol toolOwner];
@@ -182,11 +182,11 @@
                 [parentDataMatrices addObjectsFromArray:[t getUnalignedData]];
                 }
             }
-        int numFound = 0;
-        for (int i=0; i<[dataMatrices count]; i++)
+        size_t numFound = 0;
+        for (size_t i=0; i<[dataMatrices count]; i++)
             {
             RbData* myDataMatrix = [dataMatrices objectAtIndex:i];
-            for (int j=0; j<[parentDataMatrices count]; j++)
+            for (size_t j=0; j<[parentDataMatrices count]; j++)
                 {
                 RbData* parentDataMatrix = [parentDataMatrices objectAtIndex:j];
                 if ( parentDataMatrix == [myDataMatrix copiedFrom] )
@@ -202,7 +202,7 @@
         if ( [parentDataMatrices count] != numFound || [parentDataMatrices count] != [dataMatrices count] || areParentsDirty == YES )
             {
             [self removeAllDataMatrices];
-            for (int i=0; i<[parentDataMatrices count]; i++)
+            for (size_t i=0; i<[parentDataMatrices count]; i++)
                 {
 				RbData* d = [parentDataMatrices objectAtIndex:i];
 				RbData* nd = [[RbData alloc] initWithRbData:d];

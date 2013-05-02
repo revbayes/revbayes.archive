@@ -21,7 +21,7 @@
 #ifndef SimpleSiteHeterogeneousMixtureCharEvoModel_H
 #define SimpleSiteHeterogeneousMixtureCharEvoModel_H
 
-#include "AbstractSiteHeterogeneousMixtureCharEvoModel.h"
+#include "AbstractSiteHomogeneousMixtureCharEvoModel.h"
 #include "CharacterData.h"
 #include "DnaState.h"
 #include "RateMatrix.h"
@@ -33,7 +33,7 @@
 namespace RevBayesCore {
     
     template<class charType, class treeType>
-    class SimpleSiteHeterogeneousMixtureCharEvoModel : public AbstractSiteHeterogeneousMixtureCharEvoModel<charType, treeType> {
+    class SimpleSiteHeterogeneousMixtureCharEvoModel : public AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType> {
         
     public:
         SimpleSiteHeterogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, const TypedDagNode<std::vector<double> > *sr, const TypedDagNode<RateMatrix> *rm, bool c, size_t nSites);
@@ -52,7 +52,8 @@ namespace RevBayesCore {
         CharacterData<charType>*                            simulate(const TopologyNode& node);
         
         // members
-        const TypedDagNode<RateMatrix>*                     rateMatrix;
+        const TypedDagNode< RateMatrix >*                   rateMatrix;
+        const TypedDagNode< std::vector< double > >*        siteRates;
         
     };
     
@@ -68,9 +69,10 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::SimpleSiteHeterogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, const TypedDagNode<std::vector<double> > *sr, const TypedDagNode<RateMatrix> *rm, bool c, size_t nSites) : AbstractSiteHeterogeneousMixtureCharEvoModel<charType, treeType>(  t, sr, c, nSites ), rateMatrix( rm ) {
+RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::SimpleSiteHeterogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, const TypedDagNode<std::vector<double> > *sr, const TypedDagNode<RateMatrix> *rm, bool c, size_t nSites) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>(  t, sr->getValue().size(), c, nSites ), rateMatrix( rm ), siteRates( sr ) {
     // add the parameters to the parents list
     this->addParameter( rateMatrix );
+    this->addParameter( siteRates );
     
     delete this->value;
     this->value = simulate(this->tau->getValue().getRoot());
@@ -78,7 +80,7 @@ RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::Si
 
 
 template<class charType, class treeType>
-RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::SimpleSiteHeterogeneousMixtureCharEvoModel(const SimpleSiteHeterogeneousMixtureCharEvoModel &n) : AbstractSiteHeterogeneousMixtureCharEvoModel<charType, treeType>( n ), rateMatrix( n.rateMatrix ) {
+RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::SimpleSiteHeterogeneousMixtureCharEvoModel(const SimpleSiteHeterogeneousMixtureCharEvoModel &n) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>( n ), rateMatrix( n.rateMatrix ), siteRates( n.siteRates ) {
     // parameters are automatically copied
     
 }
@@ -109,9 +111,10 @@ template<class charType, class treeType>
 void RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
     
     const RateMatrix &rm = rateMatrix->getValue();
-    for (size_t i = 0; i < this->numRates; ++i)
+    const std::vector<double> &r = this->siteRates->getValue();
+    for (size_t i = 0; i < this->numMixtures; ++i)
     {
-        rm.calculateTransitionProbabilities( brlen * this->siteRates->getValue()[i], this->transitionProbMatrices[i] );
+        rm.calculateTransitionProbabilities( brlen * r[i], this->transitionProbMatrices[i] );
     }
     
 }
@@ -132,11 +135,15 @@ void RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType
     
     if (oldP == rateMatrix) 
     {
-        rateMatrix = static_cast<const TypedDagNode<RateMatrix>* >( newP );
+        rateMatrix = static_cast<const TypedDagNode< RateMatrix >* >( newP );
+    }
+    else if (oldP == rateMatrix) 
+    {
+        siteRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
     }
     else 
     {
-        AbstractSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::swapParameter(oldP,newP);
+        AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::swapParameter(oldP,newP);
     }
     
 }

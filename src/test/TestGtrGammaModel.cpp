@@ -152,7 +152,7 @@ bool TestGtrGammaModel::run( void ) {
 //    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
 //    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
     
-    moves.push_back( new ScaleMove(alpha, 1.0, true, 2.0) );
+    moves.push_back( new ScaleMove(alpha, 1.0, true, 1.0) );
 //    moves.push_back( new ScaleMove(q1_value, 1.0, true, 2.0) );
 //    moves.push_back( new ScaleMove(q2_value, 1.0, true, 2.0) );
 //    moves.push_back( new ScaleMove(q3_value, 1.0, true, 2.0) );
@@ -174,11 +174,11 @@ bool TestGtrGammaModel::run( void ) {
     monitoredNodes.insert( site_rates_norm );
     monitoredNodes.insert( alpha );
 //    monitoredNodes.insert( treeHeight );
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "TestGtrGammaModelSubstRates.log", "\t" ) );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
+    monitors.push_back( new FileMonitor( monitoredNodes, 1000, "TestGtrGammaModelSubstRates.log", "\t" ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 1000, "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestGtrGammaModel.tree", "\t", false, false, false ) );
+    monitors.push_back( new FileMonitor( monitoredNodes2, 1000, "TestGtrGammaModel.tree", "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);

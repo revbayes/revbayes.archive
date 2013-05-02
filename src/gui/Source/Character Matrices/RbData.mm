@@ -24,7 +24,7 @@
 	[taxonNames addObject:n];
 }
 
-- (RbDataCell*)cellWithRow:(int)r andColumn:(int)c {
+- (RbDataCell*)cellWithRow:(size_t)r andColumn:(int)c {
 
     if (r >= [data count])
         return nil;
@@ -428,9 +428,9 @@
         }
 }
 
-- (void)setNameOfTaxonWithIndex:(int)idx to:(NSString*)newName {
+- (void)setNameOfTaxonWithIndex:(size_t)idx to:(NSString*)newName {
 
-    if (idx < 0 || idx >= [taxonNames count])
+    if ( idx >= [taxonNames count] )
         NSLog(@"Error: Taxon index out of range");
     [taxonNames replaceObjectAtIndex:idx withObject:newName];
 }

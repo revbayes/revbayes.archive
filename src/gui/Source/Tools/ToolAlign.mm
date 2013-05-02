@@ -117,7 +117,7 @@
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = nil;
-    for (int i=0; i<[inlets count]; i++)
+    for (size_t i=0; i<[inlets count]; i++)
         {
         Inlet* theInlet = [inlets objectAtIndex:i];
         for (int j=0; j<[theInlet numberOfConnections]; j++)
@@ -154,7 +154,7 @@
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
 
     // write the alignment files to the temporary directory
-    for (int i=0; i<[unalignedData count]; i++)
+    for (size_t i=0; i<[unalignedData count]; i++)
         {
         // have the data object save a fasta file to the temporary directory
         RbData* d = [unalignedData objectAtIndex:i];
@@ -170,7 +170,7 @@
     // align each file on a separate thread
     taskCount = 0;
     NSMutableArray* taskArray = [NSMutableArray arrayWithCapacity:1];
-    for (int i=0; i<[unalignedData count]; i++)
+    for (size_t i=0; i<[unalignedData count]; i++)
         {
         // increment task count
         taskCount++;
@@ -279,7 +279,7 @@
     [self setDataWorkspaceName:@""];
 
     // set the alignment method for every data matrix
-    for (int i=0; i<[dataMatrices count]; i++)
+    for (size_t i=0; i<[dataMatrices count]; i++)
         {
         RbData* d = [dataMatrices objectAtIndex:i];
         [d setIsHomologyEstablished:YES];
@@ -291,7 +291,7 @@
         NSString* brokenName     = [brokenNameArray objectAtIndex:0];
         [d setName:brokenName];
         alignedName = [d name];
-        for (int j=0; j<[unalignedData count]; j++)
+        for (size_t j=0; j<[unalignedData count]; j++)
             {
             NSString* unalignedName  = [[unalignedData objectAtIndex:j] name];
             if ( [alignedName isEqualToString:unalignedName] == YES )
@@ -491,7 +491,7 @@
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = nil;
-    for (int i=0; i<[inlets count]; i++)
+    for (size_t i=0; i<[inlets count]; i++)
         {
         Inlet* theInlet = [inlets objectAtIndex:i];
         for (int j=0; j<[theInlet numberOfConnections]; j++)
@@ -511,7 +511,7 @@
 
     // calculate how many unaligned data matrices exist
     NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
-    for (int i=0; i<[dataTool numDataMatrices]; i++)
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
         {
         if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == NO )
             [unalignedData addObject:[dataTool dataMatrixIndexed:i]];
@@ -524,11 +524,11 @@
         
     // check that the aligned data in this tool can all be traced to unaligned data in the ToolReadData tool
     int numNotTraced = 0;
-    for (int i=0; i<[unalignedData count]; i++)
+    for (size_t i=0; i<[unalignedData count]; i++)
         {
         RbData* ud = [unalignedData objectAtIndex:i];
         BOOL tracedData = NO;
-        for (int j=0; j<[dataMatrices count]; j++)
+        for (size_t j=0; j<[dataMatrices count]; j++)
             {
             RbData* d = [dataMatrices objectAtIndex:j];
             if ( [d copiedFrom] == ud )

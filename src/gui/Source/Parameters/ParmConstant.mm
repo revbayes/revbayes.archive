@@ -223,7 +223,7 @@
     
     if ( [constantValues count] == 0 )
         return NO;
-    for (int i=0; i<[constantValues count]; i++)
+    for (size_t i=0; i<[constantValues count]; i++)
         {
         if ( [[[constantValues objectAtIndex:i] className] isEqualToString:@"PartitionConstant"] == NO )
             return NO;

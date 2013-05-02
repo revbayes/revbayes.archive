@@ -50,7 +50,7 @@
 
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
-    for (int i=0; i<[inlets count]; i++)
+    for (size_t i=0; i<[inlets count]; i++)
         {
         Inlet* theInlet = [inlets objectAtIndex:i];
         for (int j=0; j<[theInlet numberOfConnections]; j++)
@@ -66,7 +66,7 @@
 
     // calculate how many aligned data matrices exist
     NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
-    for (int i=0; i<[dataTool numDataMatrices]; i++)
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
         {
         if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
             [alignedData addObject:[dataTool dataMatrixIndexed:i]];
@@ -89,7 +89,7 @@
         
     // check to see if a tree container is downstream of this tool. If so, then purge
     // it of trees
-    for (int i=0; i<[outlets count]; i++)
+    for (size_t i=0; i<[outlets count]; i++)
         {
         Outlet* theOutlet = [outlets objectAtIndex:i];
         for (int j=0; j<[theOutlet numberOfConnections]; j++)
@@ -133,7 +133,7 @@
                     if ( [c isGapState] == YES || [c isAmbig] == YES )
                         {
                         unsigned x = 0;
-                        for (int s=0; s<[c numStates]; s++)
+                        for (size_t s=0; s<[c numStates]; s++)
                             x += (int)(pow(2.0, (double)s));
                         stateSets[i1][j1] = x;
                         }
@@ -231,14 +231,14 @@
     if ( treeSetTool == nil )
         return YES;
         
-    for (int i=0; i<[bestTrees count]; i++)
+    for (size_t i=0; i<[bestTrees count]; i++)
         {
         NSMutableArray* treeNodeData = [NSKeyedUnarchiver unarchiveObjectWithData:[bestTrees objectAtIndex:i]];
         [treeNodeData retain];
         GuiTree* newTree = [[GuiTree alloc] init];
         [newTree setNodesToArray:treeNodeData];
         Node* newRoot = nil;
-        for (int j=0; j<[treeNodeData count]; j++)
+        for (size_t j=0; j<[treeNodeData count]; j++)
             {
             if ( [[treeNodeData objectAtIndex:j] isRoot] == YES )
                 newRoot = [treeNodeData objectAtIndex:j];
@@ -365,7 +365,7 @@
         [currentTree addObject:q];
         
         // loop over the branches of the current tree to which p and q will be added
-        for (int i=0; i<[nodes count]; i++)
+        for (size_t i=0; i<[nodes count]; i++)
             {
             Node* b = [nodes objectAtIndex:i];
             if ( [b isRoot] == NO )

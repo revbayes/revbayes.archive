@@ -39,9 +39,9 @@
     return ancestor;
 }
 
-- (Node*)descendantIndexed:(int)idx {
+- (Node*)descendantIndexed:(size_t)idx {
 
-    if (idx < 0 || idx >= [descendants count])
+    if ( idx >= [descendants count] )
         return nil;
     return [descendants objectAtIndex:idx];
 }
@@ -113,7 +113,7 @@
         std::cout << [ancestor index] << " (";
     else
         std::cout << "NIL (";
-    for (int i=0; i<[descendants count]; i++)
+    for (size_t i=0; i<[descendants count]; i++)
         {
         std::cout << [(Node*)[descendants objectAtIndex:i] index];
         if (i + 1 < [descendants count])

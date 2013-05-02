@@ -311,7 +311,7 @@
 
     if ( [probabilityModel count] == 0 )
         return NO;
-    for (int i=0; i<[probabilityModel count]; i++)
+    for (size_t i=0; i<[probabilityModel count]; i++)
         {
         if ( [[[probabilityModel objectAtIndex:i] className] isEqualToString:@"PartitionModel"] == NO )
             return NO;

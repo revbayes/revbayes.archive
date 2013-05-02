@@ -36,7 +36,7 @@
                 {
                 NSString* queryName = [d0 taxonWithIndex:n];
                 BOOL taxonPresentInAllMatrices = YES;
-                for (int i=1; i<[alignedData count]; i++)
+                for (size_t i=1; i<[alignedData count]; i++)
                     {
                     RbData* di = [alignedData objectAtIndex:i];
                     if ([di isTaxonNamePresent:queryName] == NO)
@@ -51,7 +51,7 @@
         {
         // find the names that are found in at least one of the data matrices
         // (i.e., find the union of the names among all of the data matrices
-        for (int i=0; i<[alignedData count]; i++)
+        for (size_t i=0; i<[alignedData count]; i++)
             {
             RbData* di = [alignedData objectAtIndex:i];
             for (int n=0; n<[di numTaxa]; n++)
@@ -92,7 +92,7 @@
                 NSLog(@"Problem concatenating data because of a matrix of unknown type");
             }
             
-        for (int i=0; i<6; i++)
+        for (size_t i=0; i<6; i++)
             {
             int nc = -1;
             if (dataTypePresent[i] == YES)
@@ -111,11 +111,11 @@
                             RbTaxonData* tdToCopy = [d getDataForTaxonWithName:name];
                             if (tdToCopy != nil)
                                 {
-                                for (int i=0; i<[tdToCopy numCharacters]; i++)
+                                for (size_t j=0; j<[tdToCopy numCharacters]; j++)
                                     {
-                                    RbDataCell* c = [tdToCopy dataCellIndexed:i];
+                                    RbDataCell* c = [tdToCopy dataCellIndexed:j];
                                     RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
-                                    if ([d isCharacterExcluded:i] == YES)
+                                    if ([d isCharacterExcluded:j] == YES)
                                         [newD excludeCharacterIndexed:k];
                                     [td addObservation:newC];
                                     k++;
@@ -123,11 +123,11 @@
                                 }
                             else
                                 {
-                                for (int i=0; i<[d numCharactersForTaxon:0]; i++)
+                                for (size_t j=0; j<[d numCharactersForTaxon:0]; j++)
                                     {
                                     RbDataCell* newC = [[RbDataCell alloc] init];
                                     [newC setDiscreteStateTo:(-1)];
-                                    if ([d isCharacterExcluded:i] == YES)
+                                    if ([d isCharacterExcluded:j] == YES)
                                         [newD excludeCharacterIndexed:k];
                                     [td addObservation:newC];
                                     k++;
@@ -242,10 +242,10 @@
 
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
-    for (int i=0; i<[inlets count]; i++)
+    for (size_t i=0; i<[inlets count]; i++)
         {
         Inlet* theInlet = [inlets objectAtIndex:i];
-        for (int j=0; j<[theInlet numberOfConnections]; j++)
+        for (size_t j=0; j<[theInlet numberOfConnections]; j++)
             {
             Connection* c = [theInlet connectionWithIndex:j];
             Tool* t = [[c outlet] toolOwner];
@@ -262,7 +262,7 @@
 
     // calculate how many aligned data matrices exist
     NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
-    for (int i=0; i<[dataTool numDataMatrices]; i++)
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
         {
         if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
             [alignedData addObject:[dataTool dataMatrixIndexed:i]];

@@ -64,6 +64,9 @@ namespace RevBayesCore {
         
     protected:
         // helper method for this and derived classes
+        void                                                                computeRootLikelihood(size_t root, const std::vector<size_t> &c);
+        void                                                                computeInternalNodeLikelihood(const TopologyNode &node, size_t left, size_t right);
+        void                                                                computeTipLikelihood(const TopologyNode &node);
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
@@ -72,9 +75,8 @@ namespace RevBayesCore {
         virtual void                                                        touchSpecialization(DagNode *toucher);
         
         // pure virtual methods
-        virtual void                                                        computeRootLikelihood(const std::vector<size_t> &c) = 0;
-        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &node, size_t left, size_t right) = 0;
-        virtual void                                                        computeTipLikelihood(const TopologyNode &node) = 0;
+        virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen) = 0;
+        virtual const std::vector<double>&                                  getRootFrequencies(void) = 0;
         virtual CharacterData<charType>*                                    simulate(const TopologyNode& node) = 0;
         
         // members
@@ -84,10 +86,13 @@ namespace RevBayesCore {
         size_t                                                              numSites;
         const TypedDagNode<treeType>*                                       tau;
         const TypedDagNode<std::vector<double> >*                           siteRates;
+        std::vector<TransitionProbabilityMatrix>                            transitionProbMatrices;
         
+        // the likelihoods
         std::vector< std::vector< std::vector< std::vector< std::vector< double > > > > >      partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
         
+        // the data
         std::vector<std::vector<unsigned int> >                             charMatrix;
         std::vector<std::vector<bool> >                                     gapMatrix;
         std::vector<size_t>                                                 patternCounts;
@@ -100,7 +105,6 @@ namespace RevBayesCore {
         
         std::vector<bool>                                                   changedNodes;
         std::vector<bool>                                                   dirtyNodes;
-        std::vector<bool>                                                   dirtySiteRates;
     };
     
 }
@@ -122,7 +126,8 @@ numChars( charType().getNumberOfStates() ),
 numRates( sr->getValue().size() ),
 tau( t ), 
 siteRates( sr ),
-partialLikelihoods( std::vector<std::vector<std::vector<std::vector<std::vector<double> > > > >( 2, std::vector< std::vector<std::vector<std::vector<double> > > >( numRates, std::vector<std::vector<std::vector<double> > >(tau->getValue().getNumberOfNodes(), std::vector<std::vector<double> >( numSites, std::vector<double>(numChars, 0.0) ) ) ) ) ),
+transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numRates, TransitionProbabilityMatrix(numChars) ) ),
+partialLikelihoods( std::vector<std::vector<std::vector<std::vector<std::vector<double> > > > >( 2, std::vector< std::vector<std::vector<std::vector<double> > > >( tau->getValue().getNumberOfNodes(), std::vector<std::vector<std::vector<double> > >( numRates, std::vector<std::vector<double> >( numSites, std::vector<double>(numChars, 0.0) ) ) ) ) ),
 activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) )      ,
 charMatrix(), 
 gapMatrix(),
@@ -130,11 +135,11 @@ patternCounts(),
 numPatterns( numSites ),
 compressed( c ),
 changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
-dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
-dirtySiteRates( std::vector<bool>(siteRates->getValue().size(), true) ) {
+dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ) {
     
     // add the parameters to the parents list
     this->addParameter( tau );
+    this->addParameter( siteRates );
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
     
@@ -148,6 +153,7 @@ numChars( n.numChars ),
 numRates( n.numRates ),
 tau( n.tau ), 
 siteRates( n.siteRates ),
+transitionProbMatrices( n.transitionProbMatrices ),
 partialLikelihoods( n.partialLikelihoods ),
 activeLikelihood( n.activeLikelihood ),
 charMatrix( n.charMatrix ), 
@@ -156,8 +162,7 @@ patternCounts( n.patternCounts ),
 numPatterns( n.numPatterns ),
 compressed( n.compressed ),
 changedNodes( n.changedNodes ),
-dirtyNodes( n.dirtyNodes ),
-dirtySiteRates( n.dirtySiteRates ) {
+dirtyNodes( n.dirtyNodes ) {
     // parameters are automatically copied
     
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -208,10 +213,214 @@ double RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel2<charType, tre
             childrenIndices.push_back( childIndex );
         }
         
-        computeRootLikelihood( childrenIndices );
+        computeRootLikelihood( rootIndex, childrenIndices );
     }
     
     return this->lnProb;
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel2<charType, treeType>::computeRootLikelihood( size_t root, const std::vector<size_t> &children) {
+    
+    // reset the likelihood
+    this->lnProb = 0.0;
+    
+    // sum the per site probabilities
+    const std::vector<double> &f                    = getRootFrequencies();
+    std::vector<double>::const_iterator f_end       = f.end();
+    size_t left = children[0];
+    size_t right = children[1];
+    
+    std::vector< std::vector< std::vector< double > > > &p_left   = this->partialLikelihoods[activeLikelihood[left]][left];
+    std::vector< std::vector< std::vector< double > > > &p_right  = this->partialLikelihoods[activeLikelihood[right]][right];
+    
+    std::vector<double> per_rate_Likelihoods = std::vector<double>(numPatterns,0.0);
+    
+    // iterate over all rates
+    std::vector< std::vector< std::vector< double > > >::const_iterator   p_rate_left     = p_left.begin();
+    std::vector< std::vector< std::vector< double > > >::const_iterator   end             = p_left.end();
+    std::vector< std::vector< std::vector< double > > >::const_iterator   p_rate_right    = p_right.begin();
+    for (; p_rate_left != end; ++p_rate_left, ++p_rate_right) 
+    {
+        
+        // iterate over all sites
+        std::vector< std::vector< double > >::const_iterator   p_site_rate_left     = p_rate_left->begin();
+        std::vector< std::vector< double > >::const_iterator   p_site_rate_right    = p_rate_right->begin();
+        for (size_t site = 0; site < numPatterns; ++site, ++p_site_rate_left, ++p_site_rate_right)
+        {
+            
+            double tmp = 0.0;
+            std::vector<double>::const_iterator f_j             = f.begin();
+            std::vector<double>::const_iterator p_site_left_j   = p_site_rate_left->begin();
+            std::vector<double>::const_iterator p_site_right_j  = p_site_rate_right->begin();
+            for (; f_j != f.end(); ++f_j, ++p_site_left_j, ++p_site_right_j) 
+            {
+                tmp += *p_site_left_j * *p_site_right_j * *f_j;
+            }
+            per_rate_Likelihoods[site] += tmp;
+        }
+        
+    }
+    
+    std::vector< size_t >::const_iterator patterns = patternCounts.begin();
+    for (size_t site = 0; site < numPatterns; ++site, ++patterns)
+    {
+        this->lnProb += log( per_rate_Likelihoods[site] ) * *patterns;
+    }
+    this->lnProb -= log( numRates ) * numSites;
+    
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel2<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t left, size_t right) {    
+    
+    // get the index in the node sequence
+    size_t nodeIndex = node.getIndex();
+    
+    // compute the transition probability matrix
+    //    rateMatrix->getValue().calculateTransitionProbabilities( node.getBranchLength()*rateMultiplier->getValue(), transitionProbabilities);
+    //    const TransitionProbabilityMatrix &tpm = computeTransitionProbabilities( nodeIndex, node.getBranchLength()*rateMultiplier->getValue() );
+    updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    
+    std::vector< std::vector< std::vector< double > > > &p_left = this->partialLikelihoods[this->activeLikelihood[left]][left];
+    std::vector< std::vector< std::vector< double > > > &p_right = this->partialLikelihoods[this->activeLikelihood[right]][right];
+    std::vector< std::vector< std::vector< double > > > &p_node = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
+    
+    // iterate over all rates
+    std::vector< std::vector< std::vector< double > > >::const_iterator   p_rate_left     = p_left.begin();
+    std::vector< std::vector< std::vector< double > > >::const_iterator   p_rate_right    = p_right.begin();
+    std::vector< std::vector< std::vector< double > > >::iterator         p_rate          = p_node.begin();
+//    std::vector< std::vector< std::vector< double > > >::iterator         p_end           = p_node.end();
+    for (size_t rate = 0; rate < numRates; ++rate, ++p_rate, ++p_rate_left, ++p_rate_right) 
+    {
+        
+        const TransitionProbabilityMatrix &tpm = transitionProbMatrices[rate];
+        std::vector<std::vector<double> >::const_iterator   tp_begin    = tpm.begin();
+        std::vector<std::vector<double> >::const_iterator   tp_end      = tpm.end();
+        
+        // compute the per site probabilities
+        std::vector< std::vector< double > >::iterator          p_site_rate          = p_rate->begin();
+        std::vector< std::vector< double > >::const_iterator    p_site_rate_left     = p_rate_left->begin();
+        std::vector< std::vector< double > >::const_iterator    p_site_rate_right    = p_rate_right->begin();
+        std::vector< std::vector< double > >::iterator          p_end                = p_rate->end();
+        for (; p_site_rate != p_end ; ++p_site_rate_left, ++p_site_rate_right, ++p_site_rate)
+        {
+            
+            
+            // iterate over the possible starting states
+            std::vector<double>::iterator                       p_a     = p_site_rate->begin();
+            std::vector<std::vector<double> >::const_iterator   tp_a    = tp_begin;
+            for (; tp_a != tp_end; ++tp_a, ++p_a) 
+            {
+                
+                double sum = 0.0;
+                
+                // iterate over all possible terminal states
+                std::vector<double>::const_iterator p_site_left_d   = p_site_rate_left->begin();
+                std::vector<double>::const_iterator p_site_right_d  = p_site_rate_right->begin();
+                std::vector<double>::const_iterator tp_a_d          = tp_a->begin();
+                std::vector<double>::const_iterator tp_a_end        = tp_a->end();
+                for (; tp_a_d != tp_a_end; ++tp_a_d, ++p_site_left_d, ++p_site_right_d ) 
+                {
+                    sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
+                }
+                *p_a = sum;
+            }
+        }
+    }
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel2<charType, treeType>::computeTipLikelihood(const TopologyNode &node) {    
+    
+    // get the index in the node sequence
+    size_t nodeIndex = node.getIndex();
+    
+    std::vector< std::vector< std::vector< double> > > &p_node = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
+    
+    std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
+    
+    std::vector<unsigned int> &char_node = this->charMatrix[nodeIndex];
+    
+    // compute the transition probabilities
+    //    rateMatrix->getValue().calculateTransitionProbabilities( node.getBranchLength()*rateMultiplier->getValue(), transitionProbabilities );
+    //    const TransitionProbabilityMatrix &tpm = computeTransitionProbabilities( nodeIndex, node.getBranchLength()*rateMultiplier->getValue() );
+    updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    
+    // compute the per site probabilities
+    
+    
+    // iterate over all rates
+    std::vector< std::vector< std::vector< double > > >::iterator   p_rate      = p_node.begin();
+    for (size_t rate = 0; rate < numRates; ++rate, ++p_rate)
+    {
+        const TransitionProbabilityMatrix &tpm = transitionProbMatrices[rate];
+        std::vector<std::vector<double> >::const_iterator   tp_begin    = tpm.begin();
+        std::vector<std::vector<double> >::const_iterator   tp_end      = tpm.end();
+        
+        // pointers to the data per site
+        std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
+        std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
+        
+        //iterate over all sites
+        std::vector< std::vector< double > >::iterator p_site_rate      = p_rate->begin();
+        std::vector< std::vector< double > >::iterator p_end            = p_rate->end();
+    
+        for (; p_site_rate != p_end; ++p_site_rate, ++char_site, ++gap_site) 
+        {
+        
+            if ( *gap_site == true ) 
+            {
+            
+                std::vector<double>::iterator                       p_a     = p_site_rate->begin();
+                std::vector<std::vector<double> >::const_iterator   tp_a    = tp_begin;
+                for (; tp_a != tp_end; ++tp_a, ++p_a) 
+                {
+                    
+                    double tmp = 0.0;
+                    
+                    std::vector<double>::const_iterator d   = tp_a->begin();
+                    std::vector<double>::const_iterator end = tp_a->end();
+                    for (; d != end; ++d) 
+                    {
+                        tmp += *d;
+                    }
+                    *p_a = tmp;
+                }
+            } 
+            else 
+            {
+                unsigned int org_val = *char_site;
+                            
+                
+                std::vector<double>::iterator                       p_a     = p_site_rate->begin();
+                std::vector<std::vector<double> >::const_iterator   tp_a    = tp_begin;
+                for (; tp_a != tp_end; ++tp_a, ++p_a) 
+                {
+                    
+                    double tmp = 0.0;
+                    
+                    unsigned int val = org_val;
+                    std::vector<double>::const_iterator d   = tp_a->begin();
+                    std::vector<double>::const_iterator end = tp_a->end();
+                    for (; d != end; ++d) 
+                    {
+                        if ( (val & 1) == 1 ) 
+                        {
+                            tmp += *d;
+                        }
+                        
+                        val >>= 1;
+                    }
+                    *p_a = tmp;
+                }
+            }
+        }
+    }
+    
 }
 
 
@@ -267,7 +476,7 @@ void RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel2<charType, treeT
         (*it) = false;
     }
     
-    for (std::vector<bool>::iterator it = this->changed.begin(); it != this->changed.end(); ++it) 
+    for (std::vector<bool>::iterator it = this->changedNodes.begin(); it != this->changedNodes.end(); ++it) 
     {
         (*it) = false;
     }
@@ -435,7 +644,7 @@ void RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel2<charType, treeT
     }
     
     // finally we resize the partial likelihood vectors to the new pattern counts
-    partialLikelihoods = std::vector<std::vector<std::vector<std::vector<std::vector<double> > > > >( 2, std::vector<std::vector<std::vector<std::vector<double> > > >( numRates, std::vector<std::vector<std::vector<double> > >(tau->getValue().getNumberOfNodes(), std::vector<std::vector<double> >( numPatterns, std::vector<double>(numChars, 0.0) ) ) ) );
+    partialLikelihoods = std::vector<std::vector<std::vector<std::vector<std::vector<double> > > > >( 2, std::vector<std::vector<std::vector<std::vector<double> > > >( tau->getValue().getNumberOfNodes(), std::vector<std::vector<std::vector<double> > >( numRates, std::vector<std::vector<double> >( numPatterns, std::vector<double>(numChars, 0.0) ) ) ) );
     
 }
 
@@ -447,6 +656,10 @@ void RevBayesCore::AbstractSiteHeterogeneousMixtureCharEvoModel2<charType, treeT
     {
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
+    }
+    else if ( oldP == siteRates )
+    {
+        siteRates = static_cast< const TypedDagNode< std::vector< double > > * >( newP );
     }
     
 }

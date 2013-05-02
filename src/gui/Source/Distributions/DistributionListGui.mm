@@ -32,9 +32,9 @@
     [super dealloc];
 }
 
-- (DistributionGui*)getDistributionWithIndex:(int)idx {
+- (DistributionGui*)getDistributionWithIndex:(size_t)idx {
 
-    if ( (idx + 1) > [distributionList count] || idx < 0 )
+    if ( (idx + 1) > [distributionList count] )
         return nil;
     return [distributionList objectAtIndex:idx];
 }
@@ -77,7 +77,7 @@
 
 - (DistributionGui*)newDistributionWithName:(NSString*)distName andParm:(Parm*)prm {
     
-    for (int i=0; i<[distributionList count]; i++)
+    for (size_t i=0; i<[distributionList count]; i++)
         {
         DistributionGui* d = [distributionList objectAtIndex:i];
         if ( [[d distributionName] isEqualToString:distName] == YES )

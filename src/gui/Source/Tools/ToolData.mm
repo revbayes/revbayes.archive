@@ -44,7 +44,7 @@
     return dataMatrices;
 }
 
-- (RbData*)dataMatrixIndexed:(int)i {
+- (RbData*)dataMatrixIndexed:(size_t)i {
 
 	if (i > [dataMatrices count])
 		return nil;
@@ -64,7 +64,7 @@
 - (NSMutableArray*)getAlignedData {
 
     NSMutableArray* arr = [NSMutableArray arrayWithCapacity:0];
-    for (int i=0; i<[dataMatrices count]; i++)
+    for (size_t i=0; i<[dataMatrices count]; i++)
         {
         RbData* d = [dataMatrices objectAtIndex:i];
         if ( [d isHomologyEstablished] == YES )
@@ -76,7 +76,7 @@
 - (NSMutableArray*)getUnalignedData {
 
     NSMutableArray* arr = [NSMutableArray arrayWithCapacity:0];
-    for (int i=0; i<[dataMatrices count]; i++)
+    for (size_t i=0; i<[dataMatrices count]; i++)
         {
         RbData* d = [dataMatrices objectAtIndex:i];
         if ( [d isHomologyEstablished] == NO )
@@ -179,7 +179,7 @@
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
     
     // write the data matrix/matrices in this tool to the temporary directory
-    for (int i=0; i<[dataMatrices count]; i++)
+    for (size_t i=0; i<[dataMatrices count]; i++)
         {
         // have the data object save a file to the temporary directory
         RbData* d = [dataMatrices objectAtIndex:i];
@@ -248,7 +248,7 @@
     else if ( dt == "Continuous" )
         [m setDataType:CONTINUOUS];
 
-    for (int i=0; i<cd.getNumberOfTaxa(); i++)
+    for (size_t i=0; i<cd.getNumberOfTaxa(); i++)
     {        
         const RevBayesCore::AbstractTaxonData& td = cd.getTaxonData(i);
         NSString* taxonName = [NSString stringWithCString:td.getTaxonName().c_str() encoding:NSUTF8StringEncoding];
@@ -256,7 +256,7 @@
         [m addTaxonName:taxonName];
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
-        for (int j=0; j<cd.getNumberOfCharacters(i); j++)
+        for (size_t j=0; j<cd.getNumberOfCharacters(i); j++)
         {
             const RevBayesCore::CharacterState& theChar = td.getCharacter(j);
             RbDataCell* cell = [[RbDataCell alloc] init];
@@ -301,14 +301,14 @@
     return [[dataMatrices objectAtIndex:idx] name];
 }
 
-- (int)numDataMatrices {
+- (size_t)numDataMatrices {
 
-	return (int)[dataMatrices count];
+	return [dataMatrices count];
 }
 
-- (int)numAlignedMatrices {
+- (size_t)numAlignedMatrices {
 
-    int n = 0;
+    size_t n = 0;
     NSEnumerator* matrixEnumerator = [dataMatrices objectEnumerator];
     RbData* d = nil;
     while ( (d = [matrixEnumerator nextObject]) )
@@ -319,9 +319,9 @@
     return n;
 }
 
-- (int)numUnalignedMatrices {
+- (size_t)numUnalignedMatrices {
 
-    int n = 0;
+    size_t n = 0;
     NSEnumerator* matrixEnumerator = [dataMatrices objectEnumerator];
     RbData* d = nil;
     while ( (d = [matrixEnumerator nextObject]) )

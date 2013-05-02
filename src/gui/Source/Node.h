@@ -39,7 +39,7 @@
 - (void)addDescendantAtLeftMostPosition:(Node*)des;
 - (int)numberOfDescendants;
 - (Node*)ancestor;
-- (Node*)descendantIndexed:(int)idx;
+- (Node*)descendantIndexed:(size_t)idx;
 - (void)print;
 - (void)removeDescendant:(Node*)des;
 - (void)removeAllDescendants;
