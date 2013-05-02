@@ -66,41 +66,48 @@ Simplex& Simplex::operator=(const Simplex &v) {
 
 /** Get iterator to the beginning of the Container. */
 Simplex::iterator Simplex::begin( void ) {
+    
     return value->getValue().begin();
 }
 
 
 /** Get const-iterator to the beginning of the Container. */
 Simplex::const_iterator Simplex::begin( void ) const {
+    
     return value->getValue().begin();
 }
 
 
 /** Clear the container. */
 void Simplex::clear( void ) {
+    
     return value->getValue().clear();
 }
 
 
 Simplex* Simplex::clone( void ) const {
+    
     return new Simplex( *this );
 }
 
 
 /** Clear the container. */
 RbLanguageObject* Simplex::convertTo(const TypeSpec &type ) const {
+    
     return Container::convertTo( type );
 }
 
 
 /** Get iterator to the end of the Vector. */
 Simplex::iterator Simplex::end( void ) {
+    
     return value->getValue().end();
 }
 
 
 /** Get const-iterator to the end of the Vector. */
 Simplex::const_iterator Simplex::end( void ) const {
+    
     return value->getValue().end();
 }
 
@@ -108,7 +115,8 @@ Simplex::const_iterator Simplex::end( void ) const {
 /* Map calls to member methods */
 RbLanguageObject* Simplex::executeMethod(std::string const &name, const std::vector<Argument> &args) {
         
-    if ( name == "[]") {
+    if ( name == "[]") 
+    {
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
             
@@ -140,7 +148,8 @@ int Simplex::findIndex(const RbLanguageObject& x) const {
     
     // initialize the index
     int index = 0;
-    for ( i = value->getValue().begin(); i != value->getValue().end(); i++, index++) {
+    for ( i = value->getValue().begin(); i != value->getValue().end(); i++, index++) 
+    {
         // test if the object matches
         // note that we rely on the implemented operator==
         //if ( *i == x.getValue() ) {
@@ -171,6 +180,7 @@ const TypeSpec& Simplex::getClassTypeSpec(void) {
 
 
 RbLanguageObject* Simplex::getElement(size_t index) {
+    
     return new RealPos( value->getValue()[index] );
 }
 
@@ -181,7 +191,8 @@ const MethodTable&  Simplex::getMethods(void) const {
     static MethodTable methods      = MethodTable();
     static bool        methodsSet   = false;
     
-    if ( methodsSet == false ) {
+    if ( methodsSet == false ) 
+    {
         
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();

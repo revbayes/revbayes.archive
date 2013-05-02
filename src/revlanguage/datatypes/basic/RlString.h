@@ -32,6 +32,7 @@ namespace RevLanguage {
             RlString(int i);                                                                        //!< Constructor from int
             RlString(double i);                                                                     //!< Constructor from double
             RlString(const std::string& v);                                                         //!< Constructor from RlString
+            RlString(RevBayesCore::TypedDagNode<std::string> *x);                                   //!< Construct from DAG node
 
             // Basic utility functions
             RlString*                       clone(void) const;                                      //!< Copy

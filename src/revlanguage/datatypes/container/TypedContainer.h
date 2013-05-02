@@ -120,9 +120,11 @@ RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, Re
 template <typename rbType>
 RevLanguage::TypedContainer<rbType>::TypedContainer(const TypedContainer &v) : Container( v ), value( NULL ) {
     
-    if ( v.value != NULL ) {
+    if ( v.value != NULL ) 
+    {
         value = v.value->clone();
     }
+    
 }
 
 
@@ -137,13 +139,15 @@ RevLanguage::TypedContainer<rbType>::~TypedContainer() {
 template <typename rbType>
 RevLanguage::TypedContainer<rbType>& RevLanguage::TypedContainer<rbType>::operator=(const TypedContainer &v) {
     
-    if ( this != &v ) {
+    if ( this != &v ) 
+    {
         // free the memory
         delete value;
         value = NULL;
         
         // create own copy
-        if ( v.value != NULL ) {
+        if ( v.value != NULL ) 
+        {
             value = v.value->clone();
         }
     }
@@ -155,6 +159,7 @@ RevLanguage::TypedContainer<rbType>& RevLanguage::TypedContainer<rbType>::operat
 /** Get iterator to the beginning of the Container. */
 template <typename rlType>
 typename rlType::iterator RevLanguage::TypedContainer<rlType>::begin( void ) {
+    
     return value->getValue().begin();
 }
 
@@ -162,6 +167,7 @@ typename rlType::iterator RevLanguage::TypedContainer<rlType>::begin( void ) {
 /** Get const-iterator to the beginning of the Container. */
 template <typename rlType>
 typename rlType::const_iterator RevLanguage::TypedContainer<rlType>::begin( void ) const {
+    
     return value->getValue().begin();
 }
 
@@ -169,6 +175,7 @@ typename rlType::const_iterator RevLanguage::TypedContainer<rlType>::begin( void
 /** Clear the container. */
 template <typename rlType>
 void RevLanguage::TypedContainer<rlType>::clear( void ) {
+    
     return value->getValue().clear();
 }
 
@@ -176,6 +183,7 @@ void RevLanguage::TypedContainer<rlType>::clear( void ) {
 /** Clear the container. */
 template <typename rlType>
 RevLanguage::RbLanguageObject* RevLanguage::TypedContainer<rlType>::convertTo(const RevLanguage::TypeSpec &type ) const {
+    
     return Container::convertTo( type );
 }
 
@@ -183,6 +191,7 @@ RevLanguage::RbLanguageObject* RevLanguage::TypedContainer<rlType>::convertTo(co
 /** Get iterator to the end of the Vector. */
 template <typename rlType>
 typename rlType::iterator RevLanguage::TypedContainer<rlType>::end( void ) {
+    
     return value->getValue().end();
 }
 
@@ -190,6 +199,7 @@ typename rlType::iterator RevLanguage::TypedContainer<rlType>::end( void ) {
 /** Get const-iterator to the end of the Vector. */
 template <typename rlType>
 typename rlType::const_iterator RevLanguage::TypedContainer<rlType>::end( void ) const {
+    
     return value->getValue().end();
 }
 
@@ -198,7 +208,8 @@ typename rlType::const_iterator RevLanguage::TypedContainer<rlType>::end( void )
 template <typename rbType>
 RevLanguage::RbLanguageObject* RevLanguage::TypedContainer<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "clamp") {
+    if (name == "clamp") 
+    {
         
         // check whether the variable is actually a stochastic node
         if ( !value->isStochastic() ) {
@@ -215,10 +226,12 @@ RevLanguage::RbLanguageObject* RevLanguage::TypedContainer<rbType>::executeMetho
         
         return NULL;
     } 
-    else if (name == "setValue") {
+    else if (name == "setValue") 
+    {
         
         // check whether the variable is actually a stochastic node
-        if ( !value->isStochastic() ) {
+        if ( !value->isStochastic() ) 
+        {
             throw RbException("You can only set the value of a stochastic variable.");
         }
         // convert the node
@@ -232,12 +245,30 @@ RevLanguage::RbLanguageObject* RevLanguage::TypedContainer<rbType>::executeMetho
         
         return NULL;
     } 
-    else if ( name == "sort" ) {
+    else if (name == "redraw") 
+    {
+        
+        // check whether the variable is actually a stochastic node
+        if ( !value->isStochastic() ) 
+        {
+            throw RbException("You can only set the value for stochastic variables.");
+        }
+        // convert the node
+        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+        
+        // redraw the value
+        stochNode->redraw();
+        
+        return NULL;
+    } 
+    else if ( name == "sort" ) 
+    {
         sort();
         
         return NULL;
     }
-    else if ( name == "unique" ) {
+    else if ( name == "unique" ) 
+    {
         unique();
         
         return NULL;
@@ -263,7 +294,8 @@ int RevLanguage::TypedContainer<rbType>::findIndex(const RbLanguageObject& x) co
     
     // initialize the index
     int index = 0;
-    for ( i = value->getValue().begin(); i != value->getValue().end(); i++, index++) {
+    for ( i = value->getValue().begin(); i != value->getValue().end(); i++, index++) 
+    {
         // test if the object matches
         // note that we rely on the implemented operator==
 //        if ( *i == x.getValue() ) {
@@ -285,6 +317,17 @@ const RevLanguage::MethodTable&  RevLanguage::TypedContainer<rbType>::getMethods
     
     if ( methodsSet == false ) 
     {
+        
+        ArgumentRules* clampArgRules = new ArgumentRules();
+        clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
+        methods.addFunction("clamp", new MemberFunction( RbVoid_name, clampArgRules) );
+        
+        ArgumentRules* setValueArgRules = new ArgumentRules();
+        setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
+        methods.addFunction("setValue", new MemberFunction( RbVoid_name, setValueArgRules) );
+        
+        ArgumentRules* redrawArgRules = new ArgumentRules();
+        methods.addFunction("redraw", new MemberFunction( RbVoid_name, redrawArgRules) );
         
         // add method for call "x.sort()" as a function
         ArgumentRules* sortArgRules = new ArgumentRules();
@@ -328,9 +371,11 @@ bool RevLanguage::TypedContainer<rbType>::isConstant( void ) const {
 template <typename rbType>
 void RevLanguage::TypedContainer<rbType>::makeConstantValue( void ) {
     
-    if ( value == NULL ) {
+    if ( value == NULL ) 
+    {
         throw RbException("Cannot convert a variable without value to a constant value.");
-    } else {
+    } else 
+    {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<rbType>* newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(), new rbType(value->getValue()) );
         value->replace(newVal);
@@ -343,11 +388,15 @@ void RevLanguage::TypedContainer<rbType>::makeConstantValue( void ) {
 template <typename rbType>
 void RevLanguage::TypedContainer<rbType>::setName(std::string const &n) {
     
-    if ( value == NULL ) {
+    if ( value == NULL ) 
+    {
         throw RbException("Null-pointer-exception: Cannot set name of value.");
-    } else {
+    } 
+    else 
+    {
         value->setName( n );
     }
+    
 }
 
 
@@ -358,6 +407,7 @@ template <typename rbType>
 void RevLanguage::TypedContainer<rbType>::printValue(std::ostream &o) const {
     
     value->printValue(o);
+    
 }
 
 
@@ -366,7 +416,8 @@ void RevLanguage::TypedContainer<rbType>::replaceVariable(RbLanguageObject *newV
     
     RevBayesCore::DagNode* newParent = newVar->getValueNode();
     
-    while ( value->getNumberOfChildren() > 0 ) {
+    while ( value->getNumberOfChildren() > 0 ) 
+    {
         value->getFirstChild()->swapParent(value, newParent);
     }
     
@@ -378,7 +429,6 @@ template <typename rbType>
 size_t RevLanguage::TypedContainer<rbType>::size( void ) const {
     
     return value->getValue().size();
-    
 }
 
 

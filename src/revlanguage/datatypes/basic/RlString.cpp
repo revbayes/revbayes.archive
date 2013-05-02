@@ -50,6 +50,11 @@ RlString::RlString(double x) : RlModelVariableWrapper<std::string>() {
 }
 
 
+/* Construct from DAG node */
+RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : RlModelVariableWrapper<std::string>( v ) {
+}
+
+
 /** Clone function */
 RlString* RevLanguage::RlString::clone() const {
 

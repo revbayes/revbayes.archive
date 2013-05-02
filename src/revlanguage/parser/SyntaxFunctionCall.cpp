@@ -101,10 +101,13 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     // Package arguments
     std::vector<Argument> args;
-    for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++) {
+    for (std::list<SyntaxLabeledExpr*>::const_iterator i=arguments->begin(); i!=arguments->end(); i++) 
+    {
+        
 #ifdef DEBUG_PARSER
         printf( "Adding argument with label \"%s\".\n", (*i)->getLabel().c_str() );
 #endif
+        
         const RlString& theLabel = (*i)->getLabel();
         RbPtr<Variable> theVar = (*i)->getExpression().evaluateContent(env);
         
@@ -125,19 +128,23 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
     }
 
     Function* func;
-    if (variable == NULL) {
+    if (variable == NULL) 
+    {
         bool found = false;
         // first, we test if the function corresponds to a user-defined variable
-        if ( env.existsVariable( functionName ) ) {
+        if ( env.existsVariable( functionName ) ) 
+        {
             const RbLanguageObject &theValue = env.getValue( functionName );
-            if ( theValue.isTypeSpec( Function::getClassTypeSpec() ) ) {
+            if ( theValue.isTypeSpec( Function::getClassTypeSpec() ) ) 
+            {
                 const Function &theFunc = static_cast<const Function&>( theValue );
                 func = theFunc.clone();
                 found = func->checkArguments(args, NULL);
             }
         }
 
-        if ( !found ) {
+        if ( !found ) 
+        {
             // @todo: This doesn't work if the function is declared inside a function (or something equivalent)
             func = env.getFunction(functionName, args).clone();
         }
@@ -148,7 +155,8 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         func->processArguments( args );
         func->setExecutionEnviroment( &env );
     }
-    else {
+    else 
+    {
 
         RbPtr<Variable> theVar = variable->evaluateContent( env );
 

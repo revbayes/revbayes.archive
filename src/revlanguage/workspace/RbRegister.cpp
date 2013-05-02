@@ -439,6 +439,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_add",      new Func_add<Integer, Integer, Integer>(  ) );
         addFunction( "_add",      new Func_add<Real, Real, Real>(  ) );
         addFunction( "_add",      new Func_add<RealPos, RealPos, RealPos>(  ) );
+        addFunction( "_add",      new Func_add<RlString, RlString, RlString>(  ) );
         
         
         // division

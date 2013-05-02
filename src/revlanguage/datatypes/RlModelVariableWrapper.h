@@ -100,9 +100,11 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(RevBayesCore
 template <typename rbType>
 RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(const RlModelVariableWrapper &v) : RbLanguageObject(), value( NULL ) {
     
-    if ( v.value != NULL ) {
+    if ( v.value != NULL ) 
+    {
         value = v.value->clone();
     }
+    
 }
 
 
@@ -117,13 +119,15 @@ RevLanguage::RlModelVariableWrapper<rbType>::~RlModelVariableWrapper() {
 template <typename rbType>
 RevLanguage::RlModelVariableWrapper<rbType>& RevLanguage::RlModelVariableWrapper<rbType>::operator=(const RlModelVariableWrapper &v) {
     
-    if ( this != &v ) {
+    if ( this != &v ) 
+    {
         // free the memory
         delete value;
         value = NULL;
         
         // create own copy
-        if ( v.value != NULL ) {
+        if ( v.value != NULL ) 
+        {
             value = v.value->clone();
         }
     }
@@ -136,10 +140,12 @@ RevLanguage::RlModelVariableWrapper<rbType>& RevLanguage::RlModelVariableWrapper
 template <typename rbType>
 RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "clamp") {
+    if (name == "clamp") 
+    {
         
         // check whether the variable is actually a stochastic node
-        if ( !value->isStochastic() ) {
+        if ( !value->isStochastic() ) 
+        {
             throw RbException("Only stochastic variables can be clamped.");
         }
         // convert the node
@@ -153,10 +159,12 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::exec
         
         return NULL;
     } 
-    else if (name == "setValue") {
+    else if (name == "setValue") 
+    {
         
         // check whether the variable is actually a stochastic node
-        if ( !value->isStochastic() ) {
+        if ( !value->isStochastic() ) 
+        {
             throw RbException("You can only set the value for stochastic variables.");
         }
         // convert the node
@@ -167,6 +175,22 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::exec
         
         // set value
         stochNode->setValue( RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
+        
+        return NULL;
+    } 
+    else if (name == "redraw") 
+    {
+        
+        // check whether the variable is actually a stochastic node
+        if ( !value->isStochastic() ) 
+        {
+            throw RbException("You can only set the value for stochastic variables.");
+        }
+        // convert the node
+        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+                
+        // redraw the value
+        stochNode->redraw();
         
         return NULL;
     } 
@@ -191,6 +215,9 @@ const RevLanguage::MethodTable&  RevLanguage::RlModelVariableWrapper<rbType>::ge
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
         methods.addFunction("setValue", new MemberFunction( RbVoid_name, setValueArgRules) );
+        
+        ArgumentRules* redrawArgRules = new ArgumentRules();
+        methods.addFunction("redraw", new MemberFunction( RbVoid_name, redrawArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RbLanguageObject::getMethods() );
@@ -219,6 +246,7 @@ RevBayesCore::TypedDagNode<rbType>* RevLanguage::RlModelVariableWrapper<rbType>:
 
 template <typename rbType>
 bool RevLanguage::RlModelVariableWrapper<rbType>::isConstant( void ) const {
+    
     return value->isConstant();
 }
 
@@ -226,26 +254,34 @@ bool RevLanguage::RlModelVariableWrapper<rbType>::isConstant( void ) const {
 template <typename rbType>
 void RevLanguage::RlModelVariableWrapper<rbType>::makeConstantValue( void ) {
     
-    if ( value == NULL ) {
+    if ( value == NULL ) 
+    {
         throw RbException("Cannot convert a variable without value to a constant value.");
-    } else {
+    } 
+    else 
+    {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<rbType>* newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( value->getValue() ) );
         value->replace(newVal);
         delete value;
         value = newVal;
     }
+    
 }
 
 
 template <typename rbType>
 void RevLanguage::RlModelVariableWrapper<rbType>::setName(std::string const &n) {
     
-    if ( value == NULL ) {
+    if ( value == NULL ) 
+    {
         throw RbException("Null-pointer-exception: Cannot set name of value.");
-    } else {
+    } 
+    else 
+    {
         value->setName( n );
     }
+    
 }
 
 
@@ -264,7 +300,8 @@ void RevLanguage::RlModelVariableWrapper<rbType>::replaceVariable(RbLanguageObje
     
     RevBayesCore::DagNode* newParent = newVar->getValueNode();
     
-    while ( value->getNumberOfChildren() > 0 ) {
+    while ( value->getNumberOfChildren() > 0 ) 
+    {
         value->getFirstChild()->swapParent(value, newParent);
     }
     
@@ -276,14 +313,20 @@ template <typename rbType>
 void RevLanguage::RlModelVariableWrapper<rbType>::setValue(rbType *x) {
     
     RevBayesCore::ConstantNode<rbType>* newVal;
-    if ( value == NULL ) {
+    
+    if ( value == NULL ) 
+    {
         newVal = new RevBayesCore::ConstantNode<rbType>("",x);
-    } else {
+    } 
+    else 
+    {
         newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(),x);
         value->replace(newVal);
         delete value;
     }
+    
     value = newVal;
+    
 }
 
 
