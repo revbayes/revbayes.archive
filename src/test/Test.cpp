@@ -35,7 +35,7 @@
 #include "TestRevLanguage.h"
 #include "TestScalingMove.h"
 #include "TestSimplexMove.h"
-#include "TestRateHeterogeneousGtrModel.h"
+#include "TestSequenceSimulation.h"
 #include "TestSkyline.h"
 #include "TestSlidingMove.h"
 #include "TestTransitionProbabilities.h"
@@ -68,6 +68,14 @@ bool Test::performTests(void) {
     try {
         TestTransitionProbabilities test = TestTransitionProbabilities();
 //        test.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    /* The sequence simulation test */
+    try {
+        TestSequenceSimulation test = TestSequenceSimulation("trees/primates.tree");
+        test.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -199,18 +207,11 @@ bool Test::performTests(void) {
     /* A GTR+Gamma model test */
     try {
         TestGtrGammaModel testGtr = TestGtrGammaModel("data/primates.nex", "trees/primates.tree", 10000);
-        testGtr.run();
+//        testGtr.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
     
-    /* A GTR+Gamma model test */
-    try {
-        TestRateHeterogeneousGtrModel testGtr = TestRateHeterogeneousGtrModel("data/primates.nex", "trees/primates.tree", 50);
-        //testGtr.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
     
     /* A branch-heterogeneous Tamura 1992 model test */
     try {
