@@ -30,7 +30,8 @@ namespace RevBayesCore {
     class TaxonData : public AbstractTaxonData {
     
     public:
-        TaxonData(const std::string &tname="");                                                                     //!< Set type spec of container from type of elements
+        TaxonData(void);                                                                                            //!< Set type spec of container from type of elements
+        TaxonData(const std::string &tname);                                                                        //!< Set type spec of container from type of elements
         TaxonData(const TaxonData<charType> &t);                                                                    //!< Copy constructor
         virtual                                 ~TaxonData();                                                       //!< Destructor
     
@@ -71,6 +72,15 @@ namespace RevBayesCore {
 #include "RbException.h"
 
 
+
+
+/** Constructor with element type, used to properly construct vectors */
+template<class charType>
+RevBayesCore::TaxonData<charType>::TaxonData(void) : taxonName(""), sequence() {
+    
+}
+
+
 /** Constructor with element type, used to properly construct vectors */
 template<class charType>
 RevBayesCore::TaxonData<charType>::TaxonData(const std::string &tname) : taxonName(tname), sequence() {
@@ -84,7 +94,8 @@ template<class charType>
 RevBayesCore::TaxonData<charType>::TaxonData(const TaxonData<charType> &t) : taxonName(t.taxonName), sequence() {
     
     typename std::vector<charType*>::const_iterator it;
-    for (it = t.sequence.begin(); it != t.sequence.end(); ++it) {
+    for (it = t.sequence.begin(); it != t.sequence.end(); ++it) 
+    {
         charType* theChar = *it;
         sequence.push_back( theChar->clone() );
     }
@@ -94,8 +105,10 @@ RevBayesCore::TaxonData<charType>::TaxonData(const TaxonData<charType> &t) : tax
 /** Constructor with element type, used to properly construct vectors */
 template<class charType>
 RevBayesCore::TaxonData<charType>::~TaxonData(void) {
+    
     typename std::vector<charType*>::iterator it;
-    for (it = sequence.begin(); it != sequence.end(); ++it) {
+    for (it = sequence.begin(); it != sequence.end(); ++it) 
+    {
         charType* theChar = *it;
         delete theChar;
     }
@@ -106,16 +119,19 @@ RevBayesCore::TaxonData<charType>::~TaxonData(void) {
 template<class charType>
 RevBayesCore::TaxonData<charType>& RevBayesCore::TaxonData<charType>::operator=(const TaxonData<charType> &t) {
     
-    if ( &t != this ) {
+    if ( &t != this ) 
+    {
         // free the current memory
         typename std::vector<charType*>::const_iterator it;
-        for (it = sequence.begin(); it != sequence.end(); ++it) {
+        for (it = sequence.begin(); it != sequence.end(); ++it) 
+        {
             const charType* theChar = *it;
             delete theChar;
         }
         
         // clone the characters
-        for (it = t.sequence.begin(); it != t.sequence.end(); ++it) {
+        for (it = t.sequence.begin(); it != t.sequence.end(); ++it) 
+        {
             charType* theChar = *it;
             sequence.push_back( theChar->clone() );
         }
@@ -133,6 +149,7 @@ charType& RevBayesCore::TaxonData<charType>::operator[](size_t i) {
     
     if (i >= sequence.size())
         throw RbException("Index out of bounds");
+    
     return *sequence[i];
 }
 
@@ -143,6 +160,7 @@ const charType& RevBayesCore::TaxonData<charType>::operator[](size_t i) const {
     
     if (i >= sequence.size())
         throw RbException("Index out of bounds");
+    
     return *sequence[i];
 }
 
@@ -150,16 +168,20 @@ const charType& RevBayesCore::TaxonData<charType>::operator[](size_t i) const {
 template<class charType>
 bool RevBayesCore::TaxonData<charType>::operator==(const TaxonData &x) const {
     
-    if ( taxonName != x.taxonName ) {
+    if ( taxonName != x.taxonName ) 
+    {
         return false;
     }
     
-    if ( sequence.size() != x.sequence.size() ) {
+    if ( sequence.size() != x.sequence.size() ) 
+    {
         return false;
     }
     
-    for (size_t i = 0; i < sequence.size(); ++i) {
-        if ( *sequence[i] != *x.sequence[i] ) {
+    for (size_t i = 0; i < sequence.size(); ++i) 
+    {
+        if ( *sequence[i] != *x.sequence[i] ) 
+        {
             return false;
         }
     }
@@ -170,6 +192,7 @@ bool RevBayesCore::TaxonData<charType>::operator==(const TaxonData &x) const {
 
 template<class charType>
 bool RevBayesCore::TaxonData<charType>::operator!=(const TaxonData<charType> &x) const {
+    
     return !operator==(x);
 }
 
@@ -177,11 +200,14 @@ bool RevBayesCore::TaxonData<charType>::operator!=(const TaxonData<charType> &x)
 template<class charType>
 bool RevBayesCore::TaxonData<charType>::operator<(const TaxonData<charType> &x) const {
     
-    for (size_t i = 0; i < sequence.size() && i < x.sequence.size(); ++i) {
-        if ( *sequence[i] != *x.sequence[i] ) {
+    for (size_t i = 0; i < sequence.size() && i < x.sequence.size(); ++i) 
+    {
+        if ( *sequence[i] != *x.sequence[i] ) 
+        {
             return *sequence[i] < *x.sequence[i];
         }
     }
+    
     return sequence.size() < x.sequence.size();
 }
 
@@ -190,12 +216,14 @@ template<class charType>
 void RevBayesCore::TaxonData<charType>::addCharacter( CharacterState *newChar ) {
     
 #ifdef ASSERTIONS_ALL
-    if ( dynamic_cast<charType*>( newChar ) == NULL ) {
+    if ( dynamic_cast<charType*>( newChar ) == NULL ) 
+    {
         throw RbException("Inserting wrong character type into TaxonData!!!");
     }
 #endif
     
     sequence.push_back( static_cast<charType*>(newChar) );
+    
 }
 
 /* Push back a new character */
@@ -203,6 +231,7 @@ template<class charType>
 void RevBayesCore::TaxonData<charType>::addCharacter( charType *newChar ) {
     
     sequence.push_back( newChar );
+    
 }
 
 
@@ -226,6 +255,7 @@ charType& RevBayesCore::TaxonData<charType>::getElement(size_t i) {
     
     if (i >= sequence.size())
         throw RbException("Index out of bounds");
+    
     return *sequence[i];
 }
 
@@ -236,6 +266,7 @@ const charType& RevBayesCore::TaxonData<charType>::getElement(size_t i) const {
     
     if (i >= sequence.size())
         throw RbException("Index out of bounds");
+    
     return *sequence[i];
 }
 
@@ -273,7 +304,8 @@ template<class charType>
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const TaxonData<charType>& x) {
     
     o << x.getTaxonName() << ":" << std::endl;
-    for (size_t i = 0; i < x.getNumberOfCharacters(); ++i) {
+    for (size_t i = 0; i < x.getNumberOfCharacters(); ++i) 
+    {
         o << x[i];
     }
     o << std::endl;

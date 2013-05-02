@@ -669,20 +669,25 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::redr
     {
         // create the character
         charType *c = new charType();
+        c->setToFirstState();
         // draw the state
-        size_t state = 0;
         double u = rng->uniform01();
-        while ( u > 0 ) 
+        std::vector< double >::const_iterator freq = stationaryFreqs.begin();
+        while ( true ) 
         {
-            u -= stationaryFreqs[state];
-            ++state;
+            u -= *freq;
+            
+            if ( u > 0.0 )
+            {
+                ++(*c);
+                ++freq;
+            }
+            else 
+            {
+                break;
+            }
+            
         }
-        
-        // convert into a char
-        char val = (0x1 << state);
-        
-        // set the state
-        c->setState( val );
         
         // add the character to the sequence
         root.addCharacter( c );
@@ -747,7 +752,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::simu
     
     // get the sequence of this node
     size_t nodeIndex = node.getIndex();
-    TaxonData< charType > &parent = taxa[ nodeIndex ];
+    const TaxonData< charType > &parent = taxa[ nodeIndex ];
     
     // simulate the sequence for each child
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -775,21 +780,24 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::simu
             double *freqs = transitionProbMatrix[ p ];
             // create the character
             charType *c = new charType();
+            c->setToFirstState();
             // draw the state
-            size_t state = 0;
             double u = rng->uniform01();
-            while ( u > 0 ) 
+            while ( true ) 
             {
-                u -= freqs[state];
-                ++state;
+                u -= *freqs;
+                
+                if ( u > 0.0 )
+                {
+                    ++(*c);
+                    ++freqs;
+                }
+                else
+                {
+                    break;
+                }
             }
-            
-            // convert into a char
-            char val = (0x1 << state);
-            
-            // set the state
-            c->setState( val );
-            
+                        
             // add the character to the sequence
             taxon.addCharacter( c );
         }
