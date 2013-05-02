@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of the AutocorrelatedBranchMatrix class. 
- * A AutocorrelatedBranchMatrix object holds the mapping between parameter values and the indix of this parameters.
+ * A AutocorrelatedBranchMatrix object holds the mapping between parameter values and the index of this parameters.
  *
  *
  * @brief Declaration of the AutocorrelatedBranchMatrix class

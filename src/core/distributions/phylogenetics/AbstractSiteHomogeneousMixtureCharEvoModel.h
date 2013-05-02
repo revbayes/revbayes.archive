@@ -1,9 +1,9 @@
 /**
  * @file
  * This file contains the distribution class for a character state evolving along a tree.
- * This abstract base class can be derived for any character evolution model with HomogeneousMixture sites. A
+ * This abstract base class can be derived for any character evolution model with homogeneous mixture sites. A
  * homogeneous mixture model over sites is a model where all sites are drawn from the same distribution and the
- * specific instance of the per site paramom is integrated over. The per site paramom could be a rate scaler (e.g. the + gamma models)
+ * specific instance of the per site parameter is integrated over. The per site parameter could be a rate scaler (e.g. the + gamma models)
  * or different rate matrices or anything else.
  *
  * The pruning algorithm is implemented in this base class and calles some few pure virtual methods. 

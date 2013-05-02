@@ -1,14 +1,17 @@
 /**
  * @file
- * This file contains the declaration of the random variable class for a character state evolving along a tree.
- * This abstract base class can be derived for any character evolution model with homogeneous sites or
- * with specifically instantiated per site models. The pruning algorithm is scatched in this base class 
- * and provides hooks for the specific efficient algorithms. The important functions you have to override are:
- * - computeRootLikelihood
- * - computeInternalNodeLikelihood
- * - computeTipLikelihood
+ * This file contains the distribution class for a character state evolving along a tree.
+ * This abstract base class can be derived for any character evolution model with homogeneous sites. A
+ * homogeneous model over sites is a model where all sites are drawn from the same distribution. 
+ *
+ * The pruning algorithm is implemented in this base class and calles some few pure virtual methods. 
+ * The important functions you have to override are:
+ * - getRootFrequencies()
+ * - updateTransitionProbabilities()
+ *
  * The data is stored for convenience in this class in a matrix (std::vector<std::vector< unsigned > >) and can
  * be compressed.
+ *
  *
  * @brief Declaration of the character state evolution along a tree class.
  *
@@ -30,7 +33,6 @@
 
 #include "AbstractCharacterData.h"
 #include "CharacterData.h"
-#include "DnaState.h"
 #include "RateMatrix.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
@@ -53,8 +55,8 @@ namespace RevBayesCore {
         // pure virtual
         virtual AbstractSiteHomogeneousCharEvoModel*                        clone(void) const = 0;                                                                      //!< Create an independent clone
         
-        // virtual
-        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
+        // virtual (you need to overwrite this method if you have additional parameters)
+        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping paramoms
         
         // non-virtual
         double                                                              computeLnProbability(void);
@@ -65,27 +67,29 @@ namespace RevBayesCore {
     protected:
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
-
+        
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         virtual void                                                        restoreSpecialization(DagNode *restorer);
         virtual void                                                        touchSpecialization(DagNode *toucher);
         
         // pure virtual methods
-        virtual void                                                        computeRootLikelihood(const std::vector<size_t> &c) = 0;
-        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &node, size_t left, size_t right) = 0;
-        virtual void                                                        computeTipLikelihood(const TopologyNode &node) = 0;
+        virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen) = 0;
+        virtual const std::vector<double>&                                  getRootFrequencies(void) = 0;
         virtual CharacterData<charType>*                                    simulate(const TopologyNode& node) = 0;
         
         // members
         double                                                              lnProb;
-        size_t                                                              numSites;
         const size_t                                                        numChars;
+        size_t                                                              numSites;
         const TypedDagNode<treeType>*                                       tau;
+        TransitionProbabilityMatrix                                         transitionProbMatrix;
         
-        std::vector<std::vector<std::vector<std::vector<double> > > >       partialLikelihoods;
+        // the likelihoods
+        double*                                                             partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
         
+        // the data
         std::vector<std::vector<unsigned int> >                             charMatrix;
         std::vector<std::vector<bool> >                                     gapMatrix;
         std::vector<size_t>                                                 patternCounts;
@@ -94,11 +98,18 @@ namespace RevBayesCore {
         
     private:
         // private methods
-        void                                                                fillLikelihoodVector(const TopologyNode &n);
+        void                                                                computeRootLikelihood(size_t root, size_t l, size_t r);
+        void                                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
+        void                                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
+        void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         
-        std::vector<bool>                                                   changed;
-        std::vector<bool>                                                   dirty;
-                
+        std::vector<bool>                                                   changedNodes;
+        std::vector<bool>                                                   dirtyNodes;
+        
+        // offsets for nodes
+        size_t                                                              activeLikelihoodOffset;
+        size_t                                                              nodeOffset;
+        size_t                                                              siteOffset;
     };
     
 }
@@ -110,68 +121,81 @@ namespace RevBayesCore {
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
-#include <cstring>
-#include <map>
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::AbstractSiteHomogeneousCharEvoModel(const TypedDagNode<treeType> *t, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new CharacterData<charType>() ), 
-        numSites( nSites ), 
-        numChars( charType().getNumberOfStates() ),
-        tau( t ), 
-        partialLikelihoods( std::vector<std::vector<std::vector<std::vector<double> > > >( 2, std::vector<std::vector<std::vector<double> > >(tau->getValue().getNumberOfNodes(), std::vector<std::vector<double> >( numSites, std::vector<double>(numChars, 0.0) ) ) ) ),
-        activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) )      ,
-        charMatrix(), 
-        gapMatrix(),
-        patternCounts(),
-        numPatterns( numSites ),
-        compressed( c ),
-        changed( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
-        dirty( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ) {
-            
-    // add the parameters to the parents list
+numSites( nSites ), 
+numChars( charType().getNumberOfStates() ),
+tau( t ), 
+transitionProbMatrix( TransitionProbabilityMatrix(numChars) ),
+partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSites*numChars] ),
+activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) )      ,
+charMatrix(), 
+gapMatrix(),
+patternCounts(),
+numPatterns( numSites ),
+compressed( c ),
+changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
+dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ) {
+    
+    // add the paramoms to the parents list
     this->addParameter( tau );
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-        
     
+    
+    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numPatterns*numChars;
+    nodeOffset                  =  numPatterns*numChars;
+    siteOffset                  =  numChars;
 }
 
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::AbstractSiteHomogeneousCharEvoModel(const AbstractSiteHomogeneousCharEvoModel &n) : TypedDistribution< AbstractCharacterData >( n ), 
-        numSites( n.numSites ), 
-        numChars( n.numChars ),
-        tau( n.tau ), 
-        partialLikelihoods( n.partialLikelihoods ),
-        activeLikelihood( n.activeLikelihood ),
-        charMatrix( n.charMatrix ), 
-        gapMatrix( n.gapMatrix ), 
-        patternCounts( n.patternCounts ),
-        numPatterns( n.numPatterns ),
-        compressed( n.compressed ),
-        changed( n.changed ),
-        dirty( n.dirty ) {
+numSites( n.numSites ), 
+numChars( n.numChars ),
+tau( n.tau ), 
+transitionProbMatrix( n.transitionProbMatrix ),
+partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSites*numChars] ),
+activeLikelihood( n.activeLikelihood ),
+charMatrix( n.charMatrix ), 
+gapMatrix( n.gapMatrix ), 
+patternCounts( n.patternCounts ),
+numPatterns( n.numPatterns ),
+compressed( n.compressed ),
+changedNodes( n.changedNodes ),
+dirtyNodes( n.dirtyNodes ) {
     // parameters are automatically copied
     
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
+    // copy the partial likelihoods
+    memcpy(partialLikelihoods, n.partialLikelihoods, 2*tau->getValue().getNumberOfNodes()*numPatterns*numChars*sizeof(double));
+    
+    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numPatterns*numChars;
+    nodeOffset                  =  numPatterns*numChars;
+    siteOffset                  =  numChars;
 }
 
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::~AbstractSiteHomogeneousCharEvoModel( void ) {
-    // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
+    // We don't delete the paramoms, because they might be used somewhere else too. The model needs to do that!
     
     // remove myself from the tree listeners
     if ( tau != NULL ) 
     {
+        // TODO: this needs to be implemented (Sebastian)
         //        tau->getValue().getTreeChangeEventHandler().removeListener( this );
     }
+    
+    // free the partial likelihoods
+    delete [] partialLikelihoods;
 }
 
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>* RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::clone( void ) const {
-
+    
     return new AbstractSiteHomogeneousCharEvoModel<charType, treeType>( *this );
 }
 
@@ -182,61 +206,274 @@ double RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::co
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = tau->getValue().getRoot();
     
+    // we start with the root and then traverse down the tree
     size_t rootIndex = root.getIndex();
     
-    if ( dirty[rootIndex] ) 
+    // only necessary if the root is actually dirty
+    if ( dirtyNodes[rootIndex] ) 
     {
         // mark as computed
-        dirty[rootIndex] = false;
+        dirtyNodes[rootIndex] = false;
         
         
         // start by filling the likelihood vector for the two children of the root
-        std::vector<size_t> childrenIndices;
-        for (size_t i = 0; i < root.getNumberOfChildren(); ++i) 
-        {
-            const TopologyNode &child = root.getChild(i);
-            size_t childIndex = child.getIndex();
-            fillLikelihoodVector( child );
-            childrenIndices.push_back( childIndex );
-        }
+        const TopologyNode &left = root.getChild(0);
+        size_t leftIndex = left.getIndex();
+        fillLikelihoodVector( left, leftIndex );
+        const TopologyNode &right = root.getChild(1);
+        size_t rightIndex = right.getIndex();
+        fillLikelihoodVector( right, rightIndex );
         
-        computeRootLikelihood( childrenIndices );
+        // compute the likelihood of the root
+        computeRootLikelihood( rootIndex, leftIndex, rightIndex );
     }
     
     return this->lnProb;
 }
 
 
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right) {
+    
+    // reset the likelihood
+    this->lnProb = 0.0;
+    
+    // get the root frequencies
+    const std::vector<double> &f                    = getRootFrequencies();
+    std::vector<double>::const_iterator f_end       = f.end();
+    std::vector<double>::const_iterator f_begin     = f.begin();
+    
+    // get the pointers to the partial likelihoods of the left and right subtree
+    const double* p_left   = this->partialLikelihoods + activeLikelihood[left]*activeLikelihoodOffset + left*nodeOffset;
+    const double* p_right  = this->partialLikelihoods + activeLikelihood[right]*activeLikelihoodOffset + right*nodeOffset;
+    
+    // create pointers to the likelihood for the sites to iterate over
+    const double*   p_site_left     = p_left;
+    const double*   p_site_right    = p_right;
+    // iterate over all sites
+    for (size_t site = 0; site < numPatterns; ++site)
+    {
+        // temporary variable storing the likelihood
+        double tmp = 0.0;
+        // get the pointer to the stationary frequencies
+        std::vector<double>::const_iterator f_j             = f_begin;
+        // get the pointers to the likelihoods for this site
+        const double* p_site_left_j   = p_site_left;
+        const double* p_site_right_j  = p_site_right;
+        // iterate over all starting states
+        for (; f_j != f_end; ++f_j) 
+        {
+            // add the probability of starting from this state
+            tmp += *p_site_left_j * *p_site_right_j * *f_j;
+                
+            // increment pointers
+            ++p_site_left_j; ++p_site_right_j;
+        }
+        // add the likelihood for this site
+        this->lnProb += log(tmp);
+            
+        // increment the pointers to the next site
+        p_site_left+=siteOffset; p_site_right+=siteOffset;
+    }
+        
+}
+
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::fillLikelihoodVector(const TopologyNode &node) {    
+void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right) {    
     
-    // get the index in the node sequence
-    size_t nodeIndex = node.getIndex();
+    // compute the transition probability matrix
+    updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    
+    // get the pointers to the partial likelihoods for this node and the two descendant subtrees
+    const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*activeLikelihoodOffset + left*nodeOffset;
+    const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*activeLikelihoodOffset + right*nodeOffset;
+    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*activeLikelihoodOffset + nodeIndex*nodeOffset;
+    
+    const double*   tp_begin    = transitionProbMatrix.getElements();
+        
+    // create the pointers to the likelihood per site
+    double*          p_site          = p_node;
+    const double*    p_site_left     = p_left;
+    const double*    p_site_right    = p_right;
+    // compute the per site probabilities
+    for (size_t site = 0; site < numPatterns ; ++site)
+    {
+            
+        // get the pointers for this site
+        double*             p_a     = p_site;
+        const double*       tp_a    = tp_begin;
+        // iterate over the possible starting states
+        for (size_t c1 = 0; c1 < numChars; ++c1) 
+        {
+            // temporary variable
+            double sum = 0.0;
+                
+            // get the pointers for this starting state
+            const double*       p_site_left_d   = p_site_left;
+            const double*       p_site_right_d  = p_site_right;
+            const double*       tp_a_d          = tp_a;
+            // iterate over all possible terminal states
+            for (size_t c2 = 0; c2 < numChars; ++c2 ) 
+            {
+                sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
+                
+                // increment the pointers to the next terminal state
+                ++tp_a_d; ++p_site_left_d; ++p_site_right_d;
+            }
+            // store the likelihood for this starting state
+            *p_a = sum;
+                
+            // increment the pointers to the next starting state
+            tp_a+=numChars; ++p_a;
+        }
+            
+        // increment the pointers to the next site
+        p_site_left+=siteOffset; p_site_right+=siteOffset; p_site+=siteOffset;
+    }
+        
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) {    
+    
+    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*activeLikelihoodOffset + nodeIndex*nodeOffset;
+    
+    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
+    const std::vector<unsigned int> &char_node = this->charMatrix[nodeIndex];
+    
+    // compute the transition probabilities
+    updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    
+    
+    // the transition probability matrix
+    const double*   tp_begin    = transitionProbMatrix.getElements();
+        
+    // pointers to the data per site
+    std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
+    std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
+        
+    // create the pointer to the likelihoods for this site
+    double*     p_site      = p_node;
+        
+    // iterate over all sites
+    for (size_t site = 0; site != numPatterns; ++site) 
+    {
+            
+        // is this site a gap?
+        if ( *gap_site == true ) 
+        {
+            // since this is a gap we need to assume that the actual state could have been any state
+                
+            // get the pointer to the likelihood memory location for this site
+            double*             p_a     = p_site;
+            // get the pointer to the transition probability matrix
+            const double*       tp_a    = tp_begin;
+            // iterate over all initial state for the transitions
+            for (size_t c1 = 0; c1 < numChars; ++c1) 
+            {
+                // temporary variable for starting the sum of the likelihoods to the different states
+                double tmp = 0.0;
+                    
+                // get the pointer to the transition probabilities starting from this state
+                const double* d   = tp_a;
+                // iterate over all possible terminal states
+                for (size_t c2 = 0; c2 < numChars; ++c2) 
+                {
+                    // since we don't know anything about the observation, we assume it could have been any state and add the likelihood for this terminal state
+                    tmp += *d;
+                    // increment pointer to next terminal state
+                    ++d;
+                }
+                // store the likelihood
+                *p_a = tmp;
+                    
+                // increment pointers to next starting state
+                tp_a+=numChars; ++p_a;
+            }
+        } 
+        else // we have observed a character
+        {
+                
+            // get the original character
+            unsigned int org_val = *char_site;
+                
+            // get the pointer to the likelihood for this site
+            // this is were we want to store the partial likelihoods in
+            double*             p_a     = p_site;
+            // get the pointer to the transition probabilities
+            const double*       tp_a    = tp_begin;
+            // iterate over all possible initial states 
+            for (size_t c1 = 0; c1 < numChars; ++c1) 
+            {
+                    
+                double tmp = 0.0;
+                    
+                // compute the likelihood that we had a transition from state c1 to the observed state org_val
+                // note, the observed state could be ambiguous!
+                unsigned int val = org_val;
+                // get the pointer to the transition probabilities for the terminal states
+                const double* d  = tp_a;
+                while ( val != 0 ) // there are still observed states left
+                {
+                    // check whether we observed this state
+                    if ( (val & 1) == 1 ) 
+                    {
+                        // add the probability
+                        tmp += *d;
+                    }
+                        
+                    // removed this state from the observed states
+                    val >>= 1;
+                    // increment the pointer to the next transition probability
+                    ++d;
+                }
+                // store the likelihood
+                *p_a = tmp;
+                    
+                // increment pointers to next starting state
+                tp_a+=numChars; ++p_a;
+            }
+        }
+            
+        // increment the pointers to next site
+        p_site+=siteOffset; ++char_site; ++gap_site;
+    }
+    
+}
+
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex) {    
     
     // check for recomputation
-    if ( dirty[nodeIndex] ) 
+    if ( dirtyNodes[nodeIndex] ) 
     {
         // mark as computed
-        dirty[nodeIndex] = false;
+        dirtyNodes[nodeIndex] = false;
         
         if ( node.isTip() ) 
         {
-            
-            computeTipLikelihood(node);
+            // this is a tip node
+            // compute the likelihood for the tip and we are done
+            computeTipLikelihood(node, nodeIndex);
         } 
         else 
         {
+            // this is an internal node
             
-            // start by filling the likelihood vector for the two children of the root
+            // start by filling the likelihood vector for the two children of this node
             const TopologyNode &left = node.getChild(0);
             size_t leftIndex = left.getIndex();
-            fillLikelihoodVector( left );
+            fillLikelihoodVector( left, leftIndex );
             const TopologyNode &right = node.getChild(1);
             size_t rightIndex = right.getIndex();
-            fillLikelihoodVector( right );
+            fillLikelihoodVector( right, rightIndex );
             
-            computeInternalNodeLikelihood(node,leftIndex,rightIndex);
+            // now compute the likelihoods of this internal node
+            computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex);
         }
     }
 }
@@ -245,21 +482,23 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::fill
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n ) {
-
+    
+    // call a recursive flagging of all node above (closer to the root) and including this node
     recursivelyFlagNodeDirty( n );
-
+    
 }
 
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::keepSpecialization( DagNode* affecter ) {
     
-    for (std::vector<bool>::iterator it = this->dirty.begin(); it != this->dirty.end(); ++it) 
+    // reset all flags
+    for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it) 
     {
         (*it) = false;
     }
     
-    for (std::vector<bool>::iterator it = this->changed.begin(); it != this->changed.end(); ++it) 
+    for (std::vector<bool>::iterator it = this->changedNodes.begin(); it != this->changedNodes.end(); ++it) 
     {
         (*it) = false;
     }
@@ -271,21 +510,26 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::keep
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
     
+    // we need to flag this node and all ancestral nodes for recomputation
     size_t index = n.getIndex();
-    if ( !dirty[index] ) 
+    
+    // if this node is already dirty, the also all the ancestral nodes must have been flagged as dirty
+    if ( !dirtyNodes[index] ) 
     {
-        
+        // the root doesn't have an ancestor
         if ( !n.isRoot() ) 
         {
             recursivelyFlagNodeDirty( n.getParent() );
         }
         
-        dirty[index] = true;
+        // set the flag
+        dirtyNodes[index] = true;
+        
         // if we previously haven't touched this node, then we need to change the active likelihood pointer
-        if ( !changed[index] ) 
+        if ( !changedNodes[index] ) 
         {
             activeLikelihood[index] ^= 1;
-            changed[index] = true;
+            changedNodes[index] = true;
         }
         
     }
@@ -296,32 +540,34 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::recu
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::redrawValue( void ) {
-
+    
     delete this->value;
     this->value = this->simulate(tau->getValue().getRoot());
-
+    
 }
 
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::restoreSpecialization( DagNode* affecter ) {
-
-    for (std::vector<bool>::iterator it = dirty.begin(); it != dirty.end(); ++it) 
+    
+    // reset the flags
+    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it) 
     {
         (*it) = false;
     }
     
-    for (size_t index = 0; index < changed.size(); ++index) 
+    // restore the active likelihoods vector
+    for (size_t index = 0; index < changedNodes.size(); ++index) 
     {
         // we have to restore, that means if we have changed the active likelihood vector
         // then we need to revert this change
-        if ( changed[index] ) 
+        if ( changedNodes[index] ) 
         {
             activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
         }
         
         // set all flags to false
-        changed[index] = false;
+        changedNodes[index] = false;
     }
     
 }
@@ -329,6 +575,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::rest
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::setValue(AbstractCharacterData *v) {
+    
     // delegate to the parent class
     TypedDistribution< AbstractCharacterData >::setValue(v);
     
@@ -369,7 +616,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::setV
                 // we have already seen this pattern
                 // increase the frequency counter
                 patternCounts[ index->second ]++;
-            
+                
                 // obviously this site isn't unique nor the first encounter
                 unique[site] = false;
             }
@@ -377,13 +624,13 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::setV
             {
                 // create a new pattern frequency counter for this pattern
                 patternCounts.push_back(1);
-            
+                
                 // insert this pattern with the corresponding index in the map
                 patterns.insert( std::pair<std::string,size_t>(pattern,numPatterns) );
-            
+                
                 // increase the pattern counter
                 numPatterns++;
-            
+                
                 // flag that this site is unique (or the first occurence of this pattern)
                 unique[site] = true;
             }
@@ -395,7 +642,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::setV
         numPatterns = numSites;
         patternCounts = std::vector<size_t>(numSites,1);
     }
-
+    
     
     // allocate and fill the cells of the matrices
     std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
@@ -427,14 +674,20 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::setV
     }
     
     // finally we resize the partial likelihood vectors to the new pattern counts
-    partialLikelihoods = std::vector<std::vector<std::vector<std::vector<double> > > >( 2, std::vector<std::vector<std::vector<double> > >(tau->getValue().getNumberOfNodes(), std::vector<std::vector<double> >( numPatterns, std::vector<double>(numChars, 0.0) ) ) );
-
+    delete [] partialLikelihoods;
+    partialLikelihoods = new double[2*tau->getValue().getNumberOfNodes()*numPatterns*numChars];
+    
+    // set the offsets for easier iteration through the likelihood vector 
+    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numPatterns*numChars;
+    nodeOffset                  =  numPatterns*numChars;
+    siteOffset                  =  numChars;
 }
 
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
+    // we only have the topology here as the parameter
     if (oldP == tau) 
     {
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
@@ -447,19 +700,21 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::swap
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
+    // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter != tau ) 
     {
-        for (std::vector<bool>::iterator it = dirty.begin(); it != dirty.end(); ++it) 
+        for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it) 
         {
             (*it) = true;
         }
         
-        for (size_t index = 0; index < changed.size(); ++index) 
+        // flip the active likelihood pointers
+        for (size_t index = 0; index < changedNodes.size(); ++index) 
         {
-            if ( !changed[index] ) 
+            if ( !changedNodes[index] ) 
             {
                 activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
-                changed[index] = true;
+                changedNodes[index] = true;
             }
         }
     }
