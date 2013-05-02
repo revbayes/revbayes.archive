@@ -43,7 +43,7 @@ bool TestSequenceSimulation::run( void ) {
     
     // write the simulated sequence
     FastaWriter writer;
-    writer.writeData( "primatesSimulated.nex", charactermodel->getValue() );
+    writer.writeData( "primatesSimulated.fas", charactermodel->getValue() );
     
     return true;
 }
