@@ -54,7 +54,8 @@ AdmixtureTree::AdmixtureTree(const AdmixtureTree& t) : Tree( t ), root( NULL ) {
         
         // fill the nodes vector
         //    fillNodesByPreorderTraversal(root);
-        fillNodesByPhylogeneticTraversal(root);
+        //fillNodesByPhylogeneticTraversal(root);
+        setRoot(root);
         
         // set this topology for the nodes
         root->setTopology( this );
@@ -344,6 +345,27 @@ std::vector<AdmixtureNode*> AdmixtureTree::getAdmixtureParents() const {
     return tmp;
 }
 
+std::vector<AdmixtureNode*> AdmixtureTree::getFirstAdmixtureParentPerLineage(void) const {
+    
+    std::vector<AdmixtureNode *> tmp;
+    for (unsigned i = 0; i < nodes.size(); i++)
+    {
+        AdmixtureNode* p = nodes[i];
+        
+        // if admixture edge, and both admixture nodes' parents are divergence nodes
+        if (&p->getAdmixtureChild() != NULL && p->getParent().getNumberOfChildren() == 2 && p->getAdmixtureChild().getParent().getNumberOfChildren() == 2)
+        {
+            tmp.push_back(p);
+        }
+    }
+    
+    for (size_t i = 0; i < tmp.size(); i++)
+    {
+        std::cout << tmp[i] << "  " << tmp[i]->getParent().getNumberOfChildren() << "\n";
+    }
+    return tmp;
+}
+
 size_t AdmixtureTree::getNumberOfAdmixtureChildren() const {
     
     size_t n = 0;
@@ -580,9 +602,20 @@ void AdmixtureTree::setRoot( AdmixtureNode* r) {
     // bootstrap all nodes from the root and add the in a pre-order traversal
     // fillNodesByPreorderTraversal(r);
     fillNodesByPhylogeneticTraversal(r);
+    
+    size_t numTips = 0;
     for (unsigned int i = 0; i < nodes.size(); ++i) {
-        nodes[i]->setIndex(i);
+        if (nodes[i]->isTip() == false)
+            nodes[i]->setIndex(i);
+        else
+            numTips++;
     }
+    
+    std::vector<AdmixtureNode*> n2(numTips);
+    for (size_t i = 0; i < numTips; i++)
+        n2[nodes[i]->getIndex()] = nodes[i];
+    for (size_t i = 0; i < numTips; i++)
+        nodes[i] = n2[i];
     
     if (nodesByIndex.size() == 0)
         fillNodesByIndex();

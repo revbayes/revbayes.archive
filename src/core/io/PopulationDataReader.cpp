@@ -82,7 +82,7 @@ SnpData* PopulationDataReader::readSnpData(const std::string& fileName)
     sd->setNumPopulations(numPopulations);
     sd->setNumSnps((int)freqs[0].size());
     sd->setPopulationNames(names);
-    sd->setNumIndividuals(counts);
+    sd->setNumChromosomes(counts);
     sd->setSnpFrequencies(freqs);
     
     return sd;
@@ -101,13 +101,14 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
     // initialize
     SnpData* sd = new SnpData();
     std::vector<std::string> names;
+    std::vector<bool> outgroup;
     std::vector<std::vector<int> > numAlleles;
     std::vector<std::vector<int> > numSamples;
     std::vector<std::vector<double > > freqs;
     std::vector<int> tmpNumAlleles;
     std::vector<int> tmpNumSamples;
     std::vector<double> tmpFreqs;
-    std::vector<int> numIndividuals;
+    std::vector<int> numChromosomes;
     
     // open file
     std::ifstream readStream;
@@ -130,20 +131,45 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
         while (ss >> field)
         {
             if (firstLine)
-                names.push_back(field);
+            {
+                // if indicated as an outgroup taxon
+                if (*field.rbegin() == '*')
+                {
+                    outgroup.push_back(true);
+                    names.push_back(field.substr(0,field.size()-1));
+                }
+                // otherwise, it's an ingroup taxon
+                else
+                {
+                    outgroup.push_back(false);
+                    names.push_back(field);
+                }
+
+            }
 
             else
             {
                 unsigned idx = field.find(",");
                 int a = atoi(field.substr(0,idx).c_str());
                 int b = atoi(field.substr(idx+1,-1).c_str());
-                //std::cout << a << " " << b << "\t" << idx << "\n";
-                if (b > numIndividuals[popIdx])
-                    numIndividuals[popIdx] = b;
-                double f = (double)a / (double)b;
+
+                // quick hack, should instead set missing data equal to sample mean in BMAG
+                // or... simply drop the col if any elt has a+b==0
+                if (a == 0 && b == 0)
+                {
+                    a = 1;
+                    b = 1;
+                }
+                
+                if (a+b > numChromosomes[popIdx])
+                    numChromosomes[popIdx] = a+b;
+                double f = (double)a / (double)(a+b);
+                
+
+                //std::cout << f << " = " << a << " / " << a + b << "\t" << idx << "\n";
                 
                 tmpNumAlleles.push_back(a);
-                tmpNumSamples.push_back(b);
+                tmpNumSamples.push_back(a+b);
                 tmpFreqs.push_back(f);
                 popIdx++;
             }
@@ -157,7 +183,7 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
             numAlleles.resize(numPopulations);
             numSamples.resize(numPopulations);
             freqs.resize(numPopulations);
-            numIndividuals = std::vector<int>(numPopulations, 0);
+            numChromosomes = std::vector<int>(numPopulations, 0);
         }
         else
         {
@@ -190,7 +216,8 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
     sd->setNumAlleles(numAlleles);
     sd->setNumSamples(numSamples);
     sd->setSnpFrequencies(freqs);
-    sd->setNumIndividuals(numIndividuals);
+    sd->setNumChromosomes(numChromosomes);
+    sd->setOutgroup(outgroup);
     
     /*
     for (size_t i = 0; i < numPopulations; i++)

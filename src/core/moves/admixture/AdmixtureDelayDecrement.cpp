@@ -7,12 +7,13 @@
 //
 
 #include "AdmixtureDelayDecrement.h"
+#include "RbConstants.h"
 
 using namespace RevBayesCore;
 
 AdmixtureDelayDecrement::AdmixtureDelayDecrement( ConstantNode<int>* dt, double w ) : Move(dt, w), delayTimer(dt)
 {
-    
+    //nodes.insert(delayTimer);
 }
 
 AdmixtureDelayDecrement* AdmixtureDelayDecrement::clone() const
@@ -40,6 +41,17 @@ void AdmixtureDelayDecrement::acceptMove(void)
 
 double AdmixtureDelayDecrement::performMove(double& probRatio)
 {
+    std::cout << "\nAdmix Delay Decrement\n";
+    
+    
+    double t = delayTimer->getValue();
+    if (t > 0)
+    {
+        t--;
+        delayTimer->setValue(t);
+        std::cout << "delayDecrement\t" << t << "\n";
+    }
+
     return 0.0;
 }
 
@@ -47,22 +59,3 @@ void AdmixtureDelayDecrement::rejectMove(void)
 {
     ;
 }
-
-bool AdmixtureDelayDecrement::isGibbs(void) const
-{
-    return true;
-}
-
-void AdmixtureDelayDecrement::performGibbsMove(void)
-{
-    double t = delayTimer->getValue();
-    if (t > 0)
-    {
-        t--;
-        delayTimer->setValue(t);
-        std::cout << t << "\n";
-    }
-
-
-}
-

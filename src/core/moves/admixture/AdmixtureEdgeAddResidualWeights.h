@@ -1,34 +1,34 @@
 //
-//  AdmixtureEdgeRemoveResidualWeights.h
-//  revbayes_mlandis
+//  AdmixtureEdgeAddResidualWeights.h
+//  rb_mlandis
 //
-//  Created by Michael Landis on 1/21/13.
+//  Created by Michael Landis on 2/28/13.
 //  Copyright (c) 2013 Michael Landis. All rights reserved.
 //
 
-#ifndef __revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__
-#define __revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__
+#ifndef __rb_mlandis__AdmixtureEdgeAddResidualWeights__
+#define __rb_mlandis__AdmixtureEdgeAddResidualWeights__
 
 #include <ostream>
 #include <set>
 #include <string>
 
+#include "Move.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "Move.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
 #include "Tree.h"
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeRemoveResidualWeights : public Move {
+    class AdmixtureEdgeAddResidualWeights : public Move {
         
     public:
-        AdmixtureEdgeRemoveResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double weight);                                            //!<  constructor
+        AdmixtureEdgeAddResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, int me, bool asa, double weight);                                                          //!<  constructor
         
         // Basic utility functions
-        AdmixtureEdgeRemoveResidualWeights*            clone(void) const;                                                                  //!< Clone object
+        AdmixtureEdgeAddResidualWeights*              clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
@@ -41,7 +41,6 @@ namespace RevBayesCore {
         double                          performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
         void                            rejectMove(void);
         
-        
     private:
         
         // member variables
@@ -49,19 +48,23 @@ namespace RevBayesCore {
         StochasticNode<double>*         rate;
         DeterministicNode<std::vector<double> >* residuals;
         ConstantNode<int>*              delayTimer;
-        bool changed;
-        int delay;
+        bool                            changed;
+        bool                            failed;
+        bool                            allowSisterAdmixture;
+        int                             delay;
+        int                             maxEvents;
         
         // stored objects to undo proposal
-        bool                            failed;
-        AdmixtureNode*                  storedAdmixtureChild;
         AdmixtureNode*                  storedAdmixtureParent;
-        AdmixtureNode*                  storedAdmixtureChildChild;
+        AdmixtureNode*                  storedAdmixtureChild;
         AdmixtureNode*                  storedAdmixtureParentChild;
-        AdmixtureNode*                  storedAdmixtureChildParent;
+        AdmixtureNode*                  storedAdmixtureChildChild;
         AdmixtureNode*                  storedAdmixtureParentParent;
-        
+        AdmixtureNode*                  storedAdmixtureChildParent;
+        std::vector<double>             storedResiduals;
     };
     
 }
-#endif /* defined(__revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__) */
+
+
+#endif /* defined(__rb_mlandis__AdmixtureEdgeAddResidualWeights__) */

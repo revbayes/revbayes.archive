@@ -48,7 +48,6 @@ void TreeAdmixtureEventCount::update( void ) {
 
 void TreeAdmixtureEventCount::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     if (oldP == tree) {
-        std::cout << "swap taec\n";
         tree = static_cast<const TypedDagNode<AdmixtureTree>* >( newP );
     }
 }

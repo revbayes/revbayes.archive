@@ -10,6 +10,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "DistributionInverseGamma.h"
 #include "TopologyNode.h"
 
 #include <algorithm>
@@ -17,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ), diversification( d ), turnover( t ), numTaxa( nTaxa ), taxonNames( tn ) {
+AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ), diversification( d ), turnover( t ), numTaxa( nTaxa ), taxonNames( tn ), outgroup(std::vector<bool>(nTaxa,false)) {
     addParameter( diversification );
     addParameter( turnover );
     
@@ -32,9 +33,30 @@ AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const Typ
     
 }
 
+AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<bool>& o) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ), diversification( d ), turnover( t ), numTaxa( nTaxa ), taxonNames( tn ), outgroup(o), numOutgroup(0) {
+    addParameter( diversification );
+    addParameter( turnover );
+
+    double lnFact = 0.0;
+    for (size_t i = 2; i < numTaxa; i++) {
+        lnFact += std::log(i);
+    }
+
+    for (size_t i = 0; i < outgroup.size(); i++)
+    {
+        if (outgroup[i] == true)
+            numOutgroup++;
+    }
+    
+    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
+    
+    simulateTree();
+    
+}
 
 
-AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const AdmixtureConstantBirthDeathProcess &v) : TypedDistribution<AdmixtureTree>( v ), diversification( v.diversification ), turnover( v.turnover ), numTaxa( v.numTaxa ), taxonNames( v.taxonNames ), logTreeTopologyProb( v.logTreeTopologyProb ) {
+
+AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const AdmixtureConstantBirthDeathProcess &v) : TypedDistribution<AdmixtureTree>( v ), diversification( v.diversification ), turnover( v.turnover ), numTaxa( v.numTaxa ), taxonNames( v.taxonNames ), logTreeTopologyProb( v.logTreeTopologyProb ), outgroup(v.outgroup), numOutgroup(v.numOutgroup) {
     // parameters are automatically copied
 }
 
@@ -79,9 +101,9 @@ void AdmixtureConstantBirthDeathProcess::attachTimes(std::vector<AdmixtureNode *
 }
 
 
-void AdmixtureConstantBirthDeathProcess::buildRandomBinaryTree(std::vector<AdmixtureNode*> &tips) {
+void AdmixtureConstantBirthDeathProcess::buildRandomBinaryTree(std::vector<AdmixtureNode*> &tips, size_t n, bool tf) {
     
-    if (tips.size() < numTaxa) {
+    if (tips.size() < n) {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
@@ -98,16 +120,18 @@ void AdmixtureConstantBirthDeathProcess::buildRandomBinaryTree(std::vector<Admix
         AdmixtureNode* leftChild = new AdmixtureNode(0);
         parent->addChild(leftChild);
         leftChild->setParent(parent);
+        leftChild->setOutgroup(tf);
         tips.push_back(leftChild);
         
         // add a right child
         AdmixtureNode* rightChild = new AdmixtureNode(0);
         parent->addChild(rightChild);
         rightChild->setParent(parent);
+        rightChild->setOutgroup(tf);
         tips.push_back(rightChild);
         
         // recursive call to this function
-        buildRandomBinaryTree(tips);
+        buildRandomBinaryTree(tips, n, tf);
     }
 }
 
@@ -119,37 +143,78 @@ AdmixtureConstantBirthDeathProcess* AdmixtureConstantBirthDeathProcess::clone( v
 
 double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     
-    // ... may not matter, but branch lengths are uniformly distributed while testing likelihood fn...
-    return 0.0;
+    // uncomment for uniform prior
+    //return 0.0;
     
     // retrieved the speciation times
     std::vector<double> times;
-    for (int i = 0; i < value->getNumberOfInteriorNodes()+1; ++i) {
-        double t = value->getInteriorNode( i ).getTime();
-        times.push_back(t);
+    for (int i = numTaxa; i < value->getNumberOfNodes(); ++i) {
+        AdmixtureNode* p = &value->getNode(i);
+        if (p->getNumberOfChildren() == 2)
+            times.push_back(p->getTime());
     }
     // sort the vector of times in ascending order
     std::sort(times.begin(), times.end());
+    std::cout << "tau times    ";
+    for (size_t i = 0; i < times.size(); i++)
+        std::cout << times[i] << "\t";
+    std::cout << "\n";
     
     // present time
     double T = value->getTipNode(0).getTime();
     
-    int numInitialSpecies = 1;
-    // check if we condition on the root or origin
-    if ( times[0] == 0.0 ) {
-        //        lnProbTimes = - 2 * log( pSurvival(0,T) );
-        ++numInitialSpecies;
-    } else {
-        //        lnProbTimes = - log( pSurvival(0,T) );
-    }
-    
-    double lnProbTimes = numInitialSpecies * ( p1(0,T) - log(pSurvival(0,T,T)) );
-    
-    for (int i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
-        if ( lnProbTimes == RbConstants::Double::nan || lnProbTimes == RbConstants::Double::inf || lnProbTimes == RbConstants::Double::neginf) {
-            return RbConstants::Double::nan;
+    double lnProbTimes = 0.0;
+    // bd process
+    if (true)
+    {
+        int numInitialSpecies = 1;
+        // check if we condition on the root or origin
+        if ( times[0] == 0.0 ) {
+            //        lnProbTimes = - 2 * log( pSurvival(0,T) );
+            ++numInitialSpecies;
+        } else {
+            //        lnProbTimes = - log( pSurvival(0,T) );
         }
-        lnProbTimes += log(diversification->getValue() + turnover->getValue()) + p1(times[i],T);
+
+        lnProbTimes = numInitialSpecies * ( p1(0,T) - log(pSurvival(0,T,T)) );
+        
+        
+        for (int i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
+            //std::cout << times[i] << "  " << i << "  " << lnProbTimes << "  " << diversification->getValue() << "\t" << turnover->getValue() << "\t" << T << "\t" << p1(times[i],T) << "\n";
+            if ( lnProbTimes == RbConstants::Double::nan || lnProbTimes == RbConstants::Double::inf || lnProbTimes == RbConstants::Double::neginf) {
+                return RbConstants::Double::nan;
+            }
+            lnProbTimes += log(diversification->getValue() + turnover->getValue()) + p1(times[i],T);
+        }
+    
+        if (true)
+        {
+            // inverse gamma on final speciation event, mean/median ~= .1 unit tree remaining
+            double alpha = 10;
+            double beta = 0.25;
+            std::cout << "t  " << T-times[numTaxa-2] << "  " << alpha << "  " << beta << "  " << RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]) << "\n";
+            lnProbTimes += RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]);
+        }
+    }
+    // gamma distributed (spaces events)
+    else
+    {
+        double alpha = 3.0;
+        double beta = 0.5;
+        // probability of inverse-gamma distributed times for pure-birth process
+        for (int j, i=0; i < numTaxa-1; j=i, i++)
+        {
+            if (i == 0)
+                continue;
+            double t = times[i] - times[j];
+            lnProbTimes += RbStatistics::InverseGamma::lnPdf(alpha,beta,i*t);
+            //std::cout << lnProbTimes << "\t" << t << "\t" << times[j] << "\t" << times[i] << "\n";
+        }
+        
+        // probability nothing happens with n lineages
+        double t = T - times.back();
+        lnProbTimes += log(1.0 - RbStatistics::InverseGamma::cdf(alpha,beta,t*numTaxa));
+        //std::cout << lnProbTimes << "\t" << t << "\t" << T << "\t" << times.back() << "\n";
     }
     
     return lnProbTimes; // + logTreeTopologyProb;
@@ -160,7 +225,6 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
 double AdmixtureConstantBirthDeathProcess::p1(double t, double T) const {
     double a = log(pSurvival(t,T,T));
     double b = diversification->getValue() * (t-T);
-    
     if ( b > 0 ) {
         return RbConstants::Double::neginf;
     }
@@ -170,7 +234,7 @@ double AdmixtureConstantBirthDeathProcess::p1(double t, double T) const {
     //    b -= log(samplingProbability);
     
     double p = 2.0 * a + b;
-    
+    //std::cout << "\t" << a << "\t" << b << "\t" << p << "\n";
     return p;
     
 }
@@ -181,6 +245,8 @@ double AdmixtureConstantBirthDeathProcess::pSurvival(double start, double end, d
     double div = diversification->getValue();
     double xxx = ( exp( div * (start-end) ) - 1.0 ) / (-div);
     double den = 1.0 + turnover->getValue() * ( xxx );// - ( rho - 1.0 ) * exp( rate(start,end,lambda,mu,rho) );
+    
+    //std::cout << "\t\t" << div << "\t" <<  xxx << "\t" << den << "\n";
     
     return (1.0 / den);
 }
@@ -236,26 +302,87 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     // internally we treat unrooted topologies the same as rooted
     tau.setRooted( true );
     
-    AdmixtureNode* root = new AdmixtureNode();
-    std::vector<AdmixtureNode* > nodes;
-    nodes.push_back(root);
-    // recursively build the tree
-    buildRandomBinaryTree(nodes);
+    //std::cout << "gen ingroup\n";
+    // recursively build the ingroup tree
+    AdmixtureNode* rootIngroup = new AdmixtureNode();
+    std::vector<AdmixtureNode* > nodesIngroup;
+    nodesIngroup.push_back(rootIngroup);
+    buildRandomBinaryTree(nodesIngroup, numTaxa-numOutgroup, false);
+    
+    //std::cout << "gen outgroup\n";
+    // recursively build and attach the outgroup tree
+    AdmixtureNode* rootOutgroup = new AdmixtureNode();
+    std::vector<AdmixtureNode*> nodesOutgroup;
+    nodesOutgroup.push_back(rootOutgroup);
+    buildRandomBinaryTree(nodesOutgroup, numOutgroup, true);
+    for (size_t i = 0; i < nodesOutgroup.size(); i++)
+    {
+        
+    }
+    
+    /*
+    std::cout << numOutgroup << "\t" << outgroup.size() << "\n";
+    std::cout << "ingroup\t" << nodesIngroup.size() << "\n";
+    std::cout << "outgroup\t" << nodesOutgroup.size() << "\n";
+    */
     
     // set tip names
     for (int i=0; i<numTaxa; i++) {
-        size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
         
-        // get the node from the list
-        TopologyNode* node = nodes.at(index);
+        // std::cout << i << "\t";
         
-        // remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+index);
-        
+        AdmixtureNode* node = NULL;
+        // assign tip to outgroup
+        if (outgroup[i] == true)
+        {
+            //std::cout << "T\t";
+            size_t index = size_t( floor(rng->uniform01() * nodesOutgroup.size()) );
+            //std::cout << index << "\n";
+
+            // get the node from the list
+            node = nodesOutgroup.at(index);
+            
+            // remove the randomly drawn node from the list
+            nodesOutgroup.erase(nodesOutgroup.begin()+index);
+            
+        }
+
+        // assign tip to ingroup
+        else
+        {
+           // std::cout << "F\t";
+            size_t index = size_t( floor(rng->uniform01() * nodesIngroup.size()) );
+           // std::cout << index << "\n";
+            
+            // get the node from the list
+            node = nodesIngroup.at(index);
+            
+            // remove the randomly drawn node from the list
+            nodesIngroup.erase(nodesIngroup.begin()+index);
+            
+        }
         // set name
         std::string& name = taxonNames[i];
         node->setName(name);
+        node->setIndex(i);
+        node->setOutgroup(outgroup[i]);
+        
     }
+    
+    //std::cout << "merge groups\n";
+    // if there is an outgroup, combine ingroup and outgroup into one tree
+    AdmixtureNode* root;
+    if (numOutgroup > 0)
+    {
+        root = new AdmixtureNode();
+        root->addChild(rootIngroup);
+        root->addChild(rootOutgroup);
+        rootOutgroup->setParent(root);
+        rootIngroup->setParent(root);
+    }
+    // otherwise, the ingroup is the entire tree
+    else
+        root = rootIngroup;
     
     // initialize the topology by setting the root
     tau.setRoot(root);
@@ -277,17 +404,43 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     
     std::sort(t.begin(),t.end());
     
-    nodes.clear();
+    std::vector<AdmixtureNode*> nodes; 
     nodes.push_back( root );
     attachTimes(nodes, 0, t, t_or);
     for (size_t i = 0; i < numTaxa; ++i) {
         AdmixtureNode& n = tau.getTipNode(i);
-        n.setName(taxonNames[n.getIndex()]); // match taxonName and index orders
+        //std::cout << i << "\t" << n.getIndex() << "\t" << n.getName() << "\n";
+        //n.setName(taxonNames[n.getIndex()]); // match taxonName and index orders
         n.setAge( 0.0 );
     }
     
+    //std::cout << "outgroups\n";
+    // propagate ingroup/outgroup flag towards root
+    for (size_t i = 0; i < tau.getNumberOfTips(); i++)
+    {
+        AdmixtureNode* n = &tau.getTipNode(i);
+        bool tf = n->isOutgroup();
+        while (n != &tau.getRoot())
+        {
+            n->setOutgroup(tf);
+            n = &n->getParent();
+        }
+        //std::cout << n->getName() << "  " << n->getIndex() << "  " << (n->isOutgroup() ? "T" : "F") << "\n";
+    }
+    /*
+    std::cout << "outgroups\n";
+    for (size_t i = 0; i < tau.getNumberOfNodes(); i++)
+    {
+        AdmixtureNode* n = &tau.getNode(i);
+        std::cout << n->getName() << "  " << n->getIndex() << "  " << (n->isOutgroup() ? "T" : "F") << "\n";
+    }*/
+    // sort tau.nodes by index...
+    // std::sort(nodes.begin(), nodes.end(),
+    
     // finally store the new value
     *value = tau;
+    
+    std::cout << tau.getNewickRepresentation() << "\n";
     
 }
 

@@ -41,7 +41,8 @@ const std::string& AdmixtureEdgeReweight::getMoveName( void ) const {
 /** Perform the move */
 double AdmixtureEdgeReweight::performSimpleMove( void ) {
     
-        
+    std::cout << "\nAdmix Edge Reweight\n";
+    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -74,11 +75,10 @@ double AdmixtureEdgeReweight::performSimpleMove( void ) {
         double a = lambda * unitWeight + 1.0;
         double b = lambda * (1.0 - unitWeight) + 1.0;
         
-        //double fwdAlpha = beta * unitWeight / (1.0 - unitWeight);
+        // double fwdAlpha = beta * unitWeight / (1.0 - unitWeight);
         double newUnitWeight = RbStatistics::Beta::rv(a, b, *rng);
         double fwdLnProb = RbStatistics::Beta::lnPdf(a, b, newUnitWeight);
         double newWeight = newUnitWeight * admixtureMaxScaler;
-
         /*
         if (newUnitWeight < 10e-10 || (1.0 - newUnitWeight < 10e-10))
         {
@@ -88,12 +88,17 @@ double AdmixtureEdgeReweight::performSimpleMove( void ) {
          */
         
         // backwards proposal
-//        double bwdAlpha = beta * newUnitWeight / (1.0 - newUnitWeight);
+        // double bwdAlpha = beta * newUnitWeight / (1.0 - newUnitWeight);
         double new_a = lambda * newUnitWeight + 1.0;
         double new_b = lambda * (1.0 - newUnitWeight) + 1.0;
         double bwdLnProb = RbStatistics::Beta::lnPdf(new_a, new_b, unitWeight);
 
         
+        // prior
+        double prior_a = 1.0;
+        double prior_b = 1.0;
+        bwdLnProb += RbStatistics::Beta::lnPdf(prior_a, prior_b, newUnitWeight); // bwd move and fwd prior
+        fwdLnProb += RbStatistics::Beta::lnPdf(prior_a, prior_b, unitWeight); // fwd move and bwd prior
         /*
          // now we store all necessary values
          storedNode = node;
@@ -121,7 +126,7 @@ double AdmixtureEdgeReweight::performSimpleMove( void ) {
         // set the weight
         storedAdmixtureChild->setWeight( newWeight );
         
-        std::cout  << "reweight\t" << storedWeight << " -> " << newWeight << "\n";
+        std::cout  << "reweight\t" << bwdLnProb << " - " << fwdLnProb << " = " << bwdLnProb - fwdLnProb << ";\t" << unitWeight << " -> " << newUnitWeight << ";\t" << storedWeight << " -> " << newWeight << "\n";
         
         // uniform on 0,1 is symmetric
         return bwdLnProb - fwdLnProb;

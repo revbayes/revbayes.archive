@@ -1,14 +1,13 @@
 //
-//  AdmixtureFixedNodeheightPruneRegraft.h
+//  AdmixtureNarrowExchange.h
 //  revbayes_mlandis
 //
 //  Created by Michael Landis on 1/21/13.
 //  Copyright (c) 2013 Michael Landis. All rights reserved.
 //
 
-#ifndef __revbayes_mlandis__AdmixtureFixedNodeheightPruneRegraft__
-#define __revbayes_mlandis__AdmixtureFixedNodeheightPruneRegraft__
-
+#ifndef __revbayes_mlandis__AdmixtureNarrowExchange__
+#define __revbayes_mlandis__AdmixtureNarrowExchange__
 
 #include <ostream>
 #include <set>
@@ -21,33 +20,38 @@
 
 namespace RevBayesCore {
     
-    class AdmixtureFixedNodeheightPruneRegraft : public SimpleMove {
+    class AdmixtureNarrowExchange : public SimpleMove {
         
     public:
-        AdmixtureFixedNodeheightPruneRegraft( StochasticNode<AdmixtureTree> *n, double weight);                                            //!<  constructor
+        AdmixtureNarrowExchange( StochasticNode<AdmixtureTree> *n, double weight);                                            //!<  constructor
         
         // Basic utility functions
-        AdmixtureFixedNodeheightPruneRegraft*    clone(void) const;                                                                  //!< Clone object
+        AdmixtureNarrowExchange*     clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         double                          performSimpleMove(void);                                                            //!< Perform move
         void                            rejectSimpleMove(void);
+        void                            acceptSimpleMove(void);
         
     private:
-        void                            findNewBrothers(std::vector<AdmixtureNode*> &b, AdmixtureNode &p, AdmixtureNode *n);
         
         // member variables
         StochasticNode<AdmixtureTree>*       variable;
         
         // stored objects to undo proposal
-        AdmixtureNode*                       storedBrother;
-        AdmixtureNode*                       storedNewBrother;
+        bool failed;
+        AdmixtureNode*                       storedChosenNode;
+        AdmixtureNode*                       storedUncle;
+        double                          storedChosenAge;
+        double                          storedUnclesAge;
+        
+        AdmixtureNode*                      storedChosenNodeParent;
+        AdmixtureNode*                      storedUncleParent;
         
     };
     
 }
 
-
-#endif /* defined(__revbayes_mlandis__AdmixtureFixedNodeheightPruneRegraft__) */
+#endif /* defined(__revbayes_mlandis__AdmixtureNarrowExchange__) */

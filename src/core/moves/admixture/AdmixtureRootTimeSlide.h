@@ -37,13 +37,15 @@ namespace RevBayesCore {
         void                            tune(void);
         
     private:
+        void                            rescaleSubtree(AdmixtureNode *n, double factor);
         
         // member variables
         double                          delta;
         StochasticNode<AdmixtureTree>*       variable;
         
         // stored objects to undo proposal
-        double                          storedAge;
+        double                          storedRescale_0;
+        double                          storedRescale_1;
         
     };
     

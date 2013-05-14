@@ -7,6 +7,7 @@
 //
 
 #include "AdmixtureRootTimeSlide.h"
+#include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "TopologyNode.h"
@@ -28,7 +29,21 @@ AdmixtureRootTimeSlide* AdmixtureRootTimeSlide::clone( void ) const {
     return new AdmixtureRootTimeSlide( *this );
 }
 
+void AdmixtureRootTimeSlide::rescaleSubtree(AdmixtureNode *n, double factor) {
 
+    // we only rescale internal nodes
+    if ( !n->isTip() ) {
+        // rescale the age of the node
+        double newAge = n->getAge() * factor;
+        n->setAge(newAge);
+        
+        // rescale both children
+        rescaleSubtree( &n->getChild(0), factor);
+        rescaleSubtree( &n->getChild(1), factor);
+    }
+    
+    // just realized what a mess this is... requires rescaling the admixture events, which will upset their time consistency
+}
 
 const std::string& AdmixtureRootTimeSlide::getMoveName( void ) const {
     static std::string name = "AdmixtureRootTimeSlide";
@@ -44,34 +59,37 @@ double AdmixtureRootTimeSlide::performSimpleMove( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     AdmixtureTree& tau = variable->getValue();
-    
     AdmixtureNode& node = tau.getRoot();
     
-    // we need to work with the times
-    double my_age      = node.getAge();
+    // get the sum of branch lengths attached to the root node
+    double t_0 = node.getAge() - node.getChild(0).getAge();
+    double t_1 = node.getAge() - node.getChild(1).getAge();
+    double t_m = t_0 + t_1;
     
-    // now we store all necessary values
-    storedAge = my_age;
+    // draw new position along root's children's branches
+    double u = rng->uniform01() * t_m;
+    double m = t_0 / t_m;
     
-    // get the minimum age
-    double child_Age   = node.getChild( 0 ).getAge();
-    if ( child_Age < node.getChild( 1 ).getAge()) {
-        child_Age = node.getChild( 1 ).getAge();
-    }
+    // forwards proposal
+    double a = delta * m + 1.0;
+    double b = delta * (1.0 - m) + 1.0;
     
+    // double fwdAlpha = beta * unitWeight / (1.0 - unitWeight);
+    double new_m = RbStatistics::Beta::rv(a, b, *rng);
+    double fwdLnProb = RbStatistics::Beta::lnPdf(a, b, new_m);
+    double new_pos = new_m * t_m;
     
-    // draw new ages and compute the hastings ratio at the same time
-    // Note: the Hastings ratio needs to be there because one of the nodes might be a tip and hence not scaled!
-    double u = rng->uniform01();
-    double my_new_age = my_age + ( delta * ( u - 0.5 ) );
-    
-    // check if the new age is lower than the minimum
-    if ( my_new_age < child_Age ) {
-        my_new_age = child_Age - (my_new_age - child_Age);
-    }
+    // backwards proposal
+    double new_a = delta * new_m + 1.0;
+    double new_b = delta * (1.0 - new_m) + 1.0;
+    double bwdLnProb = RbStatistics::Beta::lnPdf(new_a, new_b, m);
     
     // rescale the subtrees
-    node.setAge( my_new_age );
+    storedRescale_0 = m / new_m;
+    storedRescale_1 = 1.0 - storedRescale_0;
+  
+    // NOT IMPLEMENTED -- rescaling subtrees requires special consideration for the admixture events s.t. they retain time-consistency
+//    rescaleSubtree(&node.getChild(0), storedRescale_0 );
     
     return 0.0;
 }
@@ -89,8 +107,7 @@ void AdmixtureRootTimeSlide::rejectSimpleMove( void ) {
     AdmixtureNode& node = tau.getRoot();
     
     // undo the proposal
-    node.setAge( storedAge );
-    
+    // ... rescale subtrees
     
 #ifdef ASSERTIONS_TREE
     if ( fabs(storedAge - node.getAge()) > 1E-8 ) {

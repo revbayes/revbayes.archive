@@ -48,9 +48,9 @@ void BrownianMotionAdmixtureGraphResiduals::update( void ) {
         for (size_t j = 0; j < m.size(); j++)
         {
             value->push_back(m[i][j]);
-//            std::cout << m[i][j] << "\t";
+      //      std::cout << m[i][j] << "\t";
         }
-  //      std::cout << "\n";
+        //std::cout << "\n";
     }
    // */
     
@@ -71,7 +71,6 @@ void BrownianMotionAdmixtureGraphResiduals::update( void ) {
 
 void BrownianMotionAdmixtureGraphResiduals::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     if (oldP == bmag) {
-        std::cout << "swap bmag\n";
         bmag = static_cast<const StochasticNode<CharacterData<ContinuousCharacterState> >* >( newP );
     }
 }

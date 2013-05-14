@@ -43,7 +43,7 @@ const std::string& AdmixtureEdgeRemove::getMoveName( void ) const {
 /** Perform the move */
 double AdmixtureEdgeRemove::performSimpleMove( void ) {
     
-    std::cout << "rem\n";
+    //std::cout << "rem\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -72,7 +72,7 @@ double AdmixtureEdgeRemove::performSimpleMove( void ) {
         size_t index = std::floor(admixtureParents.size() * u);
         AdmixtureNode* admixtureParent = admixtureParents[index];
         AdmixtureNode* admixtureChild = &admixtureParent->getAdmixtureChild();
-        double w = admixtureChild->getWeight();
+        //double w = admixtureChild->getWeight();
 
         // get all nodes adjacent to proposal
         storedAdmixtureChild = admixtureChild;

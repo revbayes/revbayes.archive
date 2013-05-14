@@ -67,6 +67,7 @@ namespace RevBayesCore {
         size_t                                      getNumberOfAdmixtureChildren(void) const;
         bool                                        updateTopologicalSort(void);
         std::vector<AdmixtureNode*>                 getAdmixtureParents(void) const;
+        std::vector<AdmixtureNode*>                 getFirstAdmixtureParentPerLineage(void) const;
         void                                        pushAdmixtureNode(AdmixtureNode* p);
         void                                        eraseAdmixtureNode(AdmixtureNode* p);
         void                                        checkAllEdges(void);

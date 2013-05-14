@@ -1,4 +1,4 @@
-  //
+//
 //  AdmixtureNode.cpp
 //  revbayes_mlandis
 //
@@ -41,13 +41,13 @@
 using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-AdmixtureNode::AdmixtureNode(int indx) : TopologyNode( indx ), parent( NULL ), topology( NULL ), admixtureNode(false), admixtureParent(NULL), admixtureChild(NULL), weight(1.0) {
+AdmixtureNode::AdmixtureNode(int indx) : TopologyNode( indx ), parent( NULL ), topology( NULL ), admixtureNode(false), outgroup(false), admixtureParent(NULL), admixtureChild(NULL), weight(1.0), age(0.0) {
     
 }
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-AdmixtureNode::AdmixtureNode(const std::string& n, int indx) : TopologyNode( n, indx ), parent( NULL ), topology( NULL ), admixtureNode(false), admixtureParent(NULL), admixtureChild(NULL), weight(1.0) {
+AdmixtureNode::AdmixtureNode(const std::string& n, int indx) : TopologyNode( n, indx ), parent( NULL ), topology( NULL ), admixtureNode(false), outgroup(false), admixtureParent(NULL), admixtureChild(NULL), weight(1.0), age(0.0) {
     
 }
 
@@ -66,10 +66,12 @@ AdmixtureNode::AdmixtureNode(const AdmixtureNode &n) : TopologyNode( n ), topolo
         theClone->setParent(this);
     }
     
+    age = n.age;
     weight = n.weight;
     admixtureParent = n.admixtureParent;
     admixtureChild = n.admixtureChild;
     admixtureNode = n.admixtureNode;
+    outgroup = n.outgroup;
     
 //    if (admixtureChild != NULL)
 //        admixtureChild->setAdmixtureParent(&n);
@@ -108,10 +110,12 @@ AdmixtureNode& AdmixtureNode::operator=(const AdmixtureNode &n) {
             children.push_back( (*it)->clone() );
         }
         
+        age = n.age;
         weight = n.weight;
         admixtureParent = n.admixtureParent;
         admixtureChild = n.admixtureChild;
         admixtureNode = n.admixtureNode;
+        outgroup = n.outgroup;
         
         // add myself as a new child to the parent node
         parent->addChild(this);
@@ -256,7 +260,7 @@ bool AdmixtureNode::equals(const AdmixtureNode& node) const {
 
 void AdmixtureNode::flagNewickRecomputation( void ) {
     
-    if ( parent != NULL ) {
+    if ( parent != NULL) {
         parent->flagNewickRecomputation();
     }
     
@@ -270,7 +274,8 @@ void AdmixtureNode::flagNewickRecomputation( void ) {
  * then we need to compute the age from the time.
  */
 double AdmixtureNode::getAge( void ) const {
-    return topology->getAge( index );
+    //return topology->getAge( index );
+    return age;
 }
 
 
@@ -287,6 +292,13 @@ double AdmixtureNode::getBranchLength( void ) const {
     }
 }
 
+double AdmixtureNode::getTopologyBranchLength(void) const {
+    if (parent == NULL) {
+        return 0.0;
+    }
+    else
+        return getTopologyParent().getAge() - getAge();
+}
 
 /** Get child at index i */
 const AdmixtureNode& AdmixtureNode::getChild(size_t i) const {
@@ -520,6 +532,15 @@ void AdmixtureNode::setTopologyParent(AdmixtureNode* p) {
     rootNode = false;
 }
 
+bool AdmixtureNode::isOutgroup(void)
+{
+    return outgroup;
+}
+
+bool AdmixtureNode::setOutgroup(bool tf)
+{
+    outgroup = tf;
+}
 
 bool AdmixtureNode::isAdmixtureNode(void)
 {
@@ -652,7 +673,13 @@ void AdmixtureNode::removeChild(AdmixtureNode* c) {
         //        delete p;
     }
     else
-        throw(RbException("Cannot find node in list of children nodes"));
+    {
+        std::stringstream ss_err;
+        ss_err << "Cannot find node in list of children nodes " << c << " " << this;
+        std::cout << ss_err.str() << "\n";
+       // throw(RbException(ss_err.str()));
+//        throw(RbException("Cannot find node in list of children nodes"));
+    }
     
     tipNode = children.size() == 0;
     admixtureNode = children.size() == 1;
@@ -678,7 +705,8 @@ void AdmixtureNode::setAge( double a ) {
 #endif
     
     // we delegate the call to the tree
-    topology->setAge(index, a);
+    //topology->setAge(index, a);
+    age = a;
     
     // mark for newick recomputation
     initiateFlaggingForNewickRecomputation();

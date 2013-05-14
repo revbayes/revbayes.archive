@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class AdmixtureEdgeSlide : public Move {
         
     public:
-        AdmixtureEdgeSlide( StochasticNode<AdmixtureTree> *n, double l, double weight);                                               //!<  constructor
+        AdmixtureEdgeSlide( StochasticNode<AdmixtureTree> *n, bool asa, double l, double weight);                                               //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeSlide*             clone(void) const;                                                                  //!< Clone object
@@ -65,7 +65,7 @@ namespace RevBayesCore {
         double                          storedAge;
         bool failed;
         bool changed;
-        
+        bool allowSisterAdmixture;
     };
     
 }

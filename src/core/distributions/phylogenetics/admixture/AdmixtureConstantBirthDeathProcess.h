@@ -19,6 +19,7 @@ namespace RevBayesCore {
         
     public:
         AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn);
+        AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<bool> &o);
         AdmixtureConstantBirthDeathProcess(const AdmixtureConstantBirthDeathProcess &n);                                                                                          //!< Copy constructor
         virtual                                            ~AdmixtureConstantBirthDeathProcess(void);                                                                    //!< Virtual destructor
         
@@ -32,7 +33,7 @@ namespace RevBayesCore {
         
         // helper functions
         void                                                attachTimes(std::vector<AdmixtureNode *> &tips, int index, const std::vector<double> &times, double T);
-        void                                                buildRandomBinaryTree(std::vector<AdmixtureNode *> &tips);
+        void                                                buildRandomBinaryTree(std::vector<AdmixtureNode *> &tips, size_t n, bool tf);
         double                                              p1(double t, double T) const;
         double                                              pSurvival(double start, double end, double T) const;
         double                                              simOrigin(void);
@@ -43,7 +44,9 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         diversification;
         const TypedDagNode<double>*                         turnover;
         unsigned int                                        numTaxa;
+        unsigned int                                        numOutgroup;
         std::vector<std::string>                            taxonNames;
+        std::vector<bool>                                   outgroup;
         double                                              logTreeTopologyProb;
         
     };

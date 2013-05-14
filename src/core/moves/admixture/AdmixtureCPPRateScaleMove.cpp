@@ -20,7 +20,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AdmixtureCPPRateScaleMove::AdmixtureCPPRateScaleMove( StochasticNode<AdmixtureTree>* n, StochasticNode<double> *r, double l, bool t, double w ) : SimpleMove( r, w, t ), variable( n ), rate( r ), storedRate( 0.0 ), lambda( l ) {
+AdmixtureCPPRateScaleMove::AdmixtureCPPRateScaleMove( StochasticNode<AdmixtureTree>* n, StochasticNode<double> *r, double hp, double l, bool t, double w ) : SimpleMove( r, w, t ), variable( n ), rate( r ), storedRate( 0.0 ), lambda( l ), cpp_prior(hp) {
     // we need to allocate memory for the stored value
     
     nodes.insert(variable);
@@ -53,7 +53,7 @@ const std::string& AdmixtureCPPRateScaleMove::getMoveName( void ) const {
 /** Perform the move */
 double AdmixtureCPPRateScaleMove::performSimpleMove( void ) {
     
-    std::cout << "cpp rate\n";
+    std::cout << "\n Admix CPP Rate Scale\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -72,8 +72,7 @@ double AdmixtureCPPRateScaleMove::performSimpleMove( void ) {
 
     // compute the Hastings ratio
     double lnHastingsratio = log( scalingFactor );
-    double hyperprior = 100.0;
-    double lnPrior = -hyperprior * (r - r/scalingFactor); // manual prior, ask Sebastian...
+    double lnPrior = -cpp_prior * (r - r/scalingFactor); // manual prior, ask Sebastian...
     
     // and the CPP probs
     AdmixtureTree& tau = variable->getValue();
@@ -85,7 +84,7 @@ double AdmixtureCPPRateScaleMove::performSimpleMove( void ) {
     //double lnP = (-newR + numEvents * log(newR)) - (-oldR + numEvents * log(oldR));
     double lnP = log( (exp(-newR) * pow(newR,numEvents)) / (exp(-oldR) * pow(oldR,numEvents)) );
     
-    std::cout << lnP+lnHastingsratio << "\t=\t" << lnP << "\t+\t" << lnHastingsratio << ";\t" << oldR << " -> " << newR << ";\t" << storedRate << " -> " << r << ";\t" << unitTreeLength << "\t" << numEvents << "\n";
+    std::cout << "cpp_rate\t" << lnP+lnHastingsratio << "\t=\t" << lnP << "\t+\t" << lnHastingsratio << ";\t" << oldR << " -> " << newR << ";\t" << storedRate << " -> " << r << ";\t" << unitTreeLength << "\t" << numEvents << "\n";
     
     return lnHastingsratio + lnP + lnPrior;
 }
@@ -103,7 +102,9 @@ void AdmixtureCPPRateScaleMove::printParameterSummary(std::ostream &o) const {
 void AdmixtureCPPRateScaleMove::rejectSimpleMove( void ) {
     //std::cout << "reject CPP_rate\t" << storedRate << "!->" << rate->getValue() << "\n";
     // swap current value and stored value
-    rate->setValue( new double(storedRate) );
+    //rate->setValue( new double(storedRate) );
+    double& r = rate->getValue();
+    r = storedRate;
 }
 
 

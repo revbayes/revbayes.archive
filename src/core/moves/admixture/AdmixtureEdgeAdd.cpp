@@ -1,12 +1,12 @@
 //
-//  AdmixtureEdgeAddResidualWeights.cpp
+//  AdmixtureEdgeAdd.cpp
 //  revbayes_mlandis
 //
 //  Created by Michael Landis on 1/21/13.
 //  Copyright (c) 2013 Michael Landis. All rights reserved.
 //
 
-#include "AdmixtureEdgeAddResidualWeights.h"
+#include "AdmixtureEdgeAdd.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -17,31 +17,29 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeAddResidualWeights::AdmixtureEdgeAddResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double w) : Move( v, w), variable( v ), rate(r), residuals(res), delayTimer(dt), changed(false), failed(false) {
+AdmixtureEdgeAdd::AdmixtureEdgeAdd(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, ConstantNode<int>* dt, double w) : Move( v, w), variable( v ), rate(r), delayTimer(dt), changed(false), failed(false) {
     
     nodes.insert(rate);
-    nodes.insert(residuals);
     nodes.insert(dt);
-
 }
 
 
 
 /* Clone object */
-AdmixtureEdgeAddResidualWeights* AdmixtureEdgeAddResidualWeights::clone( void ) const {
+AdmixtureEdgeAdd* AdmixtureEdgeAdd::clone( void ) const {
     
-    return new AdmixtureEdgeAddResidualWeights( *this );
+    return new AdmixtureEdgeAdd( *this );
 }
 
 
 
-const std::string& AdmixtureEdgeAddResidualWeights::getMoveName( void ) const {
-    static std::string name = "AdmixtureEdgeAddResidualWeights";
+const std::string& AdmixtureEdgeAdd::getMoveName( void ) const {
+    static std::string name = "AdmixtureEdgeAdd";
     
     return name;
 }
 
-void AdmixtureEdgeAddResidualWeights::findNewBrothers(std::vector<AdmixtureNode *> &b, AdmixtureNode &p, AdmixtureNode *n) {
+void AdmixtureEdgeAdd::findNewBrothers(std::vector<AdmixtureNode *> &b, AdmixtureNode &p, AdmixtureNode *n) {
     
     if (&p != n) {
         
@@ -59,26 +57,26 @@ void AdmixtureEdgeAddResidualWeights::findNewBrothers(std::vector<AdmixtureNode 
         }
     }
 }
+//std::vector<AdmixtureNode*> brothers;
+//findNewBrothers(brothers, *storedAdmixtureParent, &tau.getRoot());
+
+
 
 /** Perform the move */
-double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
-    
-    std::cout << "add_RW\n";
+double AdmixtureEdgeAdd::performSimpleMove( void ) {
+        
+    //std::cout << "add\n";
     
     failed = false;
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
+
     // sample a random position on the tree
     AdmixtureTree& tau = variable->getValue();
     double treeLength = tau.getTreeLength();
     double u = rng->uniform01() * treeLength;
     size_t numNodes = tau.getNumberOfNodes();
-    
-    //std::cout << "\nAEA\n";
-    //std::cout << "before AEA proposal\n";
-    // tau.checkAllEdgesRecursively(&tau.getRoot());
     
     // record position
     double v = 0.0;
@@ -101,7 +99,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
             }
         }
     }
-    
+
     storedAdmixtureAge = admixtureAge;
     
     // store adjacent nodes to new parent node
@@ -121,19 +119,15 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     // sample random position for admixture edge destination for a given tree height
     std::vector<AdmixtureNode*> brothers;
     findNewBrothers(brothers, *storedAdmixtureParent, &tau.getRoot());
-    /*
-     if (brothers.size() == 0)
-     {
-     failed = true;
-     return RbConstants::Double::neginf;
-     }
-     */
     int index = int(rng->uniform01() * brothers.size());
+    
+    // sample admixtureChild from brothers
+    // forward proposal prob == -log(numBrothers) ??
     
     // store adjacent nodes to new child node
     storedAdmixtureChildChild = brothers[index];
     storedAdmixtureChildParent = &storedAdmixtureChildChild->getParent();
-    
+
     // insert admixtureChild into graph
     storedAdmixtureChild = new AdmixtureNode();
     storedAdmixtureChild->setAge(admixtureAge);
@@ -150,27 +144,23 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     storedAdmixtureChild->setAdmixtureParent(storedAdmixtureParent);
     storedAdmixtureParent->setAdmixtureChild(storedAdmixtureChild);
     
-    //std::cout << "\nafter AEA proposal\n";
-    //tau.checkAllEdgesRecursively(&tau.getRoot());
+    // update with outgroup settings
+    storedAdmixtureChild->setOutgroup(storedAdmixtureChildParent->isOutgroup());
+    storedAdmixtureParent->setOutgroup(storedAdmixtureParentParent->isOutgroup());
     
     // prior * proposal ratio
     size_t numEvents = tau.getNumberOfAdmixtureChildren();
     double unitTreeLength = tau.getUnitTreeLength();
-    double lnP = log( (rate->getValue() * unitTreeLength) / (numEvents) );
-    //  double lnJ = 2 * log(1 - w);
-    //    double lnP = log( (rate->getValue() * treeLength) / (numEvents) );
+    double lnP = log( (rate->getValue() * unitTreeLength) / numEvents );
     std::cout << "add\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
-    
-    // quick fix -- should inherit from Move instead of SimpleMove
-    //lnP -= variable->getLnProbabilityRatio();0
     
     // bombs away
     return lnP;// + lnJ;
-    
+
 }
 
 
-void AdmixtureEdgeAddResidualWeights::rejectSimpleMove( void ) {
+void AdmixtureEdgeAdd::rejectSimpleMove( void ) {
     
     if (!failed)
     {
@@ -181,29 +171,29 @@ void AdmixtureEdgeAddResidualWeights::rejectSimpleMove( void ) {
         storedAdmixtureParentChild->setParent(storedAdmixtureParentParent);
         storedAdmixtureParentParent->removeChild(storedAdmixtureParent);
         storedAdmixtureParentParent->addChild(storedAdmixtureParentChild);
-        
+         
         // remove nodes from graph structure
         AdmixtureTree& tau = variable->getValue();
         
         tau.eraseAdmixtureNode(storedAdmixtureParent);
         tau.eraseAdmixtureNode(storedAdmixtureChild);
-        
-        // std::cout << "add fail\t" << tau.getNumberOfAdmixtureChildren() << "\n";
+
+       // std::cout << "add fail\t" << tau.getNumberOfAdmixtureChildren() << "\n";
         //std::cout << "\nafter AEA reject\n";
         //tau.checkAllEdgesRecursively(&tau.getRoot());
     }
     
 }
 
-void AdmixtureEdgeAddResidualWeights::acceptSimpleMove(void)
+void AdmixtureEdgeAdd::acceptSimpleMove(void)
 {
-    // std::cout << "add success";
-    //  std::cout << "\t" << variable->getValue().getNumberOfAdmixtureChildren();
-    //  std::cout << "\n";
+   // std::cout << "add success";
+  //  std::cout << "\t" << variable->getValue().getNumberOfAdmixtureChildren();
+  //  std::cout << "\n";
 }
 
 
-void AdmixtureEdgeAddResidualWeights::swapNode(DagNode *oldN, DagNode *newN) {
+void AdmixtureEdgeAdd::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     Move::swapNode(oldN, newN);
     
@@ -221,14 +211,10 @@ void AdmixtureEdgeAddResidualWeights::swapNode(DagNode *oldN, DagNode *newN) {
     {
         delayTimer = static_cast<ConstantNode<int>* >(newN);
     }
-    else if (oldN == residuals)
-    {
-        residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
-    }
 }
 
 
-void AdmixtureEdgeAddResidualWeights::rejectMove( void ) {
+void AdmixtureEdgeAdd::rejectMove( void ) {
     changed = false;
     
     // delegate to the derived class. The derived class needs to restore the value(s).
@@ -239,21 +225,21 @@ void AdmixtureEdgeAddResidualWeights::rejectMove( void ) {
 }
 
 
-void AdmixtureEdgeAddResidualWeights::acceptMove( void ) {
+void AdmixtureEdgeAdd::acceptMove( void ) {
     // nothing to do
     changed = false;
     
     acceptSimpleMove();
 }
 
-double AdmixtureEdgeAddResidualWeights::performMove( double &probRatio ) {
+double AdmixtureEdgeAdd::performMove( double &probRatio ) {
     
     
     if (delayTimer->getValue() > 0)
     {
         failed = true;
         //delayTimer->setValue(delayTimer->getValue()-1);
-        //        delay--;
+//        delay--;
         return RbConstants::Double::neginf;
     }
     
@@ -279,9 +265,9 @@ double AdmixtureEdgeAddResidualWeights::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << probRatio << "\n";
+         //   std::cout << theNode->getName() << "\t" << probRatio << "\n";
         }
     }
-    
+
     return hr;
 }

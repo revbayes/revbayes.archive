@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class AdmixtureCPPRateScaleMove : public SimpleMove {
         
     public:
-        AdmixtureCPPRateScaleMove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, double l, bool tuning, double w);
+        AdmixtureCPPRateScaleMove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, double hp, double l, bool tuning, double w);
 //        AdmixtureCPPRateScaleMove( const AdmixtureCPPRateScaleMove& n );
 
         // Basic utility functions
@@ -45,6 +45,7 @@ namespace RevBayesCore {
     private:
         // parameters
         double                          lambda;
+        double                          cpp_prior;
         
         StochasticNode<AdmixtureTree>*  variable;
         StochasticNode<double>*         rate;

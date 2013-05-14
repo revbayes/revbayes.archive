@@ -70,7 +70,7 @@ void AdmixtureEdgeCountPerBranch::update(void)
         
         // ... if final update(), call summarize
         if (numSamples % 1000 == 0)
-            std::cout << getSummary() << "\n";
+            ;//std::cout << getSummary() << "\n";
     }
 }
 
@@ -151,14 +151,44 @@ std::string AdmixtureEdgeCountPerBranch::getSummary(void)
     
     // query the map using bestPairs[i] to get the ith set of admixture edges given the two partitions exist
     // ...
+    std::vector<TopologyNode*> tips = tau->getValue().getNodes();
     std::stringstream ss("");
     for (size_t i = 0; i < bestPairs.size(); i++)
     {
+
+        ss << "(";
+        //        for (size_t j = 0; j < bestPairs[i].second.size(); j++)
+        //            ss << (bestPairs[i].second[j] ? "*" : ".");
+        bool firstfirst = true;
         for (size_t j = 0; j < bestPairs[i].first.size(); j++)
-            ss << (bestPairs[i].first[j] ? "*" : ".");
-        ss << "\t->\t";
-        for (size_t j = 0; j < bestPairs[i].second.size(); j++)
-            ss << (bestPairs[i].second[j] ? "*" : ".");
+        {
+            if (bestPairs[i].first[j] == true)
+            {
+                if (firstfirst)
+                    firstfirst = false;
+                else
+                    ss << ",";
+                ss << tips[j]->getName();
+            }
+        }
+        
+        ss << ") -> (";
+        //        for (size_t j = 0; j < bestPairs[i].second.size(); j++)
+        //            ss << (bestPairs[i].second[j] ? "*" : ".");
+        bool firstsecond = true;
+        for (size_t j = 0; j < bestPairs[i].first.size(); j++)
+        {
+            if (bestPairs[i].second[j] == true)
+            {
+                if (firstsecond)
+                    firstsecond = false;
+                else
+                    ss << ",";
+                ss << tips[j]->getName();
+            }
+        }
+        ss << ")";
+        
 
         std::vector<AdmixtureNode*>* v = &(*value)[bestPairs[i].first][bestPairs[i].second];
         

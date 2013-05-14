@@ -38,6 +38,7 @@ namespace RevBayesCore {
         
         double                              getAge(void) const;                                                         //!< Get the age (time ago from present) for this node
         double                              getBranchLength(void) const;                                                //!< Get the branch length leading towards this node
+        double                              getTopologyBranchLength(void) const;
         const AdmixtureNode&                getChild(size_t i) const;                                                   //!< Returns the i-th child
         AdmixtureNode&                      getChild(size_t i);                                                         //!< Returns the i-th child (non-const to return non-const node)
         std::vector<int>                    getChildrenIndices(void) const;                                             //!< Return children indices
@@ -83,21 +84,23 @@ namespace RevBayesCore {
         bool                                checkChildren(void);
         bool                                checkParent(void);
 
-        
+        bool                                setOutgroup(bool tf);
+        bool                                isOutgroup(void);
         bool                                isAdmixtureNode(void);
         bool                                isInteriorNode(void);
-        bool operator<( const AdmixtureNode*& other) const;
+        bool                                operator<( const AdmixtureNode*& other) const;
         
     private:
         std::vector<AdmixtureNode*>         children;                                                                   //!< Vector holding the node's children.
         AdmixtureNode*                      parent;                                                                     //!< Pointer to the parent of the node.
         AdmixtureTree*                      topology;                                                                   //!< A pointer to the tree for convinience access
-//        mutable double                      age;
+        mutable double                      age;
 //        mutable double                      time;
 //        mutable double                      branchLength;
         
         bool                                sorted;
         bool                                admixtureNode;
+        bool                                outgroup;
         AdmixtureNode*                      admixtureParent;
         AdmixtureNode*                      admixtureChild;
         double                              weight;

@@ -22,20 +22,17 @@ namespace RevBayesCore {
     class AdmixtureDelayDecrement : public Move {
         
     public:
-        AdmixtureDelayDecrement( ConstantNode<int>* dt, double w );                                            //!<  constructor
+        AdmixtureDelayDecrement( ConstantNode<int>* dt, double w );                                                    //!<  constructor
         
         // Basic utility functions
         AdmixtureDelayDecrement*        clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
-        bool                            isGibbs(void) const;                                                                    //!< Is this a Gibbs move?
-        void                            performGibbs(void);
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         
         void                            acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
         double                          performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
-        void                            performGibbsMove(void);
         void                            rejectMove(void);
         
     private:
