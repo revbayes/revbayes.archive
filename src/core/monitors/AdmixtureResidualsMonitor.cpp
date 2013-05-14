@@ -1,0 +1,178 @@
+//
+//  AdmixtureResidualsMonitor.cpp
+//  rb_mlandis
+//
+//  Created by Michael Landis on 3/10/13.
+//  Copyright (c) 2013 Michael Landis. All rights reserved.
+//
+
+#include "AdmixtureResidualsMonitor.h"
+#include "DagNode.h"
+#include "Model.h"
+#include "Monitor.h"
+#include "RbException.h"
+#include <iomanip>
+
+using namespace RevBayesCore;
+
+/* Constructor */
+AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(TypedDagNode< std::vector< double > >* r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr) : Monitor(g,r), outStream(), residuals(r), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), taxonNames(tn)
+{
+
+}
+
+AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(const AdmixtureResidualsMonitor &m) : Monitor( m ), outStream( ), residuals( m.residuals), nodeVariables( m.nodeVariables ), taxonNames(m.taxonNames) {
+    
+    filename    = m.filename;
+    separator   = m.separator;
+    prior       = m.prior;
+    posterior   = m.posterior;
+    likelihood  = m.likelihood;
+}
+
+
+/* Clone the object */
+AdmixtureResidualsMonitor* AdmixtureResidualsMonitor::clone(void) const {
+    
+    return new AdmixtureResidualsMonitor(*this);
+}
+
+
+void AdmixtureResidualsMonitor::closeStream() {
+    outStream.close();
+}
+
+void AdmixtureResidualsMonitor::monitor(long gen) {
+    
+    // get the printing frequency
+    int samplingFrequency = printgen;
+    
+    if (gen % samplingFrequency == 0) {
+        // print the iteration number first
+        outStream << gen;
+        
+        if ( posterior ) {
+            // add a separator before every new element
+            outStream << separator;
+            
+            const std::vector<DagNode*> &n = model->getDagNodes();
+            double pp = 0.0;
+            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
+                pp += (*it)->getLnProbability();
+            }
+            outStream << pp;
+        }
+        
+        if ( likelihood ) {
+            // add a separator before every new element
+            outStream << separator;
+            
+            const std::vector<DagNode*> &n = model->getDagNodes();
+            double pp = 0.0;
+            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
+                if ( (*it)->isClamped() ) {
+                    pp += (*it)->getLnProbability();
+                }
+            }
+            outStream << pp;
+        }
+        
+        if ( prior ) {
+            // add a separator before every new element
+            outStream << separator;
+            
+            const std::vector<DagNode*> &n = model->getDagNodes();
+            double pp = 0.0;
+            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
+                if ( !(*it)->isClamped() ) {
+                    pp += (*it)->getLnProbability();
+                }
+            }
+            outStream << pp;
+        }
+        
+        // add residuals
+        const std::vector<double>& rv = residuals->getValue();
+        size_t numTaxa = taxonNames.size();
+        for (size_t i = 0; i < numTaxa; i++)
+        {
+            for (size_t j = i; j < numTaxa; j++)
+            {
+                outStream << separator << std::setprecision(12) << std::fixed << rv[i * numTaxa + j];
+            }
+        }
+        
+        
+        outStream << std::endl;
+        
+    }
+}
+
+
+/** open the file stream for printing */
+void AdmixtureResidualsMonitor::openStream(void) {
+    
+    // open the stream to the file
+    outStream.open( filename.c_str(), std::fstream::out );
+    
+}
+
+/** Print header for monitored values */
+void AdmixtureResidualsMonitor::printHeader() {
+    
+    // print one column for the iteration number
+    outStream << "Iteration";
+    
+    if ( posterior ) {
+        // add a separator before every new element
+        outStream << separator;
+        outStream << "Posterior";
+    }
+    
+    if ( likelihood ) {
+        // add a separator before every new element
+        outStream << separator;
+        outStream << "Likelihood";
+    }
+    
+    if ( prior ) {
+        // add a separator before every new element
+        outStream << separator;
+        outStream << "Prior";
+    }
+    
+    // add residual pair names
+    size_t numTaxa = taxonNames.size();
+    for (size_t i = 0; i < numTaxa; i++)
+    {
+        for (size_t j = i; j < numTaxa; j++)
+        {
+            outStream << separator << taxonNames[i] << "." << taxonNames[j];
+        }
+    }
+
+    // end line of stream
+    outStream << std::endl;
+}
+
+
+void AdmixtureResidualsMonitor::swapNode(DagNode *oldN, DagNode *newN) {
+    
+    if (oldN == residuals)
+    {
+        residuals = static_cast<TypedDagNode<std::vector<double> >* >(newN);
+    }
+    
+    else {
+        // error catching
+        if ( nodeVariables.find(oldN) == nodeVariables.end() ) {
+            throw RbException("Cannot replace DAG node in this monitor because the monitor doesn't hold this DAG node.");
+        }
+        
+        nodeVariables.erase( oldN );
+        nodeVariables.insert( newN );
+    }
+    
+    // delegate to base class
+    Monitor::swapNode(oldN, newN);
+}
