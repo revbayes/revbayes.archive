@@ -10,9 +10,9 @@
 #include "ConstantNode.h"
 #include "NewickConverter.h"
 #include "RbException.h"
+#include "RbOptions.h"
 #include "Test.h"
 #include "TestACLNRelaxedClock.h"
-#include "TestAdmixtureGraph.h"
 #include "TestAutocorrelatedBranchHeterogeneousGtrModel.h"
 #include "TestBayesFactor.h"
 #include "TestBirthDeath.h"
@@ -44,6 +44,10 @@
 #include "TestVariableBirthDeath.h"
 #include "Tree.h"
 #include "TreeTrace.h"
+
+#ifdef USE_LIB_ARMADILLO
+#include "TestAdmixtureGraph.h"
+#endif
 
 #include <time.h>
 
@@ -345,6 +349,8 @@ bool Test::performTests(void) {
         std::cout << e.getMessage() << std::endl;
     }
     
+#ifdef USE_LIB_ARMADILLO
+    // Admixture graph
     try {
 //        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/21pop.no_edge.ultra.bm.txt", 10);
 //        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/21pop.21to1.ultra.bm.txt", 10);
@@ -352,6 +358,7 @@ bool Test::performTests(void) {
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
+#endif
     
     /* The whole RevLanguage test suite */
     try {
