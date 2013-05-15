@@ -317,7 +317,7 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     buildRandomBinaryTree(nodesOutgroup, numOutgroup, true);
     for (size_t i = 0; i < nodesOutgroup.size(); i++)
     {
-        
+        // MJL 051413: empty loop: a mistake?
     }
     
     /*

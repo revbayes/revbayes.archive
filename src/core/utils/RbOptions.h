@@ -86,7 +86,7 @@
 
 // Uncomment the first line to enable the armadillo library
 // AdmixtureGraph depends on armadillo being enabled
-// #define USE_LIB_ARMADILLO
+//#define USE_LIB_ARMADILLO
 #ifdef USE_LIB_ARMADILLO
 #include <armadillo>
 #endif

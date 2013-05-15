@@ -279,7 +279,7 @@ bool TestAdmixtureGraph::run(void) {
     // MCMC
     std::cout << "Calling mcmc\n";
     
-    Mcmc myMcmc = Mcmc(myModel, moves, monitors, 100);
+    Mcmc myMcmc = Mcmc(myModel, moves, monitors);
     myMcmc.run(100000);
     myMcmc.printOperatorSummary();
     

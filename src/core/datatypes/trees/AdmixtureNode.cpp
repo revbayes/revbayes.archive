@@ -133,6 +133,7 @@ AdmixtureNode& AdmixtureNode::operator=(const AdmixtureNode &n) {
 /** Add a child node. We own it from here on. */
 void AdmixtureNode::addChild(TopologyNode* c) {
     
+    //std::cout << "addChild ( TopologyNode* c )\n";
     AdmixtureNode *tn = dynamic_cast<AdmixtureNode*>( c );
     if ( tn != NULL ) {
         addChild( tn );
@@ -146,6 +147,8 @@ void AdmixtureNode::addChild(TopologyNode* c) {
 
 /** Add a child node. We own it from here on. */
 void AdmixtureNode::addChild(AdmixtureNode* c) {
+
+    //std::cout << "addChild ( AdmixtureNode* c )\n";
     
     // add the child to our internal vector
     children.push_back(c);
