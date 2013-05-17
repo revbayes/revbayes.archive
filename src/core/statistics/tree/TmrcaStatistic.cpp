@@ -21,16 +21,19 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c) 
 
 TmrcaStatistic::TmrcaStatistic(const TmrcaStatistic &n) : TypedFunction<double>( n ), tree( n.tree ), clade( n.clade ), index( -1 ) {
     // no need to add parameters, happens automatically
+
 }
 
 
 TmrcaStatistic::~TmrcaStatistic( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
+
 }
 
 
 
 TmrcaStatistic* TmrcaStatistic::clone( void ) const {
+    
     return new TmrcaStatistic( *this );
 }
 
@@ -38,30 +41,37 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const {
 void TmrcaStatistic::update( void ) {
     
     
-    if ( index < 0 ) {
+    if ( index < 0 ) 
+    {
         const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
-        for (std::vector<TopologyNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
-            if ( (*it)->containsClade( clade ) ) {
+        for (std::vector<TopologyNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
+        {
+            if ( (*it)->containsClade( clade ) ) 
+            {
                 index = int( (*it)->getIndex() );
                 break;
             }
         }
-        if ( index < 0 ) {
+        if ( index < 0 ) 
+        {
             throw RbException("TMRCA-Statistics can only be applied if clade is present.");
         }
     }
     
-    double tmrca = tree->getValue().getTime(index);
+    double tmrca = tree->getValue().getAge(index);
     *value = tmrca;
 }
 
 
 
 void TmrcaStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == tree) {
+    
+    if (oldP == tree) 
+    {
         tree = static_cast<const TypedDagNode<TimeTree>* >( newP );
         index = -1;
     }
+    
 }
 
 

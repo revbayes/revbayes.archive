@@ -123,9 +123,9 @@
 #include "Func_rlvector.h"
 
 /* Constructor functions */
+#include "ConstructorClade.h"
 
 /* Phylogeny functions */
-#include "Func_clade.h"
 #include "Func_mapTree.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrace.h"
@@ -133,6 +133,7 @@
 #include "Func_readTreeTrace.h"
 #include "Func_writeFasta.h"
 #include "RlTmrcaStatistic.h"
+#include "RlTreeHeightStatistic.h"
 #include "RlTreeAssemblyFunction.h"
 
 #include "RlF81RateMatrixFunction.h"
@@ -525,7 +526,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		
         
         /* Add phylogeny-related functions (alphabetical order) */
-        addFunction( "clade",                       new Func_clade()                       );
+        addFunction( "clade",                       new ConstructorClade()                 );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
@@ -536,6 +537,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
+        addFunction( "treeHeight",                  new TreeHeightStatistic()              );
 
         /* Add builtin templated functions */
         addFunction( "v",         new Func_rlvector<Monitor>() );

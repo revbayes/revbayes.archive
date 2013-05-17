@@ -7,26 +7,26 @@
 //
 
 
-#include "Func_clade.h"
+#include "ConstructorClade.h"
 #include "RlClade.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_clade::Func_clade( void ) : Function( ) {
+ConstructorClade::ConstructorClade( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-Func_clade* Func_clade::clone( void ) const {
+ConstructorClade* ConstructorClade::clone( void ) const {
     
-    return new Func_clade( *this );
+    return new ConstructorClade( *this );
 }
 
 
-RbLanguageObject* Func_clade::execute() {
+RbLanguageObject* ConstructorClade::execute() {
     
     // now allocate a new Clade
     const std::vector<std::string>& n = static_cast<const Vector<RlString> &>( args[0].getVariable()->getValue() ).getValue();
@@ -37,12 +37,13 @@ RbLanguageObject* Func_clade::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_clade::getArgumentRules( void ) const {
+const ArgumentRules& ConstructorClade::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet ) 
+    {
         
         argumentRules.push_back( new ArgumentRule( "taxa", true, Vector<RlString>::getClassTypeSpec() ) );
         
@@ -53,7 +54,7 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_clade::getClassName(void) { 
+const std::string& ConstructorClade::getClassName(void) { 
     
     static std::string rbClassName = "clade constructor function";
     
@@ -61,7 +62,7 @@ const std::string& Func_clade::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_clade::getClassTypeSpec(void) { 
+const TypeSpec& ConstructorClade::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -70,7 +71,7 @@ const TypeSpec& Func_clade::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& Func_clade::getReturnType( void ) const {
+const TypeSpec& ConstructorClade::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = Clade::getClassTypeSpec();
     
@@ -78,7 +79,7 @@ const TypeSpec& Func_clade::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_clade::getTypeSpec( void ) const {
+const TypeSpec& ConstructorClade::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

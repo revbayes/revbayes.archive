@@ -146,7 +146,7 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
                     m->push_back( mAA );
                 }
                 else {
-                    throw RbException("Unkown data type type \"" + dType + "\".");
+                    throw RbException("Unknown data type type \"" + dType + "\".");
                 }
             }
         }

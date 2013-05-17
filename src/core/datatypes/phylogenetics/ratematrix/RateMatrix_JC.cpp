@@ -60,7 +60,8 @@ RateMatrix_JC::~RateMatrix_JC(void) {
 
 RateMatrix_JC& RateMatrix_JC::operator=(const RateMatrix_JC &r) {
     
-    if (this != &r) {
+    if (this != &r) 
+    {
         TimeReversibleRateMatrix::operator=( r );
                 
     }
@@ -74,11 +75,15 @@ RateMatrix_JC& RateMatrix_JC::operator=(const RateMatrix_JC &r) {
 void RateMatrix_JC::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
     
     // calculate the transition probabilities
-    double p_ii = 1.0/numStates + (1.0-1.0/numStates) * exp(-t);
-    double p_ij = 1.0/numStates - 1.0/numStates * exp(-t);
-	for (size_t i=0; i<numStates; i++) {
+    double bf = 1.0 / numStates;
+    double oneMinusBf = 1.0 - bf;
+    double p_ii = bf + oneMinusBf * exp(-t/oneMinusBf);
+    double p_ij = bf - bf * exp(-t/oneMinusBf);
+	for (size_t i=0; i<numStates; i++) 
+    {
         P[i][i] = p_ii;
-		for (size_t j=i+1; j<numStates; j++) {
+		for (size_t j=i+1; j<numStates; j++) 
+        {
             P[i][j] = p_ij;
             P[j][i] = p_ij;
         }

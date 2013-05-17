@@ -189,16 +189,20 @@ void RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::printVal
 template <class charType, class treeType>
 void RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "tree" ) {
+    if ( name == "tree" ) 
+    {
         tree = var;
     }
-    else if ( name == "Q" ) {
+    else if ( name == "Q" ) 
+    {
         q = var;
     }
-    else if ( name == "rate" ) {
+    else if ( name == "rate" ) 
+    {
         rate = var;
     }
-    else if ( name == "nSites" ) {
+    else if ( name == "nSites" ) 
+    {
         nSites = var;
     }
     else {

@@ -307,33 +307,44 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
 
 
 bool TopologyNode::containsClade(const Clade &c) const {
+    
     std::vector<std::string> myTaxa   = getTaxaStringVector();
     
-    if ( myTaxa.size() < c.size() ) {
+    if ( myTaxa.size() < c.size() ) 
+    {
         return false;
     }
     
-    for (std::vector<std::string>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it) {
+    for (std::vector<std::string>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it) 
+    {
         bool found = false;
-        for (std::vector<std::string>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it) {
-            if ( *y_it == *it ) {
+        for (std::vector<std::string>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it) 
+        {
+            if ( *y_it == *it ) 
+            {
                 found = true;
                 break;
             }
         }
         
-        if (!found) {
+        if (!found) 
+        {
             return false;
         }
     }
     
-    if ( myTaxa.size() == c.size() ) {
+    if ( myTaxa.size() == c.size() ) 
+    {
         return true;
-    } else {
+    } 
+    else 
+    {
         bool contains = false;
-        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) 
+        {
             contains |= (*it)->containsClade(c);
-            if ( contains ) {
+            if ( contains ) 
+            {
                 break;
             }
         }

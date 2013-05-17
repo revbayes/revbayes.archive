@@ -778,6 +778,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::simu
             }
             
             double *freqs = transitionProbMatrix[ p ];
+            
             // create the character
             charType *c = new charType();
             c->setToFirstState();

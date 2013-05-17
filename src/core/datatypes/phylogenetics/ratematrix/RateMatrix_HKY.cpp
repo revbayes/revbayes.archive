@@ -39,12 +39,15 @@ RateMatrix_HKY::RateMatrix_HKY(void) : TimeReversibleRateMatrix( 4 ){
     kappa = 1.0;
     
     updateMatrix();
+    
 }
 
 
 /** Copy constructor */
 RateMatrix_HKY::RateMatrix_HKY(const RateMatrix_HKY& m) : TimeReversibleRateMatrix( m ) {
+    
     kappa = m.kappa;
+    
 }
 
 
@@ -99,7 +102,7 @@ void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbab
     P[1][0] = pi_A * oneminusa;
     P[1][1] = (pi_C * ( pi_CT+pi_AG*aa ) + pi_T*bbY) / pi_CT;
     P[1][2] = pi_G * oneminusa;
-    P[1][3] = (pi_T * ( pi_CT-pi_AG*aa ) + pi_T*bbY) / pi_CT;
+    P[1][3] = (pi_T * ( pi_CT+pi_AG*aa ) - pi_T*bbY) / pi_CT;
     
     P[2][0] = (pi_A * ( pi_AG+pi_CT*aa ) - pi_A*bbR) / pi_AG;
     P[2][1] = P[0][1];
@@ -109,20 +112,23 @@ void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbab
     P[3][0] = P[1][0];
     P[3][1] = (pi_C * ( pi_CT+pi_AG*aa ) - pi_C*bbY) / pi_CT;
     P[3][2] = P[1][2];
-    P[3][3] = (pi_T * ( pi_CT-pi_AG*aa ) + pi_C*bbY) / pi_CT;
+    P[3][3] = (pi_T * ( pi_CT+pi_AG*aa ) + pi_C*bbY) / pi_CT;
 }
 
 
 RateMatrix_HKY* RateMatrix_HKY::clone( void ) const {
+    
     return new RateMatrix_HKY( *this );
 }
 
 
 void RateMatrix_HKY::setKappa( double k ) {
+    
     kappa = k;
     
     // set flags
     needsUpdate = true;
+    
 }
 
 

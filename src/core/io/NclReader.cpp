@@ -904,7 +904,10 @@ bool NclReader::isNexusFile(std::string& fn, std::string& dType) {
         else if (word == "format")
             foundFormat = true;
         else if (fileFmt[0] == "datatype")
+        {
             dType = fileFmt[1];
+            if ( dType[dType.size()-1] == ';' ) dType = dType.substr(0, dType.size()-1);
+        }
     } while ((ch = fStrm.get()) != EOF);
 
     // close file

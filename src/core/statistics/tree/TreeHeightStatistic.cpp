@@ -30,6 +30,7 @@ TreeHeightStatistic::~TreeHeightStatistic( void ) {
 
 
 TreeHeightStatistic* TreeHeightStatistic::clone( void ) const {
+    
     return new TreeHeightStatistic( *this );
 }
 
@@ -43,9 +44,12 @@ void TreeHeightStatistic::update( void ) {
 
 
 void TreeHeightStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == tree) {
+    
+    if (oldP == tree) 
+    {
         tree = static_cast<const TypedDagNode<TimeTree>* >( newP );
     }
+    
 }
 
 

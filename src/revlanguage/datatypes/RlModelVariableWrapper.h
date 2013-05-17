@@ -34,11 +34,8 @@ namespace RevLanguage {
         // the value type definition
         typedef rbType valueType;
        
-        // Basic utility functions you have to override (also getClassTypeSpec()!)
+        // Basic utility functions you have to override
         virtual RlModelVariableWrapper*         clone(void) const = 0;                                                      //!< Clone object
-//        static const std::string&               getClassName(void);                                                         //!< Get class name
-//        static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
-//        virtual const TypeSpec&                 getTypeSpec(void) const = 0;                                                //!< Get the type spec of the instance
     
         // function you might want to overwrite
         virtual RbLanguageObject*               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions

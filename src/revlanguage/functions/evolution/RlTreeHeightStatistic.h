@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of the RevLanguage clade function, which
- * is used to created deterministic variable associated with the clade function.
+ * This file contains the declaration of the RevLanguage TreeHeight statistic, which
+ * is used to created deterministic variable associated with the TreeHeight statistic.
  *
- * @brief Declaration and implementation of Func_clade
+ * @brief Declaration and implementation of TreeheightStatistic
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -15,8 +15,8 @@
  */
 
 
-#ifndef Func_clade_H
-#define Func_clade_H
+#ifndef RlTreeHeightStatistic_H
+#define RlTreeHeightStatistic_H
 
 #include "RlFunction.h"
 
@@ -24,13 +24,13 @@
 
 namespace RevLanguage {
     
-    class Func_clade :  public Function {
+    class TreeHeightStatistic :  public Function {
         
     public:
-        Func_clade( void );
+        TreeHeightStatistic( void );
         
         // Basic utility functions
-        Func_clade*                                     clone(void) const;                                                              //!< Clone the object
+        TreeHeightStatistic*                            clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

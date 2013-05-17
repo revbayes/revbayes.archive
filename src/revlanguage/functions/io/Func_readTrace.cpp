@@ -19,7 +19,6 @@
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Func_readTrace.h"
-#include "OptionRule.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RlString.h"

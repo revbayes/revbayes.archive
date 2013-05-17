@@ -51,7 +51,8 @@ ConstantBirthDeathProcess::~ConstantBirthDeathProcess() {
 
 void ConstantBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T) {
     
-    if (index < numTaxa-1) {
+    if (index < numTaxa-1) 
+    {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
@@ -67,13 +68,15 @@ void ConstantBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyN
         
         // add a left child
         TopologyNode* leftChild = &parent->getChild(0);
-        if ( !leftChild->isTip() ) {
+        if ( !leftChild->isTip() ) 
+        {
             tips.push_back(leftChild);
         }
         
         // add a right child
         TopologyNode* rightChild = &parent->getChild(1);
-        if ( !rightChild->isTip() ) {
+        if ( !rightChild->isTip() ) 
+        {
             tips.push_back(rightChild);
         }
         
@@ -85,7 +88,8 @@ void ConstantBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyN
 
 void ConstantBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
     
-    if (tips.size() < numTaxa) {
+    if (tips.size() < numTaxa) 
+    {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
@@ -117,16 +121,19 @@ void ConstantBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*>
 
 
 ConstantBirthDeathProcess* ConstantBirthDeathProcess::clone( void ) const {
+    
     return new ConstantBirthDeathProcess( *this );
 }
 
 
 double ConstantBirthDeathProcess::computeLnProbability( void ) {
+    
     // variable declarations and initialization
     double lnProbTimes = 0;
     
     
-    if ( !matchesConstraints() ) {
+    if ( !matchesConstraints() ) 
+    {
         return RbConstants::Double::neginf;
     }
     
@@ -136,7 +143,8 @@ double ConstantBirthDeathProcess::computeLnProbability( void ) {
     
     // retrieved the speciation times
     std::vector<double> times;
-    for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i) {
+    for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i) 
+    {
         const TopologyNode& n = value->getInteriorNode( i );
         double t = n.getTime();
         times.push_back(t);
