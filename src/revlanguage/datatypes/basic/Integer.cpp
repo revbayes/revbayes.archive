@@ -72,7 +72,8 @@ RbLanguageObject* Integer::convertTo( const TypeSpec& type ) const {
     if ( type == Real::getClassTypeSpec() )
         return new Real( value->getValue() );
 
-    if ( type == RlString::getClassTypeSpec() ) {
+    if ( type == RlString::getClassTypeSpec() ) 
+    {
         std::ostringstream o;
         printValue( o );
         return new RlString( o.str() );

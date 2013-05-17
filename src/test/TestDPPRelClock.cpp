@@ -78,10 +78,7 @@ bool TestDPPRelClock::run( void ) {
 	//	DeterministicNode<double> *squareSigLN = new DeterministicNode<double>("squareSigLN", new BinaryMultiplication<double, double, double>(sigLN, sigLN) );
 	//	DeterministicNode<double> *divSqSigLN = new DeterministicNode<double>("divSqSigLN", new BinaryDivision<double, double, double>(squareSigLN, new ConstantNode<double>( "2", new double (2.0))) );
 	//	DeterministicNode<double> *muValLN = new DeterministicNode<double>("MuValLN", new BinarySubtraction<double, double, double>(logExpLN, divSqSigLN) );
-	
-	
-    TimeTree* t = trees[0];
-	
+		
     // birth-death process priors
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));

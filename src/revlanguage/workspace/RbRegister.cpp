@@ -116,6 +116,7 @@
 #include "Func_simplex.h"
 #include "Func_type.h"
 #include "Func_Source.h"
+#include "Func_write.h"
 
 /* Builtin templated functions */
 #include "Func_vector.h"
@@ -124,6 +125,7 @@
 /* Constructor functions */
 
 /* Phylogeny functions */
+#include "Func_clade.h"
 #include "Func_mapTree.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrace.h"
@@ -308,7 +310,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "Protein_model", new CharacterStateEvolutionAlongTree<AminoAcidState,BranchLengthTree>() );
         
         // relaxed (Time) clock-tree
-        addDistribution( "charStateModelRelaxedClock", new RelaxedClockCharacterStateEvolution<DnaState,TimeTree>() );
+        addDistribution( "DNA_model", new RelaxedClockCharacterStateEvolution<DnaState,TimeTree>() );
         
         
         // uniform topology distribution
@@ -440,6 +442,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_add",      new Func_add<Real, Real, Real>(  ) );
         addFunction( "_add",      new Func_add<RealPos, RealPos, RealPos>(  ) );
         addFunction( "_add",      new Func_add<RlString, RlString, RlString>(  ) );
+        addFunction( "_add",      new Func_add<RlString, Real, RlString>(  ) );
+        addFunction( "_add",      new Func_add<RlString, Integer, RlString>(  ) );
         
         
         // division
@@ -521,6 +525,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		
         
         /* Add phylogeny-related functions (alphabetical order) */
+        addFunction( "clade",                       new Func_clade()                       );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
@@ -547,6 +552,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /////////////////////////////////////////
         
         addFunction( "source",         new Func_Source() );
+        addFunction( "write",          new Func_write()  );
         
         // inference function
 //        addFunction( "beca",           new BecaFunction() );

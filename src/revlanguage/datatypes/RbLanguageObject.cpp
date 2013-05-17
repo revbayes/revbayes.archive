@@ -183,6 +183,7 @@ const std::string& RbLanguageObject::getType( void ) const {
  * Get the value as a DAG node. This default implementation throws an error.
  */
 RevBayesCore::DagNode* RbLanguageObject::getValueNode( void ) const {
+    
     throw RbException("RevLanguage only objects cannot be used inside DAG's!");
     
     return NULL;

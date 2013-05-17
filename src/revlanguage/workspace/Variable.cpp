@@ -50,6 +50,7 @@ Variable* Variable::clone( void ) const {
 
 /* Decrement the reference count. */
 size_t Variable::decrementReferenceCount( void ) const {
+    
     refCount--;
     
     return refCount;
@@ -57,6 +58,7 @@ size_t Variable::decrementReferenceCount( void ) const {
 
 
 const std::string& Variable::getName( void ) const {
+    
     return name;
 }
 
@@ -64,6 +66,7 @@ const std::string& Variable::getName( void ) const {
 
 /* Get the reference count for this instance. */
 size_t Variable::getReferenceCount(void) const {
+    
     return refCount;
 }
 
@@ -71,7 +74,8 @@ size_t Variable::getReferenceCount(void) const {
 /* Get the value of the variable */
 const RbLanguageObject& Variable::getValue(void) const {
 
-    if (value == NULL) {
+    if (value == NULL) 
+    {
         return RbNullObject::getInstance();
     }
     
@@ -81,7 +85,8 @@ const RbLanguageObject& Variable::getValue(void) const {
 /** Get the value of the variable */
 RbLanguageObject& Variable::getValue(void) {
     
-    if (value == NULL) {
+    if (value == NULL) 
+    {
         return RbNullObject::getInstance();
     }
     
@@ -91,13 +96,16 @@ RbLanguageObject& Variable::getValue(void) {
 
 /** Get the required type specs for values stored inside this variable */
 const TypeSpec& Variable::getValueTypeSpec(void) const {
+    
     return valueTypeSpec;
 }
 
 
 /* Increment the reference count for this instance. */
 void Variable::incrementReferenceCount( void ) const {
+    
     refCount++;
+    
 }
 
 
@@ -109,6 +117,7 @@ void Variable::printValue(std::ostream& o) const {
         o << "NULL";
     else
         value->printValue( o );
+    
 }
 
 
@@ -117,18 +126,22 @@ void Variable::setValue( RbLanguageObject *newValue ) {
     
     // change the old variable with the new variable in the parent and children
     replaceValue( newValue );
+    
 }
 
 
 void Variable::setName(std::string const &n) {
+    
     name = n;
+
 }
 
 
 /** Replace DAG node, only keep the children */
 void Variable::replaceValue( RbLanguageObject *newValue ) {
     
-    if (value != NULL) {
+    if (value != NULL) 
+    {
         
         // I need to tell my children that I'm being exchanged
         value->replaceVariable( newValue );
@@ -148,7 +161,9 @@ void Variable::replaceValue( RbLanguageObject *newValue ) {
 
 /** We set here the required value type spec. */
 void Variable::setValueTypeSpec(const TypeSpec &ts) {
+    
     valueTypeSpec = ts;
+    
 }
 
 

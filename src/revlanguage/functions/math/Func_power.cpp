@@ -35,7 +35,7 @@ RbLanguageObject* Func_power::execute() {
     RevBayesCore::PowerFunction* f = new RevBayesCore::PowerFunction( b, e );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
-    Real* value = new Real( detNode );
+    RealPos* value = new RealPos( detNode );
     
     return value;
 }

@@ -63,7 +63,8 @@ Workspace::Workspace(const Workspace& x) : Environment(x), typesInitialized(x.ty
 /* Assignment operator */
 Workspace& Workspace::operator=(const Workspace& x) {
 
-    if (this != &x) {
+    if (this != &x) 
+    {
         // first we need to delegate to the base class assignment operator
         Environment::operator=(x);
     }
@@ -79,14 +80,14 @@ bool Workspace::addDistribution(const std::string& name, Distribution *dist) {
     printf("Adding distribution %s to workspace\n", name.c_str());
 #endif
 
-    if ( typeTable.find(name) != typeTable.end())
+    if ( typeTable.find(name) != typeTable.end() )
         throw RbException("There is already a type named '" + dist->getTypeSpec() + "' in the workspace");
 
 #ifdef DEBUG_WORKSPACE
     printf("Adding type %s to workspace\n", dist->getTypeSpec().getType().c_str());
 #endif
 
-    typeTable.insert(std::pair<std::string, RbLanguageObject* >(dist->getTypeSpec(),dist->clone()));
+//    typeTable.insert(std::pair<std::string, RbLanguageObject* >(dist->getTypeSpec(),dist->clone()));
 
     functionTable.addFunction(name, new ConstructorFunction( dist ) );
 
@@ -155,7 +156,8 @@ Workspace* Workspace::clone() const {
 const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const {
     
     std::map<std::string, RbLanguageObject*>::const_iterator it = typeTable.find( type );
-    if ( it == typeTable.end() ) {
+    if ( it == typeTable.end() ) 
+    {
         if ( parentEnvironment != NULL )
             return static_cast<Workspace*>( parentEnvironment )->getClassTypeSpecOfType( type );
         else
@@ -171,7 +173,8 @@ const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const
 bool Workspace::existsType( const TypeSpec& name ) const {
 
     std::map<std::string, RbLanguageObject *>::const_iterator it = typeTable.find( name );
-    if ( it == typeTable.end() ) {
+    if ( it == typeTable.end() ) 
+    {
         if ( parentEnvironment != NULL )
             return static_cast<Workspace*>( parentEnvironment )->existsType( name );
         else
@@ -188,7 +191,8 @@ void Workspace::printValue(std::ostream& o) const {
 
     o << "Variable table:" << std::endl;
     VariableTable::const_iterator it;
-    for ( it = variableTable.begin(); it != variableTable.end(); it++) {
+    for ( it = variableTable.begin(); it != variableTable.end(); it++) 
+    {
         o << (*it).first << " = ";
         (*it).second->printValue( o );
         o << std::endl;
@@ -201,7 +205,8 @@ void Workspace::printValue(std::ostream& o) const {
 
     o << "Type table:" << std::endl;
     std::map<std::string, RbLanguageObject *>::const_iterator i;
-    for (i=typeTable.begin(); i!=typeTable.end(); i++) {
+    for (i=typeTable.begin(); i!=typeTable.end(); i++) 
+    {
         if ( (*i).second != NULL )
             o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;
         else

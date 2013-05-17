@@ -44,13 +44,13 @@ typedef std::map<std::string, RbLanguageObject*> TypeTable;
  * The Workspace class is used for two singleton instances, the global workspace and the user
  * workspace.
  *
- * The global workspace is the base frame for all other frames. It contains all
+ * The global workspace is the base environment for all other environments. It contains all
  * builtin functions and types, as well as any builtin (system) variables. The user workspace
  * is enclosed within the global workspace, and contains all functions, types and global
  * variables defined by the user. Local variables defined by the user are kept in local
- * frames.
+ * environments.
  *
- * The workspace has a variable table and a function table, which it inherits from Frame. In addition, it
+ * The workspace has a variable table and a function table, which it inherits from Environment. In addition, it
  * keeps a type table. It provides various types of functionality for
  * storing and retrieving functions, types and member variables and their initializers.
  *

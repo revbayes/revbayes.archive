@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of the RevLanguage gtr function, which
- * is used to created deterministic variable associated with the gtr function.
+ * This file contains the declaration of the RevLanguage clade function, which
+ * is used to created deterministic variable associated with the clade function.
  *
- * @brief Declaration and implementation of Func_gtr
+ * @brief Declaration and implementation of Func_clade
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -15,8 +15,8 @@
  */
 
 
-#ifndef RlTmrcaStatistic_H
-#define RlTmrcaStatistic_H
+#ifndef Func_clade_H
+#define Func_clade_H
 
 #include "RlFunction.h"
 
@@ -24,13 +24,13 @@
 
 namespace RevLanguage {
     
-    class TmrcaStatistic :  public Function {
+    class Func_clade :  public Function {
         
     public:
-        TmrcaStatistic( void );
+        Func_clade( void );
         
         // Basic utility functions
-        TmrcaStatistic*                                 clone(void) const;                                                              //!< Clone the object
+        Func_clade*                                     clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

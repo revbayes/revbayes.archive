@@ -273,19 +273,21 @@ void Environment::eraseVariable( const std::string& name ) {
     
     std::map<std::string, VariableSlot* >::iterator it = variableTable.find( name );
     if ( it == variableTable.end() )
-        throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist in frame" );
-    
-    // free the memory for the variable and remove it from the map of variables
-    delete it->second;
-    variableTable.erase( it );
-    
-    // remove the name from the var name list
-    for (std::vector<std::string>::iterator n=varNames.begin(); n!=varNames.end(); n++) 
+        throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist in environment" );
+    else 
     {
-        if (*n == name) 
+        // free the memory for the variable and remove it from the map of variables
+        delete it->second;
+        variableTable.erase( it );
+    
+        // remove the name from the var name list
+        for (std::vector<std::string>::iterator n=varNames.begin(); n!=varNames.end(); n++) 
         {
-            varNames.erase(n);
-            break;
+            if (*n == name) 
+            {
+                varNames.erase(n);
+                break;
+            }
         }
     }
 }
@@ -310,7 +312,8 @@ bool Environment::existsFunction(std::string const &name) const {
 /** Does variable exist in the Environment (current frame and enclosing frames)? */
 bool Environment::existsVariable( const std::string& name ) const {
     
-    if ( variableTable.find(name) == variableTable.end() ) {
+    if ( variableTable.find(name) == variableTable.end() ) 
+    {
         if ( parentEnvironment != NULL )
             return parentEnvironment->existsVariable( name );
         else
@@ -465,4 +468,20 @@ void Environment::setName(size_t i, const std::string &name) {
 
 size_t Environment::size( void ) const {
     return varNames.size();
+}
+
+
+void Environment::remove(const RbPtr<Variable> &var) {
+    
+    // delegate call
+    eraseVariable( var->getName() );
+    
+}
+
+
+void Environment::remove(const std::string &var) {
+    
+    // delegate call
+    eraseVariable( var );
+    
 }

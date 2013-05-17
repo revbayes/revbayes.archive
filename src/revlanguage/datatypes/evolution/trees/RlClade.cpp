@@ -34,7 +34,7 @@ Clade::Clade(void) : RlModelVariableWrapper<RevBayesCore::Clade>() {
 }
 
 /** Construct from core Clade */
-Clade::Clade(RevBayesCore::Clade *t) : RlModelVariableWrapper<RevBayesCore::Clade>( t ) {
+Clade::Clade(RevBayesCore::Clade *c) : RlModelVariableWrapper<RevBayesCore::Clade>( c ) {
     
 }
 
@@ -69,10 +69,12 @@ void Clade::constructInternalObject( void ) {
     
     // now allocate a new Clade
     std::vector<std::string> n;
-    for (std::vector<RbPtr<const Variable> >::iterator it = names.begin(); it != names.end(); ++it) {
+    for (std::vector<RbPtr<const Variable> >::iterator it = names.begin(); it != names.end(); ++it) 
+    {
         n.push_back( static_cast<const RlString &>( (*it)->getValue() ).getValue() );
     }
     value = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n));
+    
 }
 
 
@@ -163,7 +165,8 @@ const TypeSpec& Clade::getTypeSpec( void ) const {
 /** Set a member variable */
 void Clade::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "taxonName" || name == "") {
+    if ( name == "taxonName" || name == "") 
+    {
         names.push_back( var );
     } 
     else {

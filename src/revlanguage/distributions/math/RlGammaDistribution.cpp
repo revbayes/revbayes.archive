@@ -28,6 +28,7 @@ GammaDistribution::~GammaDistribution() {
 
 
 GammaDistribution* GammaDistribution::clone( void ) const {
+    
     return new GammaDistribution(*this);
 }
 
@@ -68,9 +69,10 @@ const MemberRules& GammaDistribution::getMemberRules(void) const {
     static MemberRules distGammaMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet ) 
+    {
         distGammaMemberRules.push_back( new ArgumentRule( "shape", true, RealPos::getClassTypeSpec() ) );
-        distGammaMemberRules.push_back( new ArgumentRule( "rate"  , true, RealPos::getClassTypeSpec() ) );
+        distGammaMemberRules.push_back( new ArgumentRule( "rate" , true, RealPos::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -91,15 +93,21 @@ const TypeSpec& GammaDistribution::getTypeSpec( void ) const {
 void GammaDistribution::printValue(std::ostream& o) const {
     
     o << "gamma(shape=";
-    if ( shape != NULL ) {
+    if ( shape != NULL ) 
+    {
         o << shape->getName();
-    } else {
+    } 
+    else 
+    {
         o << "?";
     }
     o << ", rate=";
-    if ( rate != NULL ) {
+    if ( rate != NULL ) 
+    {
         o << rate->getName();
-    } else {
+    } 
+    else 
+    {
         o << "?";
     }
     o << ")";
@@ -109,13 +117,21 @@ void GammaDistribution::printValue(std::ostream& o) const {
 /** Set a member variable */
 void GammaDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "shape" ) {
+    bool set = false;
+    if ( name == "shape" ) 
+    {
         shape = var;
+        set = true;
     }
-    if ( name == "rate" ) {
+    
+    if ( name == "rate" ) 
+    {
         rate = var;
+        set = true;
     }
-    else {
+    
+    if ( !set ) 
+    {
         Distribution::setConstMemberVariable(name, var);
     }
 }

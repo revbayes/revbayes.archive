@@ -19,6 +19,7 @@
 
 #include "Argument.h"
 #include "ArgumentRule.h"
+#include "Ellipsis.h"
 #include "Func_clear.h"
 #include "RbException.h"
 #include "RlUtils.h"
@@ -45,7 +46,18 @@ Func_clear* Func_clear::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func_clear::execute( void ) {
     
-    Workspace::userWorkspace().clear();
+    // we clear the entire workspace if there were no arguments
+    if ( args.size() == 0 )
+    {
+        Workspace::userWorkspace().clear();
+    }
+    else 
+    {
+        for (size_t i = 0; i < args.size(); ++i) 
+        {
+            Workspace::userWorkspace().remove( args[i].getVariable() );
+        }
+    }
     
     return NULL;
 }
@@ -55,6 +67,13 @@ RbLanguageObject* Func_clear::execute( void ) {
 const ArgumentRules& Func_clear::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
+    static bool rulesSet = false;
+    
+    if ( !rulesSet ) {
+        
+        argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        rulesSet = true;
+    }
     
     return argumentRules;
 }

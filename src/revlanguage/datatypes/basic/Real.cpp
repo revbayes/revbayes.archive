@@ -18,11 +18,14 @@
 
 
 #include "ConstantNode.h"
+#include "Integer.h"
+#include "Natural.h"
 #include "RlBoolean.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RbUtil.h"
+#include "RlString.h"
 #include "TypeSpec.h"
 
 #include <iomanip>
@@ -72,6 +75,17 @@ RbLanguageObject* Real::convertTo( const TypeSpec& type ) const {
         return new RealPos(value->getValue());
     if ( type == Probability::getClassTypeSpec() && value->getValue() >= 0.0 && value->getValue() <= 1.0)
         return new Probability(value->getValue());
+    if ( type == Integer::getClassTypeSpec() && value->getValue() == int(value->getValue()) )
+        return new Integer( int(value->getValue()) );
+    if ( type == Natural::getClassTypeSpec() && value->getValue() >= 0.0 && value->getValue() == int(value->getValue()) )
+        return new Natural( int(value->getValue()) );
+    
+    if ( type == RlString::getClassTypeSpec() ) 
+    {
+        std::ostringstream o;
+        printValue( o );
+        return new RlString( o.str() );
+    }
 
     return RbLanguageObject::convertTo( type );
 }
@@ -110,6 +124,12 @@ bool Real::isConvertibleTo(const TypeSpec& type) const {
     if (type == RealPos::getClassTypeSpec() && value->getValue() > 0.0)
         return true;
     if (type == Probability::getClassTypeSpec() && value->getValue() >= 0.0 && value->getValue() <= 1.0)
+        return true;
+    if ( type == Integer::getClassTypeSpec() && value->getValue() == int(value->getValue()) )
+        return true;
+    if ( type == Natural::getClassTypeSpec() && value->getValue() >= 0.0 && value->getValue() == int(value->getValue()) )
+        return true;
+    if ( type == RlString::getClassTypeSpec() )
         return true;
 
     return RbLanguageObject::isConvertibleTo(type);

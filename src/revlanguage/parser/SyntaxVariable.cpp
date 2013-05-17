@@ -286,7 +286,8 @@ RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
 RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     
     // test whether this variable was replace inside a loop
-    if ( replacementValue != NULL ) {
+    if ( replacementValue != NULL ) 
+    {
         RbPtr<Variable> theVar = RbPtr<Variable>( new Variable( replacementValue->clone() ) );
         return theVar;
     }

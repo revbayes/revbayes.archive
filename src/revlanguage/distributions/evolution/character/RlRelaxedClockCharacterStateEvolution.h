@@ -80,12 +80,14 @@ RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>::~RelaxedCl
 
 template <class charType, class treeType>
 RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>* RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>::clone( void ) const {
+    
     return new RelaxedClockCharacterStateEvolution(*this);
 }
 
 
 template <class charType, class treeType>
 RevBayesCore::SimpleBranchRateTimeCharEvoModel<typename charType::valueType, typename treeType::valueType>* RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>::createDistribution( void ) const {
+    
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
@@ -126,10 +128,11 @@ const RevLanguage::MemberRules& RevLanguage::RelaxedClockCharacterStateEvolution
     static MemberRules distCharStateEvolutionMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet ) 
+    {
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree", true, treeType::getClassTypeSpec() ) );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"  , true, RateMatrix::getClassTypeSpec() ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "clockRates"  , true, Vector<RealPos>::getClassTypeSpec(), new RealPos(1.0) ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "clockRates"  , true, Vector<RealPos>::getClassTypeSpec() ) );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"  , true, Natural::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -153,27 +156,39 @@ template <class charType, class treeType>
 void RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>::printValue(std::ostream& o) const {
     
     o << "Character-State-Evolution-Along-Tree Process(tree=";
-    if ( tree != NULL ) {
+    if ( tree != NULL ) 
+    {
         o << tree->getName();
-    } else {
+    } 
+    else 
+    {
         o << "?";
     }
     o << ", Q=";
-    if ( q != NULL ) {
+    if ( q != NULL ) 
+    {
         o << q->getName();
-    } else {
+    } 
+    else 
+    {
         o << "?";
     }
     o << ", clockRates=";
-    if ( clockRates != NULL ) {
+    if ( clockRates != NULL ) 
+    {
         o << clockRates->getName();
-    } else {
+    } 
+    else 
+    {
         o << "?";
     }
     o << ", nSites=";
-    if ( nSites != NULL ) {
+    if ( nSites != NULL ) 
+    {
         o << nSites->getName();
-    } else {
+    } 
+    else 
+    {
         o << "?";
     }
     o << ")";
@@ -184,19 +199,24 @@ void RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>::print
 template <class charType, class treeType>
 void RevLanguage::RelaxedClockCharacterStateEvolution<charType, treeType>::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "tree" ) {
+    if ( name == "tree" ) 
+    {
         tree = var;
     }
-    else if ( name == "Q" ) {
+    else if ( name == "Q" ) 
+    {
         q = var;
     }
-    else if ( name == "clockRates" ) {
+    else if ( name == "clockRates" ) 
+    {
         clockRates = var;
     }
-    else if ( name == "nSites" ) {
+    else if ( name == "nSites" ) 
+    {
         nSites = var;
     }
-    else {
+    else 
+    {
         Distribution::setConstMemberVariable(name, var);
     }
 }

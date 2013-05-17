@@ -115,7 +115,8 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
     /*********************  1. Do exact matching  **********************/
     
     /* Do exact matching of labels */
-    for(size_t i=0; i<passedArgs.size(); i++) {
+    for(size_t i=0; i<passedArgs.size(); i++) 
+    {
         
         /* Test if swallowed by ellipsis; if so, we can quit because the remaining passedArgs will also be swallowed */
         if ( taken[i] )
@@ -126,15 +127,19 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
             continue;
         
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
-        for (size_t j=0; j<nRules; j++) {
+        for (size_t j=0; j<nRules; j++) 
+        {
             
-            if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
+            if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) 
+            {
                 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable() ) && !filled[j] ) {
+                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable() ) && !filled[j] ) 
+                {
                     taken[i]          = true;
                     filled[j]         = true;
                     
-                    if ( matchScore != NULL) {
+                    if ( matchScore != NULL) 
+                    {
                         int score = computeMatchScore(passedArgs[i].getVariable(), theRules[j]);
                         matchScore->push_back(score);
                     }
@@ -152,7 +157,8 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
     /*********************  2. Do partial matching  **********************/
     
     /* Do partial matching of labels */
-    for(size_t i=0; i<passedArgs.size(); i++) {
+    for(size_t i=0; i<passedArgs.size(); i++) 
+    {
         
         /* Skip if already matched */
         if ( taken[i] )
@@ -167,9 +173,11 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
         int matchRule = -1;
         
         /* Try all rules */
-        for (size_t j=0; j<nRules; j++) {
+        for (size_t j=0; j<nRules; j++) 
+        {
             
-            if ( !filled[j] && theRules[j].getArgumentLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) {
+            if ( !filled[j] && theRules[j].getArgumentLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) 
+            {
                 ++nMatches;
                 matchRule = static_cast<int>( j );
             }
@@ -178,11 +186,13 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
         if (nMatches != 1)
             return false;
         
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable() ) ) {
+        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable() ) ) 
+        {
             taken[i]                  = true;
             filled[matchRule]         = true;
             
-            if ( matchScore != NULL) {
+            if ( matchScore != NULL) 
+            {
                 int score = computeMatchScore(passedArgs[i].getVariable(), theRules[matchRule]);
                 matchScore->push_back(score);
             }
@@ -195,24 +205,30 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
     /*********************  3. Fill with unused passedArgs  **********************/
     
     /* Fill in empty slots using the remaining args in order */
-    for(size_t i=0; i<passedArgs.size(); i++) {
+    for(size_t i=0; i<passedArgs.size(); i++) 
+    {
         
         /* Skip if already matched */
         if ( taken[i] )
             continue;
         
         /* Find first empty slot and try to fit argument there */
-        for (size_t j=0; j<nRules; j++) {
+        for (size_t j=0; j<nRules; j++) 
+        {
             
-            if ( filled[j] == false ) {
+            if ( filled[j] == false ) 
+            {
                 const RbPtr<const Variable>& argVar = passedArgs[i].getVariable();
-                if ( theRules[j].isArgumentValid( argVar ) ) {
+                if ( theRules[j].isArgumentValid( argVar ) ) 
+                {
                     taken[i]          = true;
-                    if ( !theRules[j].isEllipsis() ) {
+                    if ( !theRules[j].isEllipsis() ) 
+                    {
                         filled[j]     = true;
                     }
                     
-                    if ( matchScore != NULL) {
+                    if ( matchScore != NULL) 
+                    {
                         int score = computeMatchScore(argVar, theRules[j]);
                         matchScore->push_back(score);
                     }
@@ -232,7 +248,8 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
     /*********************  4. Fill with default values  **********************/
     
     /* Fill in empty slots using default values */
-    for(size_t i=0; i<nRules; i++) {
+    for(size_t i=0; i<nRules; i++) 
+    {
         
         if ( filled[i] == true || theRules[i].isEllipsis() )
             continue;

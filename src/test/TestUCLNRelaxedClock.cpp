@@ -104,7 +104,7 @@ bool TestUCLNRelaxedClock::run( void ) {
 	
 	std::vector<const TypedDagNode<double> *> branchRates;
 	std::vector< ContinuousStochasticNode *> branchRates_nonConst;
-	for( int i=0; i<numBranches; i++){
+	for( size_t i=0; i<numBranches; i++){
         std::ostringstream br_name;
         br_name << "br(" << i << ")";
 //		ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new LognormalDistribution(muValLN, sigLN));
@@ -144,7 +144,7 @@ bool TestUCLNRelaxedClock::run( void ) {
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
-	for( int i=0; i<numBranches; i++){
+	for( size_t i=0; i<numBranches; i++){
 		moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, true, 2.0) );
 	}
 	
@@ -159,7 +159,7 @@ bool TestUCLNRelaxedClock::run( void ) {
 	//    monitoredNodes.insert( er );
 	//    monitoredNodes.insert( pi );
     monitoredNodes.insert( div );
-	for( int i=0; i<numBranches; i++){
+	for( size_t i=0; i<numBranches; i++){
 		monitoredNodes.insert( branchRates_nonConst[i] );
 	}
     monitors.push_back( new FileMonitor( monitoredNodes, 10, "TestUCLNModel.log", "\t" ) );

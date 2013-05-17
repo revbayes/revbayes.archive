@@ -1,15 +1,15 @@
 /**
  * @file
- * This file contains the declaration of Environment, which is
+ * This file contains the declaration of environment, which is
  * the abstract base class for classes that are used to hold
- * information about an evaluation or execution Environment.
- * Each Environment has a pointer to the enclosing (parent) Environment.
- * A Environment and its parents constitute an evaluation Environment.
- * The base Environment is the global workspace. It is a
+ * information about an evaluation or execution environment.
+ * Each environment has a pointer to the enclosing (parent) environment.
+ * A Environment and its parents constitute an evaluation environment.
+ * The base environment is the global workspace. It is a
  * special type of Environment, which is described in the class
  * Workspace, derived from Environment.
  *
- * A Environment essentially consists of a table (map) or vector of
+ * An environment essentially consists of a table (map) or vector of
  * variables, which may or may not be labeled. The workspace
  * also contains a function table, and a class (type) table.
  *
@@ -43,25 +43,6 @@ namespace RevLanguage {
 
     typedef std::map<std::string, VariableSlot* > VariableTable;         //!< Typedef for convenience
 
-
-/**
- * @brief Execution or evaluation Environment
- *
- * Environment is used to hold information about an evaluation or
- * execution Environment. Each Environment has a pointer to the enclosing
- * (parent) Environment. A Environment and its parents together constitute
- * an evaluation Environment. The base Environment is the global
- * workspace. It is a special type of Environment, which is described
- * in the class Workspace, derived from Environment. The global work-
- * space contains the user workspace, which is a workspace hold-
- * ing user-defined types and functions. The user workspace, in
- * turn, contains the nested regular Environments, which are created
- * during execution or evaluation of code.
- *
- * A Environment essentially consists of a variable table and function table. The workspace
- * also contains a class (type) table.
- *
- */
 
     class Environment {
     
@@ -106,6 +87,8 @@ namespace RevLanguage {
         void                                    setName(size_t i, const std::string &n);                                                    //!< Replace the name of the i'th variable
         void                                    setParentEnvironment(Environment* newEnvironment);                                          //!< Set parent Environment
         size_t                                  size(void) const;                                                                           //!< Get size of variable table 
+        void                                    remove(const RbPtr<Variable>& var);                                                         //!< Remove variable from workspace
+        void                                    remove(const std::string& var);                                                         //!< Remove variable from workspace
         
     protected:
         

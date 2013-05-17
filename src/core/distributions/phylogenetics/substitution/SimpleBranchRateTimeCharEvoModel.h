@@ -101,6 +101,7 @@ RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::~SimpleBranc
 
 template<class charType, class treeType>
 RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>* RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::clone( void ) const {
+    
     return new SimpleBranchRateTimeCharEvoModel<charType, treeType>( *this );
 }
 
@@ -132,7 +133,6 @@ void RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::swapPar
 	else if (oldP == rateMatrix) 
     {
         rateMatrix = static_cast< const TypedDagNode< RateMatrix > *>( newP );
-        
     }
     else 
     {

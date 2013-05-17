@@ -124,6 +124,7 @@ bool VariableSlot::doesVariableExist(const std::vector<int> &indices) const {
 
 
 size_t VariableSlot::getDim( void ) const {
+    
     return lengths.size();
 }
 
@@ -176,19 +177,26 @@ RbPtr<const Variable> VariableSlot::getVariable(const std::vector<int> &indices)
 
 
 RbPtr<Variable> VariableSlot::getVariable(const std::vector<int> &indices) {
+    
     size_t index = 0;
     size_t elements = 1;
     
-    if (indices.size() < lengths.size()) {
+    if (indices.size() < lengths.size()) 
+    {
         
-        return getVectorizedVariable( indices );
+        RbPtr<Variable> var = getVectorizedVariable( indices );
+        var->setName( label );
         
+        return var;
     }
-    else {
+    else 
+    {
     
-        for (int i = int(lengths.size())-1; i >= 0; --i) {
+        for (int i = int(lengths.size())-1; i >= 0; --i) 
+        {
             // test for boundaries
-            if (indices[i] >= lengths[i]) {
+            if (indices[i] >= lengths[i]) 
+            {
                 throw RbException("Index out of bounds! Cannot access variable with index ...");
             }
             index += indices[i] * elements;

@@ -439,37 +439,45 @@ std::vector<int> TopologyNode::getChildrenIndices() const {
 
 
 size_t TopologyNode::getIndex( void ) const {
+    
     return index;
 }
 
 
 const std::string& TopologyNode::getName( void ) const {
+    
     return name;
 }
 
 
 size_t TopologyNode::getNumberOfChildren( void ) const {
+    
     return children.size();
 }
 
 TopologyNode& TopologyNode::getParent(void) { 
+    
     return *parent; 
     
 }
 
 const TopologyNode& TopologyNode::getParent(void) const { 
-    return *parent; 
     
+    return *parent; 
 }
 
 
 std::vector<std::string> TopologyNode::getTaxaStringVector( void ) const {
-    if ( isTip() ) {
+    
+    if ( isTip() ) 
+    {
         return std::vector<std::string>(1,name);
     }
-    else {
+    else 
+    {
         std::vector<std::string> taxa;
-        for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ ) {
+        for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ ) 
+        {
             std::vector<std::string> names = (*i)->getTaxaStringVector();
             taxa.insert( taxa.begin(), names.begin(), names.end() );
         }
@@ -485,10 +493,12 @@ double TopologyNode::getTime( void ) const {
 
 
 double TopologyNode::getTmrca(const TopologyNode &n) const {
+    
     std::vector<std::string> myTaxa   = getTaxaStringVector();
     std::vector<std::string> yourTaxa = n.getTaxaStringVector();
     
-    if ( myTaxa.size() < yourTaxa.size() ) {
+    if ( myTaxa.size() < yourTaxa.size() ) 
+    {
         return -1;
     }
     

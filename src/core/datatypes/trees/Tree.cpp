@@ -100,10 +100,12 @@ std::vector<std::string> Tree::getNames() const {
 }
 
 TopologyNode& Tree::getNode(size_t idx) {
+    
     return *topology->getNodes()[ idx ];
 }
 
 const TopologyNode& Tree::getNode(size_t idx) const {
+    
     return topology->getNode( idx );
 }
 
