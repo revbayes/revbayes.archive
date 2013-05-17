@@ -147,9 +147,9 @@ void AdmixtureFixedNodeheightPruneRegraft::rejectSimpleMove( void ) {
     if (!failed)
     {
         // undo the proposal
-        TopologyNode& parent = storedNewBrother->getParent();
-        TopologyNode& newGrandparent = parent.getParent();
-        TopologyNode& grandparent = storedBrother->getParent();
+        AdmixtureNode& parent = storedNewBrother->getParent();
+        AdmixtureNode& newGrandparent = parent.getParent();
+        AdmixtureNode& grandparent = storedBrother->getParent();
         
         // prune
         newGrandparent.removeChild( &parent );

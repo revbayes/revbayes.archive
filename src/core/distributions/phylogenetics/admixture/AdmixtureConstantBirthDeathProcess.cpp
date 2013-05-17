@@ -12,6 +12,7 @@
 #include "RbConstants.h"
 #include "DistributionInverseGamma.h"
 #include "TopologyNode.h"
+#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -111,7 +112,8 @@ void AdmixtureConstantBirthDeathProcess::buildRandomBinaryTree(std::vector<Admix
         size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
         
         // get the node from the list
-        TopologyNode* parent = tips.at(index);
+        AdmixtureNode* parent = tips.at(index);
+        //TopologyNode* parent = tips.at(index);
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+index);
@@ -299,6 +301,7 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     
     // Draw a random topology
     AdmixtureTree tau = AdmixtureTree();
+    
     // internally we treat unrooted topologies the same as rooted
     tau.setRooted( true );
     

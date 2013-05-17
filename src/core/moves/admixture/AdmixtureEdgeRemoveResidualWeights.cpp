@@ -58,7 +58,7 @@ void AdmixtureEdgeRemoveResidualWeights::findDescendantTips(std::set<AdmixtureNo
 /** Perform the move */
 double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Node Rem\n";
+    std::cout << "\nAdmix Node Rem RW\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -252,6 +252,8 @@ void AdmixtureEdgeRemoveResidualWeights::acceptSimpleMove(void) {
         storedAdmixtureChild->setParent(p);
         delete storedAdmixtureChild;
         delete storedAdmixtureParent;
+        
+        std::cout << "accept\n";
     }
 }
 

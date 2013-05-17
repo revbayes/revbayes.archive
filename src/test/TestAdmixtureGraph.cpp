@@ -30,6 +30,7 @@
 #include "AdmixtureNarrowExchange.h"
 #include "AdmixtureEdgeDivergenceMerge.h"
 #include "AdmixtureTree.h"
+#include "AdmixtureTreeLengthStatistic.h"
 #include "BrownianMotionAdmixtureGraph.h"
 #include "BrownianMotionAdmixtureGraphResiduals.h"
 #include "CharacterData.h"
@@ -61,7 +62,7 @@
 #include "SnpData.h"
 #include "StochasticNode.h"
 #include "TickFunction.h"
-#include "TreeLengthStatistic.h"
+
 #include "TreeAdmixtureEventCount.h"
 #include "UniformDistribution.h"
 #include "VectorFunction.h"
@@ -92,10 +93,10 @@ bool TestAdmixtureGraph::run(void) {
     size_t numSites = snps->getNumSnps();
     int blockSize = 500;
     
-    int delay = 1000;
+    int delay = 10;
     size_t numTreeResults = 50;
     size_t numAdmixtureResults = 50;
-    int maxNumberOfAdmixtureEvents = 15;
+    int maxNumberOfAdmixtureEvents = 10;
     
     bool useWishart = true;             // if false, the composite likelihood function is used
     bool useBias = !true;               // if false, no covariance bias correction for small sample size is used
@@ -104,11 +105,13 @@ bool TestAdmixtureGraph::run(void) {
     bool allowSisterAdmixture = true;   // if false, admixture events cannot be between internal lineages who share a divergence parent
     bool discardNonPosDefMtx = true;    // if false, round negative eigenvalues to positive eps
     bool useContrasts = false;          // nothing really, need to remove
+    bool updateParameters = true;
+    bool updateTree = true;
     
     
     std::stringstream rndStr;
     rndStr << std::setw(6) << std::setfill('0') << std::floor(GLOBAL_RNG->uniform01()*1e6);
-    std::string outName = "admix.w_clovis." + rndStr.str();
+    std::string outName = "test." + rndStr.str();
     
     // std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
        
@@ -137,7 +140,7 @@ bool TestAdmixtureGraph::run(void) {
     //  tau->keep();
     
     // tree length (for verifying CPP)
-    DeterministicNode<double>* treeLength = new DeterministicNode<double>("TreeLength", new TreeLengthStatistic<AdmixtureTree>(tau) );
+    DeterministicNode<double>* treeLength = new DeterministicNode<double>("TreeLength", new AdmixtureTreeLengthStatistic(tau) );
     DeterministicNode<size_t>* treeAdmixtureEventCount = new DeterministicNode<size_t>("TreeAdmixtureEventCount", new TreeAdmixtureEventCount(tau) );
     
     // branch multipliers (mutation rate is clocklike, but population sizes are not)
@@ -187,16 +190,22 @@ bool TestAdmixtureGraph::run(void) {
     
 
     // model parameters
-    moves.push_back( new ScaleMove(diffusionRate, 1.0, true, 2.0) );
-    moves.push_back( new ScaleMove(diversificationRate, 1.0, true, 2.0) );
-    moves.push_back( new ScaleMove(turnover, 1.0, true, 2.0) );
-
-    // non-admixture tree updates
-    moves.push_back( new AdmixtureNarrowExchange( tau, 4*numTaxa) );
-    moves.push_back( new AdmixtureFixedNodeheightPruneRegraft(tau, numTaxa));
-    for (size_t i = numTaxa; i < numNodes - 1; i++)
-        moves.push_back( new AdmixtureNodeTimeSlideBeta( tau, (int)i, 1.0, true, 1.0 ) );
+    if (updateParameters)
+    {
+        moves.push_back( new ScaleMove(diffusionRate, 1.0, true, 2.0) );
+        moves.push_back( new ScaleMove(diversificationRate, 1.0, true, 2.0) );
+        moves.push_back( new ScaleMove(turnover, 1.0, true, 2.0) );
+    }
     
+    
+    // non-admixture tree updates
+    if (updateTree)
+    {
+        moves.push_back( new AdmixtureNarrowExchange( tau, 4*numTaxa) );
+        moves.push_back( new AdmixtureFixedNodeheightPruneRegraft(tau, numTaxa));
+        for (size_t i = numTaxa; i < numNodes - 1; i++)
+            moves.push_back( new AdmixtureNodeTimeSlideBeta( tau, (int)i, 1.0, true, 1.0 ) );
+    }
     
     
     // branch rate updates

@@ -782,3 +782,83 @@ bool AdmixtureNode::operator<( const AdmixtureNode*& other) const
         return false;
 }
 
+
+const std::string& AdmixtureNode::computeNewick(void)
+{
+    // check if we need to recompute
+    if ( newickNeedsRefreshing ) {
+        newick = buildNewickString();
+        newickNeedsRefreshing = false;
+    }
+    
+    return newick;
+}
+
+std::string AdmixtureNode::buildNewickString(void)
+{
+    // create the newick string
+    std::stringstream o;
+    
+    // test whether this is a internal or external node
+    if (tipNode) {
+        // this is a tip so we just return the name of the node
+        o << name;
+        if ( nodeComments.size() > 0 ) {
+            o << "[&";
+            for (size_t i = 0; i < nodeComments.size(); ++i) {
+                if ( i > 0 ) {
+                    o << ",";
+                }
+                o << nodeComments[i];
+            }
+            o << "]";
+        }
+        
+        if ( topology != NULL ) {
+            o << ":" << getBranchLength();
+        }
+        if ( branchComments.size() > 0 ) {
+            o << "[&";
+            for (size_t i = 0; i < branchComments.size(); ++i) {
+                if ( i > 0 ) {
+                    o << ",";
+                }
+                o << branchComments[i];
+            }
+            o << "]";
+        }
+    }
+    else {
+        o << "(";
+        for (size_t i=0; i<(getNumberOfChildren()-1); i++) {
+            o << getChild(i).computeNewick() << ",";
+        }
+        o << getChild(getNumberOfChildren()-1).computeNewick() << ")";
+        if ( nodeComments.size() > 0 ) {
+            o << "[&";
+            for (size_t i = 0; i < nodeComments.size(); ++i) {
+                if ( i > 0 ) {
+                    o << ",";
+                }
+                o << nodeComments[i];
+            }
+            o << "]";
+        }
+        if ( topology != NULL ) {
+            o << ":" << getBranchLength();
+        }
+        if ( branchComments.size() > 0 ) {
+            o << "[&";
+            for (size_t i = 0; i < branchComments.size(); ++i) {
+                if ( i > 0 ) {
+                    o << ",";
+                }
+                o << branchComments[i];
+            }
+            o << "]";
+        }
+    }
+    
+    return o.str();
+}
+

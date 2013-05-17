@@ -61,7 +61,7 @@ void AdmixtureEdgeReplaceResidualWeights::findDescendantTips(std::set<AdmixtureN
 /** Perform the move */
 double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
     
-    std::cout << "replace_RW\n";
+    std::cout << "Admix Node Repl RW\n";
     failed = false;
     failedAdd = false;
     storedResiduals = residuals->getValue();
@@ -522,12 +522,13 @@ void AdmixtureEdgeReplaceResidualWeights::rejectSimpleMove( void ) {
         // update with outgroup settings
         storedAdmixtureChild->setOutgroup(storedAdmixtureChildParent->isOutgroup());
         storedAdmixtureParent->setOutgroup(storedAdmixtureParentParent->isOutgroup());
+        std::cout << "reject\n";
     }
     
     
     
     else
-        std::cout << "rpl_RW failed\n"; 
+        std::cout << "failed\n"; 
 }
 
 void AdmixtureEdgeReplaceResidualWeights::acceptSimpleMove(void)
@@ -578,7 +579,7 @@ void AdmixtureEdgeReplaceResidualWeights::acceptMove( void ) {
     // nothing to do
     changed = false;
     
-    std::cout << "rpl_RW accept\n";
+    std::cout << "accept\n";
     
     acceptSimpleMove();
 }

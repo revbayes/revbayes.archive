@@ -29,6 +29,7 @@
 #include "AdmixtureTree.h"
 #include "TopologyNode.h"
 #include "RbOptions.h"
+#include <algorithm>
 #include <iostream>
 
 using namespace RevBayesCore;
@@ -41,7 +42,8 @@ AdmixtureTree::AdmixtureTree(void) : Tree(), root( NULL ), numTips( 0 ), numNode
 
 
 /* Copy constructor */
-AdmixtureTree::AdmixtureTree(const AdmixtureTree& t) : Tree( t ), root( NULL ) {
+//AdmixtureTree::AdmixtureTree(const AdmixtureTree& t) : Tree( t ), root( NULL ) {
+AdmixtureTree::AdmixtureTree(const AdmixtureTree& t) : root( NULL ) {
     
     // set the parameters
     binary      = t.binary;
@@ -79,8 +81,8 @@ AdmixtureTree::~AdmixtureTree(void) {
 AdmixtureTree& AdmixtureTree::operator=(const AdmixtureTree &t) {
     
     if (this != &t) {
-        Tree::operator=(t);
-        
+        //Tree::operator=(t);
+                
         nodes.clear();
         nodesByIndex.clear();
         
@@ -299,6 +301,7 @@ double AdmixtureTree::getAge(size_t idx) const {
 
 
 double AdmixtureTree::getBranchLength(size_t idx) const {
+    
     size_t parentIdx = nodesByIndex[idx]->getParent().getIndex();
     return ages[parentIdx] - ages[idx];
 }
@@ -387,8 +390,10 @@ void AdmixtureTree::eraseAdmixtureNode(AdmixtureNode *p)
     std::vector<AdmixtureNode*>::iterator it;
 
     //@Michael: This doesn't compile on Windows using GCC 4.2
-//    it = find(nodes.begin(), nodes.end(), p);
-//    nodes.erase(it);
+    //MJL -> MysteriousStranger: I added #include <algorithm> and std::find, hopefully fixing your problem.
+    
+    it = std::find(nodes.begin(), nodes.end(), p);
+    nodes.erase(it);
 
 }
 

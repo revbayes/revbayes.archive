@@ -90,6 +90,11 @@ namespace RevBayesCore {
         bool                                isInteriorNode(void);
         bool                                operator<( const AdmixtureNode*& other) const;
         
+        const std::string&                  computeNewick(void);                                                        //!< Compute the newick RlString for this clade
+
+    protected:
+        std::string                         buildNewickString(void);                                                    //!< compute the newick RlString for a tree rooting at this node
+
     private:
         std::vector<AdmixtureNode*>         children;                                                                   //!< Vector holding the node's children.
         AdmixtureNode*                      parent;                                                                     //!< Pointer to the parent of the node.

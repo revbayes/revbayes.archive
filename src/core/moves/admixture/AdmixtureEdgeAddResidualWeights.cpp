@@ -46,7 +46,7 @@ const std::string& AdmixtureEdgeAddResidualWeights::getMoveName( void ) const {
 /** Perform the move */
 double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Edge Add\n";
+    std::cout << "\nAdmix Edge Add RW\n";
     
     storedResiduals = residuals->getValue();
     failed = false;
@@ -395,6 +395,7 @@ void AdmixtureEdgeAddResidualWeights::acceptSimpleMove(void)
     //std::cout << "add_RW accept\n";
     //  std::cout << "\t" << variable->getValue().getNumberOfAdmixtureChildren();
     //  std::cout << "\n";
+    std::cout << "accept\n";
 }
 
 

@@ -43,7 +43,7 @@ namespace RevBayesCore {
     
 }
 
-#include "TreeLengthStatistic.h"
+//#include "TreeLengthStatistic.h"
 
 using namespace RevBayesCore;
 
@@ -83,7 +83,7 @@ void TreeLengthStatistic<treeType>::update( void ) {
     for ( ; it != it_end; it++)
         treeLength += (*it)->getBranchLength();
     
-    *value = treeLength / treeHeight;
+    *value = treeLength;
 }
 
 

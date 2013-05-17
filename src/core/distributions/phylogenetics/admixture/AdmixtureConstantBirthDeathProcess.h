@@ -20,11 +20,11 @@ namespace RevBayesCore {
     public:
         AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn);
         AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<bool> &o);
-        AdmixtureConstantBirthDeathProcess(const AdmixtureConstantBirthDeathProcess &n);                                                                                          //!< Copy constructor
-        virtual                                            ~AdmixtureConstantBirthDeathProcess(void);                                                                    //!< Virtual destructor
+        AdmixtureConstantBirthDeathProcess(const AdmixtureConstantBirthDeathProcess &n);                                                                        //!< Copy constructor
+        virtual                                            ~AdmixtureConstantBirthDeathProcess(void);                                                           //!< Virtual destructor
         
         // public member functions
-        AdmixtureConstantBirthDeathProcess*                          clone(void) const;                                                                                  //!< Create an independent clone
+        AdmixtureConstantBirthDeathProcess*                 clone(void) const;                                                                                  //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                            //!< Implementation of swaping parameters
