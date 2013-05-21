@@ -93,9 +93,9 @@ bool TestAdmixtureGraph::run(void) {
     size_t numSites = snps->getNumSnps();
     int blockSize = 500;
     
-    int delay = 10;
-    size_t numTreeResults = 50;
-    size_t numAdmixtureResults = 50;
+    int delay = 1000;
+    size_t numTreeResults = 500;
+    size_t numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 10;
     
     bool useWishart = true;             // if false, the composite likelihood function is used
@@ -111,7 +111,7 @@ bool TestAdmixtureGraph::run(void) {
     
     std::stringstream rndStr;
     rndStr << std::setw(6) << std::setfill('0') << std::floor(GLOBAL_RNG->uniform01()*1e6);
-    std::string outName = "test." + rndStr.str();
+    std::string outName = "w_clovis." + rndStr.str();
     
     // std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
        
@@ -288,7 +288,9 @@ bool TestAdmixtureGraph::run(void) {
     // MCMC
     std::cout << "Calling mcmc\n";
     
-    Mcmc myMcmc = Mcmc(myModel, moves, monitors);
+    double scaleFactorConstant = 2000.0; // make this smaller to flatten the likelihood surface
+    double chainHeat = scaleFactorConstant / numSites;
+    Mcmc myMcmc = Mcmc(myModel, moves, monitors, true, chainHeat);
     myMcmc.run(100000);
     myMcmc.printOperatorSummary();
     

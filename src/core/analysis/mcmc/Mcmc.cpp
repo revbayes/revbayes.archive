@@ -12,115 +12,26 @@
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
 #include "ExtendedNewickAdmixtureTreeMonitor.h"
+#include "AdmixtureBipartitionMonitor.h"
 
 #include <cmath>
 #include <typeinfo>
 
 using namespace RevBayesCore;
 
-Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons) : model( m ), moves(), monitors() {
+Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, bool ca, double ch) : model( m ), moves(), monitors(), schedule(std::vector<Move*>()), chainActive(ca), chainHeat(ch) {
     
-    // we need to replace the DAG nodes of the monitors and moves
-    const std::vector<DagNode*>& modelNodes = model.getDagNodes();
-    for (std::vector<Move*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
-        Move *theMove = (*it)->clone();
-        std::set<DagNode*> nodes = theMove->getDagNodes();
-        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
-            DagNode* theNewNode = NULL;
-            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
-                if ( (*k)->getName() == (*j)->getName() ) {
-                    theNewNode = *k;
-                    break;
-                }
-            }
-            // error checking
-            if ( theNewNode == NULL ) {
-                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a move working on it.");
-            }
-            
-            // now swap the node
-            theMove->swapNode( *j, theNewNode );
-        }
-        moves.push_back( theMove );
-    }
-    
-    for (std::vector<Monitor*>::const_iterator it = mons.begin(); it != mons.end(); ++it) {
-        Monitor *theMonitor = (*it)->clone();
-        std::set<DagNode*> nodes = theMonitor->getDagNodes();
-//        orgNodesMonitors.insert( std::pair<Monitor*, std::set<DagNode*> >(theMonitor, nodes) );
-        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
-            DagNode* theNewNode = NULL;
-            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
-                if ( (*k)->getName() == (*j)->getName() ) {
-                    theNewNode = *k;
-                    break;
-                }
-            }
-            // error checking
-            if ( theNewNode == NULL ) {
-                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a monitor working on it.");
-            }
-            
-            // now swap the node
-            theMonitor->swapNode( *j, theNewNode );
-        }
-        monitors.push_back( theMonitor );
-    }
-    
+    replaceDag(mvs,mons);
     initialize();
 }
 
 
-Mcmc::Mcmc(const Mcmc &m) : model( m.model ) {
+Mcmc::Mcmc(const Mcmc &m) : model( m.model ), schedule(std::vector<Move*>()), chainActive(m.chainActive), chainHeat(m.chainHeat) {
+   
     const std::vector<Monitor*>& mons = m.monitors;
     const std::vector<Move*>& mvs = m.moves;
     
-    // we need to replace the DAG nodes of the monitors and moves
-    const std::vector<DagNode*>& modelNodes = model.getDagNodes();
-    for (std::vector<Move*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
-        Move *theMove = (*it)->clone();
-        std::set<DagNode*> nodes = theMove->getDagNodes();
-        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
-            DagNode* theNewNode = NULL;
-            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
-                if ( (*k)->getName() == (*j)->getName() ) {
-                    theNewNode = *k;
-                    break;
-                }
-            }
-            // error checking
-            if ( theNewNode == NULL ) {
-                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a move working on it.");
-            }
-            
-            // now swap the node
-            theMove->swapNode( *j, theNewNode );
-        }
-        moves.push_back( theMove );
-    }
-    
-    for (std::vector<Monitor*>::const_iterator it = mons.begin(); it != mons.end(); ++it) {
-        Monitor *theMonitor = (*it)->clone();
-        std::set<DagNode*> nodes = theMonitor->getDagNodes();
-        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
-            DagNode* theNewNode = NULL;
-            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
-                if ( (*k)->getName() == (*j)->getName() ) {
-                    theNewNode = *k;
-                    break;
-                }
-            }
-            // error checking
-            if ( theNewNode == NULL ) {
-                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a monitor working on it.");
-            }
-            
-            // now swap the node
-            theMonitor->swapNode( *j, theNewNode );
-        }
-        monitors.push_back( theMonitor );
-    }
-    
+    replaceDag(mvs,mons);
     initialize();
 }
 
@@ -147,7 +58,6 @@ void Mcmc::burnin(int generations, int tuningInterval) {
     std::cout << "*";
     std::cout.flush();
     
-    RandomNumberGenerator* rng        = GLOBAL_RNG;
 #ifdef DEBUG_MCMC
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
 #endif
@@ -157,12 +67,9 @@ void Mcmc::burnin(int generations, int tuningInterval) {
         (*it)->resetCounters();
     }
     
-    /* Run the chain */    
-    SequentialMoveSchedule schedule = SequentialMoveSchedule(moves);
-    //RandomMoveSchedule schedule = RandomMoveSchedule(moves);
-    
     int printInterval = int(fmax(1,generations/20.0));
     
+    // Run the chain
     for (int k=1; k<=generations; k++) {
         
         if ( k % printInterval == 0 ) {
@@ -170,77 +77,20 @@ void Mcmc::burnin(int generations, int tuningInterval) {
             std::cout.flush();
         }
         
-        size_t proposals = round( schedule.getNumberMovesPerIteration() );
-        for (size_t i=0; i<proposals; i++) {
-            /* Get the move */
-            Move* theMove = schedule.nextMove();
-            
-            if ( theMove->isGibbs() ) {
-                // do Gibbs proposal
-                theMove->performGibbs();
-                //                theMove->accept(); Not necessary, because Gibbs samplers are automatically accepted.
-            } else {
-                // do a Metropolois-Hastings proposal
-                
-                /* Propose a new value */
-                double lnProbabilityRatio;
-                double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
-                // QUESTION: How to Gibbs samplers by-pass the accept-reject?
-                /* Calculate acceptance ratio */
-                double lnR = lnProbabilityRatio + lnHastingsRatio;
-                
-                if (lnR >= 0.0) {
-                    theMove->accept();
-                    lnProbability += lnProbabilityRatio;
-                }
-                else if (lnR < -300.0){ 
-                    theMove->reject();
-                }
-                else { 
-                    double r = exp(lnR);
-                    /* Accept or reject the move */
-                    double u = rng->uniform01(); 
-                    if (u < r) {
-                        theMove->accept();
-                        lnProbability += lnProbabilityRatio;
-                    }
-                    else {
-                        theMove->reject();
-                    }
-                }
-            }
-            
-            
-            
-#ifdef DEBUG_MCMC
-            /* Assert that the probability calculation shortcuts work */
-            double curLnProb = 0.0;
-            std::vector<double> lnRatio;
-            for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-                (*i)->touch();
-                double lnProb = (*i)->getLnProbability();
-                curLnProb += lnProb;
-            }
-            if (fabs(lnProbability - curLnProb) > 1E-8)
-                throw RbException("Error in ln probability calculation shortcuts");
-            else
-                lnProbability = curLnProb;              // otherwise rounding errors accumulate
-#endif
-        }
+        nextCycle(false);
         
-        // check for autotuning and only tune in first half
+        // check for autotuning
         if ( k % tuningInterval == 0 ) {
             
-            /* tune the moves */
+            // tune the moves
             for (size_t i=0; i<moves.size(); i++) {
                 moves[i]->autoTune();
             }
         }
         
     }
+    
     std::cout << std::endl;
-    
-    
 }
 
 
@@ -338,6 +188,19 @@ void Mcmc::initialize( void ) {
             theMonitor->printHeader();
         }
         
+        else if ( typeid(*monitors[i]) == typeid(AdmixtureBipartitionMonitor) )
+        {
+            
+            AdmixtureBipartitionMonitor* theMonitor = static_cast<AdmixtureBipartitionMonitor*>( monitors[i] );
+            
+            // open the file stream for the monitor
+            theMonitor->openStream();
+            
+            // print the header information
+            theMonitor->printHeader();
+        }
+
+        
         else if ( typeid(*monitors[i]) == typeid(PathSampleMonitor) ) 
         {
             
@@ -405,20 +268,72 @@ void Mcmc::initialize( void ) {
         
     } while (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan);
     
+
+    lnProbability *= chainHeat;
+    schedule = SequentialMoveSchedule(moves);
     gen = 0;
+}
+
+void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor *> &mons)
+{
+    // we need to replace the DAG nodes of the monitors and moves
+    const std::vector<DagNode*>& modelNodes = model.getDagNodes();
+    for (std::vector<Move*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
+        Move *theMove = (*it)->clone();
+        std::set<DagNode*> nodes = theMove->getDagNodes();
+        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
+            DagNode* theNewNode = NULL;
+            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
+                if ( (*k)->getName() == (*j)->getName() ) {
+                    theNewNode = *k;
+                    break;
+                }
+            }
+            // error checking
+            if ( theNewNode == NULL ) {
+                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a move working on it.");
+            }
+            
+            // now swap the node
+            theMove->swapNode( *j, theNewNode );
+        }
+        moves.push_back( theMove );
+    }
+    
+    for (std::vector<Monitor*>::const_iterator it = mons.begin(); it != mons.end(); ++it) {
+        Monitor *theMonitor = (*it)->clone();
+        std::set<DagNode*> nodes = theMonitor->getDagNodes();
+        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
+            DagNode* theNewNode = NULL;
+            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
+                if ( (*k)->getName() == (*j)->getName() ) {
+                    theNewNode = *k;
+                    break;
+                }
+            }
+            // error checking
+            if ( theNewNode == NULL ) {
+                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a monitor working on it.");
+            }
+            
+            // now swap the node
+            theMonitor->swapNode( *j, theNewNode );
+        }
+        monitors.push_back( theMonitor );
+    }
 }
 
 
 void Mcmc::run(int generations) {
     
     if ( gen == 0 ) {
-        /* Monitor */
-        for (size_t i=0; i<monitors.size(); i++) {
-            monitors[i]->monitor(0);
-        }
+        // Monitor
+        monitor(0);
+        //for (size_t i=0; i<monitors.size(); i++) {
+        //    monitors[i]->monitor(0);
+        //}
     }
-
-    RandomNumberGenerator* rng        = GLOBAL_RNG;
+    
 #ifdef DEBUG_MCMC
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
 #endif
@@ -428,75 +343,17 @@ void Mcmc::run(int generations) {
         (*it)->resetCounters();
     }
     
-    /* Run the chain */    
-    SequentialMoveSchedule schedule = SequentialMoveSchedule(moves);
-    //RandomMoveSchedule schedule = RandomMoveSchedule(moves);
-    
+    // Run the chain
     for (int k=1; k<=generations; k++) {
         gen++;
+        nextCycle(true);
         
-        size_t proposals = round( schedule.getNumberMovesPerIteration() );
-        for (size_t i=0; i<proposals; i++) {
-            /* Get the move */
-            Move* theMove = schedule.nextMove();
-            
-            if ( theMove->isGibbs() ) {
-                // do Gibbs proposal
-                theMove->performGibbs();
-//                theMove->accept(); Not necessary, because Gibbs samplers are automatically accepted.
-            } else {
-                // do a Metropolois-Hastings proposal
-                
-                /* Propose a new value */
-                double lnProbabilityRatio;
-                double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
-                // QUESTION: How to Gibbs samplers by-pass the accept-reject?
-                /* Calculate acceptance ratio */
-                double lnR = lnProbabilityRatio + lnHastingsRatio;
-                
-                if (lnR >= 0.0) {
-                    theMove->accept();
-                    lnProbability += lnProbabilityRatio;
-                }
-                else if (lnR < -300.0){ 
-                    theMove->reject();
-                }
-                else { 
-                    double r = exp(lnR);
-                    /* Accept or reject the move */
-                    double u = rng->uniform01(); 
-                    if (u < r) {
-                        theMove->accept();
-                        lnProbability += lnProbabilityRatio;
-                    }
-                    else {
-                        theMove->reject();
-                    }
-                }
-            }
-            
-            
-            
-#ifdef DEBUG_MCMC
-            /* Assert that the probability calculation shortcuts work */
-            double curLnProb = 0.0;
-            std::vector<double> lnRatio;
-            for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-                (*i)->touch();
-                double lnProb = (*i)->getLnProbability();
-                curLnProb += lnProb;
-            }
-            if (fabs(lnProbability - curLnProb) > 1E-8)
-                throw RbException("Error in ln probability calculation shortcuts");
-            else
-                lnProbability = curLnProb;              // otherwise rounding errors accumulate
-#endif
-        }
+        // Monitor
+        monitor(gen);
         
-        /* Monitor */
-        for (size_t i=0; i<monitors.size(); i++) {
-            monitors[i]->monitor(gen);
-        }
+        //for (size_t i=0; i<monitors.size(); i++) {
+        //    monitors[i]->monitor(gen);
+       // }
         
 //        // check for autotuning and only tune in first half
 //        if ( gen <= generations/2 && gen % tuningInterval == 0 ) {
@@ -509,7 +366,7 @@ void Mcmc::run(int generations) {
                 
     }
     
-    /* Close the output file and print headers */
+    // Close the output file and print headers
 //    for (size_t i=0; i<monitors.size(); i++) {
 //        // get the monitor
 //        if ( typeid(*monitors[i]) == typeid(FileMonitor) ) {
@@ -524,6 +381,106 @@ void Mcmc::run(int generations) {
     
 }
 
+int Mcmc::nextCycle(bool advanceCycle) {
+
+    size_t proposals = round( schedule.getNumberMovesPerIteration() );
+    for (size_t i=0; i<proposals; i++) {
+        // Get the move
+        Move* theMove = schedule.nextMove();
+        
+        if ( theMove->isGibbs() ) {
+            // do Gibbs proposal
+            theMove->performGibbs();
+            // theMove->accept(); // Not necessary, because Gibbs samplers are automatically accepted.
+        } else {
+            // do a Metropolois-Hastings proposal
+            
+            // Propose a new value
+            double lnProbabilityRatio;
+            double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
+            // QUESTION: How to Gibbs samplers by-pass the accept-reject?
+
+            // Calculate acceptance ratio
+            double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
+            
+            if (lnR >= 0.0) {
+                theMove->accept();
+                lnProbability += lnProbabilityRatio;
+            }
+            else if (lnR < -300.0){
+                theMove->reject();
+            }
+            else {
+                double r = exp(lnR);
+                // Accept or reject the move
+                double u = GLOBAL_RNG->uniform01();
+                if (u < r) {
+                    theMove->accept();
+                    lnProbability += lnProbabilityRatio;
+                }
+                else {
+                    theMove->reject();
+                }
+            }
+        }
+        
+#ifdef DEBUG_MCMC
+        // Assert that the probability calculation shortcuts work
+        double curLnProb = 0.0;
+        std::vector<double> lnRatio;
+        for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+            (*i)->touch();
+            double lnProb = (*i)->getLnProbability();
+            curLnProb += lnProb;
+        }
+        if (fabs(lnProbability - curLnProb) > 1E-8)
+            throw RbException("Error in ln probability calculation shortcuts");
+        else
+            lnProbability = curLnProb;              // otherwise rounding errors accumulate
+#endif
+    }
+    
+    
+    // advance gen cycle if needed (i.e. run()==true, burnin()==false)
+    if (advanceCycle)
+        gen++;
+    
+    // gen number used for p(MC)^3
+    return gen;
+}
+
+double Mcmc::getLnProbability(void)
+{
+    return lnProbability;
+}
+
+bool Mcmc::isChainActive(void)
+{
+    return chainActive;
+}
+
+double Mcmc::getChainHeat(void)
+{
+    return chainHeat;
+}
+
+void Mcmc::setChainActive(bool tf)
+{
+    chainActive = tf;
+}
+
+void Mcmc::setChainHeat(double v)
+{
+    chainHeat = v;
+}
+
+void Mcmc::monitor(int g)
+{
+    // Monitor
+    for (size_t i = 0; i < monitors.size(); i++) {
+        monitors[i]->monitor(g);
+    }
+}
 
 void Mcmc::printOperatorSummary(void) const {
     

@@ -514,7 +514,7 @@ void BrownianMotionAdmixtureGraph::initializeCovariance(void)
     for (size_t i = 0; i < numTaxa; i++)
         covariance[i].resize(numTaxa,0.0);
     
-    print(covariance);
+    //print(covariance);
 }
 
 void BrownianMotionAdmixtureGraph::initializeResiduals(void)
@@ -862,9 +862,9 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
      std::cout << "--------------\n";
      */
     
-    double scaleFactorConstant = 5000; // make this smaller to flatten the likelihood surface
+    double scaleFactorConstant = 2000; // make this smaller to flatten the likelihood surface
     double scaleFactor = numBlocks * blockSize / scaleFactorConstant;
-    //scaleFactor = 1;
+    scaleFactor = 1;
     return lnP / scaleFactor;
 }
 
