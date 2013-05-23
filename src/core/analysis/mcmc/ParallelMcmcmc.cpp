@@ -18,38 +18,37 @@
 
 using namespace RevBayesCore;
 
-ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int si, double dt) : delta(dt), numChains(nc), swapInterval(si), gen(0)
+ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt) : delta(dt), numChains(nc), numProcesses(np), swapInterval(si), gen(0)
 {
-
     activeIndex = 0;
     
     for (int i = 0; i < numChains; i++)
     {
         // get chain heat
         double b = computeBeta(delta,i);
-      
-        // create inactive chain
-        Mcmc* oneChain = new Mcmc(m, moves, mons, false, b);
+        
+        // create chains
+        bool a = (i == 0 ? true : false);
+        Mcmc* oneChain = new Mcmc(m, moves, mons, a, b);
         chains.push_back(oneChain);
     }
-    chains[activeIndex]->setChainActive(true);
+    
     
     // assign chains to processors
-    int np = 0;
-    #if defined (USE_LIB_OPENMP)
-        np = omp_get_num_threads();
-    #endif
-    numProcesses = np;
-
-    chainsPerProcess.resize(numProcesses,std::vector<int>());
-    int pIdx = 0;
-    for (int i = 0; i < numChains; i++)
-    {
-        chainsPerProcess[pIdx++].push_back(i);
-        if (pIdx > numProcesses)
-            pIdx = 0;
-    }
+#if defined (USE_LIB_OPENMP)
+    omp_set_num_threads(numProcesses);
+#endif
     
+    if (numChains < numProcesses)
+        numProcesses = numChains;
+    
+    chainsPerProcess.resize(numProcesses);
+    for (int i = 0, j = 0; i < numChains; i++, j++)
+    {
+        if (j >= numProcesses)
+            j = 0;
+        chainsPerProcess[j].push_back(i);
+    }
 }
 
 ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m)
@@ -58,6 +57,11 @@ ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m)
 }
 
 ParallelMcmcmc::~ParallelMcmcmc(void)
+{
+    
+}
+
+void ParallelMcmcmc::initialize(void)
 {
     
 }
@@ -80,7 +84,11 @@ ParallelMcmcmc* ParallelMcmcmc::clone(void) const
 
 void ParallelMcmcmc::printOperatorSummary(void) const
 {
-    
+    for (size_t i = 0; i < numChains; i++)
+    {
+        std::cout << "\nChain " << i << ":\n";
+        chains[i]->printOperatorSummary();
+    }
 }
 
 void ParallelMcmcmc::run(int generations)
@@ -95,12 +103,12 @@ void ParallelMcmcmc::run(int generations)
         // start parallel job per block of swapInterval cycles
         int np = numProcesses;
         int pid = 1;
+        
         #pragma omp parallel default(shared) private(np, pid)
         {
             #if defined (USE_LIB_OPENMP)
                 pid = omp_get_thread_num();
             #endif
-            printf("Hello from thread %d out of %d\n", pid, np);
             
             // Create process per chain
             for (int j = 0; j < chainsPerProcess[pid].size(); j++)
@@ -115,8 +123,13 @@ void ParallelMcmcmc::run(int generations)
                     chains[chainIdx]->nextCycle(true);
 
                     // monitor chain activeIndex only
-                    if (j == activeIndex)
-                        chains[activeIndex]->monitor(i + k);
+                    if (chainIdx == activeIndex)
+                    {
+                        std::cout << i + k << " only one\n";
+                        //chains[activeIndex]->
+                        chains[activeIndex]->monitor(i+k);
+                    }
+                    //chains[chainIdx]->monitor(i+k);
                 }
             }
             
@@ -133,11 +146,6 @@ void ParallelMcmcmc::run(int generations)
     }
 }
 
-void ParallelMcmcmc::initialize(void)
-{
-    
-}
-
 void ParallelMcmcmc::swapChains(void)
 {
     size_t numChains = chains.size();
@@ -147,14 +155,14 @@ void ParallelMcmcmc::swapChains(void)
         return;
     
     // otherwise, swap adjacent chains
-    size_t j = GLOBAL_RNG->uniform01() * numChains;
-    size_t k = 0;
+    size_t j = std::floor(GLOBAL_RNG->uniform01() * numChains);
+    size_t k = (GLOBAL_RNG->uniform01() < 0.5 ? k = j-1 : k = j+1);
+    // reflect at 0 and numChains-1
     if (j == 0)
         k = 1;
     else if (j == numChains-1)
         k = numChains-2;
-    else
-        k = (GLOBAL_RNG->uniform01() < 0.5 ? k = numChains-1 : k = numChains+1);
+    
     // MJL: proposal density is not symmetric for border cases, currently unaccounted for
     
     // compute exchange ratio
@@ -175,6 +183,9 @@ void ParallelMcmcmc::swapChains(void)
     else
         accept = false;
     
+    
+    std::cout << "swapChains()\t" << j << " <--> " << k << "\t" << r << "\t" << (accept ? "accept\n" : "reject\n");
+    
     // on accept, swap beta values and active chains
     if (accept)
     {
@@ -183,8 +194,17 @@ void ParallelMcmcmc::swapChains(void)
         chains[k]->setChainHeat(bj);
 
         // swap active chain
-        bool active = chains[j]->isChainActive();
-        chains[j]->setChainActive(chains[k]->isChainActive());
-        chains[k]->setChainActive(active);
+        if (activeIndex == j)
+        {
+            activeIndex = k;
+            chains[j]->setChainActive(false);
+            chains[k]->setChainActive(true);
+        }
+        else if (activeIndex == k)
+        {
+            activeIndex = j;
+            chains[j]->setChainActive(true);
+            chains[k]->setChainActive(false);
+        }
     }
 }

@@ -50,6 +50,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
+#include "ParallelMcmcmc.h"
 #include "PathSampleMonitor.h"
 #include "PathResampleMove.h"
 #include "PathValueScalingMove.h"
@@ -107,6 +108,12 @@ bool TestAdmixtureGraph::run(void) {
     bool useContrasts = false;          // nothing really, need to remove
     bool updateParameters = true;
     bool updateTree = true;
+    
+    bool useParallelMcmcmc = true;
+    int numChains = 4;
+    int numProcesses = 4;
+    int swapInterval = 10;
+    double deltaTemp = 1.0;
     
     
     std::stringstream rndStr;
@@ -288,12 +295,20 @@ bool TestAdmixtureGraph::run(void) {
     // MCMC
     std::cout << "Calling mcmc\n";
     
-    double scaleFactorConstant = 2000.0; // make this smaller to flatten the likelihood surface
-    double chainHeat = scaleFactorConstant / numSites;
-    Mcmc myMcmc = Mcmc(myModel, moves, monitors, true, chainHeat);
-    myMcmc.run(100000);
-    myMcmc.printOperatorSummary();
-    
+    if (false)
+    {
+        double scaleFactorConstant = 2000.0; // make this smaller to flatten the likelihood surface
+        double chainHeat = scaleFactorConstant / numSites;
+        Mcmc myMcmc = Mcmc(myModel, moves, monitors, true, chainHeat);
+        myMcmc.run(100000);
+        myMcmc.printOperatorSummary();
+    }
+    else
+    {
+        ParallelMcmcmc myPmc3(myModel, moves, monitors, numChains, numProcesses, swapInterval, deltaTemp);
+        myPmc3.run(1000);
+        myPmc3.printOperatorSummary();
+    }
     std::cout << "All done...\n";
     
     // OBJECT CLEANUP

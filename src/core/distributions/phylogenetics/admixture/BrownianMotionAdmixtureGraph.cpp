@@ -232,7 +232,7 @@ void BrownianMotionAdmixtureGraph::restoreSpecialization(DagNode *restorer)
 
 void BrownianMotionAdmixtureGraph::touchSpecialization(DagNode *toucher)
 {
-    std::cout << "BMAG: touched by " << toucher->getName() << "\n";
+    //std::cout << "BMAG: touched by " << toucher->getName() << "\n";
     // only need to update Mrca for topology changes (FPNR, NNI, admixture edge moves)
     if (toucher == tau)
     {

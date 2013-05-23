@@ -156,75 +156,12 @@ void Mcmc::initialize( void ) {
     /* Open the output file and print headers */
     for (size_t i=0; i<monitors.size(); i++) 
     {
-        /*
-        // get the monitor
-        if ( typeid(*monitors[i]) == typeid(FileMonitor) ) 
-        {
-            
-            FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors[i] );
-            
-            // open the file stream for the monitor
-            theMonitor->openStream();
-            
-            // print the header information
-            theMonitor->printHeader();
-        }
-        else if ( typeid(*monitors[i]) == typeid(ExtendedNewickTreeMonitor) ) 
-        {
-            
-            ExtendedNewickTreeMonitor* theMonitor = static_cast<ExtendedNewickTreeMonitor*>( monitors[i] );
-            
-            // open the file stream for the monitor
-            theMonitor->openStream();
-            
-            // print the header information
-            theMonitor->printHeader();
-        }
-        else if ( typeid(*monitors[i]) == typeid(ExtendedNewickAdmixtureTreeMonitor) ) 
-        {
-            
-            ExtendedNewickAdmixtureTreeMonitor* theMonitor = static_cast<ExtendedNewickAdmixtureTreeMonitor*>( monitors[i] );
-            
-            // open the file stream for the monitor
-            theMonitor->openStream();
-            
-            // print the header information
-            theMonitor->printHeader();
-        }
-        
-        else if ( typeid(*monitors[i]) == typeid(AdmixtureBipartitionMonitor) )
-        {
-            
-            AdmixtureBipartitionMonitor* theMonitor = static_cast<AdmixtureBipartitionMonitor*>( monitors[i] );
-            
-            // open the file stream for the monitor
-            theMonitor->openStream();
-            
-            // print the header information
-            theMonitor->printHeader();
-        }
-
-        
-        else if ( typeid(*monitors[i]) == typeid(PathSampleMonitor) ) 
-        {
-            
-            PathSampleMonitor* theMonitor = static_cast<PathSampleMonitor*>( monitors[i] );
-            
-            // open the file stream for the monitor
-            theMonitor->openStream();
-            
-            // print the header information
-            theMonitor->printHeader();
-        }
-        */
-        
-        std::cout << "monitor " << i << " " << (chainActive ? "active" : "inactive") << "\n";
         
         // open filestream for each monitor
         monitors[i]->openStream();
 
         // if this chain is active, print the header
-        if (chainActive)
+        //if (chainActive) // surprised this works properly...
             monitors[i]->printHeader();
         
         // set the model
@@ -284,7 +221,9 @@ void Mcmc::initialize( void ) {
     
 
     lnProbability *= chainHeat;
-    schedule = SequentialMoveSchedule(moves);
+    schedule = RandomMoveSchedule(moves);
+    if (moveSchedule != NULL)
+        
     gen = 0;
 }
 
@@ -486,6 +425,11 @@ void Mcmc::setChainActive(bool tf)
 void Mcmc::setChainHeat(double v)
 {
     chainHeat = v;
+}
+
+std::vector<Monitor*>& Mcmc::getMonitors(void)
+{
+    return monitors;
 }
 
 void Mcmc::monitor(int g)

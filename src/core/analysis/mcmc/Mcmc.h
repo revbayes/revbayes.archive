@@ -23,6 +23,7 @@
 #include "Monitor.h"
 #include "Move.h"
 #include "MoveSchedule.h"
+#include "RandomMoveSchedule.h"
 #include "SequenctialMoveSchedule.h"
 
 #include <vector>
@@ -50,6 +51,7 @@ namespace RevBayesCore {
         void                                                setChainActive(bool tf);
         void                                                setChainHeat(double v);
         void                                                monitor(int g);
+        std::vector<Monitor*>&                              getMonitors(void);
         
         
 
@@ -68,8 +70,8 @@ namespace RevBayesCore {
         std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
 //      unsigned int                                        tuningInterval;
         unsigned int                                        gen;
-        SequentialMoveSchedule                              schedule;
-//        MoveSchedule*                                       schedule;
+        RandomMoveSchedule                                  schedule;
+        MoveSchedule*                                       moveSchedule;
         
         bool                                                chainActive;
         double                                              chainHeat;
