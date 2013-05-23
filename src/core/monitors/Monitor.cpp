@@ -47,6 +47,21 @@ Monitor& Monitor::operator=(const Monitor &i) {
     return *this;
 }
 
+void Monitor::closeStream(void)
+{
+    ; // dummy fn
+}
+
+void Monitor::openStream(void)
+{
+    ; // dummy fn
+}
+
+void Monitor::printHeader(void)
+{
+    ; // dummy fn
+}
+
 
 const std::set<DagNode*>& Monitor::getDagNodes( void ) const {
     return nodes;

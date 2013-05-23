@@ -84,9 +84,17 @@
 #endif
 
 
-// Uncomment the first line to enable the armadillo library
 // AdmixtureGraph depends on armadillo for linear algebra
-//#define USE_LIB_ARMADILLO
+// Uncomment the first line to enable the armadillo library
+#define USE_LIB_ARMADILLO
 #ifdef USE_LIB_ARMADILLO
 #include <armadillo>
 #endif
+
+// ParallelMcmcmc depends on boost for multiprocessing
+// Uncomment the first line to enable the boost library
+//#define USE_LIB_OPENMP
+#ifdef USE_LIB_OPENMP
+#endif
+
+

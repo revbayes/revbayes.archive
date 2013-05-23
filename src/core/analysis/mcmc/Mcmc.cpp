@@ -3,6 +3,7 @@
 #include "Mcmc.h"
 #include "MoveSchedule.h"
 #include "PathSampleMonitor.h"
+#include "RandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -52,11 +53,13 @@ Mcmc::~Mcmc(void) {
 
 void Mcmc::burnin(int generations, int tuningInterval) {
     
-    
-    std::cout << "burning in the chain ..." << std::endl;
-    std::cout << "0--------25--------50--------75--------100" << std::endl;
-    std::cout << "*";
-    std::cout.flush();
+    if (chainActive)
+    {
+        std::cout << "burning in the chain ..." << std::endl;
+        std::cout << "0--------25--------50--------75--------100" << std::endl;
+        std::cout << "*";
+        std::cout.flush();
+    }
     
 #ifdef DEBUG_MCMC
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
@@ -90,7 +93,8 @@ void Mcmc::burnin(int generations, int tuningInterval) {
         
     }
     
-    std::cout << std::endl;
+    if (chainActive)
+        std::cout << std::endl;
 }
 
 
@@ -152,7 +156,7 @@ void Mcmc::initialize( void ) {
     /* Open the output file and print headers */
     for (size_t i=0; i<monitors.size(); i++) 
     {
-                
+        /*
         // get the monitor
         if ( typeid(*monitors[i]) == typeid(FileMonitor) ) 
         {
@@ -212,6 +216,16 @@ void Mcmc::initialize( void ) {
             // print the header information
             theMonitor->printHeader();
         }
+        */
+        
+        std::cout << "monitor " << i << " " << (chainActive ? "active" : "inactive") << "\n";
+        
+        // open filestream for each monitor
+        monitors[i]->openStream();
+
+        // if this chain is active, print the header
+        if (chainActive)
+            monitors[i]->printHeader();
         
         // set the model
         monitors[i]->setModel( &model );

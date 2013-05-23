@@ -44,6 +44,10 @@ namespace RevBayesCore {
 
         // methods you may want to overwrite
         virtual void                                swapNode(DagNode *oldN, DagNode *newN);
+        virtual void                                closeStream(void);                                                  //!< Close stream after finish writing
+        virtual void                                openStream(void);                                                   //!< Open the stream for writing
+        virtual void                                printHeader(void);                                                  //!< Print header
+
 
         // getters and setters
         const std::set<DagNode *>&                  getDagNodes(void) const;                                                //!< Get the nodes vector

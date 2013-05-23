@@ -13,6 +13,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
+#include "RbOptions.h" // included for omp.h ... don't quite understand why it doesn't propagate through from main.cpp...
 
 #include <vector>
 
@@ -36,13 +37,13 @@ namespace RevBayesCore {
         void                                                swapChains(void);
         double                                              computeBeta(double d, int i);   // incremental temperature schedule
         
-        // MCMC variables
         int                                                 numChains;
+        int                                                 numProcesses;
+        std::vector<std::vector<int> >                      chainsPerProcess;
         std::vector<Mcmc*>                                  chains;
         unsigned int                                        gen;
         unsigned int                                        swapInterval;
         
-        // MCMCMC variables
         int                                                 activeIndex; // index of coldest chain, i.e. which one samples the posterior
         double                                              delta;       // delta-T, temperature increment for computeBeta
         

@@ -22,6 +22,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
+#include "MoveSchedule.h"
 #include "SequenctialMoveSchedule.h"
 
 #include <vector>
@@ -65,9 +66,10 @@ namespace RevBayesCore {
         std::vector<Monitor*>                               monitors;
         std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
         std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
-//        unsigned int                                        tuningInterval;
+//      unsigned int                                        tuningInterval;
         unsigned int                                        gen;
         SequentialMoveSchedule                              schedule;
+//        MoveSchedule*                                       schedule;
         
         bool                                                chainActive;
         double                                              chainHeat;
