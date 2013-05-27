@@ -24,13 +24,13 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-FileMonitor::FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ) {
+FileMonitor::FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap) {
     
 }
 
 
 /* Constructor */
-FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ) {
+FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap) {
     
 }
 
@@ -42,6 +42,7 @@ FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ), outStream() {
     prior       = f.prior;
     posterior   = f.posterior;
     likelihood  = f.likelihood;
+    append      = f.append;
 }
 
 
@@ -128,8 +129,10 @@ void FileMonitor::monitor(long gen) {
 void FileMonitor::openStream(void) {
     
     // open the stream to the file
-    outStream.open( filename.c_str(), std::fstream::out );
-    
+    if (append)
+        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+    else
+        outStream.open( filename.c_str(), std::fstream::out);    
 }
 
 /** Print header for monitored values */

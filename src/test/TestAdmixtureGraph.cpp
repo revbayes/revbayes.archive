@@ -94,7 +94,7 @@ bool TestAdmixtureGraph::run(void) {
     size_t numSites = snps->getNumSnps();
     int blockSize = 500;
     
-    int delay = 1000;
+    int delay = 100;
     size_t numTreeResults = 500;
     size_t numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 10;
@@ -110,10 +110,10 @@ bool TestAdmixtureGraph::run(void) {
     bool updateTree = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 4;
-    int numProcesses = 4;
+    int numChains = 8;
+    int numProcesses = 8;
     int swapInterval = 10;
-    double deltaTemp = 1.0;
+    double deltaTemp = 0.1;
     
     
     std::stringstream rndStr;
@@ -269,16 +269,16 @@ bool TestAdmixtureGraph::run(void) {
 	}
     
    
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t" ) );
+    monitors.push_back( new FileMonitor( monitoredNodes, 10, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
  
-    monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".admixture_trees.txt", "\t", true, true, true ) );
+    monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".admixture_trees.txt", "\t", true, true, true, true ) );
     
-    monitors.push_back( new AdmixtureBipartitionMonitor(tau, br_vector, delayTimer, numTreeResults, numAdmixtureResults, 10, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", false, false, false ) );
+    monitors.push_back( new AdmixtureBipartitionMonitor(tau, br_vector, delayTimer, numTreeResults, numAdmixtureResults, 10, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true ) );
     
-    monitors.push_back( new AdmixtureResidualsMonitor(residuals, snps->getPopulationNames(), 10, "/Users/mlandis/data/admix/output/" + outName + ".residuals.txt", "\t", true, true, true ) );
+    monitors.push_back( new AdmixtureResidualsMonitor(residuals, snps->getPopulationNames(), 10, "/Users/mlandis/data/admix/output/" + outName + ".residuals.txt", "\t", true, true, true, true ) );
 
-    monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, 10, "/Users/mlandis/data/admix/output/" + outName + ".topology_trees.trees", "\t", true, true, true ) );
+    monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, 10, "/Users/mlandis/data/admix/output/" + outName + ".topology_trees.trees", "\t", true, true, true, true ) );
     
     std::set<DagNode*> mn2;
     mn2.insert(tau);
@@ -309,6 +309,7 @@ bool TestAdmixtureGraph::run(void) {
         myPmc3.run(1000);
         myPmc3.printOperatorSummary();
     }
+
     std::cout << "All done...\n";
     
     // OBJECT CLEANUP

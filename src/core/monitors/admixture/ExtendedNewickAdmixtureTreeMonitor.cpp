@@ -15,7 +15,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, bool sm, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), showMetadata(sm) {
+ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, bool sm, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), showMetadata(sm) {
     
     nodes.insert(branchRates);
     
@@ -28,6 +28,7 @@ ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(const Ext
     prior       = m.prior;
     posterior   = m.posterior;
     likelihood  = m.likelihood;
+    append      = m.append;
 }
 
 
@@ -195,8 +196,10 @@ void ExtendedNewickAdmixtureTreeMonitor::monitor(long gen) {
 void ExtendedNewickAdmixtureTreeMonitor::openStream(void) {
     
     // open the stream to the file
-    outStream.open( filename.c_str(), std::fstream::out );
-    
+    if (append)
+        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+    else
+        outStream.open( filename.c_str(), std::fstream::out);
 }
 
 /** Print header for monitored values */

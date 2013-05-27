@@ -34,8 +34,8 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true);                                                                //!< Constructor with single DAG node
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode<std::vector<double> > *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true);                                              //!< Constructor with set of DAG node
+        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
+        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode<std::vector<double> > *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
         ExtendedNewickTreeMonitor(const ExtendedNewickTreeMonitor& f);
         
         // basic methods
@@ -62,6 +62,7 @@ namespace RevBayesCore {
         bool                                posterior;
         bool                                prior;
         bool                                likelihood;
+        bool                                append;
         
     };
     

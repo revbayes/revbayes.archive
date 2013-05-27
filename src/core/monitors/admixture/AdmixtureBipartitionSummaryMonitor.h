@@ -1,13 +1,13 @@
 //
-//  AdmixtureBipartitionMonitor.h
+//  AdmixtureBipartitionSummaryMonitor.h
 //  rb_mlandis
 //
-//  Created by Michael Landis on 5/27/13.
+//  Created by Michael Landis on 3/10/13.
 //  Copyright (c) 2013 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__AdmixtureBipartitionMonitor__
-#define __rb_mlandis__AdmixtureBipartitionMonitor__
+#ifndef __rb_mlandis__AdmixtureBipartitionSummaryMonitor__
+#define __rb_mlandis__AdmixtureBipartitionSummaryMonitor__
 
 #include "Monitor.h"
 #include "AdmixtureTree.h"
@@ -43,30 +43,30 @@ namespace RevBayesCore {
     };
     
     // sort results
-    struct AdmixtureBipartitionCompare {
+    struct AdmixtureBipartitionSummaryCompare {
         
         bool operator() (const std::pair<std::pair<std::vector<bool>, std::vector<bool> >, std::vector<AdmixtureEdgeRecord> >& lhs, const std::pair<std::pair<std::vector<bool>, std::vector<bool> >, std::vector<AdmixtureEdgeRecord> >& rhs) const
         {
             return lhs.second.size() > rhs.second.size();
         }
     };
-    
+   
     struct TreeBipartitionCompare {
         bool operator() (const std::pair<std::vector<bool>, std::vector<AdmixtureEdgeRecord> >& lhs, const std::pair<std::vector<bool>, std::vector<AdmixtureEdgeRecord> >& rhs) const
         {
             return lhs.second.size() > rhs.second.size();
         }
     };
-    
-    class AdmixtureBipartitionMonitor : public Monitor {
+     
+    class AdmixtureBipartitionSummaryMonitor : public Monitor {
         
     public:
         // Constructors and Destructors
-        AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap = false);
-        AdmixtureBipartitionMonitor(const AdmixtureBipartitionMonitor& f);
+        AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap = false);
+        AdmixtureBipartitionSummaryMonitor(const AdmixtureBipartitionSummaryMonitor& f);
         
         // basic methods
-        AdmixtureBipartitionMonitor*        clone(void) const;                                                  //!< Clone the object
+        AdmixtureBipartitionSummaryMonitor*        clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
         void                                monitor(long gen);                                                  //!< Monitor at generation gen
@@ -78,13 +78,13 @@ namespace RevBayesCore {
         void                                printHeader(void);                                                  //!< Print header
         
     private:
-        
+
         void                                initializeTaxonBipartition(void);
         void                                findTaxonBipartition(std::vector<bool>& b, AdmixtureNode* p);
         void                                flipTaxonBipartitionToMinor(std::vector<bool>& b);
-        //void                                updateBipartitions(void);
-        std::string                         buildBipartitionString(void);
-        //std::string                         buildAdmixtureBipartitionString(void);
+        void                                updateBipartitions(void);
+        std::string                         buildTreeBipartitionString(void);
+        std::string                         buildAdmixtureBipartitionSummaryString(void);
         
         // the stream to print
         std::fstream                        outStream;
@@ -103,7 +103,7 @@ namespace RevBayesCore {
         bool                                append;
         
         std::map<std::vector<bool>, std::vector<AdmixtureEdgeRecord> >                              treeBipartitions;
-        std::map<std::vector<bool>, std::map<std::vector<bool>,std::vector<AdmixtureEdgeRecord> > > AdmixtureBipartitions;
+        std::map<std::vector<bool>, std::map<std::vector<bool>,std::vector<AdmixtureEdgeRecord> > > AdmixtureBipartitionSummarys;
         
         
         
@@ -118,4 +118,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__rb_mlandis__AdmixtureBipartition__) */
+#endif /* defined(__rb_mlandis__AdmixtureBipartitionSummaryMonitor__) */

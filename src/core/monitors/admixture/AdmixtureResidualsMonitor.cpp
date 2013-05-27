@@ -16,7 +16,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(TypedDagNode< std::vector< double > >* r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr) : Monitor(g,r), outStream(), residuals(r), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), taxonNames(tn)
+AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(TypedDagNode< std::vector< double > >* r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,r), outStream(), residuals(r), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), taxonNames(tn)
 {
 
 }
@@ -28,6 +28,7 @@ AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(const AdmixtureResidualsMon
     prior       = m.prior;
     posterior   = m.posterior;
     likelihood  = m.likelihood;
+    append      = m.append;
 }
 
 
@@ -113,8 +114,10 @@ void AdmixtureResidualsMonitor::monitor(long gen) {
 void AdmixtureResidualsMonitor::openStream(void) {
     
     // open the stream to the file
-    outStream.open( filename.c_str(), std::fstream::out );
-    
+    if (append)
+        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+    else
+        outStream.open( filename.c_str(), std::fstream::out);
 }
 
 /** Print header for monitored values */

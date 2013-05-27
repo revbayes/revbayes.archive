@@ -93,7 +93,7 @@
 
 // ParallelMcmcmc depends on boost for multiprocessing
 // Uncomment the first line to enable the boost library
-//#define USE_LIB_OPENMP
+#define USE_LIB_OPENMP
 #ifdef USE_LIB_OPENMP
 #endif
 

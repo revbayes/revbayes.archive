@@ -161,7 +161,7 @@ void Mcmc::initialize( void ) {
         monitors[i]->openStream();
 
         // if this chain is active, print the header
-        //if (chainActive) // surprised this works properly...
+        if (chainActive) // surprised this works properly...
             monitors[i]->printHeader();
         
         // set the model

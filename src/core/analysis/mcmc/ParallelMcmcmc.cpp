@@ -9,6 +9,7 @@
 #include "ParallelMcmcmc.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include <iostream>
 #include <vector>
 #include <cmath>
 
@@ -146,6 +147,7 @@ void ParallelMcmcmc::run(int generations)
     }
 }
 
+// MJL: allow swapChains to take a swap function -- e.g. pairwise swap for 1..n-1
 void ParallelMcmcmc::swapChains(void)
 {
     size_t numChains = chains.size();

@@ -26,13 +26,13 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr) : Monitor(g,t), outStream(), tree( t ), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ) {
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap) {
     
 }
 
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< std::vector<double> > *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr) : Monitor(g,t), outStream(), tree( t ), nodeVariables( n ), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ) {
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< std::vector<double> > *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), nodeVariables( n ), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap) {
 //    this->nodes.insert( tree );
     
     for (std::set<TypedDagNode< std::vector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it) {
@@ -48,6 +48,7 @@ ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(const ExtendedNewickTreeMon
     prior       = m.prior;
     posterior   = m.posterior;
     likelihood  = m.likelihood;
+    append      = m.append;
 }
 
 
@@ -133,8 +134,10 @@ void ExtendedNewickTreeMonitor::monitor(long gen) {
 void ExtendedNewickTreeMonitor::openStream(void) {
     
     // open the stream to the file
-    outStream.open( filename.c_str(), std::fstream::out );
-    
+    if (append)
+        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+    else
+        outStream.open( filename.c_str(), std::fstream::out);
 }
 
 /** Print header for monitored values */
