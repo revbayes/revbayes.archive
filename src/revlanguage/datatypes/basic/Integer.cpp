@@ -131,10 +131,10 @@ bool Integer::isConvertibleTo( const TypeSpec& type ) const {
     if ( type == RlString::getClassTypeSpec() )
         return true;
 
-    if ( type == RealPos::getClassTypeSpec() && value > 0 )
+    if ( type == RealPos::getClassTypeSpec() && value->getValue() > 0 )
         return true;
 
-    if ( type == Natural::getClassTypeSpec() && value >= 0 )
+    if ( type == Natural::getClassTypeSpec() && value->getValue() >= 0 )
         return true;
 
     return RbLanguageObject::isConvertibleTo( type );

@@ -41,6 +41,7 @@ namespace RevBayesCore {
         double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
+        bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
         void                                                update(void);                                                               //!< Update the current value by recomputation
         void                                                redraw(void);
 
@@ -92,6 +93,7 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
 
 template<class valueType>
 RevBayesCore::DeterministicNode<valueType>* RevBayesCore::DeterministicNode<valueType>::clone( void ) const {
+    
     return new DeterministicNode<valueType>( *this );
 }
 
@@ -108,25 +110,45 @@ void RevBayesCore::DeterministicNode<valueType>::getAffected(std::set<DagNode *>
 
 template<class valueType>
 double RevBayesCore::DeterministicNode<valueType>::getLnProbability( void ) {
+    
     return 0.0;
 }
 
 
 template<class valueType>
 double RevBayesCore::DeterministicNode<valueType>::getLnProbabilityRatio( void ) {
+    
     return 0.0;
 }
 
 
 template<class valueType>
 valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) {
+    
     return function->getValue();
 }
 
 
 template<class valueType>
 const valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) const {
+    
     return function->getValue();
+}
+
+
+template<class valueType>
+bool RevBayesCore::DeterministicNode<valueType>::isConstant( void ) const {
+    
+    // iterate over all parents and only if all parents are constant then this node is constant too
+    for (std::set<const DagNode*>::iterator it = this->parents.begin(); it != this->parents.end(); ++it) 
+    {
+        if ( !(*it)->isConstant() ) 
+        {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 
@@ -154,7 +176,9 @@ void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter ) {
 
 template <class valueType>
 void RevBayesCore::DeterministicNode<valueType>::update() {
+    
     function->update();
+
 }
 
 
@@ -184,13 +208,16 @@ void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer ) 
     
     // clear the list of touched element indices
     this->touchedElements.clear();
+    
 }
 
 
 
 template <class valueType>
 void RevBayesCore::DeterministicNode<valueType>::swapParameter(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP) {
+    
     function->swapParameter(oldP, newP);
+    
 }
 
 
