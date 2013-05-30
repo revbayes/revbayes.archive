@@ -255,7 +255,7 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 193 of yacc.c.  */
-#line 259 "./grammar.tab.cpp"
+#line 259 "./grammar.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -280,7 +280,7 @@ typedef struct YYLTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 284 "./grammar.tab.cpp"
+#line 284 "./grammar.tab.c"
 
 #ifdef short
 # undef short
@@ -1485,202 +1485,202 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
       case 60: /* "expression" */
 #line 126 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1489 "./grammar.tab.cpp"
+#line 1489 "./grammar.tab.c"
 	break;
       case 61: /* "arrowAssign" */
 #line 127 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1494 "./grammar.tab.cpp"
+#line 1494 "./grammar.tab.c"
 	break;
       case 62: /* "tildeAssign" */
 #line 127 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1499 "./grammar.tab.cpp"
+#line 1499 "./grammar.tab.c"
 	break;
       case 63: /* "equationAssign" */
 #line 127 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1504 "./grammar.tab.cpp"
+#line 1504 "./grammar.tab.c"
 	break;
       case 64: /* "variable" */
 #line 125 "./grammar.y"
 	{ delete ((yyvaluep->syntaxVariable)); };
-#line 1509 "./grammar.tab.cpp"
+#line 1509 "./grammar.tab.c"
 	break;
       case 65: /* "optElements" */
 #line 121 "./grammar.y"
 	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1514 "./grammar.tab.cpp"
+#line 1514 "./grammar.tab.c"
 	break;
       case 66: /* "elementList" */
 #line 121 "./grammar.y"
 	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1519 "./grammar.tab.cpp"
+#line 1519 "./grammar.tab.c"
 	break;
       case 67: /* "fxnCall" */
 #line 125 "./grammar.y"
 	{ delete ((yyvaluep->syntaxFunctionCall)); };
-#line 1524 "./grammar.tab.cpp"
+#line 1524 "./grammar.tab.c"
 	break;
       case 68: /* "functionCall" */
 #line 125 "./grammar.y"
 	{ delete ((yyvaluep->syntaxFunctionCall)); };
-#line 1529 "./grammar.tab.cpp"
+#line 1529 "./grammar.tab.c"
 	break;
       case 69: /* "optArguments" */
 #line 122 "./grammar.y"
 	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
-#line 1534 "./grammar.tab.cpp"
+#line 1534 "./grammar.tab.c"
 	break;
       case 70: /* "argumentList" */
 #line 122 "./grammar.y"
 	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
-#line 1539 "./grammar.tab.cpp"
+#line 1539 "./grammar.tab.c"
 	break;
       case 71: /* "argument" */
 #line 125 "./grammar.y"
 	{ delete ((yyvaluep->syntaxLabeledExpr)); };
-#line 1544 "./grammar.tab.cpp"
+#line 1544 "./grammar.tab.c"
 	break;
       case 72: /* "functionDef" */
 #line 129 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1549 "./grammar.tab.cpp"
+#line 1549 "./grammar.tab.c"
 	break;
       case 73: /* "optFormals" */
 #line 123 "./grammar.y"
 	{ for (std::list<SyntaxFormal*>::iterator it=(yyvaluep->formalList)->begin(); it != (yyvaluep->formalList)->end(); it++) { SyntaxFormal* theElement = *it; delete theElement; }; delete ((yyvaluep->formalList)); };
-#line 1554 "./grammar.tab.cpp"
+#line 1554 "./grammar.tab.c"
 	break;
       case 74: /* "formalList" */
 #line 123 "./grammar.y"
 	{ for (std::list<SyntaxFormal*>::iterator it=(yyvaluep->formalList)->begin(); it != (yyvaluep->formalList)->end(); it++) { SyntaxFormal* theElement = *it; delete theElement; }; delete ((yyvaluep->formalList)); };
-#line 1559 "./grammar.tab.cpp"
+#line 1559 "./grammar.tab.c"
 	break;
       case 75: /* "formal" */
 #line 125 "./grammar.y"
 	{ delete ((yyvaluep->syntaxFormal)); };
-#line 1564 "./grammar.tab.cpp"
+#line 1564 "./grammar.tab.c"
 	break;
       case 76: /* "typeSpec" */
 #line 124 "./grammar.y"
 	{ delete ((yyvaluep->string)); };
-#line 1569 "./grammar.tab.cpp"
+#line 1569 "./grammar.tab.c"
 	break;
       case 77: /* "optDims" */
 #line 124 "./grammar.y"
 	{ delete ((yyvaluep->string)); };
-#line 1574 "./grammar.tab.cpp"
+#line 1574 "./grammar.tab.c"
 	break;
       case 78: /* "dimList" */
 #line 124 "./grammar.y"
 	{ delete ((yyvaluep->string)); };
-#line 1579 "./grammar.tab.cpp"
+#line 1579 "./grammar.tab.c"
 	break;
       case 79: /* "optRef" */
 #line 124 "./grammar.y"
 	{ delete ((yyvaluep->string)); };
-#line 1584 "./grammar.tab.cpp"
+#line 1584 "./grammar.tab.c"
 	break;
       case 80: /* "stmts" */
 #line 121 "./grammar.y"
 	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1589 "./grammar.tab.cpp"
+#line 1589 "./grammar.tab.c"
 	break;
       case 81: /* "stmtList" */
 #line 121 "./grammar.y"
 	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1594 "./grammar.tab.cpp"
+#line 1594 "./grammar.tab.c"
 	break;
       case 82: /* "statement" */
 #line 126 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1599 "./grammar.tab.cpp"
+#line 1599 "./grammar.tab.c"
 	break;
       case 83: /* "stmt_or_expr" */
 #line 126 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1604 "./grammar.tab.cpp"
+#line 1604 "./grammar.tab.c"
 	break;
       case 84: /* "declaration" */
 #line 128 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1609 "./grammar.tab.cpp"
+#line 1609 "./grammar.tab.c"
 	break;
       case 85: /* "memberDefs" */
 #line 121 "./grammar.y"
 	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1614 "./grammar.tab.cpp"
+#line 1614 "./grammar.tab.c"
 	break;
       case 86: /* "memberDef" */
 #line 128 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1619 "./grammar.tab.cpp"
+#line 1619 "./grammar.tab.c"
 	break;
       case 87: /* "classDef" */
 #line 128 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1624 "./grammar.tab.cpp"
+#line 1624 "./grammar.tab.c"
 	break;
       case 88: /* "ifStatement" */
 #line 130 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1629 "./grammar.tab.cpp"
+#line 1629 "./grammar.tab.c"
 	break;
       case 89: /* "cond" */
 #line 131 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1634 "./grammar.tab.cpp"
+#line 1634 "./grammar.tab.c"
 	break;
       case 90: /* "forStatement" */
 #line 130 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1639 "./grammar.tab.cpp"
+#line 1639 "./grammar.tab.c"
 	break;
       case 91: /* "forCond" */
 #line 131 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1644 "./grammar.tab.cpp"
+#line 1644 "./grammar.tab.c"
 	break;
       case 92: /* "whileStatement" */
 #line 130 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1649 "./grammar.tab.cpp"
+#line 1649 "./grammar.tab.c"
 	break;
       case 93: /* "nextStatement" */
 #line 132 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1654 "./grammar.tab.cpp"
+#line 1654 "./grammar.tab.c"
 	break;
       case 94: /* "breakStatement" */
 #line 132 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1659 "./grammar.tab.cpp"
+#line 1659 "./grammar.tab.c"
 	break;
       case 95: /* "returnStatement" */
 #line 131 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1664 "./grammar.tab.cpp"
+#line 1664 "./grammar.tab.c"
 	break;
       case 96: /* "identifier" */
 #line 124 "./grammar.y"
 	{ delete ((yyvaluep->string)); };
-#line 1669 "./grammar.tab.cpp"
+#line 1669 "./grammar.tab.c"
 	break;
       case 97: /* "vector" */
 #line 122 "./grammar.y"
 	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
-#line 1674 "./grammar.tab.cpp"
+#line 1674 "./grammar.tab.c"
 	break;
       case 98: /* "vectorList" */
 #line 122 "./grammar.y"
 	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
-#line 1679 "./grammar.tab.cpp"
+#line 1679 "./grammar.tab.c"
 	break;
       case 99: /* "constant" */
 #line 125 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1684 "./grammar.tab.cpp"
+#line 1684 "./grammar.tab.c"
 	break;
 
       default:
@@ -2947,14 +2947,14 @@ yyreduce:
                         prec = (int)(strlen(yytext)) - 1 - i;
                     }
                     Real* real;
-                    if ($1 > 0.0)
+                    if ($1 >= 0.0)
                         real = new RealPos($1);
                     else
                         real = new Real($1);
                     real->setPrecision(prec);
                     real->setScientific(sci);
                     */
-                    if ((yyvsp[(1) - (1)].realValue) > 0.0) {
+                    if ((yyvsp[(1) - (1)].realValue) >= 0.0) {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting RealPos constant in syntax tree \n");
 #endif
@@ -2971,7 +2971,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 2975 "./grammar.tab.cpp"
+#line 2975 "./grammar.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

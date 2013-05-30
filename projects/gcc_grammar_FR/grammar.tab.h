@@ -58,24 +58,23 @@
      RETURN = 274,
      ARROW_ASSIGN = 275,
      TILDE_ASSIGN = 276,
-     TILDEIID_ASSIGN = 277,
-     EQUATION_ASSIGN = 278,
-     EQUAL = 279,
-     AND = 280,
-     OR = 281,
-     AND2 = 282,
-     OR2 = 283,
-     GT = 284,
-     GE = 285,
-     LT = 286,
-     LE = 287,
-     EQ = 288,
-     NE = 289,
-     END_OF_INPUT = 290,
-     UNOT = 291,
-     UPLUS = 292,
-     UMINUS = 293,
-     UAND = 294
+     EQUATION_ASSIGN = 277,
+     EQUAL = 278,
+     AND = 279,
+     OR = 280,
+     AND2 = 281,
+     OR2 = 282,
+     GT = 283,
+     GE = 284,
+     LT = 285,
+     LE = 286,
+     EQ = 287,
+     NE = 288,
+     END_OF_INPUT = 289,
+     UNOT = 290,
+     UPLUS = 291,
+     UMINUS = 292,
+     UAND = 293
    };
 #endif
 /* Tokens.  */
@@ -98,48 +97,47 @@
 #define RETURN 274
 #define ARROW_ASSIGN 275
 #define TILDE_ASSIGN 276
-#define TILDEIID_ASSIGN 277
-#define EQUATION_ASSIGN 278
-#define EQUAL 279
-#define AND 280
-#define OR 281
-#define AND2 282
-#define OR2 283
-#define GT 284
-#define GE 285
-#define LT 286
-#define LE 287
-#define EQ 288
-#define NE 289
-#define END_OF_INPUT 290
-#define UNOT 291
-#define UPLUS 292
-#define UMINUS 293
-#define UAND 294
+#define EQUATION_ASSIGN 277
+#define EQUAL 278
+#define AND 279
+#define OR 280
+#define AND2 281
+#define OR2 282
+#define GT 283
+#define GE 284
+#define LT 285
+#define LE 286
+#define EQ 287
+#define NE 288
+#define END_OF_INPUT 289
+#define UNOT 290
+#define UPLUS 291
+#define UMINUS 292
+#define UAND 293
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 81 "./grammar.y"
+#line 73 "./grammar.y"
 {
-    char*                                           string;
+    char*                                           c_string;
+    std::string*                                    string;
     double                                          realValue;
     int                                             intValue;
     bool                                            boolValue;
-    RbPtr<RbString>*                                idString;
-    RbPtr<SyntaxElement>*                           syntaxElement;
-    RbPtr<SyntaxVariable>*                          syntaxVariable;
-    RbPtr<SyntaxFunctionCall>*                      syntaxFunctionCall;
-    RbPtr<SyntaxLabeledExpr>*                       syntaxLabeledExpr;
-    RbPtr<SyntaxFormal>*                            syntaxFormal;
-    RbPtr<std::list<RbPtr<SyntaxElement> > >*       syntaxElementList;
-    RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >*   argumentList;
-    RbPtr<std::list<RbPtr<SyntaxFormal> > >*        formalList;
+    RevLanguage::SyntaxElement*                     syntaxElement;
+    RevLanguage::SyntaxVariable*                    syntaxVariable;
+    RevLanguage::SyntaxFunctionCall*                syntaxFunctionCall;
+    RevLanguage::SyntaxLabeledExpr*                 syntaxLabeledExpr;
+    RevLanguage::SyntaxFormal*                      syntaxFormal;
+    std::list<RevLanguage::SyntaxElement*>*         syntaxElementList;
+    std::list<RevLanguage::SyntaxLabeledExpr*>*     argumentList;
+    std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 143 "./grammar.tab.h"
+#line 141 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
