@@ -10,33 +10,33 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "UniformDistribution.h"
-#include "RlUniformDistribution.h"
+#include "RlPositiveUniformDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "ContinuousStochasticNode.h"
 
 using namespace RevLanguage;
 
-UniformDistribution::UniformDistribution() : ContinuousDistribution() {
+PositiveUniformDistribution::PositiveUniformDistribution() : PositiveContinuousDistribution() {
     
 }
 
 
-UniformDistribution::~UniformDistribution() {
+PositiveUniformDistribution::~PositiveUniformDistribution() {
     
 }
 
 
 
-UniformDistribution* UniformDistribution::clone( void ) const {
-    return new UniformDistribution(*this);
+PositiveUniformDistribution* PositiveUniformDistribution::clone( void ) const {
+    return new PositiveUniformDistribution(*this);
 }
 
 
-RevBayesCore::UniformDistribution* UniformDistribution::createDistribution( void ) const {
+RevBayesCore::UniformDistribution* PositiveUniformDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* l   = static_cast<const Real &>( lower->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* u   = static_cast<const Real &>( upper->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* l   = static_cast<const RealPos &>( lower->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* u   = static_cast<const RealPos &>( upper->getValue() ).getValueNode();
     RevBayesCore::UniformDistribution* d    = new RevBayesCore::UniformDistribution(l, u);
     
     return d;
@@ -45,7 +45,7 @@ RevBayesCore::UniformDistribution* UniformDistribution::createDistribution( void
 
 
 /* Get class name of object */
-const std::string& UniformDistribution::getClassName(void) { 
+const std::string& PositiveUniformDistribution::getClassName(void) { 
     
     static std::string rbClassName = "Uniform distribution";
     
@@ -53,7 +53,7 @@ const std::string& UniformDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& UniformDistribution::getClassTypeSpec(void) { 
+const TypeSpec& PositiveUniformDistribution::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -64,14 +64,14 @@ const TypeSpec& UniformDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& UniformDistribution::getMemberRules(void) const {
+const MemberRules& PositiveUniformDistribution::getMemberRules(void) const {
     
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distUnifMemberRules.push_back( new ArgumentRule( "lower", true, Real::getClassTypeSpec() ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "upper"  , true, Real::getClassTypeSpec() ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "lower", true, RealPos::getClassTypeSpec()   , new Real(0.0) ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "upper"  , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         
         rulesSet = true;
     }
@@ -80,7 +80,7 @@ const MemberRules& UniformDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& UniformDistribution::getTypeSpec( void ) const {
+const TypeSpec& PositiveUniformDistribution::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -89,7 +89,7 @@ const TypeSpec& UniformDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void UniformDistribution::printValue(std::ostream& o) const {
+void PositiveUniformDistribution::printValue(std::ostream& o) const {
     
     o << " unif (lower=";
     if ( lower != NULL ) {
@@ -108,7 +108,7 @@ void UniformDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void UniformDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void PositiveUniformDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
     if ( name == "lower" ) {
         lower = var;

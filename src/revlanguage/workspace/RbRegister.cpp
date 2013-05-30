@@ -57,6 +57,7 @@
 #include "RlLognormalDistribution.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
+#include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
 
@@ -190,10 +191,10 @@
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
-
+    
     try {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
-
+        
         /* Add primitive types (alphabetic order) */
         addType( new RlBoolean()                      );
         addType( new Complex()                        );
@@ -203,7 +204,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addType( new RlString()                       );
         addType( new Real()                           );
         addType( new RealPos()                        );
-
+        
         /* Add container types (alphabetic order) */
         addType( new Vector<RlBoolean>()          );
         addType( new Vector<Integer>()            );
@@ -211,7 +212,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addType( new Vector<Real>()               );
         addType( new Vector<RealPos>()            );
         addType( new Vector<RlString>()           );
-
+        
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
         addTypeWithConstructor( "mcmc",             new Mcmc()  );
@@ -252,8 +253,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor("mTreeScale",            new TreeScale() );
         addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange() );
         addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange_nonClock() );
-
-
+        
+        
         
         ///////////////////////
         /* Add Distributions */
@@ -263,12 +264,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // beta distribution
         addDistribution( "beta", new BetaDistribution() );
-
+        
         
         // dirichlet distribution
         addDistribution( "dirichlet", new DirichletDistribution() );
         
-
+        
         // gamma distribution
         addDistribution( "gamma", new GammaDistribution() );
         
@@ -276,7 +277,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // geometric Brownian motion (BM)
         addDistribution( "geomBM", new GeometricBrownianMotion() );
         
-
+        
         // exponential distribution
         addDistribution( "exponential", new ExponentialDistribution() );
         
@@ -291,13 +292,15 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // uniform distributin
         addDistribution( "unif", new UniformDistribution() );
+        addDistribution( "unif", new PositiveUniformDistribution() );
+        
         
         
         // Phylogenetic distributions
         
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantBirthDeathProcess() );
-                
+        
         // character state evolution model (DNA)
         addDistribution( "DNA_model", new CharacterStateEvolutionAlongTree<DnaState,TimeTree>() );
         addDistribution( "DNA_model", new CharacterStateEvolutionAlongTree<DnaState,BranchLengthTree>() );
@@ -323,14 +326,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace().typesInitialized = true;
         Workspace::userWorkspace().typesInitialized   = true;
-
+        
         ///////////////////////////////
         // Add parser functions here //
         ///////////////////////////////
-
+        
         /* Add basic internal functions (alphabetic order) */
         addFunction( "_range",    new Func_range()       );
-
+        
         
         /* Add basic unary arithmetic templated functions */
         
@@ -413,26 +416,30 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("qnorm", new DistributionFunctionQuantile( new NormalDistribution() ) );
         addFunction("rnorm", new DistributionFunctionRv<Real>( new NormalDistribution() ) );
         
-        // normal distribution
+        // uniform distribution
         addFunction("dunif", new DistributionFunctionPdf<Real>( new UniformDistribution() ) );
-        addFunction("punif", new DistributionFunctionCdf( new BetaDistribution() ) );
-        addFunction("qunif", new DistributionFunctionQuantile( new BetaDistribution() ) );
+        addFunction("punif", new DistributionFunctionCdf( new UniformDistribution() ) );
+        addFunction("qunif", new DistributionFunctionQuantile( new UniformDistribution() ) );
         addFunction("runif", new DistributionFunctionRv<Real>( new UniformDistribution() ) );
+        addFunction("dunif", new DistributionFunctionPdf<RealPos>( new PositiveUniformDistribution() ) );
+        addFunction("punif", new DistributionFunctionCdf( new PositiveUniformDistribution() ) );
+        addFunction("qunif", new DistributionFunctionQuantile( new PositiveUniformDistribution() ) );
+        addFunction("runif", new DistributionFunctionRv<RealPos>( new PositiveUniformDistribution() ) );
         
         
         //////////////////////////////////
         // Add inference functions here //
         //////////////////////////////////
         
-
+        
         /* Add basic unary arithmetic and logical templated functions */
-
+        
         // unary minus ( e.g. -a )
         addFunction( "_uminus",   new Func_uminus<Integer, Integer>() );
         addFunction( "_uminus",   new Func_uminus<Natural, Integer>() );
         addFunction( "_uminus",   new Func_uminus<Real, Real>() );
         addFunction( "_uminus",   new Func_uminus<RealPos, Real>() );
-
+        
         
         
         /* Add basic arithmetic templated functions */
@@ -452,7 +459,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_div",      new Func_div<Integer, Integer, Real>(  ) );
         addFunction( "_div",      new Func_div<Real, Real, Real>(  ) );
         addFunction( "_div",      new Func_div<RealPos, RealPos, RealPos>(  ) );
-
+        
         // multiplication
         addFunction( "_mul",      new Func_mult<Natural, Natural, Natural>(  ) );
         addFunction( "_mul",      new Func_mult<Integer, Integer, Integer>(  ) );
@@ -462,17 +469,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // subtraction
         addFunction( "_sub",      new Func_sub<Integer, Integer, Integer>(  ) );
         addFunction( "_sub",      new Func_sub<Real, Real, Real>(  ) );
-
-
+        
+        
         addFunction( "_exp",      new Func_power() );
-
+        
         /* Add math functions (alphabetical order) */
 		
 		// absolute function
         addFunction( "abs",         new Func_abs()  );
         
         // cos function
-//        addFunction( "cos",       new Func_cos()  );
+        //        addFunction( "cos",       new Func_cos()  );
 		
         // exponential function
         addFunction( "exp",         new Func_exp() );
@@ -491,11 +498,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		
 		
         addFunction( "power",     new Func_power() );
-
-
+        
+        
         // sin function
-//        addFunction( "sin",       new Func_sin() );
-
+        //        addFunction( "sin",       new Func_sin() );
+        
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );
         
@@ -538,7 +545,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
         addFunction( "treeHeight",                  new TreeHeightStatistic()              );
-
+        
         /* Add builtin templated functions */
         addFunction( "v",         new Func_rlvector<Monitor>() );
         addFunction( "v",         new Func_rlvector<Move>() );
@@ -557,19 +564,19 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "write",          new Func_write()  );
         
         // inference function
-//        addFunction( "beca",           new BecaFunction() );
+        //        addFunction( "beca",           new BecaFunction() );
         addFunction( "estimateBurnin", new OptimalBurninFunction() );
     }
     catch(RbException& rbException) {
-
+        
         RBOUT("Caught an exception while initializing the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
         msg << std::endl;
         RBOUT(msg.str());
-
+        
         RBOUT("Please report this bug to the RevBayes Development Core Team");
-
+        
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
