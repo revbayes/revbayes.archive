@@ -26,7 +26,8 @@ namespace RevBayesCore {
     class Cloneable {
         
     public:
-
+        virtual                         ~Cloneable(void) {}
+        
         virtual Cloneable*              clone( void ) const = 0;                                    //!< Create a clone/copy of the object
     };
     

@@ -28,14 +28,14 @@
 
 using namespace RevBayesCore;
 
-SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, int nc, double o, bool t, double weight) : SimpleMove( v, weight, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ) {
+SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, int nc, double o, bool t, double w) : SimpleMove( v, w, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ) {
     
 }
 
 
 /** Clone object */
 SimplexMove* SimplexMove::clone( void ) const {
-
+    
     return new SimplexMove( *this );
 }
 
@@ -51,30 +51,30 @@ const std::string& SimplexMove::getMoveName( void ) const {
 
 /** Perform the move */
 double SimplexMove::performSimpleMove( void ) {
-
+    
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-
+    
     // store the value
     storedValue = variable->getValue();
-
+    
 	const std::vector<double>& curVal = variable->getValue();
 	std::vector<double> newVal = curVal;
     int                 n      = int( curVal.size() );
-
+    
 	/* We update the simplex values by proposing new values from a Dirichlet centered
-	   on the current values. The i-th parameter of the Dirichlet is the i-th value
-	   in the simplex multiplied by a parameter (alpha0, AKA tuning) that controls the
-	   variance of the Dirichlet. We implement two cases of this general move. In one
-	   case, all of the elements of the simplex are targeted for update (n == k). In the
-	   other, more complicated, case a subset of the elements of the simplex are updated
-	   (k < n). Here, we construct a smaller simplex with k+1 elements. The first k of the
-	   elements are the values from the full simplex that were targeted for update. The last
-	   element of the smaller simplex accumulates the probabilities of all of the simplex
-	   values in the full simplex that were not targeted for update. We then update the
-	   small simplex by centering a Dirichlet on the small simplex. The values for those elements
-	   in the full simplex that were not targeted for update are all changed proportionally.
-	   This means that we need to calculate the Jacobian for the Hastings ratio in this case. */
+     on the current values. The i-th parameter of the Dirichlet is the i-th value
+     in the simplex multiplied by a parameter (alpha0, AKA tuning) that controls the
+     variance of the Dirichlet. We implement two cases of this general move. In one
+     case, all of the elements of the simplex are targeted for update (n == k). In the
+     other, more complicated, case a subset of the elements of the simplex are updated
+     (k < n). Here, we construct a smaller simplex with k+1 elements. The first k of the
+     elements are the values from the full simplex that were targeted for update. The last
+     element of the smaller simplex accumulates the probabilities of all of the simplex
+     values in the full simplex that were not targeted for update. We then update the
+     small simplex by centering a Dirichlet on the small simplex. The values for those elements
+     in the full simplex that were not targeted for update are all changed proportionally.
+     This means that we need to calculate the Jacobian for the Hastings ratio in this case. */
 	double lnProposalRatio = 0.0;
 	if ( nCategories > n ) {
 		// we can't update more elements than there are elements in the simplex
@@ -96,7 +96,7 @@ double SimplexMove::performSimpleMove( void ) {
 		std::map<int,int> mapper;
 		for (size_t i=0; i<indicesToUpdate.size(); i++)
 			mapper.insert( std::make_pair(indicesToUpdate[i], i) );
-			
+        
 		// set up the vectors
 		std::vector<double> x(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> alphaForward(indicesToUpdate.size()+1, 0.0);
@@ -108,10 +108,10 @@ double SimplexMove::performSimpleMove( void ) {
 				x[it->second] += curVal[it->first];
 			else 
 				x[x.size()-1] += curVal[i];
-			}
+        }
 		for (size_t i=0; i<x.size(); i++)
             alphaForward[i] = (x[i]+offset) * alpha;
-			
+        
 		// draw a new value for the reduced vector
 		z = RbStatistics::Dirichlet::rv( alphaForward, *rng );
 		
@@ -133,7 +133,7 @@ double SimplexMove::performSimpleMove( void ) {
                 return RbConstants::Double::neginf;
             }
         }
-        			
+        
 		// Hastings ratio
 		lnProposalRatio  = RbStatistics::Dirichlet::lnPdf(alphaReverse, x) - RbStatistics::Dirichlet::lnPdf(alphaForward, z); // Hastings Ratio
 		lnProposalRatio += (n - nCategories) * log(factor); // Jacobian
@@ -170,9 +170,9 @@ double SimplexMove::performSimpleMove( void ) {
 		// finally, we calculate the log of the Hastings ratio
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
     }
-		
+    
     variable->setValue( new std::vector<double>(newVal), false );
-    	
+    
     return lnProposalRatio;
 }
 

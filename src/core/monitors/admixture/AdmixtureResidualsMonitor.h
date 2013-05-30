@@ -61,6 +61,6 @@ namespace RevBayesCore
         bool                                append;
     };
     
-};
+}
 
 #endif /* defined(__rb_mlandis__AdmixtureResidualsMonitor__) */

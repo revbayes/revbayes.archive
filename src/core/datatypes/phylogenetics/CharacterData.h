@@ -29,74 +29,74 @@ namespace RevBayesCore {
     
     template<class charType>
     class CharacterData : public AbstractCharacterData {
-
-        public:
-                                                CharacterData();                                                            //!< Constructor requires character type
-                                                CharacterData(const CharacterData& x);                                      //!< Copy constructor to deal with sequenceTypeRule
-            virtual                            ~CharacterData(void);                                                        //!< Destructor to deal with sequenceTypeRule
-
-            // Overloaded operators
-            CharacterData&                      operator=(const CharacterData& x);                                          //!< Assignment operator
-            const TaxonData<charType>&          operator[](size_t i) const;                                                 //!< Subscript operator (const)
-            bool                                operator==(const CharacterData& x) const;                                   //!< Less than operator
-            bool                                operator!=(const CharacterData& x) const;                                   //!< Less than operator
-            bool                                operator<(const CharacterData& x) const;                                    //!< Less than operator
-    
-            // implemented methods of the Cloneable interface
-            CharacterData<charType>*            clone(void) const;
         
-            // Container functions
-            void                                clear(void);
-
-            // CharacterData functions
-            void                                addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
-            void                                addTaxonData(const AbstractTaxonData &obs, bool forceAdd);                  //!< Add taxon data
-            void                                addTaxonData(const TaxonData<charType> &obs);                               //!< Add taxon data
-            void                                addTaxonData(const TaxonData<charType> &obs, bool forceAdd);                //!< Add taxon data
-            void                                excludeCharacter(size_t i);                                                 //!< Exclude character
-            void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
-            void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
-            const charType&                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
-            std::string                         getDatatype(void) const;
-            const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
-            bool                                getIsHomologyEstablished(void) const;                                       //!< Returns whether the homology of the characters has been established
-            size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
-            size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
-            size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
-            size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
-            TaxonData<charType>&                getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
-            const TaxonData<charType>&          getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
-            TaxonData<charType>&                getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
-            const TaxonData<charType>&          getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
-            const std::vector<std::string>&     getTaxonNames(void) const;                                                  //!< Get the names of the taxa
-            const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
-            bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
-            bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
-            bool                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
-            void                                restoreCharacter(size_t i);                                                 //!< Restore character
-            void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
-            void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
-            void                                setFileName(const std::string &fn);                                         //!< Set the file name
-            void                                setIsHomologyEstablished(bool tf);                                          //!< Set whether the homology of the characters has been established
-    
-        private:
-            // Utility functions
-            size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
-            bool                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
-            bool                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
-            size_t                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
-            size_t                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
-
-            // Member variables
-            std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
-            std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
-            std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
-            std::vector<std::string>            sequenceNames;                                                              //!< names of the sequences
-            size_t                              sequenceLength;                                                             //!< The length of each sequence
-            bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
+    public:
+        CharacterData();                                                            //!< Constructor requires character type
+        CharacterData(const CharacterData& x);                                      //!< Copy constructor to deal with sequenceTypeRule
+        virtual                            ~CharacterData(void);                                                        //!< Destructor to deal with sequenceTypeRule
         
-            std::map<std::string, TaxonData<charType> >    taxonMap;
-
+        // Overloaded operators
+        CharacterData&                      operator=(const CharacterData& x);                                          //!< Assignment operator
+        const TaxonData<charType>&          operator[](size_t i) const;                                                 //!< Subscript operator (const)
+        bool                                operator==(const CharacterData& x) const;                                   //!< Less than operator
+        bool                                operator!=(const CharacterData& x) const;                                   //!< Less than operator
+        bool                                operator<(const CharacterData& x) const;                                    //!< Less than operator
+        
+        // implemented methods of the Cloneable interface
+        CharacterData<charType>*            clone(void) const;
+        
+        // Container functions
+        void                                clear(void);
+        
+        // CharacterData functions
+        void                                addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
+        void                                addTaxonData(const AbstractTaxonData &obs, bool forceAdd);                  //!< Add taxon data
+        void                                addTaxonData(const TaxonData<charType> &obs);                               //!< Add taxon data
+        void                                addTaxonData(const TaxonData<charType> &obs, bool forceAdd);                //!< Add taxon data
+        void                                excludeCharacter(size_t i);                                                 //!< Exclude character
+        void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
+        void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
+        const charType&                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
+        std::string                         getDatatype(void) const;
+        const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
+        bool                                getIsHomologyEstablished(void) const;                                       //!< Returns whether the homology of the characters has been established
+        size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
+        size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
+        size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
+        size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
+        TaxonData<charType>&                getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
+        const TaxonData<charType>&          getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
+        TaxonData<charType>&                getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
+        const TaxonData<charType>&          getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
+        const std::vector<std::string>&     getTaxonNames(void) const;                                                  //!< Get the names of the taxa
+        const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
+        bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
+        bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
+        bool                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
+        void                                restoreCharacter(size_t i);                                                 //!< Restore character
+        void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
+        void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
+        void                                setFileName(const std::string &fn);                                         //!< Set the file name
+        void                                setIsHomologyEstablished(bool tf);                                          //!< Set whether the homology of the characters has been established
+        
+    private:
+        // Utility functions
+        size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
+        bool                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
+        bool                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
+        size_t                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
+        size_t                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
+        
+        // Member variables
+        std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
+        std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
+        std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
+        std::vector<std::string>            sequenceNames;                                                              //!< names of the sequences
+        size_t                              sequenceLength;                                                             //!< The length of each sequence
+        bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
+        
+        std::map<std::string, TaxonData<charType> >    taxonMap;
+        
     };
     
     
@@ -129,13 +129,16 @@ RevBayesCore::CharacterData<charType>::CharacterData(const CharacterData& x) : s
     fileName                = x.fileName;
     isHomologyEstablished   = x.isHomologyEstablished;
     taxonMap                = x.taxonMap;
+    
 }
 
 
 /* Destructor */
 template<class charType>
 RevBayesCore::CharacterData<charType>::~CharacterData( void ) {
+    
     taxonMap.clear();
+    
 }
 
 
@@ -152,6 +155,7 @@ RevBayesCore::CharacterData<charType>& RevBayesCore::CharacterData<charType>::op
         taxonMap                = x.taxonMap;
         sequenceNames           = x.sequenceNames;
     }
+    
     return (*this);
 }
 
@@ -168,31 +172,38 @@ template<class charType>
 bool RevBayesCore::CharacterData<charType>::operator==(const CharacterData<charType> &x) const {
     
     
-    if ( deletedTaxa != x.deletedTaxa ) {
+    if ( deletedTaxa != x.deletedTaxa ) 
+    {
         return false;
     }
     
-    if ( deletedCharacters != x.deletedCharacters ) {
+    if ( deletedCharacters != x.deletedCharacters ) 
+    {
         return false;
     }
     
-    if ( fileName != x.fileName ) {
+    if ( fileName != x.fileName ) 
+    {
         return false;
     }
     
-    if ( sequenceNames != x.sequenceNames ) {
+    if ( sequenceNames != x.sequenceNames ) 
+    {
         return false;
     }
     
-    if ( sequenceLength != x.sequenceLength ) {
+    if ( sequenceLength != x.sequenceLength ) 
+    {
         return false;
     }
     
-    if ( isHomologyEstablished != x.isHomologyEstablished ) {
+    if ( isHomologyEstablished != x.isHomologyEstablished ) 
+    {
         return false;
     }
     
-    if ( taxonMap != x.taxonMap ) {
+    if ( taxonMap != x.taxonMap ) 
+    {
         return false;
     }
     
@@ -202,12 +213,14 @@ bool RevBayesCore::CharacterData<charType>::operator==(const CharacterData<charT
 
 template<class charType>
 bool RevBayesCore::CharacterData<charType>::operator!=(const CharacterData<charType> &x) const {
+    
     return !operator==(x);
 }
 
 
 template<class charType>
 bool RevBayesCore::CharacterData<charType>::operator<(const CharacterData<charType> &x) const {
+    
     return sequenceNames.size() < x.sequenceNames.size();
 }
 
@@ -217,7 +230,8 @@ template<class charType>
 void RevBayesCore::CharacterData<charType>::addTaxonData(const AbstractTaxonData &obs, bool forceAdd) {
     
 #ifdef ASSERTIONS_ALL
-    if ( dynamic_cast<const TaxonData<charType>* >( &obs ) == NULL ) {
+    if ( dynamic_cast<const TaxonData<charType>* >( &obs ) == NULL ) 
+    {
         throw RbException("Inserting wrong character type into CharacterData!!!");
     }
 #endif
@@ -227,6 +241,7 @@ void RevBayesCore::CharacterData<charType>::addTaxonData(const AbstractTaxonData
     
     // add the sequence also as a member so that we can access it by name
     taxonMap.insert( std::pair<std::string, TaxonData<charType> >( obs.getTaxonName(), static_cast<const TaxonData<charType>& >( obs ) ) );
+    
 }
 
 template<class charType>
@@ -241,6 +256,7 @@ void RevBayesCore::CharacterData<charType>::addTaxonData(const AbstractTaxonData
     }
     
     addTaxonData(obs, true);
+    
 }
 
 
@@ -253,6 +269,7 @@ void RevBayesCore::CharacterData<charType>::addTaxonData(const TaxonData<charTyp
     
     // add the sequence also as a member so that we can access it by name
     taxonMap.insert( std::pair<std::string, TaxonData<charType> >( obs.getTaxonName(), obs ) );
+    
 }
 
 template<class charType>
@@ -267,6 +284,7 @@ void RevBayesCore::CharacterData<charType>::addTaxonData(const TaxonData<charTyp
     }
     
     addTaxonData(obs, true);
+    
 }
 
 
@@ -276,12 +294,14 @@ void RevBayesCore::CharacterData<charType>::clear( void ) {
     
     sequenceNames.clear();
     taxonMap.clear();
+    
 }
 
 
 /** clone the object */
 template<class charType>
 RevBayesCore::CharacterData<charType>* RevBayesCore::CharacterData<charType>::clone( void ) const {
+    
     return new CharacterData<charType>(*this);
 }
 
@@ -290,7 +310,8 @@ RevBayesCore::CharacterData<charType>* RevBayesCore::CharacterData<charType>::cl
 template<class charType>
 void RevBayesCore::CharacterData<charType>::excludeCharacter(size_t i) {
     
-    if (i >= getNumberOfCharacters() ) {
+    if (i >= getNumberOfCharacters() ) 
+    {
         std::stringstream o;
         o << "Only " << getNumberOfCharacters() << " characters in matrix";
         throw RbException( o.str() );
@@ -305,7 +326,8 @@ void RevBayesCore::CharacterData<charType>::excludeCharacter(size_t i) {
 template<class charType>
 void RevBayesCore::CharacterData<charType>::excludeTaxon(size_t i) {
     
-    if (i >= taxonMap.size()) {
+    if (i >= taxonMap.size()) 
+    {
         std::stringstream o;
         o << "Only " << taxonMap.size() << " taxa in matrix";
         throw RbException( o.str() );
@@ -319,12 +341,15 @@ void RevBayesCore::CharacterData<charType>::excludeTaxon(size_t i) {
 template<class charType>
 void RevBayesCore::CharacterData<charType>::excludeTaxon(std::string& s) {
     
-    for (size_t i = 0; i < getNumberOfTaxa(); i++) {
-        if (s == sequenceNames[i] ) {
+    for (size_t i = 0; i < getNumberOfTaxa(); i++) 
+    {
+        if (s == sequenceNames[i] ) 
+        {
             deletedTaxa.insert( i );
             break;
         }
     }
+    
 }
 
 
@@ -344,13 +369,16 @@ template<class charType>
 std::string RevBayesCore::CharacterData<charType>::getDatatype(void) const {
     
     std::string dt = "";
-    if ( sequenceNames.size() > 0 ) {
+    if ( sequenceNames.size() > 0 ) 
+    {
         const TaxonData<charType> &t = getTaxonData( sequenceNames[0] );
-        if ( t.size() > 0 ) {
+        if ( t.size() > 0 ) 
+        {
             dt = t[0].getDatatype();
         }
         
     }
+    
     return dt;
 }
 
@@ -386,9 +414,11 @@ size_t RevBayesCore::CharacterData<charType>::getNumberOfCharacters(void) const 
 template<class charType>
 size_t RevBayesCore::CharacterData<charType>::getNumberOfCharacters(size_t idx) const {
     
-    if (getNumberOfTaxa() > 0) {
+    if (getNumberOfTaxa() > 0) 
+    {
         return getTaxonData(idx).getNumberOfCharacters();
     }
+    
     return 0;
 }
 
@@ -413,6 +443,7 @@ size_t RevBayesCore::CharacterData<charType>::getNumberOfStates(void) const {
 
 template<class charType>
 size_t RevBayesCore::CharacterData<charType>::getNumberOfTaxa(void) const {
+    
     return sequenceNames.size();
 }
 
@@ -427,10 +458,12 @@ const RevBayesCore::TaxonData<charType>& RevBayesCore::CharacterData<charType>::
     const std::string& name = sequenceNames[tn];
     const typename std::map<std::string, TaxonData<charType> >::const_iterator& i = taxonMap.find( name ); 
     
-    if (i != taxonMap.end() ) {
+    if (i != taxonMap.end() ) 
+    {
         return i->second;
     }
-    else {
+    else 
+    {
         throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
     }
     
@@ -447,10 +480,12 @@ RevBayesCore::TaxonData<charType>& RevBayesCore::CharacterData<charType>::getTax
     const std::string& name = sequenceNames[tn];
     const typename std::map<std::string, TaxonData<charType> >::iterator& i = taxonMap.find( name ); 
     
-    if (i != taxonMap.end() ) {
+    if (i != taxonMap.end() ) 
+    {
         return i->second;
     }
-    else {
+    else 
+    {
         throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
     }
     
@@ -464,10 +499,12 @@ const RevBayesCore::TaxonData<charType>& RevBayesCore::CharacterData<charType>::
     
     const typename std::map<std::string, TaxonData<charType> >::const_iterator& i = taxonMap.find(tn); 
     
-    if (i != taxonMap.end() ) {
+    if (i != taxonMap.end() ) 
+    {
         return i->second;
     }
-    else {
+    else 
+    {
         throw RbException("Cannot find the taxon with name '" + tn + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
     }
     
@@ -480,14 +517,18 @@ RevBayesCore::TaxonData<charType>& RevBayesCore::CharacterData<charType>::getTax
     
     const typename std::map<std::string, TaxonData<charType> >::iterator& i = taxonMap.find(tn); 
     
-    if ( tn == "" ) {
+    if ( tn == "" ) 
+    {
         throw RbException("Ambiguous taxon name.");
     }
     
-    if (i != taxonMap.end() ) {
+    if (i != taxonMap.end() ) 
+    {
         return i->second;
     }
-    else {
+    else 
+    {
+        
         throw RbException("Cannot find the taxon with name '" + tn + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
     }
     
@@ -523,6 +564,7 @@ size_t RevBayesCore::CharacterData<charType>::indexOfTaxonWithName( std::string&
             return i;
         }
     }
+    
     return -1;
 }
 
@@ -546,6 +588,7 @@ bool RevBayesCore::CharacterData<charType>::isCharacterConstant(size_t idx) cons
             }
         }
     }
+    
     return true;
 }
 
@@ -557,6 +600,7 @@ bool RevBayesCore::CharacterData<charType>::isCharacterExcluded(size_t i) const 
 	std::set<size_t>::const_iterator it = deletedCharacters.find( i );
 	if ( it != deletedCharacters.end() )
 		return true;
+    
     return false;
 }
 
@@ -574,6 +618,7 @@ bool RevBayesCore::CharacterData<charType>::isCharacterMissingOrAmbiguous(size_t
                 return true;
         }
     }
+    
     return false;
 }
 
@@ -585,6 +630,7 @@ bool RevBayesCore::CharacterData<charType>::isTaxonExcluded(size_t i) const {
 	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
 	if ( it != deletedTaxa.end() )
 		return true;
+    
     return false;
 }
 
@@ -597,6 +643,7 @@ bool RevBayesCore::CharacterData<charType>::isTaxonExcluded(std::string& s) cons
 	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
 	if ( it != deletedTaxa.end() )
 		return true;
+    
     return false;
 }
 
@@ -611,6 +658,7 @@ size_t RevBayesCore::CharacterData<charType>::numConstantPatterns(void) const {
         if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
             nc++;
     }
+    
     return nc;
 }
 
@@ -625,6 +673,7 @@ size_t RevBayesCore::CharacterData<charType>::numMissAmbig(void) const {
         if ( isCharacterExcluded(i) == false && isCharacterMissingOrAmbiguous(i) == true )
             nma++;
     }
+    
     return nma;
 }
 
@@ -637,6 +686,7 @@ void RevBayesCore::CharacterData<charType>::restoreCharacter(size_t i) {
         throw RbException( "Character index out of range" );
     
     deletedCharacters.erase( i );
+    
 }
 
 
@@ -648,6 +698,7 @@ void RevBayesCore::CharacterData<charType>::restoreTaxon(size_t i) {
         return;
     
     deletedTaxa.erase( i );
+    
 }
 
 
@@ -658,6 +709,7 @@ void RevBayesCore::CharacterData<charType>::restoreTaxon(std::string& s) {
     size_t i = indexOfTaxonWithName( s );
     
     deletedTaxa.erase( i );
+    
 }
 
 
@@ -665,6 +717,7 @@ template<class charType>
 void RevBayesCore::CharacterData<charType>::setFileName(const std::string& fn) {
     
     fileName = fn;
+    
 }
 
 
@@ -672,6 +725,7 @@ template<class charType>
 void RevBayesCore::CharacterData<charType>::setIsHomologyEstablished(bool tf) {
     
     isHomologyEstablished = tf;
+    
 }
 
 

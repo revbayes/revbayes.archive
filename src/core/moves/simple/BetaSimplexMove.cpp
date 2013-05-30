@@ -28,7 +28,7 @@
 
 using namespace RevBayesCore;
 
-BetaSimplexMove::BetaSimplexMove(StochasticNode<double > *v, double a, bool t, double weight) : SimpleMove( v, weight, t ), variable( v ), alpha( a ) {
+BetaSimplexMove::BetaSimplexMove(StochasticNode<double > *v, double a, bool t, double w) : SimpleMove( v, w, t ), variable( v ), alpha( a ) {
     
 }
 
@@ -78,7 +78,7 @@ double BetaSimplexMove::performSimpleMove( void ) {
     
     // first, we get the parameters of the Dirichlet for the forward move
     double alphaForward = curVal * alpha;
-
+    
     // then, we propose new values
     newVal = RbStatistics::Beta::rv( alphaForward, alphaForward, *rng );
     
