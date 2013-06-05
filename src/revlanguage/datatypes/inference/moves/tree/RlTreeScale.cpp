@@ -73,7 +73,7 @@ const MemberRules& TreeScale::getMemberRules(void) const {
     if ( !rulesSet ) {
         nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
         nniMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
-        nniMemberRules.push_back( new ArgumentRule( "tuning", true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
+        nniMemberRules.push_back( new ArgumentRule( "tune", true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

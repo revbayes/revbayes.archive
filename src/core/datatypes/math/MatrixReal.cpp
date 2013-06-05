@@ -9,6 +9,7 @@
 #include "MatrixReal.h"
 
 #include <cstring>
+#include <iomanip>
 
 using namespace RevBayesCore;
 
@@ -98,6 +99,16 @@ size_t MatrixReal::size( void ) const {
 }
 
 
+void MatrixReal::resize(size_t r, size_t c) {
+    
+    elements = std::vector<std::vector<double> >(r, std::vector<double>(c,0.0) );
+    
+    nRows = r;
+    nCols = c;
+    
+}
+
+
 
 #include "RbMathMatrix.h"
 #include "RbException.h"
@@ -112,7 +123,7 @@ MatrixReal operator*(double a, const MatrixReal& B);
 MatrixReal operator/(double a, const MatrixReal& B);
 MatrixReal operator/(const MatrixReal& A, const MatrixReal& B);
 MatrixReal &operator/=(MatrixReal& A, double b);
-
+std::vector<double> operator*(const MatrixReal& A, const std::vector<double> &b);
 
 
 /**
@@ -539,38 +550,93 @@ MatrixReal& MatrixReal::operator-=(const MatrixReal& B) {
  * Compute C = A*B, where C[i][j] is the dot-product of 
  * row i of A and column j of B. Then assign the result to
  * A. Note that this operator does not perform elementwise
- * multiplication. If the matrices are not both square of the
- * same dimension, then the operation is not possible to
- * perform and we return an unomidified A.
+ * multiplication. 
  *
  * \brief Matrix multiplication with assignment (operator *=)
- * \param A An (n X n) matrix
- * \param B An (n X n) matrix
- * \return A = A * B, an (n X n) matrix, or unmodified A on failure
+ * \param A An (n X m) matrix
+ * \param B An (m X p) matrix
+ * \return A = A * B, an (n X p) matrix, or unmodified A on failure
  */
 MatrixReal& MatrixReal::operator*=(const MatrixReal& B) {
     
-	if ( nRows == nCols && B.getNumberOfRows() == B.getNumberOfColumns() && nRows == B.getNumberOfRows() ) 
+    size_t bRows = B.getNumberOfRows();
+    size_t bCols = B.getNumberOfColumns();
+	if ( nCols == bRows ) 
     {
-		MatrixReal C(nRows, nRows, 0.0 );
+		MatrixReal C(nRows, bCols, 0.0 );
 		for (size_t i=0; i<nRows; i++) 
         {
-			for (size_t j=0; j<nRows; j++) 
+			for (size_t j=0; j<bCols; j++) 
             {
 				double sum = 0.0;
-				for (size_t k=0; k<nRows; k++)
+				for (size_t k=0; k<nCols; k++)
 					sum += elements[i][k] * B[k][j];
 				C[i][j] = sum;
             }
         }
-//        double *tmp = elements;
+        
+        nCols = C.nCols;
+        nRows = C.nRows;
         elements = C.elements;
-//        C.elements = tmp;
     }
     else {
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
     }
 	return *this;
+}
+
+
+std::vector<double> MatrixReal::operator*(const std::vector<double> &V) const
+{
+    std::vector<double> E(20, 0.0);
+    
+    for (unsigned int i = 0; i < 20; i++)
+    {
+        for (unsigned int j = 0; j < V.size(); j++)
+        {
+            E[i] = E[i] + elements[j][i] * V[j];
+        }
+    }
+    return E;
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixReal& x) {
+    
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << "[ ";
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i < x.getNumberOfRows(); i++) 
+    {
+        if (i == 0)
+            o << "[ ";
+        else 
+            o << "  ";
+        
+        for (size_t j = 0; j < x.getNumberOfColumns(); ++j) 
+        {
+            if (j != 0)
+                o << ", ";
+            o << x[i][j];
+        }
+        o <<  " ]";
+        
+        if (i == x.size()-1)
+            o << " ]";
+        else 
+            o << " ,\n";
+        
+    }
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
+    return o;
 }
 
 

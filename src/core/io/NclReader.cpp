@@ -21,6 +21,7 @@
 #include "CharacterData.h"
 #include "ConstantNode.h"
 #include "ContinuousCharacterState.h"
+#include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "NclReader.h"
 #include "RbFileManager.h"
@@ -213,7 +214,7 @@ std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
 }
 
 /** Create an object to hold amino acid data */
-CharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
     
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::protein)
@@ -229,7 +230,7 @@ CharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlo
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	CharacterData<AminoAcidState>* cMat = new CharacterData<AminoAcidState>();
+	DiscreteCharacterData<AminoAcidState>* cMat = new DiscreteCharacterData<AminoAcidState>();
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
@@ -273,7 +274,7 @@ CharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlo
     return cMat;
 }
 
-CharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock) {
+DiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock) {
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::protein )
@@ -284,7 +285,7 @@ CharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix(NxsUnal
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
-	CharacterData<AminoAcidState>* cMat = new CharacterData<AminoAcidState>();
+	DiscreteCharacterData<AminoAcidState>* cMat = new DiscreteCharacterData<AminoAcidState>();
     cMat->setIsHomologyEstablished(false);
     
 	// read in the data, including taxon names
@@ -363,7 +364,7 @@ CharacterData<ContinuousCharacterState>* NclReader::createContinuousMatrix(NxsCh
 
 
 /** Create an object to hold DNA data */
-CharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
@@ -379,7 +380,7 @@ CharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charbloc
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	CharacterData<DnaState>* cMat = new CharacterData<DnaState>();
+	DiscreteCharacterData<DnaState>* cMat = new DiscreteCharacterData<DnaState>();
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
@@ -425,7 +426,7 @@ CharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charbloc
 }
 
 /** Create an object to hold DNA data */
-CharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock) {
+DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock) {
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
@@ -436,7 +437,7 @@ CharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* 
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
-	CharacterData<DnaState>* cMat = new CharacterData<DnaState>();
+	DiscreteCharacterData<DnaState>* cMat = new DiscreteCharacterData<DnaState>();
     cMat->setIsHomologyEstablished(false);
     
 	// read in the data, including taxon names
@@ -466,7 +467,7 @@ CharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* 
 }
 
 /** Create an object to hold RNA data */
-CharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::rna )
@@ -482,7 +483,7 @@ CharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charbloc
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	CharacterData<RnaState>* cMat = new CharacterData<RnaState>();
+	DiscreteCharacterData<RnaState>* cMat = new DiscreteCharacterData<RnaState>();
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
@@ -528,7 +529,7 @@ CharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charbloc
 }
 
 /** Create an object to hold DNA data */
-CharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock) {
+DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock) {
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
@@ -539,7 +540,7 @@ CharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* 
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
-	CharacterData<RnaState>* cMat = new CharacterData<RnaState>();
+	DiscreteCharacterData<RnaState>* cMat = new DiscreteCharacterData<RnaState>();
     cMat->setIsHomologyEstablished(false);
     
 	// read in the data, including taxon names
@@ -569,7 +570,7 @@ CharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* 
 }
 
 /** Create an object to hold standard data */
-CharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
     
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::standard)
@@ -592,7 +593,7 @@ CharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock
         return NULL;
     
     // instantiate the character matrix
-	CharacterData<StandardState>* cMat = new CharacterData<StandardState>();
+	DiscreteCharacterData<StandardState>* cMat = new DiscreteCharacterData<StandardState>();
     cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names

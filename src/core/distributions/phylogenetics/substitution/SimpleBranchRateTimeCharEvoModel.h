@@ -138,6 +138,7 @@ void RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::swapPar
     {
         AbstractSiteHomogeneousCharEvoModel<charType, treeType>::swapParameter(oldP,newP);
     }
+    
 }
 
 
@@ -146,17 +147,20 @@ template<class charType, class treeType>
 void RevBayesCore::SimpleBranchRateTimeCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
     bool found = false;
-    if ( affecter == branchRates ) {
+    if ( affecter == branchRates ) 
+    {
         const std::set< size_t > &touchedNodeIndices = branchRates->getTouchedElementIndices();
         found = touchedNodeIndices.size() > 0;
         std::set< size_t >::const_iterator end = touchedNodeIndices.end();
-        for (std::set< size_t >::const_iterator it = touchedNodeIndices.begin() ; it != end ; ++it) {
+        for (std::set< size_t >::const_iterator it = touchedNodeIndices.begin() ; it != end ; ++it) 
+        {
             const TopologyNode &node = this->tau->getValue().getNode( *it );
             this->recursivelyFlagNodeDirty( node );
         }
     }
     
-    if ( !found ) {
+    if ( !found ) 
+    {
         // delegate to base class
         this->AbstractSiteHomogeneousCharEvoModel<charType, treeType>::touchSpecialization( affecter );
     }

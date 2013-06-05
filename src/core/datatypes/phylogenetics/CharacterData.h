@@ -18,6 +18,7 @@
 
 #include "AbstractCharacterData.h"
 #include "CharacterState.h"
+#include "MatrixReal.h"
 #include "TaxonData.h"
 
 #include <map>
@@ -53,6 +54,7 @@ namespace RevBayesCore {
         void                                addTaxonData(const AbstractTaxonData &obs, bool forceAdd);                  //!< Add taxon data
         void                                addTaxonData(const TaxonData<charType> &obs);                               //!< Add taxon data
         void                                addTaxonData(const TaxonData<charType> &obs, bool forceAdd);                //!< Add taxon data
+//        MatrixReal                          computeStateFrequencies(void);
         void                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
@@ -79,7 +81,7 @@ namespace RevBayesCore {
         void                                setFileName(const std::string &fn);                                         //!< Set the file name
         void                                setIsHomologyEstablished(bool tf);                                          //!< Set whether the homology of the characters has been established
         
-    private:
+    protected:
         // Utility functions
         size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
         bool                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?

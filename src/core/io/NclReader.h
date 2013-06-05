@@ -23,6 +23,7 @@
 #include "AbstractCharacterData.h"
 #include "CharacterData.h"
 #include "ContinuousCharacterState.h"
+#include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "ncl.h"
 #include "nxsmultiformat.h"
@@ -76,14 +77,14 @@ namespace RevBayesCore {
                                                     NclReader(const NclReader& r) { }                                               //!< Copy constructor
         virtual                                    ~NclReader(void) { }                                                             //!< Destructor
         
-        CharacterData<AminoAcidState>*              createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
+        DiscreteCharacterData<AminoAcidState>*      createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
         CharacterData<ContinuousCharacterState>*    createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
-        CharacterData<DnaState>*                    createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
-        CharacterData<RnaState>*                    createRnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold RNA data
-        CharacterData<StandardState>*               createStandardMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold standard data
-        CharacterData<AminoAcidState>*              createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock);                   //!< Create an object to hold amino acid data
-        CharacterData<DnaState>*                    createUnalignedDnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold DNA data
-        CharacterData<RnaState>*                    createUnalignedRnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold RNA data
+        DiscreteCharacterData<DnaState>*            createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
+        DiscreteCharacterData<RnaState>*            createRnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold RNA data
+        DiscreteCharacterData<StandardState>*       createStandardMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold standard data
+        DiscreteCharacterData<AminoAcidState>*      createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock);                   //!< Create an object to hold amino acid data
+        DiscreteCharacterData<DnaState>*            createUnalignedDnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold DNA data
+        DiscreteCharacterData<RnaState>*            createUnalignedRnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold RNA data
         bool                                        fileExists(const char *fn) const;                                               //!< Returns whether a file exists
         std::string                                 findFileNameFromPath(const std::string& fp) const;                              //!< Returns the file name from a file path
         void                                        formatError(RbFileManager& fm, std::string& errorStr);                          //!< Format the error string when (mis)reading files

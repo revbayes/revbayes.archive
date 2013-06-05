@@ -156,6 +156,7 @@
 
 /* Inference functions */
 #include "OptimalBurninFunction.h"
+#include "BurninEstimationConvergenceAssessmentFunction.h"
 
 
 /* Distribution functions */
@@ -564,7 +565,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "write",          new Func_write()  );
         
         // inference function
-        //        addFunction( "beca",           new BecaFunction() );
+        addFunction( "beca",           new BurninEstimationConvergenceAssessmentFunction() );
         addFunction( "estimateBurnin", new OptimalBurninFunction() );
     }
     catch(RbException& rbException) {

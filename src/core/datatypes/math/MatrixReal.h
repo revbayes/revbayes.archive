@@ -50,6 +50,7 @@ namespace RevBayesCore {
         MatrixReal                              operator+(const MatrixReal& B) const;                               //!< operator + 
         MatrixReal                              operator-(const MatrixReal& B) const;                               //!< operator - 
         MatrixReal                              operator*(const MatrixReal& B) const;                               //!< operator * (matrix multiplication) 
+        std::vector<double>                     operator*(const std::vector<double> &b) const;                                          //!< operator * for scalar 
         
 
         std::vector<std::vector<double> >::const_iterator       begin(void) const;
@@ -62,12 +63,17 @@ namespace RevBayesCore {
         size_t                                  getNumberOfColumns(void) const;
         size_t                                  getNumberOfRows(void) const;
         size_t                                  size(void) const;
+        void                                    resize(size_t r, size_t c);
         
     protected:
         std::vector<std::vector<double> >       elements;
         size_t                                  nRows;
         size_t                                  nCols;
     };
+    
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const MatrixReal& x);                                           //!< Overloaded output operator
+
     
 //    MatrixReal                            operator+(const MatrixReal& A);                                             //!< Unary operator + 
 //    MatrixReal                            operator-(const MatrixReal& A);                                             //!< Unary operator - 

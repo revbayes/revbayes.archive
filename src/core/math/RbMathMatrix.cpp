@@ -255,6 +255,45 @@ int RbMath::findPadeQValue(double tolerance) {
 }
 
 
+/**
+ * @brief Compute the "Hadamard" product of a row matrix and a vector containing weights, according to rows or columns.
+ *
+ * @param A [in] The row matrix.
+ * @param B [in] The vector of row or column weights.
+ * @param O [out] The 'Hadamard' product.
+ * @param row Boolean. If row is set to 'true', the vector contains weights for rows. Otherwise the vector contains weights for columns.
+ */
+void RbMath::hadamardMult(const MatrixReal& A, const std::vector<double>& B, MatrixReal& O, bool row)
+{
+    size_t ncA = A.getNumberOfColumns();
+    size_t nrA = A.getNumberOfRows();
+    size_t sB = B.size();
+    if (row == true && nrA != sB) throw RbException("MatrixTools::hadamardMult(). nrows A != size of B.");
+    if (row == false && ncA != sB) throw RbException("MatrixTools::hadamardMult(). ncols A != size of B.");
+    O.resize(nrA, ncA);
+    if (row)
+    {
+        for (size_t i = 0; i < nrA; i++)
+        {
+            for (size_t j = 0; j < ncA; j++)
+            {
+                O[i][j] = A[i][j] * B[i];
+            }
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < nrA; i++)
+        {
+            for (size_t j = 0; j < ncA; j++)
+            {
+                O[i][j] = A[i][j] * B[j];
+            }
+        }
+    }
+}
+
+
 void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
 
     // get dimensions: we assume a square matrix
@@ -341,7 +380,7 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 	size_t n = a.getNumberOfColumns();
 
 	if ( m != t.getNumberOfColumns() || n != t.getNumberOfRows() )
-        throw (RbException("Cannot tranpose an N X M matrix if the other matrix is not M X N"));
+        throw (RbException("Cannot transpose an N X M matrix if the other matrix is not M X N"));
 
 	for (size_t i=0; i<m; i++)
 		for (size_t j=0; j<n; j++)

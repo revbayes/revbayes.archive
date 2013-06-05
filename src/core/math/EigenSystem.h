@@ -36,8 +36,8 @@ namespace RevBayesCore {
         const MatrixReal&                       getInverseEigenvectors(void) const { return inverseEigenvectors; }                                                  //!< Return the inverse eigenvector matrix
         const std::vector<double>&              getRealEigenvalues(void) const { return realEigenvalues; }                                                          //!< Return the real parts of the eigenvalues
         const std::vector<double>&              getImagEigenvalues(void) const { return imaginaryEigenvalues; }                                                     //!< Return the imaginary parts of the eigenvalues
-        const MatrixComplex&    getComplexEigenvectors(void) const { return complexEigenvectors; }                                                  //!< Return the eigenvector matrix
-        const MatrixComplex&    getComplexInverseEigenvectors() const { return complexInverseEigenvectors; }                                        //!< Return the inverse eigenvector matrix
+        const MatrixComplex&                    getComplexEigenvectors(void) const { return complexEigenvectors; }                                                  //!< Return the eigenvector matrix
+        const MatrixComplex&                    getComplexInverseEigenvectors() const { return complexInverseEigenvectors; }                                        //!< Return the inverse eigenvector matrix
         bool                                    isComplex(void) const { return complex; } 
         void                                    setRateMatrixPtr(MatrixReal* qp) { qPtr = qp; }
         bool                                    update(void);                                                                                                       //!< Update the eigen system for the matrix q;

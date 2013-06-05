@@ -10,7 +10,9 @@
 using namespace RevBayesCore;
 
 SimpleMove::SimpleMove(DagNode *n, double w, bool t) : Move( n, w, t ), theNode( n ) {
+    
     changed = false;
+
 }
 
 
@@ -28,20 +30,22 @@ void SimpleMove::acceptMove( void ) {
 
 void SimpleMove::acceptSimpleMove( void ) {
     // do nothing
-    ;
+    
 }
 
 
 double SimpleMove::performMove( double &probRatio ) {
     
-    if (changed) {
+    if (changed) 
+    {
         throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
     }
     changed = true;
     
     double hr = performSimpleMove();
     
-    if ( hr != hr || hr == RbConstants::Double::inf ) {
+    if ( hr != hr || hr == RbConstants::Double::inf ) 
+    {
         return RbConstants::Double::neginf;
     }
     
@@ -51,11 +55,13 @@ double SimpleMove::performMove( double &probRatio ) {
     // calculate the probability ratio for the node we just changed
     probRatio = theNode->getLnProbabilityRatio();
         
-    if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
+    if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) 
+    {
         
         std::set<DagNode* > affectedNodes;
         theNode->getAffectedNodes(affectedNodes);
-        for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
+        for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) 
+        {
             DagNode* theAffectedNode = *i;
             probRatio += theAffectedNode->getLnProbabilityRatio();
         }
@@ -67,6 +73,7 @@ double SimpleMove::performMove( double &probRatio ) {
 
 
 void SimpleMove::rejectMove( void ) {
+    
     changed = false;
     
     // delegate to the derived class. The derived class needs to restore the value(s).
@@ -82,4 +89,5 @@ void SimpleMove::swapNode(DagNode *oldN, DagNode *newN) {
     Move::swapNode(oldN, newN);
     
     theNode = newN;
+    
 }

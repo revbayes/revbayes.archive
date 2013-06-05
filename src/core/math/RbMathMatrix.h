@@ -32,6 +32,7 @@ namespace RevBayesCore {
         void                        computeLandU(MatrixComplex& aMat, MatrixComplex& lMat, MatrixComplex& uMat);        //!< Compute L & U decomposition of a matrix
         int                         expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue);                                                                    //!< Exponentiate the matrix A using the Pade method
         int                         findPadeQValue(double tolerance);                                                                                            //!< Find the pq values for controlling the tolerance of the Pade method
+        void                        hadamardMult(const MatrixReal& A, const std::vector<double>& B, MatrixReal& O, bool row = true);
         void                        matrixInverse(const MatrixComplex& a, MatrixComplex& aInv);                                         //!< Compute the inverse of a matrix
         void                        matrixInverse(const MatrixReal& a, MatrixReal& aInv);                                                                       //!< Compute the inverse of a matrix
         int                         transposeMatrix(const MatrixReal& a, MatrixReal& t);                                                                        //!< Transpose a matrix

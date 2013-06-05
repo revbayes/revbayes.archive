@@ -72,13 +72,16 @@ double ScaleMove::performSimpleMove( void ) {
 
 
 void ScaleMove::printParameterSummary(std::ostream &o) const {
+    
     o << "lambda = " << lambda;
+
 }
 
 
 void ScaleMove::rejectSimpleMove( void ) {
     // swap current value and stored value
     variable->setValue( new double(storedValue) );
+    
 }
 
 
@@ -87,17 +90,22 @@ void ScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
     SimpleMove::swapNode(oldN, newN);
     
     variable = static_cast<StochasticNode<double>* >(newN) ;
+    
 }
 
 
 void ScaleMove::tune( void ) {
+    
     double rate = numAccepted / double(numTried);
     
-    if ( rate > 0.44 ) {
+    if ( rate > 0.44 ) 
+    {
         lambda *= (1.0 + ((rate-0.44)/0.56) );
     }
-    else {
+    else 
+    {
         lambda /= (2.0 - rate/0.44 );
     }
+    
 }
 

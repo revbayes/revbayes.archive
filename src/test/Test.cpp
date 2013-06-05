@@ -18,6 +18,7 @@
 #include "TestBirthDeath.h"
 #include "TestBirthDeathModelImplementations.h"
 #include "TestBrownianMotion.h"
+#include "TestCoala.h"
 #include "TestDistributions.h"
 #include "TestDPPRelClock.h"
 #include "TestGtrGammaLikelihood.h"
@@ -292,6 +293,18 @@ bool Test::performTests(void) {
         TestACLNRelaxedClock testACLNRC = TestACLNRelaxedClock("data/primates.nex", "trees/primates.tree", 1000);
 		
 		//testACLNRC.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    
+    
+    /* A COALA model test */
+    try {
+        //        TestDPPRelClock testACLNRC = TestDPPRelClock("data/ucln_sim.nex", "data/ucln_sim.tre", 1000);
+        TestCoala testCoala = TestCoala("data/simLG_4species_1.phy", 1000);
+		
+		testCoala.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
