@@ -13,6 +13,7 @@
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
 #include "Model.h"
+#include "ModelMonitor.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "NarrowExchange.h"
@@ -186,6 +187,9 @@ bool TestBranchHeterogeneousTamura92Model::run( void ) {
     
     /* instantiate the model */
     Model myModel = Model(qs[0]);
+    
+    monitors.push_back( new ModelMonitor( &myModel, 10, "TestBranchHeterogeneousTamura92Model.p", "\t", true, true, true ) );
+    
     
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );

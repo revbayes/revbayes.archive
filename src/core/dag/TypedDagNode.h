@@ -41,7 +41,8 @@ namespace RevBayesCore {
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
     
         // member functions
-        virtual void                                        printValue(std::ostream &o) const;                                          //!< Monitor/Print this variable 
+        virtual void                                        printName(std::ostream &o, const std::string &sep) const;                                          //!< Monitor/Print this variable 
+        virtual void                                        printValue(std::ostream &o, const std::string &sep) const;                                          //!< Monitor/Print this variable 
         virtual void                                        printValue(std::ostream &o, size_t i) const;                                //!< Monitor/Print the i-th element of this variable 
 
         // getters and setters
@@ -76,18 +77,61 @@ RevBayesCore::TypedDagNode<valueType>::~TypedDagNode( void ) {
 
 
 template<class valueType>
-void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o) const {
-    o << getValue();
+void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep) const {
+    
+    if ( RbUtils::is_vector<valueType>::value ) 
+    {
+        size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
+        for (size_t i = 0; i < numElements; ++i) 
+        {
+            if ( i > 0 ) 
+            {
+                o << sep;
+            }
+            o << getName() << "[" << i << "]";
+        }
+    } 
+    else 
+    {
+        o << getName();
+    }
+}
+
+
+template<class valueType>
+void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const std::string &sep) const {
+    
+    if ( RbUtils::is_vector<valueType>::value ) 
+    {
+        size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
+        for (size_t i = 0; i < numElements; ++i) 
+        {
+            if ( i > 0 ) 
+            {
+                o << sep;
+            }
+            o << RbUtils::sub_vector<valueType>::getElement( getValue(), i );
+        }
+    } 
+    else 
+    {
+        o << getValue();
+    }
 }
 
 
 template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, size_t index) const {
-    if ( RbUtils::is_vector<valueType>::value ) {
+    
+    if ( RbUtils::is_vector<valueType>::value ) 
+    {
         o << RbUtils::sub_vector<valueType>::getElement( getValue(), index );
-    } else {
+    } 
+    else 
+    {
         o << getValue();
     }
+    
 }
 
 

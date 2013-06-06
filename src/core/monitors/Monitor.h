@@ -30,6 +30,7 @@ namespace RevBayesCore {
     
     public:
         // Constructors and Destructors
+        Monitor(int printgen);                                                                                      //!< Default Constructor
         Monitor(int printgen, DagNode *n);                                                                         //!< Default Constructor
         Monitor(int printgen, const std::set<DagNode *> &n);                                                       //!< Default Constructor
         Monitor(const Monitor &x);                                                                                          //!< Copy Constructor

@@ -389,6 +389,7 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = tLabel;
+        NxsString::blanks_to_underscores( tName );
         
         // allocate a vector of DNA states
         TaxonData<DnaState> dataVec = TaxonData<DnaState>(tName);

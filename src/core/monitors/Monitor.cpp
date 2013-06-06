@@ -6,6 +6,12 @@
 
 using namespace RevBayesCore;
 
+
+
+Monitor::Monitor(int g) : printgen( g ), model( NULL ) {
+    
+}
+
 Monitor::Monitor(int g, DagNode *n) : printgen( g ), model( NULL ) {
     
     nodes.insert( n );

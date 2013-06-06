@@ -39,7 +39,8 @@ namespace RevBayesCore {
         virtual DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const = 0;               //!< Clone the entire DAG which is connected to this node
         virtual double                                              getLnProbability(void) = 0;
         virtual double                                              getLnProbabilityRatio(void) = 0;
-        virtual void                                                printValue(std::ostream &o) const = 0;                                          //!< Monitor/Print this variable 
+        virtual void                                                printName(std::ostream &o, const std::string &sep) const = 0;                                          //!< Monitor/Print this variable 
+        virtual void                                                printValue(std::ostream &o, const std::string &sep) const = 0;                                          //!< Monitor/Print this variable 
         virtual void                                                printValue(std::ostream &o,size_t i) const = 0;                                 //!< Monitor/Print the i-th element of this variable 
         virtual void                                                redraw(void) = 0;                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         

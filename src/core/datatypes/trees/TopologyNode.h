@@ -98,7 +98,7 @@ namespace RevBayesCore {
 
     protected:    
         // helper methods
-        virtual std::string                                 buildNewickString(void);                                                    //!< compute the newick RlString for a tree rooting at this node
+        virtual std::string                         buildNewickString(void);                                                    //!< compute the newick RlString for a tree rooting at this node
         //        void                                refreshNewickString(void);                                                  //!< recompute the newick RlString
     
         // protected members

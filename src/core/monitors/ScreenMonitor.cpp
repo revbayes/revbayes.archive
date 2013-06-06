@@ -110,7 +110,7 @@ void ScreenMonitor::monitor(long gen) {
             DagNode *node = *i;
             
             // print the value
-            node->printValue(std::cout);
+            node->printValue(std::cout, separator);
         }
         
         std::cout << std::endl;

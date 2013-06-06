@@ -288,7 +288,7 @@ void RevLanguage::RlModelVariableWrapper<rbType>::setName(std::string const &n) 
 template <typename rbType>
 void RevLanguage::RlModelVariableWrapper<rbType>::printValue(std::ostream &o) const {
     
-    value->printValue(o);
+    value->printValue(o,"");
 }
 
 

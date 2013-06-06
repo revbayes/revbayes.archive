@@ -19,6 +19,7 @@
 #include "TestBirthDeathModelImplementations.h"
 #include "TestBrownianMotion.h"
 #include "TestCoala.h"
+#include "TestConstantPopCoalescent.h"
 #include "TestDistributions.h"
 #include "TestDPPRelClock.h"
 #include "TestGtrGammaLikelihood.h"
@@ -179,6 +180,16 @@ bool Test::performTests(void) {
         std::cout << e.getMessage() << std::endl;
     }
     
+    
+    /* A birth-death model test */
+    try {
+        TestConstantPopCoalescent testCoal = TestConstantPopCoalescent("trees/cetaceans cytb_final1_mrc.tree");
+        testCoal.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    
     /* A NNI test */
     try {
         TestNNI testNNI = TestNNI(100000);
@@ -304,7 +315,7 @@ bool Test::performTests(void) {
         //        TestDPPRelClock testACLNRC = TestDPPRelClock("data/ucln_sim.nex", "data/ucln_sim.tre", 1000);
         TestCoala testCoala = TestCoala("data/simLG_4species_1.phy", 1000);
 		
-		testCoala.run();
+//		testCoala.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
