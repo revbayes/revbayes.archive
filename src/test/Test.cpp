@@ -31,6 +31,7 @@
 #include "TestBranchHeterogeneousTamura92Model.h"
 #include "TestMixtureBranchHeterogeneousGtrModel.h"
 #include "TestMixtureModel.h"
+#include "TestMultispeciesCoalescent.h"
 #include "TestNumericalIntegration.h"
 #include "TestNNI.h"
 #include "TestNormalModel.h"
@@ -181,9 +182,18 @@ bool Test::performTests(void) {
     }
     
     
-    /* A birth-death model test */
+    /* A coalescent model test */
     try {
         TestConstantPopCoalescent testCoal = TestConstantPopCoalescent("trees/cetaceans cytb_final1_mrc.tree");
+//        testCoal.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    
+    /* A coalescent model test */
+    try {
+        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/primates.tree");
         testCoal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;

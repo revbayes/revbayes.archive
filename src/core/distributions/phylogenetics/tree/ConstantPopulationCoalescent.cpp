@@ -202,7 +202,8 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
     buildRandomBinaryTree(nodes);
     
     // set tip names
-    for (size_t i=0; i<numTaxa; i++) {
+    for (size_t i=0; i<numTaxa; i++) 
+    {
         size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
         
         // get the node from the list
@@ -239,7 +240,7 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
         
         size_t j = numTaxa - i;
         double nPairs = j * (j-1) / 2.0;
-        double lambda = nPairs * 2.0 / theta;
+        double lambda = nPairs * theta / 2.0;
         double u = RbStatistics::Exponential::rv( lambda, *rng);
 		coalescentTimes[i] = prevCoalescentTime + u;
 	}
@@ -252,7 +253,6 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
         TopologyNode& node = tau->getTipNode(i);
         psi->setAge( node.getIndex(), 0.0 );
     }
-    std::cerr << (*psi) << std::endl;
     
     // finally store the new value
     value = psi;
