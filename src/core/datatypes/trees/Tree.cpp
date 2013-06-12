@@ -67,35 +67,45 @@ Tree& Tree::operator=(const Tree &t) {
 
 
 bool Tree::operator==(const Tree &t) const {
+    
     return getNewickRepresentation() == t.getNewickRepresentation();
 }
 
 
 bool Tree::operator!=(const Tree &t) const {
+    
     return !operator==(t);
 }
 
 
 bool Tree::operator<(const Tree &t) const {
+    
     return getNewickRepresentation() < t.getNewickRepresentation();
 }
 
 
 void Tree::addBranchParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly) {
+    
     getRoot().addBranchParameter(name,parameters,internalOnly);
+    
 }
 
 
 void Tree::addNodeParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly) {
+    
     getRoot().addParameter(name,parameters,internalOnly);
+    
 }
 
 
 void Tree::clearBranchParameters() {
+    
     getRoot().clearBranchParameters();
+
 }
 
 std::vector<std::string> Tree::getNames() const {
+
     return topology->getNames();
 }
 
@@ -110,26 +120,32 @@ const TopologyNode& Tree::getNode(size_t idx) const {
 }
 
 std::vector<TopologyNode*> Tree::getNodes(void) const {
+    
     return topology->getNodes();
 }
 
 size_t Tree::getNumberOfInteriorNodes(void) const {
+    
     return topology->getNumberOfInteriorNodes();
 }
 
 size_t Tree::getNumberOfNodes(void) const {
+    
     return topology->getNumberOfNodes();
 }
 
 size_t Tree::getNumberOfTips(void) const {
+    
     return topology->getNumberOfTips();
 }
 
 const TopologyNode& Tree::getInteriorNode(size_t indx) const {
+    
     return topology->getInteriorNode( indx );
 }
 
 const std::string& Tree::getNewickRepresentation() const {
+    
     return topology->getNewickRepresentation();
 }
 
@@ -146,21 +162,25 @@ TopologyNode& Tree::getTipNode(size_t indx) {
 }
 
 const TopologyNode& Tree::getTipNode(size_t indx) const {
+    
     return topology->getTipNode(indx);
 }
 
 
 double Tree::getTmrca(const TopologyNode &n) {
+    
     return topology->getRoot().getTmrca( n );
 }
 
 //TreeChangeEventHandler& Tree::getTreeChangeEventHandler(void) const;//!< Get the change-event handler for this tree
 
 bool Tree::isBinary(void) const {
+    
     return topology->isBinary();
 }
 
 bool Tree::isRooted(void) const {
+    
     return topology->isRooted();
 }
 
@@ -174,6 +194,7 @@ bool Tree::isRooted(void) const {
 
 
 TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const {
+    
     return changeEventHandler;
 }
 
@@ -186,6 +207,7 @@ void Tree::setTopology(const Topology *t) {
     topology->getNodes()[topology->getNumberOfNodes()-1]->setTopology( this );
     
     resizeElementVectors( t->getNumberOfNodes() );
+
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x) {

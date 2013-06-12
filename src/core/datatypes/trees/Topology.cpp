@@ -154,32 +154,6 @@ const TopologyNode& Topology::getNode(size_t idx) const {
 }
 
 
-//TopologyNode& Topology::getNodeByIndex(size_t idx) {
-//    return *nodesByIndex[idx];
-//}
-//
-//const TopologyNode& Topology::getNodeByIndex(size_t idx) const {
-//    return *nodesByIndex[idx];
-//}
-//
-//std::vector<TopologyNode *> Topology::getNodesByIndex( void ) const {
-//    std::vector<TopologyNode *> tmp( nodesByIndex.size() );
-//    for (unsigned i = 0; i < nodesByIndex.size(); ++i) {
-//        tmp[i] = nodesByIndex[i];
-//    }
-//    return tmp;
-//}
-//
-//void Topology::fillNodesByIndex(void)
-//{
-//    size_t n = nodes.size();
-//    nodesByIndex= std::vector<TopologyNode*>(n);
-//    
-//    for (size_t i = 0; i < n; i++)
-//        nodesByIndex[i] = nodes[i];
-//}
-
-
 /** Calculate the number of interior nodes in the BranchLengthTree by deducing the number of
  tips from number of nodes, and then subtract 1 more if the BranchLengthTree is rooted. */
 size_t Topology::getNumberOfInteriorNodes( void ) const {
@@ -194,11 +168,13 @@ size_t Topology::getNumberOfInteriorNodes( void ) const {
 
 
 size_t Topology::getNumberOfNodes( void ) const {
+    
     return nodes.size();
 }
 
 
 const std::string& Topology::getNewickRepresentation( void ) const {
+    
     return root->computeNewick();
 }
 

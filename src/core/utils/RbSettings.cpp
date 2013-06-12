@@ -42,8 +42,36 @@ RbSettings::RbSettings(std::string& defaultFileName) {
 }
 
 
+
+bool RbSettings::getPrintNodeIndex( void ) const {
+    
+    return printNodeIndex;
+}
+
+
+double RbSettings::getTolerance( void ) const {
+    
+    return tolerance;
+}
+
+
 /** Initialize the user settings */
 void RbSettings::initializeUserSettings(void) {
 
-    tolerance = 10E-10;      // set default value for tolerance comparing doubles
+    tolerance = 10E-10;         // set default value for tolerance comparing doubles
+    printNodeIndex = true;      // print node indices of tree nodes as comments
+}
+
+
+void RbSettings::setPrintNodeIndex(bool tf) {
+    
+    printNodeIndex = tf;
+    
+}
+
+
+void RbSettings::setTolerance(double t) {
+    
+    tolerance = t;
+    
 }

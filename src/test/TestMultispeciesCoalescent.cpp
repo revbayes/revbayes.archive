@@ -1,15 +1,16 @@
-
+#include "BinaryDivision.h"
 #include "Clade.h"
 #include "ConstantBirthDeathProcess.h"
 #include "DeterministicNode.h"
-#include "MultispeciesCoalescent.h"
 #include "ConstantNode.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
-#include "ModelMonitor.h"
+#include "GammaDistribution.h"
 #include "Mcmc.h"
 #include "Model.h"
+#include "ModelMonitor.h"
+#include "MultispeciesCoalescent.h"
 #include "NarrowExchange.h"
 #include "NclReader.h"
 #include "NearestNeighborInterchange.h"
@@ -82,7 +83,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     TimeTree *t = trees[0];
-    //    std::cout << trees[0]->getNewickRepresentation() << std::endl;
+    std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
     
     /* testing the likelihood implementation */
@@ -111,23 +112,31 @@ bool TestMultispeciesCoalescent::run( void ) {
         tauCPC->redraw();
     }
     
-    std::cerr << tauCPC->getValue() << std::endl;
-    std::cout << tauCPC->getValue().getRoot().getAge() << std::endl;
-    std::cerr << *simTrees[0] << std::endl;
+//    std::cerr << tauCPC->getValue() << std::endl;
+//    std::cout << tauCPC->getValue().getRoot().getAge() << std::endl;
+    std::cerr << *simTrees[0] << "\n\n" << std::endl;
     
-    
-    ConstantNode<double> *lambda = new ConstantNode<double>("lambda", new double(0.1));
-    ConstantNode<double> *min = new ConstantNode<double>("min", new double(100));
+
+    std::vector<Move*> moves;
+
+    // construct the parameters for the gamma prior of the population sizes
+    // shape of the gamma (we fix it to 2.0)
+    ConstantNode<double> *shape = new ConstantNode<double>("shape", new double(2.0));
+    // rate of the gamma distribution. we use rate = 1.0/scale and a hyperprior on the P(scale) = 1.0 / scale, which is the infamous OneOverX prior distribution 
+    ConstantNode<double> *min = new ConstantNode<double>("min", new double(1E6));
     ConstantNode<double> *max = new ConstantNode<double>("max", new double(1E-10));
+    StochasticNode<double> *scale = new StochasticNode<double>("scale", new OneOverXDistribution(min,max));
+    ConstantNode<double> *one = new ConstantNode<double>("one", new double(1.0) );
+    DeterministicNode<double> *rate = new DeterministicNode<double>("rate", new BinaryDivision<double, double, double>(one,scale));
+    
+    moves.push_back( new ScaleMove(scale, 1.0, true, 2.0) );
 
     std::vector<const TypedDagNode<double> *> ne_nodes;
-    std::vector<Move*> moves;
     for (size_t i = 0; i < nNodes; ++i) 
     {
         std::stringstream o;
         o << "Ne_" << i;
-//        StochasticNode<double> *NePerNode = new StochasticNode<double>(o.str(), new ExponentialDistribution(lambda) );
-        StochasticNode<double> *NePerNode = new StochasticNode<double>(o.str(), new OneOverXDistribution(min,max) );
+        StochasticNode<double> *NePerNode = new StochasticNode<double>(o.str(), new GammaDistribution(shape,rate) );
         ne_nodes.push_back( NePerNode );
         moves.push_back( new ScaleMove(NePerNode, 1.0, true, 2.0) );
     }
@@ -135,22 +144,22 @@ bool TestMultispeciesCoalescent::run( void ) {
 //    ConstantNode< std::vector<double> > *Ne_inf = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
 
     
-    ConstantNode<double> *speciationRate = new ConstantNode<double>("speciationRate", new double(1.0) );
-    ConstantNode<double> *extinctionRate = new ConstantNode<double>("extinctionRate", new double(0.25) );
+    ConstantNode<double> *speciationRate = new ConstantNode<double>("speciationRate", new double(10.0) );
+    ConstantNode<double> *extinctionRate = new ConstantNode<double>("extinctionRate", new double(2.5) );
     ConstantNode<double> *sampling = new ConstantNode<double>("rho", new double(1.0) );
     ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
     StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "S", new ConstantBirthDeathProcess( speciationRate, extinctionRate, met, mep, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
-	TimeTree *startingTree = spTree_inf->getValue().clone();
-    TreeUtilities::rescaleTree(startingTree, &startingTree->getRoot(), 0.01);
-	spTree_inf->setValue( startingTree );
-
-    // If we want to initialize the species tree to the true tree
- 	//   TimeTree *startingTree = t;
- 	//   spTree_inf->setValue( startingTree );
-    
 	
-	//If we want to explore the species tree topology, use these 3 moves:
+    // If we want to initialize the species tree to the true tree
+    TimeTree *startingTree = spTree_inf->getValue().clone();
+    TreeUtilities::rescaleTree(startingTree, &startingTree->getRoot(), 0.01);
+    spTree_inf->setValue( startingTree );
+    
+    std::cerr << spTree_inf->getValue() << std::endl;
+
+	
+    //If we want to explore the species tree topology, use these 3 moves:
     moves.push_back( new NearestNeighborInterchange( spTree_inf, 5.0 ) );
     moves.push_back( new NarrowExchange( spTree_inf, 20.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( spTree_inf, 5.0 ) );

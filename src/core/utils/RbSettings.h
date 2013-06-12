@@ -24,25 +24,32 @@
 class RbSettings {
 
     public:
-        static RbSettings&          userSettings(void)                                //!< Get a reference to the singleton RbSettings object
+        static RbSettings&          userSettings(void)                                  //!< Get a reference to the singleton RbSettings object
 		                               {
                                        static RbSettings settings = RbSettings();
 									   return settings;
                                        }
-        void                        initializeUserSettings(void);                     //!< Initialize the user settings to default values
         
         // Access functions
-        double                      getTolerance(void) { return tolerance; }          //!< Retrieve the tolerance for comparing doubles
+        bool                        getPrintNodeIndex(void) const;                      //!< Retrieve the flag whether we should print node indices 
+        double                      getTolerance(void) const;                           //!< Retrieve the tolerance for comparing doubles
         
+        // setters
+        void                        setPrintNodeIndex(bool tf);                         //!< Set the flag whether we should print node indices
+        void                        setTolerance(double t);                             //!< Set the tolerance for comparing double
+    
     private:
-                                    RbSettings(void);                                 //!< Default constructor
-                                    RbSettings(const RbSettings& s) {}                //!< Prevent copy
-                                    RbSettings(std::string& defaultFileName);         //!< Constructor taking a default file name
-                                   ~RbSettings(void) {}                               //!< Delete function table
-        RbSettings&                 operator=(const RbSettings& s);                   //! Prevent assignment
+                                    RbSettings(void);                                   //!< Default constructor
+                                    RbSettings(const RbSettings& s) {}                  //!< Prevent copy
+                                    RbSettings(std::string& defaultFileName);           //!< Constructor taking a default file name
+                                   ~RbSettings(void) {}                                 //!< Delete function table
+        RbSettings&                 operator=(const RbSettings& s);                     //! Prevent assignment
+
+        void                        initializeUserSettings(void);                       //!< Initialize the user settings to default values
 
 		// Variables that have user settings
-        double                      tolerance;                                        //!< Tolerance for comparison of doubles
+        double                      tolerance;                                          //!< Tolerance for comparison of doubles
+        bool                        printNodeIndex;                                     //!< Should the node index of a tree be printed as a comment?
 };
 
 #endif

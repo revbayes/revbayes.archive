@@ -270,9 +270,9 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
                 double lambda = nPairs * theta;
                 
                 // add the density for this coalescent event
-               // lnProbCoal += log( lambda ) - lambda * a;
+                lnProbCoal += log( lambda ) - lambda * a;
 				//Corrected version:
-				lnProbCoal += log( theta ) - lambda * a;
+                //lnProbCoal += log( theta ) - lambda * a;
 				
 
 
