@@ -141,16 +141,21 @@ bool TestMultispeciesCoalescent::run( void ) {
     ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
     StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "S", new ConstantBirthDeathProcess( speciationRate, extinctionRate, met, mep, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+	TimeTree *startingTree = spTree_inf->getValue().clone();
+    TreeUtilities::rescaleTree(startingTree, &startingTree->getRoot(), 0.01);
+	spTree_inf->setValue( startingTree );
+
+    // If we want to initialize the species tree to the true tree
+ 	//   TimeTree *startingTree = t;
+ 	//   spTree_inf->setValue( startingTree );
     
-    // initialize the species tree
-    TimeTree *startingTree = t;
-//    TreeUtilities::rescaleTree(startingTree, &startingTree->getRoot(), 0.01);
-    spTree_inf->setValue( startingTree );
-    
-    
-//    moves.push_back( new NearestNeighborInterchange( spTree_inf, 5.0 ) );
-//    moves.push_back( new NarrowExchange( spTree_inf, 20.0 ) );
-//    moves.push_back( new FixedNodeheightPruneRegraft( spTree_inf, 5.0 ) );
+	
+	//If we want to explore the species tree topology, use these 3 moves:
+    moves.push_back( new NearestNeighborInterchange( spTree_inf, 5.0 ) );
+    moves.push_back( new NarrowExchange( spTree_inf, 20.0 ) );
+    moves.push_back( new FixedNodeheightPruneRegraft( spTree_inf, 5.0 ) );
+
+	//Moves for node heights only
     moves.push_back( new SubtreeScale( spTree_inf, 5.0 ) );
     moves.push_back( new TreeScale( spTree_inf, 1.0, true, 2.0 ) );
     moves.push_back( new NodeTimeSlideUniform( spTree_inf, 30.0 ) );
@@ -176,7 +181,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, "\t", false, false, false ) );
 
     
-    /* instiate and run the MCMC */
+    /* instantiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
     myMcmc.run(10000);
 

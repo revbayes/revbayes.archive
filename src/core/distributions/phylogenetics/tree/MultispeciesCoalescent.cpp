@@ -229,22 +229,27 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
             
             TopologyNode *parent = coalTimes2coalNodes.begin()->second;
             double parentAge = parent->getAge();
+			double branchNe = Ne->getValue()[spNode->getIndex()];
+			double theta = 1.0 / branchNe;
+
             if ( parentAge < parentSpeciesAge ) 
-            {
+            { //Coalescence in the species tree branch
                 
                 // get the left and right child of the parent
                 TopologyNode *left = &parent->getChild( 0 );
                 TopologyNode *right = &parent->getChild( 1 );
                 if ( remainingIndividuals.find( left ) == remainingIndividuals.end() || remainingIndividuals.find( right ) == remainingIndividuals.end() ) 
                 {
-                    // one of the children does not belong to this branch
+                    // one of the children does not belong to this species tree branch
                     return RbConstants::Double::neginf;
                 }
                 
+				//We remove the coalescent event and the coalesced lineages
                 coalTimes2coalNodes.erase( coalTimes2coalNodes.begin() );
                 remainingIndividuals.erase( remainingIndividuals.find( left ) );
                 remainingIndividuals.erase( remainingIndividuals.find( right ) );
                 
+				//We insert the parent in the vector of lineages in this branch
                 remainingIndividuals.insert( parent );
                 if ( !parent->isRoot() )
                 {
@@ -252,31 +257,28 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
                     coalTimes2coalNodes[ grandParent->getAge() ] = grandParent;
                 }
                 
+				//a is the time between the previous and the current coalescences
                 double a = parentAge - currentTime;
                 currentTime = parentAge;
                 
                 // now we do the computation
-                double branchNe = Ne->getValue()[spNode->getIndex()];
-                double theta = 1.0 / branchNe;
                 
-                // get the number of individuals we start with at this branch
+                // get the number j of individuals we had before the current coalescence
                 size_t j = remainingIndividuals.size() + 1;
-                // compute the number of pairs: pairs = C(j choose 2)
+                // compute the number of pairs: pairs = C(j choose 2) = j * (j-1.0) / 2.0
                 double nPairs = j * (j-1.0) / 2.0;
                 double lambda = nPairs * theta;
                 
                 // add the density for this coalescent event
-                lnProbCoal += log( lambda ) - lambda * a;
+               // lnProbCoal += log( lambda ) - lambda * a;
+				//Corrected version:
+				lnProbCoal += log( theta ) - lambda * a;
+				
 
 
-            }
+            } //End if coalescence in the species tree branch
             else 
-            {
-                
-                // now we do the computation
-                double branchNe = Ne->getValue()[spNode->getIndex()];
-                double theta = 1.0 / branchNe;
-                
+            { //No more coalescences in this species tree branch
                 
                 // compute the probability of no coalescent event in the final part of the branch
                 // only do this if the branch is not the root branch
