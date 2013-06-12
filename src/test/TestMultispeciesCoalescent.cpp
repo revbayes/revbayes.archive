@@ -160,15 +160,15 @@ bool TestMultispeciesCoalescent::run( void ) {
 
 	
     //If we want to explore the species tree topology, use these 3 moves:
-    moves.push_back( new NearestNeighborInterchange( spTree_inf, 5.0 ) );
-    moves.push_back( new NarrowExchange( spTree_inf, 20.0 ) );
+    moves.push_back( new NearestNeighborInterchange( spTree_inf, 3.0 ) );
+    moves.push_back( new NarrowExchange( spTree_inf, 5.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( spTree_inf, 5.0 ) );
 
 	//Moves for node heights only
     moves.push_back( new SubtreeScale( spTree_inf, 5.0 ) );
     moves.push_back( new TreeScale( spTree_inf, 1.0, true, 2.0 ) );
     moves.push_back( new NodeTimeSlideUniform( spTree_inf, 30.0 ) );
-    moves.push_back( new RootTimeSlide( spTree_inf, 1.0, true, 2.0 ) );
+    moves.push_back( new RootTimeSlide( spTree_inf, 1.0, false, 5.0 ) );
     
     
     
@@ -196,7 +196,7 @@ bool TestMultispeciesCoalescent::run( void ) {
 
     
     // read in the tree trace
-    TreeTrace<TimeTree> trace = readTreeTrace("NNITest.tree");
+    TreeTrace<TimeTree> trace = readTreeTrace("TestMultispeciesCoalescent.trees");
     
     TreeSummary<TimeTree> summary = TreeSummary<TimeTree>(trace);
     summary.summarize();
