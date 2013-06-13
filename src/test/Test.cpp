@@ -32,6 +32,7 @@
 #include "TestMixtureBranchHeterogeneousGtrModel.h"
 #include "TestMixtureModel.h"
 #include "TestMultispeciesCoalescent.h"
+#include "TestMultispeciesCoalescentCombinatorics.h"
 #include "TestNumericalIntegration.h"
 #include "TestNNI.h"
 #include "TestNormalModel.h"
@@ -194,6 +195,15 @@ bool Test::performTests(void) {
     /* A coalescent model test */
     try {
         TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/primates.tree");
+//        testCoal.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    
+    /* A coalescent model test */
+    try {
+        TestMultispeciesCoalescentCombinatorics testCoal = TestMultispeciesCoalescentCombinatorics();
         testCoal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;

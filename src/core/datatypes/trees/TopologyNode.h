@@ -62,7 +62,8 @@ namespace RevBayesCore {
         void                                        addParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                        addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                        clearBranchParameters(void);
-        virtual const std::string&                  computeNewick(void);                                                        //!< Compute the newick RlString for this clade
+        virtual const std::string&                  computeNewick(void);                                                        //!< Compute the newick string for this clade
+        std::string                                 computePlainNewick(void) const;                                             //!< Compute the newick string for this clade as a plain string without branch length
         size_t                                      getIndex(void) const;                                                       //!< Get index of node
         void                                        initiateFlaggingForNewickRecomputation(void);
         bool                                        isRoot(void) const;                                                         //!< Is node root?

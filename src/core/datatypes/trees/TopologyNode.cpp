@@ -311,6 +311,31 @@ const std::string& TopologyNode::computeNewick(void) {
 }
 
 
+/* Build newick string */
+std::string TopologyNode::computePlainNewick( void ) const {
+    
+    // test whether this is a internal or external node
+    if (tipNode) 
+    {
+        // this is a tip so we just return the name of the node
+        return name;
+    }
+    else {
+        std::string left = getChild(0).computePlainNewick();
+        std::string right = getChild(1).computePlainNewick();
+        if ( left < right ) 
+        {
+            return "(" + left + "," + right + ")";
+        } 
+        else 
+        {
+            return "(" + right + "," + left + ")";
+        }
+    }
+    
+}
+
+
 bool TopologyNode::containsClade(const TopologyNode *c) const {
     
     std::vector<std::string> myTaxa   = getTaxaStringVector();

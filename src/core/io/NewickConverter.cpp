@@ -102,11 +102,11 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         }
         childNode->setName( lbl );
         
-        // read the optinal  branch length
+        // read the optional branch length
         if ( ss.peek() == ':' ) {
             ss.ignore();
             std::string time = "";
-            while ( ss.good() && (c = ss.peek()) != ';' && c != ',') {
+            while ( ss.good() && (c = ss.peek()) != ';' && c != ','  && c != ')') {
                 time += ss.get();
             }
             

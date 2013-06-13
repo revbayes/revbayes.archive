@@ -199,6 +199,24 @@ TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const {
 }
 
 
+const Topology& Tree::getTopology( void ) const {
+    
+    return *topology;
+}
+
+
+bool Tree::hasSameTopology(const RevBayesCore::Tree &t) const {
+    
+    return hasSameTopology( t.getTopology() );
+}
+
+
+bool Tree::hasSameTopology(const RevBayesCore::Topology &t) const {
+    
+    return topology->getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
+}
+
+
 void Tree::setTopology(const Topology *t) {
     // set the topology of this tree
     topology = t;

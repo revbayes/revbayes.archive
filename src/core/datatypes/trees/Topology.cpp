@@ -179,6 +179,12 @@ const std::string& Topology::getNewickRepresentation( void ) const {
 }
 
 
+std::string Topology::getPlainNewickRepresentation( void ) const {
+    
+    return root->computePlainNewick();
+}
+
+
 /** Calculate and return the number of tips on the BranchLengthTree by going through the vector
  of nodes, querying each about its tip status. */
 size_t Topology::getNumberOfTips( void ) const {

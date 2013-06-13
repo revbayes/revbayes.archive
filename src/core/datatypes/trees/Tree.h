@@ -73,6 +73,9 @@ namespace RevBayesCore {
         const TopologyNode&                                 getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
         double                                              getTmrca(const TopologyNode &n);
         TreeChangeEventHandler&                             getTreeChangeEventHandler(void) const;                                      //!< Get the change-event handler for this tree
+        const Topology&                                     getTopology(void) const;                                                //!< Get the topology of this tree
+        bool                                                hasSameTopology( const Tree &t ) const;                                 //!< Has this tree the same topology?
+        bool                                                hasSameTopology( const Topology &t ) const;                             //!< Has this tree the same topology?
         bool                                                isBinary(void) const;                                                   //!< Is the Tree rooted
         bool                                                isRooted(void) const;                                                   //!< Is the Tree rooted
 //        void                                                setRooted(bool tf);                                                     //!< Set the rootedness of the Tree
