@@ -110,11 +110,13 @@ bool TestMultispeciesCoalescent::run( void ) {
     {
         simTrees.push_back( &tauCPC->getValue() );
         tauCPC->redraw();
+	//	std::cerr << *simTrees[i]  << std::endl;
+
     }
     
 //    std::cerr << tauCPC->getValue() << std::endl;
 //    std::cout << tauCPC->getValue().getRoot().getAge() << std::endl;
-    std::cerr << *simTrees[0] << "\n\n" << std::endl;
+    std::cerr << *simTrees[0] << "\n\n\n" << std::endl;
     
 
     std::vector<Move*> moves;
@@ -160,14 +162,14 @@ bool TestMultispeciesCoalescent::run( void ) {
 
 	
     //If we want to explore the species tree topology, use these 3 moves:
-    moves.push_back( new NearestNeighborInterchange( spTree_inf, 3.0 ) );
-    moves.push_back( new NarrowExchange( spTree_inf, 5.0 ) );
-    moves.push_back( new FixedNodeheightPruneRegraft( spTree_inf, 5.0 ) );
+    moves.push_back( new NearestNeighborInterchange( spTree_inf, 10.0 ) );
+    moves.push_back( new NarrowExchange( spTree_inf, 10.0 ) );
+    moves.push_back( new FixedNodeheightPruneRegraft( spTree_inf, 30.0 ) );
 
 	//Moves for node heights only
-    moves.push_back( new SubtreeScale( spTree_inf, 5.0 ) );
-    moves.push_back( new TreeScale( spTree_inf, 1.0, true, 2.0 ) );
-    moves.push_back( new NodeTimeSlideUniform( spTree_inf, 30.0 ) );
+    moves.push_back( new SubtreeScale( spTree_inf, 10.0 ) );
+    moves.push_back( new TreeScale( spTree_inf, 1.0, true, 10.0 ) );
+    moves.push_back( new NodeTimeSlideUniform( spTree_inf, 10.0 ) );
     moves.push_back( new RootTimeSlide( spTree_inf, 1.0, false, 5.0 ) );
     
     
@@ -192,6 +194,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     
     /* instantiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
+//    myMcmc.run(10000);
     myMcmc.run(10000);
 
     
