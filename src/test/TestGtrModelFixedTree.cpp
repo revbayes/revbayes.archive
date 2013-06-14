@@ -4,6 +4,7 @@
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
 #include "FileMonitor.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
 #include "Model.h"
@@ -117,11 +118,14 @@ bool TestGtrModelFixedTree::run( void ) {
     ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
     
     // and the character model
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tree, q, clockRate, true, data[0]->getNumberOfCharacters()) );
+    SimpleSiteHomogeneousCharEvoModel< DnaState, TimeTree > *charModel = new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tree, q, clockRate, true, data[0]->getNumberOfCharacters() );
+//    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tree, true, data[0]->getNumberOfCharacters() ); 
+//    charModel->setRateMatrix( q );
+//    charModel->setClockRate( clockRate );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
     charactermodel->clamp( data[0] );
     
-//    std::cout << "Expected log-L:\t\t" << "-6779.900741" << std::endl;
-    std::cout << "Expected log-L:\t\t" << "-6960.691961" << std::endl;
+    std::cout << "Expected log-L:\t\t" << "-6741.647819812251" << std::endl; // obtained from BEAST
     std::cout << "Observed log-L:\t\t" << charactermodel->getLnProbability() << std::endl;
     
     /* add the moves */

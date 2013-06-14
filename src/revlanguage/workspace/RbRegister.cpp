@@ -303,16 +303,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "cBDP", new ConstantBirthDeathProcess() );
         
         // character state evolution model (DNA)
-        addDistribution( "DNA_model", new CharacterStateEvolutionAlongTree<DnaState,TimeTree>() );
-        addDistribution( "DNA_model", new CharacterStateEvolutionAlongTree<DnaState,BranchLengthTree>() );
+        addDistribution( "substModel", new CharacterStateEvolutionAlongTree<TimeTree>() );
+        addDistribution( "substModel", new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
         
-        // character state evolution model (RNA)
-        addDistribution( "RNA_model", new CharacterStateEvolutionAlongTree<RnaState,TimeTree>() );
-        addDistribution( "RNA_model", new CharacterStateEvolutionAlongTree<RnaState,BranchLengthTree>() );
-        
-        // character state evolution model (Protein)
-        addDistribution( "Protein_model", new CharacterStateEvolutionAlongTree<AminoAcidState,TimeTree>() );
-        addDistribution( "Protein_model", new CharacterStateEvolutionAlongTree<AminoAcidState,BranchLengthTree>() );
+//        // character state evolution model (RNA)
+//        addDistribution( "RNA_model", new CharacterStateEvolutionAlongTree<RnaState,TimeTree>() );
+//        addDistribution( "RNA_model", new CharacterStateEvolutionAlongTree<RnaState,BranchLengthTree>() );
+//        
+//        // character state evolution model (Protein)
+//        addDistribution( "Protein_model", new CharacterStateEvolutionAlongTree<AminoAcidState,TimeTree>() );
+//        addDistribution( "Protein_model", new CharacterStateEvolutionAlongTree<AminoAcidState,BranchLengthTree>() );
         
         // relaxed (Time) clock-tree
         addDistribution( "DNA_model", new RelaxedClockCharacterStateEvolution<DnaState,TimeTree>() );

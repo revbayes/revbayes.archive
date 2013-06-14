@@ -151,7 +151,7 @@ void ScreenMonitor::printHeader() {
         
         // print the header
         if (theNode->getName() != "")
-            std::cout << theNode->getName();
+            theNode->printName(std::cout,separator);
         else
             std::cout << "Unnamed";
     }

@@ -67,6 +67,7 @@ namespace RevBayesCore {
         
         // inheritable methods
         void                                addParameter(const DagNode* p);                                 //!< add a parameter to the distribution
+        void                                removeParameter(const DagNode *p);
   
         virtual void                        keepSpecialization(DagNode* affecter);
         virtual void                        restoreSpecialization(DagNode *restorer);

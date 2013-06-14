@@ -112,7 +112,7 @@ void RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType
     
     const RateMatrix &rm = rateMatrix->getValue();
     const std::vector<double> &r = this->siteRates->getValue();
-    for (size_t i = 0; i < this->numMixtures; ++i)
+    for (size_t i = 0; i < this->numSiteRates; ++i)
     {
         rm.calculateTransitionProbabilities( brlen * r[i], this->transitionProbMatrices[i] );
     }

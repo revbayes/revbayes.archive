@@ -75,7 +75,7 @@ void OptionRule::printValue(std::ostream& o) const {
 
     ArgumentRule::printValue(o);
 
-    o << "options = ";
+    o << " = ";
     for (Vector<RlString>::const_iterator it = options.begin(); it != options.end(); ++it) {
         if ( it != options.begin() ) {
             o << "|";

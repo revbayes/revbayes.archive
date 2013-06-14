@@ -24,6 +24,7 @@
 #include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "NclReader.h"
+#include "RbErrorStream.h"
 #include "RbFileManager.h"
 #include "RnaState.h"
 #include "StandardState.h"
@@ -34,7 +35,6 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
-#include "RlUserInterface.h"
 
 using namespace RevBayesCore;
 

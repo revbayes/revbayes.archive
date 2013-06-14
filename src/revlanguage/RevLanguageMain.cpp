@@ -28,7 +28,6 @@ int RevLanguageMain::startRevLanguageEnvironment() {
     RevLanguage::UserInterface::userInterface().output(version.getHeader(), false);
     RevLanguage::UserInterface::userInterface().output("", false);
 
-    RbSettings::userSettings().initializeUserSettings();
     Help::getHelp().initializeHelp("~/help/");
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 

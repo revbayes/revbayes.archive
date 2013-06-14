@@ -167,7 +167,7 @@ void FileMonitor::printHeader() {
         
         // print the header
         if (theNode->getName() != "")
-            outStream << theNode->getName();
+            theNode->printName(outStream,separator);
         else
             outStream << "Unnamed";
     }

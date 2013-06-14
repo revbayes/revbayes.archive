@@ -48,14 +48,16 @@ void Mcmc::constructInternalObject( void ) {
 /* Map calls to member methods */
 RbLanguageObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "run") {
+    if (name == "run") 
+    {
         // get the member with give index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
         value->run( gen );
         
         return NULL;
     } 
-    else if (name == "burnin") {
+    else if (name == "burnin") 
+    {
         // get the member with give index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
         int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getValue() ).getValue();
@@ -63,7 +65,8 @@ RbLanguageObject* Mcmc::executeMethod(std::string const &name, const std::vector
         
         return NULL;
     } 
-    else if ( name == "operatorSummary") {
+    else if ( name == "operatorSummary") 
+    {
         value->printOperatorSummary();
         
         return NULL;

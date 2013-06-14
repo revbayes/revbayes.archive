@@ -1,6 +1,7 @@
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "GammaDistribution.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "NclReader.h"
 #include "NormalizeVectorFunction.h"
@@ -94,7 +95,12 @@ bool TestGtrGammaLikelihood::run( void ) {
     
     // and the character model
     size_t numChar = data[0]->getNumberOfCharacters();
-    SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree>(tau, site_rates_norm, q, true, numChar ); 
+//    SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree>(tau, site_rates_norm, q, true, numChar ); 
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, true, numChar ); 
+    charModel->setRateMatrix( q );
+    charModel->setSiteRates( site_rates_norm );
+//    charModel->setClockRate( clockRate );
+    
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
     charactermodel->clamp( data[0] );
     

@@ -18,7 +18,6 @@
 #define RlCharacterStateEvolutionAlongTree_H
 
 #include "AbstractCharacterData.h"
-#include "SimpleSiteHomogeneousCharEvoModel.h"
 #include "RlAbstractCharacterData.h"
 #include "RlCharacterData.h"
 #include "RlTypedDistribution.h"
@@ -26,7 +25,7 @@
 
 namespace RevLanguage {
     
-    template <class charType, class treeType>
+    template <class treeType>
     class CharacterStateEvolutionAlongTree :  public TypedDistribution< AbstractCharacterData > {
         
     public:
@@ -43,7 +42,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::SimpleSiteHomogeneousCharEvoModel<typename charType::valueType, typename treeType::valueType>*      createDistribution(void) const;
+        RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >*      createDistribution(void) const;
         
     protected:
         
@@ -56,6 +55,7 @@ namespace RevLanguage {
         RbPtr<const Variable>                           q;
         RbPtr<const Variable>                           rate;
         RbPtr<const Variable>                           nSites;
+        RbPtr<const Variable>                           type;
         
     };
     
@@ -63,39 +63,66 @@ namespace RevLanguage {
 
 
 #include "CharacterData.h"
+#include "OptionRule.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "RlRateMatrix.h"
+#include "RlString.h"
 #include "RateMatrix.h"
-#include "RlTree.h"
 
 
-template <class charType, class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution< AbstractCharacterData >() {
+template <class treeType>
+RevLanguage::CharacterStateEvolutionAlongTree<treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution< AbstractCharacterData >() {
     
 }
 
 
-template <class charType, class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::~CharacterStateEvolutionAlongTree() {
+template <class treeType>
+RevLanguage::CharacterStateEvolutionAlongTree<treeType>::~CharacterStateEvolutionAlongTree() {
     
 }
 
 
 
-template <class charType, class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>* RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::clone( void ) const {
+template <class treeType>
+RevLanguage::CharacterStateEvolutionAlongTree<treeType>* RevLanguage::CharacterStateEvolutionAlongTree<treeType>::clone( void ) const {
     return new CharacterStateEvolutionAlongTree(*this);
 }
 
 
-template <class charType, class treeType>
-RevBayesCore::SimpleSiteHomogeneousCharEvoModel<typename charType::valueType, typename treeType::valueType>* RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::createDistribution( void ) const {
+template <class treeType>
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLanguage::CharacterStateEvolutionAlongTree<treeType>::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<double>* cr = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
-    int n = static_cast<const Natural &>( nSites->getValue() ).getValueNode()->getValue();
-    RevBayesCore::SimpleSiteHomogeneousCharEvoModel<typename charType::valueType, typename treeType::valueType>*   d = new RevBayesCore::SimpleSiteHomogeneousCharEvoModel<typename charType::valueType, typename treeType::valueType>(tau, rm, cr, true, n);
+    int n = static_cast<const Natural &>( nSites->getValue() ).getValue();
+    const std::string& dt = static_cast<const RlString &>( type->getValue() ).getValue();
+    
+    
+    RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
+    
+    if ( dt == "DNA" ) 
+    {
+        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
+        dist->setRateMatrix( rm );
+        dist->setClockRate( cr );
+        d = dist;
+    } 
+    else if ( dt == "RNA" )
+    {
+        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n);
+        dist->setRateMatrix( rm );
+        dist->setClockRate( cr );
+        d = dist;
+    }
+    else if ( dt == "AA" || dt == "Protein" )
+    {
+        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, true, n);
+        dist->setRateMatrix( rm );
+        dist->setClockRate( cr );
+        d = dist;
+    }
     
     return d;
 }
@@ -103,8 +130,8 @@ RevBayesCore::SimpleSiteHomogeneousCharEvoModel<typename charType::valueType, ty
 
 
 /* Get class name of object */
-template <class charType, class treeType>
-const std::string& RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::getClassName(void) { 
+template <class treeType>
+const std::string& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getClassName(void) { 
     
     static std::string rbClassName = "Character-State-Evolution-Along-Tree Process";
     
@@ -112,8 +139,8 @@ const std::string& RevLanguage::CharacterStateEvolutionAlongTree<charType, treeT
 }
 
 /* Get class type spec describing type of object */
-template <class charType, class treeType>
-const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::getClassTypeSpec(void) { 
+template <class treeType>
+const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -124,8 +151,8 @@ const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<charT
 
 
 /** Return member rules (no members) */
-template <class charType, class treeType>
-const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::getMemberRules(void) const {
+template <class treeType>
+const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getMemberRules(void) const {
     
     static MemberRules distCharStateEvolutionMemberRules;
     static bool rulesSet = false;
@@ -137,6 +164,13 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<ch
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "rate"    , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"  , true, Natural::getClassTypeSpec() ) );
         
+        Vector<RlString> options;
+        options.push_back( RlString("DNA") );
+        options.push_back( RlString("RNA") );
+        options.push_back( RlString("AA") );
+        options.push_back( RlString("Protein") );
+        distCharStateEvolutionMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
+        
         rulesSet = true;
     }
     
@@ -144,8 +178,8 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<ch
 }
 
 
-template <class charType, class treeType>
-const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::getTypeSpec( void ) const {
+template <class treeType>
+const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -154,8 +188,8 @@ const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<charT
 
 
 /** Print value for user */
-template <class charType, class treeType>
-void RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::printValue(std::ostream& o) const {
+template <class treeType>
+void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::printValue(std::ostream& o) const {
     
     o << "Character-State-Evolution-Along-Tree Process(tree=";
     if ( tree != NULL ) {
@@ -186,8 +220,8 @@ void RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::printVal
 
 
 /** Set a member variable */
-template <class charType, class treeType>
-void RevLanguage::CharacterStateEvolutionAlongTree<charType, treeType>::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+template <class treeType>
+void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
     if ( name == "tree" ) 
     {

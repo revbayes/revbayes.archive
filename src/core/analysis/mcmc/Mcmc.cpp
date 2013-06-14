@@ -66,16 +66,19 @@ void Mcmc::burnin(int generations, int tuningInterval) {
 #endif
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
+    {
         (*it)->resetCounters();
     }
     
     int printInterval = int(fmax(1,generations/20.0));
     
     // Run the chain
-    for (int k=1; k<=generations; k++) {
+    for (int k=1; k<=generations; k++) 
+    {
         
-        if ( k % printInterval == 0 ) {
+        if ( k % printInterval == 0 ) 
+        {
             std::cout << "**";
             std::cout.flush();
         }
@@ -83,7 +86,8 @@ void Mcmc::burnin(int generations, int tuningInterval) {
         nextCycle(false);
         
         // check for autotuning
-        if ( k % tuningInterval == 0 ) {
+        if ( k % tuningInterval == 0 ) 
+        {
             
             // tune the moves
             for (size_t i=0; i<moves.size(); i++) {
@@ -279,12 +283,10 @@ void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor 
 
 void Mcmc::run(int generations) {
     
-    if ( gen == 0 ) {
+    if ( gen == 0 ) 
+    {
         // Monitor
         monitor(0);
-        //for (size_t i=0; i<monitors.size(); i++) {
-        //    monitors[i]->monitor(0);
-        //}
     }
     
 #ifdef DEBUG_MCMC
@@ -292,86 +294,70 @@ void Mcmc::run(int generations) {
 #endif
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
+    {
         (*it)->resetCounters();
     }
     
     // Run the chain
-    for (int k=1; k<=generations; k++) {
-        gen++;
+    for (int k=1; k<=generations; k++) 
+    {
         nextCycle(true);
         
         // Monitor
         monitor(gen);
-        
-        //for (size_t i=0; i<monitors.size(); i++) {
-        //    monitors[i]->monitor(gen);
-       // }
-        
-//        // check for autotuning and only tune in first half
-//        if ( gen <= generations/2 && gen % tuningInterval == 0 ) {
-//            
-//            /* tune the moves */
-//            for (size_t i=0; i<moves.size(); i++) {
-//                moves[i]->autoTune();
-//            }
-//        }
-                
+                        
     }
     
-    // Close the output file and print headers
-//    for (size_t i=0; i<monitors.size(); i++) {
-//        // get the monitor
-//        if ( typeid(*monitors[i]) == typeid(FileMonitor) ) {
-//            
-//            FileMonitor* theMonitor = static_cast<FileMonitor*>( monitors[i] );
-//            
-//            // open the file stream for the monitor
-//            theMonitor->closeStream();
-//        }
-//    }
-
     
 }
 
 int Mcmc::nextCycle(bool advanceCycle) {
 
     size_t proposals = round( schedule.getNumberMovesPerIteration() );
-    for (size_t i=0; i<proposals; i++) {
+    for (size_t i=0; i<proposals; i++) 
+    {
         // Get the move
         Move* theMove = schedule.nextMove();
         
-        if ( theMove->isGibbs() ) {
+        if ( theMove->isGibbs() ) 
+        {
             // do Gibbs proposal
             theMove->performGibbs();
             // theMove->accept(); // Not necessary, because Gibbs samplers are automatically accepted.
-        } else {
+        } 
+        else 
+        {
             // do a Metropolois-Hastings proposal
             
             // Propose a new value
             double lnProbabilityRatio;
             double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
-            // QUESTION: How to Gibbs samplers by-pass the accept-reject?
 
             // Calculate acceptance ratio
             double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
             
-            if (lnR >= 0.0) {
+            if (lnR >= 0.0) 
+            {
                 theMove->accept();
                 lnProbability += lnProbabilityRatio;
             }
-            else if (lnR < -300.0){
+            else if (lnR < -300.0)
+            {
                 theMove->reject();
             }
-            else {
+            else 
+            {
                 double r = exp(lnR);
                 // Accept or reject the move
                 double u = GLOBAL_RNG->uniform01();
-                if (u < r) {
+                if (u < r) 
+                {
                     theMove->accept();
                     lnProbability += lnProbabilityRatio;
                 }
-                else {
+                else 
+                {
                     theMove->reject();
                 }
             }
@@ -381,7 +367,8 @@ int Mcmc::nextCycle(bool advanceCycle) {
         // Assert that the probability calculation shortcuts work
         double curLnProb = 0.0;
         std::vector<double> lnRatio;
-        for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+        for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+        {
             (*i)->touch();
             double lnProb = (*i)->getLnProbability();
             curLnProb += lnProb;
@@ -435,7 +422,8 @@ std::vector<Monitor*>& Mcmc::getMonitors(void)
 void Mcmc::monitor(int g)
 {
     // Monitor
-    for (size_t i = 0; i < monitors.size(); i++) {
+    for (size_t i = 0; i < monitors.size(); i++) 
+    {
         monitors[i]->monitor(g);
     }
 }
@@ -447,7 +435,8 @@ void Mcmc::printOperatorSummary(void) const {
     
     std::cerr << "                  Name                  | Param    |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
     std::cerr << "=====================================================================================================================" << std::endl;
-    for (std::vector<Move*>::const_iterator it = moves.begin(); it != moves.end(); ++it) {
+    for (std::vector<Move*>::const_iterator it = moves.begin(); it != moves.end(); ++it) 
+    {
         (*it)->printSummary(std::cerr);
     }
     

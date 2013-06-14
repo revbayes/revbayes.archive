@@ -191,9 +191,8 @@ void ModelMonitor::printHeader() {
         // print the header
         if (theNode->getName() != "")
         {
-            // print the value
+            // print the name
             theNode->printName(outStream,separator);
-//            outStream << theNode->getName();
         }
         else
         {

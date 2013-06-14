@@ -18,6 +18,7 @@
 #include "TestBirthDeath.h"
 #include "TestBirthDeathModelImplementations.h"
 #include "TestBrownianMotion.h"
+#include "TestCharEvoModelImplementationPerformance.h"
 #include "TestCoala.h"
 #include "TestConstantPopCoalescent.h"
 #include "TestDistributions.h"
@@ -204,7 +205,7 @@ bool Test::performTests(void) {
     /* A coalescent model test */
     try {
         TestMultispeciesCoalescentCombinatorics testCoal = TestMultispeciesCoalescentCombinatorics();
-        testCoal.run();
+//        testCoal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -389,6 +390,15 @@ bool Test::performTests(void) {
     try {
         TestBayesFactor testBF = TestBayesFactor(10000);
 //        testBF.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+
+    
+    /* A char-evo-model performance test */
+    try {
+        TestCharEvoModelImplementationPerformance testGtr = TestCharEvoModelImplementationPerformance("data/primates.nex", "trees/primates.tree", 10000);
+        testGtr.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

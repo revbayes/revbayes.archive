@@ -381,7 +381,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::comp
             ++p_site_left_j; ++p_site_right_j;
         }
         // add the likelihood for this site
-        this->lnProb += log(tmp);
+        this->lnProb += log(tmp) * patternCounts[site];
             
         // increment the pointers to the next site
         p_site_left+=siteOffset; p_site_right+=siteOffset;

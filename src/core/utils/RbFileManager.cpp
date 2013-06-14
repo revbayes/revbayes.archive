@@ -17,7 +17,6 @@
 
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RlUserInterface.h"
 #include <iostream>
 #include <string>
 #include <sys/stat.h>
@@ -274,10 +273,10 @@ bool RbFileManager::listDirectoryContents(const std::string& dirpath) {
 
     DIR* dir = opendir( dirpath.c_str() );
     if (dir)
-        {
+    {
         struct dirent* entry;
         while ((entry = readdir( dir )))
-            {
+        {
             struct stat entryinfo;
             std::string entryname = entry->d_name;
 #	ifdef WIN32
@@ -286,26 +285,34 @@ bool RbFileManager::listDirectoryContents(const std::string& dirpath) {
             std::string entrypath = dirpath + "/" + entryname;
 #   endif
             if (!stat( entrypath.c_str(), &entryinfo ))
-                {
+            {
                 if (S_ISDIR( entryinfo.st_mode ))
-                    {
+                {
                     if      (entryname == "..")
+                    {
                         ;
+                    }
                     else if (entryname == "." ) 
-                        RBOUT( dirpath + "/" );
+                    {
+                        ;
+                        //RBOUT( dirpath + "/" );
                         //result.push_back( dirpath + "/" );
+                    }
                     else
+                    {
                         listDirectoryContents( entrypath );
                     }
+                }
                 else
-                    {
-                    RBOUT( entrypath );
+                {
+                    //RBOUT( entrypath );
                     //result.push_back( entrypath );
-                    }
                 }
             }
-        closedir( dir );
         }
+        closedir( dir );
+    }
+    
     return true;
 }
 

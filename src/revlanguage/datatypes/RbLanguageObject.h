@@ -61,7 +61,7 @@ public:
     virtual RevBayesCore::DagNode*      getValueNode(void) const;
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
 
-    // functions wrapper objects of RB core object might want to overwrite
+    // functions wrapper objects of RB core objects you might want to overwrite
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual void                        makeConstantValue();                                                                            //!< Convert the stored variable to a constant variable (if applicable)
     virtual void                        replaceVariable(RbLanguageObject *newVar);                                                      //!< Replace the internal DAG node
