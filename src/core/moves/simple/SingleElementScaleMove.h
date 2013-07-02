@@ -49,7 +49,7 @@ namespace RevBayesCore {
         
         StochasticNode< std::vector<double> >*      variable;
         size_t                                      index;
-        double                                      storedValue;
+		std::vector< double >                                      storedValue;
         
     };
     

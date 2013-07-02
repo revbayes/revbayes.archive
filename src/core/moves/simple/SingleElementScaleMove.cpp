@@ -19,6 +19,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbMathVector.h"
 #include "TypedDagNode.h"
 
 #include <cmath>
@@ -60,12 +61,15 @@ double SingleElementScaleMove::performSimpleMove( void ) {
     index = int(rng->uniform01() * val.size());
     
     // copy value
-    storedValue = val[index];
+    storedValue = val;
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
     double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
     val[index] *= scalingFactor;
+	
+	// normalize 
+	RbMath::normalize ( val, 1.0);
     
     // compute the Hastings ratio
     double lnHastingsratio = log( scalingFactor );
@@ -80,8 +84,12 @@ void SingleElementScaleMove::printParameterSummary(std::ostream &o) const {
 
 
 void SingleElementScaleMove::rejectSimpleMove( void ) {
+    
+    std::vector<double> &val = variable->getValue();
+	
     // swap current value and stored value
-    variable->getValue()[index] = storedValue;
+    val = storedValue;
+	
 }
 
 
