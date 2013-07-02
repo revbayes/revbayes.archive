@@ -113,6 +113,20 @@ void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbab
     P[3][1] = (pi_C * ( pi_CT+pi_AG*aa ) - pi_C*bbY) / pi_CT;
     P[3][2] = P[1][2];
     P[3][3] = (pi_T * ( pi_CT+pi_AG*aa ) + pi_C*bbY) / pi_CT;
+	
+	// test for positive likelihood
+	bool err = false;
+	for (size_t i = 0; i < P.size(); i++)
+	{
+		for (size_t j = 0; j < P.size(); j++)
+		{
+			if (P[i][j] >= 1)
+			{
+				err = true;
+				;
+			}
+		}
+	}
 }
 
 

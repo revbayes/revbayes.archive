@@ -29,6 +29,7 @@
 #include "TestGtrModelFixedTree.h"
 #include "TestGtrUnrooted.h"
 #include "TestBranchHeterogeneousGtrModel.h"
+#include "TestBranchHeterogeneousHkyModel.h"
 #include "TestBranchHeterogeneousTamura92Model.h"
 #include "TestMixtureBranchHeterogeneousGtrModel.h"
 #include "TestMixtureModel.h"
@@ -196,7 +197,8 @@ bool Test::performTests(void) {
     /* A coalescent model test */
     try {
         TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/primates.tree");
-//        testCoal.run();
+//        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/smallTest.tree");
+//       testCoal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -269,6 +271,17 @@ bool Test::performTests(void) {
 
        // testHeteroGtr.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroGtrModel.tree");
+        //    testTrace.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+	
+    /* A branch-heterogeneous HKY model test */
+    try {
+        TestBranchHeterogeneousHkyModel testHeteroHky = TestBranchHeterogeneousHkyModel("/Users/boussau/Dropbox/HeterogeneousModelsRevBayes/data/SheffieldBeetles.fasta", 1000);
+		
+		testHeteroHky.run();
+        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroHkyModel.tree");
         //    testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
@@ -398,7 +411,7 @@ bool Test::performTests(void) {
     /* A char-evo-model performance test */
     try {
         TestCharEvoModelImplementationPerformance testGtr = TestCharEvoModelImplementationPerformance("data/primates.nex", "trees/primates.tree", 10000);
-        testGtr.run();
+//		        testGtr.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
