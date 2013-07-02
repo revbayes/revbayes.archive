@@ -11,7 +11,7 @@
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "TypeSpec.h"
-#include "VectorPointer.h"
+#include "VectorRbPointer.h"
 
 
 using namespace RevLanguage;
@@ -39,8 +39,8 @@ void Mcmc::constructInternalObject( void ) {
     
     // now allocate a new sliding move
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorPointer<Move> &>( moves->getValue() ).getValue();
-    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorPointer<Monitor> &>( monitors->getValue() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
+    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getValue() ).getValue();
     value = new RevBayesCore::Mcmc(mdl, mvs, mntr);
 }
 
@@ -102,8 +102,8 @@ const MemberRules& Mcmc::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("monitors", true, VectorPointer<Monitor>::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorPointer<Move>::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

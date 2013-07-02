@@ -284,20 +284,29 @@ void Function::clearArguments(void) {
 /** Compute the match score between the argument and the argument rule. */
 int Function::computeMatchScore(const Variable *var, const ArgumentRule &rule) {
    
-    int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
+    int     score = 10000;   // Needs to be larger than the max depth of the class hierarchy
 
     const TypeSpec& argClass = var->getValue().getTypeSpec();
-    size_t j = 0;
-    const TypeSpec* parent = &argClass;
-    do {
-        if (*parent == rule.getArgumentTypeSpec() ) {
-            return int(j);
-        }
-        parent = parent->getParentType();
-        j++;
-    } while (parent != NULL);
+    const std::vector<TypeSpec> &ruleArgTypes = rule.getArgumentTypeSpec();
+    for ( std::vector<TypeSpec>::const_iterator it = ruleArgTypes.begin(); it != ruleArgTypes.end(); ++it) 
+    {
+        int j = 0;
+        const TypeSpec* parent = &argClass;
+        do {
+            if (*parent == *it ) {
+                score = j;
+                break;
+            }
+            parent = parent->getParentType();
+            j++;
+            if ( j >= score ) 
+            {
+                break;
+            }
+        } while (parent != NULL);
+    }
     
-    return aLargeNumber;    // We needed type conversion for this argument
+    return score;    // We needed type conversion for this argument
 }
 
 
@@ -449,7 +458,8 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable(), true) && !filled[j] ) {
+                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable(), true) && !filled[j] ) 
+                {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
@@ -467,7 +477,8 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
     /*********************  2. Do partial matching  **********************/
 
     /* Do partial matching of labels */
-    for(size_t i=0; i<passedArgs.size(); i++) {
+    for(size_t i=0; i<passedArgs.size(); i++) 
+    {
 
         /* Skip if already matched */
         if ( taken[i] )
@@ -482,9 +493,11 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
         int matchRule = -1;
 
         /* Try all rules */
-        for (size_t j=0; j<nRules; j++) {
+        for (size_t j=0; j<nRules; j++) 
+        {
 
-            if ( !filled[j] && theRules[j].getArgumentLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) {
+            if ( !filled[j] && theRules[j].getArgumentLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) 
+            {
                 ++nMatches;
                 matchRule = static_cast<int>( j );
             }
@@ -493,7 +506,8 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
         if (nMatches != 1)
             throw RbException("Argument matches mutliple parameters.");
  
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), true ) ) {
+        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), true ) ) 
+        {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
@@ -506,23 +520,28 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
     /*********************  3. Fill with unused passedArgs  **********************/
 
     /* Fill in empty slots using the remaining args in order */
-    for(size_t i=0; i<passedArgs.size(); i++) {
+    for(size_t i=0; i<passedArgs.size(); i++) 
+    {
 
         /* Skip if already matched */
         if ( taken[i] )
             continue;
 
         /* Find first empty slot and try to fit argument there */
-        for (size_t j=0; j<nRules; j++) {
+        for (size_t j=0; j<nRules; j++) 
+        {
 
-            if ( filled[j] == false ) {
+            if ( filled[j] == false ) 
+            {
                 if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), true ) ) {
                     taken[i]          = true;
-                    if ( !theRules[j].isEllipsis() ) {
+                    if ( !theRules[j].isEllipsis() ) 
+                    {
                         filled[j]     = true;
                         passedArgIndex[j] = static_cast<int>( i );
                     }
-                    else {
+                    else 
+                    {
                         ellipsisArgs.push_back( passedArgs[i] );
                     }
                     
@@ -540,7 +559,8 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
     /*********************  4. Fill with default values  **********************/
 
     /* Fill in empty slots using default values */
-    for(size_t i=0; i<nRules; i++) {
+    for(size_t i=0; i<nRules; i++) 
+    {
 
         if ( filled[i] == true || theRules[i].isEllipsis())
             continue;
@@ -551,7 +571,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 
         const ArgumentRule& theRule = theRules[i];
         RbPtr<Variable> theVar = theRule.getDefaultVariable().clone();
-        theVar->setValueTypeSpec( theRule.getArgumentTypeSpec() );
+        theVar->setValueTypeSpec( theRule.getDefaultVariable().getValueTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;
         pArgs.push_back( Argument( theVar, "" ) );

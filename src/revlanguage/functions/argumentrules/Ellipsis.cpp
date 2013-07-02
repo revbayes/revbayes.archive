@@ -41,6 +41,13 @@ bool RevLanguage::Ellipsis::isEllipsis( void ) const {
 /** Print value for user (in descriptions of functions, for instance */
 void RevLanguage::Ellipsis::printValue(std::ostream &o) const {
 
-    o << argTypeSpec << " ...";
+    
+    for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
+    {
+        if ( it != argTypeSpecs.begin() )
+            o << "|";
+        o << *it;
+    }
+    o << " ...";
 }
 

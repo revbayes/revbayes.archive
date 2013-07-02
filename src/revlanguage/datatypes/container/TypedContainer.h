@@ -33,9 +33,9 @@ namespace RevLanguage {
         
     public:
         // the value type definition
-        typedef rbType valueType;
-        typedef typename rbType::iterator iterator;
-        typedef typename rbType::const_iterator const_iterator;
+        typedef rbType                              valueType;
+        typedef typename rbType::iterator           iterator;
+        typedef typename rbType::const_iterator     const_iterator;
 
         virtual                                    ~TypedContainer(void);                                               //!< Destructor        
 

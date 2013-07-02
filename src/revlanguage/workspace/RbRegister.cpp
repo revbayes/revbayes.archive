@@ -302,20 +302,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantBirthDeathProcess() );
         
-        // character state evolution model (DNA)
+        // character state evolution model (DNA|RNA|AA)
         addDistribution( "substModel", new CharacterStateEvolutionAlongTree<TimeTree>() );
         addDistribution( "substModel", new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
-        
-//        // character state evolution model (RNA)
-//        addDistribution( "RNA_model", new CharacterStateEvolutionAlongTree<RnaState,TimeTree>() );
-//        addDistribution( "RNA_model", new CharacterStateEvolutionAlongTree<RnaState,BranchLengthTree>() );
-//        
-//        // character state evolution model (Protein)
-//        addDistribution( "Protein_model", new CharacterStateEvolutionAlongTree<AminoAcidState,TimeTree>() );
-//        addDistribution( "Protein_model", new CharacterStateEvolutionAlongTree<AminoAcidState,BranchLengthTree>() );
-        
-        // relaxed (Time) clock-tree
-        addDistribution( "DNA_model", new RelaxedClockCharacterStateEvolution<DnaState,TimeTree>() );
         
         
         // uniform topology distribution

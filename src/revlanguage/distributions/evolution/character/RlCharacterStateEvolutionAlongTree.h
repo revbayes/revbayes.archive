@@ -68,6 +68,7 @@ namespace RevLanguage {
 #include "RlRateMatrix.h"
 #include "RlString.h"
 #include "RateMatrix.h"
+#include "VectorAbstractElement.h"
 
 
 template <class treeType>
@@ -94,8 +95,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* cr = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
     int n = static_cast<const Natural &>( nSites->getValue() ).getValue();
     const std::string& dt = static_cast<const RlString &>( type->getValue() ).getValue();
     
@@ -105,22 +104,91 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     if ( dt == "DNA" ) 
     {
         RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
-        dist->setRateMatrix( rm );
-        dist->setClockRate( cr );
+        
+        // set the clock rates
+        if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
+        {
+            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const Vector<RealPos> &>( rate->getValue() ).getValueNode();
+            dist->setClockRate( clockRates );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
+            dist->setClockRate( clockRate );
+        }
+        
+        // set the rate matrix
+        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            dist->setRateMatrix( rm );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            dist->setRateMatrix( rm );
+        }
+        
         d = dist;
     } 
     else if ( dt == "RNA" )
     {
         RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n);
-        dist->setRateMatrix( rm );
-        dist->setClockRate( cr );
+        
+        
+        if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
+        {
+            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const Vector<RealPos> &>( rate->getValue() ).getValueNode();
+            dist->setClockRate( clockRates );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
+            dist->setClockRate( clockRate );
+        }
+        
+        // set the rate matrix
+        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            dist->setRateMatrix( rm );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            dist->setRateMatrix( rm );
+        }
+
         d = dist;
     }
     else if ( dt == "AA" || dt == "Protein" )
     {
         RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, true, n);
-        dist->setRateMatrix( rm );
-        dist->setClockRate( cr );
+        
+        
+        if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
+        {
+            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const Vector<RealPos> &>( rate->getValue() ).getValueNode();
+            dist->setClockRate( clockRates );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
+            dist->setClockRate( clockRate );
+        }
+        
+        // set the rate matrix
+        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            dist->setRateMatrix( rm );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            dist->setRateMatrix( rm );
+        }
+        
         d = dist;
     }
     
@@ -159,10 +227,19 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<tr
     
     if ( !rulesSet ) 
     {
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree"    , true, treeType::getClassTypeSpec() ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"       , true, RateMatrix::getClassTypeSpec() ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "rate"    , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"  , true, Natural::getClassTypeSpec() ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree"           , true, treeType::getClassTypeSpec() ) );
+        
+        std::vector<TypeSpec> rateMatrixTypes;
+        rateMatrixTypes.push_back( RateMatrix::getClassTypeSpec() );
+        rateMatrixTypes.push_back( Vector<RateMatrix>::getClassTypeSpec() );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"              , true, rateMatrixTypes ) );
+        
+        std::vector<TypeSpec> branchRateTypes;
+        branchRateTypes.push_back( RealPos::getClassTypeSpec() );
+        branchRateTypes.push_back( Vector<RealPos>::getClassTypeSpec() );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "branchRates"    , true, branchRateTypes, new RealPos(1.0) ) );
+        
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec() ) );
         
         Vector<RlString> options;
         options.push_back( RlString("DNA") );
@@ -231,13 +308,17 @@ void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::setConstMemberVari
     {
         q = var;
     }
-    else if ( name == "rate" ) 
+    else if ( name == "branchRates" ) 
     {
         rate = var;
     }
     else if ( name == "nSites" ) 
     {
         nSites = var;
+    }
+    else if ( name == "type" ) 
+    {
+        type = var;
     }
     else {
         Distribution::setConstMemberVariable(name, var);

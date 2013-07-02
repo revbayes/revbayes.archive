@@ -143,8 +143,8 @@ const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getMemberRules
     
     if ( !rulesSet ) {
 //        modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-//        modelMemberRules.push_back( new ArgumentRule("monitors", true, VectorPointer<Monitor>::getClassTypeSpec() ) );
-//        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorPointer<Move>::getClassTypeSpec() ) );
+//        modelMemberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
+//        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

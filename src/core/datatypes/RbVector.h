@@ -40,6 +40,10 @@ namespace RevBayesCore {
         RbVector(const RbVector<valueType> &v);
         virtual                                            ~RbVector(void);
         
+        typedef typename std::vector<valueType*>::iterator           iterator;
+        typedef typename std::vector<valueType*>::const_iterator     const_iterator;
+
+        
         // public member functions
         RbVector<valueType>*                                clone(void) const;                                                                      //!< Create an independent clone
         

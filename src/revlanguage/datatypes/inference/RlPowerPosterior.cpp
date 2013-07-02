@@ -13,7 +13,7 @@
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "TypeSpec.h"
-#include "VectorPointer.h"
+#include "VectorRbPointer.h"
 #include "Vector.h"
 
 
@@ -42,7 +42,7 @@ void PowerPosterior::constructInternalObject( void ) {
     
     // now allocate a new sliding move
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorPointer<Move> &>( moves->getValue() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
     int k     = static_cast<const Natural &>( cats->getValue() ).getValue();
     
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs);
@@ -121,7 +121,7 @@ const MemberRules& PowerPosterior::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorPointer<Move>::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
         modelMemberRules.push_back( new ArgumentRule("cats", true, Natural::getClassTypeSpec(), new Natural(20) ) );
         
         rulesSet = true;

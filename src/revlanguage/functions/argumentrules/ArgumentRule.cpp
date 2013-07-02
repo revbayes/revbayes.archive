@@ -25,12 +25,12 @@
 
 #include <sstream>
 
-
+using namespace RevLanguage;
 
 /**
  * Construct rule without default value; use "" for no label.
  */
-RevLanguage::ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp) : label(argName), argTypeSpec( argTypeSp ), isConst( c ), hasDefaultVal(false), defaultVar( NULL ) {
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp) : label(argName), argTypeSpecs( 1, argTypeSp ), isConst( c ), hasDefaultVal(false), defaultVar( NULL ) {
 
 }
 
@@ -38,115 +38,148 @@ RevLanguage::ArgumentRule::ArgumentRule(const std::string& argName, bool c, cons
 /**
  * Construct rule without default value; use "" for no label.
  */
-RevLanguage::ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RbLanguageObject *defVal) : label(argName), argTypeSpec( argTypeSp ), isConst( c ), hasDefaultVal( true ), defaultVar( new Variable( defVal ) ) {
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RbLanguageObject *defVal) : label(argName), argTypeSpecs( 1, argTypeSp ), isConst( c ), hasDefaultVal( true ), defaultVar( new Variable( defVal ) ) {
+    
+}
+
+
+/**
+ * Construct rule without default value; use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp) : label(argName), argTypeSpecs( argTypeSp ), isConst( c ), hasDefaultVal(false), defaultVar( NULL ) {
+    
+}
+
+
+/**
+ * Construct rule without default value; use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RbLanguageObject *defVal) : label(argName), argTypeSpecs( argTypeSp ), isConst( c ), hasDefaultVal( true ), defaultVar( new Variable( defVal ) ) {
     
 }
 
 
 
-RevLanguage::ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const {
+ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const {
+
     return new ArgumentRule( *this );
 }
 
 
-const std::string& RevLanguage::ArgumentRule::getArgumentLabel(void) const {
+const std::string& ArgumentRule::getArgumentLabel(void) const {
     return label;
 }
 
 
-const RevLanguage::TypeSpec& RevLanguage::ArgumentRule::getArgumentTypeSpec(void) const {
-    return argTypeSpec;
+const std::vector<TypeSpec>& ArgumentRule::getArgumentTypeSpec(void) const {
+    return argTypeSpecs;
 }
 
 
 
-const RevLanguage::Variable& RevLanguage::ArgumentRule::getDefaultVariable( void ) const {
-    if ( defaultVar == NULL ) {
+const Variable& ArgumentRule::getDefaultVariable( void ) const {
+    
+    if ( defaultVar == NULL ) 
+    {
         throw RbException("Cannot get default variable \"" + label + "\"");
     }
+    
     return *defaultVar;
 }
 
 
-bool RevLanguage::ArgumentRule::hasDefault(void) const {
+bool ArgumentRule::hasDefault(void) const {
+    
     return hasDefaultVal;
 }
 
 
 /** Test if argument is valid */
-bool RevLanguage::ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool convert) const {
+bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool convert) const {
     
     if ( var == NULL )
         return false;
     
-    // first we check if the type we want is already guaranteed by the variable
-    if ( var->getValueTypeSpec().isDerivedOf( argTypeSpec ) ) {
-        return true;
-    }
-
-    // we can only change the required value type of the variable if we want a derived type of the current value type
-    if ( argTypeSpec.isDerivedOf( var->getValueTypeSpec() ) ) {
-                          
-        // first we check if the argument needs to be converted
-        if ( var->getValue().isTypeSpec( argTypeSpec ) ) {
-            // No, we don't.
-            
-            // do the conversion if we are actually asked to
-            if ( convert ) {
-                // this is a safe const cast (Sebastian)
-                const_cast<Variable*>( (const Variable *)var )->setValueTypeSpec( argTypeSpec );
-            }
-            
-            return true;
-        } else if ( var->getValue().isConstant() && var->getValue().isConvertibleTo( argTypeSpec ) ) {
-            // Yes, we can and have to convert
-            
-            // should we do the type conversion?
-            if ( convert ) {
-                
-                RbLanguageObject* convObj = var->getValue().convertTo( argTypeSpec );
-                const_cast<Variable*>( (const Variable *) var )->setValue( convObj );
-
-                // set the new type spec of the variable
-                const_cast<Variable*>( (const Variable *) var )->setValueTypeSpec( argTypeSpec );
-            }
+    for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
+    {
+        // first we check if the type we want is already guaranteed by the variable
+        if ( var->getValueTypeSpec().isDerivedOf( *it ) ) 
+        {
             return true;
         }
+
+        // we can only change the required value type of the variable if we want a derived type of the current value type
+        if ( it->isDerivedOf( var->getValueTypeSpec() ) ) 
+        {
+                          
+            // first we check if the argument needs to be converted
+            if ( var->getValue().isTypeSpec( *it ) ) 
+            {
+                // No, we don't.
+            
+                // do the conversion if we are actually asked to
+                if ( convert ) 
+                {
+                    // this is a safe const cast (Sebastian)
+                    const_cast<Variable*>( (const Variable *)var )->setValueTypeSpec( *it );
+                }
+            
+                return true;
+            } 
+            else if ( var->getValue().isConstant() && var->getValue().isConvertibleTo( *it ) ) 
+            {
+                // Yes, we can and have to convert
+            
+                // should we do the type conversion?
+                if ( convert ) 
+                {
+                
+                    RbLanguageObject* convObj = var->getValue().convertTo( *it );
+                    const_cast<Variable*>( (const Variable *) var )->setValue( convObj );
+
+                    // set the new type spec of the variable
+                    const_cast<Variable*>( (const Variable *) var )->setValueTypeSpec( *it );
+                }
+                return true;
+            }
         
+        }
     }
     
     return false;
 }
 
 
-/** Test if argument is valid */
-bool RevLanguage::ArgumentRule::isArgumentValid(const RbLanguageObject& var, bool &conversionNeeded, TypeSpec &conversionType) const {
-    
-    // first we check if the type we want is already guaranteed by the variable
-    if ( var.getTypeSpec().isDerivedOf( argTypeSpec ) ) {
-        return true;
-    }
-    
-    if ( var.isConvertibleTo( argTypeSpec ) ) {
-        // Yes, we can and have to convert
-        // should we do the type conversion?
-        conversionNeeded = true;
-        conversionType.setElementType( new TypeSpec( argTypeSpec ) );
-        
-        return true;
-    }
-    
-    return false;
-}
+///** Test if argument is valid */
+//bool RevLanguage::ArgumentRule::isArgumentValid(const RbLanguageObject& var, bool &conversionNeeded, TypeSpec &conversionType) const {
+//    
+//    // first we check if the type we want is already guaranteed by the variable
+//    if ( var.getTypeSpec().isDerivedOf( argTypeSpec ) ) {
+//        return true;
+//    }
+//    
+//    if ( var.isConvertibleTo( argTypeSpec ) ) {
+//        // Yes, we can and have to convert
+//        // should we do the type conversion?
+//        conversionNeeded = true;
+//        conversionType.setElementType( new TypeSpec( argTypeSpec ) );
+//        
+//        return true;
+//    }
+//    
+//    return false;
+//}
 
 
 bool RevLanguage::ArgumentRule::isConstant( void ) const {
+    
     return isConst;
 }
 
 
 
 bool RevLanguage::ArgumentRule::isEllipsis( void ) const {
+    
     return false;
 }
  
@@ -155,7 +188,12 @@ bool RevLanguage::ArgumentRule::isEllipsis( void ) const {
 /** Print value for user (in descriptions of functions, for instance) */
 void RevLanguage::ArgumentRule::printValue(std::ostream &o) const {
 
-    o << argTypeSpec;
+    for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
+    {
+        if ( it != argTypeSpecs.begin() )
+            o << "|";
+        o << *it;
+    }
     o << " \"" << label << "\"";
 }
 

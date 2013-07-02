@@ -53,7 +53,7 @@ namespace RevLanguage {
 #include "RbUtil.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "VectorPointer.h"
+#include "VectorRbPointer.h"
 
 
 
@@ -80,7 +80,7 @@ RevLanguage::RbLanguageObject* RevLanguage::Func_rlvector<valType>::execute( voi
         params.push_back( val.getValue().clone() );
     }
     
-    VectorPointer<valType> *theVector = new VectorPointer<valType>( params );
+    VectorRbPointer<valType> *theVector = new VectorRbPointer<valType>( params );
         
     return theVector;
 }

@@ -7,7 +7,7 @@
  * (e.g. getTypeSpec and getClassTypeSpec for argument checking)
  *
  *
- * @brief Declaration of VectorPointer
+ * @brief Declaration of VectorRbPointer
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-08-31 17:34:45 +0200 (Fri, 31 Aug 2012) $
