@@ -61,22 +61,11 @@ double BetaSimplexMove::performSimpleMove( void ) {
 	const double& curVal = variable->getValue();
 	double newVal = curVal;
     
-	/* We update the simplex values by proposing new values from a Dirichlet centered
-     on the current values. The i-th parameter of the Dirichlet is the i-th value
-     in the simplex multiplied by a parameter (alpha0, AKA tuning) that controls the
-     variance of the Dirichlet. We implement two cases of this general move. In one
-     case, all of the elements of the simplex are targeted for update (n == k). In the
-     other, more complicated, case a subset of the elements of the simplex are updated
-     (k < n). Here, we construct a smaller simplex with k+1 elements. The first k of the
-     elements are the values from the full simplex that were targeted for update. The last
-     element of the smaller simplex accumulates the probabilities of all of the simplex
-     values in the full simplex that were not targeted for update. We then update the
-     small simplex by centering a Dirichlet on the small simplex. The values for those elements
-     in the full simplex that were not targeted for update are all changed proportionally.
-     This means that we need to calculate the Jacobian for the Hastings ratio in this case. */
+	/* We update the simplex values by proposing new values from a Beta distribution centered
+     on the current values. */
 	double lnProposalRatio = 0.0;
     
-    // first, we get the parameters of the Dirichlet for the forward move
+    // first, we get the parameters of the Beta for the forward move
     double alphaForward = curVal * alpha;
     
     // then, we propose new values

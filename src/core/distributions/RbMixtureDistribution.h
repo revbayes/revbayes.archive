@@ -127,6 +127,7 @@ size_t RevBayesCore::RbMixtureDistribution<mixtureType>::getNumberOfCategories( 
 
 template <class mixtureType>
 const RevBayesCore::RbVector<mixtureType>& RevBayesCore::RbMixtureDistribution<mixtureType>::getParameterValues( void ) const {
+    
     return parameterValues->getValue();
 }
 
@@ -135,6 +136,7 @@ void RevBayesCore::RbMixtureDistribution<mixtureType>::keepSpecialization( DagNo
     // only do this when the toucher was our parameters
     if ( affecter == parameterValues )
         this->dagNode->keepAffected();
+    
 }
 
 
@@ -146,7 +148,8 @@ mixtureType* RevBayesCore::RbMixtureDistribution<mixtureType>::simulate() {
     RandomNumberGenerator *rng = GLOBAL_RNG;
     double u = rng->uniform01();
     index = 0;
-    while ( u > probs[index] ) {
+    while ( u > probs[index] ) 
+    {
         u -= probs[index];
         index++;
     }
@@ -157,52 +160,66 @@ mixtureType* RevBayesCore::RbMixtureDistribution<mixtureType>::simulate() {
 
 template <class mixtureType>
 void RevBayesCore::RbMixtureDistribution<mixtureType>::redrawValue( void ) {
+    
     delete this->value;
     this->value = simulate();
+
+}
+
+
+template <class mixtureType>
+void RevBayesCore::RbMixtureDistribution<mixtureType>::restoreSpecialization( DagNode *restorer ) {
+    
+    // only do this when the toucher was our parameters
+    if ( restorer == parameterValues ) 
+    {
+        delete this->value;
+        this->value = parameterValues->getValue()[index].clone();
+        this->dagNode->restoreAffected();
+    }
+    
 }
 
 
 template <class mixtureType>
 void RevBayesCore::RbMixtureDistribution<mixtureType>::setCurrentIndex(size_t i) {
+    
     index = i;
     delete this->value;
     this->value = parameterValues->getValue()[i].clone();
+
 }
 
 
 
 template <class mixtureType>
 void RevBayesCore::RbMixtureDistribution<mixtureType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == parameterValues) {
+    
+    if (oldP == parameterValues) 
+    {
         parameterValues = static_cast<const TypedDagNode< RbVector<mixtureType> >* >( newP );
     }
-    else if (oldP == probabilities) {
+    else if (oldP == probabilities) 
+    {
         probabilities = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
     }
-}
-
-
-template <class mixtureType>
-void RevBayesCore::RbMixtureDistribution<mixtureType>::restoreSpecialization( DagNode *restorer ) {
-    // only do this when the toucher was our parameters
-    if ( restorer == parameterValues ) {
-        delete this->value;
-        this->value = parameterValues->getValue()[index].clone();
-        this->dagNode->restoreAffected();
-    }
+    
 }
 
 
 template <class mixtureType>
 void RevBayesCore::RbMixtureDistribution<mixtureType>::setValue(mixtureType const &v) {
     
-    const std::vector<mixtureType> &vals = parameterValues->getValue();
-    // we need to catch the value and increment the index
-    for (index = 0; index < vals.size(); ++index) {
-        if ( vals[index] == v ) {
-            break;
-        }
-    }
+    // TODO: Reimplement this!!! (Sebastian)
+//    const std::vector<mixtureType> &vals = parameterValues->getValue();
+//    // we need to catch the value and increment the index
+//    for (index = 0; index < vals.size(); ++index) 
+//    {
+//        if ( vals[index] == v ) 
+//        {
+//            break;
+//        }
+//    }
     
     // delegate class
     //    StochasticNode<mixtureType>::setValue( v );
@@ -212,7 +229,8 @@ void RevBayesCore::RbMixtureDistribution<mixtureType>::setValue(mixtureType cons
 template <class mixtureType>
 void RevBayesCore::RbMixtureDistribution<mixtureType>::touchSpecialization( DagNode *toucher ) {
     // only do this when the toucher was our parameters
-    if ( toucher == parameterValues ) {
+    if ( toucher == parameterValues ) 
+    {
         delete this->value;
         this->value = parameterValues->getValue()[index].clone();
         this->dagNode->touchAffected();

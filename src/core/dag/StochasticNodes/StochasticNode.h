@@ -53,6 +53,7 @@ namespace RevBayesCore {
         bool                                                isClamped(void) const;                                                      //!< Is this DAG node clamped?
         bool                                                isStochastic(void) const;                                                   //!< Is this DAG node stochastic?
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
+        virtual void                                        setValue(const valueType &val, bool touch=true);                                  //!< Set the value of this node
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
 
     protected:    
@@ -285,6 +286,21 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer) {
 
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool touch) {
+    // set the value
+    distribution->setValue( val );
+    
+    if ( touch ) 
+    {
+        // touch this node for probability recalculation
+        this->touch();
+    }
+    
+}
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, bool touch) {
+    
     // set the value
     distribution->setValue( val );
     

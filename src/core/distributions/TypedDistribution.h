@@ -56,6 +56,7 @@ namespace RevBayesCore {
         
         // virtual methods
         virtual void                    setValue(valueType *v);                                             //!< Set the current value, e.g. attach an observation (clamp)
+        virtual void                    setValue(const valueType &v);                                       //!< Set the current value, e.g. attach an observation (clamp)
         
         // pure virtual public methods
         virtual TypedDistribution*      clone(void) const = 0;                                              //!< Clone the distribution
@@ -148,6 +149,16 @@ void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v ) {
     delete value;
     
     value = v;
+    
+}
+
+template <class valueType>
+void RevBayesCore::TypedDistribution<valueType>::setValue( const valueType &v ) {
+    
+    // free memory
+    delete value;
+    
+    value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v );
     
 }
 

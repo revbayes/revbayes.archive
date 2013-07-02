@@ -61,15 +61,12 @@ double SingleElementScaleMove::performSimpleMove( void ) {
     index = int(rng->uniform01() * val.size());
     
     // copy value
-    storedValue = val;
+    storedValue = val[index];
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
     double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
     val[index] *= scalingFactor;
-	
-	// normalize 
-	RbMath::normalize ( val, 1.0);
     
     // compute the Hastings ratio
     double lnHastingsratio = log( scalingFactor );
@@ -88,7 +85,7 @@ void SingleElementScaleMove::rejectSimpleMove( void ) {
     std::vector<double> &val = variable->getValue();
 	
     // swap current value and stored value
-    val = storedValue;
+    val[index] = storedValue;
 	
 }
 

@@ -30,7 +30,7 @@
 #include "RootTimeSlide.h"
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
-#include "SingleElementScaleMove.h"
+#include "SimplexSingleElementScale.h"
 #include "SlidingMove.h"
 #include "SubtreeScale.h"
 #include "TestBranchHeterogeneousHkyModel.h"
@@ -199,11 +199,11 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
     moves.push_back( new ScaleMove(tstv, 1.0, true, 2.0) );
-    moves.push_back( new SingleElementScaleMove( rf, 10.0, true, 2.0 ) );
+    moves.push_back( new SimplexSingleElementScale( rf, 10.0, true, 2.0 ) );
 	moves.push_back( new ScaleMove(alpha, 1.0, true, 2.0) );
 
     for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
-        moves.push_back( new SingleElementScaleMove( pis[i], 10.0, true, 2.0 ) );
+        moves.push_back( new SimplexSingleElementScale( pis[i], 10.0, true, 2.0 ) );
         moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, true, 1.0 ) );
     }
     
