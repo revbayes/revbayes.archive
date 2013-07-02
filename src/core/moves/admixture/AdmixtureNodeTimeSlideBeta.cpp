@@ -49,17 +49,8 @@ double AdmixtureNodeTimeSlideBeta::performSimpleMove( void ) {
     
     AdmixtureTree& tau = variable->getValue();
     
-    // pick a random node which is not the root and neithor the direct descendant of the root
+    // get nodes[nodeIndex]
     AdmixtureNode* node = &tau.getNode(nodeIndex);
-
-    /*
-    do {
-        double u = rng->uniform01();
-        size_t index = std::floor(tau.getNumberOfNodes() * u);
-        node = &tau.getNode(index);
-    } while ( node->isRoot() || node->isTip() );
-    */
-    
     AdmixtureNode& parent = node->getParent();
     
     // we need to work with the times
@@ -96,13 +87,14 @@ double AdmixtureNodeTimeSlideBeta::performSimpleMove( void ) {
     storedNode = node;
     storedAge = my_age;
     
-    // draw new ages and compute the hastings ratio at the same time
-//    double my_new_age = (parent_age-child_Age) * rng->uniform01() + child_Age;
-
-    // instead...
     // sample beta rv and compute proposal factors
     double ageRange = parent_age - child_Age;
     double unitAge = (storedAge - child_Age) / ageRange;
+    
+    
+    std::cout << child_Age << " "  << storedAge << " " << parent_age << " " << ageRange << " " << unitAge << "\n";
+
+    
     double a = delta * unitAge + 1.0;
     double b = delta * (1.0 - unitAge) + 1.0;
     double newUnitAge = RbStatistics::Beta::rv(a, b, *rng);
@@ -129,6 +121,8 @@ double AdmixtureNodeTimeSlideBeta::performSimpleMove( void ) {
 
 void AdmixtureNodeTimeSlideBeta::rejectSimpleMove( void ) {
     
+    std::cout << "Node Beta Slide Reject\n";
+    
     // undo the proposal
     storedNode->setAge( storedAge );
     
@@ -154,6 +148,10 @@ void AdmixtureNodeTimeSlideBeta::swapNode(DagNode *oldN, DagNode *newN) {
     variable = static_cast<StochasticNode<AdmixtureTree>* >(newN) ;
 }
 
+void AdmixtureNodeTimeSlideBeta::acceptSimpleMove(void)
+{
+    std::cout << "accept time slide beta\n";
+}
 
 void AdmixtureNodeTimeSlideBeta::tune( void ) {
     double rate = numAccepted / double(numTried);

@@ -395,8 +395,8 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         storedAdmixtureChild->setParent(newAdmixtureChildParent);
         
         // update with outgroup settings
-        storedAdmixtureChild->setOutgroup(storedAdmixtureChildParent->isOutgroup());
-        storedAdmixtureParent->setOutgroup(storedAdmixtureParentParent->isOutgroup());
+        storedAdmixtureChild->setOutgroup(newAdmixtureChildChild->isOutgroup());
+        storedAdmixtureParent->setOutgroup(newAdmixtureParentChild->isOutgroup());
         
      //   tau.checkAllEdgesRecursively(root);
         
@@ -520,8 +520,8 @@ void AdmixtureEdgeReplaceResidualWeights::rejectSimpleMove( void ) {
 
     
         // update with outgroup settings
-        storedAdmixtureChild->setOutgroup(storedAdmixtureChildParent->isOutgroup());
-        storedAdmixtureParent->setOutgroup(storedAdmixtureParentParent->isOutgroup());
+        storedAdmixtureChild->setOutgroup(storedAdmixtureChildChild->isOutgroup());
+        storedAdmixtureParent->setOutgroup(storedAdmixtureParentChild->isOutgroup());
         std::cout << "reject\n";
     }
     

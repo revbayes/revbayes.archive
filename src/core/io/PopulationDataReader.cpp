@@ -88,7 +88,7 @@ SnpData* PopulationDataReader::readSnpData(const std::string& fileName)
     return sd;
 }
 
-SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
+SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thinBy)
 {
     
     // Expected file format
@@ -118,11 +118,13 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
     
     // read file
     bool firstLine = true;
+    int lineNum = 0;
     int popIdx = 0;
     int numPopulations = 0;
     std::string readLine = "";
     while (std::getline(readStream,readLine))
     {
+                
         int ni = 0;
         std::string field;
         std::stringstream ss(readLine);
@@ -146,8 +148,7 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
                 }
 
             }
-
-            else
+            else if (lineNum % thinBy == 0)
             {
                 unsigned idx = field.find(",");
                 int a = atoi(field.substr(0,idx).c_str());
@@ -185,7 +186,7 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
             freqs.resize(numPopulations);
             numChromosomes = std::vector<int>(numPopulations, 0);
         }
-        else
+        else if (lineNum % thinBy == 0)
         {
             // prepare for next iteration
             for (size_t i = 0; i < names.size(); i++)
@@ -204,6 +205,7 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName)
             popIdx = 0;
         }
         
+        lineNum += 1;
         firstLine = false;
 
     }

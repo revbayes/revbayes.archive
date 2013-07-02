@@ -536,8 +536,8 @@ void BrownianMotionAdmixtureGraph::updateCovariance(void)
 {
     
     // get diffusion rate
-    double sigma = diffusionRate->getValue();
-    double sigma_2 = sigma * sigma;
+    double sigma = diffusionRate->getValue(); // x(1-x)
+    //double sigma_2 = sigma * sigma;
     
     // compute covariance (depends on pathsToRoot being current)
     for (size_t i = 0; i < numTaxa; i++)
@@ -862,10 +862,14 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
      std::cout << "--------------\n";
      */
     
+    /*
     double scaleFactorConstant = 2000; // make this smaller to flatten the likelihood surface
     double scaleFactor = numBlocks * blockSize / scaleFactorConstant;
     scaleFactor = 1;
-    return lnP / scaleFactor;
+    / scaleFactor;
+    */
+    return lnP;
+    
 }
 
 
@@ -1102,7 +1106,7 @@ double BrownianMotionAdmixtureGraph::findCovariance(AdmixtureNode* p, AdmixtureN
     // Step 2. compute covariance structure
 
     //std::cout << tau->getValue().getRoot().getAge() << "\t" << tau->getValue().getTreeHeight() << "\n";
-    double unitTreeScaler = 1.0 / tau->getValue().getRoot().getAge();
+    double unitTreeScaler = 1.0; // / tau->getValue().getRoot().getAge();
     double vpq = 0.0;
     
     //std::cout << "paths\t" << p->getIndex() << " (" << pPathSet.size() << ")\t" << q->getIndex() << " (" << qPathSet.size() << ")\n";
@@ -1162,7 +1166,7 @@ double BrownianMotionAdmixtureGraph::findCovariance(AdmixtureNode* p, AdmixtureN
                 // accumulate unit divergence for paths shared by p and q
                 if (find( itq_path->begin(), itq_path->end(), *itp_step) != itq_path->end())
                 {
-                    u += ((*itp_prev)->getAge() - (*itp_step)->getAge())  * unitTreeScaler * br_val[brIdx];
+                    u += ((*itp_prev)->getAge() - (*itp_step)->getAge()) * unitTreeScaler * br_val[brIdx];
                     // std::cout << branchRates->getValue()[brIdx] << "\n";
                 }
                 

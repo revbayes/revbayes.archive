@@ -98,23 +98,6 @@ double AdmixtureFixedNodeheightPruneRegraft::performSimpleMove( void ) {
         return RbConstants::Double::neginf;
     }
     
-  /*
-    // prune
-    grandparent.removeChild( parent );
-    parent->removeChild( &brother );
-    grandparent.addChild( &brother );
-    brother.setParent( &grandparent );
-    
-    // regraft
-    TimeNode* newGrandParent = &newBro->getParent();
-    newGrandParent->removeChild( newBro );
-    newGrandParent->addChild( parent );
-    parent->setParent( newGrandParent );
-    parent->addChild( newBro );
-    newBro->setParent( parent );
-*/
-
-    
     // now we store all necessary values
     storedBrother       = &brother;
     storedNewBrother    = newBro;
@@ -132,11 +115,6 @@ double AdmixtureFixedNodeheightPruneRegraft::performSimpleMove( void ) {
     parent->setParent( newGrandParent );
     parent->addChild( newBro );
     newBro->setParent( parent );
-    
-    
-    //std::cout << "after FPNR proposal\n";
-    //tau.checkAllEdgesRecursively(&tau.getRoot());
-    
 
     return 0.0; //RbConstants::Double::neginf;
 }
@@ -168,6 +146,12 @@ void AdmixtureFixedNodeheightPruneRegraft::rejectSimpleMove( void ) {
         //AdmixtureTree& tau = variable->getValue();
         //tau.checkAllEdgesRecursively(&tau.getRoot());
     }
+}
+
+void AdmixtureFixedNodeheightPruneRegraft::acceptSimpleMove(void)
+{
+    std::cout << "accept FNPR\n";
+    
 }
 
 

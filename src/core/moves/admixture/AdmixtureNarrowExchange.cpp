@@ -7,6 +7,7 @@
 //
 
 #include "AdmixtureNarrowExchange.h"
+#include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -17,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureNarrowExchange::AdmixtureNarrowExchange(StochasticNode<AdmixtureTree> *v, double w) : SimpleMove( v, w), variable( v ) {
+AdmixtureNarrowExchange::AdmixtureNarrowExchange(StochasticNode<AdmixtureTree> *v, double d, double w) : SimpleMove( v, w), delta(d), variable( v ) {
     
 }
 
@@ -37,6 +38,48 @@ const std::string& AdmixtureNarrowExchange::getMoveName( void ) const {
     return name;
 }
 
+double AdmixtureNarrowExchange::proposeAge(AdmixtureNode* p)
+{
+    std::cout << "proposeAge()\n";
+    
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    
+    double minAge = 0.0;
+    for (size_t i = 0; i < p->getNumberOfChildren(); i++)
+    {
+        double childAge = p->getChild(i).getAge();
+        if (childAge > minAge)
+            minAge = childAge;
+        std::cout << "chAge   " << childAge << " " << minAge << "\n";
+    }
+    double maxAge = p->getParent().getAge();
+    double age = p->getAge();
+    
+    double ageRange = maxAge - minAge;
+    double unitAge = (age - minAge) / ageRange;
+    
+    std::cout << minAge << " " << " " << age << " " << maxAge << " " << ageRange << " " << unitAge << "\n";
+    
+    double a = delta * unitAge + 1.0;
+    double b = delta * (1.0 - unitAge) + 1.0;
+    double newUnitAge = RbStatistics::Beta::rv(a, b, *rng);
+    double fwdProposal = RbStatistics::Beta::lnPdf(a, b, newUnitAge);
+    double newAge = newUnitAge * ageRange + minAge;
+    double new_a = delta * newUnitAge + 1.0;
+    double new_b = delta * (1.0 - newUnitAge) + 1.0;
+    double bwdProposal = RbStatistics::Beta::lnPdf(new_a, new_b, unitAge);
+
+    p->setAge(newAge);
+
+    //if (minAge > age || maxAge < age || minAge > newAge || maxAge < newAge)
+    {
+        std::cout << "oldAge" << minAge << " " << age << " " << maxAge << "\n";
+        std::cout << "newAge" << minAge << " " << newAge << " " << maxAge << "\n";
+    }
+
+    
+    return fwdProposal-bwdProposal;
+}
 
 /** Perform the move */
 double AdmixtureNarrowExchange::performSimpleMove( void ) {
@@ -64,7 +107,6 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
     AdmixtureNode& grandparent = parent.getTopologyParent();
     AdmixtureNode* uncle = &grandparent.getTopologyChild( 0 );
     
-    
     // check if we got the correct child
     if ( uncle == &parent ) {
         uncle = &grandparent.getTopologyChild( 1 );
@@ -78,12 +120,11 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
     double p2age = node->getParent().getAge();
     double u2age = uncle->getParent().getAge();
     std::cout << node->getIndex() << "  " << uncle->getIndex() << "  " << "\n";
+    std::cout << parent.getIndex() << "  " << grandparent.getIndex()  << " " <<  "\n";
 
-//    if( uncles_age < parent_age ) {
-    //if (u2age <= p2age)
     if (node->isOutgroup() != uncle->isOutgroup())
     {
-           std::cout << "NarrowExchange failed, outgroup\n";
+        std::cout << "NarrowExchange failed, outgroup\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
@@ -98,9 +139,8 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
         storedUncle         = uncle;
         storedChosenNodeParent = &node->getParent();
         storedUncleParent = &uncle->getParent();
-
-        storedChosenAge    = my_age;
-        storedUnclesAge     = uncles_age;
+        storedParent = &parent;
+        storedGrandparent = &grandparent;
 
         // now exchange the two nodes
         storedUncleParent->removeChild( uncle ) ;
@@ -111,10 +151,19 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
         storedChosenNodeParent->addChild( uncle );
         uncle->setParent( storedChosenNodeParent );
         
+        // update ages
+        storedParentAge = parent.getAge();
+        storedGrandparentAge = grandparent.getAge();
+        double lnProposalParent = proposeAge(&parent);
+        double lnProposalGparent = proposeAge(&grandparent);
+        //double lnProposalGparent = 0.0;
+
+        
+        
         //std::cout << "\nafter NarrowExchange proposal\n";
         //tau.checkAllEdgesRecursively(&tau.getRoot());
 
-        return 0.0;
+        return lnProposalParent + lnProposalGparent;
     }
     else
     {
@@ -128,16 +177,21 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
 
 void AdmixtureNarrowExchange::rejectSimpleMove( void ) {
     
-    //std::cout << "NarrowExchange reject\n";
+    std::cout << "NarrowExchange reject\n";
     if (!failed)
     {
+        storedGrandparent->setAge(storedGrandparentAge);
+        storedParent->setAge(storedParentAge);
+        
         storedUncleParent->removeChild(storedChosenNode);
         storedUncleParent->addChild(storedUncle);
         storedUncle->setParent(storedUncleParent);
-        
+
+
         storedChosenNodeParent->removeChild(storedUncle);
         storedChosenNodeParent->addChild(storedChosenNode);
         storedChosenNode->setParent(storedChosenNodeParent);
+
     }
     //AdmixtureTree& tau = variable->getValue();
     //std::cout << "\nafter NarrowExchange reject\n";
@@ -152,7 +206,7 @@ void AdmixtureNarrowExchange::rejectSimpleMove( void ) {
 }
 
 void AdmixtureNarrowExchange::acceptSimpleMove( void ) {
-    //std::cout << "NarrowExchange accept\n";
+    std::cout << "NarrowExchange accept\n";
 }
 
 

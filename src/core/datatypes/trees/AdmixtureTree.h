@@ -72,6 +72,8 @@ namespace RevBayesCore {
         void                                        eraseAdmixtureNode(AdmixtureNode* p);
         void                                        checkAllEdges(void);
         void                                        checkAllEdgesRecursively(AdmixtureNode* p) const;
+        
+        void                                        freeMemory(void);
 
     protected:
         void                                        resizeElementVectors(size_t n);

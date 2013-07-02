@@ -85,7 +85,9 @@ std::string AdmixtureBipartitionMonitor::buildBipartitionString(void)
     bool firstRootHit = false; // necessary?
     for (size_t i = 0; i < nodes.size(); i++)
     {
+
         AdmixtureNode* p = nodes[i];
+                /*
         if (p->isRoot())
             continue;
         else if (&p->getParent() == &tau->getRoot() && firstRootHit)
@@ -93,24 +95,45 @@ std::string AdmixtureBipartitionMonitor::buildBipartitionString(void)
             firstRootHit = false;
             continue;
         }
+         */
         
         std::vector<bool> pbp = std::vector<bool>(numTaxa,false);
         findTaxonBipartition(pbp, p);
+        
+        // look like s_0,s_1,r_0,r_1,t,w
         
         if (&p->getAdmixtureParent() != NULL)
         {
             // admixture children are handled by the admixture parent case
             continue;
         }
+        else if (p->isRoot())
+        {
+            for (size_t i = 0; i < pbp.size(); i++)
+                ss << std::noboolalpha << pbp[i];
+            ss << ",";
+            ss << "," << p->getAge();
+            ss << ",";
+            ss << ",";
+            ss << ",1";
+            ss << separator;
+        }
         else if (&p->getAdmixtureChild() == NULL && &p->getAdmixtureParent() == NULL)
         {
             // skip tips for divergence partitions
-            if (p->getNumberOfChildren() == 0)
-                continue;
-            
+            // actually, keep 'em for pop-size params...
+            //if (p->getNumberOfChildren() == 0)
+            //    continue;
+
+            //ss << "D";
             // print bitstring for divergence partition
             for (size_t i = 0; i < pbp.size(); i++)
                 ss << std::noboolalpha << pbp[i];
+            ss << ",";
+            ss << "," << p->getAge();
+            ss << "," << branchRates->getValue()[p->getIndex()];
+            ss << ",";
+            ss << ",1";
             ss << separator;
         }
         
@@ -119,12 +142,16 @@ std::string AdmixtureBipartitionMonitor::buildBipartitionString(void)
             AdmixtureNode* c = &p->getAdmixtureChild();
             std::vector<bool> cbp = std::vector<bool>(numTaxa,false);
             findTaxonBipartition(cbp, c);
-
+            
             for (size_t i = 0; i < pbp.size(); i++)
                 ss << std::noboolalpha << pbp[i];
-            ss << ">";
+            ss << ",";
             for (size_t i = 0; i < cbp.size(); i++)
                 ss << std::noboolalpha << cbp[i];
+            ss << "," << p->getAge();
+            ss << "," << branchRates->getValue()[p->getTopologyChild(0).getIndex()];
+            ss << "," << branchRates->getValue()[c->getTopologyChild(0).getIndex()];
+            ss << "," << c->getWeight();
             ss << separator;
         }
     }
@@ -227,7 +254,23 @@ void AdmixtureBipartitionMonitor::printHeader() {
     }
     
     // add a separator tree
-    outStream << separator << "Tree";
+    outStream << separator;
+  
+    // get tree object names
+    AdmixtureTree* tau = &tree->getValue();
+    std::vector<AdmixtureNode*> nodes;
+    for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+        nodes.push_back(&tau->getNode(i));
+    
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        if (nodes[i]->getNumberOfChildren() == 0)
+        {
+            if (i != 0)
+                outStream << ",";
+            outStream << nodes[i]->getName();
+        }
+    }
     
     // end line of stream
     outStream << std::endl;

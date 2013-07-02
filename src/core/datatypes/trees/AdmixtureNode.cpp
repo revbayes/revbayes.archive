@@ -66,6 +66,7 @@ AdmixtureNode::AdmixtureNode(const AdmixtureNode &n) : TopologyNode( n ), topolo
         theClone->setParent(this);
     }
     
+    index = n.index;
     age = n.age;
     weight = n.weight;
     admixtureParent = n.admixtureParent;
@@ -119,6 +120,9 @@ AdmixtureNode& AdmixtureNode::operator=(const AdmixtureNode &n) {
         
         // add myself as a new child to the parent node
         parent->addChild(this);
+        
+        // topology
+        topology = NULL;
         
         // add as admixtureChild if applicable
         //if (admixtureParent != NULL)
@@ -815,7 +819,7 @@ std::string AdmixtureNode::buildNewickString(void)
         }
         
         if ( topology != NULL ) {
-            o << ":" << getBranchLength();
+            o << ":" << getTopologyBranchLength();
         }
         if ( branchComments.size() > 0 ) {
             o << "[&";
@@ -831,9 +835,9 @@ std::string AdmixtureNode::buildNewickString(void)
     else {
         o << "(";
         for (size_t i=0; i<(getNumberOfChildren()-1); i++) {
-            o << getChild(i).computeNewick() << ",";
+            o << getTopologyChild(i).computeNewick() << ",";
         }
-        o << getChild(getNumberOfChildren()-1).computeNewick() << ")";
+        o << getTopologyChild(getNumberOfChildren()-1).computeNewick() << ")";
         if ( nodeComments.size() > 0 ) {
             o << "[&";
             for (size_t i = 0; i < nodeComments.size(); ++i) {
@@ -845,7 +849,7 @@ std::string AdmixtureNode::buildNewickString(void)
             o << "]";
         }
         if ( topology != NULL ) {
-            o << ":" << getBranchLength();
+            o << ":" << getTopologyBranchLength();
         }
         if ( branchComments.size() > 0 ) {
             o << "[&";

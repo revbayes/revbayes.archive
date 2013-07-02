@@ -251,7 +251,7 @@ std::vector<std::string> AdmixtureTree::getNames( void ) const {
 
 std::vector<TopologyNode *> AdmixtureTree::getNodes( void ) const {
     std::vector<TopologyNode *> tmp( nodes.size() );
-    for (unsigned i = 0; i < nodes.size(); ++i) {
+    for (size_t i = 0; i < nodes.size(); ++i) {
         tmp[i] = nodes[i];
     }
     return tmp;
@@ -277,7 +277,7 @@ const AdmixtureNode& AdmixtureTree::getNodeByIndex(size_t idx) const {
 
 std::vector<TopologyNode *> AdmixtureTree::getNodesByIndex( void ) const {
     std::vector<TopologyNode *> tmp( nodesByIndex.size() );
-    for (unsigned i = 0; i < nodesByIndex.size(); ++i) {
+    for (size_t i = 0; i < nodesByIndex.size(); ++i) {
         tmp[i] = nodesByIndex[i];
     }
     return tmp;
@@ -341,7 +341,7 @@ size_t AdmixtureTree::getNumberOfAdmixtureParents() const {
 std::vector<AdmixtureNode*> AdmixtureTree::getAdmixtureParents() const {
     
     std::vector<AdmixtureNode *> tmp;
-    for (unsigned i = 0; i < nodes.size(); i++) {
+    for (size_t i = 0; i < nodes.size(); i++) {
         if (&nodes[i]->getAdmixtureChild() != NULL)
             tmp.push_back(nodes[i]);
     }
@@ -351,13 +351,14 @@ std::vector<AdmixtureNode*> AdmixtureTree::getAdmixtureParents() const {
 std::vector<AdmixtureNode*> AdmixtureTree::getFirstAdmixtureParentPerLineage(void) const {
     
     std::vector<AdmixtureNode *> tmp;
-    for (unsigned i = 0; i < nodes.size(); i++)
+    for (size_t i = 0; i < nodes.size(); i++)
     {
         AdmixtureNode* p = nodes[i];
         
         // if admixture edge, and both admixture nodes' parents are divergence nodes
         if (&p->getAdmixtureChild() != NULL && p->getParent().getNumberOfChildren() == 2 && p->getAdmixtureChild().getParent().getNumberOfChildren() == 2)
         {
+            std::cout << "gfappl " << i << "\n";
             tmp.push_back(p);
         }
     }
@@ -609,7 +610,7 @@ void AdmixtureTree::setRoot( AdmixtureNode* r) {
     fillNodesByPhylogeneticTraversal(r);
     
     size_t numTips = 0;
-    for (unsigned int i = 0; i < nodes.size(); ++i) {
+    for (size_t i = 0; i < nodes.size(); ++i) {
         if (nodes[i]->isTip() == false)
             nodes[i]->setIndex(i);
         else

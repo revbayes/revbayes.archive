@@ -1,13 +1,13 @@
 //
-//  AdmixtureNearestNeighborInterchange.h
+//  AdmixtureNearestNeighborInterchangeAndRateShift.h
 //  rb_mlandis
 //
 //  Created by Michael Landis on 4/12/13.
 //  Copyright (c) 2013 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__AdmixtureNearestNeighborInterchange__
-#define __rb_mlandis__AdmixtureNearestNeighborInterchange__
+#ifndef __rb_mlandis__AdmixtureNearestNeighborInterchangeAndRateShift__
+#define __rb_mlandis__AdmixtureNearestNeighborInterchangeAndRateShift__
 
 
 #include <ostream>
@@ -21,19 +21,25 @@
 
 namespace RevBayesCore {
     
-    class AdmixtureNearestNeighborInterchange : public SimpleMove {
+    class AdmixtureNearestNeighborInterchangeAndRateShift : public Move {
         
     public:
-        AdmixtureNearestNeighborInterchange( StochasticNode<AdmixtureTree> *n, std::vector<ContinuousStochasticNode*> br, double d, bool tuning, double weight);                                                         //!<  constructor
+        AdmixtureNearestNeighborInterchangeAndRateShift( StochasticNode<AdmixtureTree> *n, std::vector<ContinuousStochasticNode*> br, double d, bool tuning, double weight);                                                         //!<  constructor
         
         // Basic utility functions
-        AdmixtureNearestNeighborInterchange*  clone(void) const;                                                                  //!< Clone object
+        AdmixtureNearestNeighborInterchangeAndRateShift*  clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+        
+        void                            acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
+        double                          performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
+        void                            rejectMove(void);
+        
         double                          performSimpleMove(void);                                                            //!< Perform move
         void                            rejectSimpleMove(void);
+        void                            acceptSimpleMove(void);
         void                            tune(void);
         
     private:
@@ -57,8 +63,10 @@ namespace RevBayesCore {
 
         double                          storedAge;
         
+        int                             storedChildRateIndex;
         int                             storedNodeRateIndex;
         int                             storedBrotherRateIndex;
+        double                          storedChildRate;
         double                          storedNodeRate;
         double                          storedBrotherRate;
         
@@ -67,4 +75,4 @@ namespace RevBayesCore {
 }
 
 
-#endif /* defined(__rb_mlandis__AdmixtureNearestNeighborInterchange__) */
+#endif /* defined(__rb_mlandis__AdmixtureNearestNeighborInterchangeAndRateShift__) */

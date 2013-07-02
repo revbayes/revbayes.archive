@@ -33,6 +33,7 @@ namespace RevBayesCore {
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         double                          performSimpleMove(void);                                                            //!< Perform move
         void                            rejectSimpleMove(void);
+        void                            acceptSimpleMove(void);
         void                            tune(void);
         
     private:

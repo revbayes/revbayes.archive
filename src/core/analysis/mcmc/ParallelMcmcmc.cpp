@@ -31,6 +31,8 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         // create chains
         bool a = (i == 0 ? true : false);
         Mcmc* oneChain = new Mcmc(m, moves, mons, a, b);
+        
+        // add chain to team
         chains.push_back(oneChain);
     }
     
@@ -54,7 +56,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
 
 ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m)
 {   
-    // MJL: Uncertain if I need a copy ctor for Analysis objects (non-DAG)
+    // MJL: Do I need a copy ctor for Analysis objects (e.g. non-DAG)?
 }
 
 ParallelMcmcmc::~ParallelMcmcmc(void)
@@ -70,7 +72,8 @@ void ParallelMcmcmc::initialize(void)
 double ParallelMcmcmc::computeBeta(double delta, int idx)
 {
     // MJL: May want other distributions of beta in the future
-    return 1 / (1 + delta * idx);
+//    return 1 / (1 + delta * idx);
+    return pow(1 + delta, 2 - idx);
 }
 
 void ParallelMcmcmc::burnin(int g, int ti)
@@ -156,57 +159,74 @@ void ParallelMcmcmc::swapChains(void)
     if (numChains < 2)
         return;
     
-    // otherwise, swap adjacent chains
-    size_t j = std::floor(GLOBAL_RNG->uniform01() * numChains);
-    size_t k = (GLOBAL_RNG->uniform01() < 0.5 ? k = j-1 : k = j+1);
-    // reflect at 0 and numChains-1
-    if (j == 0)
-        k = 1;
-    else if (j == numChains-1)
-        k = numChains-2;
-    
-    // MJL: proposal density is not symmetric for border cases, currently unaccounted for
-    
-    // compute exchange ratio
-    double bj = chains[j]->getChainHeat();
-    double bk = chains[k]->getChainHeat();
-    double lnLj = chains[j]->getLnProbability();
-    double lnLk = chains[k]->getLnProbability();
-    double r = bj * lnLk + bk * lnLj - bj * lnLj - bk * lnLk;
-    
-    // determine whether we accept or reject the chain swap
-    bool accept = false;
-    if (r > 1)
-        accept = true;
-    else if (r < -100)
-        accept = false;
-    else if (exp(r) < GLOBAL_RNG->uniform01())
-        accept = true;
-    else
-        accept = false;
-    
-    
-    std::cout << "swapChains()\t" << j << " <--> " << k << "\t" << r << "\t" << (accept ? "accept\n" : "reject\n");
-    
-    // on accept, swap beta values and active chains
-    if (accept)
+    for (size_t i = 0; i < numChains; i++)
     {
-        // swap chain heat values
-        chains[j]->setChainHeat(bk);
-        chains[k]->setChainHeat(bj);
+        
+        // otherwise, swap adjacent chains
+        //size_t j = std::floor(GLOBAL_RNG->uniform01() * numChains);
+        size_t j = (numChains-1)-i;
+        size_t k = (GLOBAL_RNG->uniform01() < 0.5 ? k = j-1 : k = j+1);
+        // reflect at 0 and numChains-1
+        if (j == 0)
+            k = 1;
+        else if (j == numChains-1)
+            k = numChains-2;
+        
+        // MJL: proposal density is not symmetric for border cases, currently unaccounted for
+        double lnProposalRatio = 1.0;
+        if (numChains == 2)
+            ; // no change
+        else if (j == 0 || j == (numChains-1))
+            lnProposalRatio *= 0.5;
+        else if (j == 1 || j == (numChains-2))
+            lnProposalRatio *= 2;
+        lnProposalRatio = log(lnProposalRatio);
+        
+        // compute exchange ratio
+        double bj = chains[j]->getChainHeat();
+        double bk = chains[k]->getChainHeat();
+        double lnPj = chains[j]->getLnPosterior();
+        double lnPk = chains[k]->getLnPosterior();
+        double r = bj * (lnPk - lnPj) + bk * (lnPj - lnPk) + lnProposalRatio;
+        
+        // determine whether we accept or reject the chain swap
+        bool accept = false;
+        if (r >= 0)
+            accept = true;
+        else if (r < -100)
+            accept = false;
+        else if (exp(r) > GLOBAL_RNG->uniform01())
+            accept = true;
+        else
+            accept = false;
+        
+        // test override
+        //accept = true;
+        std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
+        std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
+        std::cout << "swapChains()\t" << j << " <--> " << k << "\t" << r << "\t" << (accept ? "accept\n" : "reject\n");
+        
+        // on accept, swap beta values and active chains
+        if (accept)
+        {
+            // swap chain heat values
+            chains[j]->setChainHeat(bk);
+            chains[k]->setChainHeat(bj);
 
-        // swap active chain
-        if (activeIndex == j)
-        {
-            activeIndex = k;
-            chains[j]->setChainActive(false);
-            chains[k]->setChainActive(true);
+            // swap active chain
+            if (activeIndex == j)
+            {
+                activeIndex = k;
+                chains[j]->setChainActive(false);
+                chains[k]->setChainActive(true);
+            }
+            else if (activeIndex == k)
+            {
+                activeIndex = j;
+                chains[j]->setChainActive(true);
+                chains[k]->setChainActive(false);
+            }
         }
-        else if (activeIndex == k)
-        {
-            activeIndex = j;
-            chains[j]->setChainActive(true);
-            chains[k]->setChainActive(false);
-        }
+        std::cout << "activeIndex " << activeIndex << "\n";
     }
 }

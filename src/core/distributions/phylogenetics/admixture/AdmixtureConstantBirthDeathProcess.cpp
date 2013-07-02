@@ -20,6 +20,7 @@
 using namespace RevBayesCore;
 
 AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ), diversification( d ), turnover( t ), numTaxa( nTaxa ), taxonNames( tn ), outgroup(std::vector<bool>(nTaxa,false)) {
+  
     addParameter( diversification );
     addParameter( turnover );
     
@@ -35,6 +36,7 @@ AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const Typ
 }
 
 AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<bool>& o) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ), diversification( d ), turnover( t ), numTaxa( nTaxa ), taxonNames( tn ), outgroup(o), numOutgroup(0) {
+  
     addParameter( diversification );
     addParameter( turnover );
 
@@ -167,57 +169,35 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     
     double lnProbTimes = 0.0;
     // bd process
-    if (true)
-    {
-        int numInitialSpecies = 1;
-        // check if we condition on the root or origin
-        if ( times[0] == 0.0 ) {
-            //        lnProbTimes = - 2 * log( pSurvival(0,T) );
-            ++numInitialSpecies;
-        } else {
-            //        lnProbTimes = - log( pSurvival(0,T) );
-        }
+    int numInitialSpecies = 1;
+    // check if we condition on the root or origin
+    if ( times[0] == 0.0 ) {
+        //        lnProbTimes = - 2 * log( pSurvival(0,T) );
+        ++numInitialSpecies;
+    } else {
+        //        lnProbTimes = - log( pSurvival(0,T) );
+    }
 
-        lnProbTimes = numInitialSpecies * ( p1(0,T) - log(pSurvival(0,T,T)) );
-        
-        
-        for (int i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
-            //std::cout << times[i] << "  " << i << "  " << lnProbTimes << "  " << diversification->getValue() << "\t" << turnover->getValue() << "\t" << T << "\t" << p1(times[i],T) << "\n";
-            if ( lnProbTimes == RbConstants::Double::nan || lnProbTimes == RbConstants::Double::inf || lnProbTimes == RbConstants::Double::neginf) {
-                return RbConstants::Double::nan;
-            }
-            lnProbTimes += log(diversification->getValue() + turnover->getValue()) + p1(times[i],T);
-        }
+    lnProbTimes = numInitialSpecies * ( p1(0,T) - log(pSurvival(0,T,T)) );
     
-        if (true)
-        {
-            // inverse gamma on final speciation event, mean/median ~= .1 unit tree remaining
-            double alpha = 10;
-            double beta = 0.25;
-            std::cout << "t  " << T-times[numTaxa-2] << "  " << alpha << "  " << beta << "  " << RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]) << "\n";
-            lnProbTimes += RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]);
+    
+    for (int i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
+        //std::cout << times[i] << "  " << i << "  " << lnProbTimes << "  " << diversification->getValue() << "\t" << turnover->getValue() << "\t" << T << "\t" << p1(times[i],T) << "\n";
+        if ( lnProbTimes == RbConstants::Double::nan || lnProbTimes == RbConstants::Double::inf || lnProbTimes == RbConstants::Double::neginf) {
+            return RbConstants::Double::nan;
         }
+        lnProbTimes += log(diversification->getValue() + turnover->getValue()) + p1(times[i],T);
     }
-    // gamma distributed (spaces events)
-    else
+
+    if (!true)
     {
-        double alpha = 3.0;
-        double beta = 0.5;
-        // probability of inverse-gamma distributed times for pure-birth process
-        for (int j, i=0; i < numTaxa-1; j=i, i++)
-        {
-            if (i == 0)
-                continue;
-            double t = times[i] - times[j];
-            lnProbTimes += RbStatistics::InverseGamma::lnPdf(alpha,beta,i*t);
-            //std::cout << lnProbTimes << "\t" << t << "\t" << times[j] << "\t" << times[i] << "\n";
-        }
-        
-        // probability nothing happens with n lineages
-        double t = T - times.back();
-        lnProbTimes += log(1.0 - RbStatistics::InverseGamma::cdf(alpha,beta,t*numTaxa));
-        //std::cout << lnProbTimes << "\t" << t << "\t" << T << "\t" << times.back() << "\n";
+        // inverse gamma on final speciation event, mean/median ~= .1 unit tree remaining
+        double alpha = 10;
+        double beta = 0.05;
+        std::cout << "t  " << T-times[numTaxa-2] << "  " << alpha << "  " << beta << "  " << RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]) << "\n";
+        lnProbTimes += RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]);
     }
+
     
     return lnProbTimes; // + logTreeTopologyProb;
     
@@ -255,7 +235,9 @@ double AdmixtureConstantBirthDeathProcess::pSurvival(double start, double end, d
 
 
 void AdmixtureConstantBirthDeathProcess::redrawValue( void ) {
-    simulateTree();
+    
+    // MJL 060713: calling simulateTree() does not correctly generate a new tree -- crashes on admixture add RW proposal!
+    //simulateTree();
 }
 
 
@@ -296,6 +278,7 @@ double AdmixtureConstantBirthDeathProcess::simSpeciation(double origin) {
 
 
 void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
+    
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     

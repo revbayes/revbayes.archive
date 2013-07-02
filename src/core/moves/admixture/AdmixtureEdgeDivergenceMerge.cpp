@@ -289,6 +289,8 @@ void AdmixtureEdgeDivergenceMerge::rejectMove( void ) {
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     
+    std::cout << "merge_RW reject\n";
+    
     // touch the node
     variable->touch();
 }
@@ -298,7 +300,7 @@ void AdmixtureEdgeDivergenceMerge::acceptMove( void ) {
     // nothing to do
     changed = false;
 
-    std::cout << "rpl_RW accept\n";
+    std::cout << "merge_RW accept\n";
     
     acceptSimpleMove();
 }

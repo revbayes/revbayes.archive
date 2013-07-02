@@ -45,13 +45,15 @@ namespace RevBayesCore {
 
         // MJL: added for p(MC)^3
         int                                                 nextCycle(bool advanceCycle);
-        double                                              getLnProbability(void);
+        //double                                              getLnLikelihood(void);
+        double                                              getLnPosterior(void);
         bool                                                isChainActive(void);
         double                                              getChainHeat(void);
         void                                                setChainActive(bool tf);
         void                                                setChainHeat(double v);
         void                                                monitor(int g);
         std::vector<Monitor*>&                              getMonitors(void);
+        void                                                redrawChainState(void);
         
         
 

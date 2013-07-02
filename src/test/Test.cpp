@@ -419,18 +419,8 @@ bool Test::performTests(void) {
 #ifdef USE_LIB_ARMADILLO
     // Admixture graph
     try {
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/natam_fewmayans.txt", 10);
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/canmap2_snps_removedMissingData.txt", 10);
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/moo_snps.no_999111.removedMissingData.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/natam_fewmayans_fewoutgroups.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/natam.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/npop5_nchr1024_nsnps1000_src2_dst0_age0.001_wt0.0_sim0.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/npop11_nchr1024_nsnps1000000_src9_dst0_age0.25_wt0.0_sim0.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/npop4_nchr1024_nsnps1000_src2_dst0_age0.001_wt0.0_sim0.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/NativeAmericans_Saqqaq_Neanderthal_Denisova.masked.genotypes.removedMayan.txt.noArchaic.oneAleut.TreeMixInput.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/no_africans.no_archaic.no_saqqaq.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/no_africans.no_archaic.no_saqqaq.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/NativeAmericans_Saqqaq.masked.genotypes.removedMayan.txt.oneAleut.TreeMixInput.removedAfricans.txt", 10);
         TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/NativeAmericans_Saqqaq_Clovis.masked.genotypes.removedMayan.txt.oneAleut.TreeMixInput.removedAfricans.txt", 10);
         testAG.run();
     } catch (RbException &e) {

@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class AdmixtureNarrowExchange : public SimpleMove {
         
     public:
-        AdmixtureNarrowExchange( StochasticNode<AdmixtureTree> *n, double weight);                                            //!<  constructor
+        AdmixtureNarrowExchange( StochasticNode<AdmixtureTree> *n, double d, double weight);                                            //!<  constructor
         
         // Basic utility functions
         AdmixtureNarrowExchange*     clone(void) const;                                                                  //!< Clone object
@@ -36,6 +36,7 @@ namespace RevBayesCore {
         void                            acceptSimpleMove(void);
         
     private:
+        double                          proposeAge(AdmixtureNode* p);
         
         // member variables
         StochasticNode<AdmixtureTree>*       variable;
@@ -44,11 +45,14 @@ namespace RevBayesCore {
         bool failed;
         AdmixtureNode*                       storedChosenNode;
         AdmixtureNode*                       storedUncle;
-        double                          storedChosenAge;
-        double                          storedUnclesAge;
+        double                              storedParentAge;
+        double                              storedGrandparentAge;
+        double                              delta;
         
         AdmixtureNode*                      storedChosenNodeParent;
         AdmixtureNode*                      storedUncleParent;
+        AdmixtureNode*                      storedParent;
+        AdmixtureNode*                      storedGrandparent;
         
     };
     

@@ -147,8 +147,6 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
     return; 
 }
 
-
-
 void Mcmc::initialize( void ) {
     
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
@@ -201,7 +199,7 @@ void Mcmc::initialize( void ) {
             (*i)->keep();
         }
         
-        if (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan) 
+        if (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan )//|| chainActive == false)
         {
             std::cerr << "Drawing new initial states ... " << std::endl;
             for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++) 
@@ -224,7 +222,7 @@ void Mcmc::initialize( void ) {
     } while (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan);
     
 
-    lnProbability *= chainHeat;
+    //lnProbability *= chainHeat;
     schedule = RandomMoveSchedule(moves);
     if (moveSchedule != NULL)
         
@@ -389,7 +387,7 @@ int Mcmc::nextCycle(bool advanceCycle) {
     return gen;
 }
 
-double Mcmc::getLnProbability(void)
+double Mcmc::getLnPosterior(void)
 {
     return lnProbability;
 }

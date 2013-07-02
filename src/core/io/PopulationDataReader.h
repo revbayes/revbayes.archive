@@ -24,7 +24,7 @@ namespace RevBayesCore {
     public:
         PopulationDataReader();
         SnpData* readSnpData(const std::string& fileName);
-        SnpData* readSnpData2(const std::string& fileName);
+        SnpData* readSnpData2(const std::string& fileName, int thinBy=1);
         
     private:
         

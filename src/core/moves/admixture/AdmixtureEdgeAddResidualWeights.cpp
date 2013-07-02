@@ -175,9 +175,10 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     //std::cout << "path_a : tip -> root\n";
     while (nd_a != NULL)
     {
-        //std::cout << "\t" << nd_a << "\t" << nd_a->getAge() << "\n";
+        std::cout << "\tnd_a\t" << nd_a->getIndex() << "\t" << nd_a << "\t" << nd_a->getAge() << "\n";
         path_a.push_back(nd_a);
         nd_a = &nd_a->getParent();
+        true;
     }
     nd_a = path_a.back();
 
@@ -186,7 +187,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     //std::cout << "path_b : tip -> root\n";
     while (nd_b != NULL)
     {
-      //  std::cout << "\t" << nd_b << "\t" << nd_b->getAge() << "\n";
+        std::cout << "\tnd_b\t" << nd_b->getIndex() << "\t" << nd_b << "\t" << nd_b->getAge() << "\n";
         path_b.push_back(nd_b);
         nd_b = &nd_b->getParent();
     }
@@ -315,10 +316,11 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
 
     
     // insert admixtureParent into graph
-    storedAdmixtureParent = new AdmixtureNode();
+    storedAdmixtureParent = new AdmixtureNode(tau.getNumberOfNodes());
     storedAdmixtureParent->setAge(admixtureAge);
     storedAdmixtureParent->setParent(storedAdmixtureParentParent);
     storedAdmixtureParent->addChild(storedAdmixtureParentChild);
+    storedAdmixtureParent->setOutgroup(storedAdmixtureParentChild->isOutgroup());
     storedAdmixtureParentParent->removeChild(storedAdmixtureParentChild);
     storedAdmixtureParentParent->addChild(storedAdmixtureParent);
     storedAdmixtureParentChild->setParent(storedAdmixtureParent);
@@ -332,10 +334,11 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
 
     
     // insert admixtureChild into graph
-    storedAdmixtureChild = new AdmixtureNode();
+    storedAdmixtureChild = new AdmixtureNode(tau.getNumberOfNodes());
     storedAdmixtureChild->setAge(admixtureAge);
     storedAdmixtureChild->setParent(storedAdmixtureChildParent);
     storedAdmixtureChild->addChild(storedAdmixtureChildChild);
+    storedAdmixtureChild->setOutgroup(storedAdmixtureChildChild->isOutgroup());
     storedAdmixtureChildParent->removeChild(storedAdmixtureChildChild);
     storedAdmixtureChildParent->addChild(storedAdmixtureChild);
     storedAdmixtureChildChild->setParent(storedAdmixtureChild);

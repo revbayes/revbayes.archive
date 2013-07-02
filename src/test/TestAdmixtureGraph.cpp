@@ -20,7 +20,7 @@
 #include "AdmixtureEdgeReweight.h"
 #include "AdmixtureEdgeSlide.h"
 #include "AdmixtureFixedNodeheightPruneRegraft.h"
-#include "AdmixtureNearestNeighborInterchange.h"
+#include "AdmixtureNearestNeighborInterchangeAndRateShift.h"
 #include "AdmixtureNodeTimeSlideBeta.h"
 #include "AdmixtureCPPRateScaleMove.h"
 #include "AdmixtureDelayDecrement.h"
@@ -87,14 +87,14 @@ bool TestAdmixtureGraph::run(void) {
     
     // read in data
    // SnpData* snps = PopulationDataReader().readSnpData(snpFilename);
-    SnpData* snps = PopulationDataReader().readSnpData2(snpFilename);
+    SnpData* snps = PopulationDataReader().readSnpData2(snpFilename,10);
     size_t numTaxa = snps->getNumPopulations();
     size_t numNodes = 2 * numTaxa - 1;
     size_t numBranches = numNodes - 1;
     size_t numSites = snps->getNumSnps();
     int blockSize = 500;
     
-    int delay = 100;
+    int delay = 4000;
     size_t numTreeResults = 500;
     size_t numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 10;
@@ -111,7 +111,7 @@ bool TestAdmixtureGraph::run(void) {
     
     bool useParallelMcmcmc = true;
     int numChains = 8;
-    int numProcesses = 8;
+    int numProcesses = numChains;
     int swapInterval = 10;
     double deltaTemp = 0.1;
     
@@ -123,14 +123,14 @@ bool TestAdmixtureGraph::run(void) {
     // std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
        
     // BM diffusion rate
-    ConstantNode<double>* a_bm = new ConstantNode<double>( "bm_a", new double(2));
-    ConstantNode<double>* b_bm = new ConstantNode<double>( "bm_b", new double(1));
+    ConstantNode<double>* a_bm = new ConstantNode<double>( "bm_a", new double(3));
+    ConstantNode<double>* b_bm = new ConstantNode<double>( "bm_b", new double(2));
     StochasticNode<double>* diffusionRate = new StochasticNode<double> ("rate_BM", new ExponentialDistribution(b_bm));
     
     // admixture CPP rate
     // possible formula for data-appropriate CPP prior
     // double cpp_prior = pow(10,2*numSites); // ... but really, probably impossible... better off using MCMCMC
-    double cpp_prior = pow(10,0);
+    double cpp_prior = pow(10,-2);
     ConstantNode<double>* c = new ConstantNode<double>( "c", new double(cpp_prior)); // admixture rate prior
     StochasticNode<double>* admixtureRate = new StochasticNode<double> ("rate_CPP", new ExponentialDistribution(c));
     admixtureRate->setValue(new double(1.0 / cpp_prior));
@@ -153,12 +153,13 @@ bool TestAdmixtureGraph::run(void) {
     // branch multipliers (mutation rate is clocklike, but population sizes are not)
 	std::vector<const TypedDagNode<double> *> branchRates;
     std::vector< ContinuousStochasticNode *> branchRates_nonConst;
-    ConstantNode<double>* branchRateA = new ConstantNode<double>( "branchRateA", new double(3));
-    ConstantNode<double>* branchRateB = new ConstantNode<double>( "branchRateB", new double(2));
+    ConstantNode<double>* branchRateA = new ConstantNode<double>( "branchRateA", new double(5));
+    ConstantNode<double>* branchRateB = new ConstantNode<double>( "branchRateB", new double(4));
 	for( int i=0; i<numBranches; i++){
 
         std::ostringstream br_name;
         br_name << "br_" << i;
+        //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new ExponentialDistribution(branchRateA) );
         ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new InverseGammaDistribution(branchRateA, branchRateB));
         //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new GammaDistribution(branchRateA, branchRateB));
         //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode(br_name.str(), new LognormalDistribution(branchRateA, branchRateB));
@@ -208,10 +209,10 @@ bool TestAdmixtureGraph::run(void) {
     // non-admixture tree updates
     if (updateTree)
     {
-        moves.push_back( new AdmixtureNarrowExchange( tau, 4*numTaxa) );
+        moves.push_back( new AdmixtureNarrowExchange( tau, 1.0, 2*numTaxa) );
         moves.push_back( new AdmixtureFixedNodeheightPruneRegraft(tau, numTaxa));
         for (size_t i = numTaxa; i < numNodes - 1; i++)
-            moves.push_back( new AdmixtureNodeTimeSlideBeta( tau, (int)i, 1.0, true, 1.0 ) );
+            moves.push_back( new AdmixtureNodeTimeSlideBeta( tau, (int)i, 1.0, false, 1.0 ) );
     }
     
     
@@ -227,7 +228,7 @@ bool TestAdmixtureGraph::run(void) {
             ;//moves.push_back( new AdmixtureShiftNodeAgeAndRate(tau, branchRates_nonConst, (int)i, 1.0, true, 1.0) );
         
         // NNI with branch rate modifier (not working quite right, disabled)
-        //moves.push_back( new AdmixtureNearestNeighborInterchange( tau, branchRates_nonConst, 1.0, true, numTaxa));
+        moves.push_back( new AdmixtureNearestNeighborInterchangeAndRateShift( tau, branchRates_nonConst, 3.0, false, numTaxa));
     }
     
     moves.push_back( new AdmixtureDelayDecrement( delayTimer, 1.0) );
@@ -239,13 +240,14 @@ bool TestAdmixtureGraph::run(void) {
         
         moves.push_back( new AdmixtureEdgeAddResidualWeights( tau, admixtureRate, residuals, delayTimer, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
         moves.push_back( new AdmixtureEdgeRemoveResidualWeights( tau, admixtureRate, residuals, delayTimer, 2.0) );
-        moves.push_back( new AdmixtureEdgeReplaceResidualWeights( tau, admixtureRate, residuals, delayTimer, allowSisterAdmixture, 5.0) );
+        moves.push_back( new AdmixtureEdgeReplaceResidualWeights( tau, admixtureRate, residuals, delayTimer, allowSisterAdmixture, 10.0) );
         moves.push_back( new AdmixtureEdgeDivergenceMerge( tau, admixtureRate, residuals, delayTimer, allowSisterAdmixture, 5.0 ));
-        
-        moves.push_back( new AdmixtureEdgeReweight( tau, 10.0, 2.0) );
-        moves.push_back( new AdmixtureEdgeReversePolarity( tau, 10.0, 2.0) );
-        moves.push_back( new AdmixtureEdgeSlide( tau, allowSisterAdmixture, 10.0, 2.0) );
+     
+        moves.push_back( new AdmixtureEdgeReweight( tau, 2.0, 5.0) );
+        moves.push_back( new AdmixtureEdgeReversePolarity( tau, 2.0, 5.0) );
+        moves.push_back( new AdmixtureEdgeSlide( tau, allowSisterAdmixture, 2.0, 5.0) );
         moves.push_back( new AdmixtureCPPRateScaleMove( tau, admixtureRate, cpp_prior, 1.0, false, 2.0));
+        
     }
     
     // dream moves...
@@ -282,7 +284,7 @@ bool TestAdmixtureGraph::run(void) {
     
     std::set<DagNode*> mn2;
     mn2.insert(tau);
-    monitors.push_back( new FileMonitor( mn2, 10,"/Users/mlandis/data/admix/output/" + outName + ".time_trees.trees", "\t" ));
+    monitors.push_back( new FileMonitor( mn2, 10,"/Users/mlandis/data/admix/output/" + outName + ".time_trees.trees", "\t", true, true, true, true ));
     
     
     // MODEL
@@ -295,7 +297,7 @@ bool TestAdmixtureGraph::run(void) {
     // MCMC
     std::cout << "Calling mcmc\n";
     
-    if (false)
+    if (!useParallelMcmcmc)
     {
         double scaleFactorConstant = 2000.0; // make this smaller to flatten the likelihood surface
         double chainHeat = scaleFactorConstant / numSites;
@@ -306,7 +308,7 @@ bool TestAdmixtureGraph::run(void) {
     else
     {
         ParallelMcmcmc myPmc3(myModel, moves, monitors, numChains, numProcesses, swapInterval, deltaTemp);
-        myPmc3.run(1000);
+        myPmc3.run(100000);
         myPmc3.printOperatorSummary();
     }
 
