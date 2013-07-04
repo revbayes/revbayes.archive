@@ -42,8 +42,8 @@ ConstantBirthDeathProcess* ConstantBirthDeathProcess::clone( void ) const {
 
 RevBayesCore::ConstantBirthDeathProcess* ConstantBirthDeathProcess::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m = static_cast<const RealPos &>( diversification->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( turnover->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* m = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( mu->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<double>* r = static_cast<const Probability &>( rho->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode< std::vector<double> > *met = static_cast<const Vector<RealPos> &>( massExtinctionTimes->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode< std::vector<double> > *mep = static_cast<const Vector<RealPos> &>( massExtinctionSurvivalProbabilities->getValue() ).getValueNode();
@@ -85,8 +85,8 @@ const MemberRules& ConstantBirthDeathProcess::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "diversification", true, RealPos::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "turnover"  , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"  , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"  , true, Probability::getClassTypeSpec(), new Probability(1.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "massExtinctionTimes"  , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "massExtinctionSurvivalProbabilities"  , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
@@ -120,15 +120,15 @@ const TypeSpec& ConstantBirthDeathProcess::getTypeSpec( void ) const {
 /** Print value for user */
 void ConstantBirthDeathProcess::printValue(std::ostream& o) const {
     
-    o << " const BDP (diversification=";
-    if ( diversification != NULL ) {
-        o << diversification->getName();
+    o << " const BDP (lambda=";
+    if ( lambda != NULL ) {
+        o << lambda->getName();
     } else {
         o << "?";
     }
-    o << ", turnover=";
-    if ( turnover != NULL ) {
-        o << turnover->getName();
+    o << ", mu=";
+    if ( mu != NULL ) {
+        o << mu->getName();
     } else {
         o << "?";
     }
@@ -175,11 +175,11 @@ void ConstantBirthDeathProcess::printValue(std::ostream& o) const {
 /** Set a member variable */
 void ConstantBirthDeathProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "diversification" ) {
-        diversification = var;
+    if ( name == "lambda" ) {
+        lambda = var;
     }
-    else if ( name == "turnover" ) {
-        turnover = var;
+    else if ( name == "mu" ) {
+        mu = var;
     }
     else if ( name == "rho" ) {
         rho = var;

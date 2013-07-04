@@ -118,7 +118,7 @@ void TreeScale::setConstMemberVariable(const std::string& name, const RbPtr<cons
     else if ( name == "lambda" ) {
         lambda = var;
     }
-    else if ( name == "tuning" ) {
+    else if ( name == "tune" ) {
         tuning = var;
     }
     else {

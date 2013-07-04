@@ -49,8 +49,8 @@ namespace RevLanguage {
         
     private:
 
-        RbPtr<const Variable>                           diversification;
-        RbPtr<const Variable>                           turnover;
+        RbPtr<const Variable>                           lambda;
+        RbPtr<const Variable>                           mu;
         RbPtr<const Variable>                           rho;
         RbPtr<const Variable>                           massExtinctionTimes;
         RbPtr<const Variable>                           massExtinctionSurvivalProbabilities;

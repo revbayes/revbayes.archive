@@ -291,7 +291,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // normal distribution
         addDistribution( "norm", new NormalDistribution() );
         
-        // uniform distributin
+        // uniform distribution
         addDistribution( "unif", new UniformDistribution() );
         addDistribution( "unif", new PositiveUniformDistribution() );
         

@@ -59,7 +59,7 @@ namespace RevBayesCore {
     
         // parameters
         int                                         printgen;
-        Model*                                      model;
+        const Model*                                model;
         std::set<DagNode *>                         nodes;
     
     };
