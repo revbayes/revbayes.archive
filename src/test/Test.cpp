@@ -280,7 +280,7 @@ bool Test::performTests(void) {
     try {
         TestBranchHeterogeneousHkyModel testHeteroHky = TestBranchHeterogeneousHkyModel("/Users/boussau/Dropbox/HeterogeneousModelsRevBayes/data/SheffieldBeetles.fasta", 1000);
 		
-		testHeteroHky.run();
+		//testHeteroHky.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroHkyModel.tree");
         //    testTrace.run();
     } catch (RbException &e) {
@@ -421,7 +421,8 @@ bool Test::performTests(void) {
     try {
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/canmap2_snps_removedMissingData.txt", 10);
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/moo_snps.no_999111.removedMissingData.txt", 10);
-        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/NativeAmericans_Saqqaq_Clovis.masked.genotypes.removedMayan.txt.oneAleut.TreeMixInput.removedAfricans.txt", 10);
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/NativeAmericans_Saqqaq_Clovis.masked.genotypes.removedMayan.txt.oneAleut.TreeMixInput.removedAfricans.txt", 10);
+        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/humans.070313.txt", 10);
         testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;

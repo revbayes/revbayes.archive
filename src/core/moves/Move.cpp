@@ -14,6 +14,12 @@ Move::Move( DagNode *n, double w, bool t ) : weight( w ), numAccepted( 0 ), numT
     nodes.insert( n );
 }
 
+Move::Move( std::vector<DagNode*> n, double w, bool t ) : weight( w ), numAccepted( 0 ), numTried( 0 ), autoTuning( t ) {
+
+    for (std::vector<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
+        nodes.insert( *it );
+}
+
 
 Move::~Move( void ) {
     

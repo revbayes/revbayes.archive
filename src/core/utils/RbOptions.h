@@ -86,7 +86,7 @@
 
 // AdmixtureGraph depends on armadillo for linear algebra
 // Uncomment the first line to enable the armadillo library
-//#define USE_LIB_ARMADILLO
+#define USE_LIB_ARMADILLO
 #ifdef USE_LIB_ARMADILLO
 #include <armadillo>
 #endif

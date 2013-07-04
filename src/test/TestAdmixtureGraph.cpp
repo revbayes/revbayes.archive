@@ -87,7 +87,7 @@ bool TestAdmixtureGraph::run(void) {
     
     // read in data
    // SnpData* snps = PopulationDataReader().readSnpData(snpFilename);
-    SnpData* snps = PopulationDataReader().readSnpData2(snpFilename,10);
+    SnpData* snps = PopulationDataReader().readSnpData2(snpFilename,1);
     size_t numTaxa = snps->getNumPopulations();
     size_t numNodes = 2 * numTaxa - 1;
     size_t numBranches = numNodes - 1;

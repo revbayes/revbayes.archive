@@ -20,6 +20,7 @@
 
 #include <ostream>
 #include <set>
+#include <vector>
 
 namespace RevBayesCore {
     
@@ -51,7 +52,9 @@ namespace RevBayesCore {
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN);
 
     protected:
-                                                                Move(DagNode* n, double w, bool autoTune = false);                                                                                                                                         //!< Default constructor
+                                                                Move(DagNode* n, double w, bool autoTune = false);
+        //!< Default constructor
+                                                                Move( std::vector<DagNode*> n, double w, bool autoTune = false);
     
         // function you have to implement
         virtual void                                            acceptMove(void) = 0;
