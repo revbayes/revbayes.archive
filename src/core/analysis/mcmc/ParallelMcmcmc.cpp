@@ -73,8 +73,7 @@ void ParallelMcmcmc::initialize(void)
 double ParallelMcmcmc::computeBeta(double delta, int idx)
 {
     // MJL: May want other distributions of beta in the future
-//    return 1 / (1 + delta * idx);
-    return pow(1 + delta, 2 - idx);
+    return pow(1 + delta, -idx);
 }
 
 void ParallelMcmcmc::burnin(int g, int ti)

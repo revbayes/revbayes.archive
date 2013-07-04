@@ -87,7 +87,7 @@ bool TestAdmixtureGraph::run(void) {
     
     // read in data
    // SnpData* snps = PopulationDataReader().readSnpData(snpFilename);
-    SnpData* snps = PopulationDataReader().readSnpData2(snpFilename,10);
+    SnpData* snps = PopulationDataReader().readSnpData2(snpFilename,1);
     size_t numTaxa = snps->getNumPopulations();
     size_t numNodes = 2 * numTaxa - 1;
     size_t numBranches = numNodes - 1;
@@ -110,10 +110,10 @@ bool TestAdmixtureGraph::run(void) {
     bool updateTree = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 8;
+    int numChains = 4;
     int numProcesses = numChains;
     int swapInterval = 10;
-    double deltaTemp = 0.1;
+    double deltaTemp = 0.5;
     
     
     std::stringstream rndStr;
@@ -200,17 +200,17 @@ bool TestAdmixtureGraph::run(void) {
     // model parameters
     if (updateParameters)
     {
-        moves.push_back( new ScaleMove(diffusionRate, 1.0, true, 2.0) );
-        moves.push_back( new ScaleMove(diversificationRate, 1.0, true, 2.0) );
-        moves.push_back( new ScaleMove(turnover, 1.0, true, 2.0) );
+        moves.push_back( new ScaleMove(diffusionRate, 1.0, true, 5.0) );
+        moves.push_back( new ScaleMove(diversificationRate, 1.0, true, 5.0) );
+        moves.push_back( new ScaleMove(turnover, 1.0, true, 5.0) );
     }
     
     
     // non-admixture tree updates
     if (updateTree)
     {
-        moves.push_back( new AdmixtureNarrowExchange( tau, 1.0, 2*numTaxa) );
-        moves.push_back( new AdmixtureFixedNodeheightPruneRegraft(tau, numTaxa));
+        moves.push_back( new AdmixtureNarrowExchange( tau, 1.0, numTaxa) );
+        moves.push_back( new AdmixtureFixedNodeheightPruneRegraft(tau, numTaxa/2));
         for (size_t i = numTaxa; i < numNodes - 1; i++)
             moves.push_back( new AdmixtureNodeTimeSlideBeta( tau, (int)i, 1.0, false, 1.0 ) );
     }
