@@ -169,6 +169,9 @@ void Mcmc::initialize( void ) {
         // set the model
         monitors[i]->setModel( &model );
         
+        // set the mcmc
+        monitors[i]->setMcmc( this );
+        
     }
     
     
@@ -410,6 +413,16 @@ void Mcmc::setChainActive(bool tf)
 void Mcmc::setChainHeat(double v)
 {
     chainHeat = v;
+}
+
+int Mcmc::getChainIdx(void)
+{
+    return chainIdx;
+}
+
+void Mcmc::setChainIdx(int x)
+{
+    chainIdx = x;
 }
 
 std::vector<Monitor*>& Mcmc::getMonitors(void)

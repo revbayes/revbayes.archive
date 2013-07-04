@@ -18,19 +18,20 @@
 
 #include "FileMonitor.h"
 #include "DagNode.h"
+#include "Mcmc.h"
 #include "Model.h"
 #include "Monitor.h"
 
 using namespace RevBayesCore;
 
 /* Constructor */
-FileMonitor::FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap) {
+FileMonitor::FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci) {
     
 }
 
 
 /* Constructor */
-FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap) {
+FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci) {
     
 }
 
@@ -43,6 +44,7 @@ FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ), outStream() {
     posterior   = f.posterior;
     likelihood  = f.likelihood;
     append      = f.append;
+    chainIdx    = f.chainIdx;
 }
 
 
@@ -108,6 +110,13 @@ void FileMonitor::monitor(long gen) {
             outStream << pp;
         }
         
+        if ( chainIdx ) {
+            // add a separator before every new element
+            outStream << separator;
+            outStream << mcmc->getChainIdx();
+            
+        }
+        
         for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
             // add a separator before every new element
             outStream << separator;
@@ -157,6 +166,11 @@ void FileMonitor::printHeader() {
         // add a separator before every new element
         outStream << separator;
         outStream << "Prior";
+    }
+    
+    if ( chainIdx ) {
+        outStream << separator;
+        outStream << "ChainIndex";
     }
     
     for (std::set<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {

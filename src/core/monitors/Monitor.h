@@ -24,6 +24,7 @@
 namespace RevBayesCore {
 
     class DagNode;
+    class Mcmc;
     class Model;
 
     class Monitor {
@@ -54,12 +55,14 @@ namespace RevBayesCore {
         const std::set<DagNode *>&                  getDagNodes(void) const;                                                //!< Get the nodes vector
         void                                        setDagNodes(const std::set<DagNode *>& args);
         void                                        setModel(Model* m);
+        void                                        setMcmc(Mcmc* m);
 
     protected:
     
         // parameters
         int                                         printgen;
         const Model*                                model;
+        Mcmc*                                       mcmc;
         std::set<DagNode *>                         nodes;
     
     };

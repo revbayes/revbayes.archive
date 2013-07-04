@@ -31,6 +31,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         // create chains
         bool a = (i == 0 ? true : false);
         Mcmc* oneChain = new Mcmc(m, moves, mons, a, b);
+        oneChain->setChainIdx(i);
         
         // add chain to team
         chains.push_back(oneChain);
@@ -187,15 +188,15 @@ void ParallelMcmcmc::swapChains(void)
         double bk = chains[k]->getChainHeat();
         double lnPj = chains[j]->getLnPosterior();
         double lnPk = chains[k]->getLnPosterior();
-        double r = bj * (lnPk - lnPj) + bk * (lnPj - lnPk) + lnProposalRatio;
+        double lnR = bj * (lnPk - lnPj) + bk * (lnPj - lnPk) + lnProposalRatio;
         
         // determine whether we accept or reject the chain swap
         bool accept = false;
-        if (r >= 0)
+        if (lnR >= 0)
             accept = true;
-        else if (r < -100)
+        else if (lnR < -100)
             accept = false;
-        else if (exp(r) > GLOBAL_RNG->uniform01())
+        else if (exp(lnR) > GLOBAL_RNG->uniform01())
             accept = true;
         else
             accept = false;
@@ -204,7 +205,7 @@ void ParallelMcmcmc::swapChains(void)
         //accept = true;
         std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
         std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
-        std::cout << "swapChains()\t" << j << " <--> " << k << "\t" << r << "\t" << (accept ? "accept\n" : "reject\n");
+        std::cout << "swapChains()\t" << j << " <--> " << k << "\t" << exp(lnR) << "\t" << (accept ? "accept\n" : "reject\n");
         
         // on accept, swap beta values and active chains
         if (accept)

@@ -30,6 +30,8 @@
 
 namespace RevBayesCore {
     
+    class Monitor;
+    
     class Mcmc {
     
     public:
@@ -51,6 +53,8 @@ namespace RevBayesCore {
         double                                              getChainHeat(void);
         void                                                setChainActive(bool tf);
         void                                                setChainHeat(double v);
+        void                                                setChainIdx(int);
+        int                                                 getChainIdx(void);
         void                                                monitor(int g);
         std::vector<Monitor*>&                              getMonitors(void);
         void                                                redrawChainState(void);
@@ -74,7 +78,8 @@ namespace RevBayesCore {
         unsigned int                                        gen;
         RandomMoveSchedule                                  schedule;
         MoveSchedule*                                       moveSchedule;
-        
+
+        int                                                 chainIdx;
         bool                                                chainActive;
         double                                              chainHeat;
     };

@@ -83,6 +83,11 @@ void Monitor::setModel(Model *m) {
     model = m;
 }
 
+void Monitor::setMcmc(Mcmc *m)
+{
+    mcmc = m;
+}
+
 
 void Monitor::swapNode(DagNode *oldN, DagNode *newN) {
     // error catching

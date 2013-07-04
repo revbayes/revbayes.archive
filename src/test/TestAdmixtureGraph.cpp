@@ -87,7 +87,7 @@ bool TestAdmixtureGraph::run(void) {
     
     // read in data
    // SnpData* snps = PopulationDataReader().readSnpData(snpFilename);
-    SnpData* snps = PopulationDataReader().readSnpData2(snpFilename,1);
+    SnpData* snps = PopulationDataReader().readSnpData2(snpFilename,10);
     size_t numTaxa = snps->getNumPopulations();
     size_t numNodes = 2 * numTaxa - 1;
     size_t numBranches = numNodes - 1;
@@ -271,7 +271,7 @@ bool TestAdmixtureGraph::run(void) {
 	}
     
    
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true ) );
+    monitors.push_back( new FileMonitor( monitoredNodes, 10, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true, true ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
  
     monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".admixture_trees.txt", "\t", true, true, true, true ) );
