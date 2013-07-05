@@ -154,7 +154,7 @@ void Mcmc::initialize( void ) {
     std::set< const DagNode *> visited;
     getOrderedStochasticNodes(dagNodes[0],orderedStochNodes, visited );
     
-        
+    sort(monitors.begin(), monitors.end());
     /* Open the output file and print headers */
     for (size_t i=0; i<monitors.size(); i++) 
     {

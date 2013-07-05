@@ -110,10 +110,10 @@ bool TestAdmixtureGraph::run(void) {
     bool updateTree = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 4;
+    int numChains = 8;
     int numProcesses = numChains;
     int swapInterval = 10;
-    double deltaTemp = 0.5;
+    double deltaTemp = 0.2;
     
     
     std::stringstream rndStr;

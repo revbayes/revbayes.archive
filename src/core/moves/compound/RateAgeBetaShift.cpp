@@ -103,11 +103,11 @@ double RateAgeBetaShift::performCompoundMove( void ) {
     tau.setAge( node->getIndex(), my_new_age );
     
     // set the rates
-    rates[parentIdx]->setValue( new double(my_age * storedRates[parentIdx] / my_new_age ));
+    rates[parentIdx]->setValue( new double((node->getParent().getAge() - my_age) * storedRates[parentIdx] / (node->getParent().getAge() - my_new_age)));
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
         int childIdx = node->getChild(i).getIndex();
-        rates[childIdx]->setValue( new double(my_age * storedRates[childIdx] / my_new_age ));
+        rates[childIdx]->setValue( new double((my_age - node->getChild(i).getAge()) * storedRates[childIdx] / (my_new_age - node->getChild(i).getAge())));
     }
     
     return backward - forward;

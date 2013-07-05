@@ -20,6 +20,8 @@ TreeAdmixtureEventCount::TreeAdmixtureEventCount(const TypedDagNode<AdmixtureTre
 
 
 TreeAdmixtureEventCount::TreeAdmixtureEventCount(const TreeAdmixtureEventCount &n) : TypedFunction<size_t>( n ), tree( n.tree ) {
+    *value = n.tree->getValue().getNumberOfAdmixtureChildren();
+    
     // no need to add parameters, happens automatically
 }
 
