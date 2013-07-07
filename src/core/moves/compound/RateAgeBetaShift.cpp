@@ -61,7 +61,7 @@ double RateAgeBetaShift::performCompoundMove( void ) {
         double u = rng->uniform01();
         size_t index = std::floor(tau.getNumberOfNodes() * u);
         node = &tau.getNode(index);
-    } while ( node->isRoot() || node->isTip() );
+    } while ( node->isRoot() || node->isTip() ); 
     
     TopologyNode& parent = node->getParent();
     
@@ -77,8 +77,8 @@ double RateAgeBetaShift::performCompoundMove( void ) {
     storedNode = node;
     storedAge = my_age;
     
-    int parentIdx = node->getParent().getIndex();
-    storedRates[parentIdx] = rates[parentIdx]->getValue();
+    int nodeIdx = node->getIndex();
+    storedRates[nodeIdx] = rates[nodeIdx]->getValue();
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
         int childIdx = node->getChild(i).getIndex();
@@ -103,7 +103,7 @@ double RateAgeBetaShift::performCompoundMove( void ) {
     tau.setAge( node->getIndex(), my_new_age );
     
     // set the rates
-    rates[parentIdx]->setValue( new double((node->getParent().getAge() - my_age) * storedRates[parentIdx] / (node->getParent().getAge() - my_new_age)));
+    rates[nodeIdx]->setValue( new double((node->getParent().getAge() - my_age) * storedRates[nodeIdx] / (node->getParent().getAge() - my_new_age)));
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
         int childIdx = node->getChild(i).getIndex();
@@ -125,8 +125,8 @@ void RateAgeBetaShift::rejectCompoundMove( void ) {
     tree->getValue().setAge( storedNode->getIndex(), storedAge );
     
     // undo the rates
-    int parentIdx = storedNode->getParent().getIndex();
-    rates[parentIdx]->setValue(new double(storedRates[parentIdx]));
+    int nodeIdx = storedNode->getIndex();
+    rates[nodeIdx]->setValue(new double(storedRates[nodeIdx]));
     for (size_t i = 0; i < storedNode->getNumberOfChildren(); i++)
     {
         int childIdx = storedNode->getChild(i).getIndex();

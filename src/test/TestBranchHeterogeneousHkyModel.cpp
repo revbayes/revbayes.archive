@@ -26,6 +26,7 @@
 #include "NodeTimeSlideUniform.h"
 #include "NormalizeVectorFunction.h"
 #include "QuantileFunction.h"
+#include "RateAgeBetaShift.h"
 #include "RbFileManager.h"
 #include "RootTimeSlide.h"
 #include "ScaleMove.h"
@@ -37,6 +38,7 @@
 #include "TimeTree.h"
 #include "TreeHeightStatistic.h"
 #include "TreeScale.h"
+#include "TreeUtilities.h"
 #include "UniformDistribution.h"
 #include "VectorFunction.h"
 #include "RbVectorFunction.h"
@@ -80,28 +82,29 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     // root frequencies
     StochasticNode<std::vector<double> > *rf = new StochasticNode<std::vector<double> >( "rf", new DirichletDistribution(bfPrior) );
 	
-    // first the hyper-priors of the clock model
+	
+	
+//    // first the hyper-priors of the clock model
     ConstantNode<double> *a = new ConstantNode<double>("a", new double(0.5) );
     ConstantNode<double> *b = new ConstantNode<double>("b", new double(0.25) );
-	
-    
+//	
+//    
     // then the parameters
     ContinuousStochasticNode *expectLN = new ContinuousStochasticNode( "UCLN.expectation", new ExponentialDistribution(a) ); // the expectation of the LN dist so mu = log(expectLN) - (sigLN^2)/2
-    ContinuousStochasticNode *sigLN = new ContinuousStochasticNode("UCLN.variance", new ExponentialDistribution(b) );
-	
+    ContinuousStochasticNode *sigLN = new ContinuousStochasticNode("UCLN.variance", new ExponentialDistribution(b) );	
     DeterministicNode<double> *logExpLN = new DeterministicNode<double>("logUCLN.exp", new LnFunction(expectLN) );
-    DeterministicNode<double> *squareSigLN = new DeterministicNode<double>("squareSigLN", new BinaryMultiplication<double, double, double>(sigLN, sigLN) );
-    DeterministicNode<double> *divSqSigLN = new DeterministicNode<double>("divSqSigLN", new BinaryDivision<double, double, double>(squareSigLN, new ConstantNode<double>( "2", new double (2.0))) );
-    DeterministicNode<double> *muValLN = new DeterministicNode<double>("MuValLN", new BinarySubtraction<double, double, double>(logExpLN, divSqSigLN) );
+   DeterministicNode<double> *squareSigLN = new DeterministicNode<double>("squareSigLN", new BinaryMultiplication<double, double, double>(sigLN, sigLN) );
+   DeterministicNode<double> *divSqSigLN = new DeterministicNode<double>("divSqSigLN", new BinaryDivision<double, double, double>(squareSigLN, new ConstantNode<double>( "2", new double (2.0))) );
+   DeterministicNode<double> *muValLN = new DeterministicNode<double>("MuValLN", new BinarySubtraction<double, double, double>(logExpLN, divSqSigLN) );
 	
-    
+   
     //Declaring a vector of HKY matrices
 	size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
     std::vector<StochasticNode < std::vector<double> >* > pis;
     std::vector< const TypedDagNode< RateMatrix >* > qs;
 	StochasticNode < double >* tstv = new ContinuousStochasticNode("tstv", new ExponentialDistribution( tstvPrior ) );
-
-	
+//
+//	
     // declaring a vector of clock rates
 	std::vector<const TypedDagNode<double> *> branchRates;
 	std::vector< ContinuousStochasticNode *> branchRates_nonConst;
@@ -119,8 +122,8 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
         qs.push_back(new DeterministicNode<RateMatrix>( q_name.str(), new HkyRateMatrixFunction( tstv, pis[i]) ));
         std::cout << "Q:\t" << qs[i]->getValue() << std::endl;        
         
-        // construct the per branch clock rate
-        std::ostringstream br_name;
+       // construct the per branch clock rate
+       std::ostringstream br_name;
         br_name << "br(" << i << ")";
 		ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new LognormalDistribution(muValLN, sigLN));
 		branchRates.push_back( tmp_branch_rate );
@@ -156,7 +159,7 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     DeterministicNode<std::vector<double> > *site_rates = new DeterministicNode<std::vector<double> >( "site_rates", new VectorFunction<double>(gamma_rates) );
     DeterministicNode<std::vector<double> > *site_rates_norm = new DeterministicNode<std::vector<double> >( "site_rates_norm", new NormalizeVectorFunction(site_rates) );
     // we actually do not use different probabilities per rate (yet!)
-    ConstantNode<std::vector<double> > *site_rate_probs = new ConstantNode<std::vector<double> >( "site_rate_probs", new std::vector<double>(4,1.0/4.0) );
+   // ConstantNode<std::vector<double> > *site_rate_probs = new ConstantNode<std::vector<double> >( "site_rate_probs", new std::vector<double>(4,1.0/4.0) );
     
     
 	
@@ -168,7 +171,13 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     
-//    tau->setValue( trees[0] );
+	
+//	//rescale the tree so that its root age is 1
+	TimeTree *t = tau->getValue().clone();
+	const TopologyNode &root = t->getRoot();
+	TreeUtilities::rescaleTree(t, &t->getRoot(), 1.0 / root.getAge());
+//	
+    tau->setValue( t );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // and the character model
@@ -195,13 +204,25 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
     moves.push_back( new SubtreeScale( tau, 5.0 ) );
-    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
-    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
+//Fixintg the root age at 1:
+	//  moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+	//    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
+//test: only 20 instead of 30
+    moves.push_back( new NodeTimeSlideUniform( tau, 20.0 ) );
     moves.push_back( new ScaleMove(tstv, 1.0, true, 2.0) );
     moves.push_back( new SimplexSingleElementScale( rf, 10.0, true, 2.0 ) );
 	moves.push_back( new ScaleMove(alpha, 1.0, true, 2.0) );
+    moves.push_back( new ScaleMove(expectLN, 1.0, true, 2.0) );
+    moves.push_back( new ScaleMove(sigLN, 1.0, true, 2.0) );
+	std::vector<DagNode*> treeAndRates;
+	treeAndRates.push_back( tau );
+	for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
+		treeAndRates.push_back( branchRates_nonConst[i] );
+	}
+	moves.push_back( new RateAgeBetaShift( treeAndRates, 1.0, true, 10.0) );                                                         //!<  constructor
 
+	
+	
     for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
         moves.push_back( new SimplexSingleElementScale( pis[i], 10.0, true, 2.0 ) );
         moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, true, 1.0 ) );
@@ -227,6 +248,7 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
 	
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
+//	myMcmc.burnin(1000, 100);
     myMcmc.run(mcmcGenerations);
     
     myMcmc.printOperatorSummary();

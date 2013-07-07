@@ -72,7 +72,7 @@ double CompoundMove::performMove( double &probRatio ) {
                 // do not double-count the prob ratio for any elt in both theNodes and affectedNodes
                 if ( find(theNodes.begin(), theNodes.end(), *i) == theNodes.end() )
                 {
-                    std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << "\n";
+               //     std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << "\n";
                     probRatio += theAffectedNode->getLnProbabilityRatio();
                 }
             }

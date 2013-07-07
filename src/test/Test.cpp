@@ -278,11 +278,11 @@ bool Test::performTests(void) {
 	
     /* A branch-heterogeneous HKY model test */
     try {
-        TestBranchHeterogeneousHkyModel testHeteroHky = TestBranchHeterogeneousHkyModel("/Users/boussau/Dropbox/HeterogeneousModelsRevBayes/data/SheffieldBeetles.fasta", 1000);
+        TestBranchHeterogeneousHkyModel testHeteroHky = TestBranchHeterogeneousHkyModel("/Users/boussau/Dropbox/HeterogeneousModelsRevBayes/data/SheffieldBeetles.fasta", 10000);
 		
-		//testHeteroHky.run();
+		testHeteroHky.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroHkyModel.tree");
-        //    testTrace.run();
+            testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

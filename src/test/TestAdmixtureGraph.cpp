@@ -20,7 +20,7 @@
 #include "AdmixtureEdgeReweight.h"
 #include "AdmixtureEdgeSlide.h"
 #include "AdmixtureFixedNodeheightPruneRegraft.h"
-#include "AdmixtureNearestNeighborInterchangeAndRateShift.h"
+//#include "AdmixtureNearestNeighborInterchangeAndRateShift.h"
 #include "AdmixtureNodeTimeSlideBeta.h"
 #include "AdmixtureCPPRateScaleMove.h"
 #include "AdmixtureDelayDecrement.h"
@@ -228,7 +228,7 @@ bool TestAdmixtureGraph::run(void) {
             ;//moves.push_back( new AdmixtureShiftNodeAgeAndRate(tau, branchRates_nonConst, (int)i, 1.0, true, 1.0) );
         
         // NNI with branch rate modifier (not working quite right, disabled)
-        moves.push_back( new AdmixtureNearestNeighborInterchangeAndRateShift( tau, branchRates_nonConst, 3.0, false, numTaxa));
+//        moves.push_back( new AdmixtureNearestNeighborInterchangeAndRateShift( tau, branchRates_nonConst, 3.0, false, numTaxa));
     }
     
     moves.push_back( new AdmixtureDelayDecrement( delayTimer, 1.0) );
