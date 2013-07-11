@@ -84,6 +84,7 @@ void ParallelMcmcmc::burnin(int g, int ti)
 ParallelMcmcmc* ParallelMcmcmc::clone(void) const
 {
     // MJL: I think this is handled through Mcmc...
+    return NULL;
 }
 
 void ParallelMcmcmc::printOperatorSummary(void) const
@@ -216,13 +217,13 @@ void ParallelMcmcmc::swapChains(void)
             // swap active chain
             if (activeIndex == j)
             {
-                activeIndex = k;
+                activeIndex = (int)k;
                 chains[j]->setChainActive(false);
                 chains[k]->setChainActive(true);
             }
             else if (activeIndex == k)
             {
-                activeIndex = j;
+                activeIndex = (int)j;
                 chains[j]->setChainActive(true);
                 chains[k]->setChainActive(false);
             }

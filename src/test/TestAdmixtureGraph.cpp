@@ -26,9 +26,12 @@
 #include "AdmixtureDelayDecrement.h"
 #include "AdmixtureBipartitionMonitor.h"
 #include "AdmixtureResidualsMonitor.h"
+#include "AdmixtureShiftTreeRates.h"
 #include "AdmixtureShiftNodeAgeAndRate.h"
+#include "AdmixtureSubtreePruneRegraftAndRateShift.h"
 #include "AdmixtureNarrowExchange.h"
 #include "AdmixtureEdgeDivergenceMerge.h"
+#include "AdmixtureSubtreePruneRegraft.h"
 #include "AdmixtureTree.h"
 #include "AdmixtureTreeLengthStatistic.h"
 #include "BrownianMotionAdmixtureGraph.h"
@@ -84,6 +87,10 @@ TestAdmixtureGraph::~TestAdmixtureGraph(void)
 bool TestAdmixtureGraph::run(void) {
     
     // MODEL GRAPH
+    std::vector<unsigned int> seed;
+   // seed.push_back(2);
+   // seed.push_back(2);
+   // GLOBAL_RNG->setSeed(seed);
     
     // read in data
    // SnpData* snps = PopulationDataReader().readSnpData(snpFilename);
@@ -94,13 +101,13 @@ bool TestAdmixtureGraph::run(void) {
     size_t numSites = snps->getNumSnps();
     int blockSize = 500;
     
-    int delay = 4000;
+    int delay = 2000;
     size_t numTreeResults = 500;
     size_t numAdmixtureResults = 500;
-    int maxNumberOfAdmixtureEvents = 10;
+    int maxNumberOfAdmixtureEvents = 8;
     
     bool useWishart = true;             // if false, the composite likelihood function is used
-    bool useBias = !true;               // if false, no covariance bias correction for small sample size is used
+    bool useBias = true;               // if false, no covariance bias correction for small sample size is used
     bool useAdmixtureEdges = true;      // if false, no admixture moves or edges are used
     bool useBranchRates = true;         // if false, all populations are of the same size
     bool allowSisterAdmixture = true;   // if false, admixture events cannot be between internal lineages who share a divergence parent
@@ -113,7 +120,7 @@ bool TestAdmixtureGraph::run(void) {
     int numChains = 8;
     int numProcesses = numChains;
     int swapInterval = 10;
-    double deltaTemp = 0.2;
+    double deltaTemp = 50;
     
     
     std::stringstream rndStr;
@@ -124,16 +131,16 @@ bool TestAdmixtureGraph::run(void) {
        
     // BM diffusion rate
     ConstantNode<double>* a_bm = new ConstantNode<double>( "bm_a", new double(3));
-    ConstantNode<double>* b_bm = new ConstantNode<double>( "bm_b", new double(2));
+    ConstantNode<double>* b_bm = new ConstantNode<double>( "bm_b", new double(10));
     StochasticNode<double>* diffusionRate = new StochasticNode<double> ("rate_BM", new ExponentialDistribution(b_bm));
     
     // admixture CPP rate
     // possible formula for data-appropriate CPP prior
     // double cpp_prior = pow(10,2*numSites); // ... but really, probably impossible... better off using MCMCMC
-    double cpp_prior = pow(10,-2);
+    double cpp_prior = pow(10,1);
     ConstantNode<double>* c = new ConstantNode<double>( "c", new double(cpp_prior)); // admixture rate prior
     StochasticNode<double>* admixtureRate = new StochasticNode<double> ("rate_CPP", new ExponentialDistribution(c));
-    admixtureRate->setValue(new double(1.0 / cpp_prior));
+    admixtureRate->setValue(new double(1.0));// / cpp_prior));
     
     // birth-death process for ultrametric tree
     StochasticNode<double>* diversificationRate = new StochasticNode<double>("div", new UniformDistribution(new ConstantNode<double>("div_lower", new double(0.0)), new ConstantNode<double>("div_upper", new double(0.01)) ));
@@ -142,7 +149,7 @@ bool TestAdmixtureGraph::run(void) {
     //diversificationRate->setValue(new double(1.0));
     
     // tree node
-    StochasticNode<AdmixtureTree>* tau = new StochasticNode<AdmixtureTree>( "tau", new AdmixtureConstantBirthDeathProcess(diversificationRate, turnover, numTaxa, snps->getPopulationNames(), snps->getOutgroup()) );
+    StochasticNode<AdmixtureTree>* tau = new StochasticNode<AdmixtureTree>( "tau", new AdmixtureConstantBirthDeathProcess(diversificationRate, turnover, (int)numTaxa, snps->getPopulationNames(), snps->getOutgroup()) );
     //  tau->touch();
     //  tau->keep();
     
@@ -153,8 +160,8 @@ bool TestAdmixtureGraph::run(void) {
     // branch multipliers (mutation rate is clocklike, but population sizes are not)
 	std::vector<const TypedDagNode<double> *> branchRates;
     std::vector< ContinuousStochasticNode *> branchRates_nonConst;
-    ConstantNode<double>* branchRateA = new ConstantNode<double>( "branchRateA", new double(5));
-    ConstantNode<double>* branchRateB = new ConstantNode<double>( "branchRateB", new double(4));
+    ConstantNode<double>* branchRateA = new ConstantNode<double>( "branchRateA", new double(2));
+    ConstantNode<double>* branchRateB = new ConstantNode<double>( "branchRateB", new double(1));
 	for( int i=0; i<numBranches; i++){
 
         std::ostringstream br_name;
@@ -209,7 +216,8 @@ bool TestAdmixtureGraph::run(void) {
     // non-admixture tree updates
     if (updateTree)
     {
-        moves.push_back( new AdmixtureNarrowExchange( tau, 1.0, numTaxa) );
+        moves.push_back( new AdmixtureNarrowExchange( tau, 1.0, numTaxa/2) );
+        //moves.push_back( new AdmixtureSubtreePruneRegraft( tau, 1.0, numTaxa/2) );
         moves.push_back( new AdmixtureFixedNodeheightPruneRegraft(tau, numTaxa/2));
         for (size_t i = numTaxa; i < numNodes - 1; i++)
             moves.push_back( new AdmixtureNodeTimeSlideBeta( tau, (int)i, 1.0, false, 1.0 ) );
@@ -221,14 +229,25 @@ bool TestAdmixtureGraph::run(void) {
     {
         // branch rate multipliers
         for( int i=0; i < numBranches; i++)
-            moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, true, 1.0) );
+            moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, false, 1.0) );
         
         // shift node age for branch rate
         for (size_t i = numTaxa; i < numNodes - 1; i++)
-            ;//moves.push_back( new AdmixtureShiftNodeAgeAndRate(tau, branchRates_nonConst, (int)i, 1.0, true, 1.0) );
+        {
+
+            moves.push_back( new AdmixtureShiftNodeAgeAndRate(tau, branchRates_nonConst, (int)i, 1.0, false, 1.0) );
+            
+            std::vector<DagNode*> pvec;
+            pvec.push_back(tau);
+            pvec.push_back(branchRates_nonConst[i]);
+            moves.push_back( new AdmixtureSubtreePruneRegraftAndRateShift(pvec, i, 1.0, 1.0) );
+        }
         
         // NNI with branch rate modifier (not working quite right, disabled)
-//        moves.push_back( new AdmixtureNearestNeighborInterchangeAndRateShift( tau, branchRates_nonConst, 3.0, false, numTaxa));
+        moves.push_back( new AdmixtureNearestNeighborInterchangeAndRateShift( tau, branchRates_nonConst, 1.0, false, numTaxa/2));
+        
+        // doesn't seem very useful...
+        //moves.push_back( new AdmixtureShiftTreeRates(diffusionRate, branchRates_nonConst, 0.2, false, 5));
     }
     
     moves.push_back( new AdmixtureDelayDecrement( delayTimer, 1.0) );

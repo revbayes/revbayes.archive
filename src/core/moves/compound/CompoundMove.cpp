@@ -57,6 +57,8 @@ double CompoundMove::performMove( double &probRatio ) {
         (*it)->touch();
     
         // calculate the probability ratio for the node we just changed
+        std::cout << (*it)->getName() << " " << (*it)->getLnProbabilityRatio() << "\n";
+            
         probRatio += (*it)->getLnProbabilityRatio();
         
         if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )

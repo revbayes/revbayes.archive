@@ -284,13 +284,13 @@ void BrownianMotionAdmixtureGraph::initializeData(void)
     // make sure tipData is matched by index, using getSnpFrequencies(name,idx)
     // std::vector<TopologyNode*> nodesByIndex = tau->getValue().getNodesByIndex();
     
-    for (size_t i = 0; i < blockSize*numBlocks; i++)
+    for (int i = 0; i < blockSize*numBlocks; i++)
     {
         data[i].resize(numTaxa,0.0);
-        for (size_t j = 0; j < numTaxa; j++)
+        for (int j = 0; j < numTaxa; j++)
         {
             double v = snps->getSnpFrequencies(j,i);
-            v += RbStatistics::Normal::rv(0.0,0.00001,*GLOBAL_RNG);
+            //v += RbStatistics::Normal::rv(0.0,0.00001,*GLOBAL_RNG);
             data[i][j] = v;
             //data[i][tipNodesByIndex[j]->getIndex()] = snps->getSnpFrequencies(tipNodesByIndex[j]->getName(),i);
             //std::cout << snps->getPopulationNames(j) << "\t" << i << "\t" << j << "\t" << tipNodesByIndex[j]->getIndex() << "\t" << data[i][tipNodesByIndex[j]->getIndex()] << "\n";
@@ -330,7 +330,7 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
     // compute mean bias per population
     std::vector<double> sampleMeanBias(numTaxa,0.0);
     
-    
+    //std::cout << "sample mean bias:   ";
     // use sample size for N_i,j, and mean N_i,j for bias
     std::vector<double> meanNumSamples(numTaxa,0.0);
     for (size_t i =0; i < numTaxa; i++)
@@ -352,12 +352,15 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
             //if (N_i == 0) std::cout << "hey!\n";
             //std::cout << N_i << "\n";
             double Z_i = N_i * (2 * N_i - 1);
-            double n_ik = 2 * N_i * std::floor(data[j][i]); // convert allele frequency to allele count
+            double n_ik = std::floor(2 * N_i * data[j][i]); // convert allele frequency to allele count
             sampleMeanBias[i] += n_ik * (2 * N_i - n_ik) / Z_i;
+            //std::cout << N_i << " " << Z_i << " " << n_ik << " " << sampleMeanBias[i] << " " << data[j][i] << "\n";
         }
-        sampleMeanBias[i] /= blockSize * numBlocks;
+        sampleMeanBias[i] /= (blockSize * numBlocks);
         sampleMeanBias[i] /= 4 * meanNumSamples[i];
+        //std::cout << "SMB  " << sampleMeanBias[i] << " ";
     }
+    //std::cout << "\n";
     
     
     // old way, uses largest sample size for N_i
@@ -406,6 +409,7 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
     
     //std::cout << "sampleCovarianceBias\n";
     //print(sampleCovarianceBias);
+    ;
 }
 
 // W^

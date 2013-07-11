@@ -197,7 +197,6 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
         std::cout << "t  " << T-times[numTaxa-2] << "  " << alpha << "  " << beta << "  " << RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]) << "\n";
         lnProbTimes += RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]);
     }
-
     
     return lnProbTimes; // + logTreeTopologyProb;
     

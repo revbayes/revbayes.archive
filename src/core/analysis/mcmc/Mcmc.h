@@ -35,7 +35,7 @@ namespace RevBayesCore {
     class Mcmc {
     
     public:
-        Mcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca=true, double ch=1.0);
+        Mcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca=true, double ch=1.0, int ci=0);
         Mcmc(const Mcmc &m);
         virtual                                            ~Mcmc(void);                                                          //!< Virtual destructor
        

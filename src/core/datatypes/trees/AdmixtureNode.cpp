@@ -135,12 +135,12 @@ AdmixtureNode& AdmixtureNode::operator=(const AdmixtureNode &n) {
 
 
 /** Add a child node. We own it from here on. */
-void AdmixtureNode::addChild(TopologyNode* c) {
+void AdmixtureNode::addChild(TopologyNode* c, bool enforceNewickRecomp) {
     
     //std::cout << "addChild ( TopologyNode* c )\n";
     AdmixtureNode *tn = dynamic_cast<AdmixtureNode*>( c );
     if ( tn != NULL ) {
-        addChild( tn );
+        addChild( tn, enforceNewickRecomp );
     }
     else {
         throw RbException("Cannot add a child of type non-AdmixtureNode to a AdmixtureNode.");
@@ -150,7 +150,7 @@ void AdmixtureNode::addChild(TopologyNode* c) {
 
 
 /** Add a child node. We own it from here on. */
-void AdmixtureNode::addChild(AdmixtureNode* c) {
+void AdmixtureNode::addChild(AdmixtureNode* c, bool enforceNewickRecomp) {
 
     //std::cout << "addChild ( AdmixtureNode* c )\n";
     
@@ -158,7 +158,8 @@ void AdmixtureNode::addChild(AdmixtureNode* c) {
     children.push_back(c);
     
     // mark for newick recomputation
-    flagNewickRecomputation();
+    if (enforceNewickRecomp)
+        flagNewickRecomputation();
     
     // fire tree change event
     if ( topology != NULL ) {
@@ -658,12 +659,12 @@ void AdmixtureNode::removeAllChildren(void) {
 }
 
 /** Remove a child from the vector of children */
-void AdmixtureNode::removeChild(TopologyNode* c) {
+void AdmixtureNode::removeChild(TopologyNode* c, bool enforceNewickRecomp) {
     
     AdmixtureNode *tn = dynamic_cast<AdmixtureNode*>( c );
     
     if ( tn != NULL ) {
-        removeChild( tn );
+        removeChild( tn, enforceNewickRecomp );
     }
     else {
         throw RbException("Cannot remove a child of type non-AdmixtureNode to a AdmixtureNode.");
@@ -672,7 +673,7 @@ void AdmixtureNode::removeChild(TopologyNode* c) {
 
 
 /** Remove a child from the vector of children */
-void AdmixtureNode::removeChild(AdmixtureNode* c) {
+void AdmixtureNode::removeChild(AdmixtureNode* c, bool enforceNewickRecomp) {
     
     std::vector<AdmixtureNode* >::iterator it = find(children.begin(), children.end(), c);
     if ( it != children.end() ) {
@@ -699,7 +700,8 @@ void AdmixtureNode::removeChild(AdmixtureNode* c) {
     }
     
     // mark for newick recomputation
-    flagNewickRecomputation();
+    if (enforceNewickRecomp)
+        flagNewickRecomputation();
 }
 
 
@@ -734,12 +736,12 @@ void AdmixtureNode::setAge( double a ) {
 
 
 
-void AdmixtureNode::setParent(TopologyNode* p) {
+void AdmixtureNode::setParent(TopologyNode* p, bool enforceNewickRecomp) {
     
     AdmixtureNode *tn = dynamic_cast<AdmixtureNode*>( p );
     
     if ( tn != NULL ) {
-        setParent( tn );
+        setParent( tn, enforceNewickRecomp );
     }
     else {
         throw RbException("Cannot set the parent of type non-AdmixtureNode to a AdmixtureNode.");
@@ -749,7 +751,7 @@ void AdmixtureNode::setParent(TopologyNode* p) {
 
 
 
-void AdmixtureNode::setParent(AdmixtureNode* p) {
+void AdmixtureNode::setParent(AdmixtureNode* p, bool enforceNewickRecomp) {
     
     // we only do something if this isn't already our parent
     if (p != parent) {
@@ -757,7 +759,8 @@ void AdmixtureNode::setParent(AdmixtureNode* p) {
         parent = p;
         
         // mark for newick recomputation
-        flagNewickRecomputation();
+        if (enforceNewickRecomp)
+            flagNewickRecomputation();
         
         // fire tree change event
         if ( topology != NULL ) {

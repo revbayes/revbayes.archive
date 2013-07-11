@@ -117,13 +117,14 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
 
 
 /** Add a child node. We own it from here on. */
-void TopologyNode::addChild(TopologyNode* c) {
+void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp) {
     
     // add the child to our internal vector
     children.push_back(c);
     
     // mark for newick recomputation
-    flagNewickRecomputation();
+    if ( forceNewickRecomp )
+        flagNewickRecomputation();
     
     // fire tree change event
     if ( topology != NULL ) {
@@ -690,7 +691,7 @@ void TopologyNode::removeAllChildren(void) {
 
 
 /** Remove a child from the vector of children */
-void TopologyNode::removeChild(TopologyNode* c) {
+void TopologyNode::removeChild(TopologyNode* c, bool forceNewickRecomp) {
     
     std::vector<TopologyNode* >::iterator it = find(children.begin(), children.end(), c);
     if ( it != children.end() ) 
@@ -712,7 +713,8 @@ void TopologyNode::removeChild(TopologyNode* c) {
     }
     
     // mark for newick recomputation
-    flagNewickRecomputation();
+    if (forceNewickRecomp)
+        flagNewickRecomputation();
 }
 
 void TopologyNode::setIndex( size_t idx) {
@@ -731,7 +733,7 @@ void TopologyNode::setName(std::string const &n) {
 }
 
 
-void TopologyNode::setParent(TopologyNode* p) {
+void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp) {
     
     // we only do something if this isn't already our parent
     if (p != parent) 
@@ -740,7 +742,8 @@ void TopologyNode::setParent(TopologyNode* p) {
         parent = p;
         
         // mark for newick recomputation
-        flagNewickRecomputation();
+        if (forceNewickRecomp)
+            flagNewickRecomputation();
         
         // fire tree change event
         if ( topology != NULL ) 

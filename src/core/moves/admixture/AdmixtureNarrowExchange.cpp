@@ -47,6 +47,7 @@ double AdmixtureNarrowExchange::proposeAge(AdmixtureNode* p)
     double minAge = 0.0;
     for (size_t i = 0; i < p->getNumberOfChildren(); i++)
     {
+        //std::cout << i << "\n";
         double childAge = p->getChild(i).getAge();
         if (childAge > minAge)
             minAge = childAge;
@@ -155,7 +156,10 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
         storedParentAge = parent.getAge();
         storedGrandparentAge = grandparent.getAge();
         double lnProposalParent = proposeAge(&parent);
-        double lnProposalGparent = proposeAge(&grandparent);
+        double lnProposalGparent = 0.0;
+        if (!grandparent.isRoot())
+            lnProposalGparent = proposeAge(&grandparent);
+       
         //double lnProposalGparent = 0.0;
 
         

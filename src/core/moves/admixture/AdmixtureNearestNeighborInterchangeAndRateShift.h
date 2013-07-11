@@ -62,6 +62,7 @@ namespace RevBayesCore {
         AdmixtureNode*                  newNodeChild;
 
         double                          storedAge;
+        double                          storedBroAge;
         
         int                             storedChildRateIndex;
         int                             storedNodeRateIndex;

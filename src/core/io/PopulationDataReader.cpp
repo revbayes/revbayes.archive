@@ -125,7 +125,7 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thi
     while (std::getline(readStream,readLine))
     {
                 
-        int ni = 0;
+        //int ni = 0;
         std::string field;
         std::stringstream ss(readLine);
         
@@ -150,7 +150,7 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thi
             }
             else if (lineNum % thinBy == 0)
             {
-                unsigned idx = field.find(",");
+                size_t idx = field.find(",");
                 int a = atoi(field.substr(0,idx).c_str());
                 int b = atoi(field.substr(idx+1,-1).c_str());
 

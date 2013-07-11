@@ -234,14 +234,13 @@ double AdmixtureShiftNodeAgeAndRate::performMove( double &probRatio ) {
             std::cout << "\tch\t" << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "  " <<  probRatio << "\n";
         }
     }
-    std::cout << "ok!\n";
     
     return hr;
 }
 
 void AdmixtureShiftNodeAgeAndRate::rejectMove( void ) {
     changed = false;
-    std::cout << "REJECT\n";
+    std::cout << "REJECT shift\n";
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     

@@ -47,18 +47,18 @@ namespace RevBayesCore {
         const AdmixtureNode&                getParent(void) const;                                                      //!< Returns the node's parent
         double                              getTime(void) const;                                                        //!< Get the time of the node
         
-        void                                addChild(TopologyNode* c);                                                  //!< Adds a child node
-        void                                addChild(AdmixtureNode* c);                                                 //!< Adds a child node
+        void                                addChild(TopologyNode* c, bool enforceNewickRecomp = true);                                                  //!< Adds a child node
+        void                                addChild(AdmixtureNode* c, bool enforceNewickRecomp = true);                                                 //!< Adds a child node
         void                                setChild(TopologyNode* c, size_t idx);
         void                                setChild(AdmixtureNode* c, size_t idx);
         void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
-        void                                removeChild(TopologyNode* p);                                               //!< Removes a specific child
-        void                                removeChild(AdmixtureNode* p);                                              //!< Removes a specific child
+        void                                removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                                               //!< Removes a specific child
+        void                                removeChild(AdmixtureNode* p, bool enforceNewickRecomp = true);                                              //!< Removes a specific child
         
         void                                setBranchLength(double a);
         void                                setAge(double a);                                                           //!< Set the age (time ago from present) for this node
-        void                                setParent(TopologyNode* p);                                                 //!< Sets the node's parent
-        void                                setParent(AdmixtureNode* p);                                                //!< Sets the node's parent
+        void                                setParent(TopologyNode* p, bool enforceNewickRecomp = true);                                                 //!< Sets the node's parent
+        void                                setParent(AdmixtureNode* p, bool enforceNewickRecomp = true);                                                //!< Sets the node's parent
         void                                setTopology(AdmixtureTree *t);
         
         AdmixtureNode&                      getAdmixtureParent(void);

@@ -73,10 +73,10 @@ namespace RevBayesCore {
         void                                        setName(const std::string& n);                                              //!< Set the name of this node
    
         // public TopologyNode functions
-        void                                        addChild(TopologyNode* c);                                              //!< Adds a child node
+        void                                        addChild(TopologyNode* c, bool enforceNewickRecomp = true);              //!< Adds a child node
         bool                                        containsClade(const TopologyNode* c) const;
         bool                                        containsClade(const Clade &c) const;
-        void                                        flagNewickRecomputation(void);                                          //!< Flag the newick RlString for recomputation
+        void                                        flagNewickRecomputation(void);                                          //!< Flag the newick string for recomputation
         double                                      getAge(void) const;                                                     //!< Get the age (time ago from present) for this node
         double                                      getBranchLength(void) const;                                            //!< Get the branch length leading towards this node
         const TopologyNode&                         getChild(size_t i) const;                                               //!< Returns the i-th child
@@ -90,10 +90,10 @@ namespace RevBayesCore {
         double                                      getTime(void) const;                                                    //!< Get the time of the node
         double                                      getTmrca(const TopologyNode &n) const;
         void                                        removeAllChildren(void);                                                //!< Removes all of the children of the node
-        void                                        removeChild(TopologyNode* p);                                           //!< Removes a specific child
+        void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                                           //!< Removes a specific child
 //        virtual void                                setAge(double a) = 0;                                                       //!< Set the age (time ago from present) for this node
 //        virtual void                                setBranchLength(double bl) = 0;                                             //!< Set the branch length
-        void                                        setParent(TopologyNode* p);                                             //!< Sets the node's parent
+        void                                        setParent(TopologyNode* p, bool enforceNewickRecomp = true);                                             //!< Sets the node's parent
 //        virtual void                                setTime(double t) = 0;                                                      //!< Set the time
         void                                        setTopology(Tree *t);
 

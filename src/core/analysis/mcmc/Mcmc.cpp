@@ -20,14 +20,14 @@
 
 using namespace RevBayesCore;
 
-Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, bool ca, double ch) : model( m ), moves(), monitors(), schedule(std::vector<Move*>()), chainActive(ca), chainHeat(ch) {
+Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, bool ca, double ch, int ci) : model( m ), moves(), monitors(), schedule(std::vector<Move*>()), chainActive(ca), chainHeat(ch), chainIdx(ci) {
     
     replaceDag(mvs,mons);
     initialize();
 }
 
 
-Mcmc::Mcmc(const Mcmc &m) : model( m.model ), schedule(std::vector<Move*>()), chainActive(m.chainActive), chainHeat(m.chainHeat) {
+Mcmc::Mcmc(const Mcmc &m) : model( m.model ), schedule(std::vector<Move*>()), chainActive(m.chainActive), chainHeat(m.chainHeat), chainIdx(m.chainIdx) {
    
     const std::vector<Monitor*>& mons = m.monitors;
     const std::vector<Move*>& mvs = m.moves;
@@ -427,7 +427,7 @@ void Mcmc::setChainIdx(int x)
 
 std::vector<Monitor*>& Mcmc::getMonitors(void)
 {
-    return monitors;
+    return monitors; 
 }
 
 void Mcmc::monitor(int g)
