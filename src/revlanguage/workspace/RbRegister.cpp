@@ -176,12 +176,16 @@
 
 /* Math functions */
 #include "Func_abs.h"
+#include "Func_ceil.h"
 #include "Func_exp.h"
+#include "Func_floor.h"
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_mean.h"
 #include "Func_power.h"
+#include "Func_round.h"
 #include "Func_sqrt.h"
+#include "Func_trunc.h"
 
 
 #include <sstream>
@@ -466,12 +470,22 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		
 		// absolute function
         addFunction( "abs",         new Func_abs()  );
+		
+		// ceil function
+        addFunction( "ceil",        new Func_ceil<Real,Integer>()  );
+        addFunction( "ceil",        new Func_ceil<RealPos,Natural>()  );
+        addFunction( "ceiling",     new Func_ceil<Real,Integer>()  );
+        addFunction( "ceiling",     new Func_ceil<RealPos,Natural>()  );
         
         // cos function
         //        addFunction( "cos",       new Func_cos()  );
 		
         // exponential function
         addFunction( "exp",         new Func_exp() );
+		
+		// floor function
+        addFunction( "floor",       new Func_floor<Real,Integer>()  );
+        addFunction( "floor",       new Func_floor<RealPos,Natural>()  );
         
         // natural log function
         addFunction( "ln",          new Func_ln()  );
@@ -494,6 +508,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );
+		
+		// round function
+        addFunction( "round",     new Func_round<Real,Integer>()  );
+        addFunction( "round",     new Func_round<RealPos,Natural>()  );
+		
+		// truncate function
+        addFunction( "trunc",     new Func_trunc<Real,Integer>()  );
+        addFunction( "trunc",     new Func_trunc<RealPos,Natural>()  );
         
         
         
