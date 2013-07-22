@@ -41,9 +41,9 @@ Func_write* Func_write::clone( void ) const {
 RbLanguageObject* Func_write::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const std::string& fn = static_cast<const RlString&>( args[args.size()-3].getVariable()->getValue() ).getValue();
-    bool  append = static_cast<const RlBoolean&>( args[args.size()-2].getVariable()->getValue() ).getValue();
-    const std::string& separator = static_cast<const RlString&>( args[args.size()-1].getVariable()->getValue() ).getValue();
+    const std::string& fn = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
+    bool  append = static_cast<const RlBoolean&>( args[2].getVariable()->getValue() ).getValue();
+    const std::string& separator = static_cast<const RlString&>( args[3].getVariable()->getValue() ).getValue();
     
     if ( fn != "" ) 
     {
@@ -63,10 +63,11 @@ RbLanguageObject* Func_write::execute( void ) {
         }
         
         // print the arguments
-        for (size_t i = 0; i < args.size()-3; i++) 
+        args[0].getVariable()->getValue().printValue(outStream);
+        for (size_t i = 4; i < args.size(); i++) 
         {
-            args[i].getVariable()->getValue().printValue(outStream);
             outStream << separator;
+            args[i].getVariable()->getValue().printValue(outStream);
         }
         outStream << std::endl;
         outStream.close();
@@ -74,11 +75,13 @@ RbLanguageObject* Func_write::execute( void ) {
     else {
         
         std::ostream& o = std::cout;
+        
         // print the arguments
-        for (size_t i = 0; i < args.size()-3; i++) 
+        args[0].getVariable()->getValue().printValue( o );
+        for (size_t i = 4; i < args.size(); i++) 
         {
-            args[i].getVariable()->getValue().printValue(o);
             o << separator;
+            args[i].getVariable()->getValue().printValue( o );
         }
         o << std::endl;
     }

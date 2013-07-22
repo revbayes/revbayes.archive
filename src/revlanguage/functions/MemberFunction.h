@@ -46,7 +46,6 @@ public:
     virtual RbLanguageObject*           execute(void);                                                              //!< Execute function
     const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
-    void                                setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var);             
     void                                setMemberObject(RbLanguageObject* obj);                                     //!< Set the member object to which this function belongs
     void                                setMethodName(const std::string& name);                                     //!< Set name of member method
         

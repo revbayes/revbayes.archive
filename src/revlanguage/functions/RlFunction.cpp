@@ -612,12 +612,15 @@ void Function::setArgument(const std::string& name, Argument& arg, const bool c)
     
     // just add this node to the vector
     args.push_back(myArg);
+    
 }
 
 
 
 void Function::setExecutionEnviroment(Environment *e) {
+    
     env = e;
+
 }
 
 

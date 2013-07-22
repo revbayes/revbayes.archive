@@ -98,15 +98,7 @@ void MemberFunction::setMemberObject( RbLanguageObject *obj) {
 
 
 void MemberFunction::setMethodName(std::string const &name) {
+ 
     funcName = name;
-}
-
-
-/** We catch here the setting of the argument variables to store our parameters. */
-void MemberFunction::setArgumentVariable(std::string const &name, const RbPtr<const Variable> &var) {
-    
-    
-    // We expect a couple of parameters which we need to add to the member function. Therefore we do not call the base class.
-    //        Function::setArgumentVariable(name, var);
 }
 
