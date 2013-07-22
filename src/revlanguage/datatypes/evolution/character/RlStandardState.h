@@ -1,0 +1,52 @@
+/**
+ * @file
+ * This file contains the declaration of RlStandardState, which is
+ * a RevBayes wrapper around a regular Standard character.
+ *
+ * @brief Declaration of RlBoolean
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date: 2012-08-23 09:27:32 +0200 (Thu, 23 Aug 2012) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2012-09-08, version 1.0
+ * @extends RbObject
+ *
+ * $Id: RlBoolean.h 1766 2012-08-23 07:27:32Z hoehna $
+ */
+
+#ifndef RlStandardState_H
+#define RlStandardState_H
+
+#include "StandardState.h"
+#include "RlModelVariableWrapper.h"
+#include "TypedDagNode.h"
+
+#include <ostream>
+#include <string>
+
+namespace RevLanguage {
+    
+    class StandardState : public RlModelVariableWrapper<RevBayesCore::StandardState> {
+        
+    public:
+        StandardState(void);                                                          //!< Default constructor
+        StandardState(const RevBayesCore::StandardState &d);                                                            //!< Construct from Standard
+        
+        // Operators
+        
+        // Basic utility functions
+        StandardState*                       clone(void) const;                                                      //!< Clone object
+        RbLanguageObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        static const std::string&       getClassName(void);                                                     //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+        bool                            isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        
+    };
+    
+}
+
+#endif
+

@@ -25,13 +25,13 @@ StandardState::StandardState(void) : DiscreteCharacterState(), state() {
 
 
 /** Default constructor */
-StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), state() {
+StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), state(), labels( s ) {
     
 }
 
 
 /** Copy constructor */
-StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), state( s.state ) {
+StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), state( s.state ), labels( s.labels ) {
     
 }
 
@@ -42,7 +42,7 @@ bool StandardState::operator==(const CharacterState& x) const {
     const StandardState* derivedX = dynamic_cast<const StandardState*>( &x );
     
     if (derivedX != NULL) {
-        return derivedX->state == state;
+        return derivedX->labels == labels && derivedX->state == state;
     }
     
     return false;

@@ -29,6 +29,7 @@
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
+#include "RlStandardState.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
@@ -144,6 +145,11 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
                     RevBayesCore::CharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::AminoAcidState> *>( *it );
                     CharacterData<AminoAcidState> *mAA = new CharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
+                }
+                else if ( dType == "standard" ) {
+                    RevBayesCore::CharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::StandardState> *>( *it );
+                    CharacterData<StandardState> *mSS = new CharacterData<StandardState>( coreM );
+                    m->push_back( mSS );
                 }
                 else {
                     throw RbException("Unknown data type type \"" + dType + "\".");
