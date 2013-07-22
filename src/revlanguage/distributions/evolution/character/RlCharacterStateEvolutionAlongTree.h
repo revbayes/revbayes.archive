@@ -98,6 +98,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     int n = static_cast<const Natural &>( nSites->getValue() ).getValue();
     const std::string& dt = static_cast<const RlString &>( type->getValue() ).getValue();
     
+    size_t nTaxa  = tau->getValue().getNumberOfTips();
+    size_t nNodes = tau->getValue().getNumberOfNodes();
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
     
@@ -109,6 +111,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const Vector<RealPos> &>( rate->getValue() ).getValueNode();
+            
+            // sanity check
+            size_t nRates = clockRates->getValue().size();
+            if ( (nNodes-1) != nRates ) 
+            {
+                throw RbException( "The number of clock rates does not match the number of branches" );
+            }
+            
             dist->setClockRate( clockRates );
         } 
         else 
@@ -121,6 +131,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            
+            // sanity check
+            if ( (nNodes-1) != rm->getValue().size() ) 
+            {
+                throw RbException( "The number of substitution matrices does not match the number of branches" );
+            }
+            
             dist->setRateMatrix( rm );
         } 
         else 
@@ -139,6 +156,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const Vector<RealPos> &>( rate->getValue() ).getValueNode();
+            
+            // sanity check
+            if ( (nNodes-1) != clockRates->getValue().size() ) 
+            {
+                throw RbException( "The number of clock rates does not match the number of branches" );
+            }
+            
             dist->setClockRate( clockRates );
         } 
         else 
@@ -151,6 +175,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            
+            // sanity check
+            if ( (nNodes-1) != rm->getValue().size() ) 
+            {
+                throw RbException( "The number of substitution matrices does not match the number of branches" );
+            }
+            
             dist->setRateMatrix( rm );
         } 
         else 
@@ -169,6 +200,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const Vector<RealPos> &>( rate->getValue() ).getValueNode();
+            
+            // sanity check
+            if ( (nNodes-1) != clockRates->getValue().size() ) 
+            {
+                throw RbException( "The number of clock rates does not match the number of branches" );
+            }
+            
             dist->setClockRate( clockRates );
         } 
         else 
@@ -181,6 +219,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            
+            // sanity check
+            if ( (nNodes-1) != rm->getValue().size() ) 
+            {
+                throw RbException( "The number of substitution matrices does not match the number of branches" );
+            }
+            
             dist->setRateMatrix( rm );
         } 
         else 
