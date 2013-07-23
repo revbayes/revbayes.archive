@@ -57,6 +57,7 @@
 #include "RlLognormalDistribution.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
+#include "RlOneOverXDistribution.h"
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
@@ -285,14 +286,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // exponential distribution
         addDistribution( "exponential", new ExponentialDistribution() );
         
-        // exponential distribution
-        addDistribution( "offsetExponential", new OffsetExponentialDistribution() );
-        
         // normal distribution
         addDistribution( "lnorm", new LognormalDistribution() );
         
         // normal distribution
         addDistribution( "norm", new NormalDistribution() );
+        
+        // offset-exponential distribution
+        addDistribution( "offsetExponential", new OffsetExponentialDistribution() );
+        
+        // 1/x distribution
+        addDistribution( "oneOverX", new OneOverXDistribution() );
         
         // uniform distribution
         addDistribution( "unif", new UniformDistribution() );
