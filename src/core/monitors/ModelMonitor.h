@@ -32,12 +32,11 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ModelMonitor(Model *n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
-        ModelMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
+        ModelMonitor(int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
         ModelMonitor(const ModelMonitor& f);
         
         // basic methods
-        ModelMonitor*                        clone(void) const;                                                  //!< Clone the object
+        ModelMonitor*                       clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
         void                                monitor(long gen);                                                  //!< Monitor at generation gen
@@ -47,6 +46,8 @@ namespace RevBayesCore {
         void                                openStream(void);                                                   //!< Open the stream for writing
         void                                printHeader(void);                                                  //!< Print header
         
+        void                                setModel(Model *m);
+    
     private:
         std::fstream                        outStream;
         

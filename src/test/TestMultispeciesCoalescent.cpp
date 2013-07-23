@@ -185,7 +185,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     Model myModel = Model(spTree_inf);
     
     std::vector<Monitor*> monitors;
-    monitors.push_back( new ModelMonitor( &myModel, 10, "TestMultispeciesCoalescent.p", "\t", true, true, true ) );
+    monitors.push_back( new ModelMonitor( 10, "TestMultispeciesCoalescent.p", "\t", true, true, true ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( spTree_inf );
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestMultispeciesCoalescent.trees", "\t", false, false, false ) );

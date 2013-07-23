@@ -157,7 +157,7 @@ bool TestBranchHeterogeneousGtrModel::run( void ) {
     DeterministicNode<std::vector<double> > *site_rates = new DeterministicNode<std::vector<double> >( "site_rates", new VectorFunction<double>(gamma_rates) );
     DeterministicNode<std::vector<double> > *site_rates_norm = new DeterministicNode<std::vector<double> >( "site_rates_norm", new NormalizeVectorFunction(site_rates) );
     // we actually do not use different probabilities per rate (yet!)
-    ConstantNode<std::vector<double> > *site_rate_probs = new ConstantNode<std::vector<double> >( "site_rate_probs", new std::vector<double>(4,1.0/4.0) );
+    // ConstantNode<std::vector<double> > *site_rate_probs = new ConstantNode<std::vector<double> >( "site_rate_probs", new std::vector<double>(4,1.0/4.0) );
     
     
             
@@ -227,7 +227,7 @@ bool TestBranchHeterogeneousGtrModel::run( void ) {
     /* instantiate the model */
     Model myModel = Model(qs[0]);
 
-    monitors.push_back( new ModelMonitor( &myModel, 10, "TestBranchHeterogeneousGtrModel.log", "\t" ) );
+    monitors.push_back( new ModelMonitor( 10, "TestBranchHeterogeneousGtrModel.log", "\t" ) );
 
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );

@@ -105,7 +105,8 @@ bool TestGtrGammaModel::run( void ) {
     gamma_rates.push_back(q4_value);
     
     DeterministicNode<std::vector<double> > *site_rates = new DeterministicNode<std::vector<double> >( "site_rates", new VectorFunction<double>(gamma_rates) );
-    ConstantNode<std::vector<double> > *site_rate_probs = new ConstantNode<std::vector<double> >( "site_rate_probs", new std::vector<double>(4,1.0/4.0) );
+    // currently unused
+    // ConstantNode<std::vector<double> > *site_rate_probs = new ConstantNode<std::vector<double> >( "site_rate_probs", new std::vector<double>(4,1.0/4.0) );
 
     DeterministicNode<std::vector<double> > *site_rates_norm = new DeterministicNode<std::vector<double> >( "site_rates_norm", new NormalizeVectorFunction(site_rates) );
     
@@ -173,7 +174,7 @@ bool TestGtrGammaModel::run( void ) {
 //    monitoredNodes.insert( q4_value );
     monitoredNodes.insert( site_rates_norm );
     monitoredNodes.insert( alpha );
-//    monitoredNodes.insert( treeHeight );
+    monitoredNodes.insert( treeHeight );
     monitors.push_back( new FileMonitor( monitoredNodes, 1000, "TestGtrGammaModelSubstRates.log", "\t" ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1000, "\t" ) );
     std::set<DagNode*> monitoredNodes2;

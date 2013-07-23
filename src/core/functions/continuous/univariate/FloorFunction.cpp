@@ -24,7 +24,8 @@ FloorFunction* FloorFunction::clone( void ) const {
 }
 
 
-void FloorFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void FloorFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) 
+{
     
     if (oldP == a) 
     {
@@ -33,9 +34,10 @@ void FloorFunction::swapParameterInternal(const DagNode *oldP, const DagNode *ne
     
 }
 
-void FloorFunction::update( void ) {
+void FloorFunction::update( void ) 
+{
     
-    *value = floor( a->getValue() );
+    *value = int( floor( a->getValue() ) );
 
 }
 

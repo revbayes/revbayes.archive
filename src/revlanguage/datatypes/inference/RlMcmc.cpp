@@ -37,7 +37,7 @@ void Mcmc::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a new MCMC object
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
     const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
     const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getValue() ).getValue();

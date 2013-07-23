@@ -11,19 +11,23 @@
 
 using namespace RevBayesCore;
 
-RoundFunction::RoundFunction(const TypedDagNode<double> *x) : TypedFunction<int>( new int(0) ), a( x ) {
+RoundFunction::RoundFunction(const TypedDagNode<double> *x) : TypedFunction<int>( new int(0) ), a( x ) 
+{
+    
     addParameter( x );
     
 }
 
 
-RoundFunction* RoundFunction::clone( void ) const {
+RoundFunction* RoundFunction::clone( void ) const 
+{
     
     return new RoundFunction(*this);
 }
 
 
-void RoundFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RoundFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) 
+{
     
     if (oldP == a) 
     {
@@ -32,9 +36,10 @@ void RoundFunction::swapParameterInternal(const DagNode *oldP, const DagNode *ne
     
 }
 
-void RoundFunction::update( void ) {
+void RoundFunction::update( void ) 
+{
     
-    *value = round( a->getValue() );
+    *value = int( round( a->getValue() ) );
     
 }
 

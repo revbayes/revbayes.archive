@@ -82,9 +82,9 @@ bool TestMixtureModel::run( void ) {
     // finally the observation
     double values[] = {1.0180587, 0.3551789, -3.0993260, 2.0436601, 0.5752029, -2.2873659, -0.4357313, -2.1162503, -2.0887467, 0.5446856};
     ContinuousStochasticNode** x = new ContinuousStochasticNode*[10];
-    for (size_t i = 0; i < 10; ++i) {
-        x[i] = new ContinuousStochasticNode( "x", new NormalDistribution(rates, sigma) );
-        x[i]->clamp( new double(values[i]) );
+    for (size_t ijk = 0; ijk < 10; ++ijk) {
+        x[ijk] = new ContinuousStochasticNode( "x", new NormalDistribution(rates, sigma) );
+        x[ijk]->clamp( new double(values[ijk]) );
     }
     
     /* add the moves */
@@ -118,8 +118,8 @@ bool TestMixtureModel::run( void ) {
     
     
     /* clean up */
-    for (size_t i = 0; i < 10; ++i) {
-        delete x[i];
+    for (size_t ijk = 0; ijk < 10; ++ijk) {
+        delete x[ijk];
     }
     delete [] x;
     delete sigma_prior;

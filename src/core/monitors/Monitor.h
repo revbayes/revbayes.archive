@@ -54,7 +54,7 @@ namespace RevBayesCore {
         // getters and setters
         const std::set<DagNode *>&                  getDagNodes(void) const;                                                //!< Get the nodes vector
         void                                        setDagNodes(const std::set<DagNode *>& args);
-        void                                        setModel(Model* m);
+        virtual void                                setModel(Model* m);
         void                                        setMcmc(Mcmc* m);
 
     protected:

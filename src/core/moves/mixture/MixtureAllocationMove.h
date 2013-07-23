@@ -57,7 +57,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class valueType>
-RevBayesCore::MixtureAllocationMove<valueType>::MixtureAllocationMove(StochasticNode<valueType> *v, double weight) : SimpleMove( v, weight ), variable( v ) {
+RevBayesCore::MixtureAllocationMove<valueType>::MixtureAllocationMove(StochasticNode<valueType> *v, double w) : SimpleMove( v, w ), variable( v ) {
     
 }
 

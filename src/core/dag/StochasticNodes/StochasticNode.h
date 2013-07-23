@@ -285,11 +285,11 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer) {
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool touch) {
+void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch) {
     // set the value
     distribution->setValue( val );
     
-    if ( touch ) 
+    if ( forceTouch ) 
     {
         // touch this node for probability recalculation
         this->touch();
@@ -299,12 +299,12 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool touc
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, bool touch) {
+void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, bool forceTouch) {
     
     // set the value
     distribution->setValue( val );
     
-    if ( touch ) 
+    if ( forceTouch ) 
     {
         // touch this node for probability recalculation
         this->touch();

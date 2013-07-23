@@ -95,7 +95,7 @@ bool TestCharEvoModelImplementationPerformance::run( void ) {
     /* instantiate the model */
     Model myModel = Model(q);
 
-    monitors.push_back( new ModelMonitor( &myModel, 100, "TestCharEvoModelImplementationPerformance.log", "\t" ) );
+    monitors.push_back( new ModelMonitor( 100, "TestCharEvoModelImplementationPerformance.log", "\t" ) );
 
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
@@ -106,7 +106,7 @@ bool TestCharEvoModelImplementationPerformance::run( void ) {
     /* clean up */
     
     t = clock() - t;
-    printf ("It took me %d clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+    printf ("It took me %lu clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
     
     return true;
 }

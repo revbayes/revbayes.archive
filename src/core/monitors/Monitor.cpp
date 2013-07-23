@@ -70,16 +70,21 @@ void Monitor::printHeader(void)
 
 
 const std::set<DagNode*>& Monitor::getDagNodes( void ) const {
+    
     return nodes;
 }
 
 
-void Monitor::setDagNodes( const std::set<DagNode *> &args) {
+void Monitor::setDagNodes( const std::set<DagNode *> &args) 
+{
+    
     nodes = args;
+
 }
 
 
-void Monitor::setModel(Model *m) {
+void Monitor::setModel(Model *m) 
+{
     model = m;
 }
 
@@ -89,7 +94,8 @@ void Monitor::setMcmc(Mcmc *m)
 }
 
 
-void Monitor::swapNode(DagNode *oldN, DagNode *newN) {
+void Monitor::swapNode(DagNode *oldN, DagNode *newN) 
+{
     // error catching
     if ( nodes.find(oldN) == nodes.end() ) {
         throw RbException("Cannot replace DAG node with name\"" + oldN->getName() + "\" in this monitor because the monitor doesn't hold this DAG node.");

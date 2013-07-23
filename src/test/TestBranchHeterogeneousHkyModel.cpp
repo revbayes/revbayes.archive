@@ -244,7 +244,7 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     /* instantiate the model */
     Model myModel = Model(qs[0]);
 	
-    monitors.push_back( new ModelMonitor( &myModel, 10, "TestBranchHeterogeneousHkyModel.log", "\t" ) );
+    monitors.push_back( new ModelMonitor( 10, "TestBranchHeterogeneousHkyModel.log", "\t" ) );
 	
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
