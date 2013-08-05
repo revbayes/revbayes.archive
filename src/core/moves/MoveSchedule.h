@@ -32,7 +32,7 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual MoveSchedule*                                   clone(void) const = 0;
         virtual double                                          getNumberMovesPerIteration(void) const = 0;
-        virtual Move*                                           nextMove(void) = 0;
+        virtual Move*                                           nextMove(int) = 0;
         
     protected:
         MoveSchedule(const std::vector<Move*> &m);                                                                                                                                         //!< Default constructor

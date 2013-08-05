@@ -40,8 +40,6 @@ namespace RevBayesCore {
         AdmixtureNode&                              getNode(size_t idx);                                                    //!< Get the node at index
         const AdmixtureNode&                        getNode(size_t idx) const;                                              //!< Get the node at index
         std::vector<TopologyNode*>                  getNodes(void) const;                                                   //!< Get a pointer to the nodes in the AdmixtureTree
-        AdmixtureNode&                              getNodeByIndex(size_t idt);                                             //!< Get the node with member index == idx
-        const AdmixtureNode&                        getNodeByIndex(size_t idt) const;                                       //!< Get the node with member index == idx
         std::vector<TopologyNode*>                  getNodesByIndex(void) const;                                            //!< Get a vector of nodes ordered by index
         size_t                                      getNumberOfInteriorNodes(void) const;                                   //!< Get the number of nodes in the AdmixtureTree
         size_t                                      getNumberOfNodes(void) const;                                           //!< Get the number of nodes in the AdmixtureTree

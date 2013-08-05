@@ -163,8 +163,8 @@ void AdmixtureNode::addChild(AdmixtureNode* c, bool enforceNewickRecomp) {
     
     // fire tree change event
     if ( topology != NULL ) {
-        topology->getTreeChangeEventHandler().fire( *this );
-        topology->getTreeChangeEventHandler().fire( *c );
+    //    topology->getTreeChangeEventHandler().fire( *this );
+    //    topology->getTreeChangeEventHandler().fire( *c );
     }
     
     tipNode = false;
@@ -198,8 +198,8 @@ void AdmixtureNode::setChild(AdmixtureNode* c, size_t idx) {
     
     // fire tree change event
     if ( topology != NULL ) {
-        topology->getTreeChangeEventHandler().fire( *this );
-        topology->getTreeChangeEventHandler().fire( *c );
+     //   topology->getTreeChangeEventHandler().fire( *this );
+     //   topology->getTreeChangeEventHandler().fire( *c );
     }
     
     tipNode = false;
@@ -424,8 +424,8 @@ void AdmixtureNode::addTopologyChild(AdmixtureNode* c) {
     
     // fire tree change event
     if ( topology != NULL ) {
-        topology->getTreeChangeEventHandler().fire( *this );
-        topology->getTreeChangeEventHandler().fire( *c );
+    //    topology->getTreeChangeEventHandler().fire( *this );
+     //   topology->getTreeChangeEventHandler().fire( *c );
     }
     
     tipNode = false;
@@ -490,8 +490,8 @@ void AdmixtureNode::removeTopologyChild(AdmixtureNode* c) {
     
     // fire tree change event
     if ( topology != NULL ) {
-        topology->getTreeChangeEventHandler().fire( *c );
-        topology->getTreeChangeEventHandler().fire( *this );
+     //   topology->getTreeChangeEventHandler().fire( *c );
+     //   topology->getTreeChangeEventHandler().fire( *this );
     }
     
     // mark for newick recomputation
@@ -532,8 +532,8 @@ void AdmixtureNode::setTopologyParent(AdmixtureNode* p) {
         
         // fire tree change event
         if ( topology != NULL ) {
-            topology->getTreeChangeEventHandler().fire( *p );
-            topology->getTreeChangeEventHandler().fire( *this );
+         //   topology->getTreeChangeEventHandler().fire( *p );
+          //  topology->getTreeChangeEventHandler().fire( *this );
         }
     }
     
@@ -695,8 +695,8 @@ void AdmixtureNode::removeChild(AdmixtureNode* c, bool enforceNewickRecomp) {
     
     // fire tree change event
     if ( topology != NULL ) {
-        topology->getTreeChangeEventHandler().fire( *c );
-        topology->getTreeChangeEventHandler().fire( *this );
+       // topology->getTreeChangeEventHandler().fire( *c );
+       // topology->getTreeChangeEventHandler().fire( *this );
     }
     
     // mark for newick recomputation
@@ -723,11 +723,11 @@ void AdmixtureNode::setAge( double a ) {
     // fire tree change event
     if ( topology != NULL ) {
         if ( isTip() ) {
-            topology->getTreeChangeEventHandler().fire( *this );
+       //     topology->getTreeChangeEventHandler().fire( *this );
         }
         else {
-            topology->getTreeChangeEventHandler().fire( getChild(0) );
-            topology->getTreeChangeEventHandler().fire( getChild(1) );
+       //     topology->getTreeChangeEventHandler().fire( getChild(0) );
+        //    topology->getTreeChangeEventHandler().fire( getChild(1) );
         }
     }
     
@@ -764,8 +764,8 @@ void AdmixtureNode::setParent(AdmixtureNode* p, bool enforceNewickRecomp) {
         
         // fire tree change event
         if ( topology != NULL ) {
-            topology->getTreeChangeEventHandler().fire( *p );
-            topology->getTreeChangeEventHandler().fire( *this );
+        //    topology->getTreeChangeEventHandler().fire( *p );
+         //   topology->getTreeChangeEventHandler().fire( *this );
         }
         
     }

@@ -39,6 +39,7 @@ namespace RevBayesCore {
         
         int                                                 numChains;
         int                                                 numProcesses;
+        std::vector<int>                                    chainIdxByHeat;
         std::vector<std::vector<int> >                      chainsPerProcess;
         std::vector<Mcmc*>                                  chains;
         unsigned int                                        gen;

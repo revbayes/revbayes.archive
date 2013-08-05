@@ -62,7 +62,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap = false);
+        AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< std::vector< double > >* br, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap = false);
         AdmixtureBipartitionMonitor(const AdmixtureBipartitionMonitor& f);
         
         // basic methods
@@ -92,7 +92,7 @@ namespace RevBayesCore {
         // parameters
         TypedDagNode<AdmixtureTree>*        tree;
         TypedDagNode< std::vector< double > >* branchRates;
-        TypedDagNode<int>* delayTimer;
+        //TypedDagNode<int>* delayTimer;
         
         std::set<DagNode *>                 nodeVariables;
         std::string                         filename;

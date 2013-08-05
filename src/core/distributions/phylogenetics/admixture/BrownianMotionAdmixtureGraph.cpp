@@ -57,7 +57,7 @@ rbMeanSampleCovariance(s->getNumPopulations(),s->getNumPopulations()),
 rbMeanSampleCovarianceEigensystem(&rbMeanSampleCovariance),
 lnDetX(0.0),
 lnZWishart(0.0),
-regularizationFactor(1e-12),
+regularizationFactor(1e-9),
 cloned(false),
 useWishart(uw),
 useContrasts(uc),
@@ -227,7 +227,8 @@ void BrownianMotionAdmixtureGraph::keepSpecialization(DagNode *affecter)
 
 void BrownianMotionAdmixtureGraph::restoreSpecialization(DagNode *restorer)
 {
-
+    // hmm...
+    
 }
 
 void BrownianMotionAdmixtureGraph::touchSpecialization(DagNode *toucher)
@@ -260,14 +261,14 @@ void BrownianMotionAdmixtureGraph::touchSpecialization(DagNode *toucher)
         updateResiduals();
     }
 
-   /*
+   
     // touches all children -- WHY?
     std::set<DagNode*> s = this->dagNode->getChildren();
     for (std::set<DagNode*>::iterator it = s.begin(); it != s.end(); it++)
     {
         (*it)->touch();
     }
-    */
+
 }
 
 void BrownianMotionAdmixtureGraph::redrawValue(void)
@@ -298,7 +299,7 @@ void BrownianMotionAdmixtureGraph::initializeData(void)
     }
     
     //std::cout << tau->getValue().getNewickRepresentation() << "\n";
-    //std::cout << "dims\t" << data.size() << "\t" << data[0].size() << "\n";
+    std::cout << "dims\t" << data.size() << "\t" << data[0].size() << "\n";
     //std::cout << "data\n";
     //printR(data);
 }
@@ -333,9 +334,9 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
     //std::cout << "sample mean bias:   ";
     // use sample size for N_i,j, and mean N_i,j for bias
     std::vector<double> meanNumSamples(numTaxa,0.0);
-    for (size_t i =0; i < numTaxa; i++)
+    for (int i =0; i < numTaxa; i++)
     {
-        for (size_t j = 0; j < blockSize*numBlocks; j++)
+        for (int j = 0; j < blockSize*numBlocks; j++)
         {
             meanNumSamples[i] += (double)snps->getNumSamples(i, j);
         }
@@ -343,16 +344,16 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
         //std::cout << meanNumSamples[i] << "\n";
     }
     
-    for (size_t i = 0; i < numTaxa; i++)
+    for (int i = 0; i < numTaxa; i++)
     {
         // compute bias
-        for (size_t j = 0; j < blockSize*numBlocks; j++)
+        for (int j = 0; j < blockSize*numBlocks; j++)
         {
             double N_i = snps->getNumSamples(i,j) / 2.0; // assume diploidy
             //if (N_i == 0) std::cout << "hey!\n";
             //std::cout << N_i << "\n";
             double Z_i = N_i * (2 * N_i - 1);
-            double n_ik = std::floor(2 * N_i * data[j][i]); // convert allele frequency to allele count
+            double n_ik = 2 * N_i * data[j][i]; // convert allele frequency to allele count
             sampleMeanBias[i] += n_ik * (2 * N_i - n_ik) / Z_i;
             //std::cout << N_i << " " << Z_i << " " << n_ik << " " << sampleMeanBias[i] << " " << data[j][i] << "\n";
         }
@@ -693,6 +694,32 @@ double BrownianMotionAdmixtureGraph::computeLnMvnGammaFn(double a, int p)
 
 #ifdef USE_LIB_ARMADILLO
 
+void BrownianMotionAdmixtureGraph::eigenTest(arma::mat W)
+{
+    
+    // check for positive definite
+    arma::vec evalx, evalw;
+    arma::mat evecx, evecw;
+    double eps = 1e-9;
+    
+    int p = W.n_rows;
+    
+    for (size_t i = 1; i < p; i++)
+    {
+        arma::mat X = W.submat( 0, 0, i, i );
+        arma::eig_sym(evalx,evecx,X);
+        for (size_t j = 0; j < i; j++)
+        {
+            if (evalx[j] < 0.0)
+            {
+                std::cout << i << " " << j << " " << evalx[j] << "\n\n";
+                std::cout << W.submat(0,0,i,i) << "\n\n";
+                ;
+            }
+        }
+    }
+}
+
 double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
 {
     //std::cout << "computeLnProbWishart\n";
@@ -739,6 +766,7 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
         p -= 1;
     }
     
+    
     // check for positive definite
     arma::vec evalx, evalw;
     arma::mat evecx, evecw;
@@ -746,10 +774,8 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
     arma::eig_sym(evalw,evecw,W);
     double eps = 1e-9;
     
-    
     //std::cout << "evalx" << "\n" << evalx << "\n";
     //std::cout << "evecx" << "\n" << evecx << "\n";
-    
     
     
     // round off small negative values, fail if proposed matrix is not positive definite (i.e. has any negative eigenvalue < -eps)
@@ -767,9 +793,17 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
         if (evalw.at(i) < 0.0)
         {
             
-            //std::cout << "evalw" << "\n" << evalw << "\n";
-            //std::cout << "evecw" << "\n" << evecw << "\n";
+            //eigenTest(W);
+
+            std::cout << "W\n" << W << "\n\n";
+            //std::cout << "U\n" << U << "\n\n";
+            //std::cout << "Uprime\n" << Uprime << "\n\n";
+            
+            std::cout << "evalw" << "\n" << evalw << "\n";
+            std::cout << "evecw" << "\n" << evecw << "\n";
             std::cout << "bad evalw\t" << i << "\t" << evalw.at(i) << "\n";
+            ;
+            
             if (discardNonPosDefMtx)
                 return RbConstants::Double::neginf;
             else

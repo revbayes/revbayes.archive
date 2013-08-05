@@ -18,11 +18,12 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeRemoveResidualWeights::AdmixtureEdgeRemoveResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double w) : Move( v, w), variable( v ), rate(r), residuals(res), delayTimer(dt), changed(false), failed(false) {
+AdmixtureEdgeRemoveResidualWeights::AdmixtureEdgeRemoveResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), changed(false), failed(false), activeGen(ag) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
-    nodes.insert(dt);
+    nodes.insert(admixtureCount);
+    //nodes.insert(dt);
 }
 
 
@@ -196,11 +197,10 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         
         
         // prior * proposal ratio
-        size_t numEvents = tau.getNumberOfAdmixtureChildren();
-        //if (numEvents == 0)
-        //    numEvents = 1;
+        numEvents = (int)tau.getNumberOfAdmixtureChildren();
         double unitTreeLength = tau.getUnitTreeLength();
-        double lnP = log( (numEvents+1) / (rate->getValue() * unitTreeLength));
+//        double lnP = log( (numEvents+1) / (rate->getValue() * unitTreeLength));
+        double lnP = -log(unitTreeLength);
         //double lnJ = -2 * log(1 - w); // inverse of admixture edge add jacobian
         
         // quick fix -- should inherit from Move instead of SimpleMove
@@ -209,6 +209,8 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         std::cout << "remove_RW\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
         //std::cout << bwdProposal << "\n";
 
+         admixtureCount->setValue(new int(numEvents));
+        
         return lnP + lnW;// + log(bwdProposal); // + lnJ;
         //return lnP;
     }
@@ -233,6 +235,8 @@ void AdmixtureEdgeRemoveResidualWeights::rejectSimpleMove( void ) {
         
         // restore nodes to admixtureTree vector
         AdmixtureTree& tau = variable->getValue();
+        
+        admixtureCount->setValue(new int(numEvents+1));
         
         
         tau.pushAdmixtureNode(storedAdmixtureParent);
@@ -272,13 +276,17 @@ void AdmixtureEdgeRemoveResidualWeights::swapNode(DagNode *oldN, DagNode *newN) 
         //std::cout << "AER\trate\n";
         rate = static_cast<StochasticNode<double>* >(newN);
     }
-    else if (oldN == delayTimer)
-    {
-        delayTimer = static_cast<ConstantNode<int>* >(newN);
-    }
+//    else if (oldN == delayTimer)
+ //   {
+ //       delayTimer = static_cast<ConstantNode<int>* >(newN);
+  //  }
     else if (oldN == residuals)
     {
         residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
+    }
+    else if (oldN == admixtureCount)
+    {
+        admixtureCount = static_cast<StochasticNode<int>* >(newN);
     }
 }
 
@@ -301,14 +309,13 @@ void AdmixtureEdgeRemoveResidualWeights::acceptMove( void ) {
     acceptSimpleMove();
 }
 
+bool AdmixtureEdgeRemoveResidualWeights::isActive(int g) const {
+    
+    return g > activeGen;
+}
+
 double AdmixtureEdgeRemoveResidualWeights::performMove( double &probRatio ) {
     
-    if (delayTimer->getValue() > 0)
-    {
-        failed = true;
-        //delayTimer->setValue(delayTimer->getValue()-1);
-        return RbConstants::Double::neginf;
-    }
     
     if (changed) {
         throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
@@ -323,8 +330,10 @@ double AdmixtureEdgeRemoveResidualWeights::performMove( double &probRatio ) {
     
     // touch the node
     variable->touch();
+    //rate->touch();
+    admixtureCount->touch();
     
-    probRatio = 0.0;
+    probRatio = admixtureCount->getLnProbabilityRatio();
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
         std::set<DagNode* > affectedNodes;

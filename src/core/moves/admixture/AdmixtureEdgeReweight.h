@@ -22,11 +22,12 @@ namespace RevBayesCore {
     class AdmixtureEdgeReweight : public SimpleMove {
         
     public:
-        AdmixtureEdgeReweight( StochasticNode<AdmixtureTree> *n, double l, double weight);                                                          //!<  constructor
+        AdmixtureEdgeReweight( StochasticNode<AdmixtureTree> *n, int ag, double l, double weight);                                                          //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeReweight*          clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
+        bool                            isActive(int g) const;
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -44,6 +45,7 @@ namespace RevBayesCore {
         double                          storedWeight;
 
         bool failed;
+        int activeGen;
         
     };
     

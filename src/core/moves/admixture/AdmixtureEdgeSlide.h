@@ -9,10 +9,13 @@
 #ifndef __revbayes_mlandis__AdmixtureEdgeSlide__
 #define __revbayes_mlandis__AdmixtureEdgeSlide__
 
+#include <map>
 #include <ostream>
 #include <set>
 #include <string>
+#include <vector>
 
+#include "ContinuousStochasticNode.h"
 #include "Move.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
@@ -22,11 +25,12 @@ namespace RevBayesCore {
     class AdmixtureEdgeSlide : public Move {
         
     public:
-        AdmixtureEdgeSlide( StochasticNode<AdmixtureTree> *n, bool asa, double l, double weight);                                               //!<  constructor
+        AdmixtureEdgeSlide( StochasticNode<AdmixtureTree> *n, std::vector<ContinuousStochasticNode*> br, int ag, bool asa, double l, double weight);                                               //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeSlide*             clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
+        bool                            isActive(int g) const;
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -44,7 +48,7 @@ namespace RevBayesCore {
         
         // member variables
         StochasticNode<AdmixtureTree>*  variable;
-        
+        std::vector<ContinuousStochasticNode*> branchRates;
         
         // tuning parameter
         double                          lambda;
@@ -63,9 +67,13 @@ namespace RevBayesCore {
         AdmixtureNode* newAdmixtureParentParent;// = storedAdmixtureParentParent;
         
         double                          storedAge;
+        double                          storedWeight;
+        std::map<int,double>            storedBranchRates;
+        
         bool failed;
         bool changed;
         bool allowSisterAdmixture;
+        int activeGen;
     };
     
 }

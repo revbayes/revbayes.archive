@@ -19,11 +19,17 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeDivergenceMerge::AdmixtureEdgeDivergenceMerge(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, bool asa, double w) : Move( v, w), variable( v ), admixtureRate(r), residuals(res), delayTimer(dt), changed(false), failed(false), allowSisterAdmixture(asa) {
+//AdmixtureEdgeDivergenceMerge::AdmixtureEdgeDivergenceMerge(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, bool asa, double w) : Move( v, w), variable( v ), admixtureRate(r), residuals(res), delayTimer(dt), changed(false), failed(false), allowSisterAdmixture(asa) {
+
+AdmixtureEdgeDivergenceMerge::AdmixtureEdgeDivergenceMerge(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector<ContinuousStochasticNode*> br, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : Move( v, w), variable( v ), admixtureRate(r), branchRates(br), admixtureCount(ac), residuals(res), changed(false), failed(false), allowSisterAdmixture(asa), activeGen(ag) {
+
     
     nodes.insert(admixtureRate);
     nodes.insert(residuals);
-    nodes.insert(delayTimer);
+    nodes.insert(admixtureCount);
+    for (size_t i = 0; i < branchRates.size(); i++)
+        nodes.insert( branchRates[i] );
+    //nodes.insert(delayTimer);
     
 }
 
@@ -85,10 +91,23 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
     {
         failed = false;
         
-        // sample a random admixture parent node
-        double u = rng->uniform01();
-        size_t index = std::floor(firstAdmixtureParentPerLineage.size() * u);
-        
+        // sample a random admixture parent node according to adm weight
+
+        //size_t index = std::floor(firstAdmixtureParentPerLineage.size() * u);
+        double sumWeight = 0.0;
+        for (size_t i = 0; i < firstAdmixtureParentPerLineage.size(); i++)
+            sumWeight += firstAdmixtureParentPerLineage[i]->getAdmixtureChild().getWeight();
+        double u = rng->uniform01() * sumWeight;
+        size_t index = 0;
+        for (size_t i = 0; i < firstAdmixtureParentPerLineage.size(); i++)
+        {
+            u -= firstAdmixtureParentPerLineage[i]->getAdmixtureChild().getWeight();
+            if (u < 0.0)
+            {
+                index = i;
+                break;
+            }
+        }
         
         // 1. preserve state
         
@@ -122,6 +141,11 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
             return RbConstants::Double::neginf;
         }
         
+        // get old branch idx
+        int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
+        int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
+        
+        
         // get admixture child divergence node position
         storedAdmixtureChildGrandparent = &storedAdmixtureChildParent->getParent();
         storedAdmixtureChildBrother = &storedAdmixtureChildParent->getChild(0);
@@ -141,6 +165,7 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
         //std::cout << storedAdmixtureChild << "  " << storedAdmixtureChildParent << "  " << storedAdmixtureChildChild << "\n";
         //std::cout << storedAdmixtureChildGrandparent << "  " << storedAdmixtureChildBrother << "\n\n";
         
+            
         // 2. update state
         
         // dummy NULL ptr to block the flagNewickRecomputation recursion...
@@ -168,12 +193,53 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
         storedAdmixtureChildBrother->setParent(storedAdmixtureChildGrandparent);
 
         // transplant child clade to parent position
-        storedAdmixtureChildParent->setAge(storedAdmixtureAge);
         storedAdmixtureParentParent->removeChild(storedAdmixtureParentChild);
         storedAdmixtureParentParent->addChild(storedAdmixtureChildParent);
         storedAdmixtureChildParent->addChild(storedAdmixtureParentChild);
         storedAdmixtureParentChild->setParent(storedAdmixtureChildParent);
         storedAdmixtureChildParent->setParent(storedAdmixtureParentParent);
+        
+        // update age
+        double newMinAge = 0.0;
+        for (size_t i = 0; i < storedAdmixtureChildParent->getNumberOfChildren(); i++)
+        {
+
+            double v = storedAdmixtureChildParent->getChild(i).getAge();
+            
+            std::cout << "v " << v << "     " << newMinAge << "\n";
+            if (v > newMinAge)
+                newMinAge = v;
+        }
+        double newDivergenceAge = rng->uniform01() * (storedAdmixtureParentParent->getAge() - newMinAge) + newMinAge;
+        std::cout << newMinAge << " " << newDivergenceAge << " " << storedAdmixtureParentParent->getAge() << "\n";
+        storedAdmixtureChildParent->setAge(newDivergenceAge);
+
+        
+        // update branch rates
+        
+        double lnBwdPropRates = 0.0;
+        
+        storedBranchRates.clear();
+        double delta = 1.0;
+        // ... have old branch idx already
+        int newChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
+        int newParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
+        std::set<int> idxSet;
+        idxSet.insert(oldChildBranchIdx);
+        idxSet.insert(oldParentBranchIdx);
+        idxSet.insert(newChildBranchIdx);
+        idxSet.insert(newParentBranchIdx);
+        
+        for (std::set<int>::iterator it = idxSet.begin(); it != idxSet.end(); it++)
+        {
+            int idx = *it;
+            double v = branchRates[idx]->getValue();
+            storedBranchRates[idx] = v;
+            double u = exp(delta*(GLOBAL_RNG->uniform01() - 0.5));
+            branchRates[idx]->setValue(new double(u * v));
+            lnBwdPropRates += log(u);
+        }
+
         
        // std::cout << "after\n";
        // tau.checkAllEdgesRecursively(&tau.getRoot());
@@ -182,24 +248,26 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
         tau.eraseAdmixtureNode(storedAdmixtureParent);
         tau.eraseAdmixtureNode(storedAdmixtureChild);
         
-        // MH ratio
-        size_t numEvents = tau.getNumberOfAdmixtureChildren();
-        double unitTreeLength = tau.getUnitTreeLength();
-        double lnP = log( (numEvents+1) / (admixtureRate->getValue() * unitTreeLength));
         
-        return lnP;
+        numEvents = (int)tau.getNumberOfAdmixtureChildren();
+        double unitTreeLength = tau.getUnitTreeLength();
+        double lnP = -log(unitTreeLength);
+       
+        admixtureCount->setValue(new int(numEvents));
+        std::cout << "wt " << storedAdmixtureWeight << "    age " << storedAdmixtureAge << " -> " << newDivergenceAge << "\n";
+        
+        return lnP + lnBwdPropRates;
     }
 }
 
 
 void AdmixtureEdgeDivergenceMerge::rejectSimpleMove( void ) {
     
+    std::cout << "admixture edge div merge REJECT\n";
     
     if (!failed)
     {
      
-        std::cout << "reject\n";
-        
         // dummy NULL ptr
         AdmixtureNode* p = NULL;
         
@@ -234,9 +302,17 @@ void AdmixtureEdgeDivergenceMerge::rejectSimpleMove( void ) {
         
         AdmixtureTree& tau = variable->getValue();
     //    tau.checkAllEdgesRecursively(&tau.getRoot());
+        
+        // restore rates
+        for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
+        {
+            branchRates[it->first]->setValue(new double(it->second));
+        }
 
         tau.pushAdmixtureNode(storedAdmixtureParent);
         tau.pushAdmixtureNode(storedAdmixtureChild);
+        
+        admixtureCount->setValue(new int(numEvents + 1));
     }
     
     else
@@ -245,7 +321,7 @@ void AdmixtureEdgeDivergenceMerge::rejectSimpleMove( void ) {
 
 void AdmixtureEdgeDivergenceMerge::acceptSimpleMove(void)
 {
-    //std::cout << "add_RW accept\n";
+    std::cout << "admixture edge div merge ACCEPT\n";
     if (!failed)
     {
         AdmixtureNode* p = NULL;
@@ -268,10 +344,10 @@ void AdmixtureEdgeDivergenceMerge::swapNode(DagNode *oldN, DagNode *newN) {
         //std::cout << "AEA\ttau\n";
         variable = static_cast<StochasticNode<AdmixtureTree>* >(newN) ;
     }
-    else if (oldN == delayTimer)
-    {
-        delayTimer = static_cast<ConstantNode<int>* >(newN);
-    }
+    //else if (oldN == delayTimer)
+    //{
+     //   delayTimer = static_cast<ConstantNode<int>* >(newN);
+    //}
     else if (oldN == residuals)
     {
         residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
@@ -279,6 +355,17 @@ void AdmixtureEdgeDivergenceMerge::swapNode(DagNode *oldN, DagNode *newN) {
     else if (oldN == admixtureRate)
     {
         admixtureRate = static_cast<StochasticNode<double>* >(newN);
+    }
+    else if (oldN == admixtureCount)
+    {
+        admixtureCount = static_cast<StochasticNode<int>* >(newN);
+    }
+    for (size_t i = 0; i < branchRates.size(); i++)
+    {
+        if (oldN == branchRates[i])
+        {
+            branchRates[i] = static_cast<ContinuousStochasticNode*>(newN);
+        }
     }
 }
 
@@ -305,9 +392,15 @@ void AdmixtureEdgeDivergenceMerge::acceptMove( void ) {
     acceptSimpleMove();
 }
 
+bool AdmixtureEdgeDivergenceMerge::isActive(int g) const {
+    
+    return g > activeGen;
+}
+
 double AdmixtureEdgeDivergenceMerge::performMove( double &probRatio ) {
     
     
+    /*
     if (delayTimer->getValue() > 0)
     {
         failed = true;
@@ -315,6 +408,7 @@ double AdmixtureEdgeDivergenceMerge::performMove( double &probRatio ) {
         //        delay--;
         return RbConstants::Double::neginf;
     }
+    */
     
     if (changed) {
         throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
@@ -329,8 +423,21 @@ double AdmixtureEdgeDivergenceMerge::performMove( double &probRatio ) {
     
     // touch the node
     variable->touch();
+    admixtureRate->touch();
+    admixtureCount->touch();
     
-    probRatio = 0.0;
+    probRatio = admixtureCount->getLnProbabilityRatio();
+    std::cout << "admixtureCount\t" << probRatio << "\n";
+    
+    
+    for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
+    {
+        branchRates[it->first]->touch();
+        probRatio += branchRates[it->first]->getLnProbabilityRatio();
+        std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
+    }
+    
+    
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
         std::set<DagNode* > affectedNodes;
@@ -338,7 +445,7 @@ double AdmixtureEdgeDivergenceMerge::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << probRatio << "\n";
+            std::cout << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "\t" << probRatio << "\n";
         }
     }
     

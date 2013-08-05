@@ -14,13 +14,17 @@ Monitor::Monitor(int g) : printgen( g ), model( NULL ) {
 
 Monitor::Monitor(int g, DagNode *n) : printgen( g ), model( NULL ) {
     
-    nodes.insert( n );
+    nodes.push_back( n );
 }
 
-Monitor::Monitor(int g, const std::set<DagNode *> &n) : printgen( g ), nodes( n ), model( NULL ) {
+Monitor::Monitor(int g, const std::set<DagNode *> &n) : printgen( g ), model( NULL ) {
+    for (std::set<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
+        nodes.push_back(*it);
+}
+
+Monitor::Monitor(int g, const std::vector<DagNode *> &n) : printgen( g ), nodes( n ), model( NULL ) {
     
 }
-
 
 Monitor::Monitor(const Monitor &i) : nodes( i.nodes ), model( i.model ) {
     
@@ -69,7 +73,7 @@ void Monitor::printHeader(void)
 }
 
 
-const std::set<DagNode*>& Monitor::getDagNodes( void ) const {
+const std::vector<DagNode*>& Monitor::getDagNodes( void ) const {
     
     return nodes;
 }
@@ -78,10 +82,14 @@ const std::set<DagNode*>& Monitor::getDagNodes( void ) const {
 void Monitor::setDagNodes( const std::set<DagNode *> &args) 
 {
     
+    for (std::set<DagNode*>::iterator it = args.begin(); it != args.end(); it++)
+        nodes.push_back(*it);
+}
+
+void Monitor::setDagNodes( const std::vector<DagNode *> &args) {
     nodes = args;
 
 }
-
 
 void Monitor::setModel(Model *m) 
 {
@@ -97,12 +105,14 @@ void Monitor::setMcmc(Mcmc *m)
 void Monitor::swapNode(DagNode *oldN, DagNode *newN) 
 {
     // error catching
-    if ( nodes.find(oldN) == nodes.end() ) {
+    std::vector<DagNode*>::iterator it = find(nodes.begin(), nodes.end(), oldN);
+
+    if (it == nodes.end()) {
         throw RbException("Cannot replace DAG node with name\"" + oldN->getName() + "\" in this monitor because the monitor doesn't hold this DAG node.");
     }
     
-    nodes.erase( oldN );
-    nodes.insert( newN );
+    it = nodes.insert( it, newN );
+    nodes.erase( it + 1 );
 }
 
 

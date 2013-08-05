@@ -112,7 +112,7 @@ void MrcaFunction<treeType>::update(void)
 {
     // get tree variables
     size_t numNodes = tau->getValue().getNumberOfNodes();
-    std::vector<TopologyNode*> nodes = tau->getValue().getNodesByIndex();
+    std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
     const TopologyNode* root = &tau->getValue().getRoot();
     
     

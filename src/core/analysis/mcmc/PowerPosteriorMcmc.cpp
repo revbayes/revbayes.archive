@@ -116,7 +116,7 @@ void PowerPosteriorMcmc::burnin(int generations, int tuningInterval) {
         size_t proposals = round( schedule.getNumberMovesPerIteration() );
         for (size_t i=0; i<proposals; i++) {
             /* Get the move */
-            Move* theMove = schedule.nextMove();
+            Move* theMove = schedule.nextMove(k);
             
             if ( theMove->isGibbs() ) {
                 // do Gibbs proposal
@@ -294,7 +294,7 @@ void PowerPosteriorMcmc::run(int gen) {
             size_t proposals = round( schedule.getNumberMovesPerIteration() );
             for (size_t j=0; j<proposals; j++) {
                 /* Get the move */
-                Move* theMove = schedule.nextMove();
+                Move* theMove = schedule.nextMove(k);
             
                 /* Propose a new value */
                 double lnProbabilityRatio;

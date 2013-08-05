@@ -89,6 +89,7 @@ namespace RevBayesCore {
 #ifdef USE_LIB_ARMADILLO
         int                                         findFirstDuplicateIndex(arma::mat A);
         void                                        svd(arma::mat& S, arma::mat& X, int x);
+        void                                        eigenTest(arma::mat W);
 #endif
         
         void                                        testGsl(void);
@@ -96,6 +97,7 @@ namespace RevBayesCore {
         void                                        testEigen(void);
         void                                        testOpenCv(void);
         void                                        testWishart(void);
+
         
         void                                        print(const std::vector<std::vector<double> >& x);
         void                                        printR(const std::vector<std::vector<double> >& x);

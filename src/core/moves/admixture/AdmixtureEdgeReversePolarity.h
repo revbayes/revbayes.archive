@@ -22,11 +22,12 @@ namespace RevBayesCore {
     class AdmixtureEdgeReversePolarity : public SimpleMove {
         
     public:
-        AdmixtureEdgeReversePolarity( StochasticNode<AdmixtureTree> *n, double l, double weight);                                                          //!<  constructor
+        AdmixtureEdgeReversePolarity( StochasticNode<AdmixtureTree> *n, int ag, double l, double weight);                                                          //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeReversePolarity*          clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
+        bool                            isActive(int g) const;
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -46,6 +47,7 @@ namespace RevBayesCore {
         
         double lambda;
         bool failed;
+        int activeGen;
         
     };
     

@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeReweight::AdmixtureEdgeReweight(StochasticNode<AdmixtureTree> *v, double l, double w) : SimpleMove( v, w), variable( v ), lambda( l ) {
+AdmixtureEdgeReweight::AdmixtureEdgeReweight(StochasticNode<AdmixtureTree> *v, int ag, double l, double w) : SimpleMove( v, w), variable( v ), lambda( l ), activeGen(ag) {
     
 }
 
@@ -132,6 +132,11 @@ double AdmixtureEdgeReweight::performSimpleMove( void ) {
         return bwdLnProb - fwdLnProb;
     }
    
+}
+
+bool AdmixtureEdgeReweight::isActive(int g) const {
+    
+    return g > activeGen;
 }
 
 

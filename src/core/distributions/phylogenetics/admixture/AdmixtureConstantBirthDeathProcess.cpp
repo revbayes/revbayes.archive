@@ -11,7 +11,6 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "DistributionInverseGamma.h"
-#include "TopologyNode.h"
 #include "Topology.h"
 
 #include <algorithm>
@@ -115,7 +114,6 @@ void AdmixtureConstantBirthDeathProcess::buildRandomBinaryTree(std::vector<Admix
         
         // get the node from the list
         AdmixtureNode* parent = tips.at(index);
-        //TopologyNode* parent = tips.at(index);
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+index);
@@ -236,7 +234,9 @@ double AdmixtureConstantBirthDeathProcess::pSurvival(double start, double end, d
 void AdmixtureConstantBirthDeathProcess::redrawValue( void ) {
     
     // MJL 060713: calling simulateTree() does not correctly generate a new tree -- crashes on admixture add RW proposal!
-    //simulateTree();
+    // MJL 071613: not convinced the new nodes are copied to value properly
+    simulateTree();
+
 }
 
 
@@ -300,10 +300,6 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     std::vector<AdmixtureNode*> nodesOutgroup;
     nodesOutgroup.push_back(rootOutgroup);
     buildRandomBinaryTree(nodesOutgroup, numOutgroup, true);
-    for (size_t i = 0; i < nodesOutgroup.size(); i++)
-    {
-        // MJL 051413: empty loop: a mistake?
-    }
     
     /*
     std::cout << numOutgroup << "\t" << outgroup.size() << "\n";
@@ -312,6 +308,7 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     */
     
     // set tip names
+    //outgroup = std::vector<bool>(numTaxa, false);
     for (int i=0; i<numTaxa; i++) {
         
         // std::cout << i << "\t";
@@ -367,7 +364,9 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     }
     // otherwise, the ingroup is the entire tree
     else
+    {
         root = rootIngroup;
+    }
     
     // initialize the topology by setting the root
     tau.setRoot(root);
@@ -424,8 +423,18 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     
     // finally store the new value
     *value = tau;
-    
+
+    /*
+    value->checkAllEdgesRecursively(&value->getRoot());
+    AdmixtureNode* r = &value->getRoot();
+    std::cout << "r" << " " << r << " " << r->getIndex() << " " << r->getAge() << "\n";
+    for (size_t i = 0; i < r->getNumberOfChildren(); i++)
+    {
+        AdmixtureNode* c = &r->getChild(i);
+        std::cout << "c" << " " << c << " " << c->getIndex() << " " << c->getAge() << "\n";
+    }
     std::cout << tau.getNewickRepresentation() << "\n";
+     */
     
 }
 

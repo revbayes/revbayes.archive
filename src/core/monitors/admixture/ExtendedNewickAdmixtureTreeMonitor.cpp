@@ -17,7 +17,7 @@ using namespace RevBayesCore;
 /* Constructor */
 ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, bool sm, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), showMetadata(sm) {
     
-    nodes.insert(branchRates);
+    nodes.push_back(branchRates);
     
 }
 

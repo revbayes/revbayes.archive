@@ -50,37 +50,40 @@ double CompoundMove::performMove( double &probRatio ) {
         return RbConstants::Double::neginf;
     }
     
-
+    std::set<DagNode* > affectedNodes;
     for (std::vector<DagNode*>::iterator it = theNodes.begin(); it != theNodes.end(); it++)
     {
         // touch each node
         (*it)->touch();
     
         // calculate the probability ratio for the node we just changed
-        std::cout << (*it)->getName() << " " << (*it)->getLnProbabilityRatio() << "\n";
+        //std::cout << (*it)->getName() << " " << (*it)->getLnProbabilityRatio() << " " << (*it)->getLnProbability() << "\n";
             
         probRatio += (*it)->getLnProbabilityRatio();
-        
+ 
         if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )
         {
-            
-            std::set<DagNode* > affectedNodes;
+            // should contain unique nodes, since it is a set
             (*it)->getAffectedNodes(affectedNodes);
+        }
+    }
+    
+    if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )
+    {
+        for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i)
+        {
+            DagNode* theAffectedNode = *i;
             
-            for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i)
+            // do not double-count the prob ratio for any elt in both theNodes and affectedNodes
+            //if ( find(theNodes.begin(), theNodes.end(), *i) == theNodes.end() )
             {
-                DagNode* theAffectedNode = *i;
-                
-                // do not double-count the prob ratio for any elt in both theNodes and affectedNodes
-                if ( find(theNodes.begin(), theNodes.end(), *i) == theNodes.end() )
-                {
-               //     std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << "\n";
-                    probRatio += theAffectedNode->getLnProbabilityRatio();
-                }
+                //std::cout << "  " << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() <<  " " << theAffectedNode->getLnProbability() << "\n";
+                probRatio += theAffectedNode->getLnProbabilityRatio();
             }
         }
     }
-        
+
+    
     return hr;
 }
 

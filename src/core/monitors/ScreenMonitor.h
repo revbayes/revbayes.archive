@@ -33,6 +33,7 @@ namespace RevBayesCore {
         // Constructors and Destructors
         ScreenMonitor(DagNode *n, int g, const std::string &del, bool pp=true, bool l=true, bool pr=true);                                                                //!< Constructor with single DAG node
         ScreenMonitor(const std::set<DagNode *> &n, int g, const std::string &del, bool pp=true, bool l=true, bool pr=true);                                              //!< Constructor with set of DAG node
+        ScreenMonitor(const std::vector<DagNode *> &n, int g, const std::string &del, bool pp=true, bool l=true, bool pr=true);                                              //!< Constructor with vector of DAG node
         ScreenMonitor(const ScreenMonitor& f);
         
         // basic methods

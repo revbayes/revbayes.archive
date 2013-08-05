@@ -36,7 +36,7 @@ ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, 
 //    this->nodes.insert( tree );
     
     for (std::set<TypedDagNode< std::vector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it) {
-        this->nodes.insert( *it );
+        this->nodes.push_back( *it );
     }
 }
 

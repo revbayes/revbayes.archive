@@ -11,11 +11,13 @@
 
 
 #include <ostream>
+#include <map>
 #include <set>
 #include <string>
 
 #include "Move.h"
 #include "ConstantNode.h"
+#include "ContinuousStochasticNode.h"
 #include "DeterministicNode.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
@@ -26,11 +28,12 @@ namespace RevBayesCore {
     class AdmixtureEdgeReplaceResidualWeights : public Move {
         
     public:
-        AdmixtureEdgeReplaceResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, bool asa, double weight);                                                          //!<  constructor
+        AdmixtureEdgeReplaceResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double weight);                                                          //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeReplaceResidualWeights*              clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
+        bool                            isActive(int g) const;
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -50,12 +53,12 @@ namespace RevBayesCore {
         StochasticNode<AdmixtureTree>*  variable;
         StochasticNode<double>*         rate;
         DeterministicNode<std::vector<double> >* residuals;
-        ConstantNode<int>*              delayTimer;
+        std::vector< ContinuousStochasticNode*> branchRates;
         bool                            changed;
         bool                            failed;
         bool                            failedAdd;
         bool                            allowSisterAdmixture;
-        int                             delay;
+        int                             activeGen;
         
         // stored objects to undo proposal
         AdmixtureNode*                  storedAdmixtureParent;
@@ -71,6 +74,7 @@ namespace RevBayesCore {
         
         double                          storedAdmixtureAge;
         double                          storedAdmixtureWeight;
+        std::map<int,double>            storedBranchRates;
 
         std::vector<double>             storedResiduals;
     };

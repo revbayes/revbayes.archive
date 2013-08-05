@@ -18,8 +18,8 @@ using namespace RevBayesCore;
 /* Constructor */
 AdmixtureBipartitionSummaryMonitor::AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0) {
     
-    nodes.insert(branchRates);
-    nodes.insert(delayTimer); // ????
+    nodes.push_back(branchRates);
+    nodes.push_back(delayTimer); // ????
     
     initializeTaxonBipartition();
 }

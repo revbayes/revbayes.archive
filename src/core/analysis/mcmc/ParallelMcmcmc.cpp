@@ -27,6 +27,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
     {
         // get chain heat
         double b = computeBeta(delta,i);
+        //std::cout << i << ": " << b << " ";
         
         // create chains
         bool a = (i == 0 ? true : false);
@@ -35,7 +36,9 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         
         // add chain to team
         chains.push_back(oneChain);
+        chainIdxByHeat.push_back(i);
     }
+    std::cout << "\n";
     
     
     // assign chains to processors
@@ -52,6 +55,11 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         if (j >= numProcesses)
             j = 0;
         chainsPerProcess[j].push_back(i);
+    }
+    
+    for (int i = 0; i < numChains; i++)
+    {
+        std::cout << chains[i]->getLnPosterior() << "\n";
     }
 }
 
@@ -134,6 +142,7 @@ void ParallelMcmcmc::run(int generations)
                         //chains[activeIndex]->
                         chains[activeIndex]->monitor(i+k);
                     }
+                    //std::cout << chainIdx << "    lnPosterior  " << chains[chainIdx]->getLnPosterior() << " chainHeat  " << chains[chainIdx]->getChainHeat() << "\n";
                     //chains[chainIdx]->monitor(i+k);
                 }
             }
@@ -155,33 +164,21 @@ void ParallelMcmcmc::run(int generations)
 void ParallelMcmcmc::swapChains(void)
 {
     size_t numChains = chains.size();
+    double lnProposalRatio = 0.0;
     
     // exit if there is only one chain
     if (numChains < 2)
         return;
     
-    for (size_t i = 0; i < numChains; i++)
+    int numAccepted = 0;
+    
+    //for (size_t i = 1; i < numChains; i++)
+    for (size_t i = numChains-1; i > 0; i--)
     {
         
-        // otherwise, swap adjacent chains
-        //size_t j = std::floor(GLOBAL_RNG->uniform01() * numChains);
-        size_t j = (numChains-1)-i;
-        size_t k = (GLOBAL_RNG->uniform01() < 0.5 ? k = j-1 : k = j+1);
-        // reflect at 0 and numChains-1
-        if (j == 0)
-            k = 1;
-        else if (j == numChains-1)
-            k = numChains-2;
-        
-        // MJL: proposal density is not symmetric for border cases, currently unaccounted for
-        double lnProposalRatio = 1.0;
-        if (numChains == 2)
-            ; // no change
-        else if (j == 0 || j == (numChains-1))
-            lnProposalRatio *= 0.5;
-        else if (j == 1 || j == (numChains-2))
-            lnProposalRatio *= 2;
-        lnProposalRatio = log(lnProposalRatio);
+        // swap adjacent chains
+        size_t j = chainIdxByHeat[i-1];
+        size_t k = chainIdxByHeat[i];
         
         // compute exchange ratio
         double bj = chains[j]->getChainHeat();
@@ -192,27 +189,36 @@ void ParallelMcmcmc::swapChains(void)
         
         // determine whether we accept or reject the chain swap
         bool accept = false;
+        double u = GLOBAL_RNG->uniform01();
         if (lnR >= 0)
             accept = true;
         else if (lnR < -100)
             accept = false;
-        else if (exp(lnR) > GLOBAL_RNG->uniform01())
+        else if (u < exp(lnR))
             accept = true;
         else
             accept = false;
         
+        if (accept == true)
+            numAccepted++;
+        
         // test override
         //accept = true;
-        std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
-        std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
-        std::cout << "swapChains()\t" << j << " <--> " << k << "\t" << exp(lnR) << "\t" << (accept ? "accept\n" : "reject\n");
-        
+        //std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
+        //std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
+        //std::cout << "swapChains()\t" << j << " <--> " << k << "  " << lnR << "\n";
+        //std::cout << u << "  " << exp(lnR) << "  " << (accept ? "accept\n" : "reject\n");
+              
         // on accept, swap beta values and active chains
         if (accept)
         {
             // swap chain heat values
             chains[j]->setChainHeat(bk);
             chains[k]->setChainHeat(bj);
+            
+            int tmpIdx = j;
+            chainIdxByHeat[i-1] = k;
+            chainIdxByHeat[i] = j;
 
             // swap active chain
             if (activeIndex == j)
@@ -228,6 +234,18 @@ void ParallelMcmcmc::swapChains(void)
                 chains[k]->setChainActive(false);
             }
         }
-        std::cout << "activeIndex " << activeIndex << "\n";
+        //std::cout << "activeIndex " << activeIndex << "\n";
     }
+    
+    /*
+    for (int j = 0; j < numChains; j++)
+    {
+        int i = chainIdxByHeat[j];
+        std::cout << i << " " << chains[i]->getChainHeat() << " " << chains[i]->getLnPosterior() << " == " << chains[i]->getModelLnProbability() << " " << (chains[i]->isChainActive() ? "*" : "") << (i == activeIndex ? "#" : "") << "\n";
+    }
+    std::cout << "freq accepted: " << (double)numAccepted/(numChains-1) << "\n";
+    
+    std::cout << "\n";
+    */
+    
 }

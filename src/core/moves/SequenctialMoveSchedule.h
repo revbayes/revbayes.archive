@@ -34,7 +34,7 @@ namespace RevBayesCore {
         // pure virtual public methods
         SequentialMoveSchedule*                         clone(void) const;
         double                                          getNumberMovesPerIteration(void) const;
-        Move*                                           nextMove(void);
+        Move*                                           nextMove(int);
 
     private:
         

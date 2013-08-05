@@ -35,6 +35,10 @@ FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string 
     
 }
 
+FileMonitor::FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci) {
+    
+}
+
 
 FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ), outStream() {
     
@@ -117,7 +121,7 @@ void FileMonitor::monitor(long gen) {
             
         }
         
-        for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
+        for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
             // add a separator before every new element
             outStream << separator;
             
@@ -173,7 +177,7 @@ void FileMonitor::printHeader() {
         outStream << "ChainIndex";
     }
     
-    for (std::set<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
         outStream << separator;
         

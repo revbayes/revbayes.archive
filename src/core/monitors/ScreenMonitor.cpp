@@ -35,6 +35,10 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, const std::str
 }
 
 
+ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, const std::string &del, bool pp, bool l, bool pr) : Monitor(g,n), separator( del ), posterior( pp ), likelihood( l ), prior( pr ) {
+    
+}
+
 ScreenMonitor::ScreenMonitor(const ScreenMonitor &f) : Monitor( f ) {
     
     separator   = f.separator;
@@ -102,7 +106,7 @@ void ScreenMonitor::monitor(long gen) {
             std::cout << pp;
         }
         
-        for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
+        for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
             // add a separator before every new element
             std::cout << separator;
             
@@ -143,7 +147,7 @@ void ScreenMonitor::printHeader() {
         std::cout << "Prior";
     }
     
-    for (std::set<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element
         std::cout << separator;
         

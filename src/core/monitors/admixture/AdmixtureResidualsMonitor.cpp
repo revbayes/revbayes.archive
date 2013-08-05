@@ -93,8 +93,29 @@ void AdmixtureResidualsMonitor::monitor(long gen) {
         }
         
         // add residuals
-        const std::vector<double>& rv = residuals->getValue();
         size_t numTaxa = taxonNames.size();
+        const std::vector<double>& rv = residuals->getValue();
+        
+        double sumNegative = 0.0;
+        double sumPositive = 0.0;
+        double sum = 0.0;
+        for (size_t i = 0; i < numTaxa; i++)
+        {
+            for (size_t j = i; j < numTaxa; j++)
+            {
+                double v = rv[i*numTaxa+j];
+                if (v > 0.0)
+                    sumPositive += v;
+                else if (v < 0.0)
+                    sumNegative += v;
+            }
+        }
+        sum = sumPositive + sumNegative;
+
+        outStream << separator << sum;
+        outStream << separator << sumPositive;
+        outStream << separator << sumNegative;
+        
         for (size_t i = 0; i < numTaxa; i++)
         {
             for (size_t j = i; j < numTaxa; j++)
@@ -143,6 +164,10 @@ void AdmixtureResidualsMonitor::printHeader() {
         outStream << separator;
         outStream << "Prior";
     }
+
+    outStream << separator << "sum";
+    outStream << separator << "sum_positive";
+    outStream << separator << "sum_negative";
     
     // add residual pair names
     size_t numTaxa = taxonNames.size();

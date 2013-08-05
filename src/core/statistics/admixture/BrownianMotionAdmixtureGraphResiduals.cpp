@@ -15,7 +15,7 @@ BrownianMotionAdmixtureGraphResiduals::BrownianMotionAdmixtureGraphResiduals(con
     addParameter( bmag );
     //addParent(bmag);
     
-    //update();
+    update();
 }
 
 
@@ -48,10 +48,11 @@ void BrownianMotionAdmixtureGraphResiduals::update( void ) {
         for (size_t j = 0; j < m.size(); j++)
         {
             value->push_back(m[i][j]);
-      //      std::cout << m[i][j] << "\t";
+            //std::cout << m[i][j] << "\t";
         }
         //std::cout << "\n";
     }
+    //std::cout << "\n\n";
    // */
     
     //BrownianMotionAdmixtureGraph* b = static_cast<BrownianMotionAdmixtureGraph*>(&bmag->getDistribution());

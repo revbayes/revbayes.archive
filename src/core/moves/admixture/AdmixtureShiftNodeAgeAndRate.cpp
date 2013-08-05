@@ -44,6 +44,8 @@ const std::string& AdmixtureShiftNodeAgeAndRate::getMoveName( void ) const {
 double AdmixtureShiftNodeAgeAndRate::performSimpleMove( void ) {
     
     
+    failed = false;
+    
     std::cout << "\nAge-Rate Shift\n";
     
     // clear old rates
@@ -54,16 +56,6 @@ double AdmixtureShiftNodeAgeAndRate::performSimpleMove( void ) {
     
     AdmixtureTree& tau = variable->getValue();
     AdmixtureNode* node = &tau.getNode(nodeIndex);
-    /*
-    // pick a random internal node, excluding the root
-    AdmixtureNode* node;
-    do {
-        double u = rng->uniform01();
-        size_t index = std::floor(tau.getNumberOfNodes() * u);
-        node = &tau.getNode(index);
-    } while ( node->isRoot() || node->isTip() );
-    */
-    
     AdmixtureNode& parent = node->getParent();
         
     // we need to work with the times
@@ -99,11 +91,8 @@ double AdmixtureShiftNodeAgeAndRate::performSimpleMove( void ) {
     // now we store all necessary values
     storedNode = node;
     storedAge = my_age;
-    
-    // draw new ages and compute the hastings ratio at the same time
-    //double my_new_age = (parent_age-child_Age) * rng->uniform01() + child_Age;
-    //std::cout << "idx\t" << node->getIndex() << "   " << storedAge << " -> " << my_new_age << "\n";
-    
+  
+    // draw new age
     double ageRange = parent_age - child_Age;
     double unitAge = (storedAge - child_Age) / ageRange;
     double a = delta * unitAge + 1.0;
@@ -115,10 +104,9 @@ double AdmixtureShiftNodeAgeAndRate::performSimpleMove( void ) {
     double new_b = delta * (1.0 - newUnitAge) + 1.0;
     double bwdProposal = RbStatistics::Beta::lnPdf(new_a, new_b, unitAge);
 
-    
     // double get branch length
-    double old_brlen = node->getParent().getAge() - my_age;
-    double new_brlen = node->getParent().getAge() - my_new_age;
+    double old_brlen = node->getTopologyParent().getAge() - my_age;
+    double new_brlen = node->getTopologyParent().getAge() - my_new_age;
     double brlen_ratio = old_brlen / new_brlen;
     
     // update branch rate leading to node
@@ -132,11 +120,12 @@ double AdmixtureShiftNodeAgeAndRate::performSimpleMove( void ) {
     node_rate = node_rate * brlen_ratio;
     branchRates[node->getIndex()]->setValue(new double(node_rate));
     
-    
     // update branch rates following from node
     for (size_t i = 0; i < storedNode->getNumberOfChildren(); i++)
     {
-        AdmixtureNode* ch = &storedNode->getChild(i);
+        AdmixtureNode* ch = &storedNode->getTopologyChild(i);
+        //AdmixtureNode* ch = &storedNode->getChild(i);
+        //double ch_ratio = (storedAge - ch->getAge()) / (my_new_age - ch->getAge());
         double ch_ratio = (storedAge - ch->getAge()) / (my_new_age - ch->getAge());
         double ch_rate = branchRates[ch->getIndex()]->getValue();
 //        branchRates[ch->getIndex()]->touch();
@@ -179,7 +168,7 @@ void AdmixtureShiftNodeAgeAndRate::rejectSimpleMove( void ) {
     
     for (size_t i = 0; i < storedNode->getNumberOfChildren(); i++)
     {
-        AdmixtureNode* ch = &storedNode->getChild(i);
+        AdmixtureNode* ch = &storedNode->getTopologyChild(i);
         branchRates[ch->getIndex()]->setValue(new double(storedRates[ch]));
     }
 }
@@ -220,7 +209,8 @@ double AdmixtureShiftNodeAgeAndRate::performMove( double &probRatio ) {
     
     for (std::map<AdmixtureNode*,double>::iterator it = storedRates.begin(); it != storedRates.end(); it++)
     {
-        probRatio += branchRates[it->first->getIndex()]->getLnProbability();
+        branchRates[it->first->getIndex()]->touch();
+        probRatio += branchRates[it->first->getIndex()]->getLnProbabilityRatio();
         std::cout << "n\t" << branchRates[it->first->getIndex()]->getName() << "\t" << probRatio << "\n";
     }
         

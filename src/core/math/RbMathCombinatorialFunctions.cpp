@@ -197,6 +197,9 @@ double RbMath::lfastchoose2(double n, double k, int *s_choose) {
  */
 double RbMath::lnFactorial(int n) {
 
+    if (n == 0)
+        return 0;
+    
 	double n1 = n;
 	double r  = 1.0 / n1;
 	double C0 =  0.918938533204672722;

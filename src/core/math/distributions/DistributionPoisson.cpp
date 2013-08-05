@@ -43,7 +43,7 @@ double RbStatistics::Poisson::pdf(double lambda, int x) {
  */
 double RbStatistics::Poisson::lnPdf(double lambda, int x) {
     
-	return ( x * std::log(lambda) - lambda - RbMath::lnFactorial(x) );
+    return ( x * std::log(lambda) - lambda - RbMath::lnFactorial(x) );
 }
 
 /*!
@@ -139,13 +139,18 @@ int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator& rng) {
              and x = 2 (ignoring higher x). The reason for using this 
              method is to prevent numerical inaccuracies in other methods. */
             //			return RbStatistics::Helper::poissonLow(lambda, *rng);
-            return 1;
+                
+            // MJL 071713: Poisson rv are supported on 0..inf, so why would a small rate return 1 instead of 0?
+            // return 1;
+            return 0;
             }
 		else 
             {
 			/* use the inversion method */
 			return RbStatistics::Helper::poissonInver(lambda, rng);
-            return 1;
+            // MJL 071713: Same as above.
+            return 0;
+            //return 1;
             }
         }
 	else 

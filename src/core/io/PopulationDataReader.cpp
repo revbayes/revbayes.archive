@@ -94,8 +94,8 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thi
     // Expected file format
     //
     //  nameA    nameB  nameC
-    //  fA1,nA1 fB1,nB1 fC1,nC1
-    //  fA2,nA2 fB2,nB2 fC2,nC2
+    //  fA1,fa1 fB1,fb1 fC1,fc1
+    //  fA2,fa2 fB2,fb2 fC2,fc2
     //  ...
     
     // initialize

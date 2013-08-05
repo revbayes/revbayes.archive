@@ -16,15 +16,17 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0) {
+//AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0) {
+
+AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0) {
     
-    nodes.insert(branchRates);
-    nodes.insert(delayTimer);
+    nodes.push_back(branchRates);
+  //  nodes.insert(delayTimer);
     
     initializeTaxonBipartition();
 }
 
-AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(const AdmixtureBipartitionMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchRates( m.branchRates), delayTimer(m.delayTimer), nodeVariables( m.nodeVariables ), numSamples(m.numSamples), numTreeResults(m.numTreeResults), numAdmixtureResults(m.numAdmixtureResults), numTaxa(m.numTaxa) {
+AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(const AdmixtureBipartitionMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchRates( m.branchRates), nodeVariables( m.nodeVariables ), numSamples(m.numSamples), numTreeResults(m.numTreeResults), numAdmixtureResults(m.numAdmixtureResults), numTaxa(m.numTaxa) {
     
     filename    = m.filename;
     separator   = m.separator;
@@ -285,10 +287,6 @@ void AdmixtureBipartitionMonitor::swapNode(DagNode *oldN, DagNode *newN) {
     else if (oldN == branchRates)
     {
         branchRates = static_cast<TypedDagNode<std::vector<double> >* >(newN);
-    }
-    else if (oldN == delayTimer)
-    {
-        delayTimer = static_cast<TypedDagNode<int>* >(newN);
     }
     
     else {

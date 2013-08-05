@@ -35,7 +35,7 @@ double SequentialMoveSchedule::getNumberMovesPerIteration( void ) const {
 }
 
 
-Move* SequentialMoveSchedule::nextMove( void ) {
+Move* SequentialMoveSchedule::nextMove( int gen ) {
     
     bool found = false;
     do {
@@ -51,10 +51,12 @@ Move* SequentialMoveSchedule::nextMove( void ) {
         } 
         else {
             usedPropOfCurrentMove = 0.0;
-            currentMove++;
-            if ( currentMove >= moves.size()) {
-                currentMove = 0;
-            }
+            do {
+                currentMove++;
+                if ( currentMove >= moves.size()) {
+                    currentMove = 0;
+                }
+            } while ( moves[currentMove]->isActive( gen ) );
         }
     } while ( !found );
     

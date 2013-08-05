@@ -49,6 +49,7 @@ namespace RevBayesCore {
         int                                                 nextCycle(bool advanceCycle);
         //double                                              getLnLikelihood(void);
         double                                              getLnPosterior(void);
+        double                                              getModelLnProbability(void);
         bool                                                isChainActive(void);
         double                                              getChainHeat(void);
         void                                                setChainActive(bool tf);

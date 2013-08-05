@@ -36,13 +36,13 @@ double SingleRandomMoveSchedule::getNumberMovesPerIteration( void ) const {
 }
 
 
-Move* SingleRandomMoveSchedule::nextMove( void ) {
+Move* SingleRandomMoveSchedule::nextMove( int gen ) {
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
     double u = sumOfWeights * rng->uniform01();
     
     int index = 0;
-    while ( weights[index] < u ) {
+    while ( weights[index] < u || !moves[index]->isActive( gen ) ) {
         u -= weights[index];
         ++index;
     }

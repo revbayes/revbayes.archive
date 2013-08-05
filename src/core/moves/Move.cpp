@@ -68,6 +68,12 @@ double Move::getUpdateWeight( void ) const {
 }
 
 
+bool Move::isActive( int g ) const {
+
+    return true;
+}
+
+
 bool Move::isGibbs( void ) const {
     return false;
 }
@@ -219,7 +225,6 @@ void Move::swapNode(DagNode *oldN, DagNode *newN) {
 void Move::tune( void ) {
     // the default implementation does nothing
 }
-
 
 std::ostream& operator<<(std::ostream& o, const Move& x) {
     o << "Move";

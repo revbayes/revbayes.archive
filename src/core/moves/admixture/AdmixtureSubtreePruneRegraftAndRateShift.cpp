@@ -167,7 +167,7 @@ double AdmixtureSubtreePruneRegraftAndRateShift::performCompoundMove( void ) {
     rate->setValue(new double(scaler * storedRate));
 
     std::cout << "age chk    " << newParent->getAge() << " " << storedNode->getAge() << " " << newChild->getAge() << "\n";
-    std::cout << "rate chk   " << storedRate << " " << storedRate * scaler << "\n";
+    std::cout << "rate chk   " << storedRate << " " << storedRate * scaler << "   lnP " << log(scaler) << "\n";
     
     return log(scaler);
 }

@@ -168,6 +168,7 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
     {
         std::cout << "new scaledBrotherRate == 0.0\n";
     }
+    std::cout << scaleChildRate*scaleBrotherRate << "  " << log(scaleChildRate*scaleBrotherRate) << "\n";
 
     
     // MH
@@ -247,9 +248,10 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performMove( double &pro
         if (!failed)
         {
             // these three rates should be touched due to setValue()
-            
+            branchRates[storedChildRateIndex]->touch();
             probRatio += branchRates[storedChildRateIndex]->getLnProbabilityRatio();
             std::cout << probRatio << "\n";
+            branchRates[storedBrotherRateIndex]->touch();
             probRatio += branchRates[storedBrotherRateIndex]->getLnProbabilityRatio();
             std::cout << probRatio << "\n";
            // probRatio += branchRates[storedNodeRateIndex]->getLnProbabilityRatio();
@@ -264,7 +266,7 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performMove( double &pro
             std::cout << "\tch\t" << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "  " <<  probRatio << "\n";
         }
     }
-    std::cout << "ok!\n";
+    std::cout << "pr " << probRatio << "    hr " << hr << "\n";
     
     return hr;
 }

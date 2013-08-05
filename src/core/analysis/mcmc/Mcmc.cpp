@@ -154,7 +154,9 @@ void Mcmc::initialize( void ) {
     std::set< const DagNode *> visited;
     getOrderedStochasticNodes(dagNodes[0],orderedStochNodes, visited );
     
-    sort(monitors.begin(), monitors.end());
+    //std::cout << "#ordered-nodes: " << orderedStochNodes.size() << std::endl;
+    //std::cout << "#dag-nodes: " << dagNodes.size() << std::endl;
+    
     /* Open the output file and print headers */
     for (size_t i=0; i<monitors.size(); i++) 
     {
@@ -183,16 +185,40 @@ void Mcmc::initialize( void ) {
         (*i)->touch();
     }
     
+    
+    // redraw parameters for inactive chains in pMC^3 team
+    if (chainActive == false)
+    {
+        for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
+        {
+            //std::cout << (*i)->getName() << std::endl;
+            if ( !(*i)->isClamped() && (*i)->isStochastic() )
+            {
+                std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
+                (*i)->redraw();
+                //                    (*i)->touch(); Not necessary. The distribution will automaticall call touch().
+            }
+            else if ( (*i)->isClamped() )
+            {
+                // make sure that the clamped node also recompute their probabilities
+                (*i)->touch();
+            }
+            
+        }
+    }
+    
     lnProbability = 0.0;
-    do 
+    do
     {
         lnProbability = 0.0;
         for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
         {
             DagNode* node = (*i);
+            (*i)->touch();
             
             double lnProb = node->getLnProbability();
             lnProbability += lnProb;
+            std::cout << node->getName() << " " << node->getLnProbability() << " " << ( node->isClamped() ? "*" : "_") << "\n";
             
         }
         
@@ -202,12 +228,13 @@ void Mcmc::initialize( void ) {
             (*i)->keep();
         }
         
-        if (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan )//|| chainActive == false)
+        if (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan)
         {
             std::cerr << "Drawing new initial states ... " << std::endl;
             for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++) 
             {
-                if ( !(*i)->isClamped() && (*i)->isStochastic() ) 
+                //std::cout << (*i)->getName() << std::endl;
+                if ( !(*i)->isClamped() && (*i)->isStochastic() )
                 {
                     std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
                     (*i)->redraw();
@@ -225,9 +252,8 @@ void Mcmc::initialize( void ) {
     } while (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan);
     
 
-    //lnProbability *= chainHeat;
     schedule = RandomMoveSchedule(moves);
-    if (moveSchedule != NULL)
+    //if (moveSchedule != NULL)
         
     gen = 0;
 }
@@ -260,8 +286,8 @@ void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor 
     
     for (std::vector<Monitor*>::const_iterator it = mons.begin(); it != mons.end(); ++it) {
         Monitor *theMonitor = (*it)->clone();
-        std::set<DagNode*> nodes = theMonitor->getDagNodes();
-        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
+        std::vector<DagNode*> nodes = theMonitor->getDagNodes();
+        for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
                 if ( (*k)->getName() == (*j)->getName() ) {
@@ -319,7 +345,7 @@ int Mcmc::nextCycle(bool advanceCycle) {
     for (size_t i=0; i<proposals; i++) 
     {
         // Get the move
-        Move* theMove = schedule.nextMove();
+        Move* theMove = schedule.nextMove( gen );
         
         if ( theMove->isGibbs() ) 
         {
@@ -338,10 +364,19 @@ int Mcmc::nextCycle(bool advanceCycle) {
             // Calculate acceptance ratio
             double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
             
+            //std::cout << "\n**********\n";
+            //std::cout << theMove->getMoveName() << "\n";
+            //std::cout << lnHastingsRatio << "  " << lnProbabilityRatio << ";  " << lnProbability << " -> " << lnProbability + lnProbabilityRatio << "\n";
+            //std::cout << "pre-mcmc     " << lnProbability << "\n";
+            
             if (lnR >= 0.0) 
             {
                 theMove->accept();
                 lnProbability += lnProbabilityRatio;
+              //  if (lnProbability > 0.0)
+                {
+                   
+                }
             }
             else if (lnR < -300.0)
             {
@@ -362,6 +397,9 @@ int Mcmc::nextCycle(bool advanceCycle) {
                     theMove->reject();
                 }
             }
+            //std::cout << "post-mcmc    " << lnProbability << "\n";
+            //std::cout << "model        " << getModelLnProbability() << "\n";
+            //std::cout << "**********\n\n";
         }
         
 #ifdef DEBUG_MCMC
@@ -393,6 +431,18 @@ int Mcmc::nextCycle(bool advanceCycle) {
 double Mcmc::getLnPosterior(void)
 {
     return lnProbability;
+}
+
+double Mcmc::getModelLnProbability(void)
+{
+    const std::vector<DagNode*> &n = model.getDagNodes();
+    double pp = 0.0;
+    for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
+        //std::cout << (*it)->getName() << "  " << (*it)->getLnProbability() << "\n";
+        //(*it)->touch();
+        pp += (*it)->getLnProbability();
+    }
+    return pp;
 }
 
 bool Mcmc::isChainActive(void)

@@ -86,8 +86,8 @@ AdmixtureTree& AdmixtureTree::operator=(const AdmixtureTree &t) {
         nodes.clear();
         nodesByIndex.clear();
         
-        delete root;
-        root = NULL;
+        //delete root;
+       // root = NULL;
         
         binary      = t.binary;
         numTips     = t.numTips;
@@ -267,14 +267,6 @@ const AdmixtureNode& AdmixtureTree::getNode(size_t idx) const {
     return *nodes[idx];
 }
 
-AdmixtureNode& AdmixtureTree::getNodeByIndex(size_t idx) {
-    return *nodesByIndex[idx];
-}
-
-const AdmixtureNode& AdmixtureTree::getNodeByIndex(size_t idx) const {
-    return *nodesByIndex[idx];
-}
-
 std::vector<TopologyNode *> AdmixtureTree::getNodesByIndex( void ) const {
     std::vector<TopologyNode *> tmp( nodesByIndex.size() );
     for (size_t i = 0; i < nodesByIndex.size(); ++i) {
@@ -286,7 +278,7 @@ std::vector<TopologyNode *> AdmixtureTree::getNodesByIndex( void ) const {
 void AdmixtureTree::fillNodesByIndex(void)
 {
     size_t n = nodes.size();
-    nodesByIndex= std::vector<AdmixtureNode*>(n);
+    nodesByIndex = std::vector<AdmixtureNode*>(n);
     
     for (size_t i = 0; i < n; i++)
         nodesByIndex[i] = nodes[i];
@@ -358,14 +350,14 @@ std::vector<AdmixtureNode*> AdmixtureTree::getFirstAdmixtureParentPerLineage(voi
         // if admixture edge, and both admixture nodes' parents are divergence nodes
         if (&p->getAdmixtureChild() != NULL && p->getParent().getNumberOfChildren() == 2 && p->getAdmixtureChild().getParent().getNumberOfChildren() == 2)
         {
-            std::cout << "gfappl " << i << "\n";
+            //std::cout << "gfappl " << i << "\n";
             tmp.push_back(p);
         }
     }
     
     for (size_t i = 0; i < tmp.size(); i++)
     {
-        std::cout << tmp[i] << "  " << tmp[i]->getParent().getNumberOfChildren() << "\n";
+        ;//  std::cout << tmp[i] << "  " << tmp[i]->getParent().getNumberOfChildren() << "\n";
     }
     return tmp;
 }
@@ -416,7 +408,9 @@ void AdmixtureTree::checkAllEdges(void)
 
 void AdmixtureTree::checkAllEdgesRecursively(AdmixtureNode* p) const
 {
-    std::cout << "p " << p << "    ";
+    std::cout << "N " << p << "    ";
+    
+    std::cout << "idx      " << p->getIndex() << "    ";
     
     if (p->getAge() == 0.0)
         std::cout << "age 0.0        ";
@@ -622,6 +616,7 @@ void AdmixtureTree::setRoot( AdmixtureNode* r) {
         n2[nodes[i]->getIndex()] = nodes[i];
     for (size_t i = 0; i < numTips; i++)
         nodes[i] = n2[i];
+    
     
     if (nodesByIndex.size() == 0)
         fillNodesByIndex();

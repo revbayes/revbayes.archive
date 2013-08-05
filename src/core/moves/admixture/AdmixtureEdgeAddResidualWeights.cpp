@@ -19,11 +19,12 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeAddResidualWeights::AdmixtureEdgeAddResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), residuals(res), delayTimer(dt), changed(false), failed(false), maxEvents(me), allowSisterAdmixture(asa) {
+AdmixtureEdgeAddResidualWeights::AdmixtureEdgeAddResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), maxEvents(me), allowSisterAdmixture(asa) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
-    nodes.insert(dt);
+    nodes.insert(admixtureCount);
+    //nodes.insert(dt);
 
 }
 
@@ -58,6 +59,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     
     // get tree info
     AdmixtureTree& tau = variable->getValue();
+    
     size_t numTaxa = tau.getNumberOfTips();
     AdmixtureNode* nodeSrc = NULL;
     AdmixtureNode* nodeDst = NULL;
@@ -114,7 +116,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
             if (m_a > u_a)
             {
                 k_a = i;
-                nodeDst = &tau.getNodeByIndex(k_a);
+                nodeDst = &tau.getNode(k_a);
                 break;
             }
         }
@@ -149,7 +151,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
             if (m_b > u_b)
             {
                 k_b = i;
-                nodeSrc = &tau.getNodeByIndex(k_b);
+                nodeSrc = &tau.getNode(k_b);
                 break;
             }
         }
@@ -162,8 +164,8 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
         {
             k_b = rng->uniform01() * numTaxa;
         } while(k_a == k_b);
-        nodeDst = &tau.getNodeByIndex(k_a);
-        nodeSrc = &tau.getNodeByIndex(k_b);
+        nodeDst = &tau.getNode(k_a);
+        nodeSrc = &tau.getNode(k_b);
     }
     
     std::cout << "taxa pair\t" << k_a << "\t" << k_b << "\n";
@@ -175,10 +177,9 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     //std::cout << "path_a : tip -> root\n";
     while (nd_a != NULL)
     {
-        std::cout << "\tnd_a\t" << nd_a->getIndex() << "\t" << nd_a << "\t" << nd_a->getAge() << "\n";
+        std::cout << "\tnd_a\t" << nd_a->getIndex() << "\t" << nd_a << "\t" << nd_a->getAge() << "\t" << &nd_a->getParent() << "\n";
         path_a.push_back(nd_a);
         nd_a = &nd_a->getParent();
-        true;
     }
     nd_a = path_a.back();
 
@@ -218,14 +219,14 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     
     // sample u.a.r. between nd_b and present (we disallow sister branches to admix...)
     double minAge = nodeSrc->getAge();
-    if (nodeDst->getAge() < minAge)
+    if (minAge < nodeDst->getAge())
         minAge = nodeDst->getAge();
     double maxAge = mrca->getAge();
     
     int mrcaChIdx = 0;
     
-    // if (allowSisterAdmixture == false)
-    if (allowSisterAdmixture == false && mrca->getTopologyChild(0).isTip() == false && mrca->getTopologyChild(1).isTip() == false)
+    //if (allowSisterAdmixture == false && mrca->getTopologyChild(0).isTip() == false && mrca->getTopologyChild(1).isTip() == false)
+    if (allowSisterAdmixture == false)// && mrca->getTopologyChild(0).isTip() == false && mrca->getTopologyChild(1).isTip() == false)
     {
         maxAge = mrca->getTopologyChild(0).getAge();
         if (maxAge < mrca->getTopologyChild(1).getAge())
@@ -243,8 +244,9 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     double admixtureAge = rng->uniform01() * (maxAge - minAge) + minAge;
     
     double a = 1.0;
-    double b = 1.0;
+    double b = 20.0;
     double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
+    //admixtureWeight = 0.0;
 
     double lnW = 0.0;
     
@@ -353,14 +355,20 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     //tau.checkAllEdgesRecursively(&tau.getRoot());
     
     // prior * proposal ratio
-    size_t numEvents = tau.getNumberOfAdmixtureChildren();
+    numEvents = (int)tau.getNumberOfAdmixtureChildren();
     double unitTreeLength = tau.getUnitTreeLength();
-    double lnP = log( (rate->getValue() * unitTreeLength) / (numEvents) );
+    double lnP = log(unitTreeLength);
+   // double lnP = log( (rate->getValue() * unitTreeLength) / (numEvents) );
     //  double lnJ = 2 * log(1 - w);
     //    double lnP = log( (rate->getValue() * treeLength) / (numEvents) );
-  
+
+    admixtureCount->setValue(new int(numEvents));
     
-    std::cout << "add_RW\t" << lnP << "\t" << lnW << "\t" << log(fwdProposal) << ";\t" << storedAdmixtureChild->getAge() << "\t" << storedAdmixtureChild->getWeight() << ";\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
+    
+    std::cout << "add_RW\t" << lnP << "\t" << lnW << "\t" << log(fwdProposal) << ";\n";
+    std::cout << "a " << storedAdmixtureChild->getAge() << "\n";
+    std::cout << "w " << storedAdmixtureChild->getWeight() << "\n";
+    std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
     
     // bombs away
     return lnP - lnW;// - log(fwdProposal);
@@ -388,6 +396,7 @@ void AdmixtureEdgeAddResidualWeights::rejectSimpleMove( void ) {
         tau.eraseAdmixtureNode(storedAdmixtureParent);
         tau.eraseAdmixtureNode(storedAdmixtureChild);
         
+        admixtureCount->setValue(new int(numEvents-1));
         std::cout << "reject\n";
     }
     
@@ -416,13 +425,17 @@ void AdmixtureEdgeAddResidualWeights::swapNode(DagNode *oldN, DagNode *newN) {
         //std::cout << "AEA\trate\n";
         rate = static_cast<StochasticNode<double>* >(newN);
     }
-    else if (oldN == delayTimer)
-    {
-        delayTimer = static_cast<ConstantNode<int>* >(newN);
-    }
+  //  else if (oldN == delayTimer)
+  //  {
+  //      delayTimer = static_cast<ConstantNode<int>* >(newN);
+  //  }
     else if (oldN == residuals)
     {
         residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
+    }
+    else if (oldN == admixtureCount)
+    {
+        admixtureCount = static_cast<StochasticNode<int>* >(newN);
     }
 }
 
@@ -435,6 +448,8 @@ void AdmixtureEdgeAddResidualWeights::rejectMove( void ) {
     
     // touch the node
     variable->touch();
+    rate->touch();
+    admixtureCount->touch();
 }
 
 
@@ -445,9 +460,14 @@ void AdmixtureEdgeAddResidualWeights::acceptMove( void ) {
     acceptSimpleMove();
 }
 
+bool AdmixtureEdgeAddResidualWeights::isActive(int g) const {
+    
+    return g > activeGen;
+}
+
 double AdmixtureEdgeAddResidualWeights::performMove( double &probRatio ) {
     
-    
+    /*
     if (delayTimer->getValue() > 0)
     {
         failed = true;
@@ -455,6 +475,7 @@ double AdmixtureEdgeAddResidualWeights::performMove( double &probRatio ) {
         //        delay--;
         return RbConstants::Double::neginf;
     }
+     */
     
     if (changed) {
         throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
@@ -463,22 +484,29 @@ double AdmixtureEdgeAddResidualWeights::performMove( double &probRatio ) {
     
     double hr = performSimpleMove();
     
+    std::cout << "hr  " << hr << "\n";
+    std::cout << "ok\n";
     if ( hr != hr || hr == RbConstants::Double::inf ) {
+        ;
         return RbConstants::Double::neginf;
     }
     
     // touch the node
     variable->touch();
+    //rate->touch();
+    admixtureCount->touch();
+    probRatio = admixtureCount->getLnProbabilityRatio();
+    std::cout << "probRatio " << probRatio << "\n";
     
-    probRatio = 0.0;
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
         std::set<DagNode* > affectedNodes;
         variable->getAffectedNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
+            //theNode->touch();
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << probRatio << "\n";
+            std::cout << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
         }
     }
     

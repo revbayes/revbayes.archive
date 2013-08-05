@@ -41,13 +41,14 @@ namespace RevBayesCore {
         double                                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
         const std::set<DagNode*>&                               getDagNodes(void) const;                                                                //!< Get the nodes vector
         double                                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
+        virtual bool                                            isActive(int g) const;                                                                  //!< Is this active at the iteration?
         virtual bool                                            isGibbs(void) const;                                                                    //!< Is this a Gibbs move?
         double                                                  perform(double& probRatio);                                                             //!< Perform the InferenceMove
         void                                                    performGibbs(void);                                                                     //!< Perform a Gibbs proposal
         void                                                    printSummary(std::ostream &o) const;                                                    //!< Print the move summary
         void                                                    reject(void);                                                                           //!< Reject the InferenceMove
         void                                                    resetCounters(void);                                                                    //!< Reset numTried/numAccepted
-
+        
         // methods you may want to overwrite
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN);
 

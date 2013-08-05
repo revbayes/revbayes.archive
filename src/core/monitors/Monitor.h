@@ -20,6 +20,7 @@
 
 #include <ostream>
 #include <set>
+#include <vector>
 
 namespace RevBayesCore {
 
@@ -34,6 +35,7 @@ namespace RevBayesCore {
         Monitor(int printgen);                                                                                      //!< Default Constructor
         Monitor(int printgen, DagNode *n);                                                                         //!< Default Constructor
         Monitor(int printgen, const std::set<DagNode *> &n);                                                       //!< Default Constructor
+        Monitor(int printgen, const std::vector<DagNode *> &n);                                                       //!< Default Constructor
         Monitor(const Monitor &x);                                                                                          //!< Copy Constructor
         virtual ~Monitor(void);                                                                                             //!< Destructor
 
@@ -52,9 +54,10 @@ namespace RevBayesCore {
 
 
         // getters and setters
-        const std::set<DagNode *>&                  getDagNodes(void) const;                                                //!< Get the nodes vector
+        const std::vector<DagNode *>&               getDagNodes(void) const;                                                //!< Get the nodes vector
         void                                        setDagNodes(const std::set<DagNode *>& args);
-        virtual void                                setModel(Model* m);
+        void                                        setDagNodes(const std::vector<DagNode *>& args);
+        void                                        setModel(Model* m);
         void                                        setMcmc(Mcmc* m);
 
     protected:
@@ -63,7 +66,7 @@ namespace RevBayesCore {
         int                                         printgen;
         const Model*                                model;
         Mcmc*                                       mcmc;
-        std::set<DagNode *>                         nodes;
+        std::vector<DagNode *>                      nodes;
     
     };
     

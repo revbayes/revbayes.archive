@@ -280,9 +280,9 @@ bool Test::performTests(void) {
     try {
         TestBranchHeterogeneousHkyModel testHeteroHky = TestBranchHeterogeneousHkyModel("/Users/boussau/Dropbox/HeterogeneousModelsRevBayes/data/SheffieldBeetles.fasta", 10000);
 		
-		testHeteroHky.run();
+		//testHeteroHky.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroHkyModel.tree");
-            testTrace.run();
+          //  testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -422,7 +422,14 @@ bool Test::performTests(void) {
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/canmap2_snps_removedMissingData.txt", 10);
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/moo_snps.no_999111.removedMissingData.txt", 10);
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/NativeAmericans_Saqqaq_Clovis.masked.genotypes.removedMayan.txt.oneAleut.TreeMixInput.removedAfricans.txt", 10);
-        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/humans.070313.txt", 10);
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/humans.071713.txt", 10000);
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.clovis.130723.txt", 10000);
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.saqqaq.130723.txt", 10000);
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.malta.130723.txt", 10000);
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.939.130723.txt", 10000);
+        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/admixsim.data.txt", 10000);
+        
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/np8_nc32_ns1000_na3_wt0.0_aa0.05_sim0.data.txt", 10000);
         testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
