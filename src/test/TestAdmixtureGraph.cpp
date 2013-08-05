@@ -28,7 +28,7 @@
 #include "AdmixtureDelayDecrement.h"
 #include "AdmixtureBipartitionMonitor.h"
 #include "AdmixtureResidualsMonitor.h"
-//#include "AdmixtureShiftTreeRates.h"
+#include "AdmixtureShiftTreeRates.h"
 #include "AdmixtureShiftNodeAgeAndRate.h"
 #include "AdmixtureSubtreePruneRegraftAndRateShift.h"
 #include "AdmixtureNarrowExchange.h"

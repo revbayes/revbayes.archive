@@ -28,7 +28,7 @@ using namespace RevBayesCore;
 /* Constructor */
 ModelMonitor::ModelMonitor(int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap) {
     
-    model = m;
+    //model = m;
     
     const std::vector<DagNode*> &n = model->getDagNodes();
     for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
@@ -218,7 +218,7 @@ void ModelMonitor::setModel(Model *m)
             } 
             else 
             {
-                nodes.insert( *it );
+                nodes.push_back( *it );
             }
         }
         

@@ -142,7 +142,7 @@ void ParallelMcmcmc::run(int generations)
                         //chains[activeIndex]->
                         chains[activeIndex]->monitor(i+k);
                     }
-                    //std::cout << chainIdx << "    lnPosterior  " << chains[chainIdx]->getLnPosterior() << " chainHeat  " << chains[chainIdx]->getChainHeat() << "\n";
+                    std::cout << chainIdx << "    lnPosterior  " << chains[chainIdx]->getLnPosterior() << " chainHeat  " << chains[chainIdx]->getChainHeat() << "\n";
                     //chains[chainIdx]->monitor(i+k);
                 }
             }
@@ -204,10 +204,10 @@ void ParallelMcmcmc::swapChains(void)
         
         // test override
         //accept = true;
-        //std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
-        //std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
-        //std::cout << "swapChains()\t" << j << " <--> " << k << "  " << lnR << "\n";
-        //std::cout << u << "  " << exp(lnR) << "  " << (accept ? "accept\n" : "reject\n");
+        std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
+        std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
+        std::cout << "swapChains()\t" << j << " <--> " << k << "  " << lnR << "\n";
+        std::cout << u << "  " << exp(lnR) << "  " << (accept ? "accept\n" : "reject\n");
               
         // on accept, swap beta values and active chains
         if (accept)
@@ -234,10 +234,9 @@ void ParallelMcmcmc::swapChains(void)
                 chains[k]->setChainActive(false);
             }
         }
-        //std::cout << "activeIndex " << activeIndex << "\n";
+        std::cout << "activeIndex " << activeIndex << "\n";
     }
     
-    /*
     for (int j = 0; j < numChains; j++)
     {
         int i = chainIdxByHeat[j];
@@ -246,6 +245,5 @@ void ParallelMcmcmc::swapChains(void)
     std::cout << "freq accepted: " << (double)numAccepted/(numChains-1) << "\n";
     
     std::cout << "\n";
-    */
     
 }
