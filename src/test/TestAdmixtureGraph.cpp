@@ -101,10 +101,10 @@ bool TestAdmixtureGraph::run(void) {
     size_t numSites = snps->getNumSnps();
     int blockSize = 50;
     
-    int delay = 100; //2000;
+    int delay = 300; //2000;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
-    int maxNumberOfAdmixtureEvents = 3;
+    int maxNumberOfAdmixtureEvents = 4;
     
     bool useWishart = true;             // if false, the composite likelihood function is used
     bool useBias = true;               // if false, no covariance bias correction for small sample size is used
@@ -117,12 +117,12 @@ bool TestAdmixtureGraph::run(void) {
     bool updateTree = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 1;
+    int numChains = 24;
     int numProcesses = numChains;
     if (numChains >= 24) numProcesses /= 2;
     if (numChains == 1) numProcesses = 1;
     int swapInterval = 10;
-    double deltaTemp = .25;
+    double deltaTemp = .1;
     
     
     std::stringstream rndStr;
@@ -142,7 +142,7 @@ bool TestAdmixtureGraph::run(void) {
     //double cpp_data_prior =(double)(numSites * branchPairs) / cpp_data_prior_scaler;
     
     // This prior requires admixture events to improve lnL by N units
-    double adm_th_lnL = 10;
+    double adm_th_lnL = 50;
     double rate_cpp_prior = exp(adm_th_lnL);
     
     // MJL 071713:  Flat Poisson prior cannot overpower model overfitting when lnL is large.

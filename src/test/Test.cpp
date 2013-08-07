@@ -22,6 +22,7 @@
 #include "TestCoala.h"
 #include "TestConstantPopCoalescent.h"
 #include "TestDistributions.h"
+#include "TestDiscreteDependenceModel.h"
 #include "TestDPPRelClock.h"
 #include "TestGtrGammaLikelihood.h"
 #include "TestGtrGammaModel.h"
@@ -430,11 +431,22 @@ bool Test::performTests(void) {
         TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/admixsim.data.txt", 10000);
         
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/np8_nc32_ns1000_na3_wt0.0_aa0.05_sim0.data.txt", 10000);
-        testAG.run();
+        //testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
 #endif
+    
+    // discrete dependence model
+    try
+    {
+        TestDiscreteDependenceModel testDdm = TestDiscreteDependenceModel(100);
+        testDdm.run();
+    }
+    catch (RbException &e)
+    {
+        std::cout << e.getMessage() << std::endl;
+    }
     
     /* The whole RevLanguage test suite */
     try {

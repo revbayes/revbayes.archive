@@ -28,6 +28,8 @@ namespace RevBayesCore {
         StandardState(void);                                                                //!< Default constructor
         StandardState(const StandardState& s);                                              //!< Copy constructor
         StandardState(const std::string &s);                                                //!< Constructor with nucleotide observation
+        StandardState(const char& s, const std::string& l);
+        StandardState(const std::string& s, const std::string& l);
     
         bool                            operator==(const CharacterState& x) const;          //!< Equality
         bool                            operator!=(const CharacterState& x) const;          //!< Inequality
@@ -51,6 +53,7 @@ namespace RevBayesCore {
         bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
         void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
         void                            setState(char s);                                   //!< Set the discrete observation
+        void                            setState(std::string s);                                   //!< Set the discrete observation
         void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
     

@@ -15,6 +15,7 @@
 
 #include "StandardState.h"
 #include <sstream>
+#include <cstdlib>
 
 using namespace RevBayesCore;
 
@@ -29,6 +30,13 @@ StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), s
     
 }
 
+StandardState::StandardState(const char& s, const std::string &l) : DiscreteCharacterState(), state(), labels( l ) {
+    setState(s);
+}
+
+StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), state(), labels( l ) {
+    setState(s);
+}
 
 /** Copy constructor */
 StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), state( s.state ), labels( s.labels ) {
@@ -193,6 +201,16 @@ void StandardState::setState(char s) {
     state = 1 << pos;
 }
 
+void StandardState::setState(std::string s) {
+    
+    const char* tmp = s.c_str();
+    
+    for (size_t i = 0; i < s.size(); i++)
+    {
+        size_t pos = labels.find(tmp[i]);
+        state = 1 << pos;
+    }
+}
 
 void StandardState::setToFirstState( void ) {
     state = 0x1;
