@@ -22,7 +22,7 @@
 #include "TestCoala.h"
 #include "TestConstantPopCoalescent.h"
 #include "TestDistributions.h"
-#include "TestDiscreteDependenceModel.h"
+#include "TestCharacterHistory.h"
 #include "TestDPPRelClock.h"
 #include "TestGtrGammaLikelihood.h"
 #include "TestGtrGammaModel.h"
@@ -440,7 +440,7 @@ bool Test::performTests(void) {
     // discrete dependence model
     try
     {
-        TestDiscreteDependenceModel testDdm = TestDiscreteDependenceModel(100);
+        TestCharacterHistory testDdm = TestCharacterHistory(100);
         testDdm.run();
     }
     catch (RbException &e)
