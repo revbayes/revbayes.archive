@@ -19,6 +19,7 @@ namespace RevBayesCore {
 
     public:
         
+        CharacterEvent(void);
         CharacterEvent(DiscreteCharacterState* s, size_t i, double t);
         CharacterEvent(const CharacterEvent& c);
         ~CharacterEvent(void);
@@ -26,6 +27,7 @@ namespace RevBayesCore {
         double getTime(void);
         size_t getIndex(void);
         DiscreteCharacterState* getState(void);
+        void setState(DiscreteCharacterState* s);
         void print(void);
         
         bool operator<(const CharacterEvent& lhs) const;

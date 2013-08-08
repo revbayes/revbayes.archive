@@ -12,6 +12,12 @@
 
 using namespace RevBayesCore;
 
+
+CharacterEvent::CharacterEvent(void)
+{
+    
+}
+
 CharacterEvent::CharacterEvent(DiscreteCharacterState* s, size_t i, double t) : time(t), state(s), index(i)
 {
     
@@ -45,6 +51,11 @@ size_t CharacterEvent::getIndex(void)
 DiscreteCharacterState* CharacterEvent::getState(void)
 {
     return state;
+}
+
+void CharacterEvent::setState(DiscreteCharacterState* s)
+{
+    state = s;
 }
 
 void CharacterEvent::print(void)

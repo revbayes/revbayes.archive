@@ -10,6 +10,7 @@
 #define __rb_mlandis__AreaHistoryCtmc__
 
 #include "AbstractCharacterHistoryCtmc.h"
+#include "AbstractCharacterHistoryRateModifier.h"
 
 namespace RevBayesCore
 {
@@ -17,10 +18,13 @@ namespace RevBayesCore
     {
     
     public:
-        AreaHistoryCtmc();
+        AreaHistoryCtmc(BranchHistory* bh, const TypedDagNode<RateMatrix> *rateMtx, size_t nc, std::string lbls, std::vector<AbstractCharacterHistoryRateModifier*> rateMods);
+        //AreaHistoryCtmc(BranchHistory* bh);
+        AreaHistoryCtmc*        clone(void) const;
         double                  sumOfRates(std::vector<CharacterEvent*> s);
         double                  transitionRate(std::vector<CharacterEvent*> s, CharacterEvent* evt);
-        
+        void                    swapParameter(const DagNode *oldP, const DagNode *newP);
+        double                  computeLnProbability(void);
     protected:
 
     private:

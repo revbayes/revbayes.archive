@@ -15,9 +15,16 @@
 #include "StochasticNode.h"
 #include "TestCharacterHistory.h"
 
+#include "AreaHistoryCtmc.h"
+#include "GeographicDistanceRateModifier.h"
 #include "BranchHistory.h"
 #include "CharacterEvent.h"
 #include "StandardState.h"
+#include "RateMatrix_GTR.h"
+#include "DirichletDistribution.h"
+#include "BetaDistribution.h"
+#include "GtrRateMatrixFunction.h"
+#include "DeterministicNode.h"
 
 using namespace RevBayesCore;
 
@@ -79,6 +86,33 @@ bool TestCharacterHistory::run( void ) {
     
     bh->updateHistory(updateSet, parentSet, childSet, indexSet);
     bh->print();
+  
+    // GTR
+    // gtr model priors
+    ConstantNode<std::vector<double> > *bf = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(2,1.0) );
+    ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(2,1.0) );
+ 
+    
+    
+  //  std::cout << "bf:\t" << bf->getValue() << std::endl;
+//    std::cout << "e:\t" << e->getValue() << std::endl;
+    
+    // then the parameters
+    StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
+    StochasticNode<std::vector<double> > *er = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
+    
+    
+    //    pi->setValue( new std::vector<double>(4,1.0/4.0) );
+    //    er->setValue( new std::vector<double>(6,1.0/6.0) );
+    
+    std::cout << "pi:\t" << pi->getValue() << std::endl;
+    std::cout << "er:\t" << er->getValue() << std::endl;
+    
+    const DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
+
+    std::vector<AbstractCharacterHistoryRateModifier*> rateMods;
+    
+    AreaHistoryCtmc* ahc = new AreaHistoryCtmc(bh, q, numChars, labels, rateMods);
     
     return true;
 }
