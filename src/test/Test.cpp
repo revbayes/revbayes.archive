@@ -428,10 +428,10 @@ bool Test::performTests(void) {
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.saqqaq.130723.txt", 10000);
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.malta.130723.txt", 10000);
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.939.130723.txt", 10000);
-        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/admixsim.data.txt", 10000);
+        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/egret_np15_nc10_ns100000_na2_aw0.2_aa0.05_sim2.data.txt", 10000);
         
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/np8_nc32_ns1000_na3_wt0.0_aa0.05_sim0.data.txt", 10000);
-        //testAG.run();
+        testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -441,7 +441,7 @@ bool Test::performTests(void) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory(100);
-        testDdm.run();
+        //testDdm.run();
     }
     catch (RbException &e)
     {

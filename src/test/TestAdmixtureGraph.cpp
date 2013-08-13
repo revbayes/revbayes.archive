@@ -117,7 +117,7 @@ bool TestAdmixtureGraph::run(void) {
     bool updateTree = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 24;
+    int numChains = 8;
     int numProcesses = numChains;
     if (numChains >= 24) numProcesses /= 2;
     if (numChains == 1) numProcesses = 1;
@@ -142,7 +142,7 @@ bool TestAdmixtureGraph::run(void) {
     //double cpp_data_prior =(double)(numSites * branchPairs) / cpp_data_prior_scaler;
     
     // This prior requires admixture events to improve lnL by N units
-    double adm_th_lnL = 50;
+    double adm_th_lnL = 20;
     double rate_cpp_prior = exp(adm_th_lnL);
     
     // MJL 071713:  Flat Poisson prior cannot overpower model overfitting when lnL is large.

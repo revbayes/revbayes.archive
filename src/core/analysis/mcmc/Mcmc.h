@@ -43,7 +43,7 @@ namespace RevBayesCore {
         void                                                burnin(int g, int ti);
         Mcmc*                                               clone(void) const;
         void                                                printOperatorSummary(void) const;
-        void                                                run(int g);
+        virtual void                                        run(int g);
 
         // MJL: added for p(MC)^3
         int                                                 nextCycle(bool advanceCycle);
