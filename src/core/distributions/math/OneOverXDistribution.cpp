@@ -1,6 +1,7 @@
 #include "OneOverXDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 
 #include <cmath>
 
@@ -37,39 +38,66 @@ OneOverXDistribution* OneOverXDistribution::clone( void ) const {
 }
 
 
-double OneOverXDistribution::computeLnProbability( void ) {
+double OneOverXDistribution::computeLnProbability( void ) 
+{
     
-    return 1.0 / ( (log(max->getValue()) - log( min->getValue() )) * (*value) );
+    double v = *value; 
+    double mi = min->getValue();
+    double ma = max->getValue();
+    if ( v >= mi && v <= ma ) 
+    {
+       return 1.0 / ( (log(max->getValue()) - log( min->getValue() )) * (*value) ); 
+    } 
+    else 
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    
 }
 
 
-double OneOverXDistribution::getMax( void ) const {
+double OneOverXDistribution::getMax( void ) const 
+{
+
     return max->getValue();
 }
 
 
-double OneOverXDistribution::getMin( void ) const {
+double OneOverXDistribution::getMin( void ) const 
+{
+
     return min->getValue();
 }
 
 
-double OneOverXDistribution::quantile(double p) const {
+double OneOverXDistribution::quantile(double p) const 
+{
+
     return 0.0;
 }
 
 
-void OneOverXDistribution::redrawValue( void ) {
+void OneOverXDistribution::redrawValue( void ) 
+{
+
     double u = GLOBAL_RNG->uniform01();
     double ln_a = log( min->getValue() );
     *value = exp( u*(log( max->getValue() ) - ln_a) + ln_a);
+
 }
 
 
-void OneOverXDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == min) {
+void OneOverXDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
+
+    if (oldP == min) 
+    {
         min = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == max) {
+    else if (oldP == max) 
+    {
         max = static_cast<const TypedDagNode<double>* >( newP );
     }
+    
 }

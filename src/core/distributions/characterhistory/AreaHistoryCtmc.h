@@ -30,6 +30,6 @@ namespace RevBayesCore
     private:
         
     };
-};
+}
 
 #endif /* defined(__rb_mlandis__AreaHistoryCtmc__) */

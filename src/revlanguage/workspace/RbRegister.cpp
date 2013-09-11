@@ -90,6 +90,7 @@
 #include "RlMonitor.h"
 #include "RlFileMonitor.h"
 #include "RlExtendedNewickFileMonitor.h"
+#include "RlModelMonitor.h"
 #include "RlScreenMonitor.h"
 
 /// Parser functions ///
@@ -234,6 +235,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* File monitor */
         addTypeWithConstructor("filemonitor",    new FileMonitor());
+        
+        /* File monitor */
+        addTypeWithConstructor("modelmonitor",    new ModelMonitor());
         
         /* Screen monitor */
         addTypeWithConstructor("screenmonitor",    new ScreenMonitor());

@@ -56,6 +56,6 @@ namespace RevBayesCore {
         std::vector<CharacterEvent*> childCharacters;
        
     };
-};
+}
 
 #endif /* defined(__rb_mlandis__BranchHistory__) */

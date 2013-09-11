@@ -48,6 +48,6 @@ namespace RevBayesCore
 
         
     };
-};
+}
 
 #endif /* defined(__rb_mlandis__AbstractCharacterHistoryCtmc__) */

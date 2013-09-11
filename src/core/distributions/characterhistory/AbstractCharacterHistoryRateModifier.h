@@ -29,6 +29,6 @@ namespace RevBayesCore
         
     };
     
-};
+}
 
 #endif /* defined(__rb_mlandis__AbstractCharacterHistoryRateModifier__) */
