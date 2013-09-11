@@ -55,6 +55,7 @@ namespace RevBayesCore {
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
         virtual void                                        setValue(const valueType &val, bool touch=true);                                  //!< Set the value of this node
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
+        void                                                setIgnoreRedraw(bool tf=true);
 
     protected:    
         
@@ -66,6 +67,7 @@ namespace RevBayesCore {
     
         // protected members
         bool                                                clamped;
+        bool                                                ignoreRedraw;
         double                                              lnProb;                                                                     //!< Current log probability
         bool                                                needsProbabilityRecalculation;                                              //!< Do we need recalculation of the ln prob?
         double                                              storedLnProb;
@@ -81,7 +83,7 @@ namespace RevBayesCore {
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) : DynamicNode<valueType>( n ), clamped( false ), lnProb( RbConstants::Double::neginf ), needsProbabilityRecalculation( true ), distribution( d ) {
+RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) : DynamicNode<valueType>( n ), clamped( false ), ignoreRedraw(false), lnProb( RbConstants::Double::neginf ), needsProbabilityRecalculation( true ), distribution( d ) {
     
     // set myself as the DAG node of the distribution
     distribution->setStochasticNode( this );
@@ -98,7 +100,7 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ), clamped( n.clamped ), needsProbabilityRecalculation( true ), distribution( n.distribution->clone() ) {
+RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ), clamped( n.clamped ), ignoreRedraw(n.ignoreRedraw), needsProbabilityRecalculation( true ), distribution( n.distribution->clone() ) {
     
     // set myself as the DAG node of the distribution
     distribution->setStochasticNode( this );
@@ -248,8 +250,10 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
 
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::redraw( void ) {
+
     // draw the value
-    distribution->redrawValue();
+    if (!ignoreRedraw)
+        distribution->redrawValue();
     
     // touch this node for probability recalculation
     this->touch();
@@ -312,7 +316,11 @@ void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, boo
     
 }
 
-
+template <class valueType>
+void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw(bool tf)
+{
+    ignoreRedraw = tf;
+}
 
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::swapParameter(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP) {

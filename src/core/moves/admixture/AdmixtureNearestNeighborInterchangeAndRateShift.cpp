@@ -23,6 +23,10 @@ AdmixtureNearestNeighborInterchangeAndRateShift::AdmixtureNearestNeighborInterch
         nodes.insert(branchRates[i]);
 }
 
+AdmixtureNearestNeighborInterchangeAndRateShift::~AdmixtureNearestNeighborInterchangeAndRateShift(void)
+{
+    
+}
 
 
 /* Clone object */
@@ -34,7 +38,7 @@ AdmixtureNearestNeighborInterchangeAndRateShift* AdmixtureNearestNeighborInterch
 
 
 const std::string& AdmixtureNearestNeighborInterchangeAndRateShift::getMoveName( void ) const {
-    static std::string name = "AdmixtureNearestNeighborInterchangeAndRateShift";
+    static std::string name = "AdmixtureNNIAndRateShift";
     
     return name;
 }

@@ -13,50 +13,62 @@
 using namespace RevBayesCore;
 
 
-AreaHistoryCtmc::AreaHistoryCtmc(BranchHistory* bh, const TypedDagNode<RateMatrix> *rateMtx, size_t nc, std::string lbls, std::vector<AbstractCharacterHistoryRateModifier*> rateMods) : AbstractCharacterHistoryCtmc(bh,rateMtx,nc,lbls,rateMods) {}
+AreaHistoryCtmc::AreaHistoryCtmc(BranchHistory* bh, TypedDagNode<RateMatrix> *rm, size_t nc, std::string lbls, std::vector<AbstractCharacterHistoryRateModifier*> rateMods) : AbstractCharacterHistoryCtmc(bh,rm,nc,lbls,rateMods) {}
 
 
 //AreaHistoryCtmc::AreaHistoryCtmc(BranchHistory* bh) : AbstractCharacterHistoryCtmc(bh) {}
 
 
-double AreaHistoryCtmc::transitionRate(std::vector<CharacterEvent *> s, CharacterEvent *evt)
+double AreaHistoryCtmc::transitionRate(std::vector<CharacterEvent *> curState, CharacterEvent *evt)
 {
     double rate = 0.0;
+    size_t numStates = curState[0]->getState()->getNumberOfStates();
     
     // get base rate of Q_i,j
+    std::vector<CharacterEvent*> newState = curState;
+    newState[ evt->getIndex() ] = evt;
     
-    // for each RateModifier*, multiply
+    // rate according to rate matrix
+    const size_t srcIdx = curState[evt->getIndex()]->getState()->getState();
+    const size_t dstIdx = evt->getState()->getState();
+    rate = rateMatrix->getValue()[ srcIdx ][ dstIdx ];
+
+    // apply all rateModifiers
+    std::vector<AbstractCharacterHistoryRateModifier*>::iterator it;
+    for ( it = rateModifiers.begin(); it != rateModifiers.end(); it++)
+        rate *= (*it)->computeRateModifier(curState,newState);
     
     return rate;
 }
 
-double AreaHistoryCtmc::sumOfRates(std::vector<CharacterEvent *> s)
+double AreaHistoryCtmc::sumOfRates(std::vector<CharacterEvent *> curState)
 {
     double sum = 0.0;
     
-    size_t numStates = s[0]->getState()->getNumberOfStates();
+    size_t numStates = curState[0]->getState()->getNumberOfStates();
     std::string labels = "01";
     CharacterEvent eventChange;
     
-    for (size_t i = 0; i < s.size(); i++)
+    for (size_t i = 0; i < curState.size(); i++)
     {
     
         for (size_t j = 0; j < numStates; j++)
         {
             // do not gather rate if no state change occurs
-            if (j == s[i]->getState()->getState())
+            if (j == curState[i]->getState()->getState())
                 continue;
             
-            // update site i to state j
+            // update site i to state j -- potentially slow, impl alt std_state class
             std::stringstream ss;
             ss << (int)j;
             StandardState stateChange(ss.str(),labels);
             eventChange = CharacterEvent(&stateChange, i, 0.0);
           
             // sum rates for all state changes
-            sum += transitionRate(s, &eventChange);
+            sum += transitionRate(curState, &eventChange);
         }
     }
+    
     return sum;
 }
 

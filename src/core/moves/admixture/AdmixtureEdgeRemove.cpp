@@ -58,6 +58,7 @@ double AdmixtureEdgeRemove::performSimpleMove( void ) {
     // if no admixtureParent exists, the proposal fails
     if (admixtureParents.size() == 0)
     {
+        std::cout << "AER nothing to remove\n";
         failed = true;
         return RbConstants::Double::neginf;
     }

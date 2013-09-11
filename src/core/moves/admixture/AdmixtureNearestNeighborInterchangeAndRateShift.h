@@ -25,6 +25,7 @@ namespace RevBayesCore {
         
     public:
         AdmixtureNearestNeighborInterchangeAndRateShift( StochasticNode<AdmixtureTree> *n, std::vector<ContinuousStochasticNode*> br, double d, bool tuning, double weight);                                                         //!<  constructor
+        virtual ~AdmixtureNearestNeighborInterchangeAndRateShift(void);
         
         // Basic utility functions
         AdmixtureNearestNeighborInterchangeAndRateShift*  clone(void) const;                                                                  //!< Clone object

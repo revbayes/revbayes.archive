@@ -12,7 +12,7 @@
 
 using namespace RevBayesCore;
 
-AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh, const TypedDagNode<RateMatrix> *rateMtx, size_t nc, std::string lbls, std::vector<AbstractCharacterHistoryRateModifier*> rateMods) : TypedDistribution<BranchHistory>(bh), rateMatrix(rateMtx), rateModifiers(rateMods) {}
+AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh, TypedDagNode<RateMatrix> *rateMtx, size_t nc, std::string lbls, std::vector<AbstractCharacterHistoryRateModifier*> rateMods) : TypedDistribution<BranchHistory>(bh), rateMatrix(rateMtx), rateModifiers(rateMods) {}
 
 // AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh) : TypedDistribution<BranchHistory>(bh) {}
 
@@ -49,11 +49,3 @@ void AbstractCharacterHistoryCtmc::setRateModifiers(const std::vector<void (*)()
 }
 */
 
-double AbstractCharacterHistoryCtmc::transitionRate(std::vector<CharacterEvent*> oldState, std::multiset<CharacterEvent*> changeState)
-{
-    double rate = 0.0;
-    
-    std::vector<CharacterEvent*> newState = oldState;
-    
-    return rate;
-}

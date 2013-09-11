@@ -15,13 +15,13 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, bool sm, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), showMetadata(sm) {
+ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, bool sm, bool sr, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), showMetadata(sm), showRates(sr) {
     
     nodes.push_back(branchRates);
     
 }
 
-ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(const ExtendedNewickAdmixtureTreeMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchRates( m.branchRates), nodeVariables( m.nodeVariables ), showMetadata(m.showMetadata) {
+ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(const ExtendedNewickAdmixtureTreeMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchRates( m.branchRates), nodeVariables( m.nodeVariables ), showMetadata(m.showMetadata), showRates(m.showRates) {
     
     filename    = m.filename;
     separator   = m.separator;
@@ -45,6 +45,7 @@ void ExtendedNewickAdmixtureTreeMonitor::closeStream() {
 
 
 std::string ExtendedNewickAdmixtureTreeMonitor::buildExtendedNewick( void ) {
+    tree->getValue().getRoot().setNewickNeedsRefreshing(true);
     std::string newick = buildExtendedNewick( &tree->getValue().getRoot() );
     return newick;
 }
@@ -66,8 +67,8 @@ std::string ExtendedNewickAdmixtureTreeMonitor::buildExtendedNewick( AdmixtureNo
     double br = 1.0;
     if (!n->isRoot())
     {
-        
-        br = branchRates->getValue()[n->getIndex()];
+        if (showRates)
+            br = branchRates->getValue()[n->getIndex()];
         //std::cout << "hmm\n";
         // [{s=&srcPtr,d=&dstPtr,t=double,w=double},{...},...,{...}]
         

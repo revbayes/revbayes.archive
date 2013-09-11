@@ -15,10 +15,13 @@
 #ifndef TreeUtilities_H
 #define TreeUtilities_H
 
+#include "AdmixtureTree.h"
 #include "BranchLengthTree.h"
 #include "TimeTree.h"
 #include "Tree.h"
 #include "TopologyNode.h"
+#include <string>
+#include <vector>
 
 namespace RevBayesCore {
 
@@ -26,12 +29,14 @@ namespace RevBayesCore {
     
         // these function are for public use
         TimeTree*       convertTree(const Tree &t);
+        AdmixtureTree*  convertToAdmixtureTree(const Tree &t, std::vector<std::string> names); // , const std::vector<std::string> names);
         void            rescaleSubtree(TimeTree *t, TopologyNode *n, double factor);
         void            rescaleTree(TimeTree *t, TopologyNode *n, double factor);
         std::string     uniqueNewickTopology(const Tree &t);
     
         // internal helper functions
         void            constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages);
+        void            constructAdmixtureTreeRecursively(AdmixtureNode *tn, const TopologyNode &n, std::vector<AdmixtureNode*> &nodes, std::vector<double> &ages);
         std::string     uniqueNewickTopologyRecursive(const TopologyNode &n);
 
     }

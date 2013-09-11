@@ -46,7 +46,7 @@ namespace RevBayesCore {
         virtual void                                        run(int g);
 
         // MJL: added for p(MC)^3
-        int                                                 nextCycle(bool advanceCycle);
+        virtual int                                         nextCycle(bool advanceCycle);
         //double                                              getLnLikelihood(void);
         double                                              getLnPosterior(void);
         double                                              getModelLnProbability(void);
@@ -60,9 +60,8 @@ namespace RevBayesCore {
         std::vector<Monitor*>&                              getMonitors(void);
         void                                                redrawChainState(void);
         
-        
+    protected:
 
-    private:
         void                                                getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNode*>& orderedStochasticNodes, std::set<const DagNode*>& visitedNodes);
         void                                                initialize(void);
         void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);

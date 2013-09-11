@@ -18,14 +18,17 @@
 #ifndef Test_H
 #define Test_H
 
-
 class Test {
     
 public:
-    Test();
+    Test(void);
+    Test(int c, const char * v[]);
     virtual                    ~Test(void);                                                          //!< Virtual destructor
-    
     bool                        performTests();
+    
+private:
+    int argc;
+    const char** argv;
     
 };
 

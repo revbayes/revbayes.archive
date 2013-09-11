@@ -60,6 +60,7 @@ namespace RevBayesCore {
         void                                setParent(TopologyNode* p, bool enforceNewickRecomp = true);                                                 //!< Sets the node's parent
         void                                setParent(AdmixtureNode* p, bool enforceNewickRecomp = true);                                                //!< Sets the node's parent
         void                                setTopology(AdmixtureTree *t);
+        void                                setNewickNeedsRefreshing(bool tf);
         
         AdmixtureNode&                      getAdmixtureParent(void);
         const AdmixtureNode&                getAdmixtureParent(void) const;
@@ -90,10 +91,10 @@ namespace RevBayesCore {
         bool                                isInteriorNode(void);
         bool                                operator<( const AdmixtureNode*& other) const;
         
-        const std::string&                  computeNewick(void);                                                        //!< Compute the newick RlString for this clade
+        virtual const std::string&          computeNewick(void);                                                        //!< Compute the newick RlString for this clade
 
     protected:
-        std::string                         buildNewickString(void);                                                    //!< compute the newick RlString for a tree rooting at this node
+        virtual std::string                         buildNewickString(void);
 
     private:
         std::vector<AdmixtureNode*>         children;                                                                   //!< Vector holding the node's children.

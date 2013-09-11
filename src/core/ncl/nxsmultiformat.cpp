@@ -1465,12 +1465,18 @@ void MultiFormatReader::readPhylipTreeFile(std::istream & inf, bool relaxedNames
 		clone template (gulp)
 	*/
 	NxsTreesBlock * treesB = static_cast<NxsTreesBlock *>(nb);
+        
+        
+        
 	NxsString err;
 	try {
 		treesB->Reset();
 		NxsToken inTokens(inf);
 		treesB->ReadPhylipTreeFile(inTokens);
-		if (!relaxedNames)
+	
+        
+        
+        if (!relaxedNames)
 			{
 			const NxsTaxaBlockAPI * taxa = treesB->GetTaxaBlockPtr(0L);
 			if (!taxa)

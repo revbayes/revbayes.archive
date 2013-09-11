@@ -157,10 +157,10 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     }
     // sort the vector of times in ascending order
     std::sort(times.begin(), times.end());
-    std::cout << "tau times    ";
-    for (size_t i = 0; i < times.size(); i++)
-        std::cout << times[i] << "\t";
-    std::cout << "\n";
+    
+    //std::cout << "tau times    ";
+    //for (size_t i = 0; i < times.size(); i++) std::cout << times[i] << "\t";
+    //std::cout << "\n";
     
     // present time
     double T = value->getTipNode(0).getTime();
@@ -180,22 +180,13 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     
     
     for (int i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
-        //std::cout << times[i] << "  " << i << "  " << lnProbTimes << "  " << diversification->getValue() << "\t" << turnover->getValue() << "\t" << T << "\t" << p1(times[i],T) << "\n";
+
         if ( lnProbTimes == RbConstants::Double::nan || lnProbTimes == RbConstants::Double::inf || lnProbTimes == RbConstants::Double::neginf) {
             return RbConstants::Double::nan;
         }
         lnProbTimes += log(diversification->getValue() + turnover->getValue()) + p1(times[i],T);
     }
 
-    if (!true)
-    {
-        // inverse gamma on final speciation event, mean/median ~= .1 unit tree remaining
-        double alpha = 10;
-        double beta = 0.05;
-        std::cout << "t  " << T-times[numTaxa-2] << "  " << alpha << "  " << beta << "  " << RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]) << "\n";
-        lnProbTimes += RbStatistics::InverseGamma::lnPdf(alpha,beta,T-times[numTaxa-2]);
-    }
-    
     return lnProbTimes; // + logTreeTopologyProb;
     
 }
@@ -421,21 +412,14 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     // sort tau.nodes by index...
     // std::sort(nodes.begin(), nodes.end(),
     
+    tau.setNames(taxonNames);
+    tau.updateTipOrderByNames(taxonNames);
+//    for (size_t i = 0; i < taxonNames.size(); i++) std::cout << "ACBDP " << taxonNames[i] << " " << tau.getNode(i).getName() << "\n";
+    
     // finally store the new value
     *value = tau;
-
-    /*
-    value->checkAllEdgesRecursively(&value->getRoot());
-    AdmixtureNode* r = &value->getRoot();
-    std::cout << "r" << " " << r << " " << r->getIndex() << " " << r->getAge() << "\n";
-    for (size_t i = 0; i < r->getNumberOfChildren(); i++)
-    {
-        AdmixtureNode* c = &r->getChild(i);
-        std::cout << "c" << " " << c << " " << c->getIndex() << " " << c->getAge() << "\n";
-    }
-    std::cout << tau.getNewickRepresentation() << "\n";
-     */
     
+    ;
 }
 
 

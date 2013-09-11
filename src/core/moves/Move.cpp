@@ -133,7 +133,7 @@ void Move::printSummary( std::ostream &o ) const {
    
     // print the DagNode name
     const std::string &dn_name = (*nodes.begin())->getName();
-    spaces = 20 - dn_name.length();
+    spaces = 10 - dn_name.length();
     o << dn_name;
     for (size_t i = 0; i < spaces; ++i) {
         o << " ";
@@ -168,6 +168,7 @@ void Move::printSummary( std::ostream &o ) const {
     
     // print the acceptance ratio
     double ratio = numAccepted / (double)numTried;
+    if (numTried == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i) {

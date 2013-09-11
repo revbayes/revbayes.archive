@@ -25,17 +25,17 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-FileMonitor::FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci) {
+FileMonitor::FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci), chainHeat(ch) {
     
 }
 
 
 /* Constructor */
-FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci) {
+FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci), chainHeat(ch) {
     
 }
 
-FileMonitor::FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci) {
+FileMonitor::FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci), chainHeat(ch) {
     
 }
 
@@ -49,6 +49,7 @@ FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ), outStream() {
     likelihood  = f.likelihood;
     append      = f.append;
     chainIdx    = f.chainIdx;
+    chainHeat   = f.chainHeat;
 }
 
 
@@ -121,6 +122,12 @@ void FileMonitor::monitor(long gen) {
             
         }
         
+        if (chainHeat)
+        {
+            outStream << separator;
+            outStream << mcmc->getChainHeat();
+        }
+        
         for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
             // add a separator before every new element
             outStream << separator;
@@ -175,6 +182,12 @@ void FileMonitor::printHeader() {
     if ( chainIdx ) {
         outStream << separator;
         outStream << "ChainIndex";
+    }
+    
+    if (chainHeat)
+    {
+        outStream << separator;
+        outStream << "ChainHeat";
     }
     
     for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {

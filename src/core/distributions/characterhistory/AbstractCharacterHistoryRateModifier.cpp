@@ -7,3 +7,10 @@
 //
 
 #include "AbstractCharacterHistoryRateModifier.h"
+
+using namespace RevBayesCore;
+
+AbstractCharacterHistoryRateModifier::AbstractCharacterHistoryRateModifier(void)
+{
+    ;
+}

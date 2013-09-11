@@ -19,15 +19,14 @@
 
 using namespace RevBayesCore;
 
-ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt) : delta(dt), numChains(nc), numProcesses(np), swapInterval(si), gen(0)
+ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt, double sh) : delta(dt), numChains(nc), numProcesses(np), swapInterval(si), gen(0), startingHeat(sh)
 {
     activeIndex = 0;
     
     for (int i = 0; i < numChains; i++)
     {
         // get chain heat
-        double b = computeBeta(delta,i);
-        //std::cout << i << ": " << b << " ";
+        double b = computeBeta(delta,i) * startingHeat;
         
         // create chains
         bool a = (i == 0 ? true : false);
@@ -59,8 +58,11 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
     
     for (int i = 0; i < numChains; i++)
     {
+        
+        std::cout << i << ": " << chains[i]->getChainHeat() << " ";
         std::cout << chains[i]->getLnPosterior() << "\n";
     }
+    
 }
 
 ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m)
@@ -136,11 +138,12 @@ void ParallelMcmcmc::run(int generations)
                     chains[chainIdx]->nextCycle(true);
 
                     // monitor chain activeIndex only
-                    if (chainIdx == activeIndex)
+                    //if (chainIdx == activeIndex)
+                    if (chains[chainIdx]->isChainActive() )
                     {
                         std::cout << i + k << " only one\n";
                         //chains[activeIndex]->
-                        chains[activeIndex]->monitor(i+k);
+                        chains[chainIdx]->monitor(i+k);
                     }
                     std::cout << chainIdx << "    lnPosterior  " << chains[chainIdx]->getLnPosterior() << " chainHeat  " << chains[chainIdx]->getChainHeat() << "\n";
                     //chains[chainIdx]->monitor(i+k);

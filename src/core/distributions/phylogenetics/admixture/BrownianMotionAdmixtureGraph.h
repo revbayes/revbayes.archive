@@ -33,7 +33,7 @@ namespace RevBayesCore {
     class BrownianMotionAdmixtureGraph : public TypedDistribution<CharacterData<ContinuousCharacterState> > {
         
     public:
-        BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< std::vector< double > > *br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs);
+        BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< std::vector< double > > *br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs, double ls=1.0);
         BrownianMotionAdmixtureGraph(const BrownianMotionAdmixtureGraph &n);
         virtual                                     ~BrownianMotionAdmixtureGraph(void);
         
@@ -73,6 +73,7 @@ namespace RevBayesCore {
         void                                        initializeResiduals(void);
         void                                        initializeTipNodesByIndex(void);
         void                                        initializeRbCovarianceEigensystem(void);
+        void                                        initializeMissingDataCorrection(void);
         
         void                                        updateResiduals(void);                          // R, updates
         void                                        updateCovariance(void);                         // V, updates
@@ -115,7 +116,8 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >                               meanSampleCovarianceEstimator;// W^ (averaged)
         std::vector<std::vector<double> >                               compositeCovariance;          // Sigma
         std::vector<std::vector<double> >                               residuals;
-            
+        std::vector<std::vector<double> >                               missingDataCorrection;
+        
         // population graph
         std::map<AdmixtureNode*,std::set<std::list<AdmixtureNode*> > >  pathsToRoot;
         std::vector<AdmixtureNode*>                                     tipNodesByIndex;
@@ -147,6 +149,7 @@ namespace RevBayesCore {
         bool useBias;
         bool discardNonPosDefMtx;
         
+        double likelihoodScaler;            // default 1.0, flattens likelihood...
         double lnProbMvn;
         double lnZWishart;
         double lnDetX;

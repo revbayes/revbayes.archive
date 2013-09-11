@@ -8,6 +8,7 @@
 
 #include "AdmixtureBipartitionMonitor.h"
 #include "DagNode.h"
+#include "Mcmc.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "RbException.h"
@@ -18,7 +19,7 @@ using namespace RevBayesCore;
 /* Constructor */
 //AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0) {
 
-AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0) {
+AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0), chainIdx(ci), chainHeat(ch) {
     
     nodes.push_back(branchRates);
   //  nodes.insert(delayTimer);
@@ -34,6 +35,8 @@ AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(const AdmixtureBipartit
     posterior   = m.posterior;
     likelihood  = m.likelihood;
     append      = m.append;
+    chainIdx    = m.chainIdx;
+    chainHeat   = m.chainHeat;
 }
 
 
@@ -209,6 +212,18 @@ void AdmixtureBipartitionMonitor::monitor(long gen) {
             outStream << pp;
         }
         
+        if (chainIdx)
+        {
+            outStream << separator;
+            outStream << mcmc->getChainIdx();
+        }
+
+        if (chainHeat)
+        {
+            outStream << separator;
+            outStream << mcmc->getChainHeat();
+        }
+        
         // add a separator before the tree
         outStream << separator;
         
@@ -253,6 +268,18 @@ void AdmixtureBipartitionMonitor::printHeader() {
         // add a separator before every new element
         outStream << separator;
         outStream << "Prior";
+    }
+    
+    if (chainIdx)
+    {
+        outStream << separator;
+        outStream << "ChainIndex";
+    }
+    
+    if (chainHeat)
+    {
+        outStream << separator;
+        outStream << "ChainHeat";
     }
     
     // add a separator tree

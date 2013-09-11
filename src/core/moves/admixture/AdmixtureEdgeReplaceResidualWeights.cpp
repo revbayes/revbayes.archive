@@ -331,7 +331,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         
         
         double a = 1.0;
-        double b = 20.0;
+        double b = 1.5;
         double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
         admixtureWeight /= 2;
             
@@ -575,7 +575,6 @@ void AdmixtureEdgeReplaceResidualWeights::rejectSimpleMove( void ) {
             branchRates[it->first]->setValue(new double(it->second));
         }
 
-        
         std::cout << "replace reject\n";
     }
     

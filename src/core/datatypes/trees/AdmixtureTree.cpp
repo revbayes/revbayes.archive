@@ -31,12 +31,18 @@
 #include "RbOptions.h"
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 using namespace RevBayesCore;
 
 
 /* Default constructor */
 AdmixtureTree::AdmixtureTree(void) : Tree(), root( NULL ), numTips( 0 ), numNodes( 0 ) {
+    
+}
+
+
+AdmixtureTree::AdmixtureTree(const std::vector<std::string>& n) : Tree(), root( NULL ), numTips( 0 ), numNodes( 0 ), names(n) {
     
 }
 
@@ -49,24 +55,23 @@ AdmixtureTree::AdmixtureTree(const AdmixtureTree& t) : root( NULL ) {
     binary      = t.binary;
     numTips     = t.numTips;
     numNodes    = t.numNodes;
+    names = t.names;
     
     // need to perform a deep copy of the AdmixtureTree nodes
     if (t.root != NULL) {
         root = t.getRoot().clone();
         
-        // fill the nodes vector
-        //    fillNodesByPreorderTraversal(root);
-        //fillNodesByPhylogeneticTraversal(root);
         setRoot(root);
         
         // set this topology for the nodes
         root->setTopology( this );
         
         fillNodesByIndex();
+        
+        updateTipOrderByNames(names);
     }
     
 }
-
 
 /* Destructor */
 AdmixtureTree::~AdmixtureTree(void) {
@@ -80,9 +85,13 @@ AdmixtureTree::~AdmixtureTree(void) {
 
 AdmixtureTree& AdmixtureTree::operator=(const AdmixtureTree &t) {
     
+    
+    ;
+    
     if (this != &t) {
         //Tree::operator=(t);
-                
+        
+        
         nodes.clear();
         nodesByIndex.clear();
         
@@ -93,6 +102,7 @@ AdmixtureTree& AdmixtureTree::operator=(const AdmixtureTree &t) {
         numTips     = t.numTips;
         numNodes    = t.numNodes;
         nodesByIndex = t.nodesByIndex;
+        names = t.names;
         
         TopologyNode* newRoot = t.root->clone();
         
@@ -102,6 +112,8 @@ AdmixtureTree& AdmixtureTree::operator=(const AdmixtureTree &t) {
         // set this topology for the nodes
         root->setTopology( this );
         
+        updateTipOrderByNames(names);
+        
     }
     
     return *this;
@@ -110,7 +122,7 @@ AdmixtureTree& AdmixtureTree::operator=(const AdmixtureTree &t) {
 
 /* Clone function */
 AdmixtureTree* AdmixtureTree::clone(void) const {
-    
+    ;
     return new AdmixtureTree(*this);
 }
 
@@ -234,18 +246,6 @@ void AdmixtureTree::fillNodesByPhylogeneticTraversal(AdmixtureNode* node) {
         // this is phylogenetic ordering so the internal nodes come last
         nodes.push_back(node);
     }
-}
-
-
-
-std::vector<std::string> AdmixtureTree::getNames( void ) const {
-    std::vector<std::string> names;
-    for (size_t i = 0; i < getNumberOfTips(); ++i) {
-        const TopologyNode& n = getTipNode( i );
-        names.push_back( n.getName() );
-    }
-    
-    return names;
 }
 
 
@@ -482,6 +482,7 @@ void AdmixtureTree::pushAdmixtureNode(AdmixtureNode *p)
 }
 
 const std::string& AdmixtureTree::getNewickRepresentation( void ) const {
+    root->setNewickNeedsRefreshing(true);
     return root->computeNewick();
 }
 
@@ -585,7 +586,7 @@ void AdmixtureTree::setRooted(bool tf) {
 
 void AdmixtureTree::setRoot( TopologyNode* r) {
     
-    AdmixtureNode *tn = dynamic_cast<AdmixtureNode*>( r );
+    AdmixtureNode *tn = static_cast<AdmixtureNode*>( r );
     setRoot( tn );
     
 }
@@ -604,25 +605,88 @@ void AdmixtureTree::setRoot( AdmixtureNode* r) {
     fillNodesByPhylogeneticTraversal(r);
     
     size_t numTips = 0;
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        if (nodes[i]->isTip() == false)
-            nodes[i]->setIndex(i);
-        else
-            numTips++;
-    }
+    size_t tipIdx = 0;
+    size_t intIdx =0 ;
     
+    for (size_t i = 0; i < nodes.size(); i++)
+        nodes[i]->setIndex(i);
+    
+  //  for (size_t i = 0; i < nodes.size(); ++i) {
+  ///      if (nodes[i]->isTip() == false)
+//            nodes[i]->setIndex(i);
+  //      else
+  //          numTips++;
+        //std::cout << nodes[i]->getName() << " " << nodes[i]->getIndex() << " " << nodes[i]->getAge() << "\n";
+    //}
+    
+    
+    /*
     std::vector<AdmixtureNode*> n2(numTips);
     for (size_t i = 0; i < numTips; i++)
         n2[nodes[i]->getIndex()] = nodes[i];
+    
     for (size_t i = 0; i < numTips; i++)
         nodes[i] = n2[i];
+    */
     
     
-    if (nodesByIndex.size() == 0)
-        fillNodesByIndex();
+    //if (nodesByIndex.size() == 0)
+    //    fillNodesByIndex();
+}
+
+void AdmixtureTree::setAgesFromBrlens(const std::vector<double>& brlens)
+{
+    recurseSetAgeFromBrlen(root, brlens);
+}
+
+void AdmixtureTree::recurseSetAgeFromBrlen(AdmixtureNode* p, const std::vector<double>& brlens)
+{
+    for (size_t i = 0; i < p->getNumberOfChildren(); i++)
+        recurseSetAgeFromBrlen(&p->getChild(i), brlens);
+    p->getParent().setAge(brlens[p->getIndex()] - p->getAge());
+}
+
+void AdmixtureTree::updateTipOrderByNames(std::vector<std::string> n)
+{
+    //std::cout << "updateTipOrderByNames()  " << n.size() << "\n";
+    
+    std::vector<AdmixtureNode*> tmp_nodes = nodes;
+    
+    for (size_t i = 0; i < n.size(); i++)
+    {
+        for (size_t j = 0; j < n.size(); j++)
+        {
+            if (n[i] == nodes[j]->getName())
+            {
+                AdmixtureNode* p = nodes[i];
+                nodes[i] = nodes[j];
+                nodes[j] = p;
+                nodes[i]->setIndex(i);
+//                tmp_nodes[j] = nodes[i];
+  //              tmp_nodes[j]->setIndex(j);
+            }
+        }
+    }
+  
+//    for (size_t i = 0; i < n.size(); i++)
+//        std::cout << "UPDATE " << n[i] << " " << nodes[i]->getName() << "\n";
+//        std::cout << "UPDATE " << n[i] << " " << tmp_nodes[i]->getName() << "\n";
+    
+//    nodes = tmp_nodes;
+}
+
+const std::vector<std::string>& AdmixtureTree::getNames(void)
+{
+    return names;
+}
+
+void AdmixtureTree::setNames(const std::vector<std::string>& n)
+{
+    names = n;
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const AdmixtureTree& x) {
+    
     o << x.getNewickRepresentation();
     
     return o;

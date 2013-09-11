@@ -17,16 +17,22 @@ namespace RevBayesCore
     class GeographicDistanceRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographicDistanceRateModifier(void); // pass map
+        GeographicDistanceRateModifier(void); // pass and parse map
+        double computeRateModifier(std::vector<CharacterEvent*> curState, std::set<CharacterEvent*> newState);
         
     protected:
-        void computePairwiseDistances(void);
-        double computeDistanceModifier(std::vector<CharacterEvent*> startingState, std::set<CharacterEvent*> stateChange);
+        double computePairwiseDistances(int i, int j);
+        
         
     private:
         std::string distanceType;
         std::vector<std::vector<double> > geographicCoordinates;
         std::vector<std::vector<double> > geographicDistances;
+        
+        //
+        int numAreas;
+        
+        // set this up to have clean/dirty/etc ??
     };
 }
 

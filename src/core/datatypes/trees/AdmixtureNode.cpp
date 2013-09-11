@@ -865,7 +865,12 @@ std::string AdmixtureNode::buildNewickString(void)
             o << "]";
         }
     }
-    
+    std::cout << "TEST " << o.str() << "\n";
     return o.str();
+}
+
+void AdmixtureNode::setNewickNeedsRefreshing(bool tf)
+{
+    newickNeedsRefreshing = tf;
 }
 

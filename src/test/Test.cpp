@@ -57,10 +57,17 @@
 #endif
 
 #include <time.h>
+#include <vector>
 
 using namespace RevBayesCore;
 
-Test::Test() {
+Test::Test(void) {
+    
+}
+
+
+Test::Test(int c, const char* v[]) : argc(c), argv(v)
+{
     
 }
 
@@ -420,18 +427,18 @@ bool Test::performTests(void) {
 #ifdef USE_LIB_ARMADILLO
     // Admixture graph
     try {
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/canmap2_snps_removedMissingData.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/moo_snps.no_999111.removedMissingData.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/NativeAmericans_Saqqaq_Clovis.masked.genotypes.removedMayan.txt.oneAleut.TreeMixInput.removedAfricans.txt", 10);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/humans.071713.txt", 10000);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.clovis.130723.txt", 10000);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.saqqaq.130723.txt", 10000);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.malta.130723.txt", 10000);
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/modern.939.130723.txt", 10000);
-        TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/egret_np15_nc10_ns100000_na2_aw0.2_aa0.05_sim2.data.txt", 10000);
-        
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("/Users/mlandis/data/admix/input/np8_nc32_ns1000_na3_wt0.0_aa0.05_sim0.data.txt", 10000);
-        testAG.run();
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("canmap2_snps_removedMissingData.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("moo_snps.no_999111.removedMissingData.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("humans.071713.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("modern.clovis.130723.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("modern.saqqaq.130723.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("modern.malta.130723.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("modern.939.130723.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("Modern.samtools.TreeMixInput.txt", 10000,  "/Users/mlandis/data/admix/input/", "tree.txt");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("MIM.treemix.new.input.all.txt",10000 "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph("trek1.data.txt", 1000, "/Users/mlandis/data/admix/input/", "");
+        TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "simmy.data.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        //testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -441,7 +448,7 @@ bool Test::performTests(void) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory(100);
-        //testDdm.run();
+        testDdm.run();
     }
     catch (RbException &e)
     {

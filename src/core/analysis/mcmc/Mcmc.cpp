@@ -218,7 +218,7 @@ void Mcmc::initialize( void ) {
             
             double lnProb = node->getLnProbability();
             lnProbability += lnProb;
-            std::cout << node->getName() << " " << node->getLnProbability() << " " << ( node->isClamped() ? "*" : "_") << "\n";
+            //std::cout << node->getName() << " " << node->getLnProbability() << " " << ( node->isClamped() ? "*" : "_") << "\n";
             
         }
         

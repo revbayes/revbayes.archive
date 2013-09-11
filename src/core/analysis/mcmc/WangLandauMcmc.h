@@ -19,37 +19,37 @@ namespace RevBayesCore
     {
         
     public:
-        WangLandauMcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca=true, double ch=1.0, int ci=0, size_t ns=1e6, double sse=10e-5, double ssc=2.0, double ub=0.0, double lb=1000.0, size_t np=20);
+        WangLandauMcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca=true, double ch=1.0, int ci=0, size_t ns=1e6, double se=10e-5, double sc=0.25, double ub=0.0, double lb=1000.0, size_t np=20);
+        
+         virtual int                                nextCycle(bool advanceCycle);
         
     protected:
 
         
     private:
+        
         void initializeSteps(void);
         void initializePartitionLowerBound(void);
         void updateProportions(double x, int t);
         void resetProportions(void);
         void updateBias(void);
 
-        std::vector<double> bias;                // theta_t
-        std::vector<double> proportions;         // nu
-        std::vector<double> steps;           // gamma
-        std::vector<double> partitionLowerBound; // xi
+        std::vector<double> bias;                   // theta
+        std::vector<double> proportions;            // nu
+        std::vector<double> steps;                  // gamma
+        std::vector<double> partitionLowerBound;    // xi
         
+        double proportionConstant;
+
         size_t stepIndex;
         size_t numSteps;
         double stepEpsilon;
         double stepConstant;
-
-        double proportionConstant;
         
         size_t partitionIndex;
         size_t numPartitions;
         double upperBoundEnergy;
         double lowerBoundEnergy;
-        
-
-      
     };
 }
 

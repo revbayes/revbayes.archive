@@ -32,9 +32,9 @@ namespace RevBayesCore {
 
     public:
         // Constructors and Destructors
-        FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false);                                                                //!< Constructor with single DAG node
-        FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false);                                              //!< Constructor with set of DAG node
-        FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false);                                              //!< Constructor with vector of DAG node
+        FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                                                //!< Constructor with single DAG node
+        FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                              //!< Constructor with set of DAG node
+        FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                              //!< Constructor with vector of DAG node
         FileMonitor(const FileMonitor& f);
 
         // basic methods
@@ -59,6 +59,7 @@ namespace RevBayesCore {
         bool                                likelihood;
         bool                                append;
         bool                                chainIdx;
+        bool                                chainHeat;
     
     };
     

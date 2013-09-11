@@ -23,6 +23,7 @@ namespace RevBayesCore {
         
     public:
         AdmixtureTree(void);                                                                                                     //!< Default constructor
+        AdmixtureTree(const std::vector<std::string>& n);
         AdmixtureTree(const AdmixtureTree& t);                                                                                        //!< Copy constructor
         virtual                                    ~AdmixtureTree(void);                                                                                                        //!< Destructor
         
@@ -36,7 +37,6 @@ namespace RevBayesCore {
         void                                        fillNodeTimes(void);                                                    //!< Compute the branch length, age and time of each node.
         double                                      getAge(size_t idx) const;
         double                                      getBranchLength(size_t idx) const;
-        std::vector<std::string>                    getNames() const;
         AdmixtureNode&                              getNode(size_t idx);                                                    //!< Get the node at index
         const AdmixtureNode&                        getNode(size_t idx) const;                                              //!< Get the node at index
         std::vector<TopologyNode*>                  getNodes(void) const;                                                   //!< Get a pointer to the nodes in the AdmixtureTree
@@ -60,6 +60,9 @@ namespace RevBayesCore {
         void                                        setRooted(bool tf);                                                     //!< Set the rootedness of the AdmixtureTree
         void                                        setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the AdmixtureTree from it
         void                                        setRoot(AdmixtureNode* r);                                              //!< Set the root and bootstrap the AdmixtureTree from it
+        void                                        setAgesFromBrlens(const std::vector<double>& brlens);
+        void                                        setNames(const std::vector<std::string>& n);
+        const std::vector<std::string>&             getNames(void);
        
         size_t                                      getNumberOfAdmixtureParents(void) const;
         size_t                                      getNumberOfAdmixtureChildren(void) const;
@@ -72,11 +75,13 @@ namespace RevBayesCore {
         void                                        checkAllEdgesRecursively(AdmixtureNode* p) const;
         
         void                                        freeMemory(void);
+        void                                        updateTipOrderByNames(std::vector<std::string> names);
 
     protected:
         void                                        resizeElementVectors(size_t n);
         
     private:
+        void                                        recurseSetAgeFromBrlen(AdmixtureNode* p, const std::vector<double>& brlens);
         void                                        equalizeBranchLengths(AdmixtureNode &node);                                  //!< Equalizing branch lengths between subtrees so that no rounding errors happen
         void                                        fillNodeTimes(AdmixtureNode &node);                                          //!< Compute the branch length, age and time of each node.
         void                                        fillNodesByPreorderTraversal(AdmixtureNode* node);                           //!< fill the nodes vector by a preorder traversal recursively starting with this node.
@@ -98,6 +103,7 @@ namespace RevBayesCore {
         size_t                                      numNodes;
         std::vector<double>                         times;
         std::vector<double>                         ages;
+        std::vector<std::string>                    names;
 
     };
     

@@ -43,6 +43,18 @@ bool TestCharacterHistory::run( void ) {
     size_t numStates =10;
     
     
+    
+    size_t y = 0x1011;
+    std::cout << (int)y << "\n";
+    size_t x = 0x1000;
+    std::cout << (int)x << "\t" << pow(16,3) << "\n";
+    bool val = true;
+    int pos = 3;
+    std::cout << x << "\n";
+    x &= val << pos;
+    std::cout << x << "\n";
+
+    
     /////////////
     
     std::string labels = "0123456789";
@@ -50,7 +62,11 @@ bool TestCharacterHistory::run( void ) {
     for (size_t i = 0; i < numChars; i++)
         stateStr += "0";
     
-    StandardState egSs('a',"acgt");
+    StandardState egSs('g',"acgt");
+    std::cout << "egSs test\n";
+    //std::cout << egSs.getState() << "\n";
+    //std::cout << egSs.DiscreteCharacterState::getNumberOfStates() << "\n";
+    
     BranchHistory* bh = new BranchHistory(&egSs, numChars);
     
     std::multiset<CharacterEvent*,CharacterEventCompare> updateSet;
@@ -108,7 +124,7 @@ bool TestCharacterHistory::run( void ) {
     std::cout << "pi:\t" << pi->getValue() << std::endl;
     std::cout << "er:\t" << er->getValue() << std::endl;
     
-    const DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
+    DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
 
     std::vector<AbstractCharacterHistoryRateModifier*> rateMods;
     

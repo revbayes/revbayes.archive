@@ -19,9 +19,10 @@ namespace RevBayesCore
     {
     public:
         AbstractCharacterHistoryRateModifier(void);
+        virtual double computeRateModifier(std::vector<CharacterEvent*> curState, std::vector<CharacterEvent*> newState) = 0;
         
     protected:
-        virtual double computeDistanceModifier(std::vector<CharacterEvent*> startingState, std::set<CharacterEvent*> stateChange) = 0;
+        
         
     private:
         

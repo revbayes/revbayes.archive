@@ -8,6 +8,8 @@
 
 #include <cmath>
 #include "RbConstants.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 
 #include "WangLandauMcmc.h"
 
@@ -109,4 +111,94 @@ void WangLandauMcmc::updateBias(void)
         sum += bias[i];
     for (size_t i = 0; i < numPartitions; i++)
         bias[i] /= sum;
+}
+
+
+int WangLandauMcmc::nextCycle(bool advanceCycle) {
+    
+    size_t proposals = round( schedule.getNumberMovesPerIteration() );
+    for (size_t i=0; i<proposals; i++)
+    {
+        // Get the move
+        Move* theMove = schedule.nextMove( gen );
+        
+        if ( theMove->isGibbs() )
+        {
+            // do Gibbs proposal
+            theMove->performGibbs();
+            // theMove->accept(); // Not necessary, because Gibbs samplers are automatically accepted.
+        }
+        else
+        {
+            // do a Metropolois-Hastings proposal
+            
+            // Propose a new value
+            double lnProbabilityRatio;
+            double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
+            
+            // Calculate acceptance ratio
+            double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
+            
+            //std::cout << "\n**********\n";
+            //std::cout << theMove->getMoveName() << "\n";
+            //std::cout << lnHastingsRatio << "  " << lnProbabilityRatio << ";  " << lnProbability << " -> " << lnProbability + lnProbabilityRatio << "\n";
+            //std::cout << "pre-mcmc     " << lnProbability << "\n";
+            
+            if (lnR >= 0.0)
+            {
+                theMove->accept();
+                lnProbability += lnProbabilityRatio;
+                //  if (lnProbability > 0.0)
+                {
+                    
+                }
+            }
+            else if (lnR < -300.0)
+            {
+                theMove->reject();
+            }
+            else
+            {
+                double r = exp(lnR);
+                // Accept or reject the move
+                double u = GLOBAL_RNG->uniform01();
+                if (u < r)
+                {
+                    theMove->accept();
+                    lnProbability += lnProbabilityRatio;
+                }
+                else
+                {
+                    theMove->reject();
+                }
+            }
+            //std::cout << "post-mcmc    " << lnProbability << "\n";
+            //std::cout << "model        " << getModelLnProbability() << "\n";
+            //std::cout << "**********\n\n";
+        }
+        
+#ifdef DEBUG_MCMC
+        // Assert that the probability calculation shortcuts work
+        double curLnProb = 0.0;
+        std::vector<double> lnRatio;
+        for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
+        {
+            (*i)->touch();
+            double lnProb = (*i)->getLnProbability();
+            curLnProb += lnProb;
+        }
+        if (fabs(lnProbability - curLnProb) > 1E-8)
+            throw RbException("Error in ln probability calculation shortcuts");
+        else
+            lnProbability = curLnProb;              // otherwise rounding errors accumulate
+#endif
+    }
+    
+    
+    // advance gen cycle if needed (i.e. run()==true, burnin()==false)
+    if (advanceCycle)
+        gen++;
+    
+    // gen number used for p(MC)^3
+    return gen;
 }

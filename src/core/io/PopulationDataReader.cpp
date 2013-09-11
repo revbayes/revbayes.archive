@@ -12,6 +12,7 @@
 
 //@Michael: Needed to make Windows compiler happy.
 #include <stdlib.h>
+#include <iostream>
 
 using namespace RevBayesCore;
 
@@ -129,6 +130,9 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thi
         std::string field;
         std::stringstream ss(readLine);
         
+        //std::cout << lineNum << "\n";
+        //std::cout << readLine << "\n";
+        
         // read the line
         while (ss >> field)
         {
@@ -156,15 +160,26 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thi
 
                 // quick hack, should instead set missing data equal to sample mean in BMAG
                 // or... simply drop the col if any elt has a+b==0
+                
+                /*
                 if (a == 0 && b == 0)
                 {
                     a = 1;
                     b = 1;
                 }
+                */
                 
+                if (a+b == 0) { a=1;b=1; }
+                
+                //double sum = a + b;
                 if (a+b > numChromosomes[popIdx])
                     numChromosomes[popIdx] = a+b;
-                double f = (double)a / (double)(a+b);
+                //double f = 0.0;
+                //if (sum > 0)
+                double f = 0.0;
+                if (a + b > 0)
+                    f = double(a) / double(a + b);
+//                double f = (double)a / (double)(a+b);
                 
 
                 //std::cout << f << " = " << a << " / " << a + b << "\t" << idx << "\n";
@@ -181,6 +196,7 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thi
         if (firstLine)
         {
             numPopulations = (int)names.size();
+            //std::cout << "numPop " << numPopulations << "\n";
             numAlleles.resize(numPopulations);
             numSamples.resize(numPopulations);
             freqs.resize(numPopulations);
@@ -189,16 +205,19 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thi
         else if (lineNum % thinBy == 0)
         {
             // prepare for next iteration
+            
+            
             for (size_t i = 0; i < names.size(); i++)
             {
                 numAlleles[i].push_back(tmpNumAlleles[i]);
                 numSamples[i].push_back(tmpNumSamples[i]);
                 freqs[i].push_back(tmpFreqs[i]);
             }
-            numAlleles.push_back(tmpNumAlleles);
-            numSamples.push_back(tmpNumSamples);
-            freqs.push_back(tmpFreqs);
             
+            //numAlleles.push_back(tmpNumAlleles);
+            //numSamples.push_back(tmpNumSamples);
+            //freqs.push_back(tmpFreqs);
+                        
             tmpNumAlleles.clear();
             tmpNumSamples.clear();
             tmpFreqs.clear();
@@ -220,17 +239,6 @@ SnpData* PopulationDataReader::readSnpData2(const std::string& fileName, int thi
     sd->setSnpFrequencies(freqs);
     sd->setNumChromosomes(numChromosomes);
     sd->setOutgroup(outgroup);
-    
-    /*
-    for (size_t i = 0; i < numPopulations; i++)
-    {
-        std::cout << names[i] << "(" << numIndividuals[i] << ")\t";
-        for (size_t j = 0; j < numSnps; j++)
-        {
-            std::cout << numAlleles[i][j] << "," << numSamples[i][j] << "\t";
-        }
-        std::cout << "\n";
-    }*/
     
     return sd;
 }

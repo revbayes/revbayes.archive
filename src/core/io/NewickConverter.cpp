@@ -1,3 +1,4 @@
+#include "AdmixtureTree.h"
 #include "BranchLengthTree.h"
 #include "NewickConverter.h"
 #include "RbException.h"
@@ -43,6 +44,36 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     for (size_t i = 0; i < nodes.size(); ++i) {
         t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
     }
+    
+    // return the tree, the caller is responsible for destruction
+    return t;
+}
+
+
+AdmixtureTree* NewickConverter::getAdmixtureTreeFromNewick(std::string const &n) {
+    
+    // create and allocate the tree object
+    AdmixtureTree *t = new AdmixtureTree();
+    
+    std::vector<TopologyNode*> nodes;
+    std::vector<double> brlens;
+    
+    // construct the tree starting from the root
+    TopologyNode *root = createNode( n, nodes, brlens );
+    
+    // convert to AdmixtureNode*
+    std::vector<AdmixtureNode*> adm_nodes;
+    for (size_t i = 0; i < nodes.size(); i++)
+        adm_nodes.push_back(static_cast<AdmixtureNode*>(nodes[i]));
+    
+    // set up the tree
+    t->setRoot(adm_nodes[adm_nodes.size()-1]);
+    
+    // set the branch lengths
+    //for (size_t i = 0; i < nodes.size(); ++i) {
+    t->setAgesFromBrlens(brlens);
+        ;//t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
+   // }
     
     // return the tree, the caller is responsible for destruction
     return t;

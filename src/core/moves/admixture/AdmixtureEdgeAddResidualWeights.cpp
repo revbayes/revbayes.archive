@@ -244,7 +244,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     double admixtureAge = rng->uniform01() * (maxAge - minAge) + minAge;
     
     double a = 1.0;
-    double b = 20.0;
+    double b = 1.5;
     double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
     //admixtureWeight = 0.0;
 
@@ -485,7 +485,6 @@ double AdmixtureEdgeAddResidualWeights::performMove( double &probRatio ) {
     double hr = performSimpleMove();
     
     std::cout << "hr  " << hr << "\n";
-    std::cout << "ok\n";
     if ( hr != hr || hr == RbConstants::Double::inf ) {
         ;
         return RbConstants::Double::neginf;
