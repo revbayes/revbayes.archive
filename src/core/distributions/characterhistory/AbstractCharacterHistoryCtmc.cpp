@@ -40,10 +40,3 @@ void AbstractCharacterHistoryCtmc::setValue(const std::multiset<CharacterEvent*,
     value->updateHistory(updateSet,parentSet,childSet,indexSet);
 }
 
-/*
-void AbstractCharacterHistoryCtmc::setRateModifiers(const std::vector<void (*)() >& vfp)
-{
-    rateModifiers = vfp;
-}
-*/
-

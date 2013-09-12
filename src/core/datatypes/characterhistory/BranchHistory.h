@@ -64,6 +64,8 @@ namespace RevBayesCore {
         std::vector<CharacterEvent*> childCharacters;
         std::set<size_t>             dirtyCharacters;
     };
+    
+    std::ostream& operator<<(std::ostream& o, const BranchHistory& x);
 }
 
 #endif /* defined(__rb_mlandis__BranchHistory__) */

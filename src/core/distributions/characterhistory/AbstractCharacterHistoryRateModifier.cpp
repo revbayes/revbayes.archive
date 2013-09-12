@@ -22,3 +22,10 @@ std::ostream& operator<<(std::ostream& o, const std::vector<AbstractCharacterHis
     
     return o;
 }
+
+std::ostream& operator<<(std::ostream& o, const AbstractCharacterHistoryRateModifier& x)
+{
+    o << " ";
+    
+    return o;
+}

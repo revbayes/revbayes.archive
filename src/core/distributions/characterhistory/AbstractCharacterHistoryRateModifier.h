@@ -28,7 +28,8 @@ namespace RevBayesCore
         
         
     };
-    
+    std::ostream& operator<<(std::ostream& o, const AbstractCharacterHistoryRateModifier& x);                                         //!< Overloaded output operator
+    std::ostream& operator<<(std::ostream& o, const std::vector<AbstractCharacterHistoryRateModifier*>& x);                                         //!< Overloaded output operator
 }
 
 #endif /* defined(__rb_mlandis__AbstractCharacterHistoryRateModifier__) */

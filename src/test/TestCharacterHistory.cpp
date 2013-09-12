@@ -99,6 +99,8 @@ bool TestCharacterHistory::run( void ) {
     
     DeterministicNode< std::vector<AbstractCharacterHistoryRateModifier*> >* rm_vector = new DeterministicNode< std::vector< AbstractCharacterHistoryRateModifier* > >( "rm_vector", new VectorFunction< AbstractCharacterHistoryRateModifier* >( rateMods ) );
 
+
+
     AreaHistoryCtmc* ahc = new AreaHistoryCtmc(bh, q, numStates, numChars, rm_vector);
     StochasticNode<BranchHistory>* bh_rv = new StochasticNode<BranchHistory>( "bh_rv", ahc);
     
