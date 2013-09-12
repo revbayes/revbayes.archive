@@ -25,27 +25,29 @@ namespace RevBayesCore
     public:
 
         //AbstractCharacterHistoryCtmc(BranchHistory* bh);
-        AbstractCharacterHistoryCtmc(BranchHistory* bh, TypedDagNode<RateMatrix> *rateMtx, size_t nc, std::string lbls, std::vector<AbstractCharacterHistoryRateModifier*> rateMods);
+        AbstractCharacterHistoryCtmc(BranchHistory* bh, TypedDagNode<RateMatrix> *rateMtx, size_t ns, size_t nc, TypedDagNode<std::vector<AbstractCharacterHistoryRateModifier*> >* rateMods);
+        AbstractCharacterHistoryCtmc(TypedDagNode<RateMatrix> *rateMtx, size_t ns, size_t nc, TypedDagNode<std::vector<AbstractCharacterHistoryRateModifier*> >* rateMods);
 
         // allows for partial update of history
-        void                            setValue(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<CharacterEvent*>& parentSet, const std::set<CharacterEvent*>& childSet, const std::set<size_t>& indexSet );
+        void                                                    setValue(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<CharacterEvent*>& parentSet, const std::set<CharacterEvent*>& childSet, const std::set<size_t>& indexSet );
                 
         // inherited pure virtual functions
-        void                            redrawValue(void);
+        void                                                    redrawValue(void);
 
         // pure virtual functions
-        virtual AbstractCharacterHistoryCtmc*   clone(void) const = 0;
-        virtual void                    swapParameter(const DagNode *oldP, const DagNode *newP) = 0;
-        virtual double                  computeLnProbability(void) = 0;
-        virtual double                  sumOfRates(std::vector<CharacterEvent*> s) = 0;
-        virtual double                  transitionRate(std::vector<CharacterEvent*> oldState, CharacterEvent* evt) = 0;
+        virtual AbstractCharacterHistoryCtmc*                   clone(void) const = 0;
+        virtual void                                            swapParameter(const DagNode *oldP, const DagNode *newP) = 0;
+        virtual double                                          computeLnProbability(void) = 0;
+        virtual double                                          sumOfRates(std::vector<CharacterEvent*> s) = 0;
+        virtual double                                          transitionRate(std::vector<CharacterEvent*> oldState, CharacterEvent* evt) = 0;
         
     protected:
-        TypedDagNode<RateMatrix>* rateMatrix;
-        std::vector<AbstractCharacterHistoryRateModifier*> rateModifiers;
+        TypedDagNode<RateMatrix>*                               rateMatrix;
+        TypedDagNode<std::vector<AbstractCharacterHistoryRateModifier*> >*      rateModifiers;
+        size_t                                                  numStates;
+        size_t                                                  numChars;
         
     private:
-
         
     };
 }

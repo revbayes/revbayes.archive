@@ -25,6 +25,7 @@
 #include "BetaDistribution.h"
 #include "GtrRateMatrixFunction.h"
 #include "DeterministicNode.h"
+#include "VectorFunction.h"
 
 using namespace RevBayesCore;
 
@@ -38,36 +39,12 @@ TestCharacterHistory::~TestCharacterHistory() {
 
 bool TestCharacterHistory::run( void ) {
     
-    size_t numChars = 10;
-    size_t numEvents = 5;
-    size_t numStates =10;
+    size_t numChars = 9;
+    size_t numStates = 2;
     
+    //////////
     
-    
-    size_t y = 0x1011;
-    std::cout << (int)y << "\n";
-    size_t x = 0x1000;
-    std::cout << (int)x << "\t" << pow(16,3) << "\n";
-    bool val = true;
-    int pos = 3;
-    std::cout << x << "\n";
-    x &= val << pos;
-    std::cout << x << "\n";
-
-    
-    /////////////
-    
-    std::string labels = "0123456789";
-    std::string stateStr = "";
-    for (size_t i = 0; i < numChars; i++)
-        stateStr += "0";
-    
-    StandardState egSs('g',"acgt");
-    std::cout << "egSs test\n";
-    //std::cout << egSs.getState() << "\n";
-    //std::cout << egSs.DiscreteCharacterState::getNumberOfStates() << "\n";
-    
-    BranchHistory* bh = new BranchHistory(&egSs, numChars);
+    BranchHistory* bh = new BranchHistory(numStates, numChars);
     
     std::multiset<CharacterEvent*,CharacterEventCompare> updateSet;
     std::set<CharacterEvent*> parentSet, childSet;
@@ -75,30 +52,19 @@ bool TestCharacterHistory::run( void ) {
     
     
     for (size_t i = 0; i < numChars; i++)
+        parentSet.insert(new CharacterEvent(i, 0, 0.0));
+    
+    for (size_t i = 0; i < numChars; i++)
+        childSet.insert(new CharacterEvent(i, 1, 1.0));
+    
+    double dt = 1.0 / (numChars+1);
+    for (size_t i = 0; i < numChars; i++)
     {
-        std::stringstream ss;
-        ss << i;
-        parentSet.insert(new CharacterEvent(new StandardState(ss.str(),labels),i,0.0));
+        updateSet.insert(new CharacterEvent(i, 1, dt*(i+1)));
     }
     
     for (size_t i = 0; i < numChars; i++)
-    {
-        std::stringstream ss;
-        ss << numChars-i-1;
-        childSet.insert(new CharacterEvent(new StandardState(ss.str(),labels),i,1.0));
-    }
-    
-    for (size_t i = 0; i < numEvents; i++)
-    {
-        std::stringstream ss;
-        ss << i;
-        updateSet.insert(new CharacterEvent(new StandardState(ss.str(),labels), 2*i, 0.9-0.1*i));
-    }
-    
-    for (size_t i = 0; i < numChars; i++)
-    {
         indexSet.insert(i);
-    }
     
     bh->updateHistory(updateSet, parentSet, childSet, indexSet);
     bh->print();
@@ -126,9 +92,19 @@ bool TestCharacterHistory::run( void ) {
     
     DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
 
-    std::vector<AbstractCharacterHistoryRateModifier*> rateMods;
+    // rate modifier functions ... add distance function here
+    std::vector<const TypedDagNode<AbstractCharacterHistoryRateModifier*> *> rateMods;
+    //DeterministicNode* geo_dist = new DeterministicNode("geo_dist", new LognormalDistribution(branchRateC, branchRateD));
+    //rateModes.push_back(new Stoc)
     
-    AreaHistoryCtmc* ahc = new AreaHistoryCtmc(bh, q, numChars, labels, rateMods);
+    DeterministicNode< std::vector<AbstractCharacterHistoryRateModifier*> >* rm_vector = new DeterministicNode< std::vector< AbstractCharacterHistoryRateModifier* > >( "rm_vector", new VectorFunction< AbstractCharacterHistoryRateModifier* >( rateMods ) );
+
+    AreaHistoryCtmc* ahc = new AreaHistoryCtmc(bh, q, numStates, numChars, rm_vector);
+    StochasticNode<BranchHistory>* bh_rv = new StochasticNode<BranchHistory>( "bh_rv", ahc);
+    
+    std::cout << bh_rv->getLnProbability() << "\n";
+    std::cout << "lnL\t" << ahc->computeLnProbability() << "\n";
+
     
     return true;
 }

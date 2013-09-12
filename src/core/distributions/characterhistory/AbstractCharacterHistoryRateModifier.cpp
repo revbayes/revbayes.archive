@@ -7,10 +7,18 @@
 //
 
 #include "AbstractCharacterHistoryRateModifier.h"
+#include <iostream>
 
 using namespace RevBayesCore;
 
 AbstractCharacterHistoryRateModifier::AbstractCharacterHistoryRateModifier(void)
 {
     ;
+}
+
+std::ostream& operator<<(std::ostream& o, const std::vector<AbstractCharacterHistoryRateModifier*>& x)
+{
+    o << " ";
+    
+    return o;
 }

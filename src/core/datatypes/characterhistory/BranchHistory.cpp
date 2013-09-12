@@ -15,13 +15,43 @@
 
 using namespace RevBayesCore;
 
+
+BranchHistory::BranchHistory(void) : numCharacters(0), numStates(0), isTip(false), isRoot(false), branchIndex(-1)
+{
+    
+}
 //BranchHistory::BranchHistory(size_t nc, size_t ns, std::string l, bool it, bool ir) : numCharacters(nc), numStates(ns), labels(l), isTip(it), isRoot(ir)
-BranchHistory::BranchHistory(DiscreteCharacterState* d, size_t nc, size_t bi, bool it, bool ir) : numCharacters(nc), numStates(d->getNumberOfStates()), labels(d->getStateLabels()), isTip(it), isRoot(ir), branchIndex(bi)
+BranchHistory::BranchHistory(size_t ns, size_t nc, size_t bi, bool it, bool ir) : numCharacters(nc), numStates(ns), isTip(it), isRoot(ir), branchIndex(bi)
 {
     parentCharacters.resize(numCharacters);
     childCharacters.resize(numCharacters);
 }
 
+
+BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
+    
+    // MJL 09/12/13: untested
+    
+    if (this != &bh) {
+        
+        this->numStates = bh.numStates;
+        this->numCharacters = bh.numCharacters;
+        this->isTip = bh.isTip;
+        this->isRoot = bh.isRoot;
+        this->branchIndex = bh.branchIndex;
+        
+        this->parentCharacters = bh.parentCharacters;
+        this->childCharacters = bh.childCharacters;
+        this->history = bh.history;
+    }
+    
+    return *this;
+}
+
+BranchHistory* BranchHistory::clone(void) const
+{
+    return new BranchHistory(*this);
+}
 
 const std::vector<CharacterEvent*>& BranchHistory::getParentCharacters(void)
 {
@@ -106,7 +136,7 @@ void BranchHistory::print(void)
     std::cout << "0.0 : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
-        std::cout << std::setw(8) << (*it_v)->getState()->getState() << " ";
+        std::cout << std::setw(8) << (*it_v)->getState() << " ";
     }
     std::cout << "\n";
     
@@ -119,7 +149,7 @@ void BranchHistory::print(void)
             if (i != (*it_h)->getIndex())
                 std::cout << std::setw(8) << " ";
             else
-                std::cout << std::setw(8) << (*it_h)->getState()->getState();
+                std::cout << std::setw(8) << (*it_h)->getState();
             std::cout << " ";
         }
         std::cout << "\n";
@@ -127,7 +157,25 @@ void BranchHistory::print(void)
     std::cout << "1.0 : ";
     for (it_v = childCharacters.begin(); it_v != childCharacters.end(); it_v++)
     {
-        std::cout << std::setw(8) << (*it_v)->getState()->getState() << " ";
+        std::cout << std::setw(8) << (*it_v)->getState() << " ";
     }
     std::cout << "\n";
+}
+
+const std::set<size_t>& BranchHistory::getDirtyCharacters(void)
+{
+    return dirtyCharacters;
+}
+
+void BranchHistory::setDirtyCharacters(const std::set<size_t>& s)
+{
+    dirtyCharacters = s;
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchHistory& x) {
+    
+    o << " ";
+    
+    return o;
 }

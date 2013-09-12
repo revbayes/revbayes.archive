@@ -10,7 +10,7 @@
 #define __rb_mlandis__CharacterEvent__
 
 #include <vector>
-#include "DiscreteCharacterState.h"
+//#include "DiscreteCharacterState.h"
 
 namespace RevBayesCore {
 
@@ -20,14 +20,14 @@ namespace RevBayesCore {
     public:
         
         CharacterEvent(void);
-        CharacterEvent(DiscreteCharacterState* s, size_t i, double t);
+        CharacterEvent(size_t i, unsigned int s, double t);
         CharacterEvent(const CharacterEvent& c);
         ~CharacterEvent(void);
         
         double getTime(void);
         size_t getIndex(void);
-        DiscreteCharacterState* getState(void);
-        void setState(DiscreteCharacterState* s);
+        unsigned int getState(void);
+        void setState(unsigned int s);
         void print(void);
         
         bool operator<(const CharacterEvent& lhs) const;
@@ -36,7 +36,7 @@ namespace RevBayesCore {
         
         
     private:
-        DiscreteCharacterState* state;  // from statespace -- possibly make a set of state/positions...
+        unsigned int state;  // from statespace -- possibly make a set of state/positions...
         double time;    // from 0 to 1
         size_t index;   // from 0 to N "sites"
 

@@ -9,7 +9,6 @@
 #ifndef __rb_mlandis__BranchHistory__
 #define __rb_mlandis__BranchHistory__
 
-#include "DiscreteCharacterState.h"
 #include "CharacterEvent.h"
 #include "CharacterEventCompare.h"
 #include <vector>
@@ -22,8 +21,11 @@ namespace RevBayesCore {
     class BranchHistory {
         
     public:
+        BranchHistory(void);
+        BranchHistory(size_t ns, size_t nc, size_t bi=-1, bool it=false, bool ir=false);
+        BranchHistory& operator=(const BranchHistory& bh);
         
-        BranchHistory(DiscreteCharacterState* d, size_t nc, size_t bi=-1, bool it=false, bool ir=false);
+        BranchHistory* clone(void) const;
         
         const std::vector<CharacterEvent*>& getParentCharacters(void);
         const std::vector<CharacterEvent*>& getChildCharacters(void);
@@ -35,7 +37,14 @@ namespace RevBayesCore {
         void clearEvents(const std::set<size_t>& clearSet);
         void updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<CharacterEvent*>& parentSet, const std::set<CharacterEvent*>& childSet, const std::set<size_t>& indexSet);
         
+        // used to 
+        std::multiset<CharacterEvent*,CharacterEventCompare> swapHistoryEvents(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet);
+        std::set<CharacterEvent*> swapParentCharacters(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet);
+        std::set<CharacterEvent*> swapChildCharacters(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet);
+        
         void print(void);
+        const std::set<size_t>& getDirtyCharacters(void);
+        void setDirtyCharacters(const std::set<size_t>& s);
         
     protected:
         
@@ -46,7 +55,6 @@ namespace RevBayesCore {
         size_t branchIndex;
         size_t numCharacters;
         size_t numStates;
-        std::string labels;
         bool isTip;
         bool isRoot;
         
@@ -54,7 +62,7 @@ namespace RevBayesCore {
         std::multiset<CharacterEvent*,CharacterEventCompare> history;
         std::vector<CharacterEvent*> parentCharacters;
         std::vector<CharacterEvent*> childCharacters;
-       
+        std::set<size_t>             dirtyCharacters;
     };
 }
 

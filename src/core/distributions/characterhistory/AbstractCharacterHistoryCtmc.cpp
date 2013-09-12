@@ -12,14 +12,12 @@
 
 using namespace RevBayesCore;
 
-AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh, TypedDagNode<RateMatrix> *rateMtx, size_t nc, std::string lbls, std::vector<AbstractCharacterHistoryRateModifier*> rateMods) : TypedDistribution<BranchHistory>(bh), rateMatrix(rateMtx), rateModifiers(rateMods) {}
+AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh, TypedDagNode<RateMatrix> *rateMtx, size_t ns, size_t nc, TypedDagNode<std::vector<AbstractCharacterHistoryRateModifier*> >* rateMods) : TypedDistribution<BranchHistory>(bh), rateMatrix(rateMtx), rateModifiers(rateMods), numStates(ns), numChars(nc) {}
+
+AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatrix> *rateMtx, size_t ns, size_t nc, TypedDagNode<std::vector<AbstractCharacterHistoryRateModifier*> >* rateMods) : TypedDistribution<BranchHistory>(new BranchHistory()), rateMatrix(rateMtx), rateModifiers(rateMods), numStates(ns), numChars(nc) {}
 
 // AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh) : TypedDistribution<BranchHistory>(bh) {}
 
-AbstractCharacterHistoryCtmc* AbstractCharacterHistoryCtmc::clone(void) const
-{
-    
-}
 
 double AbstractCharacterHistoryCtmc::computeLnProbability(void)
 {
