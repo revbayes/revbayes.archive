@@ -84,7 +84,7 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         size_t index = std::floor(admixtureParents.size() * u);
         AdmixtureNode* admixtureParent = admixtureParents[index];
         AdmixtureNode* admixtureChild = &admixtureParent->getAdmixtureChild();
-        double w = admixtureChild->getWeight();
+        //double w = admixtureChild->getWeight();
         
         // get all nodes adjacent to proposal
         storedAdmixtureChild = admixtureChild;

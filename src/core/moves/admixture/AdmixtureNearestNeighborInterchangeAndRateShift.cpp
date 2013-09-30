@@ -64,7 +64,7 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
         node = &tau.getNode(index);
     } while ( node->isRoot() || node->getTopologyParent().isRoot() ||  node->getNumberOfChildren() != 2);
     
-    int nodeChildMoveIdx = std::floor(rng->uniform01() * 2.0);
+    int nodeChildMoveIdx = (int)std::floor(rng->uniform01() * 2.0);
     int nodeBrotherIdx = 0;
     
     
@@ -132,8 +132,8 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
     storedNodeChildMove->setParent(storedNodeParent);
 
     // get branch rate index
-    storedChildRateIndex = node->getTopologyChild(nodeChildMoveIdx).getIndex();
-    storedBrotherRateIndex = parent->getTopologyChild(nodeBrotherIdx).getIndex();
+    storedChildRateIndex = (int)node->getTopologyChild(nodeChildMoveIdx).getIndex();
+    storedBrotherRateIndex = (int)parent->getTopologyChild(nodeBrotherIdx).getIndex();
 //    storedNodeRateIndex = node->getIndex();
 
     
@@ -143,9 +143,9 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
     storedBrotherRate = branchRates[storedBrotherRateIndex]->getValue();
     
     // update
-    double cnr = 0.0;
-    double snr = 0.0;
-    double sbr = 0.0;
+    //double cnr = 0.0;
+    //double snr = 0.0;
+    //double sbr = 0.0;
     
     double scaleChildRate = exp(delta*(rng->uniform01() - 0.5));
  //   double scaleNodeRate = exp(delta*(rng->uniform01() - 0.5));

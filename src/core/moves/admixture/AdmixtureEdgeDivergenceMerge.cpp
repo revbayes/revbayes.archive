@@ -75,7 +75,7 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     AdmixtureTree& tau = variable->getValue();
-    AdmixtureNode* root = &tau.getRoot();
+    //AdmixtureNode* root = &tau.getRoot();
     
     std::vector<AdmixtureNode*> firstAdmixtureParentPerLineage = tau.getFirstAdmixtureParentPerLineage();
     

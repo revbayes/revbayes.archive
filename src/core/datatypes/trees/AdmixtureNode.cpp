@@ -548,6 +548,7 @@ bool AdmixtureNode::isOutgroup(void)
 bool AdmixtureNode::setOutgroup(bool tf)
 {
     outgroup = tf;
+    return tf;
 }
 
 bool AdmixtureNode::isAdmixtureNode(void)

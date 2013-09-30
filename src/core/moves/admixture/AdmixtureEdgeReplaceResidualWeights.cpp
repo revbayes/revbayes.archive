@@ -475,7 +475,7 @@ void AdmixtureEdgeReplaceResidualWeights::rejectSimpleMove( void ) {
     if (failedAdd == true)
     {
         // NOTE: root used to protect from infinite recursions caused by AdmixtureNode::flagNewickComputation() from addChild,removeChild,setParent.
-        AdmixtureNode* root = &variable->getValue().getRoot();
+        //AdmixtureNode* root = &variable->getValue().getRoot();
   
         /*
         std::cout << "\n\tbefore reject no residuals, or maxAge<=minAge\n";

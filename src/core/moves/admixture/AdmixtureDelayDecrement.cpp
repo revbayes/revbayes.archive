@@ -31,7 +31,9 @@ void AdmixtureDelayDecrement::swapNode(DagNode *oldN, DagNode *newN)
 
 const std::string& AdmixtureDelayDecrement::getMoveName(void) const
 {
-    return "delay decrement";
+    static std::string name = "AdmixtureEdgeDelayDecrement";
+    
+    return name;
 }
     
 void AdmixtureDelayDecrement::acceptMove(void)

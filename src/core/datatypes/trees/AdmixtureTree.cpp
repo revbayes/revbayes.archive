@@ -604,9 +604,9 @@ void AdmixtureTree::setRoot( AdmixtureNode* r) {
     // fillNodesByPreorderTraversal(r);
     fillNodesByPhylogeneticTraversal(r);
     
-    size_t numTips = 0;
-    size_t tipIdx = 0;
-    size_t intIdx =0 ;
+    //size_t numTips = 0;
+    //size_t tipIdx = 0;
+    //size_t intIdx =0 ;
     
     for (size_t i = 0; i < nodes.size(); i++)
         nodes[i]->setIndex(i);

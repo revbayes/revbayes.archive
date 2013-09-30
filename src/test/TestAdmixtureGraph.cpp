@@ -82,7 +82,7 @@
 
 using namespace RevBayesCore;
 
-TestAdmixtureGraph::TestAdmixtureGraph(const std::string &sfn, int gen, const std::string &sfp, const std::string &tfn) : snpFilename( sfn ), snpFilepath(sfp), treeFilename(tfn), mcmcGenerations( gen )
+TestAdmixtureGraph::TestAdmixtureGraph(const std::string &sfn, int gen, const std::string &sfp, const std::string &tfn) : snpFilename( sfn ), snpFilepath(sfp), treeFilename(tfn), mcmcGenerations( gen ), argc(0)
 {
     ;
 }
@@ -100,14 +100,16 @@ TestAdmixtureGraph::~TestAdmixtureGraph(void)
 bool TestAdmixtureGraph::run(void) {
     
     std::cout << "Running TestAdmixtureGraph\n";
-    for (int i = 0; i < argc; i++)
-    {
-        argTokens.push_back(argv[i]);
-        std::cout << i << " " << argTokens[i] << "\n";
-    }
-    std::cout << argc << " == " << argTokens.size() << " arguments\n";
+    
+    std::cout << "argc: " << argc << "\n";
     if (argc > 1)
     {
+        for (int i = 0; i < argc; i++)
+        {
+            argTokens.push_back(argv[i]);
+            std::cout << i << " " << argTokens[i] << "\n";
+        }
+        std::cout << argc << " == " << argTokens.size() << " arguments\n";
         snpFilename = argTokens[1];
     }
     
@@ -151,10 +153,10 @@ bool TestAdmixtureGraph::run(void) {
     size_t numSites = snps->getNumSnps();
     int blockSize = 50;
     
-    int delay = 100;
+    int delay = 200;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
-    int maxNumberOfAdmixtureEvents = 1;
+    int maxNumberOfAdmixtureEvents = 2;
     
     bool useWishart = true;             // if false, the composite likelihood function is used
     bool useBias = true;               // if false, no covariance bias correction for small sample size is used
@@ -168,11 +170,11 @@ bool TestAdmixtureGraph::run(void) {
     bool updateNodeAges = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 1;
+    int numChains = 5;
     int numProcesses = numChains;
 //    numProcesses=80;
     int swapInterval = 5;
-    double deltaTemp = .025;
+    double deltaTemp = .2;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
@@ -194,7 +196,7 @@ bool TestAdmixtureGraph::run(void) {
     //              Consider implementing Conway-Maxewell-Poisson distn instead.
     
     // This prior requires admixture events to improve lnL by N units
-    double adm_th_lnL = 1;
+    double adm_th_lnL = 3;
     double rate_cpp_prior = exp(adm_th_lnL);
     
     ConstantNode<double>* c = new ConstantNode<double>( "c", new double(rate_cpp_prior)); // admixture rate prior

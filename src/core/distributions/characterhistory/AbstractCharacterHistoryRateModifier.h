@@ -11,15 +11,18 @@
 
 #include <set>
 #include <vector>
+#include "Cloneable.h"
 
 namespace RevBayesCore
 {
     class CharacterEvent;
-    class AbstractCharacterHistoryRateModifier
+    class AbstractCharacterHistoryRateModifier : public Cloneable
     {
     public:
         AbstractCharacterHistoryRateModifier(void);
-        virtual double computeRateModifier(std::vector<CharacterEvent*> curState, std::vector<CharacterEvent*> newState) = 0;
+        virtual double computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState) = 0;
+        virtual void update(void) = 0;
+        AbstractCharacterHistoryRateModifier* clone( void ) const = 0;
         
     protected:
         

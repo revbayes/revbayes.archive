@@ -131,7 +131,7 @@ void AdmixtureEdgeAddCladeResiduals::findCladeResiduals(void)
                 {
                     for (std::set<AdmixtureNode*>::const_iterator jt2 = clade2.begin(); jt2 != clade2.end(); jt2++)
                     {
-                        int idx = (*jt1)->getIndex() * numTips + (*jt2)->getIndex();
+                        size_t idx = (*jt1)->getIndex() * numTips + (*jt2)->getIndex();
                         double v = storedResiduals[idx];
                         if (v > 0)
                             r += v;
@@ -291,7 +291,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         admixtureWeight /= 2;
         
         // insert admixtureParent into graph
-        storedAdmixtureParent = new AdmixtureNode(tau.getNumberOfNodes());
+        storedAdmixtureParent = new AdmixtureNode((int)tau.getNumberOfNodes());
         storedAdmixtureParent->setAge(newAge);
         storedAdmixtureParent->setParent(storedAdmixtureParentParent,false);
         storedAdmixtureParent->addChild(storedAdmixtureParentChild,false);
@@ -302,7 +302,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         tau.pushAdmixtureNode(storedAdmixtureParent);
         
         // insert admixtureChild into graph
-        storedAdmixtureChild = new AdmixtureNode(tau.getNumberOfNodes());
+        storedAdmixtureChild = new AdmixtureNode((int)tau.getNumberOfNodes());
         storedAdmixtureChild->setAge(newAge);
         storedAdmixtureChild->setParent(storedAdmixtureChildParent,false);
         storedAdmixtureChild->addChild(storedAdmixtureChildChild,false);

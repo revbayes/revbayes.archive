@@ -87,7 +87,7 @@ std::string AdmixtureBipartitionMonitor::buildBipartitionString(void)
     for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
         nodes.push_back(&tau->getNode(i));
     
-    bool firstRootHit = false; // necessary?
+   // bool firstRootHit = false; // necessary?
     for (size_t i = 0; i < nodes.size(); i++)
     {
 

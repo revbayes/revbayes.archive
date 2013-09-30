@@ -23,14 +23,24 @@ namespace RevBayesCore {
     class TestCharacterHistory {
         
     public:
-        TestCharacterHistory(int gen);
+        TestCharacterHistory(const std::string &afn,  const std::string &tfn, const std::string &gfn, int gen, const std::string &fp="");
+        TestCharacterHistory(int ac, const char* av[], const std::string &afn, const std::string &tfn, const std::string &gfn, int gen, const std::string &fp="");
         virtual                                ~TestCharacterHistory(void);                                                            //!< Virtual destructor
         
         bool                                    run();
         
     private:
+        void tokenizeArgv(void);
         
+        // members
+        std::string                             areaFilename;
+        std::string                             treeFilename;
+        std::string                             geoFilename;
+        std::string                             filepath;
         int                                     mcmcGenerations;
+        int                                     argc;
+        const char**                            argv;
+        std::vector<std::string>                argTokens;
         
     };
     

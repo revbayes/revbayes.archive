@@ -56,10 +56,13 @@ const std::string& AdmixtureRootTimeSlide::getMoveName( void ) const {
 double AdmixtureRootTimeSlide::performSimpleMove( void ) {
     
     // Get random number generator
+    
+    /*
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     AdmixtureTree& tau = variable->getValue();
     AdmixtureNode& node = tau.getRoot();
+    
     
     // get the sum of branch lengths attached to the root node
     double t_0 = node.getAge() - node.getChild(0).getAge();
@@ -90,6 +93,7 @@ double AdmixtureRootTimeSlide::performSimpleMove( void ) {
   
     // NOT IMPLEMENTED -- rescaling subtrees requires special consideration for the admixture events s.t. they retain time-consistency
 //    rescaleSubtree(&node.getChild(0), storedRescale_0 );
+    */
     
     return 0.0;
 }
@@ -102,9 +106,9 @@ void AdmixtureRootTimeSlide::printParameterSummary(std::ostream &o) const {
 
 void AdmixtureRootTimeSlide::rejectSimpleMove( void ) {
     
-    AdmixtureTree& tau = variable->getValue();
+    //AdmixtureTree& tau = variable->getValue();
     
-    AdmixtureNode& node = tau.getRoot();
+    //AdmixtureNode& node = tau.getRoot();
     
     // undo the proposal
     // ... rescale subtrees

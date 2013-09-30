@@ -10,7 +10,7 @@
 #define __rb_mlandis__GeographicDistanceRateModifier__
 
 #include "AbstractCharacterHistoryRateModifier.h"
-#include "ContinuousStochasticNode.h"
+#include "StochasticNode.h"
 #include <string>
 
 namespace RevBayesCore
@@ -18,25 +18,30 @@ namespace RevBayesCore
     class GeographicDistanceRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographicDistanceRateModifier(ContinuousStochasticNode* dp); // pass map... pass it parameter pointer?
-        double computeRateModifier(std::vector<CharacterEvent*> curState, std::set<CharacterEvent*> newState); // ... or pass value to computeRateModifier
+        GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-9, std::string dt="haversine"); // pass map... pass it parameter pointer?
+        double computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value to computeRateModifier
+        void updateGeographicDistancePowers(double dp=1.0, bool upd=true);
+        void update(void);
+        GeographicDistanceRateModifier* clone(void) const;
+        void print(std::vector<std::vector<double> > m);
+        void printAll(void);
         
     protected:
         double computePairwiseDistances(int i, int j);
-        
+        void computeAllPairwiseDistances(void);
         
     private:
         std::string distanceType;
         std::vector<std::vector<double> > geographicCoordinates;
         std::vector<std::vector<double> > geographicDistances;
+        std::vector<std::vector<double> > geographicDistancePowers;
+        std::vector<std::vector<size_t> > geographicDistanceOrder;
         
         // helper variables
         int numAreas;
+        double threshhold;
+        double distancePower;
         
-        // parameters
-        ContinuousStochasticNode* distancePower;
-        
-        // set this up to have clean/dirty/etc ??
     };
 }
 

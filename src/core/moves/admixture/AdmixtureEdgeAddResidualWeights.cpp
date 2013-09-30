@@ -318,7 +318,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
 
     
     // insert admixtureParent into graph
-    storedAdmixtureParent = new AdmixtureNode(tau.getNumberOfNodes());
+    storedAdmixtureParent = new AdmixtureNode((int)tau.getNumberOfNodes());
     storedAdmixtureParent->setAge(admixtureAge);
     storedAdmixtureParent->setParent(storedAdmixtureParentParent);
     storedAdmixtureParent->addChild(storedAdmixtureParentChild);
@@ -336,7 +336,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
 
     
     // insert admixtureChild into graph
-    storedAdmixtureChild = new AdmixtureNode(tau.getNumberOfNodes());
+    storedAdmixtureChild = new AdmixtureNode((int)tau.getNumberOfNodes());
     storedAdmixtureChild->setAge(admixtureAge);
     storedAdmixtureChild->setParent(storedAdmixtureChildParent);
     storedAdmixtureChild->addChild(storedAdmixtureChildChild);

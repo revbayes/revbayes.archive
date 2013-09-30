@@ -77,11 +77,11 @@ double RateAgeBetaShift::performCompoundMove( void ) {
     storedNode = node;
     storedAge = my_age;
     
-    int nodeIdx = node->getIndex();
+    int nodeIdx = (int)node->getIndex();
     storedRates[nodeIdx] = rates[nodeIdx]->getValue();
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
-        int childIdx = node->getChild(i).getIndex();
+        int childIdx = (int)node->getChild(i).getIndex();
         storedRates[childIdx] = rates[childIdx]->getValue();
     }
     
@@ -106,7 +106,7 @@ double RateAgeBetaShift::performCompoundMove( void ) {
     rates[nodeIdx]->setValue( new double((node->getParent().getAge() - my_age) * storedRates[nodeIdx] / (node->getParent().getAge() - my_new_age)));
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
-        int childIdx = node->getChild(i).getIndex();
+        int childIdx = (int)node->getChild(i).getIndex();
         rates[childIdx]->setValue( new double((my_age - node->getChild(i).getAge()) * storedRates[childIdx] / (my_new_age - node->getChild(i).getAge())));
     }
     
@@ -125,11 +125,11 @@ void RateAgeBetaShift::rejectCompoundMove( void ) {
     tree->getValue().setAge( storedNode->getIndex(), storedAge );
     
     // undo the rates
-    int nodeIdx = storedNode->getIndex();
+    int nodeIdx = (int)storedNode->getIndex();
     rates[nodeIdx]->setValue(new double(storedRates[nodeIdx]));
     for (size_t i = 0; i < storedNode->getNumberOfChildren(); i++)
     {
-        int childIdx = storedNode->getChild(i).getIndex();
+        int childIdx = (int)storedNode->getChild(i).getIndex();
         rates[childIdx]->setValue(new double(storedRates[childIdx]));
     }
 

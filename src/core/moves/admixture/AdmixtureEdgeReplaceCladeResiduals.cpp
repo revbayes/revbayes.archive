@@ -133,7 +133,7 @@ void AdmixtureEdgeReplaceCladeResiduals::findCladeResiduals(void)
                 {
                     for (std::set<AdmixtureNode*>::const_iterator jt2 = clade2.begin(); jt2 != clade2.end(); jt2++)
                     {
-                        int idx = (*jt1)->getIndex() * numTips + (*jt2)->getIndex();
+                        size_t idx = (*jt1)->getIndex() * numTips + (*jt2)->getIndex();
                         double v = storedResiduals[idx];
                         if (v > 0)
                             r += v;

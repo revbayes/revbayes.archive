@@ -82,7 +82,7 @@ double AdmixtureFixedNodeheightPruneRegraft::performSimpleMove( void ) {
         parent = &tau.getNode(index);
     } while ( parent->isRoot() || parent->getNumberOfChildren() != 2);
      
-    AdmixtureNode& node          = parent->getChild(0);
+    //AdmixtureNode& node          = parent->getChild(0);
     AdmixtureNode& brother       = parent->getChild(1);
     AdmixtureNode& grandparent   = parent->getParent();
 

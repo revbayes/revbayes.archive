@@ -53,7 +53,7 @@ namespace RevBayesCore {
         bool                                                isClamped(void) const;                                                      //!< Is this DAG node clamped?
         bool                                                isStochastic(void) const;                                                   //!< Is this DAG node stochastic?
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
-        virtual void                                        setValue(const valueType &val, bool touch=true);                                  //!< Set the value of this node
+        virtual void                                        setValue(const valueType &val, bool touch=true);                            //!< Set the value of this node
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         void                                                setIgnoreRedraw(bool tf=true);
 

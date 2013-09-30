@@ -114,8 +114,8 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
     }
 
     // we need to work with the times
-    double gparent_age  = grandparent.getAge();
-    double parent_age   = parent.getAge();
+    //double gparent_age  = grandparent.getAge();
+    //double parent_age   = parent.getAge();
     double uncles_age   = uncle->getAge();
     double my_age       = node->getAge();
     double p2age = node->getParent().getAge();

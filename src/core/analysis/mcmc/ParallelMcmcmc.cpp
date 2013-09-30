@@ -180,8 +180,8 @@ void ParallelMcmcmc::swapChains(void)
     {
         
         // swap adjacent chains
-        size_t j = chainIdxByHeat[i-1];
-        size_t k = chainIdxByHeat[i];
+        int j = chainIdxByHeat[i-1];
+        int k = chainIdxByHeat[i];
         
         // compute exchange ratio
         double bj = chains[j]->getChainHeat();
@@ -219,7 +219,7 @@ void ParallelMcmcmc::swapChains(void)
             chains[j]->setChainHeat(bk);
             chains[k]->setChainHeat(bj);
             
-            int tmpIdx = j;
+            //size_t tmpIdx = j;
             chainIdxByHeat[i-1] = k;
             chainIdxByHeat[i] = j;
 

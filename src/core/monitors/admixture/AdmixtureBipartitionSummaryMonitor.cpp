@@ -119,7 +119,7 @@ void AdmixtureBipartitionSummaryMonitor::updateBipartitions(void)
                 // topology nodes have complementary disjoint bipartitions
                 //flipTaxonBipartitionToMinor(p_key);
 
-                er = AdmixtureEdgeRecord(numSamples,false,p->getWeight(),p->getAge(),p->getBranchLength(),branchRates->getValue()[p->getIndex()]);
+                er = AdmixtureEdgeRecord((int)numSamples,false,p->getWeight(),p->getAge(),p->getBranchLength(),branchRates->getValue()[p->getIndex()]);
                 
                 // if key exists, push on to existing value as copy of original node
                 if (treeBipartitions.find(p_key) != treeBipartitions.end())
@@ -143,7 +143,7 @@ void AdmixtureBipartitionSummaryMonitor::updateBipartitions(void)
                 AdmixtureNode* c = &p->getAdmixtureChild();
                 c_key = std::vector<bool>(numTaxa,false);
                 findTaxonBipartition(c_key, c);
-                er = AdmixtureEdgeRecord(numSamples,true,c->getWeight(),c->getAge(),c->getBranchLength(),branchRates->getValue()[c->getTopologyChild(0).getIndex()]);
+                er = AdmixtureEdgeRecord((int)numSamples,true,c->getWeight(),c->getAge(),c->getBranchLength(),branchRates->getValue()[c->getTopologyChild(0).getIndex()]);
                 
                 // if key exists, push on to existing value as copy of original node
                 if (AdmixtureBipartitionSummarys.find(p_key) != AdmixtureBipartitionSummarys.end() && AdmixtureBipartitionSummarys.at(p_key).find(c_key) != AdmixtureBipartitionSummarys.at(p_key).end())

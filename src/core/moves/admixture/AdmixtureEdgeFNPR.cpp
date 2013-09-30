@@ -385,7 +385,7 @@ void AdmixtureEdgeFNPR::rejectSimpleMove( void ) {
         //std::cout << "reject edge slide\n";
         
         // NOTE: root used to protect from infinite recursions caused by AdmixtureNode::flagNewickComputation() from addChild,removeChild,setParent.
-        AdmixtureNode* root = &variable->getValue().getRoot();
+        //AdmixtureNode* root = &variable->getValue().getRoot();
         
         
         

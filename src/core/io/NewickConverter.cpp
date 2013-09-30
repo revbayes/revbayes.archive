@@ -59,7 +59,7 @@ AdmixtureTree* NewickConverter::getAdmixtureTreeFromNewick(std::string const &n)
     std::vector<double> brlens;
     
     // construct the tree starting from the root
-    TopologyNode *root = createNode( n, nodes, brlens );
+    //TopologyNode *root = createNode( n, nodes, brlens );
     
     // convert to AdmixtureNode*
     std::vector<AdmixtureNode*> adm_nodes;

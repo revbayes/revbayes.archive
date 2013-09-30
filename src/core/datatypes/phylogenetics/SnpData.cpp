@@ -32,5 +32,6 @@ const std::vector<double>& SnpData::getSnpFrequencies(std::string a) const
             return snpFrequencies[i];
         }
     }
-    return std::vector<double>(0);
+    std::cout << a << " not found in SnpData\n";
+    return snpFrequencies[-1];
 }

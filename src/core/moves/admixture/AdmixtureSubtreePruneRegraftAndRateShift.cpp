@@ -93,7 +93,7 @@ double AdmixtureSubtreePruneRegraftAndRateShift::performCompoundMove( void ) {
     } while ( storedNode->isRoot() || storedNode->getNumberOfChildren() != 2);
     storedParent = &storedNode->getParent();
     
-    int chIdx1 = rng->uniform01() * storedNode->getNumberOfChildren();
+    int chIdx1 = (int)(rng->uniform01() * storedNode->getNumberOfChildren());
     int chIdx2 = (chIdx1 == 0 ? 1 : 0);
     storedChild = &storedNode->getChild(chIdx1);
     AdmixtureNode* movingChild = &storedNode->getChild(chIdx2);

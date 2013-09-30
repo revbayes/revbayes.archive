@@ -436,8 +436,8 @@ bool Test::performTests(void) {
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("modern.939.130723.txt", 10000, "/Users/mlandis/data/admix/input/", "");
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("Modern.samtools.TreeMixInput.txt", 10000,  "/Users/mlandis/data/admix/input/", "tree.txt");
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("MIM.treemix.new.input.all.txt",10000 "/Users/mlandis/data/admix/input/", "");
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph("trek1.data.txt", 1000, "/Users/mlandis/data/admix/input/", "");
-        TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "simmy.data.txt", 10000, "/Users/mlandis/data/admix/input/", "");
+        TestAdmixtureGraph testAG = TestAdmixtureGraph("past_eg_1.data.txt", 100000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "simmy.data.txt", 10000, "/Users/mlandis/data/admix/input/", "");
         //testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
@@ -447,7 +447,7 @@ bool Test::performTests(void) {
     // discrete dependence model
     try
     {
-        TestCharacterHistory testDdm = TestCharacterHistory(100);
+        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 100);
         testDdm.run();
     }
     catch (RbException &e)

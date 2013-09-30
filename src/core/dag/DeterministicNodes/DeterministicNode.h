@@ -37,6 +37,8 @@ namespace RevBayesCore {
     
         // public methods
         DeterministicNode<valueType>*                       clone(void) const;
+        virtual TypedFunction<valueType>&                   getFunction(void);
+        virtual const TypedFunction<valueType>&             getFunction(void) const;
         double                                              getLnProbability(void);
         double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
@@ -106,6 +108,20 @@ void RevBayesCore::DeterministicNode<valueType>::getAffected(std::set<DagNode *>
     
     this->getAffectedNodes( affected );
     
+}
+
+
+template<class valueType>
+RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<valueType>::getFunction( void ) {
+    
+    return *function;
+}
+
+
+template<class valueType>
+const RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<valueType>::getFunction( void ) const {
+    
+    return *function;
 }
 
 template<class valueType>

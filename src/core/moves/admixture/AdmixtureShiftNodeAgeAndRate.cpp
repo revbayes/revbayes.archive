@@ -155,7 +155,6 @@ void AdmixtureShiftNodeAgeAndRate::rejectSimpleMove( void ) {
 
     
     // undo the ages
-    double newAge = storedNode->getAge();
     storedNode->setAge( storedAge );
     
     if (&storedNode->getAdmixtureParent() != NULL)

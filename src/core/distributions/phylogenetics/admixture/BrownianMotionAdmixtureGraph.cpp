@@ -320,14 +320,14 @@ void BrownianMotionAdmixtureGraph::initializeMissingDataCorrection(void)
         missingDataCorrection[i].resize(numTaxa,0.0);
     
     
-    for (size_t i = 0; i < blockSize*numBlocks; i++)
+    for (int i = 0; i < blockSize*numBlocks; i++)
     {
-        for (size_t j = 0; j < numTaxa; j++)
+        for (int j = 0; j < numTaxa; j++)
         {
             if (snps->getNumSamples(j,i) == 0)
                 continue;
             
-            for (size_t k = 0; k < numTaxa; k++)
+            for (int k = 0; k < numTaxa; k++)
             {
                 if (snps->getNumSamples(k,i) != 0)
                     missingDataCorrection[j][k] += 1.0;
@@ -469,13 +469,13 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceEstimator(void)
         for (size_t m = 0; m < numTaxa; m++)
             sampleCovarianceEstimator[k][m].resize(numTaxa,0.0);
         
-        for (size_t m = 0; m < numTaxa; m++)
+        for (int m = 0; m < numTaxa; m++)
         {
-            for (size_t n = m; n < numTaxa; n++)
+            for (int n = m; n < numTaxa; n++)
             {
                 double v = 0.0;
                 int ns = 0;
-                for (size_t j = k * blockSize; j < (k+1) * blockSize; j++)
+                for (int j = (int)(k * blockSize); j < (k+1) * blockSize; j++)
                 {
                     if (snps->getNumSamples(n,j) > 0 && snps->getNumSamples(m,j) > 0)
                     {
@@ -769,15 +769,15 @@ void BrownianMotionAdmixtureGraph::eigenTest(arma::mat W)
     // check for positive definite
     arma::vec evalx, evalw;
     arma::mat evecx, evecw;
-    double eps = 1e-9;
+//    double eps = 1e-9;
     
     int p = W.n_rows;
     
-    for (size_t i = 1; i < p; i++)
+    for (int i = 1; i < p; i++)
     {
         arma::mat X = W.submat( 0, 0, i, i );
         arma::eig_sym(evalx,evecx,X);
-        for (size_t j = 0; j < i; j++)
+        for (int j = 0; j < i; j++)
         {
             if (evalx[j] < 0.0)
             {
@@ -795,8 +795,8 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
     //return 0.0;
     
     
-    int n = numBlocks*blockSize;
-    int p = numTaxa;
+    size_t n = numBlocks*blockSize;
+    size_t p = numTaxa;
     
     arma::mat W(p,p);
     arma::mat X(p,p);
@@ -1438,7 +1438,7 @@ void BrownianMotionAdmixtureGraph::updateNodeToIndexContrastData(void)
     // So, we only need to remap AdmixtureNode* -> int for nodes in (numNodes,t.getNumberOfNodes.size()-1).
     
     AdmixtureTree t = tau->getValue();
-    for (size_t i = numNodes; i < t.getNumberOfNodes(); i++)
+    for (int i = (int)numNodes; i < t.getNumberOfNodes(); i++)
     {
         AdmixtureNode* p = &t.getNode(i);
         p->setIndex(i); // can I just do this? ...
@@ -1461,7 +1461,7 @@ void BrownianMotionAdmixtureGraph::initializeNodeToIndexContrastData(void)
     for (size_t i = 0; i < t.getNumberOfNodes(); i++)
     {
         AdmixtureNode* p = &t.getNode(i);
-        nodeToIndex[p] = p->getIndex();
+        nodeToIndex[p] = (int)p->getIndex();
         if (p->isTip())
             for (size_t j = 0; j < numSites; j++)
                 contrastData[p->getIndex()][j] = data[j][i];
