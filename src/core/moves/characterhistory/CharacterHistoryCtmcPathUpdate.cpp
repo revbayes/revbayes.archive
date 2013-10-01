@@ -55,14 +55,18 @@ double CharacterHistoryCtmcPathUpdate::performSimpleMove(void)
     
     // propose new value
     AbstractCharacterHistoryCtmc* p = static_cast< AbstractCharacterHistoryCtmc* >( &variable->getDistribution() );
+    size_t ne0 = p->getValue().getNumEvents();
     p->simulatePath(updateSet);
+    size_t ne1 = p->getValue().getNumEvents();
+    
+    //std::cout << variable->getName() << " " << ne0 << " " << ne1 << "\n";
     
     return 0.0;
 }
 
 void CharacterHistoryCtmcPathUpdate::printParameterSummary(std::ostream &o) const
 {
-    o << variable->getValue().getNumEvents();
+    o << "lambda = " << lambda;
 }
 
 void CharacterHistoryCtmcPathUpdate::rejectSimpleMove(void)

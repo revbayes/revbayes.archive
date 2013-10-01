@@ -29,15 +29,14 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
     
     if (this != &bh) {
         
-        this->numStates = bh.numStates;
-        this->numCharacters = bh.numCharacters;
-        this->parentCharacters = bh.parentCharacters;
-        this->childCharacters = bh.childCharacters;
-        this->history = bh.history;
-        
-        this->redrawChildCharacters = bh.redrawChildCharacters;
-        this->redrawParentCharacters = bh.redrawParentCharacters;
-        this->redrawHistory = bh.redrawHistory;
+        numStates = bh.numStates;
+        numCharacters = bh.numCharacters;
+        parentCharacters = bh.parentCharacters;
+        childCharacters = bh.childCharacters;
+        history = bh.history;
+        redrawChildCharacters = bh.redrawChildCharacters;
+        redrawParentCharacters = bh.redrawParentCharacters;
+        redrawHistory = bh.redrawHistory;
     }
     
     return *this;
@@ -184,31 +183,31 @@ void BranchHistory::print(void)
     std::vector<CharacterEvent*>::iterator it_v;
     std::vector<CharacterEvent*> tmp = parentCharacters;
     
-    std::cout << "0.0      : ";
+    std::cout << "         0.0 : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
-        std::cout << std::setw(8) << (*it_v)->getState() << " ";
+        std::cout << std::setw(3) << (*it_v)->getState() << " ";
     }
     std::cout << "\n";
     
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
-        std::cout << (*it_h)->getTime() << " : ";
+        std::cout << std::setw(12) << std::setprecision(6) << (*it_h)->getTime() << " : ";
         tmp[ (*it_h)->getIndex() ] = *it_h;
         for (size_t i = 0; i < numCharacters; i++)
         {
             if (i != (*it_h)->getIndex())
-                std::cout << std::setw(8) << " ";
+                std::cout << std::setw(3) << " ";
             else
-                std::cout << std::setw(8) << (*it_h)->getState();
+                std::cout << std::setw(3) << (*it_h)->getState();
             std::cout << " ";
         }
         std::cout << "\n";
     }
-    std::cout << "1.0      : ";
+    std::cout << "         1.0 : ";
     for (it_v = childCharacters.begin(); it_v != childCharacters.end(); it_v++)
     {
-        std::cout << std::setw(8) << (*it_v)->getState() << " ";
+        std::cout << std::setw(3) << (*it_v)->getState() << " ";
     }
     std::cout << "\n";
     ;
@@ -271,7 +270,7 @@ const size_t BranchHistory::getNumEvents(void) const
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchHistory& x) {
     
-    o << " "; //x.getNumEvents();
+    o << x.getNumEvents();
     
     return o;
 }

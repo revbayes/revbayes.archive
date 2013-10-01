@@ -88,16 +88,17 @@ bool TestCharacterHistory::run( void ) {
     //////////
     // test
     
-    size_t numTaxa = 4;
+    size_t numTaxa = 3;
     size_t numNodes = 2 * numTaxa - 1;
     std::vector<std::string> taxonNames;
-    taxonNames.push_back("A");
-    taxonNames.push_back("B");
-    taxonNames.push_back("C");
-    taxonNames.push_back("D");
-
+    for (size_t i = 0; i < numTaxa; i++)
+    {
+        std::stringstream ss;
+        ss << i;
+        taxonNames.push_back("p" + ss.str());
+    }
     
-    size_t numCharacters = 9;
+    size_t numCharacters = pow(3,2);
     size_t numStates = 2;
     size_t branchIndex = 0;
     
@@ -282,8 +283,6 @@ bool TestCharacterHistory::run( void ) {
     monitoredNodes.insert( rateGain );
     monitoredNodes.insert( rateLoss );
     
-  
-    /*
     for (size_t i = 0; i < br_vector.size(); i++)
     {
         TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
@@ -294,10 +293,9 @@ bool TestCharacterHistory::run( void ) {
     for (size_t i = 0; i < bh_vector.size(); i++)
     {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
-        monitors.insert( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
+        monitoredNodes.insert( bh_tdn );
     }
 
-    */
     
     monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
@@ -311,8 +309,6 @@ bool TestCharacterHistory::run( void ) {
     ///////////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-    
-    std::cout << "Running mcmc\n";
     myMcmc.run(mcmcGenerations/100);
     myMcmc.printOperatorSummary();
 

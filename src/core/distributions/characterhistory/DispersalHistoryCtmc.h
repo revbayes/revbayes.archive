@@ -41,7 +41,7 @@ namespace RevBayesCore
         virtual void                                            simulateParentCharacterState(const std::set<size_t>& indexSet);
         
     protected:
-        bool                                                    historyContainsExtinction(const std::vector<CharacterEvent*>& v, const std::set<CharacterEvent*,CharacterEventCompare>& s);
+        bool                                                    historyContainsExtinction(const std::vector<CharacterEvent*>& v, const std::multiset<CharacterEvent*,CharacterEventCompare>& s);
         virtual std::set<CharacterEvent*>                       simulateCharacterState(const std::set<size_t>& indexSet, double t);
         unsigned int                                            numOn(std::vector<CharacterEvent*> v);
         unsigned int                                            numOn(std::set<CharacterEvent*> s);

@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-TreeCharacterHistory::TreeCharacterHistory(std::vector<const TypedDagNode<BranchHistory>* > bh, const TypedDagNode<TimeTree>* tr, size_t nc, size_t ns) : TypedDistribution<RevBayesCore::BranchHistory>(new BranchHistory(nc,ns)), numCharacters(nc), numStates(ns)
+TreeCharacterHistory::TreeCharacterHistory(std::vector<const TypedDagNode<BranchHistory>* > bh, const TypedDagNode<TimeTree>* tr, size_t nc, size_t ns) : TypedDistribution<RevBayesCore::BranchHistory>(new BranchHistory(nc,ns)), numCharacters(nc), numStates(ns), tree(tr)
 {
     
     for (size_t i = 0; i < bh.size(); i++)
@@ -20,13 +20,12 @@ TreeCharacterHistory::TreeCharacterHistory(std::vector<const TypedDagNode<Branch
         addParameter(bh[i]);
     }
     
-    tree = tr;
     addParameter(tree);
     
-    dirtyBranch = std::vector<bool>(branchHistories.size(), true);
+    //dirtyBranch = std::vector<bool>(branchHistories.size(), true);
 }
 
-TreeCharacterHistory::TreeCharacterHistory(const TreeCharacterHistory& m) : TypedDistribution<RevBayesCore::BranchHistory>(m), numCharacters(m.numCharacters), numStates(m.numStates)
+TreeCharacterHistory::TreeCharacterHistory(const TreeCharacterHistory& m) : TypedDistribution<RevBayesCore::BranchHistory>(m), numCharacters(m.numCharacters), numStates(m.numStates), tree(m.tree), branchHistories(m.branchHistories)
 {
     
 }
@@ -44,7 +43,7 @@ void TreeCharacterHistory::redrawValue(void)
     // update internal node states
     for (int i = (int)nodes.size()-1; i >= 0; i--)
     {
-        std::cout << "iteration " << i << "\n";
+        std::cout << "redrawValue() for BranchHistory " << i << "\n";
         
         TopologyNode* p = nodes[i];
         //size_t nodeIdx = p->getIndex();
@@ -92,6 +91,17 @@ void TreeCharacterHistory::redrawValue(void)
         }
         
         bh->getValue().print();
+        std::cout << "--------\n";
+    }
+    
+    // enable redraw for parent/child/path
+    for (int i = 0; i < branchHistories.size(); i++)
+    {
+        const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
+        StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);
+        bh->getValue().setRedrawParentCharacters(true);
+        bh->getValue().setRedrawChildCharacters(true);
+        bh->getValue().setRedrawHistory(true);
     }
 }
 

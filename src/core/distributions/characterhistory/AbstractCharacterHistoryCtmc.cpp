@@ -74,7 +74,7 @@ void AbstractCharacterHistoryCtmc::simulatePath(const std::set<size_t>& indexSet
     // reject sample path history
     std::vector<CharacterEvent*> parentVector = value->getParentCharacters();
     std::vector<CharacterEvent*> childVector = value->getChildCharacters();
-    std::set<CharacterEvent*,CharacterEventCompare> history;
+    std::multiset<CharacterEvent*,CharacterEventCompare> history;
     
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index);
@@ -130,7 +130,7 @@ void AbstractCharacterHistoryCtmc::simulatePath(const std::set<size_t>& indexSet
             history.insert(*jt);
     }
     
-    value->setHistory(history);
+    value->updateHistory(history,indexSet);
 }
 
 void AbstractCharacterHistoryCtmc::simulateChildCharacterState(const std::set<size_t>& indexSet)
