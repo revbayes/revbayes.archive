@@ -37,6 +37,10 @@ void TreeCharacterHistory::redrawValue(void)
     const TimeTree* tau = &tree->getValue();
     std::vector<TopologyNode*> nodes = tau->getNodes();
     
+    std::set<size_t> indexSet;
+    for (size_t i = 0; i < numCharacters; i++)
+        indexSet.insert(i);
+    
     // update internal node states
     for (int i = (int)nodes.size()-1; i >= 0; i--)
     {

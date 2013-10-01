@@ -51,9 +51,9 @@ double AbstractCharacterHistoryCtmc::computeLnProbability(void)
     return 0.0;
 }
 
-void AbstractCharacterHistoryCtmc::simulatePath(void)
+void AbstractCharacterHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
 {
-    value->clearEvents();
+    value->clearEvents(indexSet);
     
     // get transition rates
     std::vector<std::vector<double> > r(numStates);
@@ -70,7 +70,7 @@ void AbstractCharacterHistoryCtmc::simulatePath(void)
             }
         }
     }
-
+    
     // reject sample path history
     std::vector<CharacterEvent*> parentVector = value->getParentCharacters();
     std::vector<CharacterEvent*> childVector = value->getChildCharacters();
@@ -82,10 +82,12 @@ void AbstractCharacterHistoryCtmc::simulatePath(void)
         bt = 200;
     bt = 1.0;
     
-    for (size_t i = 0; i < numCharacters; i++)
+    //for (size_t i = 0; i < numCharacters; i++)
+    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
+        size_t i = *it;
         std::set<CharacterEvent*> tmpHistory;
-
+        
         unsigned int currState = parentVector[i]->getState();
         unsigned int endState = childVector[i]->getState();
         do
@@ -96,7 +98,7 @@ void AbstractCharacterHistoryCtmc::simulatePath(void)
             {
                 double r_sum = -r[currState][currState];
                 t += RbStatistics::Exponential::rv( r_sum * bt * br, *GLOBAL_RNG );
-        
+                
                 if (t < 1.0)
                 {
                     double u = GLOBAL_RNG->uniform01() * r_sum;
@@ -124,37 +126,37 @@ void AbstractCharacterHistoryCtmc::simulatePath(void)
         while (currState != endState);
         //std::cout << "^ accepted\n--------\n";
         
-        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
-            history.insert(*it);
+        for (std::set<CharacterEvent*>::iterator jt = tmpHistory.begin(); jt != tmpHistory.end(); jt++)
+            history.insert(*jt);
     }
     
     value->setHistory(history);
 }
 
-void AbstractCharacterHistoryCtmc::simulateChildCharacterState(void)
+void AbstractCharacterHistoryCtmc::simulateChildCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setChildCharacters(simulateCharacterState(1.0));
+    value->setChildCharacters(simulateCharacterState(indexSet, 1.0));
 }
 
-void AbstractCharacterHistoryCtmc::simulateParentCharacterState(void)
+void AbstractCharacterHistoryCtmc::simulateParentCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setParentCharacters(simulateCharacterState(0.0));
+    value->setParentCharacters(simulateCharacterState(indexSet, 0.0));
 }
 
-std::set<CharacterEvent*> AbstractCharacterHistoryCtmc::simulateCharacterState(double t)
+std::set<CharacterEvent*> AbstractCharacterHistoryCtmc::simulateCharacterState(const std::set<size_t>& indexSet, double t)
 {
     std::set<CharacterEvent*> characterState;
-
-    for (size_t i = 0; i < numCharacters; i++)
+    
+    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
         unsigned int s = (unsigned int)(GLOBAL_RNG->uniform01() * numStates);
-        //std::cout << s << " ";
-        characterState.insert(new CharacterEvent(i,s,t));
+        characterState.insert(new CharacterEvent(*it,s,t));
     }
-    //std::cout << "\n";
     
     return characterState;
 }
+
+
 
 
 void AbstractCharacterHistoryCtmc::redrawValue(void)
@@ -162,10 +164,14 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
     
     //std::cout << "ns " << numStates << "   nc " << numCharacters << "\n";
 
+    std::set<size_t> indexSet;
+    for (size_t i = 0; i < numCharacters; i++)
+        indexSet.insert(i);
+    
     if (value->getRedrawParentCharacters())
     {
         //std::cout << index << " !! redraw parent\n";
-        simulateParentCharacterState();
+        simulateParentCharacterState(indexSet);
         value->setRedrawParentCharacters(false);
     }
 
@@ -173,7 +179,7 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
     if (value->getRedrawChildCharacters())
     {
         //std::cout << index << " redraw child\n";
-        simulateChildCharacterState();
+        simulateChildCharacterState(indexSet);
         value->setRedrawChildCharacters(false);
     }
     
@@ -181,7 +187,7 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
     if (value->getRedrawHistory())
     {
         //std::cout << index << " redraw path\n";
-        simulatePath();
+        simulatePath(indexSet);
         value->setRedrawHistory(false);
     }
     
@@ -219,46 +225,3 @@ void AbstractCharacterHistoryCtmc::setValue(const std::multiset<CharacterEvent*,
 {
     value->updateHistory(updateSet,parentSet,childSet,indexSet);
 }
-
-
-/*
- 
- // silly distribution that samples according to rates away from some state
- std::vector<double> p;
- double p_sum = 0.0;
- for (size_t i = 0; i < numStates; i++)
- {
- double p_i = 0.0;
- for (size_t j = 0; j < numStates-1; j++)
- {
- if (i != j)
- {
- p_i += rates[i * numStates + j]->getValue();
- }
- }
- p.push_back(1.0 / p_i);
- p_sum += p[i];
- }
- 
- for (size_t i = 0; i < p.size(); i++)
- p[i] /= p_sum;
- 
- 
- for (size_t i = 0; i < numCharacters; i++)
- {
- unsigned int s = 0;
- double u = GLOBAL_RNG->uniform01();
- for (size_t j = 0; j < p.size(); j++)
- {
- u -= p[j];
- if (u < 0.0)
- {
- s = 0;
- break;
- }
- }
- 
- characterState.insert(new CharacterEvent(i,s,t));
- }
- */
-

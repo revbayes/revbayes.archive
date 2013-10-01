@@ -141,9 +141,10 @@ void DispersalHistoryCtmc::touchSpecialization(DagNode *toucher)
 
 
 
-void DispersalHistoryCtmc::simulatePath(void)
+void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
 {
-    value->clearEvents();
+
+    value->clearEvents(indexSet);
     
     // get transition rates
     std::vector<std::vector<double> > r(numStates);
@@ -172,8 +173,9 @@ void DispersalHistoryCtmc::simulatePath(void)
         bt = 200;
     bt = 10.0;
     
-    for (size_t i = 0; i < numCharacters; i++)
+    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
+        size_t i = *it;
         std::set<CharacterEvent*> tmpHistory;
         
         unsigned int currState = parentVector[i]->getState();
@@ -209,7 +211,7 @@ void DispersalHistoryCtmc::simulatePath(void)
     if (historyContainsExtinction(parentVector, history) == true)
     {
         std::cout << "contains extinction\n";
-        simulatePath();
+        simulatePath(indexSet);
     }
     else
         value->setHistory(history);
@@ -234,31 +236,32 @@ bool DispersalHistoryCtmc::historyContainsExtinction(const std::vector<Character
     return false;
 }
 
-void DispersalHistoryCtmc::simulateChildCharacterState(void)
+void DispersalHistoryCtmc::simulateChildCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setChildCharacters(simulateCharacterState(1.0));
+    value->setChildCharacters(simulateCharacterState(indexSet,1.0));
 }
 
-void DispersalHistoryCtmc::simulateParentCharacterState(void)
+void DispersalHistoryCtmc::simulateParentCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setParentCharacters(simulateCharacterState(0.0));
+    value->setParentCharacters(simulateCharacterState(indexSet,0.0));
 }
 
-std::set<CharacterEvent*> DispersalHistoryCtmc::simulateCharacterState(double t)
+std::set<CharacterEvent*> DispersalHistoryCtmc::simulateCharacterState(const std::set<size_t>& indexSet,double t)
 {
     std::set<CharacterEvent*> characterState;
     int numOn = 0;
     
-    for (size_t i = 0; i < numCharacters; i++)
+    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+//    for (size_t i = 0; i < numCharacters; i++)
     {
         unsigned int s = (unsigned int)(GLOBAL_RNG->uniform01() * numStates);
         numOn += s;
-        characterState.insert(new CharacterEvent(i,s,t));
+        characterState.insert(new CharacterEvent(*it,s,t));
     }
     
     // retry if extinct
     if (numOn == 0)
-        characterState = simulateCharacterState(t);
+        characterState = simulateCharacterState(indexSet, t);
     
     return characterState;
 }
@@ -269,10 +272,14 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     //std::cout << "ns " << numStates << "   nc " << numCharacters << "\n";
     
+    std::set<size_t> indexSet;
+    for (size_t i = 0; i < numCharacters; i++)
+        indexSet.insert(i);
+    
     if (value->getRedrawParentCharacters())
     {
         std::cout << index << " redraw parent\n";
-        simulateParentCharacterState();
+        simulateParentCharacterState(indexSet);
         value->setRedrawParentCharacters(false);
     }
     
@@ -280,7 +287,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     if (value->getRedrawChildCharacters())
     {
         std::cout << index << " redraw child\n";
-        simulateChildCharacterState();
+        simulateChildCharacterState(indexSet);
         value->setRedrawChildCharacters(false);
     }
     
@@ -288,7 +295,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     if (value->getRedrawHistory())
     {
         std::cout << index << " redraw path\n";
-        simulatePath();
+        simulatePath(indexSet);
         value->setRedrawHistory(false);
     }
     

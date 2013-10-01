@@ -12,6 +12,7 @@
 #include "BetaDistribution.h"
 #include "BranchHistory.h"
 #include "CharacterEvent.h"
+#include "CharacterHistoryCtmcPathUpdate.h"
 #include "Clade.h"
 #include "ConstantBirthDeathProcess.h"
 #include "ConstantNode.h"
@@ -168,7 +169,7 @@ bool TestCharacterHistory::run( void ) {
     // geographical distance powers
     ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(10.0));
     StochasticNode<double>* distancePower = new StochasticNode<double>("dist_pow", new ExponentialDistribution(distancePower_pr));
-    distancePower->setValue(new double(2.0));
+    distancePower->setValue(new double(1.0));
     
     // tree
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
@@ -258,9 +259,12 @@ bool TestCharacterHistory::run( void ) {
         moves.push_back( new ScaleMove(br_sn, 1.0, true, 2.0) );
     }
     
+    
     for (size_t i = 0; i < bh_vector.size(); i++)
     {
-        ; // path update for bh
+        TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
+        StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
+        moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
     }
     
     for (size_t i = numTaxa; i < bh_vector.size(); i++)
@@ -277,6 +281,23 @@ bool TestCharacterHistory::run( void ) {
     monitoredNodes.insert( distancePower );
     monitoredNodes.insert( rateGain );
     monitoredNodes.insert( rateLoss );
+    
+  
+    /*
+    for (size_t i = 0; i < br_vector.size(); i++)
+    {
+        TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
+        monitoredNodes.insert( br_tdn );
+    }
+    
+    
+    for (size_t i = 0; i < bh_vector.size(); i++)
+    {
+        TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
+        monitors.insert( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
+    }
+
+    */
     
     monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );

@@ -26,6 +26,10 @@ namespace RevBayesCore {
         BranchHistory& operator=(const BranchHistory& bh);
         BranchHistory* clone(void) const;
         
+        const size_t getNumCharacters(void) const;
+        const size_t getNumStates(void) const;
+        const size_t getNumEvents(void) const;
+        
         const std::vector<CharacterEvent*>& getParentCharacters(void);
         const std::vector<CharacterEvent*>& getChildCharacters(void);
         const std::vector<CharacterEvent*>& getParentCharacters(void) const;
@@ -37,6 +41,7 @@ namespace RevBayesCore {
         void clearEvents(void);
         void clearEvents(const std::set<size_t>& clearSet);
         void updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<CharacterEvent*>& parentSet, const std::set<CharacterEvent*>& childSet, const std::set<size_t>& indexSet);
+        void updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<size_t>& indexSet);
         
         // used to 
         //std::multiset<CharacterEvent*,CharacterEventCompare> swapHistoryEvents(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet);

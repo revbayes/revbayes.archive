@@ -32,13 +32,17 @@ namespace RevBayesCore
         
         // inherited virtual functions
         virtual void                                            redrawValue(void);
-        virtual void                                            simulatePath(void);
-        virtual void                                            simulateChildCharacterState(void);
-        virtual void                                            simulateParentCharacterState(void);
+        
+        //virtual void                                            simulatePath(void);
+        //virtual void                                            simulateChildCharacterState(void);
+        //virtual void                                            simulateParentCharacterState(void);
+        virtual void                                            simulatePath(const std::set<size_t>& indexSet);
+        virtual void                                            simulateChildCharacterState(const std::set<size_t>& indexSet);
+        virtual void                                            simulateParentCharacterState(const std::set<size_t>& indexSet);
         
     protected:
         bool                                                    historyContainsExtinction(const std::vector<CharacterEvent*>& v, const std::set<CharacterEvent*,CharacterEventCompare>& s);
-        virtual std::set<CharacterEvent*>                       simulateCharacterState(double t);
+        virtual std::set<CharacterEvent*>                       simulateCharacterState(const std::set<size_t>& indexSet, double t);
         unsigned int                                            numOn(std::vector<CharacterEvent*> v);
         unsigned int                                            numOn(std::set<CharacterEvent*> s);
         unsigned int                                            numOn(std::set<CharacterEvent*,CharacterEventCompare> s);

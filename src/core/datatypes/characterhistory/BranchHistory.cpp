@@ -116,6 +116,8 @@ void BranchHistory::removeEvent(CharacterEvent* evt)
 
 void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<CharacterEvent*>& parentSet, const std::set<CharacterEvent*>& childSet, const std::set<size_t>& indexSet)
 {
+    
+    /*
     // erase events on branchHistory for indices in indexSet
     clearEvents(indexSet);
     
@@ -123,6 +125,9 @@ void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterE
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = updateSet.begin(); it_h != updateSet.end(); it_h++)
         history.insert(*it_h);
+    */
+    
+    updateHistory(updateSet, indexSet);
     
     // update events on terminal vectors
     std::set<CharacterEvent*>::iterator it_idx;
@@ -131,6 +136,18 @@ void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterE
     for (it_idx = childSet.begin(); it_idx != childSet.end(); it_idx++)
         childCharacters[ (*it_idx)->getIndex() ] = *it_idx;
     
+}
+
+void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<size_t>& indexSet)
+{
+    // erase events on branchHistory for indices in indexSet
+    clearEvents(indexSet);
+    
+    // insert elements into history
+    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    for (it_h = updateSet.begin(); it_h != updateSet.end(); it_h++)
+        history.insert(*it_h);
+
 }
 
 void BranchHistory::setParentCharacters(const std::set<CharacterEvent*>& s)
@@ -237,9 +254,24 @@ void BranchHistory::setRedrawHistory(bool tf)
     redrawHistory = tf;
 }
 
+const size_t BranchHistory::getNumCharacters(void) const
+{
+    return numCharacters;
+}
+
+const size_t BranchHistory::getNumStates(void) const
+{
+    return numStates;
+}
+
+const size_t BranchHistory::getNumEvents(void) const
+{
+    return history.size();
+}
+
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchHistory& x) {
     
-    o << " ";
+    o << " "; //x.getNumEvents();
     
     return o;
 }

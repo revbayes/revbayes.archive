@@ -33,9 +33,14 @@ namespace RevBayesCore
                 
         // inherited pure virtual functions
         virtual void                                            redrawValue(void);
-        virtual void                                            simulatePath(void);
-        virtual void                                            simulateChildCharacterState(void);
-        virtual void                                            simulateParentCharacterState(void);
+        
+        //virtual void                                            simulatePath(void);
+        //virtual void                                            simulateChildCharacterState(void);
+        //virtual void                                            simulateParentCharacterState(void);
+        
+        virtual void                                            simulatePath(const std::set<size_t>& indexSet);
+        virtual void                                            simulateChildCharacterState(const std::set<size_t>& indexSet);
+        virtual void                                            simulateParentCharacterState(const std::set<size_t>& indexSet);
 
         // pure virtual functions
         virtual AbstractCharacterHistoryCtmc*                   clone(void) const = 0;
@@ -45,7 +50,8 @@ namespace RevBayesCore
         virtual double                                          transitionRate(std::vector<CharacterEvent*> oldState, CharacterEvent* evt) = 0;
         
     protected:
-        virtual std::set<CharacterEvent*>                       simulateCharacterState(double t);
+        //virtual std::set<CharacterEvent*>                       simulateCharacterState(double t);
+        virtual std::set<CharacterEvent*>                       simulateCharacterState(const std::set<size_t>& indexSet, double t);
         
         TypedDagNode<RateMatrix>*                               rateMatrix;
         std::vector<const TypedDagNode<double>* >               rates;
