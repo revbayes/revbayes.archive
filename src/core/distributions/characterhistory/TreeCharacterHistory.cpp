@@ -36,14 +36,18 @@ void TreeCharacterHistory::redrawValue(void)
 
     const TimeTree* tau = &tree->getValue();
     std::vector<TopologyNode*> nodes = tau->getNodes();
-
-    // update internal node states
-    for (size_t i = nodes.size(); i >= 1; --i)
-    {
-        TopologyNode* p = nodes[i];
-        size_t nodeIdx = p->getIndex();
-        size_t parentIdx = p->getParent().getIndex();
     
+    // update internal node states
+    for (int i = (int)nodes.size()-1; i >= 0; i--)
+    {
+        std::cout << "iteration " << i << "\n";
+        
+        TopologyNode* p = nodes[i];
+        //size_t nodeIdx = p->getIndex();
+        size_t parentIdx = 0;
+        if (!p->isRoot())
+            parentIdx = p->getParent().getIndex();
+        
         // cast away constness like a villain
         const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
         StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);
@@ -58,6 +62,7 @@ void TreeCharacterHistory::redrawValue(void)
         if (p->isRoot())
         {
             bh->getDistribution().redrawValue();
+            bh->getValue().setRedrawParentCharacters(false);
         }
         else
         {
@@ -65,23 +70,24 @@ void TreeCharacterHistory::redrawValue(void)
             for (size_t i = 0; i < parentVector.size(); i++)
                 parentSet.insert(parentVector[i]);
             bh->getValue().setParentCharacters(parentSet);
+            bh->getValue().setRedrawParentCharacters(false);
         }
         
         if (p->isTip())
         {
             // childVector = observedCharacters;
-            for (size_t i = 0; i < childVector.size(); i++)
-                childSet.insert(childVector[i]);
-            bh->getValue().setChildCharacters(childSet);
+            //for (size_t i = 0; i < childVector.size(); i++)
+            //    childSet.insert(childVector[i]);
+            //bh->getValue().setChildCharacters(childSet);
+            
+            bh->getDistribution().redrawValue();
         }
         else
         {
             bh->getDistribution().redrawValue();
         }
         
-        //redrawBranch(updateSet, parentSet, childSet, indexSet);
-        
-        //bh->getValue().updateHistory(updateSet, parentSet, childSet, indexSet);
+        bh->getValue().print();
     }
 }
 

@@ -20,6 +20,7 @@ namespace RevBayesCore
         
     public:
         DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd=NULL);
+        DispersalHistoryCtmc(const DispersalHistoryCtmc& m);
                 
         DispersalHistoryCtmc*               clone(void) const;
         double                              computeLnProbability(void);

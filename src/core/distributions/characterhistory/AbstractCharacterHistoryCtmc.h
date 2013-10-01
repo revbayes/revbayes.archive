@@ -25,6 +25,7 @@ namespace RevBayesCore
 
         //AbstractCharacterHistoryCtmc(BranchHistory* bh, TypedDagNode<RateMatrix> *rateMtx, std::vector<TypedDagNode<double> >* r, size_t ns, size_t nc);
         AbstractCharacterHistoryCtmc(TypedDagNode<RateMatrix> *rateMtx, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx);
+        AbstractCharacterHistoryCtmc(const AbstractCharacterHistoryCtmc& m);
         
         // allows for partial update of history
         //virtual void                                            setValue(BranchHistory* v);

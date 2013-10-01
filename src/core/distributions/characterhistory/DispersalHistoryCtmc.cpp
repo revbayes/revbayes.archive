@@ -24,6 +24,12 @@ DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::ve
     addParameter(distancePower);
 }
 
+DispersalHistoryCtmc::DispersalHistoryCtmc(const DispersalHistoryCtmc& m) : AbstractCharacterHistoryCtmc(m)
+{
+    geographicDistances = m.geographicDistances;
+    distancePower = m.distancePower;
+}
+
 DispersalHistoryCtmc* DispersalHistoryCtmc::clone(void) const
 {
     return new DispersalHistoryCtmc(*this);
@@ -94,7 +100,7 @@ double DispersalHistoryCtmc::computeLnProbability(void)
     double t = 0.0;
     double dt = 0.0;
     double br = branchRate->getValue();
-    double bt = tree->getValue().getNode(index).getBranchLength();
+    double bt = tree->getValue().getBranchLength(index);
     double bs = bt/br;
 
     // stepwise events
@@ -164,7 +170,7 @@ void DispersalHistoryCtmc::simulatePath(void)
     double bt = tree->getValue().getBranchLength(index);
     if (bt == 0.0)
         bt = 200;
-    bt = 1.0;
+    bt = 10.0;
     
     for (size_t i = 0; i < numCharacters; i++)
     {
@@ -265,7 +271,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawParentCharacters())
     {
-        std::cout << "redraw parent\n";
+        std::cout << index << " redraw parent\n";
         simulateParentCharacterState();
         value->setRedrawParentCharacters(false);
     }
@@ -273,7 +279,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawChildCharacters())
     {
-        std::cout << "redraw child\n";
+        std::cout << index << " redraw child\n";
         simulateChildCharacterState();
         value->setRedrawChildCharacters(false);
     }
@@ -281,7 +287,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawHistory())
     {
-        std::cout << "redraw path\n";
+        std::cout << index << " redraw path\n";
         simulatePath();
         value->setRedrawHistory(false);
     }

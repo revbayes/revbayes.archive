@@ -35,6 +35,17 @@ AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatr
     //redrawValue();
 }
 
+AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(const AbstractCharacterHistoryCtmc& m) : TypedDistribution<BranchHistory>(m)
+{
+    rateMatrix = m.rateMatrix;
+    rates = m.rates;
+    tree = m.tree;
+    branchRate = m.branchRate;
+    numStates = m.numStates;
+    numCharacters = m.numCharacters;
+    index = m.index;
+}
+
 double AbstractCharacterHistoryCtmc::computeLnProbability(void)
 {
     return 0.0;
@@ -153,7 +164,7 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
 
     if (value->getRedrawParentCharacters())
     {
-        //std::cout << "redraw parent\n";
+        //std::cout << index << " !! redraw parent\n";
         simulateParentCharacterState();
         value->setRedrawParentCharacters(false);
     }
@@ -161,7 +172,7 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawChildCharacters())
     {
-        //std::cout << "redraw child\n";
+        //std::cout << index << " redraw child\n";
         simulateChildCharacterState();
         value->setRedrawChildCharacters(false);
     }
@@ -169,7 +180,7 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
 
     if (value->getRedrawHistory())
     {
-        //std::cout << "redraw path\n";
+        //std::cout << index << " redraw path\n";
         simulatePath();
         value->setRedrawHistory(false);
     }

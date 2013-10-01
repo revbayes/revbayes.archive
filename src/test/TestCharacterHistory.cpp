@@ -88,6 +88,7 @@ bool TestCharacterHistory::run( void ) {
     // test
     
     size_t numTaxa = 4;
+    size_t numNodes = 2 * numTaxa - 1;
     std::vector<std::string> taxonNames;
     taxonNames.push_back("A");
     taxonNames.push_back("B");
@@ -165,7 +166,7 @@ bool TestCharacterHistory::run( void ) {
     branchRate->setValue(1.0);
     
     // geographical distance powers
-    ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(1.0));
+    ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(10.0));
     StochasticNode<double>* distancePower = new StochasticNode<double>("dist_pow", new ExponentialDistribution(distancePower_pr));
     distancePower->setValue(new double(2.0));
     
@@ -177,8 +178,6 @@ bool TestCharacterHistory::run( void ) {
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
 
-    
-    
     //////////
     // test distances
     std::vector<std::vector<double> > geo_coords;
@@ -195,29 +194,52 @@ bool TestCharacterHistory::run( void ) {
     
     // create a branch history
     GeographicDistanceRateModifier* gdrm = new GeographicDistanceRateModifier(geo_coords);
+    
+    /*
     DispersalHistoryCtmc* ahc = new DispersalHistoryCtmc(q, rates, tau, branchRate, distancePower, numCharacters, numStates, 0, gdrm);
     StochasticNode<BranchHistory>* br_chm = new StochasticNode<BranchHistory>("br_model",ahc);
     br_chm->redraw();
     br_chm->getValue().print();
-    
+    */
 
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
     std::cout << "rateLoss       = " << rateLoss->getValue() << "\n";
     std::cout << "distancePower  = " << distancePower->getValue() << "\n";
-    std::cout << "lnL            = " << ahc->computeLnProbability() << "\n";
+    //std::cout << "lnL            = " << ahc->computeLnProbability() << "\n";
     std::cout << "--------------\n";
     
     ///////////////
     
     
     // test for a tree character history
-    // std::vector<const TypedDagNode<BranchHistory>* > bh_vector;
-    // std::vector<const TypedDagNode<double>* > br_vector;
-    // std::vector<const TypedDagNode<double>* > er_vector;
     
-    //TreeCharacterHistory* tch = new TreeCharacterHistory( bh_vector, tau, numCharacters, numStates );
-    //StochasticNode<BranchHistory>* tr_chm = new StochasticNode<BranchHistory>("tr_model", tch);
+    
+    // branch rates
+    std::vector<const TypedDagNode<double>* > br_vector;
+    for (size_t i = 0; i < numNodes; i++)
+    {
+        std::stringstream ss;
+        ss << i;
+        StochasticNode<double>* tmp_br = new StochasticNode<double>("br" + ss.str(), new ExponentialDistribution(branchRate_pr));
+        tmp_br->setValue(1.0);
+        br_vector.push_back(tmp_br);
+    }
+
+    // branch histories
+    std::vector<const TypedDagNode<BranchHistory>* > bh_vector;
+    for (size_t i = 0; i < numNodes; i++)
+    {
+        std::stringstream ss;
+        ss << i;
+        DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, gdrm);
+        bh_vector.push_back(new StochasticNode<BranchHistory>("bh" + ss.str(), tmp_ahc));
+    }
+    
+    // tree history
+    TreeCharacterHistory* tch = new TreeCharacterHistory( bh_vector, tau, numCharacters, numStates );
+    StochasticNode<BranchHistory>* tr_chm = new StochasticNode<BranchHistory>("tr_model", tch);
+    tr_chm->redraw();
     
     
     
@@ -229,6 +251,22 @@ bool TestCharacterHistory::run( void ) {
     moves.push_back( new ScaleMove(distancePower, 1.0, true, 2.0) );
     moves.push_back( new ScaleMove(rateGain, 1.0, true, 2.0) );
     moves.push_back( new ScaleMove(rateLoss, 1.0, true, 2.0) );
+    for (size_t i = 0; i < br_vector.size(); i++)
+    {
+        TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
+        StochasticNode<double>* br_sn = static_cast<StochasticNode<double>* >(br_tdn);
+        moves.push_back( new ScaleMove(br_sn, 1.0, true, 2.0) );
+    }
+    
+    for (size_t i = 0; i < bh_vector.size(); i++)
+    {
+        ; // path update for bh
+    }
+    
+    for (size_t i = numTaxa; i < bh_vector.size(); i++)
+    {
+        ; // node update for bh
+    }
     
     ///////////////
     
@@ -246,16 +284,16 @@ bool TestCharacterHistory::run( void ) {
     ///////////////
     
     std::cout << "Instantiating model\n";
-    Model myModel = Model(br_chm);
+    Model myModel = Model(tr_chm);
 
     
     ///////////////
     std::cout << "Instantiating mcmc\n";
-    //Mcmc myMcmc = Mcmc( myModel, moves, monitors );
+    Mcmc myMcmc = Mcmc( myModel, moves, monitors );
     
     std::cout << "Running mcmc\n";
-    //myMcmc.run(mcmcGenerations);
-    //myMcmc.printOperatorSummary();
+    myMcmc.run(mcmcGenerations/100);
+    myMcmc.printOperatorSummary();
 
     
     ///////////////

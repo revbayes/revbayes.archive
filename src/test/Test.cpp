@@ -447,7 +447,7 @@ bool Test::performTests(void) {
     // discrete dependence model
     try
     {
-        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 100);
+        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
         testDdm.run();
     }
     catch (RbException &e)
