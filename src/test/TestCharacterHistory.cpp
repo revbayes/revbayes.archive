@@ -101,35 +101,34 @@ bool TestCharacterHistory::run( void ) {
     
     size_t numCharacters = pow(4,2);
     size_t numStates = 2;
-    size_t branchIndex = 0;
-    
-    
-    //////////////////////
-    // initialize branch history
-    
-    BranchHistory* bh = new BranchHistory(numCharacters, numStates, 0);
-    
-    std::multiset<CharacterEvent*,CharacterEventCompare> updateSet;
-    std::set<CharacterEvent*> parentSet, childSet;
-    std::set<size_t> indexSet;
-    
-    for (size_t i = 0; i < numCharacters; i++)
-        parentSet.insert(new CharacterEvent(i, (i < 4 ? 1 : 0), 0.0));
-    
-    for (size_t i = 0; i < numCharacters; i++)
-        childSet.insert(new CharacterEvent(i, (i < 4 && i != 0? 0 : 1), 1.0));
-    
-    double dt = 1.0 / (numCharacters+1);
-    for (size_t i = 1; i < numCharacters; i++)
+        
+    std::vector<std::vector<double> > geo_coords;
+    std::string geo_type = "line";
+    if (geo_type == "square")
     {
-        updateSet.insert(new CharacterEvent(i, (i > 3 ? 1 : 0), dt*(i+1)));
+        for (size_t i = 0; i < sqrt(numCharacters); i++)
+        {
+            for (size_t j = 0; j < sqrt(numCharacters); j++)
+            {
+                std::vector<double> tmp;
+                tmp.push_back(i);
+                tmp.push_back(j);
+                geo_coords.push_back(tmp);
+            }
+        }
     }
+    else if (geo_type == "line")
+    {
+        for (size_t i = 0; i < numCharacters; i++)
+        {
+            std::vector<double> tmp;
+            tmp.push_back(i);
+            tmp.push_back(0);
+            geo_coords.push_back(tmp);
+        }
+    }
+
     
-    for (size_t i = 0; i < numCharacters; i++)
-        indexSet.insert(i);
-    
-    //bh->updateHistory(updateSet, parentSet, childSet, indexSet);
-  
     //////////
     
     // To use RateMatrix, need to derive class with:
@@ -168,43 +167,23 @@ bool TestCharacterHistory::run( void ) {
     StochasticNode<double>* branchRate = new StochasticNode<double>("br", new ExponentialDistribution(branchRate_pr));
     branchRate->setValue(1.0);
     
-    // geographical distance powers
-    ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(5.0));
-    StochasticNode<double>* distancePower = new StochasticNode<double>("dist_pow", new ExponentialDistribution(distancePower_pr));
-    distancePower->setValue(new double(4.0));
-    
     // tree
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
+    div->setValue(new double(1.0));
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
 
-    //////////
-    // test distances
-    std::vector<std::vector<double> > geo_coords;
-    for (size_t i = 0; i < sqrt(numCharacters); i++)
-    {
-        for (size_t j = 0; j < sqrt(numCharacters); j++)
-        {
-            std::vector<double> tmp;
-            tmp.push_back(i);
-            tmp.push_back(j);
-            geo_coords.push_back(tmp);
-        }
-    }
+    // geographical distance powers
+    ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(5.0));
+    StochasticNode<double>* distancePower = new StochasticNode<double>("dist_pow", new ExponentialDistribution(distancePower_pr));
+    distancePower->setValue(new double(4.0));
     
-    // create a branch history
+    // geographic distances
     GeographicDistanceRateModifier* gdrm = new GeographicDistanceRateModifier(geo_coords);
     
-    /*
-    DispersalHistoryCtmc* ahc = new DispersalHistoryCtmc(q, rates, tau, branchRate, distancePower, numCharacters, numStates, 0, gdrm);
-    StochasticNode<BranchHistory>* br_chm = new StochasticNode<BranchHistory>("br_model",ahc);
-    br_chm->redraw();
-    br_chm->getValue().print();
-    */
-
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
     std::cout << "rateLoss       = " << rateLoss->getValue() << "\n";
@@ -212,10 +191,7 @@ bool TestCharacterHistory::run( void ) {
     std::cout << "--------------\n";
     
     ///////////////
-    
-    
     // test for a tree character history
-    
     
     // branch rates
     std::vector<const TypedDagNode<double>* > br_vector;
@@ -338,3 +314,33 @@ bool TestCharacterHistory::run( void ) {
     
     return true;
 }
+
+
+//////////////////////
+// initialize branch history
+
+
+/*
+ BranchHistory* bh = new BranchHistory(numCharacters, numStates, 0);
+ 
+ std::multiset<CharacterEvent*,CharacterEventCompare> updateSet;
+ std::set<CharacterEvent*> parentSet, childSet;
+ std::set<size_t> indexSet;
+ 
+ for (size_t i = 0; i < numCharacters; i++)
+ parentSet.insert(new CharacterEvent(i, (i < 4 ? 1 : 0), 0.0));
+ 
+ for (size_t i = 0; i < numCharacters; i++)
+ childSet.insert(new CharacterEvent(i, (i < 4 && i != 0? 0 : 1), 1.0));
+ 
+ double dt = 1.0 / (numCharacters+1);
+ for (size_t i = 1; i < numCharacters; i++)
+ {
+ updateSet.insert(new CharacterEvent(i, (i > 3 ? 1 : 0), dt*(i+1)));
+ }
+ 
+ for (size_t i = 0; i < numCharacters; i++)
+ indexSet.insert(i);
+ 
+ //bh->updateHistory(updateSet, parentSet, childSet, indexSet);
+ */

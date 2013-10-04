@@ -335,6 +335,7 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     
     // start state
     std::vector<CharacterEvent*> currState = value->getParentCharacters();
+    std::set<CharacterEvent*,CharacterEventCompare> history;
     
     // simulate to end state
     double t = 0.0;
@@ -369,6 +370,7 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
                 if (u <= 0.0)
                 {
                     currState[i] = evt;
+                    history.insert(evt);
                     
                     // check how many areas on
                     if (s == 0)
@@ -381,8 +383,10 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
         }
     }
     while (t < 1.0);
-
+    
+    value->setHistory(history);
     value->setChildCharacters(currState);
+
 }
 
 unsigned int DispersalHistoryCtmc::numOn(std::vector<CharacterEvent*> v)
