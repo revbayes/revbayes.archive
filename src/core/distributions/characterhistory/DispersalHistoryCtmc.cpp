@@ -87,6 +87,9 @@ void DispersalHistoryCtmc::swapParameter(const DagNode *oldP, const DagNode *new
 double DispersalHistoryCtmc::computeLnProbability(void)
 {
     double lnL = 0.0;
+
+    if (tree->getValue().getNode(index).isRoot())
+        return 0.0;
     
     BranchHistory* bh = value;
     
@@ -101,7 +104,12 @@ double DispersalHistoryCtmc::computeLnProbability(void)
     double dt = 0.0;
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
-    double bs = bt/br;
+    if (bt == 0.0)
+        bt = 5.0;
+    double bs = bt*br;
+    //std::cout << "** " << bs << " = " << br << " * " << bt << "\n";
+    //bh->print();
+    //std::cout << "**\n";
 
     // stepwise events
     for (it_h = history.begin(); it_h != history.end(); it_h++)
@@ -119,13 +127,14 @@ double DispersalHistoryCtmc::computeLnProbability(void)
         // update state
         currState[idx] = *it_h;
         t += dt;
-        //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "\n";
+        //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "; " << bt << " " << br << " " << dt << "\n";
     }
     
     // lnL for final non-event
     double sr = sumOfRates(currState);
     lnL += -sr * (1.0 - t);
 
+    //std::cout << "----\n";
     return lnL;
 }
 
@@ -170,7 +179,7 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0) // root bt
-        bt = 10.0;
+        bt = 5.0;
     
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {

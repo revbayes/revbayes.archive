@@ -23,6 +23,7 @@ namespace RevBayesCore {
     public:
         //BranchHistory(void);
         BranchHistory(size_t nc, size_t ns);
+        BranchHistory(const BranchHistory& m);
         BranchHistory& operator=(const BranchHistory& bh);
         BranchHistory* clone(void) const;
         

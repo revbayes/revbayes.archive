@@ -84,10 +84,14 @@ void TreeCharacterHistory::redrawValue(void)
             //bh->getValue().setChildCharacters(childSet);
             
             bh->getDistribution().redrawValue();
+            bh->getValue().setRedrawChildCharacters(false);
+            bh->getValue().setRedrawHistory(false);
         }
         else
         {
             bh->getDistribution().redrawValue();
+            bh->getValue().setRedrawChildCharacters(false);
+            bh->getValue().setRedrawHistory(false);
         }
         
         bh->getValue().print();

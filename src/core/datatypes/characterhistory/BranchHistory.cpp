@@ -25,6 +25,22 @@ BranchHistory::BranchHistory(size_t nc, size_t ns) : numCharacters(nc), numState
 }
 
 
+BranchHistory::BranchHistory(const BranchHistory& m)
+{
+    if (this != &m) {
+        
+        numStates = m.numStates;
+        numCharacters = m.numCharacters;
+        parentCharacters = m.parentCharacters;
+        childCharacters = m.childCharacters;
+        history = m.history;
+        redrawChildCharacters = m.redrawChildCharacters;
+        redrawParentCharacters = m.redrawParentCharacters;
+        redrawHistory = m.redrawHistory;
+    }
+    
+}
+
 BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
     
     if (this != &bh) {
@@ -91,15 +107,18 @@ void BranchHistory::clearEvents(const std::set<size_t>& indexSet)
     {
         if ( indexSet.find( (*it_h)->getIndex() ) != indexSet.end() )
         {
+//            std::cout << "found one!\n";
             it_tmp = it_h;
             ++it_tmp;
             history.erase(it_h);
             it_h = it_tmp;
+            //std::cout << "found!\n";
         }
         else
         {
             ++it_h;
         }
+        //std::cout << "sz " << history.size() << "\n";
     }
 }
 

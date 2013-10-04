@@ -257,10 +257,9 @@ bool TestCharacterHistory::run( void ) {
     {
         TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
         StochasticNode<double>* br_sn = static_cast<StochasticNode<double>* >(br_tdn);
-        moves.push_back( new ScaleMove(br_sn, 1.0, true, 2.0) );
+        ;//moves.push_back( new ScaleMove(br_sn, 1.0, true, 2.0) );
     }
-    
-    
+        
     for (size_t i = 0; i < bh_vector.size(); i++)
     {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
@@ -298,7 +297,7 @@ bool TestCharacterHistory::run( void ) {
 
     
     monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
     
     ///////////////
     
@@ -309,7 +308,7 @@ bool TestCharacterHistory::run( void ) {
     ///////////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-    myMcmc.run(mcmcGenerations/100);
+    myMcmc.run(mcmcGenerations/10);
     myMcmc.printOperatorSummary();
 
     
