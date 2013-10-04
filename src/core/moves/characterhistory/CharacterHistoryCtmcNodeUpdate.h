@@ -14,39 +14,55 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "AbstractCharacterHistoryCtmc.h"
 #include "BranchHistory.h"
-#include "SimpleMove.h"
+#include "Move.h"
 #include "StochasticNode.h"
+#include "TimeTree.h"
 
 namespace RevBayesCore {
     
-    class CharacterHistoryCtmcNodeUpdate : public SimpleMove {
+    class CharacterHistoryCtmcNodeUpdate : public Move {
         
     public:
-        CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory> *n, double l, bool tuning, double w);                                    //!<  constructor
+        CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector<StochasticNode<BranchHistory>* > bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w);                                    //!<  constructor
         
         // Basic utility functions
         CharacterHistoryCtmcNodeUpdate* clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
+        
+        void                                    acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
+        double                                  performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
+        void                                    rejectMove(void);                                                                   //!< Reject the InferenceMoveSimple
+        
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         double                          performSimpleMove(void);                                                            //!< Perform move
         void                            printParameterSummary(std::ostream &o) const;
         void                            rejectSimpleMove(void);
         void                            tune(void);
         
+        bool                                    changed;
+        DagNode*                                theNode;
+
+        
     private:
         // parameters
         double                          lambda;
+        size_t                          numCharacters;
+        size_t                          numStates;
+        size_t                          index;
         
         StochasticNode<BranchHistory>*  variable;
-        double                          storedValue;
+        StochasticNode<TimeTree>*       tree;
+        std::vector< StochasticNode<BranchHistory>* > bh_vector;
         
         std::set<size_t>                storedIndexes;
-        std::multiset<CharacterEvent*>  storedCharacterEvents;
+        std::map<size_t,BranchHistory*>  storedValue;
+        std::set<BranchHistory>         storedSet;
         
     };
     

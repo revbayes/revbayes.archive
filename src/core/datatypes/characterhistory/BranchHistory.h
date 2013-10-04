@@ -22,7 +22,7 @@ namespace RevBayesCore {
         
     public:
         //BranchHistory(void);
-        BranchHistory(size_t nc, size_t ns);
+        BranchHistory(size_t nc, size_t ns, size_t idx);
         BranchHistory(const BranchHistory& m);
         BranchHistory& operator=(const BranchHistory& bh);
         BranchHistory* clone(void) const;
@@ -30,6 +30,7 @@ namespace RevBayesCore {
         const size_t getNumCharacters(void) const;
         const size_t getNumStates(void) const;
         const size_t getNumEvents(void) const;
+        const size_t getIndex(void) const;
         
         const std::vector<CharacterEvent*>& getParentCharacters(void);
         const std::vector<CharacterEvent*>& getChildCharacters(void);
@@ -49,7 +50,9 @@ namespace RevBayesCore {
         //std::set<CharacterEvent*> swapParentCharacters(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet);
         //std::set<CharacterEvent*> swapChildCharacters(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet);
         void setParentCharacters(const std::set<CharacterEvent*>& s);
+        void setParentCharacters(const std::vector<CharacterEvent*>& s);
         void setChildCharacters(const std::set<CharacterEvent*>& s);
+        void setChildCharacters(const std::vector<CharacterEvent*>& s);
         void setHistory(const std::set<CharacterEvent*,CharacterEventCompare>& s);
         void setHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& s);
         
@@ -69,6 +72,7 @@ namespace RevBayesCore {
         // container/element arguments
         size_t numCharacters;
         size_t numStates;
+        size_t index;
         
         // containers
         mutable std::multiset<CharacterEvent*,CharacterEventCompare> history;

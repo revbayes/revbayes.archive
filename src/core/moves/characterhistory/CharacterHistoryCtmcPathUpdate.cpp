@@ -13,9 +13,9 @@
 
 using namespace RevBayesCore;
 
-CharacterHistoryCtmcPathUpdate::CharacterHistoryCtmcPathUpdate( StochasticNode<BranchHistory> *n, double l, bool tuning, double w) : SimpleMove(n, w, tuning), variable(n), lambda(l), storedValue(n->getValue().getNumCharacters(),n->getValue().getNumStates()), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates())
+CharacterHistoryCtmcPathUpdate::CharacterHistoryCtmcPathUpdate( StochasticNode<BranchHistory> *n, double l, bool tuning, double w) : SimpleMove(n, w, tuning), variable(n), lambda(l), storedValue(0,0,0), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates())
 {
-    ;
+    ; // storedValue(n->getValue().getNumCharacters(),n->getValue().getNumStates(), n->getValue().getIndex()),
 }
 
 // Basic utility functions
@@ -56,7 +56,7 @@ double CharacterHistoryCtmcPathUpdate::performSimpleMove(void)
     // propose new value
     AbstractCharacterHistoryCtmc* p = static_cast< AbstractCharacterHistoryCtmc* >( &variable->getDistribution() );
     size_t ne0 = p->getValue().getNumEvents();
-    p->simulatePath(updateSet);
+    p->samplePath(updateSet);
     size_t ne1 = p->getValue().getNumEvents();
     
     //std::cout << variable->getName() << " " << ne0 << " " << ne1 << "\n";

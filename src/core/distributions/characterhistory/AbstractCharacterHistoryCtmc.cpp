@@ -23,7 +23,7 @@ AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh, Ty
 }
 */
 
-AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatrix> *rateMtx, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns)), rateMatrix(rateMtx), numStates(ns), numCharacters(nc), rates(r), branchRate(br), tree(t), index(idx)
+AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatrix> *rateMtx, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns, idx)), rateMatrix(rateMtx), numStates(ns), numCharacters(nc), rates(r), branchRate(br), tree(t), index(idx)
 {
     for (size_t i = 0; i < r.size(); i++)
         addParameter(rates[i]);
@@ -52,6 +52,11 @@ double AbstractCharacterHistoryCtmc::computeLnProbability(void)
 }
 
 void AbstractCharacterHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
+{
+    
+}
+
+void AbstractCharacterHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
 {
     value->clearEvents(indexSet);
     
@@ -133,17 +138,17 @@ void AbstractCharacterHistoryCtmc::simulatePath(const std::set<size_t>& indexSet
     value->updateHistory(history,indexSet);
 }
 
-void AbstractCharacterHistoryCtmc::simulateChildCharacterState(const std::set<size_t>& indexSet)
+void AbstractCharacterHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setChildCharacters(simulateCharacterState(indexSet, 1.0));
+    value->setChildCharacters(sampleCharacterState(indexSet, 1.0));
 }
 
-void AbstractCharacterHistoryCtmc::simulateParentCharacterState(const std::set<size_t>& indexSet)
+void AbstractCharacterHistoryCtmc::sampleParentCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setParentCharacters(simulateCharacterState(indexSet, 0.0));
+    value->setParentCharacters(sampleCharacterState(indexSet, 0.0));
 }
 
-std::set<CharacterEvent*> AbstractCharacterHistoryCtmc::simulateCharacterState(const std::set<size_t>& indexSet, double t)
+std::set<CharacterEvent*> AbstractCharacterHistoryCtmc::sampleCharacterState(const std::set<size_t>& indexSet, double t)
 {
     std::set<CharacterEvent*> characterState;
     
@@ -171,7 +176,7 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
     if (value->getRedrawParentCharacters())
     {
         //std::cout << index << " !! redraw parent\n";
-        simulateParentCharacterState(indexSet);
+        sampleParentCharacterState(indexSet);
         value->setRedrawParentCharacters(false);
     }
 
@@ -179,7 +184,7 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
     if (value->getRedrawChildCharacters())
     {
         //std::cout << index << " redraw child\n";
-        simulateChildCharacterState(indexSet);
+        sampleChildCharacterState(indexSet);
         value->setRedrawChildCharacters(false);
     }
     
@@ -187,7 +192,7 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
     if (value->getRedrawHistory())
     {
         //std::cout << index << " redraw path\n";
-        simulatePath(indexSet);
+        samplePath(indexSet);
         value->setRedrawHistory(false);
     }
     

@@ -18,7 +18,7 @@ using namespace RevBayesCore;
 
 //BranchHistory::BranchHistory(void) : numCharacters(0), numStates(0), isTip(false), isRoot(false) { }
 
-BranchHistory::BranchHistory(size_t nc, size_t ns) : numCharacters(nc), numStates(ns), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true) //, isTip(it), isRoot(ir)
+BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) : numCharacters(nc), numStates(ns), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true), index(idx)
 {
     parentCharacters.resize(numCharacters);
     childCharacters.resize(numCharacters);
@@ -37,6 +37,7 @@ BranchHistory::BranchHistory(const BranchHistory& m)
         redrawChildCharacters = m.redrawChildCharacters;
         redrawParentCharacters = m.redrawParentCharacters;
         redrawHistory = m.redrawHistory;
+        index = m.index;
     }
     
 }
@@ -53,6 +54,7 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
         redrawChildCharacters = bh.redrawChildCharacters;
         redrawParentCharacters = bh.redrawParentCharacters;
         redrawHistory = bh.redrawHistory;
+        index = bh.index;
     }
     
     return *this;
@@ -182,6 +184,15 @@ void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
         childCharacters[ (*it)->getIndex() ] = *it;
 }
 
+void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
+{
+    childCharacters = s;
+}
+
+void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
+{
+    parentCharacters = s;
+}
 
 void BranchHistory::setHistory(const std::set<CharacterEvent*,CharacterEventCompare>& s)
 {
@@ -202,6 +213,7 @@ void BranchHistory::print(void)
     std::vector<CharacterEvent*>::iterator it_v;
     std::vector<CharacterEvent*> tmp = parentCharacters;
     
+    std::cout << "BranchHistory " << index << "\n";
     std::cout << "         0.0 : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
@@ -285,6 +297,11 @@ const size_t BranchHistory::getNumStates(void) const
 const size_t BranchHistory::getNumEvents(void) const
 {
     return history.size();
+}
+
+const size_t BranchHistory::getIndex(void) const
+{
+    return index;
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchHistory& x) {
