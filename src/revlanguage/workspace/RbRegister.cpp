@@ -50,6 +50,7 @@
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
+#include "RlBernoulliDistribution.h"
 #include "RlDirichletDistribution.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
@@ -271,6 +272,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // Pure statistical distributions
         
+        // Bernoulli distribution
+        addDistribution( "bernoulli", new BernoulliDistribution() );
+        
+        
         // beta distribution
         addDistribution( "beta", new BetaDistribution() );
         
@@ -387,11 +392,15 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // Add distribution functions here //
         /////////////////////////////////////
         
-        // normal distribution
-        addFunction("dbeta", new DistributionFunctionPdf<RealPos>( new BetaDistribution() ) );
-        addFunction("pbeta", new DistributionFunctionCdf( new BetaDistribution() ) );
-        addFunction("qbeta", new DistributionFunctionQuantile( new BetaDistribution() ) );
-        addFunction("rbeta", new DistributionFunctionRv<RealPos>( new BetaDistribution() ) );
+        // Bernoulli distribution
+        addFunction("dbernoulli", new DistributionFunctionPdf<Natural>( new BernoulliDistribution() ) );
+        addFunction("rbernoulli", new DistributionFunctionRv<Natural>( new BernoulliDistribution() ) );
+        
+        // beta distribution
+        addFunction("dbeta", new DistributionFunctionPdf<Probability>( new BetaDistribution() ) );
+//        addFunction("pbeta", new DistributionFunctionCdf( new BetaDistribution() ) );
+//        addFunction("qbeta", new DistributionFunctionQuantile( new BetaDistribution() ) );
+        addFunction("rbeta", new DistributionFunctionRv<Probability>( new BetaDistribution() ) );
         
         // exponential distribution
         addFunction("dexponential", new DistributionFunctionPdf<RealPos>( new ExponentialDistribution() ) );

@@ -17,7 +17,7 @@
 
 using namespace RevLanguage;
 
-BetaDistribution::BetaDistribution() : PositiveContinuousDistribution() {
+BetaDistribution::BetaDistribution() : TypedDistribution<Probability>() {
     
 }
 
@@ -131,6 +131,6 @@ void BetaDistribution::setConstMemberVariable(const std::string& name, const RbP
     
     if ( !found ) 
     {
-        PositiveContinuousDistribution::setConstMemberVariable(name, var);
+        TypedDistribution<Probability>::setConstMemberVariable(name, var);
     }
 }

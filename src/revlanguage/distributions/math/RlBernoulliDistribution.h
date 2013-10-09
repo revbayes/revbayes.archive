@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of the Beta distribution, which is used create
- * random variables of uniform distributions.
+ * This file contains the declaration of the Bernoulli distribution, which is used create
+ * random variables of Bernoulli distributions.
  *
- * @brief Declaration and implementation of BetaDistribution
+ * @brief Declaration and implementation of BernoulliDistribution
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -15,23 +15,24 @@
  * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlBetaDistribution_H
-#define RlBetaDistribution_H
+#ifndef RlBernoulliDistribution_H
+#define RlBernoulliDistribution_H
 
-#include "BetaDistribution.h"
+#include "BernoulliDistribution.h"
+#include "Natural.h"
 #include "Probability.h"
 #include "RlTypedDistribution.h"
 
 namespace RevLanguage {
     
-    class BetaDistribution :  public TypedDistribution<Probability> {
+    class BernoulliDistribution :  public TypedDistribution<Natural> {
         
     public:
-        BetaDistribution( void );
-        virtual ~BetaDistribution();
+        BernoulliDistribution( void );
+        virtual ~BernoulliDistribution();
         
         // Basic utility functions
-        BetaDistribution*                               clone(void) const;                                                              //!< Clone the object
+        BernoulliDistribution*                          clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -40,7 +41,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::BetaDistribution*                 createDistribution(void) const;
+        RevBayesCore::BernoulliDistribution*            createDistribution(void) const;
         
     protected:
         
@@ -48,8 +49,8 @@ namespace RevLanguage {
         
         
     private:
-        RbPtr<const Variable>                           alpha;
-        RbPtr<const Variable>                           beta;
+        
+        RbPtr<const Variable>                           p;
         
     };
     
