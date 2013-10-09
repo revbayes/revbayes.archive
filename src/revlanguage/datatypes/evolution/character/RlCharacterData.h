@@ -99,20 +99,20 @@ RevLanguage::CharacterData<charType>* RevLanguage::CharacterData<charType>::clon
 template <typename charType>
 RevLanguage::RbLanguageObject* RevLanguage::CharacterData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-//    if (name == "[]") 
-//    {
-//        // get the member with give index
-//        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
-//            
-//        if (this->value->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) ) 
-//        {
-//            throw RbException("Index out of bounds in []");
-//        }
-//            
-//        const RevBayesCore::AbstractTaxonData& element = this->value->getValue().getTaxonData(index.getValue() - 1);
-//    
-//        return new AbstractTaxonData( new RevBayesCore::AbstractTaxonData( element ) );
-//    }
+    if (name == "[]") 
+    {
+        // get the member with give index
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
+            
+        if (this->value->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) ) 
+        {
+            throw RbException("Index out of bounds in []");
+        }
+            
+        const RevBayesCore::TaxonData<typename charType::valueType>& element = static_cast< RevBayesCore::CharacterData<typename charType::valueType>& >( this->value->getValue() ).getTaxonData(index.getValue() - 1);
+    
+        return new TaxonData<charType>( new RevBayesCore::TaxonData<typename charType::valueType>( element ) );
+    }
     
     return AbstractCharacterData::executeMethod( name, args );
 }

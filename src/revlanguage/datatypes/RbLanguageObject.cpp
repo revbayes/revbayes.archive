@@ -72,12 +72,14 @@ RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
   */
 RbLanguageObject* RbLanguageObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "get") {
+    if (name == "get") 
+    {
         // get the member with give name
         const std::string &varName = static_cast<const RlString &>( args[0].getVariable()->getValue() ).getValue();
         
         // check if a member with that name exists
-        if ( hasMember( varName ) ) {
+        if ( hasMember( varName ) ) 
+        {
             return getMember(varName);
         }
         
@@ -85,18 +87,21 @@ RbLanguageObject* RbLanguageObject::executeMethod(std::string const &name, const
         return NULL;
         
     }
-    else if ( name == "members" ) {
+    else if ( name == "members" ) 
+    {
         
         return NULL;
     }
-    else if ( name == "methods" ) {
+    else if ( name == "methods" ) 
+    {
         // just print the method names
         const MethodTable &m = getMethods();
         m.printValue(std::cout);
         
         return NULL;
     }
-    else {
+    else 
+    {
         throw RbException( "No mapping from member method '" + name + "' to internal function call provided" );
     }
 }

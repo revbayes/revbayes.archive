@@ -88,11 +88,13 @@ RevLanguage::TaxonData<charType>* RevLanguage::TaxonData<charType>::clone() cons
 template <typename charType>
 RevLanguage::RbLanguageObject* RevLanguage::TaxonData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if ( name == "[]") {
+    if ( name == "[]") 
+    {
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
             
-        if (this->value->getValue().size() < (size_t)(index.getValue()) ) {
+        if (this->value->getValue().size() < (size_t)(index.getValue()) ) 
+        {
             throw RbException("Index out of bounds in []");
         }
             
