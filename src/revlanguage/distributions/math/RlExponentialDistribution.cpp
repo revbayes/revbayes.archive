@@ -102,10 +102,11 @@ void ExponentialDistribution::printValue(std::ostream& o) const {
 /** Set a member variable */
 void ExponentialDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "lambda" ) {
+    if ( name == "lambda" ) 
+    {
         lambda = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        PositiveContinuousDistribution::setConstMemberVariable(name, var);
     }
 }

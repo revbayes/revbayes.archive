@@ -29,11 +29,13 @@ BetaDistribution::~BetaDistribution() {
 
 
 BetaDistribution* BetaDistribution::clone( void ) const {
+    
     return new BetaDistribution(*this);
 }
 
 
 RevBayesCore::BetaDistribution* BetaDistribution::createDistribution( void ) const {
+    
     // get the parameters
     RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( alpha->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<double>* b   = static_cast<const RealPos &>( beta->getValue() ).getValueNode();
@@ -69,7 +71,8 @@ const MemberRules& BetaDistribution::getMemberRules(void) const {
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet ) 
+    {
         distUnifMemberRules.push_back( new ArgumentRule( "alpha", true, RealPos::getClassTypeSpec() ) );
         distUnifMemberRules.push_back( new ArgumentRule( "beta"  , true, RealPos::getClassTypeSpec() ) );
         
@@ -110,13 +113,24 @@ void BetaDistribution::printValue(std::ostream& o) const {
 /** Set a member variable */
 void BetaDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "alpha" ) {
+    // it is important to consider that both alpha and beta could be the same variable (DAG node)
+    // flag if we found the variable to set it
+    bool found = false;
+    
+    if ( name == "alpha" ) 
+    {
         alpha = var;
+        found = true;
     }
-    if ( name == "beta" ) {
+    
+    if ( name == "beta" ) 
+    {
         beta = var;
+        found = true;
     }
-    else {
-        Distribution::setConstMemberVariable(name, var);
+    
+    if ( !found ) 
+    {
+        PositiveContinuousDistribution::setConstMemberVariable(name, var);
     }
 }
