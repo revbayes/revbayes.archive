@@ -39,7 +39,8 @@ namespace RevLanguage {
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
-        // Distribution functions you have to override
+        // Distribution functions you have to override                  
+        virtual Probability*                            createRandomVariable(void) const;  
         RevBayesCore::BetaDistribution*                 createDistribution(void) const;
         
     protected:

@@ -46,6 +46,16 @@ RevBayesCore::BetaDistribution* BetaDistribution::createDistribution( void ) con
 
 
 
+Probability* BetaDistribution::createRandomVariable(void) const { 
+    
+    RevBayesCore::ContinuousDistribution* d = createDistribution();
+    RevBayesCore::TypedDagNode<double>* rv  = new RevBayesCore::ContinuousStochasticNode("", d);
+    
+    return new Probability(rv);
+}
+
+
+
 /* Get class name of object */
 const std::string& BetaDistribution::getClassName(void) { 
     
