@@ -51,13 +51,13 @@ namespace RevBayesCore {
         virtual void                                closeStream(void);                                                  //!< Close stream after finish writing
         virtual void                                openStream(void);                                                   //!< Open the stream for writing
         virtual void                                printHeader(void);                                                  //!< Print header
+        virtual void                                setModel(Model* m);
 
 
         // getters and setters
         const std::vector<DagNode *>&               getDagNodes(void) const;                                                //!< Get the nodes vector
         void                                        setDagNodes(const std::set<DagNode *>& args);
         void                                        setDagNodes(const std::vector<DagNode *>& args);
-        void                                        setModel(Model* m);
         void                                        setMcmc(Mcmc* m);
 
     protected:

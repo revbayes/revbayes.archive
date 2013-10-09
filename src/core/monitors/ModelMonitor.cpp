@@ -30,23 +30,23 @@ ModelMonitor::ModelMonitor(int g, const std::string &fname, const std::string &d
     
     //model = m;
     
-    const std::vector<DagNode*> &n = model->getDagNodes();
-    for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
-    {
-        if ( (*it)->isStochastic() && !(*it)->isClamped() )
-        {
-            bool tree = dynamic_cast< StochasticNode<BranchLengthTree>* >(*it) != NULL || dynamic_cast< StochasticNode<TimeTree>* >(*it) != NULL;
-            if ( tree ) 
-            {
-                // nothing to do (at least not yet)
-            } 
-            else 
-            {
-                nodes.push_back( *it );
-            }
-        }
-            
-    }
+//    const std::vector<DagNode*> &n = model->getDagNodes();
+//    for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
+//    {
+//        if ( (*it)->isStochastic() && !(*it)->isClamped() )
+//        {
+//            bool tree = dynamic_cast< StochasticNode<BranchLengthTree>* >(*it) != NULL || dynamic_cast< StochasticNode<TimeTree>* >(*it) != NULL;
+//            if ( tree ) 
+//            {
+//                // nothing to do (at least not yet)
+//            } 
+//            else 
+//            {
+//                nodes.push_back( *it );
+//            }
+//        }
+//            
+//    }
     
     
 }
@@ -201,6 +201,8 @@ void ModelMonitor::printHeader() {
 
 void ModelMonitor::setModel(Model *m)
 {
+    // for savety we empty our dag nodes
+    nodes.clear();
     
     // delegate call to super class
     // model = m;
