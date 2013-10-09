@@ -65,7 +65,7 @@ include_directories(
 )
 
 add_subdirectory(core)   # Split into much smaller libraries
-add_subdirectory(parser)
+add_subdirectory(revlanguage)
 
 add_executable(rb ${PROJECT_SOURCE_DIR}/parser/RbMain.cpp)
 target_link_libraries(rb rb-parser rb-core)

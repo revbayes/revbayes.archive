@@ -1,8 +1,12 @@
 #
+# @author Sebastian Hoehna
 # @author Marc A. Suchard
 #
 
-CMake instructions:
+CMake preparation:
+$ ./regenerate.sh
+
+CMake build instructions:
 
 $ cmake .
 $ make
