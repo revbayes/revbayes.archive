@@ -43,10 +43,7 @@ class Real : public RlModelVariableWrapper<double> {
         Real(double v);                                                                                         //!< Construct from double
         Real(int v);                                                                                            //!< Construct from int 
         Real(const Real& x);                                                                                    //!< Copy constructor
-    
-        // the value type definition
-        typedef double valueType;
-    
+        
         // Overloaded operators
         
         // Basic utility functions

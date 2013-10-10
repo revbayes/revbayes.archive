@@ -4,4 +4,4 @@
  #or directories which have spaces or newlines in their names 
 
 ./createCMakeSingle.sh "../src/core" "core" > "../projects/cmake/core/CMakeLists.txt"
-./createCMakeSingle.sh "../src/parser" "parser" > "../projects/cmake/parser/CMakeLists.txt"
+./createCMakeSingle.sh "../src/revlanguage" "revlanguage" > "../projects/cmake/revlanguage/CMakeLists.txt"

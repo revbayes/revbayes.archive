@@ -37,7 +37,7 @@ namespace RevLanguage {
         // Operators
         
         // Basic utility functions
-        StandardState*                       clone(void) const;                                                      //!< Clone object
+        StandardState*                  clone(void) const;                                                      //!< Clone object
         RbLanguageObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
