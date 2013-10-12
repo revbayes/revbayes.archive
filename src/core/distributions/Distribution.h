@@ -52,6 +52,8 @@ namespace RevBayesCore {
         void                                restore(DagNode *restorer);
         void                                touch(DagNode *toucher );
 
+        virtual void                        reInitialized( void );                                          //!< The model was re-initialized
+        
         // pure virtual public methods
         virtual Distribution*               clone(void) const = 0;                                          //!< Clone the distribution
         virtual double                      computeLnProbability(void) = 0;                                 //!< Compute the ln probability

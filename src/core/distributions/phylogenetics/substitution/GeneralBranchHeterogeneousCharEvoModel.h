@@ -147,7 +147,7 @@ RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>* RevBay
 template<class charType, class treeType>
 const std::vector<double>& RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::getRootFrequencies( void ) {
     
-    if ( branchHeterogeneousSubstitutionMatrices ) 
+    if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL ) 
     {
         return rootFrequencies->getValue();
     } 

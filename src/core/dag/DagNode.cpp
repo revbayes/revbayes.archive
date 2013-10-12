@@ -184,6 +184,16 @@ void DagNode::keepAffected() {
         (*i)->keepMe( this );
 }
 
+
+
+/**
+ * By default we do not need to do anything when re-initializiating.
+ */
+void DagNode::reInitialized( void ) {
+    // nothing to do
+}
+
+
 void DagNode::removeChild(DagNode *child) const {
     
     // test if we even have this node as a child

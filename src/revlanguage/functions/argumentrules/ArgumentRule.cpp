@@ -150,27 +150,6 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
 }
 
 
-///** Test if argument is valid */
-//bool RevLanguage::ArgumentRule::isArgumentValid(const RbLanguageObject& var, bool &conversionNeeded, TypeSpec &conversionType) const {
-//    
-//    // first we check if the type we want is already guaranteed by the variable
-//    if ( var.getTypeSpec().isDerivedOf( argTypeSpec ) ) {
-//        return true;
-//    }
-//    
-//    if ( var.isConvertibleTo( argTypeSpec ) ) {
-//        // Yes, we can and have to convert
-//        // should we do the type conversion?
-//        conversionNeeded = true;
-//        conversionType.setElementType( new TypeSpec( argTypeSpec ) );
-//        
-//        return true;
-//    }
-//    
-//    return false;
-//}
-
-
 bool RevLanguage::ArgumentRule::isConstant( void ) const {
     
     return isConst;

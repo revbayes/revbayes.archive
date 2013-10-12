@@ -243,6 +243,7 @@ void Mcmc::initialize( void ) {
                 else if ( (*i)->isClamped() ) 
                 {
                     // make sure that the clamped node also recompute their probabilities
+                    (*i)->reInitialized();
                     (*i)->touch();
                 }
                 

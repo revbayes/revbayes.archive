@@ -54,6 +54,7 @@ namespace RevLanguage {
         RbPtr<const Variable>                           tree;
         RbPtr<const Variable>                           q;
         RbPtr<const Variable>                           rate;
+        RbPtr<const Variable>                           rootFrequencies;
         RbPtr<const Variable>                           nSites;
         RbPtr<const Variable>                           type;
         
@@ -65,6 +66,7 @@ namespace RevLanguage {
 #include "CharacterData.h"
 #include "OptionRule.h"
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
+#include "RbNullObject.h"
 #include "RlRateMatrix.h"
 #include "RlString.h"
 #include "RateMatrix.h"
@@ -86,6 +88,7 @@ RevLanguage::CharacterStateEvolutionAlongTree<treeType>::~CharacterStateEvolutio
 
 template <class treeType>
 RevLanguage::CharacterStateEvolutionAlongTree<treeType>* RevLanguage::CharacterStateEvolutionAlongTree<treeType>::clone( void ) const {
+  
     return new CharacterStateEvolutionAlongTree(*this);
 }
 
@@ -98,14 +101,22 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     int n = static_cast<const Natural &>( nSites->getValue() ).getValue();
     const std::string& dt = static_cast<const RlString &>( type->getValue() ).getValue();
     
-    size_t nTaxa  = tau->getValue().getNumberOfTips();
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
+    
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
+    const RevBayesCore::TypedDagNode< std::vector< double > > *rf = NULL;
+    if ( rootFrequencies->getValue() != RbNullObject::getInstance() )
+    {
+        static_cast<const Simplex &>( rootFrequencies->getValue() ).getValueNode();
+    }
     
     if ( dt == "DNA" ) 
     {
         RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
+        
+        // set the root frequencies (by default these are NULL so this is OK)
+        dist->setRootFrequencies( rf );
         
         // set the clock rates
         if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
@@ -152,6 +163,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     {
         RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n);
         
+        // set the root frequencies (by default these are NULL so this is OK)
+        dist->setRootFrequencies( rf );
         
         if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
         {
@@ -196,6 +209,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     {
         RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, true, n);
         
+        // set the root frequencies (by default these are NULL so this is OK)
+        dist->setRootFrequencies( rf );
         
         if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
         {
@@ -236,6 +251,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         d = dist;
     }
+    
     
     return d;
 }
@@ -278,6 +294,9 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<tr
         rateMatrixTypes.push_back( RateMatrix::getClassTypeSpec() );
         rateMatrixTypes.push_back( Vector<RateMatrix>::getClassTypeSpec() );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"              , true, rateMatrixTypes ) );
+        
+        // optional argument for the root frequencies
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "rootFrequencies", true, Simplex::getClassTypeSpec(), NULL ) );
         
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
@@ -352,6 +371,10 @@ void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::setConstMemberVari
     else if ( name == "Q" ) 
     {
         q = var;
+    }
+    else if ( name == "rootFrequencies" ) 
+    {
+        rootFrequencies = var;
     }
     else if ( name == "branchRates" ) 
     {

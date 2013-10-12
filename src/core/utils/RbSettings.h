@@ -37,7 +37,7 @@ class RbSettings {
         // setters
         void                        setPrintNodeIndex(bool tf);                         //!< Set the flag whether we should print node indices
         void                        setTolerance(double t);                             //!< Set the tolerance for comparing double
-	void                        initializeUserSettings(void);                       //!< Initialize the user settings to default values
+        void                        initializeUserSettings(void);                       //!< Initialize the user settings to default values
 
     private:
                                     RbSettings(void);                                   //!< Default constructor

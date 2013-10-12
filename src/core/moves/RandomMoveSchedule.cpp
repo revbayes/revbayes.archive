@@ -54,7 +54,8 @@ Move* RandomMoveSchedule::nextMove( int gen ) {
     
     int index = 0;
     // only if the move is inactive or the weight of the move is smaller than u
-    while ( !moves[index]->isActive(gen) || weights[index] <= u ) {
+    while ( !moves[index]->isActive(gen) || weights[index] <= u ) 
+    {
         // check if this move is active
         // if not, then we just subtract the weight of this move
         if ( moves[index]->isActive( gen ) )

@@ -50,6 +50,11 @@ void Distribution::keepSpecialization( DagNode* affecter ) {
 }
 
 
+void Distribution::reInitialized( void ) {
+    // do nothing
+}
+
+
 void Distribution::removeParameter(const DagNode *p) {
     
     std::set<const DagNode *>::iterator it = parameters.find( p );

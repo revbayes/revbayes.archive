@@ -67,6 +67,7 @@ namespace RevBayesCore {
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                                             //!< The tree has changed and we want to know which part.
         void                                                                setValue(AbstractCharacterData *v);                                                   //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
+        void                                                                reInitialized(void);
         
     protected:
         // helper method for this and derived classes
@@ -764,6 +765,15 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     this->compress();
     
 }
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::reInitialized( void ) {
+    
+    // we need to recompress because the tree may have changed
+    compress();
+}
+
 
 
 template<class charType, class treeType>
