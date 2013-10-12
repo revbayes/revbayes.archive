@@ -20,7 +20,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-StandardState::StandardState(void) : DiscreteCharacterState(), state() {
+StandardState::StandardState(void) : DiscreteCharacterState(), state(0x1), labels( "01" ) {
     
 }
 

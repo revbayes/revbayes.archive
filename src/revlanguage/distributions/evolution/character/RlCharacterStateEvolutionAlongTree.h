@@ -70,6 +70,7 @@ namespace RevLanguage {
 #include "RlRateMatrix.h"
 #include "RlString.h"
 #include "RateMatrix.h"
+#include "StandardState.h"
 #include "VectorAbstractElement.h"
 
 
@@ -108,7 +109,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     const RevBayesCore::TypedDagNode< std::vector< double > > *rf = NULL;
     if ( rootFrequencies->getValue() != RbNullObject::getInstance() )
     {
-        static_cast<const Simplex &>( rootFrequencies->getValue() ).getValueNode();
+        rf = static_cast<const Simplex &>( rootFrequencies->getValue() ).getValueNode();
     }
     
     if ( dt == "DNA" ) 
@@ -251,6 +252,52 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         d = dist;
     }
+    else if ( dt == "Standard" )
+    {
+        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::StandardState, typename treeType::valueType>(tau, true, n);
+        
+        // set the root frequencies (by default these are NULL so this is OK)
+        dist->setRootFrequencies( rf );
+        
+        if ( rate->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
+        {
+            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const Vector<RealPos> &>( rate->getValue() ).getValueNode();
+            
+            // sanity check
+            if ( (nNodes-1) != clockRates->getValue().size() ) 
+            {
+                throw RbException( "The number of clock rates does not match the number of branches" );
+            }
+            
+            dist->setClockRate( clockRates );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
+            dist->setClockRate( clockRate );
+        }
+        
+        // set the rate matrix
+        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            
+            // sanity check
+            if ( (nNodes-1) != rm->getValue().size() ) 
+            {
+                throw RbException( "The number of substitution matrices does not match the number of branches" );
+            }
+            
+            dist->setRateMatrix( rm );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            dist->setRateMatrix( rm );
+        }
+        
+        d = dist;
+    }
     
     
     return d;
@@ -310,6 +357,7 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<tr
         options.push_back( RlString("RNA") );
         options.push_back( RlString("AA") );
         options.push_back( RlString("Protein") );
+        options.push_back( RlString("Standard") );
         distCharStateEvolutionMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
         
         rulesSet = true;

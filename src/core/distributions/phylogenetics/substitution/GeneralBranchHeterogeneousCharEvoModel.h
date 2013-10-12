@@ -340,7 +340,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     if ( f != NULL )
     {
         // set the value
-        branchHeterogeneousSubstitutionMatrices = true;
+//        branchHeterogeneousSubstitutionMatrices = true;
         rootFrequencies = f;
     
         // add the parameter
