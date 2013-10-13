@@ -32,6 +32,7 @@ namespace RevBayesCore {
         void                            swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
+        void                            acceptSimpleMove(void);
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         double                          performSimpleMove(void);                                                            //!< Perform move
         void                            printParameterSummary(std::ostream &o) const;

@@ -43,6 +43,7 @@ namespace RevBayesCore {
         double                          performSimpleMove(void);                                                            //!< Perform move
         void                            printParameterSummary(std::ostream &o) const;
         void                            rejectSimpleMove(void);
+        void                            acceptSimpleMove(void);
         void                            tune(void);
         
         bool                                    changed;

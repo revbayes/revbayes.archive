@@ -68,6 +68,8 @@ double SimpleMove::performMove( double &probRatio ) {
         }
     }
     
+    //std::cout << probRatio << "\n";
+    
         
     return hr;
 }

@@ -28,6 +28,8 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
 #include "StochasticNode.h"
@@ -89,7 +91,10 @@ bool TestCharacterHistory::run( void ) {
     //////////
     // test
     
-    size_t numTaxa = 3;
+    std::vector<unsigned int> seed;
+    //seed.push_back(3); seed.push_back(3); GLOBAL_RNG->setSeed(seed);
+    
+    size_t numTaxa = 5;
     size_t numNodes = 2 * numTaxa - 1;
     std::vector<std::string> taxonNames;
     for (size_t i = 0; i < numTaxa; i++)
@@ -99,7 +104,7 @@ bool TestCharacterHistory::run( void ) {
         taxonNames.push_back("p" + ss.str());
     }
     
-    size_t numCharacters = pow(4,2);
+    size_t numCharacters = pow(5,2);
     size_t numStates = 2;
         
     std::vector<std::vector<double> > geo_coords;
@@ -152,12 +157,12 @@ bool TestCharacterHistory::run( void ) {
     //////////
     
     // substitution rates
-    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(1));
-    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(1.0/5.0));
+    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(1.0));
+    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(1.0));
     StochasticNode<double>* rateGain = new StochasticNode<double>("r1", new ExponentialDistribution(rateGain_pr));
     StochasticNode<double>* rateLoss = new StochasticNode<double>("r0", new ExponentialDistribution(rateLoss_pr));
-    rateGain->setValue(new double(1.0 / rateGain_pr->getValue()));
-    rateLoss->setValue(new double(1.0 / rateLoss_pr->getValue()));
+    rateGain->setValue(new double(.0001));
+    rateLoss->setValue(new double(.0002));
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
     rates.push_back(rateGain);
@@ -175,14 +180,16 @@ bool TestCharacterHistory::run( void ) {
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
     div->setValue(new double(1.0));
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
+    std::cout << tau->getValue().getNewickRepresentation() << "\n";
 
-    // geographical distance powers
+    // geographical distance power
     ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(5.0));
     StochasticNode<double>* distancePower = new StochasticNode<double>("dist_pow", new ExponentialDistribution(distancePower_pr));
-    distancePower->setValue(new double(4.0));
+    distancePower->setValue(new double(pow(10,-6)));
     
     // geographic distances
     GeographicDistanceRateModifier* gdrm = new GeographicDistanceRateModifier(geo_coords);
+    gdrm->update();
     
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
@@ -212,6 +219,7 @@ bool TestCharacterHistory::run( void ) {
         std::stringstream ss;
         ss << i;
         DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, gdrm);
+        //DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, NULL);
         StochasticNode<BranchHistory>* sn_bh = new StochasticNode<BranchHistory>("bh" + ss.str(), tmp_ahc);
         bh_vector.push_back(sn_bh);
         bh_vector_stochastic.push_back(sn_bh);
@@ -224,15 +232,13 @@ bool TestCharacterHistory::run( void ) {
     tr_chm->redraw();
     
     
-    
-    
     ///////////////
     
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove(distancePower, 1.0, true, 2.0) );
-    //moves.push_back( new ScaleMove(rateGain, 1.0, true, 2.0) );
-    //moves.push_back( new ScaleMove(rateLoss, 1.0, true, 2.0) );
+    moves.push_back( new ScaleMove(distancePower, 1.0, true, 5.0) );
+    moves.push_back( new ScaleMove(rateGain, 1.0, true, 5.0) );
+    moves.push_back( new ScaleMove(rateLoss, 1.0, true, 5.0) );
     for (size_t i = 0; i < br_vector.size(); i++)
     {
         TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
@@ -245,7 +251,7 @@ bool TestCharacterHistory::run( void ) {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
         StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
         moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
-        if (i > numTaxa)
+        if (i >= numTaxa)
             moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 2.0));
     }
     
@@ -267,7 +273,7 @@ bool TestCharacterHistory::run( void ) {
     for (size_t i = 0; i < br_vector.size(); i++)
     {
         TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
-        monitoredNodes.insert( br_tdn );
+        ;//monitoredNodes.insert( br_tdn );
     }
     
     for (size_t i = 0; i < bh_vector.size(); i++)
@@ -289,7 +295,7 @@ bool TestCharacterHistory::run( void ) {
     ///////////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-    myMcmc.run(mcmcGenerations/1000);
+    myMcmc.run(mcmcGenerations/100);
     myMcmc.printOperatorSummary();
 
     
@@ -314,33 +320,3 @@ bool TestCharacterHistory::run( void ) {
     
     return true;
 }
-
-
-//////////////////////
-// initialize branch history
-
-
-/*
- BranchHistory* bh = new BranchHistory(numCharacters, numStates, 0);
- 
- std::multiset<CharacterEvent*,CharacterEventCompare> updateSet;
- std::set<CharacterEvent*> parentSet, childSet;
- std::set<size_t> indexSet;
- 
- for (size_t i = 0; i < numCharacters; i++)
- parentSet.insert(new CharacterEvent(i, (i < 4 ? 1 : 0), 0.0));
- 
- for (size_t i = 0; i < numCharacters; i++)
- childSet.insert(new CharacterEvent(i, (i < 4 && i != 0? 0 : 1), 1.0));
- 
- double dt = 1.0 / (numCharacters+1);
- for (size_t i = 1; i < numCharacters; i++)
- {
- updateSet.insert(new CharacterEvent(i, (i > 3 ? 1 : 0), dt*(i+1)));
- }
- 
- for (size_t i = 0; i < numCharacters; i++)
- indexSet.insert(i);
- 
- //bh->updateHistory(updateSet, parentSet, childSet, indexSet);
- */

@@ -22,6 +22,8 @@ DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::ve
 
 {
     addParameter(distancePower);
+    if (geographicDistances != NULL)
+        geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
 }
 
 DispersalHistoryCtmc::DispersalHistoryCtmc(const DispersalHistoryCtmc& m) : AbstractCharacterHistoryCtmc(m)
@@ -39,6 +41,10 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
 {
     
     double rate = 0.0;
+   
+    // rate to extinction cfg is 0
+    if (numOn(currState) == 1 && nextState->getState() == 0)
+        return 0.0;
     
     // rate according to binary rate matrix Q
     rate = rates[ nextState->getState() ]->getValue();
@@ -51,7 +57,7 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
         //std::cout << rate*drm << " = " << rate << " * " << drm << "\n";
         rate *= drm;
     }
-
+    
     return rate;
 }
 
@@ -87,13 +93,16 @@ void DispersalHistoryCtmc::swapParameter(const DagNode *oldP, const DagNode *new
 double DispersalHistoryCtmc::computeLnProbability(void)
 {
     double lnL = 0.0;
-
+    
     if (tree->getValue().getNode(index).isRoot())
         return 0.0;
     
     BranchHistory* bh = value;
     
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
+    unsigned int n = numOn(currState);
+    if (n == 0)
+        return 0.0;
     //std::vector<CharacterEvent*> endState = bh->getParentCharacters();
     
     std::multiset<CharacterEvent*,CharacterEventCompare> history = bh->getHistory();
@@ -118,25 +127,114 @@ double DispersalHistoryCtmc::computeLnProbability(void)
         dt = (*it_h)->getTime() - t;
         dt *= bs; // rescale time (correct?)
         
+        if ((*it_h)->getState() == 0)
+            n--;
+        else
+            n++;
+        if (n == 0)
+            return RbConstants::Double::neginf;
+        
         double tr = transitionRate(currState, *it_h);
         double sr = sumOfRates(currState);
         
-        // lnL for stepwise events
+        // lnL for stepwise events for p(x->y)
         lnL += log(tr) - sr * dt;
+        
+        // proposal density for q(x->y)... might cancel, largely??
+        //double tr_iid = rates[ (*it_h)->getState() ]->getValue();
+        //lnL -= log(tr_iid) - sr * dt;
         
         // update state
         currState[idx] = *it_h;
         t += dt;
-        //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "; " << bt << " " << br << " " << dt << "\n";
+        //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "; " << bt << " " << br << " " << dt << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
     }
     
     // lnL for final non-event
     double sr = sumOfRates(currState);
     lnL += -sr * (1.0 - t);
+    
+    // for q(x->y)... cancels?
+    //lnL -= -sr * (1.0 - t);
 
     //std::cout << "----\n";
     return lnL;
 }
+
+double DispersalHistoryCtmc::computeLnProposal(void)
+{
+    double lnL = 0.0;
+    
+    if (tree->getValue().getNode(index).isRoot())
+        return 0.0;
+    
+    BranchHistory* bh = value;
+    
+    std::vector<CharacterEvent*> currState = bh->getParentCharacters();
+    unsigned int n = numOn(currState);
+    if (n == 0)
+        return 0.0;
+    //std::vector<CharacterEvent*> endState = bh->getParentCharacters();
+    
+    std::multiset<CharacterEvent*,CharacterEventCompare> history = bh->getHistory();
+    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    
+    // rate/time scale
+    double t = 0.0;
+    double dt = 0.0;
+    double br = branchRate->getValue();
+    double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
+    if (bt == 0.0)
+        bt = 10.0;
+    double bs = bt*br;
+    //std::cout << "** " << bs << " = " << br << " * " << bt << "\n";
+    //bh->print();
+    //std::cout << "**\n";
+    
+    // stepwise events
+    for (it_h = history.begin(); it_h != history.end(); it_h++)
+    {
+        double idx = (*it_h)->getIndex();
+        dt = (*it_h)->getTime() - t;
+        dt *= bs; // rescale time (correct?)
+        
+        if ((*it_h)->getState() == 0)
+            n--;
+        else
+            n++;
+        if (n == 0)
+            return RbConstants::Double::neginf;
+        
+        double tr = rates[ (*it_h)->getState() ]->getValue();
+        double sr = sumOfRates(currState);
+        
+        // lnL for stepwise events for p(x->y)
+        lnL += log(tr) - sr * dt;
+        
+        // update state
+        currState[idx] = *it_h;
+        t += dt;
+        //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "; " << bt << " " << br << " " << dt << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
+    }
+    
+    // lnL for final non-event
+    double sr = sumOfRates(currState);
+    lnL += -sr * (1.0 - t);
+    
+    // for q(x->y)... cancels?
+    //lnL -= -sr * (1.0 - t);
+    
+    
+    // child and parent character states
+    double p1 = rates[1]->getValue() / (rates[0]->getValue() + rates[1]->getValue());
+    unsigned int m = numOn(value->getParentCharacters()) + numOn(value->getChildCharacters());
+    lnL += m * log(p1) - (numCharacters - m)* log(1.0 - p1);
+    
+    //std::cout << "----\n";
+    return lnL;
+}
+
+
 
 //virtual void                        keepSpecialization(DagNode* affecter);
 //virtual void                        restoreSpecialization(DagNode *restorer);
@@ -156,20 +254,29 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
     value->clearEvents(indexSet);
     
     // get transition rates
+    double r[2];
+    r[0] = rates[0]->getValue();
+    r[1] = rates[1]->getValue();
+    
+    /*
     std::vector<std::vector<double> > r(numStates);
     for (size_t i = 0; i < numStates; i++)
-    {
         r[i].resize(numStates);
+
+    r[0][1] = rates[0]->getValue();
+    r[0][0] = -r[0][1];
+    r[1][0] = rates[1]->getValue();
+    r[1][1] = -r[1][0];
+    
+    for (size_t i = 0; i < numStates; i++)
+    {
         for (size_t j = 0; j < numStates; j++)
         {
-            if (i != j)
-            {
-                size_t k = i * (numStates-1) + j;
-                r[i][i] -= rates[k]->getValue();
-                r[i][j] = rates[k]->getValue();
-            }
+            std::cout << r[i][j] << " ";
         }
+        std::cout << "\n";
     }
+     */
     
     // reject sample path history
     std::vector<CharacterEvent*> parentVector = value->getParentCharacters();
@@ -180,6 +287,8 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0) // root bt
         bt = 10.0;
+    
+    //std::cout << br << " " << bt << "\n";
     
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
@@ -195,9 +304,9 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
             double t = 0.0;
             do
             {
-                double r_sum = -r[currState][currState];
-                t += RbStatistics::Exponential::rv( r_sum * bt * br, *GLOBAL_RNG );
-                
+//                double r_sum = r[currState];
+                t += RbStatistics::Exponential::rv( r[currState] * bt * br, *GLOBAL_RNG );
+                //std::cout << i << " " << t << " " << currState << " " << r[currState]*bt*br << "\n";
                 if (t < 1.0)
                 {
                     currState = ( currState == 1 ? 0 : 1);
@@ -213,12 +322,16 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
             history.insert(*it);
     }
     
+    /*
     if (historyContainsExtinction(parentVector, history) == true)
     {
         std::cout << "contains extinction\n";
         samplePath(indexSet);
+        return;
     }
-    else
+     */
+    
+    //else
         value->updateHistory(history,indexSet);
         //value->setHistory(history);
 }
@@ -228,8 +341,12 @@ bool DispersalHistoryCtmc::historyContainsExtinction(const std::vector<Character
     int n = numOn(v);
  
     std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+    
+    //for (size_t i = 0; i < v.size(); i++) std::cout << v[i]->getState(); std::cout << "\n";
+    
     for (it = s.begin(); it != s.end(); it++)
     {
+        //for (size_t i = 0; i < (*it)->getIndex(); i++) std::cout << " "; std::cout << (*it)->getState() << "\n";
         if ( (*it)->getState() == 0 )
             n--;
         else
@@ -244,32 +361,46 @@ bool DispersalHistoryCtmc::historyContainsExtinction(const std::vector<Character
 
 void DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setChildCharacters(sampleCharacterState(indexSet,1.0));
+    std::vector<CharacterEvent*> childStates = value->getChildCharacters();
+
+    sampleCharacterState(indexSet, childStates, 1.0);
+    value->setChildCharacters(childStates);
+//std::vector<CharacterEvent*> parentStates = value->getParentCharacters();
+    //for (size_t i = 0; i < parentStates.size(); i++) std::cout << parentStates[i]->getState() << " "; std::cout << "\n";
+    //for (size_t i = 0; i < childStates.size(); i++) std::cout << childStates[i]->getState() << " "; std::cout << "\n";
+
 }
 
 void DispersalHistoryCtmc::sampleParentCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setParentCharacters(sampleCharacterState(indexSet,0.0));
+    std::vector<CharacterEvent*> parentStates = value->getParentCharacters();
+    sampleCharacterState(indexSet, parentStates, 0.0);
+    value->setParentCharacters(parentStates);
 }
 
-std::set<CharacterEvent*> DispersalHistoryCtmc::sampleCharacterState(const std::set<size_t>& indexSet,double t)
+void DispersalHistoryCtmc::sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t)
 {
-    std::set<CharacterEvent*> characterState;
-    int numOn = 0;
-    
+    double p1 = rates[1]->getValue() / (rates[0]->getValue() + rates[1]->getValue());
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
-//    for (size_t i = 0; i < numCharacters; i++)
     {
-        unsigned int s = (unsigned int)(GLOBAL_RNG->uniform01() * numStates);
-        numOn += s;
-        characterState.insert(new CharacterEvent(*it,s,t));
+        unsigned int s = (unsigned int)(GLOBAL_RNG->uniform01() < p1 ? 1 : 0);
+        //states[*it]->setState(s);
+        states[*it] = new CharacterEvent(*it,s,t);
     }
     
     // retry if extinct
-    if (numOn == 0)
-        characterState = sampleCharacterState(indexSet, t);
-    
-    return characterState;
+    if (numOn(states) == 0)
+        sampleCharacterState(indexSet, states,t);
+
+    /*
+    else
+    {
+        for (size_t i = 0; i < states.size(); i++)
+            std::cout << states[i]->getState() << " ";
+        std::cout << "\n";
+    }
+     */
+
 }
 
 
@@ -284,7 +415,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawParentCharacters())
     {
-        //std::cout << index << " redraw parent\n";
+        std::cout << index << " redraw parent\n";
         sampleParentCharacterState(indexSet);
         value->setRedrawParentCharacters(false);
     }
@@ -292,7 +423,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawChildCharacters())
     {
-        //std::cout << index << " redraw child\n";
+        std::cout << index << " redraw child\n";
         sampleChildCharacterState(indexSet);
         value->setRedrawChildCharacters(false);
     }
@@ -300,11 +431,12 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawHistory())
     {
-        //std::cout << index << " redraw path\n";
+        std::cout << index << " redraw path\n";
         samplePath(indexSet);
         value->setRedrawHistory(false);
     }
     
+    std::cout << "redrawValue done\n";
     //value->print();
 }
 
@@ -333,6 +465,8 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     if (bt == 0.0) // root bt
         bt = 10.0;
     
+    //std::cout << br << " " << bt << "\n";
+    
     // start state
     std::vector<CharacterEvent*> currState = value->getParentCharacters();
     std::set<CharacterEvent*,CharacterEventCompare> history;
@@ -346,6 +480,7 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
         double r_sum = sumOfRates(currState);
         t += RbStatistics::Exponential::rv( r_sum * bt * br, *GLOBAL_RNG );
         
+        //std::cout << t << " " << r_sum << " " << bt << " " << br << "\n";
         //std::cout << "t " << t << "\t";
         //for (size_t i = 0; i < currState.size(); i++)
         //    std::cout << currState[i]->getState() << " ";
@@ -364,9 +499,10 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
                     continue;
                 
                 CharacterEvent* evt = new CharacterEvent(i,s,t);
-                u -= transitionRate(currState, evt);
+                double tx_rate = transitionRate(currState, evt);
+                u -= tx_rate;
                 
-                //std::cout << "\tu " << u << ": " << i << " " << s << " " << t << " " << r_sum << " " << n << "\n";
+                //std::cout << "\tu " << u << ": " << i << " " << s << " " << t << " " << r_sum << " " << n << " " << tx_rate << " " << bt << " " << br << "\n";
                 if (u <= 0.0)
                 {
                     currState[i] = evt;

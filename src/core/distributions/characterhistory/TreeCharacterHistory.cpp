@@ -41,7 +41,62 @@ void TreeCharacterHistory::redrawValue(void)
     for (size_t i = 0; i < numCharacters; i++)
         indexSet.insert(i);
     
-    // update internal node states
+    // update node states
+    for (int i = (int)nodes.size()-1; i >= 0; i--)
+    {
+        std::cout << "redrawValue() for BranchHistory " << i << "\n";
+
+        TopologyNode* p = nodes[i];
+        size_t parentIdx = 0;
+        if (!p->isRoot())
+            parentIdx = p->getParent().getIndex();
+        
+        // cast away constness like a villain
+        const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
+        StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);
+
+        std::cout << "BEFORE NODE\n";
+        bh->getValue().print();
+        
+        // ... now I can setValue()
+        std::multiset<CharacterEvent*, CharacterEventCompare> updateSet;
+        std::set<CharacterEvent*> parentSet;
+        std::set<CharacterEvent*> childSet;
+        std::set<size_t> indexSet;
+        std::vector<CharacterEvent*> parentChildVector, parentVector, childVector;
+        
+        if (p->isRoot())
+        {
+            std::cout << "isRoot()\n";
+            bh->getDistribution().redrawValue();
+        }
+        else
+        {
+            //std::cout << "idx" << parentIdx << " " << i << "\n";
+            parentChildVector = branchHistories[parentIdx]->getValue().getChildCharacters();
+            parentVector = branchHistories[i]->getValue().getParentCharacters();
+            for (size_t j = 0; j < parentVector.size(); j++)
+                parentVector[j]->setState(parentChildVector[j]->getState());
+                //parentSet.insert(new CharacterEvent(*parentVector[j]));
+            //std::cout << "p "; for (size_t j = 0; j < parentVector.size(); j++) std::cout << parentVector[j]->getState() << " "; std::cout << "\n";
+            //std::cout << "c "; for (size_t j = 0; j < childVector.size(); j++) std::cout << childVector[j]->getState() << " "; std::cout << "\n";
+            bh->getValue().setParentCharacters(parentVector);
+            bh->getValue().setRedrawParentCharacters(false);
+            if (p->isTip())
+                bh->getValue().setRedrawChildCharacters(false);
+            bh->getDistribution().redrawValue();
+            
+        }
+        bh->getValue().setRedrawChildCharacters(false);
+        
+
+        std::cout << "AFTER NODE\n";
+        bh->getValue().print();
+    }
+    
+    
+    
+    // update paths
     for (int i = (int)nodes.size()-1; i >= 0; i--)
     {
         std::cout << "redrawValue() for BranchHistory " << i << "\n";
@@ -55,46 +110,35 @@ void TreeCharacterHistory::redrawValue(void)
         // cast away constness like a villain
         const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
         StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);
-  
+        
+        std::cout << "BEFORE PATH \n";
+        bh->getValue().print();
+        
         // ... now I can setValue()
         std::multiset<CharacterEvent*, CharacterEventCompare> updateSet;
         std::set<CharacterEvent*> parentSet;
         std::set<CharacterEvent*> childSet;
         std::set<size_t> indexSet;
         std::vector<CharacterEvent*> parentVector, childVector;
-        
-        if (p->isRoot())
-        {
-            bh->getDistribution().redrawValue();
-            bh->getValue().setRedrawParentCharacters(false);
-        }
-        else
-        {
-            parentVector = branchHistories[parentIdx]->getValue().getChildCharacters();
-            for (size_t i = 0; i < parentVector.size(); i++)
-                parentSet.insert(parentVector[i]);
-            bh->getValue().setParentCharacters(parentSet);
-            bh->getValue().setRedrawParentCharacters(false);
-        }
-        
+    
         if (p->isTip())
         {
             // childVector = observedCharacters;
             //for (size_t i = 0; i < childVector.size(); i++)
             //    childSet.insert(childVector[i]);
             //bh->getValue().setChildCharacters(childSet);
-            
-            bh->getValue().setRedrawChildCharacters(false);
+            std::cout << "isTip()\n";
             bh->getDistribution().redrawValue();
             bh->getValue().setRedrawHistory(false);
         }
         else
         {
             bh->getDistribution().redrawValue();
-            bh->getValue().setRedrawChildCharacters(false);
+//            bh->getValue().setRedrawChildCharacters(false);
             bh->getValue().setRedrawHistory(false);
         }
-        
+
+        std::cout << "AFTER\n";
         bh->getValue().print();
         std::cout << "--------\n";
     }

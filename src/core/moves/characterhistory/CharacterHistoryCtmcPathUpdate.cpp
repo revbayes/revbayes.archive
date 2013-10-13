@@ -54,14 +54,20 @@ double CharacterHistoryCtmcPathUpdate::performSimpleMove(void)
     }
     
     // propose new value
+    double lnProposal = 0.0;
     AbstractCharacterHistoryCtmc* p = static_cast< AbstractCharacterHistoryCtmc* >( &variable->getDistribution() );
-    size_t ne0 = p->getValue().getNumEvents();
+    
+    lnProposal -= p->computeLnProposal();
+    //size_t ne0 = p->getValue().getNumEvents();
     p->samplePath(updateSet);
-    size_t ne1 = p->getValue().getNumEvents();
+    lnProposal += p->computeLnProposal();
+    //size_t ne1 = p->getValue().getNumEvents();
     
     //std::cout << variable->getName() << " " << ne0 << " " << ne1 << "\n";
     
-    return 0.0;
+    //std::cout << lnProposal << "\n";
+    
+    return lnProposal;
 }
 
 void CharacterHistoryCtmcPathUpdate::printParameterSummary(std::ostream &o) const
@@ -72,6 +78,18 @@ void CharacterHistoryCtmcPathUpdate::printParameterSummary(std::ostream &o) cons
 void CharacterHistoryCtmcPathUpdate::rejectSimpleMove(void)
 {
     variable->setValue( new BranchHistory(storedValue) );
+}
+
+void CharacterHistoryCtmcPathUpdate::acceptSimpleMove(void)
+{
+    /*
+    std::cout << "\nOLD\n";
+    storedValue.print();
+    std::cout << "\nNEW\n";
+    variable->getValue().print();
+    std::cout << "\n";
+    */
+    
 }
 
 void CharacterHistoryCtmcPathUpdate::tune(void)

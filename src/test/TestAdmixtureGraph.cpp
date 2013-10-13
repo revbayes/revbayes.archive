@@ -156,12 +156,12 @@ bool TestAdmixtureGraph::run(void) {
     int delay = 200;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
-    int maxNumberOfAdmixtureEvents = 2;
+    int maxNumberOfAdmixtureEvents = 1;
     
     bool useWishart = true;             // if false, the composite likelihood function is used
     bool useBias = true;               // if false, no covariance bias correction for small sample size is used
     bool useAdmixtureEdges = true;      // if false, no admixture moves or edges are used
-    bool useBranchRates = true;         // if false, all populations are of the same size
+    bool useBranchRates = !true;         // if false, all populations are of the same size
     bool allowSisterAdmixture = true;   // if false, admixture events cannot be between internal lineages who share a divergence parent
     bool discardNonPosDefMtx = true;    // if false, round negative eigenvalues to positive eps
     bool useContrasts = false;          // nothing really, need to remove
@@ -173,7 +173,7 @@ bool TestAdmixtureGraph::run(void) {
     int numChains = 5;
     int numProcesses = numChains;
 //    numProcesses=80;
-    int swapInterval = 5;
+    int swapInterval = 10;
     double deltaTemp = .2;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;

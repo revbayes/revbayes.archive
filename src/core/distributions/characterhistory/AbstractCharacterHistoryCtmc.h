@@ -35,10 +35,6 @@ namespace RevBayesCore
         virtual void                                            redrawValue(void);
         virtual void                                            simulate(void) = 0;
         
-        //virtual void                                            simulatePath(void);
-        //virtual void                                            simulateChildCharacterState(void);
-        //virtual void                                            simulateParentCharacterState(void);
-        
         virtual void                                            simulatePath(const std::set<size_t>& indexSet) = 0;
         virtual void                                            samplePath(const std::set<size_t>& indexSet);
         virtual void                                            sampleChildCharacterState(const std::set<size_t>& indexSet);
@@ -48,12 +44,13 @@ namespace RevBayesCore
         virtual AbstractCharacterHistoryCtmc*                   clone(void) const = 0;
         virtual void                                            swapParameter(const DagNode *oldP, const DagNode *newP) = 0;
         virtual double                                          computeLnProbability(void) = 0;
+        virtual double                                          computeLnProposal(void) = 0;
         virtual double                                          sumOfRates(std::vector<CharacterEvent*> s) = 0;
         virtual double                                          transitionRate(std::vector<CharacterEvent*> oldState, CharacterEvent* evt) = 0;
         
     protected:
         //virtual std::set<CharacterEvent*>                       simulateCharacterState(double t);
-        virtual std::set<CharacterEvent*>                       sampleCharacterState(const std::set<size_t>& indexSet, double t);
+        virtual void                       sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t);
         
         TypedDagNode<RateMatrix>*                               rateMatrix;
         std::vector<const TypedDagNode<double>* >               rates;

@@ -24,6 +24,7 @@ namespace RevBayesCore
                 
         DispersalHistoryCtmc*               clone(void) const;
         double                              computeLnProbability(void);
+        double                              computeLnProposal(void);
         //void                                redrawValue(void);
         double                              sumOfRates(std::vector<CharacterEvent*> currState);
         void                                swapParameter(const DagNode *oldP, const DagNode *newP);
@@ -35,8 +36,6 @@ namespace RevBayesCore
         virtual void                                            simulate(void);
         
         virtual void                                            simulatePath(const std::set<size_t>& indexSet);
-        //virtual void                                            simulateChildCharacterState(void);
-        //virtual void                                            simulateParentCharacterState(void);
         virtual void                                            samplePath(const std::set<size_t>& indexSet);
         virtual void                                            sampleChildCharacterState(const std::set<size_t>& indexSet);
         virtual void                                            sampleParentCharacterState(const std::set<size_t>& indexSet);
@@ -44,7 +43,7 @@ namespace RevBayesCore
         
     protected:
         bool                                                    historyContainsExtinction(const std::vector<CharacterEvent*>& v, const std::multiset<CharacterEvent*,CharacterEventCompare>& s);
-        virtual std::set<CharacterEvent*>                       sampleCharacterState(const std::set<size_t>& indexSet, double t);
+        virtual void                                            sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t);
         unsigned int                                            numOn(std::vector<CharacterEvent*> v);
         unsigned int                                            numOn(std::set<CharacterEvent*> s);
         unsigned int                                            numOn(std::set<CharacterEvent*,CharacterEventCompare> s);

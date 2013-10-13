@@ -140,25 +140,30 @@ void AbstractCharacterHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
 
 void AbstractCharacterHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setChildCharacters(sampleCharacterState(indexSet, 1.0));
+    std::vector<CharacterEvent*> childStates = value->getChildCharacters();
+    value->setChildCharacters(childStates);
+    sampleCharacterState(indexSet, childStates, 1.0);
 }
 
 void AbstractCharacterHistoryCtmc::sampleParentCharacterState(const std::set<size_t>& indexSet)
 {
-    value->setParentCharacters(sampleCharacterState(indexSet, 0.0));
+    std::vector<CharacterEvent*> parentStates = value->getParentCharacters();
+    sampleCharacterState(indexSet, parentStates, 0.0);
+    value->setParentCharacters(parentStates);
 }
 
-std::set<CharacterEvent*> AbstractCharacterHistoryCtmc::sampleCharacterState(const std::set<size_t>& indexSet, double t)
+void AbstractCharacterHistoryCtmc::sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t)
 {
-    std::set<CharacterEvent*> characterState;
+  //  std::set<CharacterEvent*> characterState;
     
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
         unsigned int s = (unsigned int)(GLOBAL_RNG->uniform01() * numStates);
-        characterState.insert(new CharacterEvent(*it,s,t));
+        states[*it]->setState(s);
+//        characterState.insert(new CharacterEvent(*it,s,t));
     }
     
-    return characterState;
+    //return characterState;
 }
 
 

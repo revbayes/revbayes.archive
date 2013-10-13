@@ -22,6 +22,12 @@ BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) : numCharacters(n
 {
     parentCharacters.resize(numCharacters);
     childCharacters.resize(numCharacters);
+    
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        parentCharacters[i] = new CharacterEvent(i,0,0.0);
+        childCharacters[i] = new CharacterEvent(i,0,1.0);
+    }
 }
 
 
@@ -174,24 +180,28 @@ void BranchHistory::setParentCharacters(const std::set<CharacterEvent*>& s)
 {
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        parentCharacters[ (*it)->getIndex() ] = *it;
+        parentCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
 }
 
 void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
 {
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        childCharacters[ (*it)->getIndex() ] = *it;
+        childCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
 }
 
 void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
 {
-    childCharacters = s;
+    std::vector<CharacterEvent*>::const_iterator it;
+    for (it = s.begin(); it != s.end(); it++)
+        childCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
 }
 
 void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
 {
-    parentCharacters = s;
+    std::vector<CharacterEvent*>::const_iterator it;
+    for (it = s.begin(); it != s.end(); it++)
+        parentCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
 }
 
 void BranchHistory::setHistory(const std::set<CharacterEvent*,CharacterEventCompare>& s)

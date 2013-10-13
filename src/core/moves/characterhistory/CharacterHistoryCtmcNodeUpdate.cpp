@@ -38,7 +38,7 @@ void CharacterHistoryCtmcNodeUpdate::swapNode(DagNode *oldN, DagNode *newN)
     {
         variable = static_cast<StochasticNode<BranchHistory>* >( newN );
     }
-    else if (oldN == tree)
+    if (oldN == tree)
     {
         tree = static_cast<StochasticNode<TimeTree>* >(newN);
     }
@@ -61,10 +61,13 @@ const std::string& CharacterHistoryCtmcNodeUpdate::getMoveName(void) const
 double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
 {
 
+    //std::cout << "\nNODE UPDATE\n";
     // store adjacent histories
     TimeTree* tau = &tree->getValue();
     TopologyNode* nd = &tau->getNode(index);
-    storedValue[index] = new BranchHistory(variable->getValue());
+
+    storedValue.clear();
+    storedValue[index] = new BranchHistory( bh_vector[index]->getValue() );
     for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
     {
         size_t ch_idx = nd->getChild(i).getIndex();
@@ -75,6 +78,7 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
     // sample characters to update
     std::set<size_t> updateSet;
     updateSet.insert(GLOBAL_RNG->uniform01() * numCharacters); // at least one is inserted
+    //std::cout << "updateSet ";
     for (size_t i = 0; i < numCharacters; i++)
     {
         if (GLOBAL_RNG->uniform01() < lambda)
@@ -82,22 +86,38 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
             updateSet.insert(i);
         }
     }
+    //for (std::set<size_t>::iterator it = updateSet.begin(); it != updateSet.end(); it++) std::cout << *it << " "; std::cout << "\n";
     
     // propose new value
+    double lnProposal = 0.0;
     AbstractCharacterHistoryCtmc* p = static_cast< AbstractCharacterHistoryCtmc* >( &variable->getDistribution() );
+    //std::cout << "OLD P\n";
+    //p->getValue().print();
+    lnProposal -= p->computeLnProposal();
     p->sampleChildCharacterState(updateSet);
     p->samplePath(updateSet);
+    lnProposal += p->computeLnProposal();
+    //std::cout << "NEW P\n";
+    //p->getValue().print();
     for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
     {
         size_t ch_idx = nd->getChild(i).getIndex();
         AbstractCharacterHistoryCtmc* q = static_cast< AbstractCharacterHistoryCtmc* >( &bh_vector[ch_idx]->getDistribution() );
-        q->getValue().setParentCharacters( p->getValue().getParentCharacters() );
+        //std::cout << "OLD Q " << i << "\n";
+        //q->getValue().print();
+        lnProposal -= q->computeLnProposal();
+        q->getValue().setParentCharacters( p->getValue().getChildCharacters() );
         q->samplePath(updateSet);
+        lnProposal += q->computeLnProposal();
+        //std::cout << "NEW Q " << i << "\n";
+        //q->getValue().print();
     }
     
     //std::cout << variable->getName() << " " << ne0 << " " << ne1 << "\n";
     
-    return 0.0;
+    //std::cout << lnProposal << "\n";
+    
+    return lnProposal;
 }
 
 void CharacterHistoryCtmcNodeUpdate::printParameterSummary(std::ostream &o) const
@@ -107,16 +127,20 @@ void CharacterHistoryCtmcNodeUpdate::printParameterSummary(std::ostream &o) cons
 
 void CharacterHistoryCtmcNodeUpdate::rejectSimpleMove(void)
 {
+    //std::cout << "---------\n";
     // store adjacent histories
     TimeTree* tau = &tree->getValue();
     TopologyNode* nd = &tau->getNode(index);
-    variable->setValue(storedValue[index]);
+    
+    bh_vector[index]->setValue(storedValue[index]);
+    //storedValue[index]->print();
     for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
     {
         size_t ch_idx = nd->getChild(i).getIndex();
         bh_vector[ch_idx]->setValue(storedValue[ch_idx]);
     }
     
+    //std::cout << "REJECT\n\n";
     // free memory
     storedValue.clear();
 
@@ -127,7 +151,8 @@ void CharacterHistoryCtmcNodeUpdate::acceptMove( void ) {
     // nothing to do
     changed = false;
     
-    //acceptSimpleMove();
+    //std::cout << "ACCEPT\n\n";
+    acceptSimpleMove();
 }
 
 double CharacterHistoryCtmcNodeUpdate::performMove(double& probRatio)
@@ -145,19 +170,33 @@ double CharacterHistoryCtmcNodeUpdate::performMove(double& probRatio)
         return RbConstants::Double::neginf;
     }
     
-    // touch the node
+    // touch nodes
     variable->touch();
+    TopologyNode* nd = &tree->getValue().getNode(index);
+    bh_vector[index]->touch();
+    for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
+    {
+        size_t bh_idx = nd->getChild(i).getIndex();
+        //std::cout << "touch()\n";
+        bh_vector[bh_idx]->touch();
+    }
     
     // calculate the probability ratio for the node we just changed
     probRatio = variable->getLnProbabilityRatio();
     //std::cout << "nd+path  : " << probRatio << "\n";
     
     // and for child path lnProbs
-    TopologyNode* nd = &tree->getValue().getNode(index);
+    //TopologyNode* nd = &tree->getValue().getNode(index);
+    double v = bh_vector[index]->getLnProbabilityRatio();
+    double w = bh_vector[index]->getLnProbability();
+    //std::cout << "nd " << index << " path : " << v << " " << w << "\n";
+    probRatio += v;
     for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
     {
-        double v = bh_vector[nd->getChild(i).getIndex()]->getLnProbabilityRatio();
-        //std::cout << "ch" << i << " path : " << v << "\n";
+        size_t bh_idx = nd->getChild(i).getIndex();
+        v = bh_vector[bh_idx]->getLnProbabilityRatio();
+        w = bh_vector[bh_idx]->getLnProbability();
+        //std::cout << "ch" << i << " " << bh_idx << " path : " << v << " " << w << "\n";
         probRatio += v;
     }
     
@@ -187,7 +226,20 @@ void CharacterHistoryCtmcNodeUpdate::rejectMove(void)
     
     // touch the node
     variable->touch();
+    // and for child path lnProbs
+    
+    TopologyNode* nd = &tree->getValue().getNode(index);
+    for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
+    {
+        size_t bh_idx = nd->getChild(i).getIndex();
+        bh_vector[bh_idx]->touch();
+    }
 
+}
+
+void CharacterHistoryCtmcNodeUpdate::acceptSimpleMove(void)
+{
+    ;
 }
 
 void CharacterHistoryCtmcNodeUpdate::tune(void)
