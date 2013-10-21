@@ -63,7 +63,10 @@ TreeTrace<TimeTree> TestMultispeciesCoalescent::readTreeTrace(const std::string 
 //    
 //    delete trace;
 //    
-//    return rv;
+
+    // This is temporary to allow compilation...
+    TreeTrace<TimeTree> rv;
+    return rv;
 }
 
 

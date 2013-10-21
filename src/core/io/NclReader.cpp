@@ -78,12 +78,11 @@ void NclReader::constructBranchLengthTreefromNclRecursively(TopologyNode* tn, st
 
 
 /** Reads the blocks stored by NCL and converts them to RevBayes character matrices */
-std::vector<AbstractCharacterData* > NclReader::convertFromNcl(std::vector<std::string>& fnv) {
+std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string& fileName) {
     
 	std::vector<AbstractCharacterData* > cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	int k = 0;
 	for (int tBlck=0; tBlck<numTaxaBlocks; tBlck++)
     {
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
@@ -129,8 +128,7 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(std::vector<std::
             
 			if (m != NULL)
             {
-                std::string tempFileName = findFileNameFromPath(fnv[k++]);
-                m->setFileName( tempFileName );
+                m->setFileName( fileName );
 				cmv.push_back( m );
             }
         }
@@ -173,8 +171,7 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(std::vector<std::
             
 			if (m != NULL)
             {
-                std::string tempFileName = findFileNameFromPath(fnv[k++]);
-                m->setFileName( tempFileName );
+                m->setFileName( fileName );
 				cmv.push_back( m );
             }
         }
@@ -874,68 +871,29 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType) {
 }
 
 
-/** Try to determine if the file is likely to be in Nexus format. All we do is check for the presence of a few 
- key words that appear in pretty much every Nexus file. */
-bool NclReader::isNexusFile(std::string& fn, std::string& dType) {
+/**
+  * Try to determine if the file is likely to be in Nexus format. We check if the first word in the
+  * file is #NEXUS. If not, then we check if the file name ending is ".nex". If neither is true, it
+  * is probably not a NEXUS file.
+  */
+bool NclReader::isNexusFile(const std::string& fn) {
     
-    // open file
+    // open file, read first word, close file
 	std::ifstream fStrm;
     fStrm.open(fn.c_str(), ios::in);
-    
-    // read the file token-by-token looking for NEXUS things
-    bool foundNexus = false, foundBegin = false, foundData = false, foundDimensions = false, foundMatrix = false, foundFormat = false;
-    int ch;
-    std::string word = "";
-    do {
-        fStrm >> word;
-        StringUtilities::toLower( word );
-        
-        std::vector<std::string> fileFmt;
-        StringUtilities::stringSplit( word, "=", fileFmt );
-        
-        // check if the token matches any key words we expect to see in a NEXUS file
-        if (word == "#nexus")
-            foundNexus = true;
-        else if (word == "begin")
-            foundBegin = true;
-        else if (word == "data;")
-            foundData = true;
-        else if (word == "dimensions")
-            foundDimensions = true;
-        else if (word == "matrix")
-            foundMatrix = true;
-        else if (word == "format")
-            foundFormat = true;
-        else if (fileFmt[0] == "datatype")
-        {
-            dType = fileFmt[1];
-            if ( dType[dType.size()-1] == ';' ) dType = dType.substr(0, dType.size()-1);
-        }
-    } while ((ch = fStrm.get()) != EOF);
-    
-    // close file
+    std::string word;
+    fStrm >> word;
     fStrm.close();
-    
-    // check how many of the elements we were expecting we found
-    int numElementsFound = 0;
-    if (foundNexus == true)
-        numElementsFound++;
-    if (foundBegin == true)
-        numElementsFound++;
-    if (foundData == true)
-        numElementsFound++;
-    if (foundDimensions == true)
-        numElementsFound++;
-    if (foundMatrix == true)
-        numElementsFound++;
-    if (foundFormat == true)
-        numElementsFound++;
-    
-    // return true or false depending upon how many of the elements we were expecting that we found
-    if (numElementsFound >= 5)
+ 
+    if (word=="#NEXUS")
         return true;
-    
-    return false;
+    else {
+        size_t found = fn.find_last_of(".");
+        if ( found != std::string::npos && fn.substr(found+1) == "nex" )
+            return true;
+        else
+            return false;
+    }
 }
 
 
@@ -1053,7 +1011,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
     {
         bool isInterleaved = false;
         std::string myFileType = "unknown", dType = "unknown";
-        if (isNexusFile(*p, dType) == true)
+        if (isNexusFile(*p) == true)
             myFileType = "nexus";
         else if (isPhylipFile(*p, dType, isInterleaved) == true)
             myFileType = "phylip";
@@ -1310,15 +1268,26 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
 	catch(NxsException err)
     {
         std::string fns = fileName;
+        
+        // Basic error message
         addWarning("Nexus error in file \"" + StringUtilities::getLastPathComponent(fns) + "\"");
+
+        // NxsReader error message
+        addWarning(err.msg);
+
+        // Position information
+        std::stringstream errorMessage;
+        errorMessage << "The error occurred while reading line ";
+        errorMessage << err.line << " column " << err.col;
+        addWarning(errorMessage.str());
+
+        // Return empty character matrix vector
         std::vector<AbstractCharacterData*> dummy;
 		return dummy;
     }
     
-	std::vector<std::string> fileNameVector;
-	std::string str = fileName;
-	fileNameVector.push_back( str );
-	std::vector<AbstractCharacterData*> cvm = convertFromNcl(fileNameVector);
+	std::string fn = fileName;
+	std::vector<AbstractCharacterData*> cvm = convertFromNcl(fn);
 	return cvm;
 }
 

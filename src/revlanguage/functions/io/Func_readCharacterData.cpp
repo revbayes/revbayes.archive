@@ -105,8 +105,9 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     // that can be read.
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
         bool isInterleaved = false;
-        std::string myFileType = "unknown", dType = "unknown";
-        if (reader.isNexusFile(*p, dType) == true)
+        std::string myFileType = "unknown";
+        std::string dType = "unknown";
+        if (reader.isNexusFile(*p) == true)
             myFileType = "nexus";
         else if (reader.isPhylipFile(*p, dType, isInterleaved) == true)
             myFileType = "phylip";
@@ -130,29 +131,31 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
             // read the content of the file now
             std::vector<RevBayesCore::AbstractCharacterData*> m_i = reader.readMatrices( *p, myFileType );
             for (std::vector<RevBayesCore::AbstractCharacterData*>::iterator it = m_i.begin(); it != m_i.end(); it++) {
+                
+                dType = (*it)->getDatatype();
 
-                if ( dType == "dna" ) {
+                if ( dType == "DNA" ) {
                     RevBayesCore::CharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::DnaState> *>( *it );
                     CharacterData<DnaState> *mDNA = new CharacterData<DnaState>( coreM );
                     m->push_back( mDNA );
                 }
-                else if ( dType == "rna" ) {
+                else if ( dType == "RNA" ) {
                     RevBayesCore::CharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::RnaState> *>( *it );
                     CharacterData<RnaState> *mRNA = new CharacterData<RnaState>( coreM );
                     m->push_back( mRNA );
                 }
-                else if ( dType == "protein" ) {
+                else if ( dType == "Protein" ) {
                     RevBayesCore::CharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::AminoAcidState> *>( *it );
                     CharacterData<AminoAcidState> *mAA = new CharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
                 }
-                else if ( dType == "standard" ) {
+                else if ( dType == "Standard" ) {
                     RevBayesCore::CharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::StandardState> *>( *it );
                     CharacterData<StandardState> *mSS = new CharacterData<StandardState>( coreM );
                     m->push_back( mSS );
                 }
                 else {
-                    throw RbException("Unknown data type type \"" + dType + "\".");
+                    throw RbException("Unknown data type \"" + dType + "\".");
                 }
             }
         }
@@ -201,14 +204,14 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
             if ( myWarnings.size() > 0 )
             {
                 std::stringstream o3;
-                o3 << "Did not read the file for the following ";
+                o3 << "Error reading the file. Error ";
                 if (myWarnings.size() == 1)
-                    o3 << "reason:";
+                    o3 << "message:";
                 else
-                    o3 << "reasons:";
+                    o3 << "messages:";
                 RBOUT(o3.str());
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-                    RBOUT("* "+(*it));
+                    RBOUT(" * "+(*it));
             }
         }
     }

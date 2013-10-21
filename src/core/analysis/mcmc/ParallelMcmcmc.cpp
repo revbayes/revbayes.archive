@@ -13,6 +13,7 @@
 #include <vector>
 #include <cmath>
 
+#undef USE_LIB_OPENMP
 #if defined (USE_LIB_OPENMP)
     #include <omp.h>
 #endif

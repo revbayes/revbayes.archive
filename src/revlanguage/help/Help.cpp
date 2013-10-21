@@ -72,12 +72,10 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         hStr += "\n";
     }
     
-    // alias
-    
-    // verbose
-    if ( h->hasChildWithTag("verbose") == true )
+    // description
+    if ( h->hasChildWithTag("description") == true )
     {
-        HelpNode* hn = h->getChildWithTag("verbose");
+        HelpNode* hn = h->getChildWithTag("description");
         hStr += "\n";
         hStr += formatStringWithBreaks(hn->getHelpEntry(), RevBayesCore::RbUtils::PAD, columnWidth);
         hStr += "\n";
@@ -142,6 +140,29 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         }
         hStr += "\n";
     }
+    
+    // details
+    if ( h->hasChildWithTag("details") == true )
+    {
+        HelpNode* hn = h->getChildWithTag("details");
+        hStr += "\n";
+        hStr += formatStringWithBreaks("Details:\n", RevBayesCore::RbUtils::PAD, columnWidth);
+        hStr += "\n";
+        hStr += formatStringWithBreaks(hn->getHelpEntry(), RevBayesCore::RbUtils::PAD, columnWidth);
+        hStr += "\n";
+    }
+    
+    // value
+    if ( h->hasChildWithTag("value") == true )
+    {
+        HelpNode* hn = h->getChildWithTag("value");
+        hStr += "\n";
+        hStr += formatStringWithBreaks("Return value:\n", RevBayesCore::RbUtils::PAD, columnWidth);
+        hStr += "\n";
+        hStr += formatStringWithBreaks(hn->getHelpEntry(), RevBayesCore::RbUtils::PAD, columnWidth);
+        hStr += "\n";
+    }
+    
     
     // author
     if ( h->hasChildWithTag("author") == true )
@@ -513,7 +534,7 @@ bool Help::parseHelpFile(std::string& fn) {
 	std::ifstream fStrm;
     fStrm.open(fn.c_str(), std::ios::in);
     
-    // read the file token-by-token looking for Fasta things
+    // read the file token-by-token
     getNextTag(helpRoot, fStrm);
     
     // close file

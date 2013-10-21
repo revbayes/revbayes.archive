@@ -21,7 +21,7 @@ speciesTree( sp ), Ne( N ), numTaxa( g2s.size() ), gene2species( g2s ) {
     addParameter( speciesTree );
     addParameter( Ne );
     
-    double lnFact = RbMath::lnFactorial(numTaxa);
+    double lnFact = RbMath::lnFactorial((int)(numTaxa));
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
     

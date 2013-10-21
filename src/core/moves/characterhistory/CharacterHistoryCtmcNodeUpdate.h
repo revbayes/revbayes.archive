@@ -24,7 +24,8 @@
 
 namespace RevBayesCore {
     
-    class CharacterHistoryCtmcNodeUpdate : public Move {
+/*
+ class CharacterHistoryCtmcNodeUpdate : public Move {
         
     public:
         CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector<StochasticNode<BranchHistory>* > bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w);                                    //!<  constructor
@@ -67,6 +68,7 @@ namespace RevBayesCore {
         
     };
     
+*/
 }
 
 #endif /* defined(__rb_mlandis__CharacterHistoryCtmcNodeUpdate__) */

@@ -46,8 +46,8 @@ namespace RevBayesCore {
 
     class NclReader{
     
-        friend class NxsBlock;
-        friend class NxsUnalignedBlock;
+        friend class ::NxsBlock;
+        friend class ::NxsUnalignedBlock;
         
     public:
     
@@ -60,7 +60,7 @@ namespace RevBayesCore {
         
         // file type methods
         bool                                        isFastaFile(std::string& fn, std::string& dType);                               //!< Checks if the file is in Fasta format
-        bool                                        isNexusFile(std::string& fn, std::string& dType);                                                   //!< Checks if the file is in NEXUS format
+        bool                                        isNexusFile(const std::string& fn);                                             //!< Checks if the file is in NEXUS format
         bool                                        isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved);         //!< Checks if the file is in Phylip format
 
         // alignment stuff
@@ -93,7 +93,7 @@ namespace RevBayesCore {
         std::string                                 intuitDataType(std::string& s);                                                 //!< Attempt to determine the type of data
 
         // methods for reading sequence alignments
-        std::vector<AbstractCharacterData* >        convertFromNcl(std::vector<std::string>& fnv);                                  //!< Reads the blocks stored by NCL and converts them to RevBayes character matrices 
+        std::vector<AbstractCharacterData* >        convertFromNcl(const std::string& fileName);                                    //!< Reads the blocks stored by NCL and converts them to RevBayes character matrices
         std::vector<AbstractCharacterData* >        readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);                          //!< Reads a single file using NCL
         void                                        setExcluded(const NxsCharactersBlock* charblock, AbstractCharacterData* cMat ) const;       //!< Set excluded taxa and excluded characters
 
