@@ -24,7 +24,7 @@ class RevLanguageMain {
 public:
     RevLanguageMain();
     
-    int                        startRevLanguageEnvironment();
+    int                        startRevLanguageEnvironment(const int argc, const char* argv[]);
     
 };
 

@@ -583,7 +583,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_vector<RealPos>() );
         addFunction( "v",         new Func_vector<RlBoolean>() );
         addFunction( "v",         new Func_vector<Clade>() );
-        
+
         /////////////////////////////////////////
         // Add RevLanguage only functions here //
         /////////////////////////////////////////

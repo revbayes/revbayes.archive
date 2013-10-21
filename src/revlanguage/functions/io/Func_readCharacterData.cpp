@@ -103,6 +103,7 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
+    int numFilesRead = 0;
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
         bool isInterleaved = false;
         std::string myFileType = "unknown";
@@ -114,6 +115,7 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
         else if (reader.isFastaFile(*p, dType) == true)
             myFileType = "fasta";
         
+        int numMatricesReadForThisFile=0;
         if (myFileType != "unknown") {
             std::string suffix = "|" + dType;
             if ( myFileType == "phylip" ) {
@@ -134,6 +136,9 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
                 
                 dType = (*it)->getDatatype();
 
+                // Assume success; correct below if failure
+                numMatricesReadForThisFile++;
+                
                 if ( dType == "DNA" ) {
                     RevBayesCore::CharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::DnaState> *>( *it );
                     CharacterData<DnaState> *mDNA = new CharacterData<DnaState>( coreM );
@@ -155,6 +160,7 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
                     m->push_back( mSS );
                 }
                 else {
+                    numMatricesReadForThisFile--;
                     throw RbException("Unknown data type \"" + dType + "\".");
                 }
             }
@@ -162,7 +168,8 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
         else {
             reader.addWarning("Unknown file type");
         }
-        
+    if (numMatricesReadForThisFile > 0)
+        numFilesRead++;
     }
     
     
@@ -170,12 +177,16 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     if (readingDirectory == true)
     {
         std::stringstream o2;
-        if ( m->size() == 0 )
+        if ( numFilesRead == 0 )
             o2 << "Failed to read any files";
-        else if ( m->size() == 1 )
-            o2 << "Successfully read one file";
+        else if ( numFilesRead == 1 ) {
+            if ( m->size() == 1 )
+                o2 << "Successfully read one file with one character matrix";
+            else
+                o2 << "Successfully read one file with " << m->size() << " character matrices";
+        }
         else
-            o2 << "Successfully read " << m->size() << " files";
+            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices";
         RBOUT(o2.str());
         std::set<std::string> myWarnings = reader.getWarnings();
         if ( vectorOfFileNames.size() - m->size() > 0 && myWarnings.size() > 0 )

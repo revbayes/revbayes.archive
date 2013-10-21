@@ -7,7 +7,7 @@ int main (int argc, const char * argv[])
 {
 
     RevLanguageMain rl;
-    rl.startRevLanguageEnvironment();
+    rl.startRevLanguageEnvironment(argc, argv);
         
     return 0;
 }
