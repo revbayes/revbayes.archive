@@ -375,6 +375,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
         rateVariationAcrossSites = true;
         siteRates = r;
         this->numSiteRates = r->getValue().size();
+        std::cerr << this->numSiteRates << std::endl;
         this->resizeLikelihoodVectors();
     }
     else

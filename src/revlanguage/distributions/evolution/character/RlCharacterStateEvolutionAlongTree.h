@@ -54,6 +54,7 @@ namespace RevLanguage {
         RbPtr<const Variable>                           tree;
         RbPtr<const Variable>                           q;
         RbPtr<const Variable>                           rate;
+        RbPtr<const Variable>                           siteRates;
         RbPtr<const Variable>                           rootFrequencies;
         RbPtr<const Variable>                           nSites;
         RbPtr<const Variable>                           type;
@@ -104,6 +105,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
+    RevBayesCore::TypedDagNode< std::vector<double> >* siteRatesNode = static_cast<const Vector<RealPos> &>( siteRates->getValue() ).getValueNode();
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
     const RevBayesCore::TypedDagNode< std::vector< double > > *rf = NULL;
@@ -158,6 +160,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
+        if ( siteRatesNode->getValue().size() > 0 ) 
+        {
+            dist->setSiteRates( siteRatesNode );
+        }
+        
         d = dist;
     } 
     else if ( dt == "RNA" )
@@ -202,6 +209,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
             dist->setRateMatrix( rm );
+        }
+        
+        if ( siteRatesNode->getValue().size() > 0 ) 
+        {
+            dist->setSiteRates( siteRatesNode );
         }
 
         d = dist;
@@ -250,6 +262,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
+        if ( siteRatesNode->getValue().size() > 0 ) 
+        {
+            dist->setSiteRates( siteRatesNode );
+        }
+        
         d = dist;
     }
     else if ( dt == "Standard" )
@@ -294,6 +311,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
             dist->setRateMatrix( rm );
+        }
+        
+        if ( siteRatesNode->getValue().size() > 0 ) 
+        {
+            dist->setSiteRates( siteRatesNode );
         }
         
         d = dist;
@@ -350,6 +372,9 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<tr
         branchRateTypes.push_back( Vector<RealPos>::getClassTypeSpec() );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "branchRates"    , true, branchRateTypes, new RealPos(1.0) ) );
         
+        Vector<RealPos> *defaultSiteRates = new Vector<RealPos>();
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "siteRates"    , true, Vector<RealPos>::getClassTypeSpec(), defaultSiteRates ) );
+        
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec() ) );
         
         Vector<RlString> options;
@@ -392,9 +417,15 @@ void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::printValue(std::os
     } else {
         o << "?";
     }
-    o << ", rate=";
+    o << ", branchRates=";
     if ( rate != NULL ) {
         o << rate->getName();
+    } else {
+        o << "?";
+    }
+    o << ", siteRates=";
+    if ( rate != NULL ) {
+        o << siteRates->getName();
     } else {
         o << "?";
     }
@@ -427,6 +458,10 @@ void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::setConstMemberVari
     else if ( name == "branchRates" ) 
     {
         rate = var;
+    }
+    else if ( name == "siteRates" ) 
+    {
+        siteRates = var;
     }
     else if ( name == "nSites" ) 
     {

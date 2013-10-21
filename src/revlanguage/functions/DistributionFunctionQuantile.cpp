@@ -99,7 +99,8 @@ DistributionFunctionQuantile* DistributionFunctionQuantile::clone(void) const {
 /** Execute function: we reset our template object here and give out a copy */
 RbLanguageObject* DistributionFunctionQuantile::execute( void ) {
     
-    RevBayesCore::ContinuousDistribution *d = NULL;
+    Real* value = NULL;
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getValue() ).getValueNode();
     
     if ( templateObject != NULL ) {
         ContinuousDistribution* copyObject = templateObject->clone();
@@ -113,9 +114,13 @@ RbLanguageObject* DistributionFunctionQuantile::execute( void ) {
             }
         }
         
-        d = copyObject->createDistribution();
+        RevBayesCore::ContinuousDistribution *d = copyObject->createDistribution();
+        RevBayesCore::QuantileFunction* f = new RevBayesCore::QuantileFunction( arg, d );
+        RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+        value = new Real( detNode );
     }
-    else {
+    else 
+    {
         PositiveContinuousDistribution* copyObject = templateObjectPositive->clone();
         
         for ( size_t i = 1; i < args.size(); i++ ) {
@@ -127,17 +132,14 @@ RbLanguageObject* DistributionFunctionQuantile::execute( void ) {
             }
         }
         
-        d = copyObject->createDistribution();
+        RevBayesCore::ContinuousDistribution *d = copyObject->createDistribution();
+        RevBayesCore::QuantileFunction* f = new RevBayesCore::QuantileFunction( arg, d );
+        RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+        value = new RealPos( detNode );
         
     }
     
-    
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getValue() ).getValueNode();
-    RevBayesCore::QuantileFunction* f = new RevBayesCore::QuantileFunction( arg, d );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
-    
-    Real* value = new Real( detNode );
-    
+    // return the value
     return value;
 }
 
@@ -177,5 +179,16 @@ const TypeSpec& DistributionFunctionQuantile::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& DistributionFunctionQuantile::getReturnType(void) const {
     
-    return Real::getClassTypeSpec();
+    if ( templateObject != NULL ) 
+    {
+        return Real::getClassTypeSpec();
+    }
+    else if ( templateObjectPositive != NULL ) 
+    {
+        return RealPos::getClassTypeSpec();
+    }
+    else 
+    {
+        return Real::getClassTypeSpec();
+    }
 }
