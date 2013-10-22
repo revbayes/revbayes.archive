@@ -577,6 +577,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Add builtin templated functions */
         addFunction( "v",         new Func_rlvector<Monitor>() );
         addFunction( "v",         new Func_rlvector<Move>() );
+        addFunction( "v",         new Func_rlvector<AbstractCharacterData>() );
         addFunction( "v",         new Func_vector<Natural>() );
         addFunction( "v",         new Func_vector<Integer>() );
         addFunction( "v",         new Func_vector<Real>() );

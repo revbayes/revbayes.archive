@@ -103,14 +103,18 @@ const MethodTable& Container::getMethods(void) const {
 /* Map calls to member methods */
 RbLanguageObject* Container::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "size") {
+    if (name == "size") 
+    {
         
         return new Natural( size() );
-    } else if ( name == "[]") {
+    } 
+    else if ( name == "[]") 
+    {
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
 
-        if (size() < (size_t)(index.getValue()) ) {
+        if (size() < (size_t)(index.getValue()) )
+        {
             throw RbException("Index out of bounds in []");
         }
         

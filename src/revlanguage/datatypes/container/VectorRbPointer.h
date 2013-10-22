@@ -283,7 +283,7 @@ const RevLanguage::MethodTable& RevLanguage::VectorRbPointer<rlType>::getMethods
         methods.addFunction("[]",  new MemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
-        //        methods.setParentTable( &TypedContainer<std::vector<elementType> *>::getMethods() );
+        methods.setParentTable( &TypedControlVariableContainer<std::vector<typename rlType::valueType *> >::getMethods() );
         
         methodsSet = true;
     }
