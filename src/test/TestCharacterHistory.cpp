@@ -12,6 +12,7 @@
 #include "BetaDistribution.h"
 #include "BranchHistory.h"
 #include "CharacterEvent.h"
+#include "CharacterHistoryNodeMonitor.h"
 #include "CharacterHistoryCtmcNodeUpdate.h"
 #include "CharacterHistoryCtmcPathUpdate.h"
 #include "Clade.h"
@@ -28,6 +29,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
+#include "PhylowoodNhxMonitor.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "ScaleMove.h"
@@ -90,7 +92,7 @@ bool TestCharacterHistory::run( void ) {
     
     //////////
     // test
-    
+    int maxGen = (int)((double)mcmcGenerations / 10);
     std::vector<unsigned int> seed;
     //seed.push_back(3); seed.push_back(3); GLOBAL_RNG->setSeed(seed);
     
@@ -108,7 +110,7 @@ bool TestCharacterHistory::run( void ) {
     size_t numStates = 2;
         
     std::vector<std::vector<double> > geo_coords;
-    std::string geo_type = "line";
+    std::string geo_type = "square";
     if (geo_type == "square")
     {
         for (size_t i = 0; i < sqrt(numCharacters); i++)
@@ -133,36 +135,15 @@ bool TestCharacterHistory::run( void ) {
         }
     }
 
-    
-    //////////
-    
-    // To use RateMatrix, need to derive class with:
-    // - non-reversible
-    // - non-scaled (i.e. without rate 1 per row)
-    // ... may not need to get transition probabilities using Rao-Teh sampling
-    
-    // gtr model priors
-    ConstantNode<std::vector<double> > *bf = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(2,1.0) );
-    ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(2,1.0) );
- 
-    // gtr model parameters
-    StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
-    StochasticNode<std::vector<double> > *er = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
-    
-    pi->setValue( new std::vector<double>(numStates,1.0/numStates) );
-    er->setValue( new std::vector<double>(numStates,1.0/numStates) );
-    
-    DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
-
     //////////
     
     // substitution rates
-    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(1.0));
-    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(1.0));
+    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(10.0));
+    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(10.0));
     StochasticNode<double>* rateGain = new StochasticNode<double>("r1", new ExponentialDistribution(rateGain_pr));
     StochasticNode<double>* rateLoss = new StochasticNode<double>("r0", new ExponentialDistribution(rateLoss_pr));
-    rateGain->setValue(new double(.0001));
-    rateLoss->setValue(new double(.0002));
+    rateGain->setValue(new double(.5));
+    rateLoss->setValue(new double(5));
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
     rates.push_back(rateGain);
@@ -174,22 +155,37 @@ bool TestCharacterHistory::run( void ) {
     
     // tree
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
-    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
+    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.5));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    div->setValue(new double(1.0));
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
+    div->setValue(new double(pow(1.0,-2)));
+    StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
     std::cout << tau->getValue().getNewickRepresentation() << "\n";
 
     // geographical distance power
-    ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(5.0));
+    ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(2.0));
     StochasticNode<double>* distancePower = new StochasticNode<double>("dist_pow", new ExponentialDistribution(distancePower_pr));
-    distancePower->setValue(new double(pow(10,-6)));
+    //distancePower->setValue(new double(pow(10,-6)));
+    distancePower->setValue(new double(4.0));
     
     // geographic distances
     GeographicDistanceRateModifier* gdrm = new GeographicDistanceRateModifier(geo_coords);
     gdrm->update();
+    //gdrm = NULL;
+    
+    
+    /*
+    // range size bd rates
+    ConstantNode<double>* extinctionPower_pr = new ConstantNode<double>("ext_pow_pr", new double(1.0));
+    ConstantNode<double>* dispersalPower_pr = new ConstantNode<double>("disp_pow_pr", new double(1.0));
+    StochasticNode<double>* extinctionPower = new StochasticNode<double>("ext_pow", new ExponentialDistribution(extinctionPower_pr));
+    StochasticNode<double>* dispersalPower = new StochasticNode<double>("disp_pow", new ExponentialDistribution(dispersalPower_pr));
+    
+    ConstantNode<double>* areaStationaryFrequency_pr_a = new ConstantNode<double>("area_freq_pr_a", new double(1.0));
+    ConstantNode<double>* areaStationaryFrequency_pr_b = new ConstantNode<double>("area_freq_pr_b", new double(1.0));
+    StochasticNode<double>* areaStationaryFrequency = new StochasticNode<double>("area_freq", new BetaDistribution(areaStationaryFrequency_pr_a, areaStationaryFrequency_pr_b));
+    */
     
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
@@ -218,7 +214,7 @@ bool TestCharacterHistory::run( void ) {
     {
         std::stringstream ss;
         ss << i;
-        DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, gdrm);
+        DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, gdrm);
         //DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, NULL);
         StochasticNode<BranchHistory>* sn_bh = new StochasticNode<BranchHistory>("bh" + ss.str(), tmp_ahc);
         bh_vector.push_back(sn_bh);
@@ -241,8 +237,8 @@ bool TestCharacterHistory::run( void ) {
     moves.push_back( new ScaleMove(rateLoss, 1.0, true, 5.0) );
     for (size_t i = 0; i < br_vector.size(); i++)
     {
-        TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
-        StochasticNode<double>* br_sn = static_cast<StochasticNode<double>* >(br_tdn);
+        //TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
+        //StochasticNode<double>* br_sn = static_cast<StochasticNode<double>* >(br_tdn);
         ;//moves.push_back( new ScaleMove(br_sn, 1.0, true, 2.0) );
     }
         
@@ -252,7 +248,7 @@ bool TestCharacterHistory::run( void ) {
         StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
         moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
         if (i >= numTaxa)
-            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 2.0));
+            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 5.0));
     }
     
     for (size_t i = numTaxa; i < bh_vector.size(); i++)
@@ -270,9 +266,10 @@ bool TestCharacterHistory::run( void ) {
     monitoredNodes.insert( rateGain );
     monitoredNodes.insert( rateLoss );
     
+    
     for (size_t i = 0; i < br_vector.size(); i++)
     {
-        TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
+        //TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
         ;//monitoredNodes.insert( br_tdn );
     }
     
@@ -284,8 +281,22 @@ bool TestCharacterHistory::run( void ) {
 
     
     monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
+    //monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t" ));
+    unsigned int burn = (unsigned int)(maxGen * .2);
+    monitors.push_back( new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 1, maxGen, burn, filepath + "rb.phylowood.txt", "\t" ));
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
+
     
+    //TypedDagNode<TimeTree>* t1 = NULL;
+    //std::vector<TypedDagNode<BranchHistory>* > bh1;
+    
+    //CharacterHistoryNodeMonitor(t1, bh1, 10, filepath+"rb.tree_chars.txt", "\t");
+    
+    
+    
+    //  CharacterHistoryNodeMonitor(TypedDagNode<TimeTree> *t, std::vector< TypedDagNode< BranchHistory >* > bh, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+    
+ 
     ///////////////
     
     std::cout << "Instantiating model\n";
@@ -295,9 +306,19 @@ bool TestCharacterHistory::run( void ) {
     ///////////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-    myMcmc.run(mcmcGenerations/100);
+    myMcmc.run(maxGen);
     myMcmc.printOperatorSummary();
 
+    
+    /*
+    for (size_t i = 0; i < numNodes; i++)
+    {
+        TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
+        bh_tdn->getValue().print();
+    }
+    std::cout << "rateGain " << rateGain->getValue() << "\n";
+    std::cout << "rateLoss " << rateLoss->getValue() << "\n";
+    */
     
     ///////////////
     
@@ -320,3 +341,31 @@ bool TestCharacterHistory::run( void ) {
     
     return true;
 }
+
+
+
+/*
+
+ 
+ //////////
+ 
+ // To use RateMatrix, need to derive class with:
+ // - non-reversible
+ // - non-scaled (i.e. without rate 1 per row)
+ // ... may not need to get transition probabilities using Rao-Teh sampling
+ 
+ // gtr model priors
+ ConstantNode<std::vector<double> > *bf = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(2,1.0) );
+ ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(2,1.0) );
+ 
+ // gtr model parameters
+ StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
+ StochasticNode<std::vector<double> > *er = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
+ 
+ pi->setValue( new std::vector<double>(numStates,1.0/numStates) );
+ er->setValue( new std::vector<double>(numStates,1.0/numStates) );
+ 
+ DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
+
+
+*/

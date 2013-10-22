@@ -40,6 +40,7 @@ const std::string& CharacterHistoryCtmcPathUpdate::getMoveName(void) const
 double CharacterHistoryCtmcPathUpdate::performSimpleMove(void)
 {
     // store old history
+    //storedValue = BranchHistory(variable->getValue());
     storedValue = variable->getValue();
     
     // sample characters to update
@@ -54,20 +55,24 @@ double CharacterHistoryCtmcPathUpdate::performSimpleMove(void)
     }
     
     // propose new value
-    double lnProposal = 0.0;
     AbstractCharacterHistoryCtmc* p = static_cast< AbstractCharacterHistoryCtmc* >( &variable->getDistribution() );
     
-    lnProposal -= p->computeLnProposal();
-    //size_t ne0 = p->getValue().getNumEvents();
+    //std::cout << "OLD P\n";
+    //p->getValue().print();
+    //std::cout << "OLD P (stored)\n";
+    //storedValue.print();
+    
+    double lnProposalBwd = p->computeLnProposal();
     p->samplePath(updateSet);
-    lnProposal += p->computeLnProposal();
-    //size_t ne1 = p->getValue().getNumEvents();
+    double lnProposalFwd = p->computeLnProposal();
+
+    //std::cout << "NEW P (stored)\n";
+    //storedValue.print();
+    //std::cout << "NEW P\n";
+    //p->getValue().print();
     
-    //std::cout << variable->getName() << " " << ne0 << " " << ne1 << "\n";
-    
-    //std::cout << lnProposal << "\n";
-    
-    return lnProposal;
+    //return 0.0;
+    return lnProposalBwd - lnProposalFwd;
 }
 
 void CharacterHistoryCtmcPathUpdate::printParameterSummary(std::ostream &o) const
@@ -78,18 +83,12 @@ void CharacterHistoryCtmcPathUpdate::printParameterSummary(std::ostream &o) cons
 void CharacterHistoryCtmcPathUpdate::rejectSimpleMove(void)
 {
     variable->setValue( new BranchHistory(storedValue) );
+    //std::cout << "REJECT PATH\n";
 }
 
 void CharacterHistoryCtmcPathUpdate::acceptSimpleMove(void)
 {
-    /*
-    std::cout << "\nOLD\n";
-    storedValue.print();
-    std::cout << "\nNEW\n";
-    variable->getValue().print();
-    std::cout << "\n";
-    */
-    
+    //std::cout << "ACCEPT PATH\n";
 }
 
 void CharacterHistoryCtmcPathUpdate::tune(void)

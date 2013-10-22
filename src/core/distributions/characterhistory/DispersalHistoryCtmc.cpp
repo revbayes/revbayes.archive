@@ -18,12 +18,29 @@
 
 using namespace RevBayesCore;
 
-DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd) : AbstractCharacterHistoryCtmc(rm,r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp)
+DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs) : AbstractCharacterHistoryCtmc(rm,r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs)
 
 {
     addParameter(distancePower);
     if (geographicDistances != NULL)
         geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
+}
+
+DispersalHistoryCtmc::DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs) : AbstractCharacterHistoryCtmc(r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs)
+
+{
+    addParameter(distancePower);
+    if (geographicDistances != NULL)
+        geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
+    if (gainRangeSizeRateModifier != NULL)
+    {
+        ;//gainRangeSizeRateModifier->updateFrequency(<#double f#>)
+        ;//gainRangeSizeRateModifier->updatePower(￼)
+    }
+    if (lossRangeSizeRateModifier != NULL)
+    {
+        
+    }
 }
 
 DispersalHistoryCtmc::DispersalHistoryCtmc(const DispersalHistoryCtmc& m) : AbstractCharacterHistoryCtmc(m)
@@ -92,41 +109,46 @@ void DispersalHistoryCtmc::swapParameter(const DagNode *oldP, const DagNode *new
 
 double DispersalHistoryCtmc::computeLnProbability(void)
 {
+    //return 0.0;
+    
     double lnL = 0.0;
     
     if (tree->getValue().getNode(index).isRoot())
         return 0.0;
     
     BranchHistory* bh = value;
-    
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
+    
+    // reject extinction cfgs
     unsigned int n = numOn(currState);
     if (n == 0)
         return 0.0;
-    //std::vector<CharacterEvent*> endState = bh->getParentCharacters();
     
     std::multiset<CharacterEvent*,CharacterEventCompare> history = bh->getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     
-    // rate/time scale
+    // rate/time scaler
     double t = 0.0;
     double dt = 0.0;
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0)
         bt = 10.0;
-    double bs = bt*br;
-    //std::cout << "** " << bs << " = " << br << " * " << bt << "\n";
-    //bh->print();
-    //std::cout << "**\n";
-
+    double bs = bt * br;
+    
+//    std::cout << "bt,br" << bt << " " << br << "\n";
+ 
     // stepwise events
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
+        // next event time
         double idx = (*it_h)->getIndex();
         dt = (*it_h)->getTime() - t;
-        dt *= bs; // rescale time (correct?)
         
+        // rescale time
+        dt *= bs;
+        
+        // reject extinction cfgs
         if ((*it_h)->getState() == 0)
             n--;
         else
@@ -140,10 +162,6 @@ double DispersalHistoryCtmc::computeLnProbability(void)
         // lnL for stepwise events for p(x->y)
         lnL += log(tr) - sr * dt;
         
-        // proposal density for q(x->y)... might cancel, largely??
-        //double tr_iid = rates[ (*it_h)->getState() ]->getValue();
-        //lnL -= log(tr_iid) - sr * dt;
-        
         // update state
         currState[idx] = *it_h;
         t += dt;
@@ -152,12 +170,10 @@ double DispersalHistoryCtmc::computeLnProbability(void)
     
     // lnL for final non-event
     double sr = sumOfRates(currState);
-    lnL += -sr * (1.0 - t);
-    
-    // for q(x->y)... cancels?
-    //lnL -= -sr * (1.0 - t);
+    lnL += -sr * (1.0 - t) * bs;
 
-    //std::cout << "----\n";
+    //std::cout << "lnL " << lnL << "\n";
+    
     return lnL;
 }
 
@@ -169,12 +185,12 @@ double DispersalHistoryCtmc::computeLnProposal(void)
         return 0.0;
     
     BranchHistory* bh = value;
-    
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
+    
+    // reject extinction cfgs
     unsigned int n = numOn(currState);
     if (n == 0)
         return 0.0;
-    //std::vector<CharacterEvent*> endState = bh->getParentCharacters();
     
     std::multiset<CharacterEvent*,CharacterEventCompare> history = bh->getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
@@ -186,17 +202,17 @@ double DispersalHistoryCtmc::computeLnProposal(void)
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0)
         bt = 10.0;
-    double bs = bt*br;
-    //std::cout << "** " << bs << " = " << br << " * " << bt << "\n";
-    //bh->print();
-    //std::cout << "**\n";
+    double bs = bt * br;
     
     // stepwise events
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
+        // next event time and index
         double idx = (*it_h)->getIndex();
         dt = (*it_h)->getTime() - t;
-        dt *= bs; // rescale time (correct?)
+        
+        // rescale time
+        dt *= bs;
         
         if ((*it_h)->getState() == 0)
             n--;
@@ -219,18 +235,25 @@ double DispersalHistoryCtmc::computeLnProposal(void)
     
     // lnL for final non-event
     double sr = sumOfRates(currState);
-    lnL += -sr * (1.0 - t);
+    lnL += -sr * (1.0 - t) * bs;
     
-    // for q(x->y)... cancels?
-    //lnL -= -sr * (1.0 - t);
-    
+    // proposal probs for internal states is a little trickier, since whether you consider lnP for parent or child depends on proposal mechanism
+    /*
+     std::cout << lnL << "\n";
+    std::cout << "----\n";
     
     // child and parent character states
     double p1 = rates[1]->getValue() / (rates[0]->getValue() + rates[1]->getValue());
     unsigned int m = numOn(value->getParentCharacters()) + numOn(value->getChildCharacters());
-    lnL += m * log(p1) - (numCharacters - m)* log(1.0 - p1);
+    std::cout << "m " << m << " " << " p1 " << p1 << "\n";
+    lnL += m * log(p1) + (2 * numCharacters - m) * log(1.0 - p1);
     
-    //std::cout << "----\n";
+    std::cout << lnL << "\n";
+    std::cout << "----\n";
+    */
+    
+    //std::cout << "lnP " << lnL << "\n";
+    
     return lnL;
 }
 
@@ -254,29 +277,8 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
     value->clearEvents(indexSet);
     
     // get transition rates
-    double r[2];
-    r[0] = rates[0]->getValue();
-    r[1] = rates[1]->getValue();
-    
-    /*
-    std::vector<std::vector<double> > r(numStates);
-    for (size_t i = 0; i < numStates; i++)
-        r[i].resize(numStates);
-
-    r[0][1] = rates[0]->getValue();
-    r[0][0] = -r[0][1];
-    r[1][0] = rates[1]->getValue();
-    r[1][1] = -r[1][0];
-    
-    for (size_t i = 0; i < numStates; i++)
-    {
-        for (size_t j = 0; j < numStates; j++)
-        {
-            std::cout << r[i][j] << " ";
-        }
-        std::cout << "\n";
-    }
-     */
+    double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
+    //std::cout << "rates " << r[0] << " " << r[1] << "\n";
     
     // reject sample path history
     std::vector<CharacterEvent*> parentVector = value->getParentCharacters();
@@ -287,8 +289,8 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0) // root bt
         bt = 10.0;
-    
-    //std::cout << br << " " << bt << "\n";
+    double bs = br * bt;
+    //std::cout << "index " << index << "\n";
     
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
@@ -304,14 +306,17 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
             double t = 0.0;
             do
             {
-//                double r_sum = r[currState];
-                t += RbStatistics::Exponential::rv( r[currState] * bt * br, *GLOBAL_RNG );
-                //std::cout << i << " " << t << " " << currState << " " << r[currState]*bt*br << "\n";
+                t += RbStatistics::Exponential::rv( r[currState] * bs, *GLOBAL_RNG );
+                //std::cout << i << " " << t << " " << currState << " " << r[currState] * bs << "\n";
                 if (t < 1.0)
                 {
                     currState = ( currState == 1 ? 0 : 1);
                     CharacterEvent* evt = new CharacterEvent(i,currState,t);
                     tmpHistory.insert(evt);
+                }
+                else
+                {
+                    ;// std::cout << "------\n";
                 }
             }
             while(t < 1.0);
@@ -330,10 +335,16 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
         return;
     }
      */
-    
     //else
-        value->updateHistory(history,indexSet);
-        //value->setHistory(history);
+    value->updateHistory(history,indexSet);
+    
+    //value->print();
+    //
+    //std::cout << value->getHistory().size() << "\n";
+    //std::cout << bt << "\n";
+    //std::cout << bt * (double)value->getHistory().size() << "\n";
+    
+    ;
 }
 
 bool DispersalHistoryCtmc::historyContainsExtinction(const std::vector<CharacterEvent*>& v, const std::multiset<CharacterEvent*,CharacterEventCompare>& s)
@@ -359,48 +370,187 @@ bool DispersalHistoryCtmc::historyContainsExtinction(const std::vector<Character
     return false;
 }
 
-void DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet)
+double DispersalHistoryCtmc::sampleRootCharacterState(const std::set<size_t>& indexSet)
 {
-    std::vector<CharacterEvent*> childStates = value->getChildCharacters();
-
-    sampleCharacterState(indexSet, childStates, 1.0);
-    value->setChildCharacters(childStates);
-//std::vector<CharacterEvent*> parentStates = value->getParentCharacters();
-    //for (size_t i = 0; i < parentStates.size(); i++) std::cout << parentStates[i]->getState() << " "; std::cout << "\n";
-    //for (size_t i = 0; i < childStates.size(); i++) std::cout << childStates[i]->getState() << " "; std::cout << "\n";
-
-}
-
-void DispersalHistoryCtmc::sampleParentCharacterState(const std::set<size_t>& indexSet)
-{
+    if (!tree->getValue().getNode(index).isRoot())
+        return 0.0;
+    
+    // compute transition probabilities
+    double br = branchRate->getValue();
+    double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
+    if (bt == 0.0) // root bt
+        bt = 10.0;
+    double bs = br * bt;
+    
+    double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
+    double expPart = exp( - (r[0] + r[1]) * bs);
+    
+    double pi0 = r[0] / (r[0] + r[1]);
+    double pi1 = 1.0 - pi0;
+    double tp[2][2] = { { pi0 + pi1 * expPart, pi1 - pi1 * expPart }, { pi0 - pi0 * expPart, pi1 + pi0 * expPart } };
+    
     std::vector<CharacterEvent*> parentStates = value->getParentCharacters();
-    sampleCharacterState(indexSet, parentStates, 0.0);
-    value->setParentCharacters(parentStates);
-}
-
-void DispersalHistoryCtmc::sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t)
-{
-    double p1 = rates[1]->getValue() / (rates[0]->getValue() + rates[1]->getValue());
+    std::vector<CharacterEvent*> childStates = value->getChildCharacters();
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
-        unsigned int s = (unsigned int)(GLOBAL_RNG->uniform01() < p1 ? 1 : 0);
-        //states[*it]->setState(s);
+        // should sample conditioned on descendant states...
+        // not entirely sure why, though
+        // for Gibbs sampler, must sample internal node states wp of model, not arbitrarily randomly
+        // ... the bad news is I need information from descendant lineages then...
+        
+        unsigned int parentS = 0;
+        unsigned int childS = childStates[*it]->getState();
+        double u = GLOBAL_RNG->uniform01();
+        if (u < tp[childS][1])
+            parentS = 1;
+        parentStates[*it] = new CharacterEvent(*it, parentS, 0.0);
+    }
+    
+    //double lnP = sampleCharacterState(indexSet, childStates, 1.0);
+    value->setParentCharacters(parentStates);
+    
+    return 0.0;
+}
+
+double DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet)
+{
+    
+    // compute transition probabilities
+    double br = branchRate->getValue();
+    double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
+    if (bt == 0.0) // root bt
+        bt = 10.0;
+    double bs = br * bt;
+
+    double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
+    double expPart = exp( - (r[0] + r[1]) * bs);
+
+    double pi0 = r[0] / (r[0] + r[1]);
+    double pi1 = 1.0 - pi0;
+    double tp[2][2] = { { pi0 + pi1 * expPart, pi1 - pi1 * expPart }, { pi0 - pi0 * expPart, pi1 + pi0 * expPart } };
+    
+    std::vector<CharacterEvent*> parentState = value->getParentCharacters();
+    std::vector<CharacterEvent*> childStates = value->getChildCharacters();
+    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+    {
+        // should sample conditioned on descendant states...
+        // not entirely sure why, though
+        // for Gibbs sampler, must sample internal node states wp of model, not arbitrarily randomly
+        // ... the bad news is I need information from descendant lineages then...
+        
+        unsigned int parentS = parentState[*it]->getState();
+        unsigned int childS = 0;
+        double u = GLOBAL_RNG->uniform01();
+        if (u < tp[parentS][1])
+            childS = 1;
+        childStates[*it] = new CharacterEvent(*it, childS, 1.0);
+    }
+    
+    //double lnP = sampleCharacterState(indexSet, childStates, 1.0);
+    value->setChildCharacters(childStates);
+    
+    return 0.0;
+    //return lnP;
+}
+
+
+double DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet, const std::vector<CharacterEvent*>& state1, const std::vector<CharacterEvent*>& state2)
+{
+    
+    // compute transition probabilities
+    double br = branchRate->getValue();
+    double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
+    if (bt == 0.0) // root bt
+        bt = 10.0;
+    double bs = br * bt;
+    
+    double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
+    double expPart = exp( - (r[0] + r[1]) * bs);
+    
+    double pi0 = r[0] / (r[0] + r[1]);
+    double pi1 = 1.0 - pi0;
+    double tp[2][2] = { { pi0 + pi1 * expPart, pi1 - pi1 * expPart }, { pi0 - pi0 * expPart, pi1 + pi0 * expPart } };
+    
+    std::vector<CharacterEvent*> parentState = value->getParentCharacters();
+    std::vector<CharacterEvent*> childState = value->getChildCharacters();
+    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+    {
+        // should sample conditioned on descendant states...
+        // not entirely sure why, though
+        // for Gibbs sampler, must sample internal node states wp of model, not arbitrarily randomly
+        // ... the bad news is I need information from descendant lineages then...
+        
+        unsigned int ancS = parentState[*it]->getState();
+        //unsigned int thisS = childState[*it]->getState();
+        unsigned int desS1 = state1[*it]->getState();
+        unsigned int desS2 = state2[*it]->getState();
+
+        double u = GLOBAL_RNG->uniform01();
+        double g0 = tp[ancS][0] * tp[0][desS1] * tp[0][desS2];
+        double g1 = tp[ancS][1] * tp[1][desS1] * tp[1][desS2];
+        
+        unsigned int s = 0;
+        if (u < g1 / (g0 + g1))
+            s = 1;
+        
+        childState[*it] = new CharacterEvent(*it, s, 1.0);
+    }
+    
+    //double lnP = sampleCharacterState(indexSet, childStates, 1.0);
+    value->setChildCharacters(childState);
+    
+    return 0.0;
+    //return lnP;
+}
+
+
+double DispersalHistoryCtmc::sampleParentCharacterState(const std::set<size_t>& indexSet)
+{
+
+    std::vector<CharacterEvent*> parentStates = value->getParentCharacters();
+    double lnP = sampleCharacterState(indexSet, parentStates, 0.0);
+    value->setParentCharacters(parentStates);
+    return lnP;
+}
+
+double DispersalHistoryCtmc::sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t)
+{
+    double p1 = rates[1]->getValue() / (rates[0]->getValue() + rates[1]->getValue());
+    int n1_old = 0;
+    int n1_new = 0;
+    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+    {
+        
+        unsigned int s = 0;
+        if (GLOBAL_RNG->uniform01() < p1)
+        {
+            s = 1;
+            n1_new++;
+        }
+        
+        if (states[*it]->getState() == 1)
+            n1_old++;
+        
         states[*it] = new CharacterEvent(*it,s,t);
     }
     
     // retry if extinct
-    if (numOn(states) == 0)
-        sampleCharacterState(indexSet, states,t);
-
-    /*
+    double lnP = 0.0;
+    unsigned int n = numOn(states);
+    if (n == 0)
+    {
+        lnP = sampleCharacterState(indexSet, states,t);
+        return lnP;
+    }
     else
     {
-        for (size_t i = 0; i < states.size(); i++)
-            std::cout << states[i]->getState() << " ";
-        std::cout << "\n";
+        // proposal density (n0 - n'0) * ln p0 + (n1 - n'1) * ln p1
+        lnP = (n1_old - n1_new) * log(p1) + (n1_new - n1_old) * log(1.0 - p1);
+        //std::cout << (n1_old - n1_new) * log(p1)  << "\n";
+        //std::cout << (n1_new - n1_old) * log(1.0 - p1) << "\n";
+        ;
+        return lnP;
     }
-     */
-
 }
 
 
@@ -415,7 +565,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawParentCharacters())
     {
-        std::cout << index << " redraw parent\n";
+        //std::cout << index << " redraw parent\n";
         sampleParentCharacterState(indexSet);
         value->setRedrawParentCharacters(false);
     }
@@ -423,7 +573,7 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawChildCharacters())
     {
-        std::cout << index << " redraw child\n";
+        //std::cout << index << " redraw child\n";
         sampleChildCharacterState(indexSet);
         value->setRedrawChildCharacters(false);
     }
@@ -431,12 +581,12 @@ void DispersalHistoryCtmc::redrawValue(void)
     
     if (value->getRedrawHistory())
     {
-        std::cout << index << " redraw path\n";
+        //std::cout << index << " redraw path\n";
         samplePath(indexSet);
         value->setRedrawHistory(false);
     }
     
-    std::cout << "redrawValue done\n";
+//    std::cout << "redrawValue done\n";
     //value->print();
 }
 
@@ -463,7 +613,8 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0) // root bt
-        bt = 10.0;
+        bt = 100.0;
+    double bs = br * bt;
     
     //std::cout << br << " " << bt << "\n";
     
@@ -478,13 +629,7 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     {
         // sample next event time
         double r_sum = sumOfRates(currState);
-        t += RbStatistics::Exponential::rv( r_sum * bt * br, *GLOBAL_RNG );
-        
-        //std::cout << t << " " << r_sum << " " << bt << " " << br << "\n";
-        //std::cout << "t " << t << "\t";
-        //for (size_t i = 0; i < currState.size(); i++)
-        //    std::cout << currState[i]->getState() << " ";
-        //std::cout << "\n";
+        t += RbStatistics::Exponential::rv( r_sum * bs, *GLOBAL_RNG );
         
         if (t < 1.0)
         {
@@ -519,6 +664,10 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
         }
     }
     while (t < 1.0);
+    
+    //std::cout << history.size() << "\n";
+    //std::cout << sumOfRates(currState) << "\n";
+    //std::cout << bt << "\n";
     
     value->setHistory(history);
     value->setChildCharacters(currState);

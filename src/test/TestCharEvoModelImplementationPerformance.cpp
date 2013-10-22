@@ -75,7 +75,7 @@ bool TestCharEvoModelImplementationPerformance::run( void ) {
     size_t numChar = data[0]->getNumberOfCharacters();
 //    ConstantNode<double> *rm = new ConstantNode<double>("rateMultiplier", new double(1.0) );
 //    SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tau, q, rm, true, numChar ); 
-    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, true, numChar ); 
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, data[0]->getNumberOfStates(), true, numChar );
     charModel->setRateMatrix( q );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
     charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );

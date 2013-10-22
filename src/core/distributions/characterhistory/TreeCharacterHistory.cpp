@@ -44,7 +44,7 @@ void TreeCharacterHistory::redrawValue(void)
     // update node states
     for (int i = (int)nodes.size()-1; i >= 0; i--)
     {
-        std::cout << "redrawValue() for BranchHistory " << i << "\n";
+        //std::cout << "redrawValue() for BranchHistory " << i << "\n";
 
         TopologyNode* p = nodes[i];
         size_t parentIdx = 0;
@@ -55,8 +55,8 @@ void TreeCharacterHistory::redrawValue(void)
         const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
         StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);
 
-        std::cout << "BEFORE NODE\n";
-        bh->getValue().print();
+        //std::cout << "BEFORE NODE\n";
+        //bh->getValue().print();
         
         // ... now I can setValue()
         std::multiset<CharacterEvent*, CharacterEventCompare> updateSet;
@@ -67,7 +67,7 @@ void TreeCharacterHistory::redrawValue(void)
         
         if (p->isRoot())
         {
-            std::cout << "isRoot()\n";
+            //std::cout << "isRoot()\n";
             bh->getDistribution().redrawValue();
         }
         else
@@ -90,8 +90,8 @@ void TreeCharacterHistory::redrawValue(void)
         bh->getValue().setRedrawChildCharacters(false);
         
 
-        std::cout << "AFTER NODE\n";
-        bh->getValue().print();
+        //std::cout << "AFTER NODE\n";
+        //bh->getValue().print();
     }
     
     
@@ -99,7 +99,7 @@ void TreeCharacterHistory::redrawValue(void)
     // update paths
     for (int i = (int)nodes.size()-1; i >= 0; i--)
     {
-        std::cout << "redrawValue() for BranchHistory " << i << "\n";
+        //std::cout << "redrawValue() for BranchHistory " << i << "\n";
         
         TopologyNode* p = nodes[i];
         //size_t nodeIdx = p->getIndex();
@@ -111,8 +111,8 @@ void TreeCharacterHistory::redrawValue(void)
         const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
         StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);
         
-        std::cout << "BEFORE PATH \n";
-        bh->getValue().print();
+        //std::cout << "BEFORE PATH \n";
+        //bh->getValue().print();
         
         // ... now I can setValue()
         std::multiset<CharacterEvent*, CharacterEventCompare> updateSet;
@@ -127,7 +127,7 @@ void TreeCharacterHistory::redrawValue(void)
             //for (size_t i = 0; i < childVector.size(); i++)
             //    childSet.insert(childVector[i]);
             //bh->getValue().setChildCharacters(childSet);
-            std::cout << "isTip()\n";
+           // std::cout << "isTip()\n";
             bh->getDistribution().redrawValue();
             bh->getValue().setRedrawHistory(false);
         }
@@ -138,9 +138,9 @@ void TreeCharacterHistory::redrawValue(void)
             bh->getValue().setRedrawHistory(false);
         }
 
-        std::cout << "AFTER\n";
-        bh->getValue().print();
-        std::cout << "--------\n";
+        //std::cout << "AFTER\n";
+        //bh->getValue().print();
+        //std::cout << "--------\n";
     }
     
     // enable redraw for parent/child/path

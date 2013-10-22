@@ -79,6 +79,10 @@ namespace RevBayesCore {
         mutable std::vector<CharacterEvent*> parentCharacters;
         mutable std::vector<CharacterEvent*> childCharacters;
         
+        // add per-state count
+        //std::vector<std::vector<unsigned int> > parentCharacterCounts;
+        //std::vector<std::vector<unsigned int> > childCharacterCounts;
+        
         //
         bool redrawParentCharacters;
         bool redrawChildCharacters;

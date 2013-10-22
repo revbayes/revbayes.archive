@@ -18,7 +18,7 @@ namespace RevBayesCore
     class GeographicDistanceRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-9, std::string dt="haversine"); // pass map... pass it parameter pointer?
+        GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-6, std::string dt="haversine"); // pass map... pass it parameter pointer?
         double computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value to computeRateModifier
         void updateGeographicDistancePowers(double dp=1.0, bool upd=true);
         void update(void);
@@ -29,6 +29,7 @@ namespace RevBayesCore
     protected:
         double computePairwiseDistances(int i, int j);
         void computeAllPairwiseDistances(void);
+        void computeAllPairwiseDistanceOrder(void);
         
     private:
         std::string distanceType;

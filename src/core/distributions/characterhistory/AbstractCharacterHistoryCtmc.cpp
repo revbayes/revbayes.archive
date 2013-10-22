@@ -35,6 +35,18 @@ AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatr
     //redrawValue();
 }
 
+AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns, idx)), numStates(ns), numCharacters(nc), rates(r), branchRate(br), tree(t), index(idx)
+{
+    for (size_t i = 0; i < r.size(); i++)
+        addParameter(rates[i]);
+    
+    addParameter(tree);
+    addParameter(branchRate);
+    
+    //redrawValue();
+}
+
+
 AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(const AbstractCharacterHistoryCtmc& m) : TypedDistribution<BranchHistory>(m)
 {
     rateMatrix = m.rateMatrix;
@@ -138,36 +150,23 @@ void AbstractCharacterHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
     value->updateHistory(history,indexSet);
 }
 
-void AbstractCharacterHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet)
+double AbstractCharacterHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet)
 {
+    double lnP = 0.0;
     std::vector<CharacterEvent*> childStates = value->getChildCharacters();
+    lnP = sampleCharacterState(indexSet, childStates, 1.0);
     value->setChildCharacters(childStates);
-    sampleCharacterState(indexSet, childStates, 1.0);
+    return lnP;
 }
 
-void AbstractCharacterHistoryCtmc::sampleParentCharacterState(const std::set<size_t>& indexSet)
+double AbstractCharacterHistoryCtmc::sampleParentCharacterState(const std::set<size_t>& indexSet)
 {
+    double lnP = 0.0;
     std::vector<CharacterEvent*> parentStates = value->getParentCharacters();
-    sampleCharacterState(indexSet, parentStates, 0.0);
+    lnP = sampleCharacterState(indexSet, parentStates, 0.0);
     value->setParentCharacters(parentStates);
+    return lnP;
 }
-
-void AbstractCharacterHistoryCtmc::sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t)
-{
-  //  std::set<CharacterEvent*> characterState;
-    
-    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
-    {
-        unsigned int s = (unsigned int)(GLOBAL_RNG->uniform01() * numStates);
-        states[*it]->setState(s);
-//        characterState.insert(new CharacterEvent(*it,s,t));
-    }
-    
-    //return characterState;
-}
-
-
-
 
 void AbstractCharacterHistoryCtmc::redrawValue(void)
 {

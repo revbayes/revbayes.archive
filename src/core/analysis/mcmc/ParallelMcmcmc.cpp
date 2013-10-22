@@ -13,7 +13,6 @@
 #include <vector>
 #include <cmath>
 
-#undef USE_LIB_OPENMP
 #if defined (USE_LIB_OPENMP)
     #include <omp.h>
 #endif
@@ -117,7 +116,7 @@ void ParallelMcmcmc::run(int generations)
     for (int i = 1; i <= generations; i += swapInterval)
     {
         // start parallel job per block of swapInterval cycles
-        int np = numProcesses;
+        int np = numProcesses; // in fact, used by the macro below
         int pid = 1;
         
         #pragma omp parallel default(shared) private(np, pid)

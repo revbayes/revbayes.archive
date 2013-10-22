@@ -69,7 +69,7 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::SimpleSiteHeterogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, const TypedDagNode<std::vector<double> > *sr, const TypedDagNode<RateMatrix> *rm, bool c, size_t nSites) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>(  t, sr->getValue().size(), c, nSites ), rateMatrix( rm ), siteRates( sr ) {
+RevBayesCore::SimpleSiteHeterogeneousMixtureCharEvoModel<charType, treeType>::SimpleSiteHeterogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, const TypedDagNode<std::vector<double> > *sr, const TypedDagNode<RateMatrix> *rm, bool c, size_t nSites) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>(  t, rm->getValue().size(), sr->getValue().size(), c, nSites ), rateMatrix( rm ), siteRates( sr ) {
     // add the parameters to the parents list
     this->addParameter( rateMatrix );
     this->addParameter( siteRates );

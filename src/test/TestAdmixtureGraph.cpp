@@ -150,7 +150,7 @@ bool TestAdmixtureGraph::run(void) {
     size_t numTaxa = snps->getNumPopulations();
     size_t numNodes = 2 * numTaxa - 1;
     size_t numBranches = numNodes - 1;
-    size_t numSites = snps->getNumSnps();
+    //size_t numSites = snps->getNumSnps();
     int blockSize = 50;
     
     int delay = 200;

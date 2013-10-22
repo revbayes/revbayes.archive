@@ -106,6 +106,7 @@ void ScaleMove::tune( void ) {
     {
         lambda /= (2.0 - rate/0.44 );
     }
+    std::cout << lambda << "\n";
     
 }
 

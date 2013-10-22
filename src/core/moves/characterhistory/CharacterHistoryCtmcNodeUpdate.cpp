@@ -12,7 +12,7 @@
 #include "RandomNumberGenerator.h"
 
 using namespace RevBayesCore;
-/*
+
 
 CharacterHistoryCtmcNodeUpdate::CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector< StochasticNode<BranchHistory> *> bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w) : Move(n, w, tuning), variable(n), bh_vector(bhv), lambda(l), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates()), tree(t), index(n->getValue().getIndex()), changed(false)
 
@@ -90,35 +90,47 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
     //for (std::set<size_t>::iterator it = updateSet.begin(); it != updateSet.end(); it++) std::cout << *it << " "; std::cout << "\n";
     
     // propose new value
-    double lnProposal = 0.0;
     AbstractCharacterHistoryCtmc* p = static_cast< AbstractCharacterHistoryCtmc* >( &variable->getDistribution() );
+    
     //std::cout << "OLD P\n";
     //p->getValue().print();
-    lnProposal -= p->computeLnProposal();
-    p->sampleChildCharacterState(updateSet);
+    double lnBwdProposal = p->computeLnProposal();
+    if (nd->isRoot())
+        //lnBwdProposal += p->sampleRootCharacterState(updateSet);
+        lnBwdProposal += p->sampleParentCharacterState(updateSet);
+    
+    size_t ch_idx0 = nd->getChild(0).getIndex();
+    size_t ch_idx1 = nd->getChild(1).getIndex();
+    
+    lnBwdProposal += p->sampleChildCharacterState(updateSet, bh_vector[ch_idx0]->getValue().getChildCharacters(), bh_vector[ch_idx1]->getValue().getChildCharacters());
+    
+    // propose new state
     p->samplePath(updateSet);
-    lnProposal += p->computeLnProposal();
+    double lnFwdProposal = p->computeLnProposal();
+
     //std::cout << "NEW P\n";
     //p->getValue().print();
+    
     for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
     {
         size_t ch_idx = nd->getChild(i).getIndex();
         AbstractCharacterHistoryCtmc* q = static_cast< AbstractCharacterHistoryCtmc* >( &bh_vector[ch_idx]->getDistribution() );
+        
         //std::cout << "OLD Q " << i << "\n";
         //q->getValue().print();
-        lnProposal -= q->computeLnProposal();
+        
+        lnBwdProposal += q->computeLnProposal();
         q->getValue().setParentCharacters( p->getValue().getChildCharacters() );
         q->samplePath(updateSet);
-        lnProposal += q->computeLnProposal();
+        lnFwdProposal += q->computeLnProposal();
+        
         //std::cout << "NEW Q " << i << "\n";
         //q->getValue().print();
     }
+    //std::cout << lnBwdProposal-lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << "\n";
     
-    //std::cout << variable->getName() << " " << ne0 << " " << ne1 << "\n";
-    
-    //std::cout << lnProposal << "\n";
-    
-    return lnProposal;
+    //return 0.0;
+    return lnBwdProposal - lnFwdProposal;
 }
 
 void CharacterHistoryCtmcNodeUpdate::printParameterSummary(std::ostream &o) const
@@ -141,7 +153,8 @@ void CharacterHistoryCtmcNodeUpdate::rejectSimpleMove(void)
         bh_vector[ch_idx]->setValue(storedValue[ch_idx]);
     }
     
-    //std::cout << "REJECT\n\n";
+    //std::cout << "REJECT NODE\n\n";
+    
     // free memory
     storedValue.clear();
 
@@ -152,7 +165,7 @@ void CharacterHistoryCtmcNodeUpdate::acceptMove( void ) {
     // nothing to do
     changed = false;
     
-    //std::cout << "ACCEPT\n\n";
+    //std::cout << "ACCEPT NODE\n\n";
     acceptSimpleMove();
 }
 
@@ -174,29 +187,22 @@ double CharacterHistoryCtmcNodeUpdate::performMove(double& probRatio)
     // touch nodes
     variable->touch();
     TopologyNode* nd = &tree->getValue().getNode(index);
-    bh_vector[index]->touch();
+    //bh_vector[index]->touch();
     for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
     {
         size_t bh_idx = nd->getChild(i).getIndex();
-        //std::cout << "touch()\n";
         bh_vector[bh_idx]->touch();
     }
     
     // calculate the probability ratio for the node we just changed
     probRatio = variable->getLnProbabilityRatio();
-    //std::cout << "nd+path  : " << probRatio << "\n";
     
     // and for child path lnProbs
-    //TopologyNode* nd = &tree->getValue().getNode(index);
-    double v = bh_vector[index]->getLnProbabilityRatio();
-    double w = bh_vector[index]->getLnProbability();
-    //std::cout << "nd " << index << " path : " << v << " " << w << "\n";
-    probRatio += v;
     for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
     {
         size_t bh_idx = nd->getChild(i).getIndex();
-        v = bh_vector[bh_idx]->getLnProbabilityRatio();
-        w = bh_vector[bh_idx]->getLnProbability();
+        double v = bh_vector[bh_idx]->getLnProbabilityRatio();
+        //double w = bh_vector[bh_idx]->getLnProbability();
         //std::cout << "ch" << i << " " << bh_idx << " path : " << v << " " << w << "\n";
         probRatio += v;
     }
@@ -214,7 +220,7 @@ double CharacterHistoryCtmcNodeUpdate::performMove(double& probRatio)
         }
     }
     
-    
+    //std::cout << probRatio << " " << hr << "\n";
     return hr;
 }
 
@@ -248,4 +254,3 @@ void CharacterHistoryCtmcNodeUpdate::tune(void)
     
 }
 
-*/

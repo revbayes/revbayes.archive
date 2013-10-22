@@ -24,7 +24,7 @@
 
 namespace RevBayesCore {
     
-/*
+
  class CharacterHistoryCtmcNodeUpdate : public Move {
         
     public:
@@ -68,7 +68,7 @@ namespace RevBayesCore {
         
     };
     
-*/
+
 }
 
 #endif /* defined(__rb_mlandis__CharacterHistoryCtmcNodeUpdate__) */

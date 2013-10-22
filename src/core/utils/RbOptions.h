@@ -51,8 +51,8 @@
 #define DEBUG_WORKSPACE
 #endif
 
-// switch debugging MCMC on
-#ifndef DEBUG_MCMC
+// switch debuggin g MCMC on
+≥#ifndef DEBUG_MCMC÷
 #define DEBUG_MCMC
 #endif
 
@@ -81,19 +81,19 @@
 #endif
 
 
-#endif
+//#endif
 
 
 // AdmixtureGraph depends on armadillo for linear algebra
 // Uncomment the first line to enable the armadillo library
-//#define USE_LIB_ARMADILLO
+#define USE_LIB_ARMADILLO
 #ifdef USE_LIB_ARMADILLO
 #include <armadillo>
 #endif
 
 // ParallelMcmcmc depends on boost for multiprocessing
 // Uncomment the first line to enable the boost library
-#define USE_LIB_OPENMP
+//#define USE_LIB_OPENMP
 #ifdef USE_LIB_OPENMP
 #endif
 

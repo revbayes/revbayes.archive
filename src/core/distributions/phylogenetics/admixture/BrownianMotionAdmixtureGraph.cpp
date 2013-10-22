@@ -795,8 +795,8 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
     //return 0.0;
     
     
-    size_t n = numBlocks*blockSize;
-    size_t p = numTaxa;
+    int n = (int)(numBlocks*blockSize);
+    int p = (int)numTaxa;
     
     arma::mat W(p,p);
     arma::mat X(p,p);
@@ -822,14 +822,14 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
     // drop smallest singular value using SVD
     if (true)
     {
-        arma::mat Uprime(numTaxa,numTaxa);
-        arma::mat U(numTaxa,numTaxa);
-        arma::mat V(numTaxa,numTaxa);
-        arma::vec s(numTaxa);
+        arma::mat Uprime(p,p);
+        arma::mat U(p,p);
+        arma::mat V(p,p);
+        arma::vec s(p);
         
         arma::svd(U,s,V,X);
         Uprime = U;
-        Uprime.shed_row(numTaxa-1);
+        Uprime.shed_row(p-1);
         X = Uprime * X * arma::trans(Uprime);
         W = Uprime * W * arma::trans(Uprime);
         p -= 1;
@@ -851,7 +851,7 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
     evalx += eps;
     evalw += eps;
     
-    for (size_t i = 0; i < p; i++)
+    for (unsigned int i = 0; i < p; i++)
     {
         if (evalx.at(i) < 0.0)
         {
@@ -989,10 +989,11 @@ void BrownianMotionAdmixtureGraph::computeLnDetX(void)
     
     //for (int i = 0; i < numTaxa; i++)
     //    rbMeanSampleCovariance[i][i] += regularizationFactor;
+    int p = (int)numTaxa;
     
-    arma::mat tmp(numTaxa,numTaxa);
-    for (int i = 0; i < numTaxa; i++)
-        for (int j = 0; j < numTaxa; j++)
+    arma::mat tmp(p,p);
+    for (int i = 0; i < p; i++)
+        for (int j = 0; j < p; j++)
             tmp.at(i,j) = rbMeanSampleCovariance[i][j];
     double v = 0;
     double sgn = 0;
@@ -1043,19 +1044,22 @@ void BrownianMotionAdmixtureGraph::computeLnDetX(void)
 
 void BrownianMotionAdmixtureGraph::svd(arma::mat& A, arma::mat& B, int idx)
 {
-    arma::mat Uprime(numTaxa,numTaxa);
-    arma::mat U(numTaxa,numTaxa);
-    arma::mat V(numTaxa,numTaxa);
-    arma::vec s(numTaxa);
+    
+    int p = (int)numTaxa;
+    
+    arma::mat Uprime(p,p);
+    arma::mat U(p,p);
+    arma::mat V(p,p);
+    arma::vec s(p);
     
     arma::svd(U,s,V,A);
     Uprime = U;
-    Uprime.shed_row(numTaxa-1);
+    Uprime.shed_row(p-1);
     arma::mat Aprime = Uprime * A * arma::trans(Uprime);
 
     arma::svd(U,s,V,B);
     Uprime = U;
-    Uprime.shed_row(numTaxa-1);
+    Uprime.shed_row(p-1);
     arma::mat Bprime = Uprime * B * arma::trans(Uprime);
     
     
@@ -1320,7 +1324,7 @@ double BrownianMotionAdmixtureGraph::computeLnProbContrasts(void)
     
     // fill pruning order for tree, ignoring admixture nodes
     AdmixtureTree t = tau->getValue();
-    AdmixtureNode* root = &t.getRoot();
+    //AdmixtureNode* root = &t.getRoot();
     
     // pruning contrasts
     for (size_t i = 0; i < dagTraversalOrder.size(); i++)

@@ -7,34 +7,34 @@
 //
 
 #include <cmath>
-#include "CharacterEVent.h"
+#include "CharacterEvent.h"
 #include "GeographicDistanceRateModifier.h"
 #include "RbConstants.h"
 #define EARTHRADIUSKM 6371
 
 using namespace RevBayesCore;
 
-GeographicDistanceRateModifier::GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp, double th, std::string dt) : geographicCoordinates(gc), threshhold(th), numAreas(gc.size()), distancePower(dp),distanceType(dt)
+GeographicDistanceRateModifier::GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp, double th, std::string dt) : geographicCoordinates(gc), threshhold(th), numAreas((int)gc.size()), distancePower(dp), distanceType(dt)
 {
     
     geographicDistances.resize(numAreas);
     geographicDistancePowers.resize(numAreas);
     
-    for (size_t i = 0; i < numAreas; i++)
+    for (int i = 0; i < numAreas; i++)
     {
         geographicDistances[i].resize(numAreas,0.0);
         geographicDistancePowers[i].resize(numAreas,0.0);
     }
-    for (size_t i = 0; i < numAreas; i++)
+    for (int i = 0; i < numAreas; i++)
     {
-        for (size_t j = i; j < numAreas; j++)
+        for (int j = i; j < numAreas; j++)
         {
             geographicDistances[i][j] = computePairwiseDistances(i,j);
             geographicDistances[j][i] = geographicDistances[i][j];
         }
     }
-    
-    updateGeographicDistancePowers(1.0,true);
+    computeAllPairwiseDistanceOrder();
+    updateGeographicDistancePowers(1.0, true);
     update();
     
     //printAll();
@@ -44,27 +44,17 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
 {
     if (newState->getState() == 0)
         return 1.0;
-    
-//    std::cout << "dp " << distancePower << "\n";
-    //std::cout << newState->getIndex() << " : ";
-    
+        
     // determine which areas are present and which are absent
     std::set<CharacterEvent*> present;
     std::set<CharacterEvent*> absent;
-    
-    //std::cout << "absent (" << newState->getIndex() << "," << newState->getState() << "," << currState[newState->getIndex()]->getState() << ") : ";
     for (size_t i = 0; i < numAreas; i++)
     {
         if (currState[i]->getState() == 0)
-        {
-            //std::cout << currState[i] << i << "," << currState[i]->getIndex() << " ";
             absent.insert(currState[i]);
-      //      std::cout << currState[i]->getIndex() << " ";
-        }
         else
             present.insert(currState[i]);
     }
-    //std::cout << "\n";
     
     // get sum of distances_ij^beta
     double rate = 0.0;
@@ -107,12 +97,45 @@ void GeographicDistanceRateModifier::update(void)
 {
     for (size_t i = 0; i < numAreas; i++)
     {
-        for (size_t j = i; j < numAreas; j++)
+        for (size_t j = 0; j < numAreas; j++)
         {
-            geographicDistancePowers[i][j] = pow(geographicDistances[i][j], -distancePower);
-            geographicDistancePowers[j][i] = geographicDistancePowers[i][j];
+            double d = pow(geographicDistances[i][j], -distancePower);
+            geographicDistancePowers[i][j] = d;
+            geographicDistancePowers[j][i] = d;
         }
     }
+    
+    /*
+    for (size_t i = 0; i < numAreas; i++)
+    {
+        double last_d = 0.0;
+        for (size_t j = 0; j < numAreas; j++)
+        {
+            size_t k = geographicDistanceOrder[i][j];
+            double d = pow(geographicDistances[i][j], -distancePower);
+
+            // if d is large or if all distances are not very small, update as usual
+            if (d > threshhold || (d - last_d) > threshhold)
+            {
+                last_d = d;
+                geographicDistancePowers[i][k] = d;
+            }
+            
+            // otherwise, remaining elements are negligibly small
+            else
+            {
+                for (size_t k_rest = k; k_rest < numAreas; k_rest++)
+                {
+                    geographicDistancePowers[i][k_rest] = 0.0;
+                }
+                break;
+            }
+//            geographicDistancePowers[j][i] = d;
+        }
+        for (size_t j = i; j < numAreas; j++)
+            geographicDistancePowers[j][i] = geographicDistancePowers[i][j];
+    }
+    */
 }
 
 
@@ -153,6 +176,31 @@ double GeographicDistanceRateModifier::computePairwiseDistances(int i, int j)
     }
     
     return d;
+}
+
+void GeographicDistanceRateModifier::computeAllPairwiseDistanceOrder(void)
+{
+    //std::vector<std::vector<size_t> > geographicDistanceOrder;
+    //double minDist = 0;
+    
+    geographicDistanceOrder.resize(numAreas);
+    for (size_t i = 0; i < numAreas; i++)
+    {
+        //orderedDistanceIdx[i].resize(numAreas,0);
+        for (size_t j = 0; j < numAreas; j++)
+        {
+            double d = geographicDistances[i][j];
+            
+            size_t k = 0;
+            for (k = 0; k < geographicDistanceOrder[i].size(); k++)
+            {
+                if (d < geographicDistances[i][geographicDistanceOrder[i][k]])
+                    break;
+            }
+            std::vector<size_t>::iterator it = geographicDistanceOrder[i].begin();
+            geographicDistanceOrder[i].insert(it + k, j);
+        }
+    }
 }
 
 void GeographicDistanceRateModifier::print(std::vector<std::vector<double> > m)
