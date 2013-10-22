@@ -51,7 +51,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nMix, bool c, size_t nSites);
+        AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites);
         AbstractSiteHomogeneousMixtureCharEvoModel(const AbstractSiteHomogeneousMixtureCharEvoModel &n);                                                                                          //!< Copy constructor
         virtual                                                            ~AbstractSiteHomogeneousMixtureCharEvoModel(void);                                                              //!< Virtual destructor
         
@@ -133,9 +133,9 @@ namespace RevBayesCore {
 #include <cmath>
 
 template<class charType, class treeType>
-RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nMix, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new CharacterData<charType>() ), 
+RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new CharacterData<charType>() ), 
 numSites( nSites ), 
-numChars( charType().getNumberOfStates() ),
+numChars( nChars ),
 numSiteRates( nMix ),
 tau( t ), 
 transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),

@@ -37,7 +37,7 @@ namespace RevBayesCore {
     class GeneralBranchHeterogeneousCharEvoModel : public AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType> {
         
     public:
-        GeneralBranchHeterogeneousCharEvoModel(const TypedDagNode< treeType > *t, bool c, size_t nSites);
+        GeneralBranchHeterogeneousCharEvoModel(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites);
         GeneralBranchHeterogeneousCharEvoModel(const GeneralBranchHeterogeneousCharEvoModel &n);                                                                                                //!< Copy constructor
         virtual                                            ~GeneralBranchHeterogeneousCharEvoModel(void);                                                                   //!< Virtual destructor
         
@@ -85,7 +85,7 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::GeneralBranchHeterogeneousCharEvoModel(const TypedDagNode<treeType> *t, bool c, size_t nSites) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>(  t, 1, c, nSites ) {
+RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::GeneralBranchHeterogeneousCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>(  t, nChars, 1, c, nSites ) {
     
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
