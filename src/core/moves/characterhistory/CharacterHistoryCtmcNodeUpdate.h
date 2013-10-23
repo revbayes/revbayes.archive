@@ -24,7 +24,8 @@
 
 namespace RevBayesCore {
     
-
+/*   This code does not compile in Xcode 5.0 for me. /Fredrik
+ 
  class CharacterHistoryCtmcNodeUpdate : public Move {
         
     public:
@@ -68,7 +69,7 @@ namespace RevBayesCore {
         
     };
     
-
+*/
 }
 
 #endif /* defined(__rb_mlandis__CharacterHistoryCtmcNodeUpdate__) */

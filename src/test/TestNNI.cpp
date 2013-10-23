@@ -46,6 +46,8 @@ TreeTrace<TimeTree> TestNNI::readTreeTrace(const std::string &fname) {
 //    delete trace;
 //    
 //    return rv;
+
+    return TreeTrace<TimeTree>();   // \TODO Sebastian: This is a temporary fix -- Fredrik
 }
 
 

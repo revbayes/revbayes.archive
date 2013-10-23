@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-
+/*
 CharacterHistoryCtmcNodeUpdate::CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector< StochasticNode<BranchHistory> *> bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w) : Move(n, w, tuning), variable(n), bh_vector(bhv), lambda(l), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates()), tree(t), index(n->getValue().getIndex()), changed(false)
 
 {
@@ -253,4 +253,4 @@ void CharacterHistoryCtmcNodeUpdate::tune(void)
 {
     
 }
-
+*/

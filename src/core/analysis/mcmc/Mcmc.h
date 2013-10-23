@@ -62,10 +62,14 @@ namespace RevBayesCore {
         
     protected:
 
-        void                                                getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNode*>& orderedStochasticNodes, std::set<const DagNode*>& visitedNodes);
-        void                                                initialize(void);
-        void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
         void                                                assignMoveSchedule(void);
+        void                                                getOrderedStochasticNodes(  const DagNode*              dagNode,
+                                                                                        std::vector<DagNode*>&      orderedStochasticNodes,
+                                                                                        std::set<const DagNode*>&   visitedNodes
+                                                                                     );
+        void                                                initializeChain(void);                      //!< Initialize objects for mcmc sampling
+        void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
+        void                                                startMonitors(void);                        //!< Start the monitors
     
         // members
         double                                              lnProbability;

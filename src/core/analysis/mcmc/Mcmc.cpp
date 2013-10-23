@@ -23,7 +23,6 @@ using namespace RevBayesCore;
 Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, bool ca, double ch, int ci) : model( m ), moves(), monitors(), schedule(std::vector<Move*>()), chainActive(ca), chainHeat(ch), chainIdx(ci) {
     
     replaceDag(mvs,mons);
-    initialize();
 }
 
 
@@ -33,7 +32,6 @@ Mcmc::Mcmc(const Mcmc &m) : model( m.model ), schedule(std::vector<Move*>()), ch
     const std::vector<Move*>& mvs = m.moves;
     
     replaceDag(mvs,mons);
-    initialize();
 }
 
 
@@ -52,6 +50,9 @@ Mcmc::~Mcmc(void) {
 
 
 void Mcmc::burnin(int generations, int tuningInterval) {
+    
+    // Initialize objects needed by chain
+    initializeChain();
     
     if (chainActive)
     {
@@ -147,7 +148,7 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
     return; 
 }
 
-void Mcmc::initialize( void ) {
+void Mcmc::initializeChain( void ) {
     
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
     std::vector<DagNode *> orderedStochNodes;
@@ -156,27 +157,7 @@ void Mcmc::initialize( void ) {
     
     //std::cout << "#ordered-nodes: " << orderedStochNodes.size() << std::endl;
     //std::cout << "#dag-nodes: " << dagNodes.size() << std::endl;
-    
-    /* Open the output file and print headers */
-    for (size_t i=0; i<monitors.size(); i++) 
-    {
-        
-        // open filestream for each monitor
-        monitors[i]->openStream();
 
-        // if this chain is active, print the header
-        if (chainActive) // surprised this works properly...
-            monitors[i]->printHeader();
-        
-        // set the model
-        monitors[i]->setModel( &model );
-        
-        // set the mcmc
-        monitors[i]->setMcmc( this );
-        
-    }
-    
-    
     /* Get initial lnProbability of model */
     
     // first we touch all nodes so that the likelihood is dirty
@@ -236,7 +217,7 @@ void Mcmc::initialize( void ) {
                 //std::cout << (*i)->getName() << std::endl;
                 if ( !(*i)->isClamped() && (*i)->isStochastic() )
                 {
-                    std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
+//                    std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
                     (*i)->redraw();
 //                    (*i)->touch(); Not necessary. The distribution will automaticall call touch().
                 }
@@ -311,9 +292,13 @@ void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor 
 
 void Mcmc::run(int generations) {
     
-    if ( gen == 0 ) 
+    // Initialize objects used in run
+    initializeChain();
+    
+    if ( gen == 0 )
     {
         // Monitor
+        startMonitors();
         monitor(0);
     }
     
@@ -503,4 +488,26 @@ void Mcmc::printOperatorSummary(void) const {
     }
     
     std::cout << std::endl;
+}
+
+void Mcmc::startMonitors( void ) {
+    
+    /* Open the output file and print headers */
+    for (size_t i=0; i<monitors.size(); i++)
+    {
+        
+        // open filestream for each monitor
+        monitors[i]->openStream();
+        
+        // if this chain is active, print the header
+        if (chainActive) // surprised this works properly...
+            monitors[i]->printHeader();
+        
+        // set the model
+        monitors[i]->setModel( &model );
+        
+        // set the mcmc
+        monitors[i]->setMcmc( this );
+        
+    }
 }

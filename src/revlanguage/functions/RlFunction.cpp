@@ -109,7 +109,7 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
     
     /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
     std::vector<bool>   taken           = std::vector<bool>( passedArgs.size(), false );
-    std::vector<bool>   filled          = std::vector<bool>( passedArgs.size(), false );
+    std::vector<bool>   filled          = std::vector<bool>( theRules.size(), false );
     
     
     /*********************  1. Do exact matching  **********************/
