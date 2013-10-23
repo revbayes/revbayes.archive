@@ -12,7 +12,7 @@
 #include "BetaDistribution.h"
 #include "BranchHistory.h"
 #include "CharacterEvent.h"
-// #include "CharacterHistoryNodeMonitor.h"
+#include "CharacterHistoryNodeMonitor.h"
 #include "CharacterHistoryCtmcNodeUpdate.h"
 #include "CharacterHistoryCtmcPathUpdate.h"
 #include "Clade.h"
@@ -29,7 +29,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
-// #include "PhylowoodNhxMonitor.h"
+#include "PhylowoodNhxMonitor.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "ScaleMove.h"
@@ -281,9 +281,9 @@ bool TestCharacterHistory::run( void ) {
 
     
     monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
-    //monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t" ));
+    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t" ));
     unsigned int burn = (unsigned int)(maxGen * .2);
-//    monitors.push_back( new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 1, maxGen, burn, filepath + "rb.phylowood.txt", "\t" ));
+    monitors.push_back( new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 1, maxGen, burn, filepath + "rb.phylowood.txt", "\t" ));
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
 
     
