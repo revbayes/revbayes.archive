@@ -13,14 +13,17 @@
 
 using namespace RevBayesCore;
 
-/*
-CharacterHistoryCtmcNodeUpdate::CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector< StochasticNode<BranchHistory> *> bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w) : Move(n, w, tuning), variable(n), bh_vector(bhv), lambda(l), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates()), tree(t), index(n->getValue().getIndex()), changed(false)
+CharacterHistoryCtmcNodeUpdate::CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector< StochasticNode<BranchHistory> *> bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w) : Move(n, w, tuning), variable(n), lambda(l), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates()), tree(t), index(n->getValue().getIndex()), changed(false)
 
 {
+    
     // add tree to parameter list (used to find adjacent branches)
     nodes.insert(tree);
-    for (size_t i = 0; i < bh_vector.size(); i++)
+    for (size_t i = 0; i < bhv.size(); i++)
+    {
+        bh_vector.push_back(bhv[i]);
         nodes.insert(bh_vector[i]);
+    }
 
     storedValue.clear();
 }
@@ -253,4 +256,3 @@ void CharacterHistoryCtmcNodeUpdate::tune(void)
 {
     
 }
-*/

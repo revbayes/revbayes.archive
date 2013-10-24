@@ -10,7 +10,7 @@
 #define __rb_mlandis__CharacterHistoryCtmcNodeUpdate__
 
 
-#include <ostream>
+//#include <ostream>
 #include <set>
 #include <string>
 #include <vector>
@@ -24,7 +24,7 @@
 
 namespace RevBayesCore {
     
-/*   This code does not compile in Xcode 5.0 for me. /Fredrik
+ //   This code does not compile in Xcode 5.0 for me. /Fredrik
  
  class CharacterHistoryCtmcNodeUpdate : public Move {
         
@@ -69,7 +69,6 @@ namespace RevBayesCore {
         
     };
     
-*/
 }
 
 #endif /* defined(__rb_mlandis__CharacterHistoryCtmcNodeUpdate__) */
