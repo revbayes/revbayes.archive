@@ -19,7 +19,9 @@ namespace RevBayesCore
     {
     public:
         RangeSizeRateModifier(unsigned int numAreas, unsigned int stateModified);
-        double computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
+        RangeSizeRateModifier(const RangeSizeRateModifier& m);
+        double computeRateModifier(std::vector<CharacterEvent*> currState, CharacterEvent* newState);
+        double computeRateModifier(std::vector<CharacterEvent*> currState, int newState);
         RangeSizeRateModifier* clone(void) const;
         
         void updateFrequency(double f);
@@ -29,7 +31,7 @@ namespace RevBayesCore
     protected:
         
     private:
-        int numAreas;
+        unsigned int numAreas;
         int stateModified;
         double frequency;
         double power;

@@ -672,7 +672,7 @@ double RbMath::incompleteGamma(double x, double alpha, double scale) {
             
             if (pn5 != 0) {
                 rn = pn4 / pn5;
-                dif = abs(gin - rn);
+                dif = fabs(gin - rn);
                 if (dif <= accurate) {
                     if (dif <= accurate * rn) {
                         break;
@@ -685,7 +685,7 @@ double RbMath::incompleteGamma(double x, double alpha, double scale) {
             pn1 = pn3;
             pn2 = pn4;
             pn3 = pn5;
-            if (abs(pn4) >= overflow) {
+            if (fabs(pn4) >= overflow) {
                 pn0 /= overflow;
                 pn1 /= overflow;
                 pn2 /= overflow;

@@ -72,7 +72,7 @@ void Trace::computeStatistics( void ) {
     if ( burnin < 0 ) {
         burnin = int(size());
         burnin *= stepSize;
-        burnin *= 0.1;
+        burnin = (int)(burnin * 0.1);
     }
     
     TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();

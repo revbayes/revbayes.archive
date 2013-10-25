@@ -112,7 +112,7 @@ unsigned NxsCompressDiscreteMatrix(
 	    const unsigned lastTaxonIndex = *(taxaToInclude->rbegin());
 	    if (lastTaxonIndex >= ntax)
 	        throw NxsException("Taxon index in taxaToInclude argument to NxsCompressDiscreteMatrix is out of range");
-        patternLength -= taxaToInclude->size();
+        patternLength -= (unsigned)taxaToInclude->size();
 	    }
     else
         {

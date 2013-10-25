@@ -9,6 +9,8 @@
 #include "TestCharacterHistory.h"
 
 // sorted
+#include "AreaSizeRateModifier.h"
+#include "BetaSimplexMove.h"
 #include "BetaDistribution.h"
 #include "BranchHistory.h"
 #include "CharacterEvent.h"
@@ -108,9 +110,10 @@ bool TestCharacterHistory::run( void ) {
     
     size_t numCharacters = pow(5,2);
     size_t numStates = 2;
-        
+    
+    // assign area coordinates
     std::vector<std::vector<double> > geo_coords;
-    std::string geo_type = "square";
+    std::string geo_type = "line";
     if (geo_type == "square")
     {
         for (size_t i = 0; i < sqrt(numCharacters); i++)
@@ -135,6 +138,31 @@ bool TestCharacterHistory::run( void ) {
         }
     }
 
+    // assign area sizes
+    std::vector<double> areaSizes;
+    double areaFactor = 1.0;
+    if (geo_type == "square")
+    {
+        for (size_t i = 0; i < sqrt(numCharacters); i++)
+        {
+            for (size_t j = 0; j < sqrt(numCharacters); j++)
+            {
+                areaSizes.push_back(1 + i * areaFactor + j * areaFactor);
+            }
+        }
+    }
+    else if (geo_type == "line")
+    {
+        
+        for (size_t i = 0; i < numCharacters; i++)
+        {
+            areaSizes.push_back(1 + i * areaFactor);
+          //  std::cout << areaSizes[i] << " ";
+        }
+       // std::cout << "\n";
+    }
+    
+    
     //////////
     
     // substitution rates
@@ -151,7 +179,7 @@ bool TestCharacterHistory::run( void ) {
     // branch rate
     ConstantNode<double>* branchRate_pr = new ConstantNode<double>("br_pr", new double(1.0));
     StochasticNode<double>* branchRate = new StochasticNode<double>("br", new ExponentialDistribution(branchRate_pr));
-    branchRate->setValue(1.0);
+    
     
     // tree
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
@@ -159,7 +187,6 @@ bool TestCharacterHistory::run( void ) {
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    div->setValue(new double(pow(1.0,-2)));
     StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
     std::cout << tau->getValue().getNewickRepresentation() << "\n";
 
@@ -167,7 +194,6 @@ bool TestCharacterHistory::run( void ) {
     ConstantNode<double>* distancePower_pr = new ConstantNode<double>("dist_pow_pr", new double(2.0));
     StochasticNode<double>* distancePower = new StochasticNode<double>("dist_pow", new ExponentialDistribution(distancePower_pr));
     //distancePower->setValue(new double(pow(10,-6)));
-    distancePower->setValue(new double(4.0));
     
     // geographic distances
     GeographicDistanceRateModifier* gdrm = new GeographicDistanceRateModifier(geo_coords);
@@ -175,7 +201,7 @@ bool TestCharacterHistory::run( void ) {
     //gdrm = NULL;
     
     
-    /*
+    
     // range size bd rates
     ConstantNode<double>* extinctionPower_pr = new ConstantNode<double>("ext_pow_pr", new double(1.0));
     ConstantNode<double>* dispersalPower_pr = new ConstantNode<double>("disp_pow_pr", new double(1.0));
@@ -185,11 +211,34 @@ bool TestCharacterHistory::run( void ) {
     ConstantNode<double>* areaStationaryFrequency_pr_a = new ConstantNode<double>("area_freq_pr_a", new double(1.0));
     ConstantNode<double>* areaStationaryFrequency_pr_b = new ConstantNode<double>("area_freq_pr_b", new double(1.0));
     StochasticNode<double>* areaStationaryFrequency = new StochasticNode<double>("area_freq", new BetaDistribution(areaStationaryFrequency_pr_a, areaStationaryFrequency_pr_b));
-    */
+    
+    RangeSizeRateModifier* grsrm = new RangeSizeRateModifier((unsigned int)numCharacters, 1);
+    RangeSizeRateModifier* lrsrm = new RangeSizeRateModifier((unsigned int)numCharacters, 1);
+    grsrm=NULL;
+    lrsrm=NULL;
+    
+    
+    // area size rate modifiers    
+    ConstantNode<double>* areaPower_pr = new ConstantNode<double>("area_pow_pr", new double(1.0));
+    StochasticNode<double>* areaPower = new StochasticNode<double>("area_pow", new ExponentialDistribution(areaPower_pr));
+    AreaSizeRateModifier* asrm = new AreaSizeRateModifier(areaSizes);
+    
+    // simulation settings
+    branchRate->setValue(1.0);
+    div->setValue(new double(pow(1.0,-2)));
+    extinctionPower->setValue(new double(2.0));
+    dispersalPower->setValue(new double(2.0));
+    distancePower->setValue(new double(2.0));
+    areaStationaryFrequency->setValue(new double(0.2));
+    areaPower->setValue(new double(0.5));
     
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
     std::cout << "rateLoss       = " << rateLoss->getValue() << "\n";
+    std::cout << "dispersalPower = " << dispersalPower->getValue() << "\n";
+    std::cout << "extinctPower   = " << extinctionPower->getValue() << "\n";
+    std::cout << "areaFreq       = " << areaStationaryFrequency->getValue() << "\n";
+    std::cout << "areaPower      = " << areaPower->getValue() << "\n";
     std::cout << "distancePower  = " << distancePower->getValue() << "\n";
     std::cout << "--------------\n";
     
@@ -214,7 +263,7 @@ bool TestCharacterHistory::run( void ) {
     {
         std::stringstream ss;
         ss << i;
-        DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, gdrm);
+        DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(rates, tau, br_vector[i], distancePower, dispersalPower, extinctionPower, areaStationaryFrequency, areaPower, numCharacters, numStates, i, gdrm, grsrm, lrsrm, asrm);
         //DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, NULL);
         StochasticNode<BranchHistory>* sn_bh = new StochasticNode<BranchHistory>("bh" + ss.str(), tmp_ahc);
         bh_vector.push_back(sn_bh);
@@ -235,6 +284,11 @@ bool TestCharacterHistory::run( void ) {
     moves.push_back( new ScaleMove(distancePower, 1.0, true, 5.0) );
     moves.push_back( new ScaleMove(rateGain, 1.0, true, 5.0) );
     moves.push_back( new ScaleMove(rateLoss, 1.0, true, 5.0) );
+    //moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
+    //moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
+    //moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 10.0, true, 5.0));
+    moves.push_back( new ScaleMove(areaPower, 1.0, true, 5.0) );
+    
     for (size_t i = 0; i < br_vector.size(); i++)
     {
         //TypedDagNode<double>* br_tdn = const_cast<TypedDagNode<double>* >(br_vector[i]);
@@ -247,8 +301,8 @@ bool TestCharacterHistory::run( void ) {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
         StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
         moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
-//        if (i >= numTaxa)
-//            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 5.0));
+        if (i >= numTaxa)
+            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 5.0));
     }
     
     for (size_t i = numTaxa; i < bh_vector.size(); i++)
@@ -265,6 +319,10 @@ bool TestCharacterHistory::run( void ) {
     monitoredNodes.insert( distancePower );
     monitoredNodes.insert( rateGain );
     monitoredNodes.insert( rateLoss );
+    monitoredNodes.insert( dispersalPower );
+    monitoredNodes.insert( extinctionPower );
+    monitoredNodes.insert( areaStationaryFrequency );
+    monitoredNodes.insert( areaPower );
     
     
     for (size_t i = 0; i < br_vector.size(); i++)

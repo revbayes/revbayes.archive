@@ -152,7 +152,7 @@ double RbStatistics::Helper::pointChi2(double prob, double v) {
                 - (6.73 + ch * (13.32 + 3 * ch)) / p2;
                 ch -= (1 - exp(a + g + .5 * ch + c * aa) * p2 / p1)
                 / t;
-            } while (abs(q / ch - 1) - epsi > 0);
+            } while (fabs(q / ch - 1) - epsi > 0);
         }
     }
     do {
@@ -179,7 +179,7 @@ double RbStatistics::Helper::pointChi2(double prob, double v) {
               * (s2 - b
                  * (s3 - b
                     * (s4 - b * (s5 - b * s6))))));
-    } while (abs(q / ch - 1) > e);
+    } while (fabs(q / ch - 1) > e);
     
     return (ch);
 }

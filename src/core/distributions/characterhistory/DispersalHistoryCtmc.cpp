@@ -18,28 +18,62 @@
 
 using namespace RevBayesCore;
 
-DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs) : AbstractCharacterHistoryCtmc(rm,r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs)
+DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp,  const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs, AreaSizeRateModifier* asrm) : AbstractCharacterHistoryCtmc(rm,r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs), lossRangeSizePower(lrsp), gainRangeSizePower(grsp), rangeSizeFrequency(rsf), areaSizePower(asp), areaSizeRateModifier(asrm)
+
 
 {
     addParameter(distancePower);
+    addParameter(lossRangeSizePower);
+    addParameter(gainRangeSizePower);
+    addParameter(rangeSizeFrequency);
+    addParameter(areaSizePower);
+    
     if (geographicDistances != NULL)
         geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
-}
-
-DispersalHistoryCtmc::DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs) : AbstractCharacterHistoryCtmc(r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs)
-
-{
-    addParameter(distancePower);
-    if (geographicDistances != NULL)
-        geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
+    
     if (gainRangeSizeRateModifier != NULL)
     {
-        ;//gainRangeSizeRateModifier->updateFrequency(<#double f#>)
-        ;//gainRangeSizeRateModifier->updatePower(￼)
+        gainRangeSizeRateModifier->updateFrequency(rangeSizeFrequency->getValue());
+        gainRangeSizeRateModifier->updatePower(gainRangeSizePower->getValue());
     }
     if (lossRangeSizeRateModifier != NULL)
     {
-        
+        lossRangeSizeRateModifier->updateFrequency(rangeSizeFrequency->getValue());
+        lossRangeSizeRateModifier->updatePower(lossRangeSizePower->getValue());
+    }
+
+    if (areaSizeRateModifier != NULL)
+    {
+        areaSizeRateModifier->updatePower(areaSizePower->getValue());
+    }
+}
+
+DispersalHistoryCtmc::DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp,  const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs, AreaSizeRateModifier* asrm) : AbstractCharacterHistoryCtmc(r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs), lossRangeSizePower(lrsp), gainRangeSizePower(grsp), rangeSizeFrequency(rsf), areaSizePower(asp), areaSizeRateModifier(asrm)
+
+{
+    addParameter(distancePower);
+    addParameter(lossRangeSizePower);
+    addParameter(gainRangeSizePower);
+    addParameter(rangeSizeFrequency);
+    addParameter(areaSizePower);
+    
+    if (geographicDistances != NULL)
+        geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
+    
+    if (gainRangeSizeRateModifier != NULL)
+    {
+        gainRangeSizeRateModifier->updateFrequency(rangeSizeFrequency->getValue());
+        gainRangeSizeRateModifier->updatePower(gainRangeSizePower->getValue());
+    }
+    if (lossRangeSizeRateModifier != NULL)
+    {
+        lossRangeSizeRateModifier->updateFrequency(rangeSizeFrequency->getValue());
+        lossRangeSizeRateModifier->updatePower(lossRangeSizePower->getValue());
+    }
+    
+    if (areaSizeRateModifier != NULL)
+    {
+        areaSizeRateModifier->updatePower(areaSizePower->getValue());
     }
 }
 
@@ -47,6 +81,13 @@ DispersalHistoryCtmc::DispersalHistoryCtmc(const DispersalHistoryCtmc& m) : Abst
 {
     geographicDistances = m.geographicDistances;
     distancePower = m.distancePower;
+    gainRangeSizePower = m.gainRangeSizePower;
+    lossRangeSizePower = m.lossRangeSizePower;
+    rangeSizeFrequency = m.rangeSizeFrequency;
+    gainRangeSizeRateModifier = m.gainRangeSizeRateModifier;
+    lossRangeSizeRateModifier = m.lossRangeSizeRateModifier;
+    areaSizePower = m.areaSizePower;
+    areaSizeRateModifier = m.areaSizeRateModifier;
 }
 
 DispersalHistoryCtmc* DispersalHistoryCtmc::clone(void) const
@@ -65,6 +106,16 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
     
     // rate according to binary rate matrix Q
     rate = rates[ nextState->getState() ]->getValue();
+    
+    // account for range size modifier
+    if (gainRangeSizeRateModifier != NULL && nextState->getState() == 1)
+    {
+        rate *= gainRangeSizeRateModifier->computeRateModifier(currState, nextState);
+    }
+    else if (lossRangeSizeRateModifier != NULL && nextState->getState() == 0)
+    {
+        rate *= lossRangeSizeRateModifier->computeRateModifier(currState, nextState);
+    }
 
     // account for distance
     double drm = 1.0;
@@ -73,6 +124,13 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
         drm = geographicDistances->computeRateModifier(currState, nextState);
         //std::cout << rate*drm << " = " << rate << " * " << drm << "\n";
         rate *= drm;
+    }
+    
+    if (areaSizeRateModifier != NULL)
+    {
+        double arm = areaSizeRateModifier->computeRateModifier(currState, nextState);
+        //std::cout << rate*arm << " = " << rate << " * " << arm << "\n";
+        rate *= arm;
     }
     
     return rate;
@@ -93,7 +151,21 @@ double DispersalHistoryCtmc::sumOfRates(std::vector<CharacterEvent *> currState)
     if (numOn == 1)
         numOn = 0;
     
-    double sum = numOn * rates[0]->getValue() + numOff * rates[1]->getValue();
+    double rateOn = numOn * rates[0]->getValue();
+    double rateOff = numOff * rates[1]->getValue();
+
+    // modify sum of rates according to range size
+    if (gainRangeSizeRateModifier != NULL)
+    {
+        rateOn *= gainRangeSizeRateModifier->computeRateModifier(currState, 0);
+    }
+    if (lossRangeSizeRateModifier != NULL)
+    {
+        rateOff *= gainRangeSizeRateModifier->computeRateModifier(currState, 1);
+    }
+    
+    double sum = rateOn + rateOff;
+    
     return sum;
 }
 
@@ -266,6 +338,20 @@ void DispersalHistoryCtmc::touchSpecialization(DagNode *toucher)
     if (toucher == distancePower && geographicDistances != NULL)
     {
         geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
+    }
+    
+    else if (toucher == lossRangeSizePower && lossRangeSizeRateModifier != NULL)
+    {
+        lossRangeSizeRateModifier->updatePower(lossRangeSizePower->getValue());
+    }
+    else if (toucher == gainRangeSizePower && gainRangeSizeRateModifier != NULL)
+    {
+        gainRangeSizeRateModifier->updatePower(gainRangeSizePower->getValue());
+    }
+    
+    else if (toucher == areaSizePower && areaSizeRateModifier != NULL)
+    {
+        areaSizeRateModifier->updatePower(areaSizePower->getValue());
     }
 }
 

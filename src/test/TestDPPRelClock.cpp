@@ -99,8 +99,8 @@ bool TestDPPRelClock::run( void ) {
     std::cout << "er:\t" << er->getValue() << std::endl;
 	
 	
-	size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
-	
+	//size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
+
 	//ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4, numBranches) ) );
 //	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution() );
 //	cp->setValue( new double( RbStatistics::Helper::dppConcParamFromNumTables(4, numBranches) ) );
