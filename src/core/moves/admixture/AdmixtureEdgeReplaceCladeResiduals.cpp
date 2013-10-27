@@ -324,7 +324,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
         double a = 1.0;
         double b = 1.5;
         double newWeight = RbStatistics::Beta::rv(a, b, *rng);
-        double lnW = RbStatistics::Beta::lnPdf(a, b, newWeight);
+        //double lnW = RbStatistics::Beta::lnPdf(a, b, newWeight);
         newWeight /= 2;
         
         
@@ -386,7 +386,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
         
         // prior * proposal ratio
         numEvents = (int)tau.getNumberOfAdmixtureChildren();
-        double unitTreeLength = tau.getUnitTreeLength();
+        //double unitTreeLength = tau.getUnitTreeLength();
         //double lnP = 0.0;//log(unitTreeLength);
         //admixtureCount->setValue(new int(numEvents));
         

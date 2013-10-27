@@ -325,7 +325,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         
         // prior * proposal ratio
         numEvents = (int)tau.getNumberOfAdmixtureChildren();
-        double unitTreeLength = tau.getUnitTreeLength();
+        //double unitTreeLength = tau.getUnitTreeLength();
         //double lnP = 0.0;//log(unitTreeLength);
         admixtureCount->setValue(new int(numEvents));
         

@@ -32,6 +32,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         bool a = (i == 0 ? true : false);
         Mcmc* oneChain = new Mcmc(m, moves, mons, a, b);
         oneChain->setChainIdx(i);
+        oneChain->startMonitors();
         
         // add chain to team
         chains.push_back(oneChain);

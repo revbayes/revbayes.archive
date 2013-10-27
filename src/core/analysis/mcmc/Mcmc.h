@@ -42,24 +42,22 @@ namespace RevBayesCore {
         // public methods
         void                                                burnin(int g, int ti);
         Mcmc*                                               clone(void) const;
-        void                                                printOperatorSummary(void) const;
-        virtual void                                        run(int g);
-
-        // MJL: added for p(MC)^3
-        virtual int                                         nextCycle(bool advanceCycle);
-        //double                                              getLnLikelihood(void);
+        double                                              getChainHeat(void);
+        int                                                 getChainIdx(void);
         double                                              getLnPosterior(void);
         double                                              getModelLnProbability(void);
+        std::vector<Monitor*>&                              getMonitors(void);
         bool                                                isChainActive(void);
-        double                                              getChainHeat(void);
+        void                                                monitor(int g);
+        virtual int                                         nextCycle(bool advanceCycle);
+        void                                                printOperatorSummary(void) const;
+        void                                                redrawChainState(void);
+        virtual void                                        run(int g);
         void                                                setChainActive(bool tf);
         void                                                setChainHeat(double v);
         void                                                setChainIdx(int);
-        int                                                 getChainIdx(void);
-        void                                                monitor(int g);
-        std::vector<Monitor*>&                              getMonitors(void);
-        void                                                redrawChainState(void);
-        
+        void                                                startMonitors(void);                        //!< Start the monitors
+
     protected:
 
         void                                                assignMoveSchedule(void);
@@ -70,23 +68,22 @@ namespace RevBayesCore {
         void                                                initializeChain(void);                      //!< Initialize objects for mcmc sampling
         void                                                initializeMonitors(void);                   //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
-        void                                                startMonitors(void);                        //!< Start the monitors
     
         // members
-        double                                              lnProbability;
-        Model                                               model;
-        std::vector<Move*>                                  moves;
-        std::vector<Monitor*>                               monitors;
-        std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
-        std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
-//      unsigned int                                        tuningInterval;
-        unsigned int                                        gen;
-        RandomMoveSchedule                                  schedule;
-        MoveSchedule*                                       moveSchedule;
-
         int                                                 chainIdx;
         bool                                                chainActive;
         double                                              chainHeat;
+        unsigned int                                        gen;
+        double                                              lnProbability;
+        Model                                               model;
+        std::vector<Move*>                                  moves;
+        MoveSchedule*                                       moveSchedule;
+        std::vector<Monitor*>                               monitors;
+        std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
+        std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
+        RandomMoveSchedule                                  schedule;
+//      unsigned int                                        tuningInterval;
+
     };
 
 }

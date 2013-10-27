@@ -158,7 +158,7 @@ double AdmixtureSubtreePruneRegraft::proposeAge(AdmixtureNode* p)
         //std::cout << "chAge   " << childAge << " " << minAge << "\n";
     }
     double maxAge = p->getParent().getAge();
-    double age = p->getAge();
+    //double age = p->getAge();
     double ageRange = maxAge - minAge;
     double newAge = minAge + (rng->uniform01() * ageRange);
     

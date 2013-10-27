@@ -153,7 +153,7 @@ bool TestAdmixtureGraph::run(void) {
     //size_t numSites = snps->getNumSnps();
     int blockSize = 50;
     
-    int delay = 200;
+    int delay = 10;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 1;
@@ -183,7 +183,7 @@ bool TestAdmixtureGraph::run(void) {
     std::stringstream rndStr;
     rndStr << std::setw(9) << std::fixed << std::setprecision(0) << std::setfill('0') << std::floor(GLOBAL_RNG->uniform01()*1e9);
     // std::string outName = "papa." + rndStr.str();
-    std::string simName = "past";
+    std::string simName = "what";
     std::string outName = simName + "." + rndStr.str() + "." + snpFilename;
     
     // BM diffusion rate
