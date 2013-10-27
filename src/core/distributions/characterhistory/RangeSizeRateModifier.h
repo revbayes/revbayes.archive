@@ -18,7 +18,7 @@ namespace RevBayesCore
     class RangeSizeRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        RangeSizeRateModifier(unsigned int numAreas, unsigned int stateModified);
+        RangeSizeRateModifier(unsigned int numAreas, unsigned int stateModified, int sgn=1);
         RangeSizeRateModifier(const RangeSizeRateModifier& m);
         double computeRateModifier(std::vector<CharacterEvent*> currState, CharacterEvent* newState);
         double computeRateModifier(std::vector<CharacterEvent*> currState, int newState);
@@ -35,6 +35,9 @@ namespace RevBayesCore
         int stateModified;
         double frequency;
         double power;
+        int sign;
+        double slope; // if slope == 0, then no BD effects...
+        double intercept; // set intercept to be max rate
         
     };
 }

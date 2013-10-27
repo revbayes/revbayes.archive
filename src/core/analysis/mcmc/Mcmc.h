@@ -68,6 +68,7 @@ namespace RevBayesCore {
                                                                                         std::set<const DagNode*>&   visitedNodes
                                                                                      );
         void                                                initializeChain(void);                      //!< Initialize objects for mcmc sampling
+        void                                                initializeMonitors(void);                   //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
         void                                                startMonitors(void);                        //!< Start the monitors
     

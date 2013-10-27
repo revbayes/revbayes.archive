@@ -140,7 +140,7 @@ bool TestCharacterHistory::run( void ) {
 
     // assign area sizes
     std::vector<double> areaSizes;
-    double areaFactor = 1.0;
+    double areaFactor = .5;
     if (geo_type == "square")
     {
         for (size_t i = 0; i < sqrt(numCharacters); i++)
@@ -170,12 +170,7 @@ bool TestCharacterHistory::run( void ) {
     ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(10.0));
     StochasticNode<double>* rateGain = new StochasticNode<double>("r1", new ExponentialDistribution(rateGain_pr));
     StochasticNode<double>* rateLoss = new StochasticNode<double>("r0", new ExponentialDistribution(rateLoss_pr));
-    rateGain->setValue(new double(.5));
-    rateLoss->setValue(new double(5));
-    std::vector<const TypedDagNode<double>* > rates;
-    rates.push_back(rateLoss);
-    rates.push_back(rateGain);
-    
+ 
     // branch rate
     ConstantNode<double>* branchRate_pr = new ConstantNode<double>("br_pr", new double(1.0));
     StochasticNode<double>* branchRate = new StochasticNode<double>("br", new ExponentialDistribution(branchRate_pr));
@@ -198,10 +193,7 @@ bool TestCharacterHistory::run( void ) {
     // geographic distances
     GeographicDistanceRateModifier* gdrm = new GeographicDistanceRateModifier(geo_coords);
     gdrm->update();
-    //gdrm = NULL;
-    
-    
-    
+   
     // range size bd rates
     ConstantNode<double>* extinctionPower_pr = new ConstantNode<double>("ext_pow_pr", new double(1.0));
     ConstantNode<double>* dispersalPower_pr = new ConstantNode<double>("disp_pow_pr", new double(1.0));
@@ -214,8 +206,7 @@ bool TestCharacterHistory::run( void ) {
     
     RangeSizeRateModifier* grsrm = new RangeSizeRateModifier((unsigned int)numCharacters, 1);
     RangeSizeRateModifier* lrsrm = new RangeSizeRateModifier((unsigned int)numCharacters, 1);
-    grsrm=NULL;
-    lrsrm=NULL;
+
     
     
     // area size rate modifiers    
@@ -224,6 +215,12 @@ bool TestCharacterHistory::run( void ) {
     AreaSizeRateModifier* asrm = new AreaSizeRateModifier(areaSizes);
     
     // simulation settings
+    
+    //gdrm = NULL;
+    //grsrm = NULL;
+    //lrsrm = NULL;
+    //asrm = NULL;
+    
     branchRate->setValue(1.0);
     div->setValue(new double(pow(1.0,-2)));
     extinctionPower->setValue(new double(2.0));
@@ -231,6 +228,12 @@ bool TestCharacterHistory::run( void ) {
     distancePower->setValue(new double(2.0));
     areaStationaryFrequency->setValue(new double(0.2));
     areaPower->setValue(new double(0.5));
+
+    rateGain->setValue(new double(2));
+    rateLoss->setValue(new double(2));
+    std::vector<const TypedDagNode<double>* > rates;
+    rates.push_back(rateLoss);
+    rates.push_back(rateGain);
     
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
@@ -284,9 +287,9 @@ bool TestCharacterHistory::run( void ) {
     moves.push_back( new ScaleMove(distancePower, 1.0, true, 5.0) );
     moves.push_back( new ScaleMove(rateGain, 1.0, true, 5.0) );
     moves.push_back( new ScaleMove(rateLoss, 1.0, true, 5.0) );
-    //moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
-    //moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
-    //moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 10.0, true, 5.0));
+    moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
+    moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
+    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 10.0, true, 5.0));
     moves.push_back( new ScaleMove(areaPower, 1.0, true, 5.0) );
     
     for (size_t i = 0; i < br_vector.size(); i++)
@@ -350,10 +353,7 @@ bool TestCharacterHistory::run( void ) {
     
     //CharacterHistoryNodeMonitor(t1, bh1, 10, filepath+"rb.tree_chars.txt", "\t");
     
-    
-    
     //  CharacterHistoryNodeMonitor(TypedDagNode<TimeTree> *t, std::vector< TypedDagNode< BranchHistory >* > bh, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
-    
  
     ///////////////
     

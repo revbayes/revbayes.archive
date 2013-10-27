@@ -157,11 +157,11 @@ double DispersalHistoryCtmc::sumOfRates(std::vector<CharacterEvent *> currState)
     // modify sum of rates according to range size
     if (gainRangeSizeRateModifier != NULL)
     {
-        rateOn *= gainRangeSizeRateModifier->computeRateModifier(currState, 0);
+        rateOn *= gainRangeSizeRateModifier->computeRateModifier(currState, 1);
     }
     if (lossRangeSizeRateModifier != NULL)
     {
-        rateOff *= gainRangeSizeRateModifier->computeRateModifier(currState, 1);
+        rateOff *= lossRangeSizeRateModifier->computeRateModifier(currState, 1);
     }
     
     double sum = rateOn + rateOff;

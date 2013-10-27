@@ -14,26 +14,20 @@
 
 using namespace RevBayesCore;
 
-RangeSizeRateModifier::RangeSizeRateModifier(unsigned int na, unsigned int sm) : numAreas(na), stateModified(sm)
+RangeSizeRateModifier::RangeSizeRateModifier(unsigned int na, unsigned int sm, int sgn) : numAreas(na), stateModified(sm), sign(sgn)
 {
     
     update();
 }
 
-RangeSizeRateModifier::RangeSizeRateModifier(const RangeSizeRateModifier& m) : numAreas(m.numAreas), stateModified(m.stateModified)
+RangeSizeRateModifier::RangeSizeRateModifier(const RangeSizeRateModifier& m) : numAreas(m.numAreas), stateModified(m.stateModified), sign(m.sign)
 {
     ;
 }
 
 double RangeSizeRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
 {
-    int n = 0;
-    for (size_t i = 0; i < numAreas; i++)
-        if (currState[i]->getState() == stateModified)
-            n++;
-    
-    double ret = 1.0 / pow(1.0 + fabs(n - frequency * numAreas), power);
-    return ret;
+    return computeRateModifier(currState, newState->getState());
 }
 
 double RangeSizeRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, int newState)
@@ -43,8 +37,10 @@ double RangeSizeRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         if (newState == stateModified)
             n++;
     
-    double ret = 1.0 / pow(1.0 + fabs(n - frequency * numAreas), power);
-    std::cout << newState << " " << n << " " << frequency << " " << power << " " << ret << "\n";
+ //   double ret = 1.0 / pow(1.0 + fabs(n - frequency * numAreas), power);
+ //   std::cout << newState << " " << n << " " << frequency << " " << power << " " << ret << "\n";
+    
+    double ret = intercept + sign * n * slope;
     return ret;
 }
 

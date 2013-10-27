@@ -23,6 +23,9 @@ using namespace RevBayesCore;
 Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, bool ca, double ch, int ci) : model( m ), moves(), monitors(), schedule(std::vector<Move*>()), chainActive(ca), chainHeat(ch), chainIdx(ci) {
     
     replaceDag(mvs,mons);
+    
+    initializeChain();
+    initializeMonitors();
 }
 
 
@@ -32,6 +35,9 @@ Mcmc::Mcmc(const Mcmc &m) : model( m.model ), schedule(std::vector<Move*>()), ch
     const std::vector<Move*>& mvs = m.moves;
     
     replaceDag(mvs,mons);
+    
+    initializeChain();
+    initializeMonitors();
 }
 
 
@@ -53,6 +59,7 @@ void Mcmc::burnin(int generations, int tuningInterval) {
     
     // Initialize objects needed by chain
     initializeChain();
+    initializeMonitors();
     
     if (chainActive)
     {
@@ -155,11 +162,8 @@ void Mcmc::initializeChain( void ) {
     std::set< const DagNode *> visited;
     getOrderedStochasticNodes(dagNodes[0],orderedStochNodes, visited );
     
-    //std::cout << "#ordered-nodes: " << orderedStochNodes.size() << std::endl;
-    //std::cout << "#dag-nodes: " << dagNodes.size() << std::endl;
-
     /* Get initial lnProbability of model */
-    
+
     // first we touch all nodes so that the likelihood is dirty
     for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
     {
@@ -199,8 +203,6 @@ void Mcmc::initializeChain( void ) {
             
             double lnProb = node->getLnProbability();
             lnProbability += lnProb;
-//            std::cout << node->getName() << " " << node->getLnProbability() << " " << ( node->isClamped() ? "*" : "_") << "\n";
-            
         }
         
         // now we keep all nodes so that the likelihood is stored
@@ -238,6 +240,15 @@ void Mcmc::initializeChain( void ) {
     //if (moveSchedule != NULL)
         
     gen = 0;
+}
+
+void Mcmc::initializeMonitors(void)
+{
+    for (size_t i=0; i<monitors.size(); i++)
+    {
+        monitors[i]->setMcmc(this);
+        monitors[i]->setModel( &model );
+    }
 }
 
 void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor *> &mons)
@@ -294,6 +305,7 @@ void Mcmc::run(int generations) {
     
     // Initialize objects used in run
     initializeChain();
+    initializeMonitors();
     
     if ( gen == 0 )
     {
@@ -350,19 +362,10 @@ int Mcmc::nextCycle(bool advanceCycle) {
             // Calculate acceptance ratio
             double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
             
-            //std::cout << "\n**********\n";
-            //std::cout << theMove->getMoveName() << "\n";
-            //std::cout << lnHastingsRatio << "  " << lnProbabilityRatio << ";  " << lnProbability << " -> " << lnProbability + lnProbabilityRatio << "\n";
-            //std::cout << "pre-mcmc     " << lnProbability << "\n";
-            
             if (lnR >= 0.0) 
             {
                 theMove->accept();
                 lnProbability += lnProbabilityRatio;
-              //  if (lnProbability > 0.0)
-                {
-                   
-                }
             }
             else if (lnR < -300.0)
             {
@@ -383,9 +386,6 @@ int Mcmc::nextCycle(bool advanceCycle) {
                     theMove->reject();
                 }
             }
-            //std::cout << "post-mcmc    " << lnProbability << "\n";
-            //std::cout << "model        " << getModelLnProbability() << "\n";
-            //std::cout << "**********\n\n";
         }
         
 #ifdef DEBUG_MCMC
@@ -502,12 +502,5 @@ void Mcmc::startMonitors( void ) {
         // if this chain is active, print the header
         if (chainActive) // surprised this works properly...
             monitors[i]->printHeader();
-        
-        // set the model
-        monitors[i]->setModel( &model );
-        
-        // set the mcmc
-        monitors[i]->setMcmc( this );
-        
     }
 }
