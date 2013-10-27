@@ -51,13 +51,13 @@ std::pair<AdmixtureNode*,AdmixtureNode*> AdmixtureEdgeAddCladeResiduals::sampleA
 
     // sample a partition based on sum of residuals
     double sum1 = 0.0;
-    std::cout << "cladeResidualSums : ";
+    //std::cout << "cladeResidualSums : ";
     for (size_t i = 0; i < cladeResidualSums.size(); i++)
     {
         sum1 += cladeResidualSums[i];
-        std::cout << cladeResidualSums[i] << " ";
+      //  std::cout << cladeResidualSums[i] << " ";
     }
-    std::cout << "\n";
+//    std::cout << "\n";
     
     double u1 = GLOBAL_RNG->uniform01() * sum1;
     size_t idx1 = 0;
@@ -71,18 +71,18 @@ std::pair<AdmixtureNode*,AdmixtureNode*> AdmixtureEdgeAddCladeResiduals::sampleA
             break;
         }
     }
-    std::cout << "picked partition " << idx1 << " (" << cladeResidualSums[idx1]/sum1 << ")\n";
+  //  std::cout << "picked partition " << idx1 << " (" << cladeResidualSums[idx1]/sum1 << ")\n";
     
     // sample a pair of edges from partition
     double sum2 = 0.0;
-    std::cout << "partition sum : ";
+//    std::cout << "partition sum : ";
     std::map<std::pair<AdmixtureNode*,AdmixtureNode*>,double>::iterator it1, it2;
     for (it1 = cladeResiduals[idx1].begin(); it1 != cladeResiduals[idx1].end(); it1++)
     {
         sum2 += it1->second;
-        std::cout << it1->second << " ";
+  //      std::cout << it1->second << " ";
     }
-    std::cout << "\n";
+  //  std::cout << "\n";
     
     double u2 = GLOBAL_RNG->uniform01() * sum2;
     int idx2 = 0;
@@ -92,14 +92,14 @@ std::pair<AdmixtureNode*,AdmixtureNode*> AdmixtureEdgeAddCladeResiduals::sampleA
         if (u2 < 0.0)
         {
             lnP += log(it1->second / sum2);
-            std::cout << "picked pair " << idx2 << " (" << it1->second/sum2 << ") : " << it1->first.first->getIndex() << "," << it1->first.second->getIndex() << "\n";
+    //        std::cout << "picked pair " << idx2 << " (" << it1->second/sum2 << ") : " << it1->first.first->getIndex() << "," << it1->first.second->getIndex() << "\n";
             return it1->first;
         }
         idx2++;
     }
     
     // should never reach here
-    std::cout << "error!?\n";
+//    std::cout << "error!?\n";
     return (cladeResiduals[idx1].begin())->first;
 }
 
@@ -216,7 +216,7 @@ std::set<AdmixtureNode*> AdmixtureEdgeAddCladeResiduals::findClades(AdmixtureNod
 /** Perform the move */
 double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Edge Add clade residuals\n";
+//    std::cout << "\nAdmix Edge Add clade residuals\n";
     
     clades.clear();
     cladeOrder.clear();
@@ -238,7 +238,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
     // pass if maxEvents reached
     if (tau.getNumberOfAdmixtureParents() >= maxEvents)
     {
-        std::cout << "truncating admixture events\n";
+  //      std::cout << "truncating admixture events\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
@@ -258,7 +258,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         
         // sample admixture edge from residuals
         std::pair<AdmixtureNode*,AdmixtureNode*> nds = sampleAdmixtureEdgeFromResiduals(lnP);
-        std::cout << "nds " << nds.first->getIndex() << " " << nds.second->getIndex() << "\n";
+  //      std::cout << "nds " << nds.first->getIndex() << " " << nds.second->getIndex() << "\n";
         if (GLOBAL_RNG->uniform01() < 0.5)
         {
             storedAdmixtureChildChild = nds.first;
@@ -281,7 +281,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
             minAge = storedAdmixtureParentChild->getAge();
         
         double newAge = GLOBAL_RNG->uniform01() * (maxAge-minAge) + minAge;
-        std::cout << minAge << " < " << newAge << " < " << maxAge << "\n";
+    //    std::cout << minAge << " < " << newAge << " < " << maxAge << "\n";
         
         // sample weight
         double a = 1.0;
@@ -330,10 +330,10 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         admixtureCount->setValue(new int(numEvents));
         
         // stats
-        std::cout << "add_CR\t" << lnP << "\t" << lnW << ";\n";
-        std::cout << "a " << storedAdmixtureChild->getAge() << "\n";
-        std::cout << "w " << storedAdmixtureChild->getWeight() << "\n";
-        std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
+//        std::cout << "add_CR\t" << lnP << "\t" << lnW << ";\n";
+//        std::cout << "a " << storedAdmixtureChild->getAge() << "\n";
+//        std::cout << "w " << storedAdmixtureChild->getWeight() << "\n";
+//        std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
         
         // bombs away
         return -(lnP + lnW);
@@ -363,7 +363,7 @@ void AdmixtureEdgeAddCladeResiduals::rejectSimpleMove( void ) {
         tau.getRoot().flagNewickRecomputation();
         
         admixtureCount->setValue(new int(numEvents-1));
-        std::cout << "reject add clade residuals\n";
+  //      std::cout << "reject add clade residuals\n";
     }
     true;
 }
@@ -373,8 +373,9 @@ void AdmixtureEdgeAddCladeResiduals::acceptSimpleMove(void)
     //std::cout << "add_RW accept\n";
     //  std::cout << "\t" << variable->getValue().getNumberOfAdmixtureChildren();
     //  std::cout << "\n";
-    std::cout << "accept add clade residuals\n";
-    true;
+//    std::cout << "accept add clade residuals\n";
+  //  true;
+    ;
 }
 
 
@@ -447,7 +448,7 @@ double AdmixtureEdgeAddCladeResiduals::performMove( double &probRatio ) {
     
     double hr = performSimpleMove();
     
-    std::cout << "hr  " << hr << "\n";
+//    std::cout << "hr  " << hr << "\n";
     if ( hr != hr || hr == RbConstants::Double::inf ) {
         ;
         return RbConstants::Double::neginf;
@@ -458,7 +459,7 @@ double AdmixtureEdgeAddCladeResiduals::performMove( double &probRatio ) {
     //rate->touch();
     admixtureCount->touch();
     probRatio = admixtureCount->getLnProbabilityRatio();
-    std::cout << "probRatio " << probRatio << "\n";
+  //  std::cout << "probRatio " << probRatio << "\n";
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
@@ -468,7 +469,7 @@ double AdmixtureEdgeAddCladeResiduals::performMove( double &probRatio ) {
             DagNode* theNode = *i;
             //theNode->touch();
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
+    //        std::cout << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
         }
     }
     

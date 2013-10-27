@@ -54,13 +54,13 @@ std::pair<AdmixtureNode*,AdmixtureNode*> AdmixtureEdgeReplaceCladeResiduals::sam
     
     // sample a partition based on sum of residuals
     double sum1 = 0.0;
-    std::cout << "cladeResidualSums : ";
+    //std::cout << "cladeResidualSums : ";
     for (size_t i = 0; i < cladeResidualSums.size(); i++)
     {
         sum1 += cladeResidualSums[i];
-        std::cout << cladeResidualSums[i] << " ";
+      //  std::cout << cladeResidualSums[i] << " ";
     }
-    std::cout << "\n";
+//    std::cout << "\n";
     
     double u1 = GLOBAL_RNG->uniform01() * sum1;
     size_t idx1 = 0;
@@ -74,18 +74,18 @@ std::pair<AdmixtureNode*,AdmixtureNode*> AdmixtureEdgeReplaceCladeResiduals::sam
             break;
         }
     }
-    std::cout << "picked partition " << idx1 << " (" << cladeResidualSums[idx1]/sum1 << ")\n";
+  //  std::cout << "picked partition " << idx1 << " (" << cladeResidualSums[idx1]/sum1 << ")\n";
     
     // sample a pair of edges from partition
     double sum2 = 0.0;
-    std::cout << "partition sum : ";
+    //std::cout << "partition sum : ";
     std::map<std::pair<AdmixtureNode*,AdmixtureNode*>,double>::iterator it1, it2;
     for (it1 = cladeResiduals[idx1].begin(); it1 != cladeResiduals[idx1].end(); it1++)
     {
         sum2 += it1->second;
-        std::cout << it1->second << " ";
+  //      std::cout << it1->second << " ";
     }
-    std::cout << "\n";
+//    std::cout << "\n";
     
     double u2 = GLOBAL_RNG->uniform01() * sum2;
     int idx2 = 0;
@@ -95,14 +95,14 @@ std::pair<AdmixtureNode*,AdmixtureNode*> AdmixtureEdgeReplaceCladeResiduals::sam
         if (u2 < 0.0)
         {
             lnP += log(it1->second / sum2);
-            std::cout << "picked pair " << idx2 << " (" << it1->second/sum2 << ") : " << it1->first.first->getIndex() << "," << it1->first.second->getIndex() << "\n";
+    //        std::cout << "picked pair " << idx2 << " (" << it1->second/sum2 << ") : " << it1->first.first->getIndex() << "," << it1->first.second->getIndex() << "\n";
             return it1->first;
         }
         idx2++;
     }
     
     // should never reach here
-    std::cout << "error!?\n";
+//    std::cout << "error!?\n";
     return (cladeResiduals[idx1].begin())->first;
 }
 
@@ -218,8 +218,8 @@ std::set<AdmixtureNode*> AdmixtureEdgeReplaceCladeResiduals::findClades(Admixtur
 /** Perform the move */
 double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Edge Repl clade residuals\n";
-    
+  //  std::cout << "\nAdmix Edge Repl clade residuals\n";
+  
     clades.clear();
     cladeOrder.clear();
     cladeOrderAges.clear();
@@ -242,7 +242,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
     if (tau.getNumberOfAdmixtureParents() == 0)
     {
         failed = true;
-        std::cout << "no admixture evts\n";
+    //    std::cout << "no admixture evts\n";
         return RbConstants::Double::neginf;
     }
     else
@@ -296,7 +296,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
         
         // sample admixture edge from residuals
         std::pair<AdmixtureNode*,AdmixtureNode*> nds = sampleAdmixtureEdgeFromResiduals(lnP);
-        std::cout << "nds " << nds.first->getIndex() << " " << nds.second->getIndex() << "\n";
+      //  std::cout << "nds " << nds.first->getIndex() << " " << nds.second->getIndex() << "\n";
         if (GLOBAL_RNG->uniform01() < 0.5)
         {
             newAdmixtureChildChild = nds.first;
@@ -373,7 +373,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
             storedBranchRates[idx] = v;
             double u = exp(delta*(GLOBAL_RNG->uniform01() - 0.5));
             branchRates[idx]->setValue(new double(u * v));
-            std::cout << "br " << idx << " " << v << " -> " << u*v << "\n";
+        //    std::cout << "br " << idx << " " << v << " -> " << u*v << "\n";
             lnBwdPropRates += log(u);
         }
         
@@ -391,10 +391,10 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
         //admixtureCount->setValue(new int(numEvents));
         
         // stats
-        std::cout << "add_CR\t" << lnP << "\t" << lnW << ";\n";
-        std::cout << "a " << storedAdmixtureChild->getAge() << "\n";
-        std::cout << "w " << storedAdmixtureChild->getWeight() << "\n";
-        std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
+//        std::cout << "add_CR\t" << lnP << "\t" << lnW << ";\n";
+//        std::cout << "a " << storedAdmixtureChild->getAge() << "\n";
+//        std::cout << "w " << storedAdmixtureChild->getWeight() << "\n";
+//        std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
         
         // bombs away
         return lnBwdPropRates;
@@ -457,7 +457,7 @@ void AdmixtureEdgeReplaceCladeResiduals::rejectSimpleMove( void ) {
         tau.getRoot().flagNewickRecomputation();
         
         //admixtureCount->setValue(new int(numEvents-1));
-        std::cout << "reject repl clade residuals\n";
+//        std::cout << "reject repl clade residuals\n";
     }
     
 }
@@ -467,7 +467,7 @@ void AdmixtureEdgeReplaceCladeResiduals::acceptSimpleMove(void)
     //std::cout << "add_RW accept\n";
     //  std::cout << "\t" << variable->getValue().getNumberOfAdmixtureChildren();
     //  std::cout << "\n";
-    std::cout << "accept repl clade residuals\n";
+    ;//    std::cout << "accept repl clade residuals\n";
 }
 
 
@@ -546,7 +546,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performMove( double &probRatio ) {
     {
         //branchRates[it->first]->touch();
         probRatio += branchRates[it->first]->getLnProbabilityRatio();
-        std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
+//        std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
     }
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
@@ -556,7 +556,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
+//            std::cout << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
         }
     }
     

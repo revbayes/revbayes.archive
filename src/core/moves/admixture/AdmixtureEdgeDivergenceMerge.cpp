@@ -67,7 +67,7 @@ void AdmixtureEdgeDivergenceMerge::findDescendantTips(std::set<AdmixtureNode*>& 
 /** Perform the move */
 double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Edge Div Merge\n";
+    //std::cout << "\nAdmix Edge Div Merge\n";
     failed = false;
     storedResiduals = residuals->getValue();
     
@@ -206,12 +206,12 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
 
             double v = storedAdmixtureChildParent->getChild(i).getAge();
             
-            std::cout << "v " << v << "     " << newMinAge << "\n";
+            //std::cout << "v " << v << "     " << newMinAge << "\n";
             if (v > newMinAge)
                 newMinAge = v;
         }
         double newDivergenceAge = rng->uniform01() * (storedAdmixtureParentParent->getAge() - newMinAge) + newMinAge;
-        std::cout << newMinAge << " " << newDivergenceAge << " " << storedAdmixtureParentParent->getAge() << "\n";
+        //std::cout << newMinAge << " " << newDivergenceAge << " " << storedAdmixtureParentParent->getAge() << "\n";
         storedAdmixtureChildParent->setAge(newDivergenceAge);
 
         
@@ -254,7 +254,7 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
         double lnP = -log(unitTreeLength);
        
         admixtureCount->setValue(new int(numEvents));
-        std::cout << "wt " << storedAdmixtureWeight << "    age " << storedAdmixtureAge << " -> " << newDivergenceAge << "\n";
+        //std::cout << "wt " << storedAdmixtureWeight << "    age " << storedAdmixtureAge << " -> " << newDivergenceAge << "\n";
         
         return lnP + lnBwdPropRates;
     }
@@ -263,7 +263,7 @@ double AdmixtureEdgeDivergenceMerge::performSimpleMove( void ) {
 
 void AdmixtureEdgeDivergenceMerge::rejectSimpleMove( void ) {
     
-    std::cout << "admixture edge div merge REJECT\n";
+    //std::cout << "admixture edge div merge REJECT\n";
     
     if (!failed)
     {
@@ -316,12 +316,12 @@ void AdmixtureEdgeDivergenceMerge::rejectSimpleMove( void ) {
     }
     
     else
-        std::cout << "failed\n";
+        ;//std::cout << "failed\n";
 }
 
 void AdmixtureEdgeDivergenceMerge::acceptSimpleMove(void)
 {
-    std::cout << "admixture edge div merge ACCEPT\n";
+    //std::cout << "admixture edge div merge ACCEPT\n";
     if (!failed)
     {
         AdmixtureNode* p = NULL;
@@ -376,7 +376,7 @@ void AdmixtureEdgeDivergenceMerge::rejectMove( void ) {
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     
-    std::cout << "merge_RW reject\n";
+    //std::cout << "merge_RW reject\n";
     
     // touch the node
     variable->touch();
@@ -387,7 +387,7 @@ void AdmixtureEdgeDivergenceMerge::acceptMove( void ) {
     // nothing to do
     changed = false;
 
-    std::cout << "merge_RW accept\n";
+    //std::cout << "merge_RW accept\n";
     
     acceptSimpleMove();
 }
@@ -427,14 +427,14 @@ double AdmixtureEdgeDivergenceMerge::performMove( double &probRatio ) {
     admixtureCount->touch();
     
     probRatio = admixtureCount->getLnProbabilityRatio();
-    std::cout << "admixtureCount\t" << probRatio << "\n";
+    //std::cout << "admixtureCount\t" << probRatio << "\n";
     
     
     for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
     {
         branchRates[it->first]->touch();
         probRatio += branchRates[it->first]->getLnProbabilityRatio();
-        std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
+        //std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
     }
     
     
@@ -445,7 +445,7 @@ double AdmixtureEdgeDivergenceMerge::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "\t" << probRatio << "\n";
+            //std::cout << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "\t" << probRatio << "\n";
         }
     }
     

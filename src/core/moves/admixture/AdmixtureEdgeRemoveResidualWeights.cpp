@@ -59,7 +59,7 @@ void AdmixtureEdgeRemoveResidualWeights::findDescendantTips(std::set<AdmixtureNo
 /** Perform the move */
 double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Node Rem RW\n";
+    //std::cout << "\nAdmix Node Rem RW\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -206,7 +206,7 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         // quick fix -- should inherit from Move instead of SimpleMove
         // lnP -= variable->getLnProbabilityRatio();
         
-        std::cout << "remove_RW\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
+        //std::cout << "remove_RW\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
         //std::cout << bwdProposal << "\n";
 
          admixtureCount->setValue(new int(numEvents));
@@ -242,7 +242,7 @@ void AdmixtureEdgeRemoveResidualWeights::rejectSimpleMove( void ) {
         tau.pushAdmixtureNode(storedAdmixtureParent);
         tau.pushAdmixtureNode(storedAdmixtureChild);
         
-        std::cout << "reject\n";
+        //std::cout << "reject\n";
         
     }
 }
@@ -257,7 +257,7 @@ void AdmixtureEdgeRemoveResidualWeights::acceptSimpleMove(void) {
         delete storedAdmixtureChild;
         delete storedAdmixtureParent;
         
-        std::cout << "accept\n";
+        //std::cout << "accept\n";
     }
 }
 
@@ -341,7 +341,7 @@ double AdmixtureEdgeRemoveResidualWeights::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << probRatio << "\n";
+            //std::cout << theNode->getName() << "\t" << probRatio << "\n";
         }
     }
     

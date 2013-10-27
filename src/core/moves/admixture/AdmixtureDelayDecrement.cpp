@@ -51,7 +51,7 @@ double AdmixtureDelayDecrement::performMove(double& probRatio)
     {
         t--;
         delayTimer->setValue(t);
-        std::cout << "delayDecrement\t" << t << "\n";
+        //std::cout << "delayDecrement\t" << t << "\n";
     }
 
     return 0.0;

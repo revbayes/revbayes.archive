@@ -46,7 +46,7 @@ double AdmixtureShiftNodeAgeAndRate::performSimpleMove( void ) {
     
     failed = false;
     
-    std::cout << "\nAge-Rate Shift\n";
+    //std::cout << "\nAge-Rate Shift\n";
     
     // clear old rates
     storedRates.clear();
@@ -115,8 +115,8 @@ double AdmixtureShiftNodeAgeAndRate::performSimpleMove( void ) {
     //std::cout << "br_name" << branchRates[node->getIndex()]->getName() << "\n";
     storedRates[node] = node_rate;
     
-    std::cout << "brlen\t" << old_brlen << " -> " << new_brlen << "   " << brlen_ratio << "\n";
-    std::cout << "node_rate " << node_rate << " -> " << node_rate * brlen_ratio <<"\n";
+    //std::cout << "brlen\t" << old_brlen << " -> " << new_brlen << "   " << brlen_ratio << "\n";
+    //std::cout << "node_rate " << node_rate << " -> " << node_rate * brlen_ratio <<"\n";
     node_rate = node_rate * brlen_ratio;
     branchRates[node->getIndex()]->setValue(new double(node_rate));
     
@@ -131,8 +131,8 @@ double AdmixtureShiftNodeAgeAndRate::performSimpleMove( void ) {
 //        branchRates[ch->getIndex()]->touch();
         storedRates[ch] = ch_rate;
         //branchRates[node->getIndex()]->setValue(new double(ch_rate * ch_ratio));
-        std::cout << "ch_brlen " << i << "  " << (storedAge - ch->getAge()) << " -> " << (my_new_age - ch->getAge()) << "   " << ch_ratio << "\n";
-        std::cout << "ch_rate  " << i << "  " << ch_rate << " -> " << ch_rate * ch_ratio << "\n";
+        //std::cout << "ch_brlen " << i << "  " << (storedAge - ch->getAge()) << " -> " << (my_new_age - ch->getAge()) << "   " << ch_ratio << "\n";
+        //std::cout << "ch_rate  " << i << "  " << ch_rate << " -> " << ch_rate * ch_ratio << "\n";
         ch_rate = ch_rate * ch_ratio;
         branchRates[ch->getIndex()]->setValue(new double(ch_rate));
     }
@@ -175,7 +175,7 @@ void AdmixtureShiftNodeAgeAndRate::rejectSimpleMove( void ) {
 void AdmixtureShiftNodeAgeAndRate::acceptMove( void ) {
     // nothing to do
     changed = false;
-    std::cout << "ACCEPT shift\n";
+    //std::cout << "ACCEPT shift\n";
     acceptSimpleMove();
 }
 
@@ -186,7 +186,7 @@ void AdmixtureShiftNodeAgeAndRate::acceptSimpleMove( void ) {
 
 double AdmixtureShiftNodeAgeAndRate::performMove( double &probRatio ) {
     
-    std::cout << "shift\n";
+    //std::cout << "shift\n";
     
     if (changed) {
         throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
@@ -204,13 +204,13 @@ double AdmixtureShiftNodeAgeAndRate::performMove( double &probRatio ) {
     
     // calculate the probability ratio for the node we just changed
     probRatio = variable->getLnProbabilityRatio();
-    std::cout << "n\t" << variable->getName() << "\t" << probRatio << "\n";
+    //std::cout << "n\t" << variable->getName() << "\t" << probRatio << "\n";
     
     for (std::map<AdmixtureNode*,double>::iterator it = storedRates.begin(); it != storedRates.end(); it++)
     {
         branchRates[it->first->getIndex()]->touch();
         probRatio += branchRates[it->first->getIndex()]->getLnProbabilityRatio();
-        std::cout << "n\t" << branchRates[it->first->getIndex()]->getName() << "\t" << probRatio << "\n";
+        //std::cout << "n\t" << branchRates[it->first->getIndex()]->getName() << "\t" << probRatio << "\n";
     }
         
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
@@ -220,7 +220,7 @@ double AdmixtureShiftNodeAgeAndRate::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << "\tch\t" << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "  " <<  probRatio << "\n";
+            //std::cout << "\tch\t" << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "  " <<  probRatio << "\n";
         }
     }
     
@@ -229,7 +229,7 @@ double AdmixtureShiftNodeAgeAndRate::performMove( double &probRatio ) {
 
 void AdmixtureShiftNodeAgeAndRate::rejectMove( void ) {
     changed = false;
-    std::cout << "REJECT shift\n";
+    //std::cout << "REJECT shift\n";
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     

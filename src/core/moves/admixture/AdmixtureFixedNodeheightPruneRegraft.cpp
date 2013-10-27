@@ -66,7 +66,7 @@ const std::string& AdmixtureFixedNodeheightPruneRegraft::getMoveName( void ) con
 /** Perform the move */
 double AdmixtureFixedNodeheightPruneRegraft::performSimpleMove( void ) {
     
-    std::cout << "\nDiv Node FNPR\n";
+    //std::cout << "\nDiv Node FNPR\n";
     failed = false;
     
     // Get random number generator
@@ -142,7 +142,7 @@ void AdmixtureFixedNodeheightPruneRegraft::rejectSimpleMove( void ) {
         grandparent.addChild( &parent );
         parent.setParent( &grandparent );
         
-        std::cout << "after FPNR reject\n";
+  //      std::cout << "after FPNR reject\n";
         //AdmixtureTree& tau = variable->getValue();
         //tau.checkAllEdgesRecursively(&tau.getRoot());
     }
@@ -150,7 +150,7 @@ void AdmixtureFixedNodeheightPruneRegraft::rejectSimpleMove( void ) {
 
 void AdmixtureFixedNodeheightPruneRegraft::acceptSimpleMove(void)
 {
-    std::cout << "accept FNPR\n";
+ //   std::cout << "accept FNPR\n";
     
 }
 

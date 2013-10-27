@@ -53,7 +53,7 @@ const std::string& AdmixtureCPPRateScaleMove::getMoveName( void ) const {
 /** Perform the move */
 double AdmixtureCPPRateScaleMove::performSimpleMove( void ) {
     
-    std::cout << "\n Admix CPP Rate Scale\n";
+    //std::cout << "\n Admix CPP Rate Scale\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -84,7 +84,7 @@ double AdmixtureCPPRateScaleMove::performSimpleMove( void ) {
     //double lnP = (-newR + numEvents * log(newR)) - (-oldR + numEvents * log(oldR));
     double lnP = log( (exp(-newR) * pow(newR,numEvents)) / (exp(-oldR) * pow(oldR,numEvents)) );
     
-    std::cout << "cpp_rate\t" << lnP+lnHastingsratio << "\t=\t" << lnP << "\t+\t" << lnHastingsratio << ";\t" << oldR << " -> " << newR << ";\t" << storedRate << " -> " << r << ";\t" << unitTreeLength << "\t" << numEvents << "\n";
+    //std::cout << "cpp_rate\t" << lnP+lnHastingsratio << "\t=\t" << lnP << "\t+\t" << lnHastingsratio << ";\t" << oldR << " -> " << newR << ";\t" << storedRate << " -> " << r << ";\t" << unitTreeLength << "\t" << numEvents << "\n";
     
     return lnHastingsratio + lnP + lnPrior;
 }

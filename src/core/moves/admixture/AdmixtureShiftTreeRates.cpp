@@ -43,7 +43,7 @@ const std::string& AdmixtureShiftTreeRates::getMoveName( void ) const {
 double AdmixtureShiftTreeRates::performSimpleMove( void ) {
     
     
-    std::cout << "\nTreeRate Shift\n";
+    //std::cout << "\nTreeRate Shift\n";
     
     // clear old rates
     storedRates.clear();
@@ -86,7 +86,7 @@ void AdmixtureShiftTreeRates::rejectSimpleMove( void ) {
 void AdmixtureShiftTreeRates::acceptMove( void ) {
     // nothing to do
     changed = false;
-    std::cout << "ACCEPT treeshift\n";
+    //std::cout << "ACCEPT treeshift\n";
     acceptSimpleMove();
 }
 
@@ -140,7 +140,7 @@ double AdmixtureShiftTreeRates::performMove( double &probRatio ) {
 
 void AdmixtureShiftTreeRates::rejectMove( void ) {
     changed = false;
-    std::cout << "REJECT treeshift\n";
+    //std::cout << "REJECT treeshift\n";
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     

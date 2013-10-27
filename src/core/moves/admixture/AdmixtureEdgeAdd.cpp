@@ -152,7 +152,7 @@ double AdmixtureEdgeAdd::performSimpleMove( void ) {
     size_t numEvents = tau.getNumberOfAdmixtureChildren();
     double unitTreeLength = tau.getUnitTreeLength();
     double lnP = log( (rate->getValue() * unitTreeLength) / numEvents );
-    std::cout << "add\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
+    //std::cout << "add\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
     
     // bombs away
     return lnP;// + lnJ;

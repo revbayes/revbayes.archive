@@ -41,7 +41,7 @@ const std::string& AdmixtureEdgeReversePolarity::getMoveName( void ) const {
 /** Perform the move */
 double AdmixtureEdgeReversePolarity::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Edge Reverse\n";
+    //std::cout << "\nAdmix Edge Reverse\n";
     
     failed = false;
     
@@ -109,7 +109,7 @@ double AdmixtureEdgeReversePolarity::performSimpleMove( void ) {
 }
 
 void AdmixtureEdgeReversePolarity::acceptSimpleMove( void ) {
-        std::cout << "accept reverse polarity\n";
+    //std::cout << "accept reverse polarity\n";
 }
 
 void AdmixtureEdgeReversePolarity::rejectSimpleMove( void ) {
@@ -117,7 +117,7 @@ void AdmixtureEdgeReversePolarity::rejectSimpleMove( void ) {
     // undo the proposal
     if (!failed)
     {
-        std::cout << "reject reverse polarity\n";
+        //std::cout << "reject reverse polarity\n";
         storedAdmixtureChild->setAdmixtureChild(NULL);
         storedAdmixtureChild->setAdmixtureParent(storedAdmixtureParent);
         storedAdmixtureChild->setWeight(storedWeight);

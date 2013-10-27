@@ -174,7 +174,7 @@ bool TestAdmixtureGraph::run(void) {
     int numProcesses = numChains;
 //    numProcesses=80;
     int swapInterval = 10;
-    double deltaTemp = .2;
+    double deltaTemp = .5;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
@@ -334,6 +334,7 @@ bool TestAdmixtureGraph::run(void) {
         moves.push_back( new AdmixtureEdgeAddCladeResiduals( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
         moves.push_back( new AdmixtureEdgeReplaceCladeResiduals( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 10.0) );
         
+        
         if (updateTopology)
             moves.push_back( new AdmixtureEdgeDivergenceMerge( tau, admixtureRate, branchRates_nonConst, admixtureCount, residuals, delay, allowSisterAdmixture, 5.0 ));
 
@@ -341,6 +342,7 @@ bool TestAdmixtureGraph::run(void) {
         moves.push_back( new AdmixtureEdgeReversePolarity( tau, delay, 1.0, 5.0) );
         moves.push_back( new AdmixtureEdgeSlide( tau, branchRates_nonConst, delay, allowSisterAdmixture, 1.0, 10.0) );
         moves.push_back( new ScaleMove(admixtureRate, 1.0, false, 5.0));
+
     }
     
 
@@ -356,9 +358,13 @@ bool TestAdmixtureGraph::run(void) {
     monitoredNodes.push_back( diversificationRate );
     monitoredNodes.push_back( turnover );
     monitoredNodes.push_back( admixtureCount );
-    for( int i=0; i<numBranches; i++){
-        monitoredNodes.push_back( branchRates_nonConst[i] );
-	}
+    
+    if (useBranchRates)
+    {
+        for( int i=0; i<numBranches; i++){
+            monitoredNodes.push_back( branchRates_nonConst[i] );
+        }
+    }
      
     monitors.push_back( new FileMonitor( monitoredNodes, 10, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true, true, true ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );

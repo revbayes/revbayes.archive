@@ -42,7 +42,7 @@ const std::string& AdmixtureSubtreePruneRegraftAndRateShift::getMoveName( void )
 
 double AdmixtureSubtreePruneRegraftAndRateShift::proposeAge(AdmixtureNode* p)
 {
-    std::cout << "proposeAge()\n";
+    //std::cout << "proposeAge()\n";
     
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -52,20 +52,13 @@ double AdmixtureSubtreePruneRegraftAndRateShift::proposeAge(AdmixtureNode* p)
         double childAge = p->getChild(i).getAge();
         if (childAge > minAge)
             minAge = childAge;
-        std::cout << "chAge   " << childAge << " " << minAge << "\n";
+        //std::cout << "chAge   " << childAge << " " << minAge << "\n";
     }
     double maxAge = p->getParent().getAge();
-    double age = p->getAge();
     double ageRange = maxAge - minAge;
     double newAge = minAge + rng->uniform01() * ageRange;
     
     p->setAge(newAge);
-    
-    //if (minAge > age || maxAge < age || minAge > newAge || maxAge < newAge)
-    {
-        std::cout << "oldAge " << minAge << " " << age << " " << maxAge << "\n";
-        std::cout << "newAge " << minAge << " " << newAge << " " << maxAge << "\n";
-    }
     
     
     //    return fwdProposal-bwdProposal;
@@ -77,7 +70,7 @@ double AdmixtureSubtreePruneRegraftAndRateShift::performCompoundMove( void ) {
     
     failed = false;
     
-    std::cout << "\nDiv Node Subtree Prune Regraft & Rate Shift\n";
+    //std::cout << "\nDiv Node Subtree Prune Regraft & Rate Shift\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -114,18 +107,20 @@ double AdmixtureSubtreePruneRegraftAndRateShift::performCompoundMove( void ) {
     // forbid outgroup regraft
     if (storedNode->isOutgroup() != newChild->isOutgroup())
     {
-        std::cout << "SPR failed, outgroup\n";
+        // std::cout << "SPR failed, outgroup\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
     
     // memory and ages
+    /*
     std::cout << "storedNode   " << storedNode << " " << storedNode->getAge() << "\n";
     std::cout << "storedChild1 " << storedChild << " " << storedChild->getAge() << "\n";
     std::cout << "storedChild2 " << movingChild << " " << movingChild->getAge() << "\n";
     std::cout << "storedParent " << storedParent << " " << storedParent->getAge() << "\n";
     std::cout << "newChild     " << newChild << " " << newChild->getAge() <<  "\n";
     std::cout << "newParent    " << newParent << " " << newParent->getAge() << "\n";
+     */
     
     // prune storedNode
     storedParent->removeChild(storedNode,false);
@@ -150,7 +145,7 @@ double AdmixtureSubtreePruneRegraftAndRateShift::performCompoundMove( void ) {
         double childAge = storedNode->getChild(i).getAge();
         if (childAge > minAge)
             minAge = childAge;
-        std::cout << "chAge   " << childAge << " " << minAge << "\n";
+        //std::cout << "chAge   " << childAge << " " << minAge << "\n";
     }
     double maxAge = storedNode->getParent().getAge();
     double ageRange = maxAge - minAge;
@@ -166,8 +161,8 @@ double AdmixtureSubtreePruneRegraftAndRateShift::performCompoundMove( void ) {
     double scaler = exp(delta * (rng->uniform01() - 0.5));
     rate->setValue(new double(scaler * storedRate));
 
-    std::cout << "age chk    " << newParent->getAge() << " " << storedNode->getAge() << " " << newChild->getAge() << "\n";
-    std::cout << "rate chk   " << storedRate << " " << storedRate * scaler << "   lnP " << log(scaler) << "\n";
+    //std::cout << "age chk    " << newParent->getAge() << " " << storedNode->getAge() << " " << newChild->getAge() << "\n";
+    //std::cout << "rate chk   " << storedRate << " " << storedRate * scaler << "   lnP " << log(scaler) << "\n";
     
     return log(scaler);
 }
@@ -175,7 +170,7 @@ double AdmixtureSubtreePruneRegraftAndRateShift::performCompoundMove( void ) {
 
 void AdmixtureSubtreePruneRegraftAndRateShift::rejectCompoundMove( void ) {
     
-    std::cout << "SPR reject\n";
+    //std::cout << "SPR reject\n";
     
     if (!failed)
         //if (false)
@@ -194,7 +189,7 @@ void AdmixtureSubtreePruneRegraftAndRateShift::rejectCompoundMove( void ) {
         storedParent->addChild(storedNode,false);
         storedNode->setParent(storedParent,false);
         
-        std::cout << "ages " << storedNode->getAge() << " " << storedNodeAge << "\n";
+        //std::cout << "ages " << storedNode->getAge() << " " << storedNodeAge << "\n";
         storedNode->setAge(storedNodeAge);
         
         // update Newick string for tree
@@ -230,7 +225,7 @@ void AdmixtureSubtreePruneRegraftAndRateShift::rejectCompoundMove( void ) {
 }
 
 void AdmixtureSubtreePruneRegraftAndRateShift::acceptCompoundMove( void ) {
-    std::cout << "SPR accept\n";
+    //std::cout << "SPR accept\n";
 }
 
 

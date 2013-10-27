@@ -40,7 +40,7 @@ const std::string& AdmixtureNarrowExchange::getMoveName( void ) const {
 
 double AdmixtureNarrowExchange::proposeAge(AdmixtureNode* p)
 {
-    std::cout << "proposeAge()\n";
+//    std::cout << "proposeAge()\n";
     
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -51,7 +51,7 @@ double AdmixtureNarrowExchange::proposeAge(AdmixtureNode* p)
         double childAge = p->getChild(i).getAge();
         if (childAge > minAge)
             minAge = childAge;
-        std::cout << "chAge   " << childAge << " " << minAge << "\n";
+      //  std::cout << "chAge   " << childAge << " " << minAge << "\n";
     }
     double maxAge = p->getParent().getAge();
     double age = p->getAge();
@@ -59,7 +59,7 @@ double AdmixtureNarrowExchange::proposeAge(AdmixtureNode* p)
     double ageRange = maxAge - minAge;
     double unitAge = (age - minAge) / ageRange;
     
-    std::cout << minAge << " " << " " << age << " " << maxAge << " " << ageRange << " " << unitAge << "\n";
+  //  std::cout << minAge << " " << " " << age << " " << maxAge << " " << ageRange << " " << unitAge << "\n";
     
     double a = delta * unitAge + 1.0;
     double b = delta * (1.0 - unitAge) + 1.0;
@@ -73,10 +73,10 @@ double AdmixtureNarrowExchange::proposeAge(AdmixtureNode* p)
     p->setAge(newAge);
 
     //if (minAge > age || maxAge < age || minAge > newAge || maxAge < newAge)
-    {
-        std::cout << "oldAge" << minAge << " " << age << " " << maxAge << "\n";
-        std::cout << "newAge" << minAge << " " << newAge << " " << maxAge << "\n";
-    }
+   // {
+     //   std::cout << "oldAge" << minAge << " " << age << " " << maxAge << "\n";
+     //   std::cout << "newAge" << minAge << " " << newAge << " " << maxAge << "\n";
+   // }
 
     
     return fwdProposal-bwdProposal;
@@ -85,7 +85,7 @@ double AdmixtureNarrowExchange::proposeAge(AdmixtureNode* p)
 /** Perform the move */
 double AdmixtureNarrowExchange::performSimpleMove( void ) {
     
-    std::cout << "\nDiv Node Narrow Exchange\n";
+  //  std::cout << "\nDiv Node Narrow Exchange\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -120,19 +120,19 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
     double my_age       = node->getAge();
     double p2age = node->getParent().getAge();
     double u2age = uncle->getParent().getAge();
-    std::cout << node->getIndex() << "  " << uncle->getIndex() << "  " << "\n";
-    std::cout << parent.getIndex() << "  " << grandparent.getIndex()  << " " <<  "\n";
+//    std::cout << node->getIndex() << "  " << uncle->getIndex() << "  " << "\n";
+//    std::cout << parent.getIndex() << "  " << grandparent.getIndex()  << " " <<  "\n";
 
     if (node->isOutgroup() != uncle->isOutgroup())
     {
-        std::cout << "NarrowExchange failed, outgroup\n";
+    //    std::cout << "NarrowExchange failed, outgroup\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
     
     else if (uncles_age < p2age && my_age <= u2age)
     {
-        std::cout << "NarrowExchange proposed\n";
+      //  std::cout << "NarrowExchange proposed\n";
         failed = false;
         
         // now we store all necessary values
@@ -171,7 +171,7 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
     }
     else
     {
-        std::cout << "NarrowExchange failed, ages\n";
+   //     std::cout << "NarrowExchange failed, ages\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
@@ -181,7 +181,7 @@ double AdmixtureNarrowExchange::performSimpleMove( void ) {
 
 void AdmixtureNarrowExchange::rejectSimpleMove( void ) {
     
-    std::cout << "NarrowExchange reject\n";
+ //   std::cout << "NarrowExchange reject\n";
     if (!failed)
     {
         storedGrandparent->setAge(storedGrandparentAge);
@@ -210,7 +210,7 @@ void AdmixtureNarrowExchange::rejectSimpleMove( void ) {
 }
 
 void AdmixtureNarrowExchange::acceptSimpleMove( void ) {
-    std::cout << "NarrowExchange accept\n";
+   // std::cout << "NarrowExchange accept\n";
 }
 
 

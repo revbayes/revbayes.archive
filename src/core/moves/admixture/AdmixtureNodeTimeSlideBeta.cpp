@@ -41,8 +41,7 @@ const std::string& AdmixtureNodeTimeSlideBeta::getMoveName( void ) const {
 /** Perform the move */
 double AdmixtureNodeTimeSlideBeta::performSimpleMove( void ) {
     
-    
-    std::cout << "\nNode Age Beta Slide\n";
+    //std::cout << "\nNode Age Beta Slide\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -92,9 +91,8 @@ double AdmixtureNodeTimeSlideBeta::performSimpleMove( void ) {
     double unitAge = (storedAge - child_Age) / ageRange;
     
     
-    std::cout << child_Age << " "  << storedAge << " " << parent_age << " " << ageRange << " " << unitAge << "\n";
+    //std::cout << child_Age << " "  << storedAge << " " << parent_age << " " << ageRange << " " << unitAge << "\n";
 
-    
     double a = delta * unitAge + 1.0;
     double b = delta * (1.0 - unitAge) + 1.0;
     double newUnitAge = RbStatistics::Beta::rv(a, b, *rng);
@@ -113,7 +111,7 @@ double AdmixtureNodeTimeSlideBeta::performSimpleMove( void ) {
     else if (&node->getAdmixtureChild() != NULL)
         node->getAdmixtureChild().setAge( my_new_age );
     
-    std::cout << "idx\t" << node->getIndex() << "   " << storedAge << " -> " << my_new_age << "\n";
+    //std::cout << "idx\t" << node->getIndex() << "   " << storedAge << " -> " << my_new_age << "\n";
     
     return bwdProposal - fwdProposal;
 }
@@ -121,7 +119,7 @@ double AdmixtureNodeTimeSlideBeta::performSimpleMove( void ) {
 
 void AdmixtureNodeTimeSlideBeta::rejectSimpleMove( void ) {
     
-    std::cout << "Node Beta Slide Reject\n";
+    //std::cout << "Node Beta Slide Reject\n";
     
     // undo the proposal
     storedNode->setAge( storedAge );
@@ -150,7 +148,7 @@ void AdmixtureNodeTimeSlideBeta::swapNode(DagNode *oldN, DagNode *newN) {
 
 void AdmixtureNodeTimeSlideBeta::acceptSimpleMove(void)
 {
-    std::cout << "accept time slide beta\n";
+    //std::cout << "accept time slide beta\n";
 }
 
 void AdmixtureNodeTimeSlideBeta::tune( void ) {

@@ -63,7 +63,7 @@ void AdmixtureEdgeReplaceResidualWeights::findDescendantTips(std::set<AdmixtureN
 /** Perform the move */
 double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
     
-    std::cout << "Admix Node Repl RW\n";
+  //  std::cout << "Admix Node Repl RW\n";
     failed = false;
     failedAdd = false;
         
@@ -79,7 +79,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
     if (admixtureParents.size() == 0)
     {
         failed = true;
-        std::cout << "no admixture evts\n";
+    //    std::cout << "no admixture evts\n";
         return RbConstants::Double::neginf;
     }
     
@@ -187,15 +187,17 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
             // if there are no positive residuals, abort move
             if (sumResidualWeights_a == 0.0)
             {
-                std::cout << "no pos residuals\n";
+      //          std::cout << "no pos residuals\n";
                 failedAdd = true;
                 return RbConstants::Double::neginf;
             }
-            
+
+            /*
             std::cout << "rw_a\t";
             for (size_t i = 0; i < numTaxa; i++)
                 std::cout << residualWeights_a[i] / sumResidualWeights_a << "\t";
             std::cout << "\n";
+             */
             
             // sample taxon A from weights
             double u_a = rng->uniform01() * sumResidualWeights_a;
@@ -227,10 +229,12 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
                 }
             }
             
+            /*
                 std::cout << "rw_b\t";
             for (size_t i = 0; i < numTaxa; i++)
                 std::cout << residualWeights_b[i] / sumResidualWeights_b << "\t";
             std::cout << "\n";
+             */
             
             // sample taxon B from weights
             double u_b = rng->uniform01() * sumResidualWeights_b;
@@ -261,7 +265,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
             nodeSrc = &tau.getNode(k_b);
         }
         
-        std::cout << "taxa pair\t" << k_a << "\t" << k_b << "\n";
+//        std::cout << "taxa pair\t" << k_a << "\t" << k_b << "\n";
         //std::cout << "fwdProposal\t" << fwdProposal << "\tlnFwdProposal\t" << log(fwdProposal) << "\n";
         
         // get path from tip to root for both nodes
@@ -437,7 +441,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
             storedBranchRates[idx] = v;
             double u = exp(delta*(GLOBAL_RNG->uniform01() - 0.5));
             branchRates[idx]->setValue(new double(u * v));
-            std::cout << "br " << idx << " " << v << " -> " << u*v << "\n";
+  //          std::cout << "br " << idx << " " << v << " -> " << u*v << "\n";
             lnBwdPropRates += log(u);
         }        
      //   tau.checkAllEdgesRecursively(root);
@@ -448,9 +452,9 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         
         
 //        std::cout << "replace lnPropRat\t" << lnBwdProposal - lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << ";\t";
-        std::cout << "replace lnPropRat\t" << lnBwdProposal - lnFwdProposal + lnBwdPropRates << " = " << lnBwdProposal << " - " << lnFwdProposal << " + " << lnBwdPropRates << ";\t";
-        std::cout << "a " << storedAdmixtureAge << " -> " << newAge << "\n";
-        std::cout << "w " << newWeight << "\n";
+//        std::cout << "replace lnPropRat\t" << lnBwdProposal - lnFwdProposal + lnBwdPropRates << " = " << lnBwdProposal << " - " << lnFwdProposal << " + " << lnBwdPropRates << ";\t";
+//        std::cout << "a " << storedAdmixtureAge << " -> " << newAge << "\n";
+//        std::cout << "w " << newWeight << "\n";
         
        return lnBwdProposal - lnFwdProposal + lnBwdPropRates;
         
@@ -575,13 +579,13 @@ void AdmixtureEdgeReplaceResidualWeights::rejectSimpleMove( void ) {
             branchRates[it->first]->setValue(new double(it->second));
         }
 
-        std::cout << "replace reject\n";
+//        std::cout << "replace reject\n";
     }
     
     
     
     else
-        std::cout << "replace failed\n";
+        ;//std::cout << "replace failed\n";
 }
 
 void AdmixtureEdgeReplaceResidualWeights::acceptSimpleMove(void)
@@ -637,7 +641,7 @@ void AdmixtureEdgeReplaceResidualWeights::acceptMove( void ) {
     // nothing to do
     changed = false;
     
-    std::cout << "replace accept\n";
+    //std::cout << "replace accept\n";
     
     acceptSimpleMove();
 }
@@ -650,7 +654,7 @@ bool AdmixtureEdgeReplaceResidualWeights::isActive(int g) const {
 
 double AdmixtureEdgeReplaceResidualWeights::performMove( double &probRatio ) {
     
-    std::cout << "\nAdmix Edge Replace\n";
+    //std::cout << "\nAdmix Edge Replace\n";
     
     if (changed) {
         throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
@@ -671,7 +675,7 @@ double AdmixtureEdgeReplaceResidualWeights::performMove( double &probRatio ) {
     {
         //branchRates[it->first]->touch();
         probRatio += branchRates[it->first]->getLnProbabilityRatio();
-        std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
+        //std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
     }
 
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
@@ -681,7 +685,7 @@ double AdmixtureEdgeReplaceResidualWeights::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
+      //      std::cout << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
         }
     }
     

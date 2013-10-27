@@ -41,7 +41,7 @@ const std::string& AdmixtureEdgeReweight::getMoveName( void ) const {
 /** Perform the move */
 double AdmixtureEdgeReweight::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Edge Reweight\n";
+    //std::cout << "\nAdmix Edge Reweight\n";
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -126,7 +126,7 @@ double AdmixtureEdgeReweight::performSimpleMove( void ) {
         // set the weight
         storedAdmixtureChild->setWeight( newWeight );
         
-        std::cout  << "reweight\t" << bwdLnProb << " - " << fwdLnProb << " = " << bwdLnProb - fwdLnProb << ";\t" << unitWeight << " -> " << newUnitWeight << ";\t" << storedWeight << " -> " << newWeight << "\n";
+        //std::cout  << "reweight\t" << bwdLnProb << " - " << fwdLnProb << " = " << bwdLnProb - fwdLnProb << ";\t" << unitWeight << " -> " << newUnitWeight << ";\t" << storedWeight << " -> " << newWeight << "\n";
         
         // uniform on 0,1 is symmetric
         return bwdLnProb - fwdLnProb;

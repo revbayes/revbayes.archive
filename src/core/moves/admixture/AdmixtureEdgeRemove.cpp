@@ -58,7 +58,7 @@ double AdmixtureEdgeRemove::performSimpleMove( void ) {
     // if no admixtureParent exists, the proposal fails
     if (admixtureParents.size() == 0)
     {
-        std::cout << "AER nothing to remove\n";
+        //std::cout << "AER nothing to remove\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
@@ -112,7 +112,7 @@ double AdmixtureEdgeRemove::performSimpleMove( void ) {
         // quick fix -- should inherit from Move instead of SimpleMove
        // lnP -= variable->getLnProbabilityRatio();
         
-        std::cout << "remove\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
+        //std::cout << "remove\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
         return lnP;// + lnJ;
     }
 }
@@ -235,7 +235,7 @@ double AdmixtureEdgeRemove::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "\t" << probRatio << "\n";
+            //std::cout << theNode->getName() << "\t" << probRatio << "\n";
         }
     }
     

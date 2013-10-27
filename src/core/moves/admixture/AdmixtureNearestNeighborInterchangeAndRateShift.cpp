@@ -47,7 +47,7 @@ const std::string& AdmixtureNearestNeighborInterchangeAndRateShift::getMoveName(
 /** Perform the move */
 double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void ) {
     
-    std::cout << "\nDiv Node NNI & Rate Rescale\n";
+    //std::cout << "\nDiv Node NNI & Rate Rescale\n";
     
     failed = false;
     
@@ -68,7 +68,7 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
     int nodeBrotherIdx = 0;
     
     
-    std::cout << "nodeChildeMoveIdx  " << nodeChildMoveIdx << "\n";
+    //std::cout << "nodeChildeMoveIdx  " << nodeChildMoveIdx << "\n";
     // divergence location
     AdmixtureNode* childMove = &node->getChild(nodeChildMoveIdx);
     AdmixtureNode* parent = &node->getTopologyParent();
@@ -85,31 +85,22 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
     
     // get brother of node (not divergence child node)
     brother = &parent->getChild(nodeBrotherIdx);
-   
-    if (childMove->getAge() == 0.0 && brother->getAge() == 0.0)
-    {
-        std::cout << "nni " << childMove->getIndex() << " " << brother->getIndex() << "\n";
-        std::cout << "childMv  " << childMove->getIndex() << "  " << childMove->getAge() << "\n";
-        std::cout << "node     " << node->getIndex() << "  " << node->getAge() << "\n";
-        std::cout << "brother  " << brother->getIndex() << "  " << brother->getAge() << "\n";
-        std::cout << "parent   " << parent->getIndex() << "  " << parent->getAge() << "\n";
-    }
     
     if (brother->getAge() > node->getAge())
     {
-        std::cout << "failed, bro > node\n";
+        //std::cout << "failed, bro > node\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
     else if (childMove->getAge() > parent->getAge())
     {
-        std::cout << "failed, child > parent\n";
+        //std::cout << "failed, child > parent\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
     else if (childMove->isOutgroup() != brother->isOutgroup())
     {
-        std::cout << "failed, outgroup mismatch\n";
+        //std::cout << "failed, outgroup mismatch\n";
         failed = true;
         return RbConstants::Double::neginf;
     }
@@ -155,13 +146,13 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
     branchRates[storedBrotherRateIndex]->setValue(new double(storedBrotherRate * scaleBrotherRate));
     //branchRates[storedChildRateIndex]->touch();
     
-    std::cout << "chld rate  " << storedChildRate << " -> " << storedChildRate*scaleChildRate << "\n";
+    //std::cout << "chld rate  " << storedChildRate << " -> " << storedChildRate*scaleChildRate << "\n";
    // std::cout << "node rate  " << storedNodeRate << " -> " << storedNodeRate*scaleNodeRate << "\n";
-    std::cout << "bro  rate  " << storedBrotherRate << " -> " << storedBrotherRate*scaleBrotherRate << "\n";
+    //std::cout << "bro  rate  " << storedBrotherRate << " -> " << storedBrotherRate*scaleBrotherRate << "\n";
     
     if (storedChildRate * scaleChildRate == 0.0)
     {
-        std::cout << "new scaledChildRate == 0.0\n";
+        ;//std::cout << "new scaledChildRate == 0.0\n";
     }
     
     //if (storedNodeRate * scaleNodeRate == 0.0)
@@ -170,9 +161,9 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
     //}
     if (storedBrotherRate * scaleBrotherRate == 0.0)
     {
-        std::cout << "new scaledBrotherRate == 0.0\n";
+        ;//std::cout << "new scaledBrotherRate == 0.0\n";
     }
-    std::cout << scaleChildRate*scaleBrotherRate << "  " << log(scaleChildRate*scaleBrotherRate) << "\n";
+    //std::cout << scaleChildRate*scaleBrotherRate << "  " << log(scaleChildRate*scaleBrotherRate) << "\n";
 
     
     // MH
@@ -183,14 +174,14 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performSimpleMove( void 
 
 void AdmixtureNearestNeighborInterchangeAndRateShift::acceptSimpleMove(void) {
     
-    std::cout << "accept NNI\n";
+    //std::cout << "accept NNI\n";
 }
 
 void AdmixtureNearestNeighborInterchangeAndRateShift::rejectSimpleMove( void ) {
     
     if (!failed)
     {
-        std::cout << "reject NNI\n";
+        //std::cout << "reject NNI\n";
         
         // undo the proposal
         storedNode->removeChild(storedBrother);
@@ -213,7 +204,7 @@ void AdmixtureNearestNeighborInterchangeAndRateShift::rejectSimpleMove( void ) {
 void AdmixtureNearestNeighborInterchangeAndRateShift::acceptMove( void ) {
     // nothing to do
     changed = false;
-    std::cout << "accept NNI\n";
+    //std::cout << "accept NNI\n";
    // acceptSimpleMove();
 }
 
@@ -225,7 +216,7 @@ void AdmixtureNearestNeighborInterchangeAndRateShift::acceptSimpleMove( void ) {
 
 double AdmixtureNearestNeighborInterchangeAndRateShift::performMove( double &probRatio ) {
     
-    std::cout << "NNI::performMove()\n";
+    //std::cout << "NNI::performMove()\n";
     
     if (changed) {
    //;     throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
@@ -238,14 +229,12 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performMove( double &pro
         return RbConstants::Double::neginf;
     }
     
-    std::cout << "1\n";
     // touch the node
     variable->touch();
 
-        std::cout << "2\n";
     // calculate the probability ratio for the node we just changed
     probRatio = variable->getLnProbabilityRatio();
-    std::cout << "n\t" << variable->getName() << "\t" << probRatio << "\n";
+    //std::cout << "n\t" << variable->getName() << "\t" << probRatio << "\n";
  
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
@@ -254,10 +243,8 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performMove( double &pro
             // these three rates should be touched due to setValue()
             branchRates[storedChildRateIndex]->touch();
             probRatio += branchRates[storedChildRateIndex]->getLnProbabilityRatio();
-            std::cout << probRatio << "\n";
             branchRates[storedBrotherRateIndex]->touch();
             probRatio += branchRates[storedBrotherRateIndex]->getLnProbabilityRatio();
-            std::cout << probRatio << "\n";
            // probRatio += branchRates[storedNodeRateIndex]->getLnProbabilityRatio();
            // std::cout << probRatio << "\n";
         }
@@ -267,17 +254,17 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performMove( double &pro
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << "\tch\t" << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "  " <<  probRatio << "\n";
+            //std::cout << "\tch\t" << theNode->getName() << "\t" << theNode->getLnProbabilityRatio() << "  " <<  probRatio << "\n";
         }
     }
-    std::cout << "pr " << probRatio << "    hr " << hr << "\n";
+    //std::cout << "pr " << probRatio << "    hr " << hr << "\n";
     
     return hr;
 }
 
 void AdmixtureNearestNeighborInterchangeAndRateShift::rejectMove( void ) {
     changed = false;
-    std::cout << "REJECT\n";
+    //std::cout << "REJECT\n";
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     

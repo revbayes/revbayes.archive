@@ -58,7 +58,7 @@ void AdmixtureEdgeFNPR::findNewBrothers(std::vector<AdmixtureNode *> &b, Admixtu
 /** Perform the move */
 double AdmixtureEdgeFNPR::performSimpleMove( void ) {
     
-    std::cout << "\nAdmix Edge FNPR\n";
+    //std::cout << "\nAdmix Edge FNPR\n";
     failed = false;
     
     // Get random number generator
@@ -366,7 +366,7 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
         double lnFwdProposal = log(fwdProposal) + fwdWeightLnProb;
         double lnBwdProposal = log(bwdProposal) + bwdWeightLnProb;
         
-        std::cout << "fnpr lnPropRat\t" << lnBwdProposal - lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << ";\t";
+        //std::cout << "fnpr lnPropRat\t" << lnBwdProposal - lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << ";\t";
         //std::cout << storedAge << " -> " << newAge << "\n";
         
         return lnBwdProposal - lnFwdProposal + lnBwdPropRates;
@@ -479,11 +479,11 @@ void AdmixtureEdgeFNPR::rejectSimpleMove( void ) {
         storedAdmixtureChild->setWeight(storedWeight);
         
     }
-     std::cout << "reject admixture edge FNPR\n";
+    //std::cout << "reject admixture edge FNPR\n";
 }
 
 void AdmixtureEdgeFNPR::acceptSimpleMove(void) {
-    std::cout << "accept admixture edge FNPR\n";
+    //std::cout << "accept admixture edge FNPR\n";
 }
 
 
@@ -550,7 +550,7 @@ double AdmixtureEdgeFNPR::performMove( double &probRatio ) {
     {
         branchRates[it->first]->touch();
         probRatio += branchRates[it->first]->getLnProbabilityRatio();
-        std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
+        //std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
     }
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
@@ -560,10 +560,10 @@ double AdmixtureEdgeFNPR::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-            std::cout << theNode->getName() << "  " << theNode->getLnProbability() << "  " << theNode->getLnProbabilityRatio() << "\n";
+            //std::cout << theNode->getName() << "  " << theNode->getLnProbability() << "  " << theNode->getLnProbabilityRatio() << "\n";
         }
     }
-    std::cout << probRatio << "\n";
+    //std::cout << probRatio << "\n";
     
     return hr;
 }
