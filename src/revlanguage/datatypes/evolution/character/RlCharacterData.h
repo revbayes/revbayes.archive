@@ -142,7 +142,7 @@ const RevLanguage::TypeSpec& RevLanguage::CharacterData<rlType>::getClassTypeSpe
 template <typename rlType>
 const RevLanguage::MethodTable& RevLanguage::CharacterData<rlType>::getMethods(void) const {
     
-    static MethodTable    methods                     = MethodTable();
+    static MethodTable    myMethods                   = MethodTable();
     static bool           methodsSet                  = false;
     
     if ( methodsSet == false ) 
@@ -151,16 +151,16 @@ const RevLanguage::MethodTable& RevLanguage::CharacterData<rlType>::getMethods(v
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( TaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+        myMethods.addFunction("[]",  new MemberFunction( TaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
         
                 
         // necessary call for proper inheritance
-        methods.setParentTable( &AbstractCharacterData::getMethods() );
+        myMethods.setParentTable( &AbstractCharacterData::getMethods() );
         methodsSet = true;
     }
     
     
-    return methods;
+    return myMethods;
 }
 
 

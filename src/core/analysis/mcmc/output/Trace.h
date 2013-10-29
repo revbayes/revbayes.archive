@@ -21,11 +21,10 @@ namespace RevBayesCore {
 #define NOT_CHECKED 2
 
     class Trace {
-        public:
+
+    public:
     
         Trace(void);
-        Trace(const Trace& t);                                                                        //!< copy constructor
-        virtual                    ~Trace();
     
         // overloaded functions from RbObject
         Trace*                      clone(void) const;                                              //!< Clone object

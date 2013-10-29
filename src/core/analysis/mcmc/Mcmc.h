@@ -39,6 +39,9 @@ namespace RevBayesCore {
         Mcmc(const Mcmc &m);
         virtual                                            ~Mcmc(void);                                                          //!< Virtual destructor
        
+        // overloaded operators
+        Mcmc&                                               operator=(const Mcmc &m);
+        
         // public methods
         void                                                burnin(int g, int ti);
         Mcmc*                                               clone(void) const;
@@ -73,7 +76,7 @@ namespace RevBayesCore {
         int                                                 chainIdx;
         bool                                                chainActive;
         double                                              chainHeat;
-        unsigned int                                        gen;
+        unsigned int                                        generation;
         double                                              lnProbability;
         Model                                               model;
         std::vector<Move*>                                  moves;

@@ -1,7 +1,8 @@
 /**
  * @file
  * This file contains the declaration of the Model class. 
- * A Model object holds the model graph.
+ * A Model object holds the model graph which is an independent copy
+ * of the DAG nodes contained in the model.
  *
  *
  * @brief Declaration of the Model class
@@ -33,26 +34,29 @@ namespace RevBayesCore {
                                                                     Model(const DagNode* source);
                                                                     Model(const std::set<const DagNode*> sources);
                                                                     Model(const Model &m);
-        virtual                                                    ~Model(void);                                                          //!< Virtual destructor
+        virtual                                                    ~Model(void);                                                          
     
+        
+        // overloaded operators
+        Model&                                                      operator=(const Model& x);
+        
+        
         // convenience methods
-        Model*                                                      clone(void) const;                                                      //!< Create clone
+        Model*                                                      clone(void) const;                                                      
     
         // getters and setters
         std::vector<DagNode*>&                                      getDagNodes(void);
         const std::vector<DagNode*>&                                getDagNodes(void) const;
         const std::map<const DagNode*, DagNode*>&                   getNodesMap(void) const;
-        const std::map<const DagNode*, std::set<DagNode*> >&        getReplacementMap(void) const;
 
     private:
         // private methods
         void                                                        addSourceNode(const DagNode *sourceNode);
     
         // members
-        std::vector<DagNode*>                                       nodes;
-        std::map<const DagNode*, DagNode*>                          nodesMap;
-        std::map<const DagNode*, std::set<DagNode*> >               replacementMap;
-        std::set<const DagNode*>                                    sources;
+        std::vector<DagNode*>                                       nodes;                                                          //!< The DAG nodes of the model graph
+        std::map<const DagNode*, DagNode*>                          nodesMap;                                                       //!< Map between original nodes and own copy
+        std::set<const DagNode*>                                    sources;                                                        //!< Set of source nodes for the model graph
     };
     
 }

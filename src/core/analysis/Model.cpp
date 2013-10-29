@@ -54,6 +54,31 @@ Model::~Model( void ) {
 }
 
 
+Model& Model::operator=(const Model &x) {
+    
+    if ( this != &x )
+    {
+        // first remove all DAG nodes
+        for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+        {
+            DagNode *theNode = *it;
+            delete theNode;
+        }
+        
+        // iterate over all sources
+        for (std::set<const DagNode*>::const_iterator it = x.sources.begin(); it != x.sources.end(); ++it) 
+        {
+            // add this node and build model graph
+            addSourceNode( *it );
+            DagNode* newSource = nodesMap.find( *it )->second;
+            sources.insert( newSource );
+        }
+    }
+    
+    return *this;
+}
+
+
 void Model::addSourceNode(const DagNode *sourceNode) {
     
     if (sourceNode == NULL)
@@ -104,10 +129,4 @@ std::vector<DagNode *>& Model::getDagNodes( void ) {
 const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const {
     
     return nodesMap;
-}
-
-
-const std::map<const DagNode*, std::set<DagNode*> >& Model::getReplacementMap( void ) const {
-    
-    return replacementMap;
 }

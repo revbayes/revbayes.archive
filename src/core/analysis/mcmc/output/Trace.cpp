@@ -24,39 +24,6 @@ Trace::Trace() {
     invalidate();
 }
 
-/**
- * Copy constructor
- *
- */
-Trace::Trace(const Trace& t) {
-    fileName                        = t.fileName;
-    parmName                        = t.parmName;
-    
-    burnin                          = t.burnin;
-    ess                             = t.ess;
-    mean                            = t.mean;
-    median                          = t.median;
-    sem                             = t.sem;
-    stepSize                        = t.stepSize;
-    
-    converged                       = t.converged;
-    passedStationarityTest          = t.passedStationarityTest;
-    passedGewekeTest                = t.passedGewekeTest;
-    //    passedHeidelbergerWelchStatistic = NOT_CHECKED;
-    //    passedRafteryLewisStatistic = NOT_CHECKED;
-    passedEssThreshold              = t.passedEssThreshold;
-    passedSemThreshold              = t.passedSemThreshold;
-    passedIidBetweenChainsStatistic = t.passedIidBetweenChainsStatistic;
-    passedGelmanRubinTest           = t.passedGelmanRubinTest;
-    
-    values                          = t.values;
-}
-
-
-Trace::~Trace() {
-    values.clear();
-}
-
 
 void Trace::addObject(double d) {
     values.push_back(d);

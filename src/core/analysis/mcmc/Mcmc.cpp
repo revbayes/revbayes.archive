@@ -239,7 +239,7 @@ void Mcmc::initializeChain( void ) {
     schedule = RandomMoveSchedule(moves);
     //if (moveSchedule != NULL)
         
-    gen = 0;
+    generation = 0;
 }
 
 void Mcmc::initializeMonitors(void)
@@ -301,13 +301,13 @@ void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor 
 }
 
 
-void Mcmc::run(int generations) {
+void Mcmc::run(int kIterations) {
     
     // Initialize objects used in run
     initializeChain();
     initializeMonitors();
     
-    if ( gen == 0 )
+    if ( generation == 0 )
     {
         // Monitor
         startMonitors();
@@ -325,12 +325,12 @@ void Mcmc::run(int generations) {
     }
     
     // Run the chain
-    for (int k=1; k<=generations; k++) 
+    for (int k=1; k<=kIterations; k++) 
     {
         nextCycle(true);
         
         // Monitor
-        monitor(gen);
+        monitor(generation);
                         
     }
     
@@ -343,7 +343,7 @@ int Mcmc::nextCycle(bool advanceCycle) {
     for (size_t i=0; i<proposals; i++) 
     {
         // Get the move
-        Move* theMove = schedule.nextMove( gen );
+        Move* theMove = schedule.nextMove( generation );
         
         if ( theMove->isGibbs() ) 
         {
@@ -408,10 +408,10 @@ int Mcmc::nextCycle(bool advanceCycle) {
     
     // advance gen cycle if needed (i.e. run()==true, burnin()==false)
     if (advanceCycle)
-        gen++;
+        generation++;
     
     // gen number used for p(MC)^3
-    return gen;
+    return generation;
 }
 
 double Mcmc::getLnPosterior(void)
