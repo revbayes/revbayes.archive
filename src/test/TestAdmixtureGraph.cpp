@@ -153,7 +153,8 @@ bool TestAdmixtureGraph::run(void) {
     //size_t numSites = snps->getNumSnps();
     int blockSize = 50;
     
-    int delay = 10;
+    int divGens = 10;
+    int delay = 100;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 1;
@@ -174,7 +175,7 @@ bool TestAdmixtureGraph::run(void) {
     int numProcesses = numChains;
 //    numProcesses=80;
     int swapInterval = 10;
-    double deltaTemp = .5;
+    double deltaTemp = 0.2;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
@@ -398,7 +399,7 @@ bool TestAdmixtureGraph::run(void) {
     else
     {
         ParallelMcmcmc myPmc3(myModel, moves, monitors, numChains, numProcesses, swapInterval, deltaTemp, startingHeat);
-        myPmc3.run(mcmcGenerations);
+        myPmc3.run(mcmcGenerations/divGens);
         myPmc3.printOperatorSummary();
     }
 

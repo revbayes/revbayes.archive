@@ -91,14 +91,13 @@ bool TestCharacterHistory::run( void ) {
     areaFilename = "rb.areas.txt";
     treeFilename = "rb.tree.txt";
     
-    
     //////////
     // test
     int maxGen = (int)((double)mcmcGenerations / 10);
     std::vector<unsigned int> seed;
     //seed.push_back(3); seed.push_back(3); GLOBAL_RNG->setSeed(seed);
     
-    size_t numTaxa = 5;
+    size_t numTaxa = 2;
     size_t numNodes = 2 * numTaxa - 1;
     std::vector<std::string> taxonNames;
     for (size_t i = 0; i < numTaxa; i++)
@@ -108,12 +107,12 @@ bool TestCharacterHistory::run( void ) {
         taxonNames.push_back("p" + ss.str());
     }
     
-    size_t numCharacters = pow(5,2);
+    size_t numCharacters = pow(10,2);
     size_t numStates = 2;
     
     // assign area coordinates
     std::vector<std::vector<double> > geo_coords;
-    std::string geo_type = "line";
+    std::string geo_type = "square";
     if (geo_type == "square")
     {
         for (size_t i = 0; i < sqrt(numCharacters); i++)
@@ -183,6 +182,7 @@ bool TestCharacterHistory::run( void ) {
     ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
     ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
     StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
+    tau->clamp(new TimeTree(tau->getValue()));
     std::cout << tau->getValue().getNewickRepresentation() << "\n";
 
     // geographical distance power
@@ -216,21 +216,21 @@ bool TestCharacterHistory::run( void ) {
     
     // simulation settings
     
-    //gdrm = NULL;
-    //grsrm = NULL;
-    //lrsrm = NULL;
-    //asrm = NULL;
+    gdrm = NULL;
+    grsrm = NULL;
+    lrsrm = NULL;
+    asrm = NULL;
     
     branchRate->setValue(1.0);
     div->setValue(new double(pow(1.0,-2)));
     extinctionPower->setValue(new double(2.0));
     dispersalPower->setValue(new double(2.0));
-    distancePower->setValue(new double(2.0));
+    distancePower->setValue(new double(0.0));
     areaStationaryFrequency->setValue(new double(0.2));
     areaPower->setValue(new double(0.5));
 
-    rateGain->setValue(new double(2));
-    rateLoss->setValue(new double(2));
+    rateGain->setValue(new double(.1));
+    rateLoss->setValue(new double(.1));
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
     rates.push_back(rateGain);
@@ -303,9 +303,9 @@ bool TestCharacterHistory::run( void ) {
     {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
         StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
-        moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
+        //moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
         if (i >= numTaxa)
-            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 5.0));
+            ;//moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 5.0));
     }
     
     for (size_t i = numTaxa; i < bh_vector.size(); i++)
@@ -342,9 +342,9 @@ bool TestCharacterHistory::run( void ) {
 
     
     monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
-    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t" ));
+    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
     unsigned int burn = (unsigned int)(maxGen * .2);
-    monitors.push_back( new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 1, maxGen, burn, filepath + "rb.phylowood.txt", "\t" ));
+    monitors.push_back( new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 50, maxGen, burn, filepath + "rb.phylowood.txt", "\t" ));
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
 
     

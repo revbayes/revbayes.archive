@@ -183,7 +183,7 @@ void ExtendedNewickAdmixtureTreeMonitor::monitor(long gen) {
         outStream << separator;
         
         std::string en = buildExtendedNewick();
-        std::cout << "\n" << en << "\n\n";
+        //std::cout << "\n" <<   en << "\n";
         
         outStream << en;
         

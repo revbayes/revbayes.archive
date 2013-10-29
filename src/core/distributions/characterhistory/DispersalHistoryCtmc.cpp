@@ -151,9 +151,13 @@ double DispersalHistoryCtmc::sumOfRates(std::vector<CharacterEvent *> currState)
     if (numOn == 1)
         numOn = 0;
     
-    double rateOn = numOn * rates[0]->getValue();
-    double rateOff = numOff * rates[1]->getValue();
-
+    // density-dependent BD process
+    //    double rateOn = numOn * ( rates[0]->getValue() + numOn * gainRangeSizePower->getValue() );
+    //    double rateOff = numOff * ( rates[1]->getValue() - numOn * lossRangeSizePower->getValue() );
+    
+    double rateOn = numOff * rates[1]->getValue();
+    double rateOff = numOn * rates[0]->getValue();
+    
     // modify sum of rates according to range size
     if (gainRangeSizeRateModifier != NULL)
     {
@@ -206,9 +210,11 @@ double DispersalHistoryCtmc::computeLnProbability(void)
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0)
         bt = 10.0;
+    
     double bs = bt * br;
     
 //    std::cout << "bt,br" << bt << " " << br << "\n";
+    //std::cout << "branch " << index << "\n";
  
     // stepwise events
     for (it_h = history.begin(); it_h != history.end(); it_h++)
@@ -225,6 +231,7 @@ double DispersalHistoryCtmc::computeLnProbability(void)
             n--;
         else
             n++;
+        
         if (n == 0)
             return RbConstants::Double::neginf;
         
@@ -246,6 +253,7 @@ double DispersalHistoryCtmc::computeLnProbability(void)
 
     //std::cout << "lnL " << lnL << "\n";
     
+    ;
     return lnL;
 }
 

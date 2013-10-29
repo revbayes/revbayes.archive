@@ -38,7 +38,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         chains.push_back(oneChain);
         chainIdxByHeat.push_back(i);
     }
-    std::cout << "\n";
+    //std::cout << "\n";
     
     
     // assign chains to processors
@@ -60,8 +60,8 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
     for (int i = 0; i < numChains; i++)
     {
         
-        std::cout << i << ": " << chains[i]->getChainHeat() << " ";
-        std::cout << chains[i]->getLnPosterior() << "\n";
+        ;//std::cout << i << ": " << chains[i]->getChainHeat() << " ";
+        ;//std::cout << chains[i]->getLnPosterior() << "\n";
     }
     
 }

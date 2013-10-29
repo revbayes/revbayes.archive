@@ -423,10 +423,10 @@ void AdmixtureBipartitionSummaryMonitor::monitor(long gen) {
         updateBipartitions();
         
         std::string tp = buildTreeBipartitionString();
-        std::cout << "\n" << tp;
+        //std::cout << "\n" << tp;
         
         std::string ap = buildAdmixtureBipartitionSummaryString();
-        std::cout << "\n" << ap;
+        //std::cout << "\n" << ap;
         
         outStream << std::endl;
         outStream << tp << std::endl;

@@ -120,7 +120,7 @@ int WangLandauMcmc::nextCycle(bool advanceCycle) {
     for (size_t i=0; i<proposals; i++)
     {
         // Get the move
-        Move* theMove = schedule.nextMove( gen );
+        Move* theMove = schedule.nextMove( generation );
         
         if ( theMove->isGibbs() )
         {
@@ -197,8 +197,8 @@ int WangLandauMcmc::nextCycle(bool advanceCycle) {
     
     // advance gen cycle if needed (i.e. run()==true, burnin()==false)
     if (advanceCycle)
-        gen++;
+        generation++;
     
     // gen number used for p(MC)^3
-    return gen;
+    return generation;
 }
