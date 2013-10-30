@@ -45,7 +45,7 @@ namespace RevBayesCore
         virtual double                                          sampleChildCharacterState(const std::set<size_t>& indexSet);
         virtual double                                          sampleParentCharacterState(const std::set<size_t>& indexSet);
         virtual double                                          sampleRootCharacterState(const std::set<size_t>& indexSet);
-        virtual double                                          sampleChildCharacterState(const std::set<size_t>& indexSet, const std::vector<CharacterEvent*>& state1, const std::vector<CharacterEvent*>& state2);
+        virtual double                                          sampleChildCharacterState(const std::set<size_t>& indexSet, const std::vector<CharacterEvent*>& state1, const std::vector<CharacterEvent*>& state2, double t1, double t2);
         
         
     protected:

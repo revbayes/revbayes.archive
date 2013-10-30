@@ -82,6 +82,7 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
     // sample characters to update
     std::set<size_t> updateSet;
     updateSet.insert(GLOBAL_RNG->uniform01() * numCharacters); // at least one is inserted
+    
     //std::cout << "updateSet ";
     for (size_t i = 0; i < numCharacters; i++)
     {
@@ -99,13 +100,13 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
     //p->getValue().print();
     double lnBwdProposal = p->computeLnProposal();
     if (nd->isRoot())
-        //lnBwdProposal += p->sampleRootCharacterState(updateSet);
-        lnBwdProposal += p->sampleParentCharacterState(updateSet);
+        lnBwdProposal += p->sampleRootCharacterState(updateSet);
+        //lnBwdProposal += p->sampleParentCharacterState(updateSet);
     
     size_t ch_idx0 = nd->getChild(0).getIndex();
     size_t ch_idx1 = nd->getChild(1).getIndex();
     
-    lnBwdProposal += p->sampleChildCharacterState(updateSet, bh_vector[ch_idx0]->getValue().getChildCharacters(), bh_vector[ch_idx1]->getValue().getChildCharacters());
+    lnBwdProposal += p->sampleChildCharacterState(updateSet, bh_vector[ch_idx0]->getValue().getChildCharacters(), bh_vector[ch_idx1]->getValue().getChildCharacters(), tau->getBranchLength(ch_idx0), tau->getBranchLength(ch_idx1));
     
     // propose new state
     p->samplePath(updateSet);
@@ -167,7 +168,7 @@ void CharacterHistoryCtmcNodeUpdate::rejectSimpleMove(void)
 void CharacterHistoryCtmcNodeUpdate::acceptMove( void ) {
     // nothing to do
     changed = false;
-    
+ 
     //std::cout << "ACCEPT NODE\n\n";
     acceptSimpleMove();
 }

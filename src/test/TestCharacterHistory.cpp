@@ -93,11 +93,11 @@ bool TestCharacterHistory::run( void ) {
     
     //////////
     // test
-    int maxGen = (int)((double)mcmcGenerations / 10);
+    int maxGen = (int)((double)mcmcGenerations / 5);
     std::vector<unsigned int> seed;
     //seed.push_back(3); seed.push_back(3); GLOBAL_RNG->setSeed(seed);
     
-    size_t numTaxa = 2;
+    size_t numTaxa = 20;
     size_t numNodes = 2 * numTaxa - 1;
     std::vector<std::string> taxonNames;
     for (size_t i = 0; i < numTaxa; i++)
@@ -165,8 +165,8 @@ bool TestCharacterHistory::run( void ) {
     //////////
     
     // substitution rates
-    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(10.0));
-    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(10.0));
+    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(1.0));
+    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(1.0));
     StochasticNode<double>* rateGain = new StochasticNode<double>("r1", new ExponentialDistribution(rateGain_pr));
     StochasticNode<double>* rateLoss = new StochasticNode<double>("r0", new ExponentialDistribution(rateLoss_pr));
  
@@ -216,7 +216,7 @@ bool TestCharacterHistory::run( void ) {
     
     // simulation settings
     
-    gdrm = NULL;
+    //gdrm = NULL;
     grsrm = NULL;
     lrsrm = NULL;
     asrm = NULL;
@@ -225,12 +225,12 @@ bool TestCharacterHistory::run( void ) {
     div->setValue(new double(pow(1.0,-2)));
     extinctionPower->setValue(new double(2.0));
     dispersalPower->setValue(new double(2.0));
-    distancePower->setValue(new double(0.0));
+    distancePower->setValue(new double(3.0));
     areaStationaryFrequency->setValue(new double(0.2));
     areaPower->setValue(new double(0.5));
 
-    rateGain->setValue(new double(.1));
-    rateLoss->setValue(new double(.1));
+    rateGain->setValue(new double(.3));
+    rateLoss->setValue(new double(3));
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
     rates.push_back(rateGain);
@@ -256,6 +256,7 @@ bool TestCharacterHistory::run( void ) {
         ss << i;
         StochasticNode<double>* tmp_br = new StochasticNode<double>("br" + ss.str(), new ExponentialDistribution(branchRate_pr));
         tmp_br->setValue(1.0);
+        tmp_br->clamp(new double(1.0));
         br_vector.push_back(tmp_br);
     }
 
@@ -279,6 +280,8 @@ bool TestCharacterHistory::run( void ) {
     StochasticNode<BranchHistory>* tr_chm = new StochasticNode<BranchHistory>("tr_model", tch);
     tr_chm->redraw();
     
+    //rateGain->redraw();
+    //rateLoss->redraw();
     
     ///////////////
     
@@ -303,9 +306,9 @@ bool TestCharacterHistory::run( void ) {
     {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
         StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
-        //moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
+        moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
         if (i >= numTaxa)
-            ;//moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 5.0));
+            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 5.0));
     }
     
     for (size_t i = numTaxa; i < bh_vector.size(); i++)

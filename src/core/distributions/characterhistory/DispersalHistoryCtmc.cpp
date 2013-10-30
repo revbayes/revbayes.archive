@@ -210,6 +210,7 @@ double DispersalHistoryCtmc::computeLnProbability(void)
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0)
         bt = 10.0;
+    //else bt = 1.0;
     
     double bs = bt * br;
     
@@ -244,12 +245,12 @@ double DispersalHistoryCtmc::computeLnProbability(void)
         // update state
         currState[idx] = *it_h;
         t += dt;
-        //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "; " << bt << " " << br << " " << dt << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
+        //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "; " << bs << " = " << bt << " * " << br << "; " << dt/bs << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
     }
     
     // lnL for final non-event
     double sr = sumOfRates(currState);
-    lnL += -sr * (1.0 - t) * bs;
+    lnL += -sr * (1.0 * bs - t);
 
     //std::cout << "lnL " << lnL << "\n";
     
@@ -315,7 +316,7 @@ double DispersalHistoryCtmc::computeLnProposal(void)
     
     // lnL for final non-event
     double sr = sumOfRates(currState);
-    lnL += -sr * (1.0 - t) * bs;
+    lnL += -sr * (1.0 * bs - t);
     
     // proposal probs for internal states is a little trickier, since whether you consider lnP for parent or child depends on proposal mechanism
     /*
@@ -400,17 +401,18 @@ void DispersalHistoryCtmc::samplePath(const std::set<size_t>& indexSet)
             double t = 0.0;
             do
             {
-                t += RbStatistics::Exponential::rv( r[currState] * bs, *GLOBAL_RNG );
+                unsigned int nextState = (currState == 1 ? 0 : 1);
+                t += RbStatistics::Exponential::rv( r[nextState] * bs, *GLOBAL_RNG );
                 //std::cout << i << " " << t << " " << currState << " " << r[currState] * bs << "\n";
                 if (t < 1.0)
                 {
-                    currState = ( currState == 1 ? 0 : 1);
-                    CharacterEvent* evt = new CharacterEvent(i,currState,t);
+                    currState = nextState;
+                    CharacterEvent* evt = new CharacterEvent(i , nextState, t);
                     tmpHistory.insert(evt);
                 }
                 else
                 {
-                    ;// std::cout << "------\n";
+                    ;//std::cout << "------\n";
                 }
             }
             while(t < 1.0);
@@ -473,11 +475,11 @@ double DispersalHistoryCtmc::sampleRootCharacterState(const std::set<size_t>& in
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0) // root bt
-        bt = 10.0;
+        bt = 100.0;
     double bs = br * bt;
     
     double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
-    double expPart = exp( - (r[0] + r[1]) * bs);
+    double expPart = exp( -(r[0] + r[1]) * bs);
     
     double pi0 = r[0] / (r[0] + r[1]);
     double pi1 = 1.0 - pi0;
@@ -527,11 +529,6 @@ double DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& i
     std::vector<CharacterEvent*> childStates = value->getChildCharacters();
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
-        // should sample conditioned on descendant states...
-        // not entirely sure why, though
-        // for Gibbs sampler, must sample internal node states wp of model, not arbitrarily randomly
-        // ... the bad news is I need information from descendant lineages then...
-        
         unsigned int parentS = parentState[*it]->getState();
         unsigned int childS = 0;
         double u = GLOBAL_RNG->uniform01();
@@ -548,44 +545,51 @@ double DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& i
 }
 
 
-double DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet, const std::vector<CharacterEvent*>& state1, const std::vector<CharacterEvent*>& state2)
+double DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& indexSet, const std::vector<CharacterEvent*>& state1, const std::vector<CharacterEvent*>& state2, double t1, double t2)
 {
     
-    // compute transition probabilities
+    // get branch scaler
     double br = branchRate->getValue();
-    double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
+    double rootAge = tree->getValue().getRoot().getAge();
+    double bt = tree->getValue().getBranchLength(index) / rootAge;
     if (bt == 0.0) // root bt
-        bt = 10.0;
+        bt = 100.0;
     double bs = br * bt;
+    //std::cout << "bs  " << bs << "\n";
     
+    // compute transition probabilities
     double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
-    double expPart = exp( - (r[0] + r[1]) * bs);
-    
+    double expPart0 = exp( - (r[0] + r[1]) * bs);
+    double expPart1 = exp( - (r[0] + r[1]) * t1/rootAge);
+    double expPart2 = exp( - (r[0] + r[1]) * t2/rootAge);
     double pi0 = r[0] / (r[0] + r[1]);
     double pi1 = 1.0 - pi0;
-    double tp[2][2] = { { pi0 + pi1 * expPart, pi1 - pi1 * expPart }, { pi0 - pi0 * expPart, pi1 + pi0 * expPart } };
+    double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
+    double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
+    double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
+    
+//    std::cout << tp0[0][0] << " " << tp0[0][1] << "\n" << tp0[1][0] << " " << tp0[1][1] << "\n";
+//    std::cout << tp1[0][0] << " " << tp1[0][1] << "\n" << tp1[1][0] << " " << tp1[1][1] << "\n";
+//    std::cout << tp2[0][0] << " " << tp2[0][1] << "\n" << tp2[1][0] << " " << tp2[1][1] << "\n";
     
     std::vector<CharacterEvent*> parentState = value->getParentCharacters();
     std::vector<CharacterEvent*> childState = value->getChildCharacters();
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
-        // should sample conditioned on descendant states...
-        // not entirely sure why, though
-        // for Gibbs sampler, must sample internal node states wp of model, not arbitrarily randomly
-        // ... the bad news is I need information from descendant lineages then...
-        
         unsigned int ancS = parentState[*it]->getState();
         //unsigned int thisS = childState[*it]->getState();
         unsigned int desS1 = state1[*it]->getState();
         unsigned int desS2 = state2[*it]->getState();
 
         double u = GLOBAL_RNG->uniform01();
-        double g0 = tp[ancS][0] * tp[0][desS1] * tp[0][desS2];
-        double g1 = tp[ancS][1] * tp[1][desS1] * tp[1][desS2];
+        double g0 = tp0[ancS][0] * tp1[0][desS1] * tp2[0][desS2];
+        double g1 = tp0[ancS][1] * tp1[1][desS1] * tp2[1][desS2];
         
         unsigned int s = 0;
         if (u < g1 / (g0 + g1))
             s = 1;
+        
+//        std::cout << "\t" << *it << " " << s << " : " << ancS << " -> (" << g0 << "," << g1 << ") -> (" << desS1 << "," << desS2 << ")\n";
         
         childState[*it] = new CharacterEvent(*it, s, 1.0);
     }
@@ -707,7 +711,7 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0) // root bt
-        bt = 100.0;
+        bt = 10.0;
     double bs = br * bt;
     
     //std::cout << br << " " << bt << "\n";
@@ -759,9 +763,10 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     }
     while (t < 1.0);
     
-    //std::cout << history.size() << "\n";
-    //std::cout << sumOfRates(currState) << "\n";
-    //std::cout << bt << "\n";
+    std::cout << history.size() << "\n";
+    std::cout << sumOfRates(currState) << "\n";
+    std::cout << bt << "\n";
+    std::cout << (double)(history.size()) / sumOfRates(currState) / bt << "\n";
     
     value->setHistory(history);
     value->setChildCharacters(currState);

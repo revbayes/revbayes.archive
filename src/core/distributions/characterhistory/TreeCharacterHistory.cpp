@@ -41,8 +41,9 @@ void TreeCharacterHistory::redrawValue(void)
     for (size_t i = 0; i < numCharacters; i++)
         indexSet.insert(i);
     
-    // update node states
-    for (int i = (int)nodes.size()-1; i >= 0; i--)
+    // update node states, from tips to root
+//    for (int i = (int)nodes.size()-1; i >= 0; i--)
+    for (int i = 0; i < (int)nodes.size(); i++)
     {
         //std::cout << "redrawValue() for BranchHistory " << i << "\n";
 
@@ -63,7 +64,7 @@ void TreeCharacterHistory::redrawValue(void)
         std::set<CharacterEvent*> parentSet;
         std::set<CharacterEvent*> childSet;
         std::set<size_t> indexSet;
-        std::vector<CharacterEvent*> parentChildVector, parentVector, childVector;
+        std::vector<CharacterEvent*> parentChildVector, nodeParentVector, nodeChildVector;
         
         if (p->isRoot())
         {
@@ -74,13 +75,13 @@ void TreeCharacterHistory::redrawValue(void)
         {
             //std::cout << "idx" << parentIdx << " " << i << "\n";
             parentChildVector = branchHistories[parentIdx]->getValue().getChildCharacters();
-            parentVector = branchHistories[i]->getValue().getParentCharacters();
-            for (size_t j = 0; j < parentVector.size(); j++)
-                parentVector[j]->setState(parentChildVector[j]->getState());
+            nodeParentVector = branchHistories[i]->getValue().getParentCharacters();
+            for (size_t j = 0; j < nodeParentVector.size(); j++)
+                nodeParentVector[j]->setState(parentChildVector[j]->getState());
                 //parentSet.insert(new CharacterEvent(*parentVector[j]));
             //std::cout << "p "; for (size_t j = 0; j < parentVector.size(); j++) std::cout << parentVector[j]->getState() << " "; std::cout << "\n";
             //std::cout << "c "; for (size_t j = 0; j < childVector.size(); j++) std::cout << childVector[j]->getState() << " "; std::cout << "\n";
-            bh->getValue().setParentCharacters(parentVector);
+            bh->getValue().setParentCharacters(nodeParentVector);
             bh->getValue().setRedrawParentCharacters(false);
             if (p->isTip())
                 bh->getValue().setRedrawChildCharacters(false);
@@ -97,7 +98,11 @@ void TreeCharacterHistory::redrawValue(void)
     
     
     // update paths
-    for (int i = (int)nodes.size()-1; i >= 0; i--)
+    
+    //int numEvents = 0;
+    
+    //for (int i = (int)nodes.size()-1; i >= 0; i--)
+    for (int i = 0; i < (int)nodes.size(); i++)
     {
         //std::cout << "redrawValue() for BranchHistory " << i << "\n";
         
@@ -119,7 +124,7 @@ void TreeCharacterHistory::redrawValue(void)
         std::set<CharacterEvent*> parentSet;
         std::set<CharacterEvent*> childSet;
         std::set<size_t> indexSet;
-        std::vector<CharacterEvent*> parentVector, childVector;
+        std::vector<CharacterEvent*> nodeParentVector, nodeChildVector;
     
         if (p->isTip())
         {
@@ -138,11 +143,17 @@ void TreeCharacterHistory::redrawValue(void)
             bh->getValue().setRedrawHistory(false);
         }
 
+        //if (!p->isRoot()) numEvents += bh->getValue().getNumEvents();
+        
         //std::cout << "AFTER\n";
-        //bh->getValue().print();
-        //std::cout << "--------\n";
+        std::cout << "redrawValue() for BranchHistory " << i << "\n";
+        bh->getValue().print();
+        std::cout << "--------\n";
     }
     
+    //std::cout << (double)numEvents / numCharacters << " " << numEvents << " " << tau->getTreeLength() / tau->getRoot().getAge() << "\n";
+    
+    ;
     // enable redraw for parent/child/path
     for (int i = 0; i < branchHistories.size(); i++)
     {
@@ -162,6 +173,8 @@ void TreeCharacterHistory::simulate(void)
     std::set<size_t> indexSet;
     for (size_t i = 0; i < numCharacters; i++)
         indexSet.insert(i);
+    
+    //int numEvents = 0;
     
     // update internal node states
     for (int i = (int)nodes.size()-1; i >= 0; i--)
@@ -203,10 +216,16 @@ void TreeCharacterHistory::simulate(void)
         
         // simulate path towards childCharacters
         achc->simulate();
+    
+        //if (!p->isRoot()) numEvents += bh->getValue().getNumEvents();
         
         bh->getValue().print();
         std::cout << "--------\n";
     }
+    
+    //std::cout << (double)numEvents / numCharacters << " " << numEvents << " " << tau->getTreeLength() / tau->getRoot().getAge() << "\n";
+    
+    ;
     
     // enable redraw for parent/child/path
     for (int i = 0; i < branchHistories.size(); i++)
