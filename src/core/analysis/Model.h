@@ -18,10 +18,9 @@ namespace RevBayesCore {
      *
      * \copyright (c) Copyright 2009-2013 (GPL version 3)
      * \date Last modified: $Date$
-     * \author The RevBayes Development Core Team
+     * \author The RevBayes Development Core Team ($Author$)
      * \since Version 1.0, 2012-06-21
      *
-     * $Id$
      */
     class Model {
         
