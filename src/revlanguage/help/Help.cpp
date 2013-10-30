@@ -1,4 +1,6 @@
 /**
+ * Another doxygen test
+ *
  * @file
  * This file contains the implementation of Help, a singleton 
  * class that manages help for the user.

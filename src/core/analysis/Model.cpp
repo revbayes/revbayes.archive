@@ -109,6 +109,7 @@ void Model::addSourceNode(const DagNode *sourceNode) {
 
 
 Model* Model::clone( void ) const {
+    
     return new Model( *this );
 }
 

@@ -1,4 +1,6 @@
 /**
+ *  Help.h
+ *
  * @file
  * This file contains the declaration of Help, which is
  * used to manage user help. The class is created on start

@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Model class. 
- * A Model object holds the model graph which is an independent copy
- * of the DAG nodes contained in the model.
- *
- *
- * @brief Declaration of the Model class
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-06-21
- *
- * $Id$
- */
-
-
 #ifndef Model_H
 #define Model_H
 
@@ -27,9 +8,23 @@
 namespace RevBayesCore {
 
     class DagNode;
-
-    class Model {
     
+    /**
+     * \brief Declaration of the Model class
+     *
+     * This file contains the declaration of the Model class. 
+     * A Model object holds the model graph which is an independent copy
+     * of the DAG nodes contained in the model.
+     *
+     * \copyright (c) Copyright 2009-2013 (GPL version 3)
+     * \date Last modified: $Date$
+     * \author The RevBayes Development Core Team
+     * \since Version 1.0, 2012-06-21
+     *
+     * $Id$
+     */
+    class Model {
+        
         public:
                                                                     Model(const DagNode* source);
                                                                     Model(const std::set<const DagNode*> sources);

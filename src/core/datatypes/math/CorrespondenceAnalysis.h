@@ -86,7 +86,7 @@ namespace RevBayesCore
         double n_;
 
     };
-} // end of namespace bpp.
+} // end of namespace RevBayesCore.
 
 #endif  // _CORRESPONDENCEANALYSIS_H_
 
