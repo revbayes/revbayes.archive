@@ -33,6 +33,13 @@ PROJECT_NAME           = RevBayes
 
 PROJECT_NUMBER         = Developer
 
+# With the PROJECT_LOGO tag one can specify an logo or icon that is 
+# included in the documentation. The maximum height of the logo should not 
+# exceed 55 pixels and the maximum width should not exceed 200 pixels. 
+# Doxygen will copy the logo to the output directory.
+
+PROJECT_LOGO           = ../revbayes/trunk/aquabayes.png
+
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
 # If a relative path is entered, it will be relative to the location 
@@ -74,7 +81,7 @@ BRIEF_MEMBER_DESC      = YES
 # Note: if both HIDE_UNDOC_MEMBERS and BRIEF_MEMBER_DESC are set to NO, the 
 # brief descriptions will be completely suppressed.
 
-REPEAT_BRIEF           = YES
+REPEAT_BRIEF           = NO
 
 # This tag implements a quasi-intelligent brief description abbreviator 
 # that is used to form the text in various listings. Each string 
@@ -102,14 +109,14 @@ ABBREVIATE_BRIEF       = "The $name class" \
 # Doxygen will generate a detailed section even if there is only a brief 
 # description.
 
-ALWAYS_DETAILED_SEC    = NO
+ALWAYS_DETAILED_SEC    = YES
 
 # If the INLINE_INHERITED_MEMB tag is set to YES, doxygen will show all 
 # inherited members of a class in the documentation of that class as if those 
 # members were ordinary class members. Constructors, destructors and assignment 
 # operators of the base classes will not be shown.
 
-INLINE_INHERITED_MEMB  = NO
+INLINE_INHERITED_MEMB  = YES
 
 # If the FULL_PATH_NAMES tag is set to YES then Doxygen will prepend the full 
 # path before files name in the file list and in the header files. If set 
@@ -229,6 +236,15 @@ OPTIMIZE_OUTPUT_VHDL   = NO
 
 EXTENSION_MAPPING      = 
 
+# If MARKDOWN_SUPPORT is enabled (the default) then doxygen pre-processes all 
+# comments according to the Markdown format, which allows for more readable 
+# documentation. See http://daringfireball.net/projects/markdown/ for details. 
+# The output of markdown processing is further processed by doxygen, so you 
+# can mix doxygen, HTML, and XML commands with Markdown formatting. 
+# Disable only in case of backward compatibilities issues.
+
+MARKDOWN_SUPPORT       = YES
+
 # If you use STL classes (i.e. std::string, std::vector, etc.) but do not want 
 # to include (a tag file for) the STL sources as input, then you should 
 # set this tag to YES in order to let doxygen match functions declarations and 
@@ -273,6 +289,22 @@ DISTRIBUTE_GROUP_DOC   = NO
 
 SUBGROUPING            = YES
 
+# When the INLINE_GROUPED_CLASSES tag is set to YES, classes, structs and 
+# unions are shown inside the group in which they are included (e.g. using 
+# @ingroup) instead of on a separate page (for HTML and Man pages) or 
+# section (for LaTeX and RTF).
+
+INLINE_GROUPED_CLASSES = NO
+
+# When the INLINE_SIMPLE_STRUCTS tag is set to YES, structs, classes, and 
+# unions with only public data fields will be shown inline in the documentation 
+# of the scope in which they are defined (i.e. file, namespace, or group 
+# documentation), provided this scope is documented. If set to NO (the default), 
+# structs, classes, and unions are shown on a separate page (for HTML and Man 
+# pages) or section (for LaTeX and RTF).
+
+INLINE_SIMPLE_STRUCTS  = NO
+
 # When TYPEDEF_HIDES_STRUCT is enabled, a typedef of a struct, union, or enum 
 # is documented as struct, union, or enum with the name of the typedef. So 
 # typedef struct TypeS {} TypeT, will appear in the documentation as a struct 
@@ -299,6 +331,17 @@ TYPEDEF_HIDES_STRUCT   = NO
 
 SYMBOL_CACHE_SIZE      = 0
 
+# Similar to the SYMBOL_CACHE_SIZE the size of the symbol lookup cache can be 
+# set using LOOKUP_CACHE_SIZE. This cache is used to resolve symbols given 
+# their name and scope. Since this can be an expensive process and often the 
+# same symbol appear multiple times in the code, doxygen keeps a cache of 
+# pre-resolved symbols. If the cache is too small doxygen will become slower. 
+# If the cache is too large, memory is wasted. The cache size is given by this 
+# formula: 2^(16+LOOKUP_CACHE_SIZE). The valid range is 0..9, the default is 0, 
+# corresponding to a cache size of 2^16 = 65536 symbols.
+
+LOOKUP_CACHE_SIZE      = 0
+
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
@@ -314,6 +357,11 @@ EXTRACT_ALL            = YES
 # will be included in the documentation.
 
 EXTRACT_PRIVATE        = NO
+
+# If the EXTRACT_PACKAGE tag is set to YES all members with package or internal
+# scope will be included in the documentation.
+
+EXTRACT_PACKAGE        = NO
 
 # If the EXTRACT_STATIC tag is set to YES all static members of a file 
 # will be included in the documentation.
@@ -448,6 +496,15 @@ SORT_GROUP_NAMES       = NO
 
 SORT_BY_SCOPE_NAME     = NO
 
+# If the STRICT_PROTO_MATCHING option is enabled and doxygen fails to 
+# do proper type resolution of all parameters of a function it will reject a 
+# match between the prototype and the implementation of a member function even 
+# if there is only one candidate or it is obvious which candidate to choose 
+# by doing a simple string match. By disabling STRICT_PROTO_MATCHING doxygen 
+# will still accept a match between prototype and implementation in such cases.
+
+STRICT_PROTO_MATCHING  = NO
+
 # The GENERATE_TODOLIST tag can be used to enable (YES) or 
 # disable (NO) the todo list. This list is created by putting \todo 
 # commands in the documentation.
@@ -530,6 +587,16 @@ FILE_VERSION_FILTER    =
 
 LAYOUT_FILE            = 
 
+# The CITE_BIB_FILES tag can be used to specify one or more bib files 
+# containing the references data. This must be a list of .bib files. The 
+# .bib extension is automatically appended if omitted. Using this command 
+# requires the bibtex tool to be installed. See also 
+# http://en.wikipedia.org/wiki/BibTeX for more info. For LaTeX the style 
+# of the bibliography can be controlled using LATEX_BIB_STYLE. To use this 
+# feature you need bibtex and perl available in the search path.
+
+CITE_BIB_FILES         = 
+
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
@@ -590,7 +657,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = ../src
+INPUT                  = ../revbayes/trunk/src
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -1120,7 +1187,7 @@ SERVER_BASED_SEARCH    = NO
 # If the GENERATE_LATEX tag is set to YES (the default) Doxygen will 
 # generate Latex output.
 
-GENERATE_LATEX         = YES
+GENERATE_LATEX         = NO
 
 # The LATEX_OUTPUT tag is used to specify where the LaTeX docs will be put. 
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
