@@ -81,7 +81,7 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
     // get sum-normalized rate-modifier
     double r = absent.size() * rate / sum;
     
-    //std::cout << "drm   " << r << " = " << absent.size() << " * " << rate << " / " << sum <<  "\n";
+//    std::cout << "drm   " << r << " = " << absent.size() << " * " << rate << " / " << sum <<  "\n";
     
     return r;
 }

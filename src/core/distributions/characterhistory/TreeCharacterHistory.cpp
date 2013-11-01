@@ -42,13 +42,13 @@ void TreeCharacterHistory::redrawValue(void)
         indexSet.insert(i);
     
     // update node states, from tips to root
-//    for (int i = (int)nodes.size()-1; i >= 0; i--)
     for (int i = 0; i < (int)nodes.size(); i++)
     {
         //std::cout << "redrawValue() for BranchHistory " << i << "\n";
 
         TopologyNode* p = nodes[i];
         size_t parentIdx = 0;
+        
         if (!p->isRoot())
             parentIdx = p->getParent().getIndex();
         
@@ -64,37 +64,91 @@ void TreeCharacterHistory::redrawValue(void)
         std::set<CharacterEvent*> parentSet;
         std::set<CharacterEvent*> childSet;
         std::set<size_t> indexSet;
-        std::vector<CharacterEvent*> parentChildVector, nodeParentVector, nodeChildVector;
+        std::vector<CharacterEvent*> parentChildVector, nodeParentVector, nodeChildVector, childParentVector;
         
-        if (p->isRoot())
+        if (!p->isTip())
         {
-            //std::cout << "isRoot()\n";
-            bh->getDistribution().redrawValue();
-        }
-        else
-        {
-            //std::cout << "idx" << parentIdx << " " << i << "\n";
-            parentChildVector = branchHistories[parentIdx]->getValue().getChildCharacters();
-            nodeParentVector = branchHistories[i]->getValue().getParentCharacters();
-            for (size_t j = 0; j < nodeParentVector.size(); j++)
-                nodeParentVector[j]->setState(parentChildVector[j]->getState());
+            //std::cout << "redrwaValue() idx" << parentIdx << " " << i << "\n";
+            //parentChildVector = branchHistories[parentIdx]->getValue().getChildCharacters();
+            //nodeParentVector = branchHistories[i]->getValue().getParentCharacters();
+            //for (size_t j = 0; j < nodeParentVector.size(); j++)
+            //    nodeParentVector[j]->setState(parentChildVector[j]->getState());
                 //parentSet.insert(new CharacterEvent(*parentVector[j]));
+
             //std::cout << "p "; for (size_t j = 0; j < parentVector.size(); j++) std::cout << parentVector[j]->getState() << " "; std::cout << "\n";
             //std::cout << "c "; for (size_t j = 0; j < childVector.size(); j++) std::cout << childVector[j]->getState() << " "; std::cout << "\n";
-            bh->getValue().setParentCharacters(nodeParentVector);
+            //bh->getValue().setParentCharacters(nodeParentVector);
+            //bh->getValue().setRedrawParentCharacters(false);
+
+            
+            // sample new child characters for the internal node
             bh->getValue().setRedrawParentCharacters(false);
-            if (p->isTip())
-                bh->getValue().setRedrawChildCharacters(false);
+            bh->getValue().setRedrawHistory(false);
+            bh->getValue().setRedrawChildCharacters(true);
+            nodeChildVector = bh->getValue().getChildCharacters();
+            //std::cout << "c "; for (size_t j = 0; j < nodeChildVector.size(); j++) std::cout << nodeChildVector[j]->getState() << " "; std::cout << "\n";
             bh->getDistribution().redrawValue();
+            nodeChildVector = bh->getValue().getChildCharacters();
+            bh->getValue().setRedrawChildCharacters(false);
+            //std::cout << "c "; for (size_t j = 0; j < nodeChildVector.size(); j++) std::cout << nodeChildVector[j]->getState() << " "; std::cout << "\n";
+
+            /*
+            // update parent characters for internal node's descendants
+            for (size_t j = 0; j < p->getNumberOfChildren(); j++)
+            {
+                TopologyNode* q = &p->getChild(j);
+                int q_idx = q->getIndex();
+                const StochasticNode<BranchHistory>* cqbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[q_idx]);
+                StochasticNode<BranchHistory>* qbh = const_cast<StochasticNode<BranchHistory>* >(cbh);
+                //qbh->getDistribution().getValue().setParentCharacters(nodeChildVector);
+                childParentVector = qbh->getValue().getParentCharacters();
+                for (size_t k = 0; k < nodeChildVector.size(); k++) childParentVector[k]->setState( nodeChildVector[k]->getState() );
+                
+                std::vector<CharacterEvent*> v = bh->getDistribution().getValue().getChildCharacters();
+                std::cout << "c_q "; for (size_t k = 0; k < v.size(); k++) std::cout << v[k]->getState() << " "; std::cout << "\n";
+            }
+            */
+            
+            //bh->getValue().setRedrawParentCharacters(false);
+            //bh->getValue().setRedrawHistory(false);
             
         }
-        bh->getValue().setRedrawChildCharacters(false);
-        
+        else if (p->isTip())
+        {
+            bh->getValue().setRedrawParentCharacters(false);
+            bh->getValue().setRedrawHistory(false);
+            bh->getValue().setRedrawChildCharacters(false);
+        }
+
 
         //std::cout << "AFTER NODE\n";
         //bh->getValue().print();
     }
     
+    // update node parent states (same as parent child states for sympatry)
+    for (int i = 0; i < (int)nodes.size(); i++)
+    {
+        TopologyNode* p = nodes[i];
+        size_t parentIdx = 0;
+        
+        // cast away constness like a villain
+        const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
+        StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);
+        
+        if (!p->isRoot())
+        {
+            parentIdx = p->getParent().getIndex();
+            bh->getValue().setParentCharacters( branchHistories[parentIdx]->getValue().getChildCharacters() );
+        }
+        else if (p->isRoot())
+        {
+
+            bh->getValue().setRedrawParentCharacters(true);
+            bh->getDistribution().redrawValue();
+            bh->getValue().setRedrawParentCharacters(false);
+        }
+
+    }
     
     
     // update paths
@@ -126,6 +180,9 @@ void TreeCharacterHistory::redrawValue(void)
         std::set<size_t> indexSet;
         std::vector<CharacterEvent*> nodeParentVector, nodeChildVector;
     
+        
+        bh->getValue().setRedrawHistory(true);
+        
         if (p->isTip())
         {
             // childVector = observedCharacters;
@@ -146,9 +203,9 @@ void TreeCharacterHistory::redrawValue(void)
         //if (!p->isRoot()) numEvents += bh->getValue().getNumEvents();
         
         //std::cout << "AFTER\n";
-        std::cout << "redrawValue() for BranchHistory " << i << "\n";
-        bh->getValue().print();
-        std::cout << "--------\n";
+//        std::cout << "redrawValue() for BranchHistory " << i << "\n";
+//        bh->getValue().print();
+//        std::cout << "--------\n";
     }
     
     //std::cout << (double)numEvents / numCharacters << " " << numEvents << " " << tau->getTreeLength() / tau->getRoot().getAge() << "\n";

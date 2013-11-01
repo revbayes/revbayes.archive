@@ -15,6 +15,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include <string>
+//#define USE_DDBD
 
 using namespace RevBayesCore;
 
@@ -99,14 +100,37 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
 {
     
     double rate = 0.0;
-   
+    int s = nextState->getState();
+    int n1 = numOn(currState);
+//    std::cout << rates[0]->getValue() << " " << rates[1]->getValue() << "\n";
+//    std::cout << n1 << " " << s << "\n";
+//    std::cout << nextState->getIndex() << " : " << currState[ nextState->getIndex() ]->getState() << " -> " << nextState->getState() << "\n";
     // rate to extinction cfg is 0
-    if (numOn(currState) == 1 && nextState->getState() == 0)
+    if (n1 == 1 && s == 0)
         return 0.0;
     
     // rate according to binary rate matrix Q
-    rate = rates[ nextState->getState() ]->getValue();
+    rate = rates[s]->getValue();
     
+//    std::cout << "rate " << rate <<"\n";
+    
+    
+    // adjust rate by diversity-dependent BD process
+#ifdef USE_DDBD
+    //std::cout << s << " " << n1 << " " << rate << "\n";
+    double f1 = (double)n1 / numCharacters;
+    if (s == 0)
+    {
+        rate = rates[0]->getValue() * exp( -(1.0 - f1) * lossRangeSizePower->getValue() );
+    }
+    else
+    {
+        int n0 = numCharacters - n1;
+        rate = rates[1]->getValue() * exp( -f1 * gainRangeSizePower->getValue() ) * (double)n0 / (double)n1 ;
+    }
+#endif
+    
+    /*
     // account for range size modifier
     if (gainRangeSizeRateModifier != NULL && nextState->getState() == 1)
     {
@@ -116,22 +140,25 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
     {
         rate *= lossRangeSizeRateModifier->computeRateModifier(currState, nextState);
     }
+    */
 
     // account for distance
     double drm = 1.0;
     if (geographicDistances != NULL && nextState->getState() == 1)
     {
         drm = geographicDistances->computeRateModifier(currState, nextState);
-        //std::cout << rate*drm << " = " << rate << " * " << drm << "\n";
+//        std::cout << rate*drm << " = " << rate << " * " << drm << "\n";
         rate *= drm;
     }
     
-    if (areaSizeRateModifier != NULL)
+    if (areaSizeRateModifier != NULL && nextState->getState() == 1)
     {
         double arm = areaSizeRateModifier->computeRateModifier(currState, nextState);
-        //std::cout << rate*arm << " = " << rate << " * " << arm << "\n";
+        //std::cout << rate*arm << " = " << rate << " * " << arm << "; " << nextState->getIndex() << " " << nextState->getState() << "\n";
         rate *= arm;
     }
+    
+    //std::cout << rate <<"\n";
     
     return rate;
 }
@@ -139,36 +166,40 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
 double DispersalHistoryCtmc::sumOfRates(std::vector<CharacterEvent *> currState)
 {
     // get rate away away from currState
-    size_t numOn = 0;
-    for (size_t i = 0; i < currState.size(); i++)
-    {
-        if (currState[i]->getState() == 1)
-            numOn++;
-    }
-    size_t numOff = currState.size() - numOn;
+    int n1 = numOn(currState);
+    int n0 = numCharacters - n1;
     
     // forbid extinction events
-    if (numOn == 1)
-        numOn = 0;
+    if (n1 == 1)
+        n1 = 0;
     
+    double r0 = 0.0;
+    double r1 = 0.0;
+    
+#ifdef USE_DDBD
     // density-dependent BD process
-    //    double rateOn = numOn * ( rates[0]->getValue() + numOn * gainRangeSizePower->getValue() );
-    //    double rateOff = numOff * ( rates[1]->getValue() - numOn * lossRangeSizePower->getValue() );
-    
-    double rateOn = numOff * rates[1]->getValue();
-    double rateOff = numOn * rates[0]->getValue();
+    double f1 = (double)(n1) / numCharacters;
+    r0 = n1 * rates[0]->getValue() * exp( -(1.0 - f1) * lossRangeSizePower->getValue() );
+    r1 = n1 * rates[1]->getValue() * exp( -f1 * gainRangeSizePower->getValue() );
+#else
+    // density-independent (BayArea version)
+    r0 = n1 * rates[0]->getValue();
+    r1 = n0 * rates[1]->getValue();
+#endif
     
     // modify sum of rates according to range size
+    /*
     if (gainRangeSizeRateModifier != NULL)
     {
-        rateOn *= gainRangeSizeRateModifier->computeRateModifier(currState, 1);
+        ;//r1 *= gainRangeSizeRateModifier->computeRateModifier(currState, 1);
     }
     if (lossRangeSizeRateModifier != NULL)
     {
-        rateOff *= lossRangeSizeRateModifier->computeRateModifier(currState, 1);
+        ;//r0 *= lossRangeSizeRateModifier->computeRateModifier(currState, 1);
     }
+    */
     
-    double sum = rateOn + rateOff;
+    double sum = r0 + r1;
     
     return sum;
 }
@@ -181,6 +212,22 @@ void DispersalHistoryCtmc::swapParameter(const DagNode *oldP, const DagNode *new
     {
         distancePower = static_cast<const TypedDagNode<double>* >( newP );
     }
+    
+    else if (oldP == areaSizePower)
+    {
+        areaSizePower = static_cast<const TypedDagNode<double>* >(newP);
+    }
+    
+    else if (oldP == gainRangeSizePower)
+    {
+        gainRangeSizePower = static_cast<const TypedDagNode<double>* >(newP);
+    }
+    
+    else if (oldP == lossRangeSizePower)
+    {
+        lossRangeSizePower = static_cast<const TypedDagNode<double>* >(newP);
+    }
+
 }
 
 double DispersalHistoryCtmc::computeLnProbability(void)
@@ -215,7 +262,7 @@ double DispersalHistoryCtmc::computeLnProbability(void)
     double bs = bt * br;
     
 //    std::cout << "bt,br" << bt << " " << br << "\n";
-    //std::cout << "branch " << index << "\n";
+//    std::cout << "branch " << index << "\n";
  
     // stepwise events
     for (it_h = history.begin(); it_h != history.end(); it_h++)
@@ -711,7 +758,7 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0) // root bt
-        bt = 10.0;
+        bt = 100.0;
     double bs = br * bt;
     
     //std::cout << br << " " << bt << "\n";
@@ -763,11 +810,13 @@ void DispersalHistoryCtmc::simulatePath(const std::set<size_t>& indexSet)
     }
     while (t < 1.0);
     
+    /*
     std::cout << history.size() << "\n";
     std::cout << sumOfRates(currState) << "\n";
     std::cout << bt << "\n";
     std::cout << (double)(history.size()) / sumOfRates(currState) / bt << "\n";
-    
+    */
+     
     value->setHistory(history);
     value->setChildCharacters(currState);
 

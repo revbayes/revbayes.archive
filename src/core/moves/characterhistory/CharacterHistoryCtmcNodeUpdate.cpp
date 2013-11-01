@@ -96,8 +96,8 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
     // propose new value
     AbstractCharacterHistoryCtmc* p = static_cast< AbstractCharacterHistoryCtmc* >( &variable->getDistribution() );
     
-    //std::cout << "OLD P\n";
-    //p->getValue().print();
+//    std::cout << "OLD P\n";
+//    p->getValue().print();
     double lnBwdProposal = p->computeLnProposal();
     if (nd->isRoot())
         lnBwdProposal += p->sampleRootCharacterState(updateSet);
@@ -112,24 +112,24 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
     p->samplePath(updateSet);
     double lnFwdProposal = p->computeLnProposal();
 
-    //std::cout << "NEW P\n";
-    //p->getValue().print();
+//    std::cout << "NEW P\n";
+//    p->getValue().print();
     
     for (size_t i = 0; i < nd->getNumberOfChildren(); i++)
     {
         size_t ch_idx = nd->getChild(i).getIndex();
         AbstractCharacterHistoryCtmc* q = static_cast< AbstractCharacterHistoryCtmc* >( &bh_vector[ch_idx]->getDistribution() );
         
-        //std::cout << "OLD Q " << i << "\n";
-        //q->getValue().print();
+//        std::cout << "OLD Q " << i << "\n";
+//        q->getValue().print();
         
         lnBwdProposal += q->computeLnProposal();
         q->getValue().setParentCharacters( p->getValue().getChildCharacters() );
         q->samplePath(updateSet);
         lnFwdProposal += q->computeLnProposal();
         
-        //std::cout << "NEW Q " << i << "\n";
-        //q->getValue().print();
+//        std::cout << "NEW Q " << i << "\n";
+//        q->getValue().print();
     }
     //std::cout << lnBwdProposal-lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << "\n";
     
@@ -225,6 +225,7 @@ double CharacterHistoryCtmcNodeUpdate::performMove(double& probRatio)
     }
     
     //std::cout << probRatio << " " << hr << "\n";
+    //return RbConstants::Double::neginf;
     return hr;
 }
 

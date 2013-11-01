@@ -43,7 +43,8 @@ double AreaSizeRateModifier::computeRateModifier(std::vector<CharacterEvent *> c
     
     for (size_t i = 0; i < numAreas; i++)
     {
-        if (currState[i]->getState() == stateModified)
+        // normalize vs characters which may potentially take value==stateModified
+        if (currState[i]->getState() != stateModified)
         {
    //         std::cout << i << " ";
             mean += areaPowers[i];
@@ -69,7 +70,9 @@ double AreaSizeRateModifier::computeRateModifier(std::vector<CharacterEvent *> c
     */
     
     double r = areaPowers[areaIdx] / mean;
-    //std::cout << areaIdx << " " << r << "\n";
+    //std::cout << areaIdx << " " << r << " " << power << "\n";
+    
+    ;
     return r;
 }
 

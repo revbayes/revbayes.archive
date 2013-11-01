@@ -47,6 +47,8 @@
 #include "RateMatrix_GTR.h"
 #include "GtrRateMatrixFunction.h"
 
+//#define USE_DDBD
+
 using namespace RevBayesCore;
 
 
@@ -131,8 +133,8 @@ bool TestCharacterHistory::run( void ) {
         for (size_t i = 0; i < numCharacters; i++)
         {
             std::vector<double> tmp;
-            tmp.push_back(i);
             tmp.push_back(0);
+            tmp.push_back(i);
             geo_coords.push_back(tmp);
         }
     }
@@ -156,24 +158,20 @@ bool TestCharacterHistory::run( void ) {
         for (size_t i = 0; i < numCharacters; i++)
         {
             areaSizes.push_back(1 + i * areaFactor);
-          //  std::cout << areaSizes[i] << " ";
+       
         }
-       // std::cout << "\n";
+
     }
-    
+    //for (size_t i =0; i <numCharacters; i++) std::cout << areaSizes[i] << " "; std::cout << "\n";
+
     
     //////////
     
     // substitution rates
-    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(1.0));
-    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(1.0));
+    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(10.0));
+    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(10.0));
     StochasticNode<double>* rateGain = new StochasticNode<double>("r1", new ExponentialDistribution(rateGain_pr));
     StochasticNode<double>* rateLoss = new StochasticNode<double>("r0", new ExponentialDistribution(rateLoss_pr));
- 
-    // branch rate
-    ConstantNode<double>* branchRate_pr = new ConstantNode<double>("br_pr", new double(1.0));
-    StochasticNode<double>* branchRate = new StochasticNode<double>("br", new ExponentialDistribution(branchRate_pr));
-    
     
     // tree
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
@@ -195,22 +193,21 @@ bool TestCharacterHistory::run( void ) {
     gdrm->update();
    
     // range size bd rates
-    ConstantNode<double>* extinctionPower_pr = new ConstantNode<double>("ext_pow_pr", new double(1.0));
-    ConstantNode<double>* dispersalPower_pr = new ConstantNode<double>("disp_pow_pr", new double(1.0));
-    StochasticNode<double>* extinctionPower = new StochasticNode<double>("ext_pow", new ExponentialDistribution(extinctionPower_pr));
-    StochasticNode<double>* dispersalPower = new StochasticNode<double>("disp_pow", new ExponentialDistribution(dispersalPower_pr));
-    
+    ConstantNode<double>* extinctionPower_pr = new ConstantNode<double>("ext_pow_pr", new double(5.0));
+    ConstantNode<double>* dispersalPower_pr = new ConstantNode<double>("disp_pow_pr", new double(5.0));
     ConstantNode<double>* areaStationaryFrequency_pr_a = new ConstantNode<double>("area_freq_pr_a", new double(1.0));
     ConstantNode<double>* areaStationaryFrequency_pr_b = new ConstantNode<double>("area_freq_pr_b", new double(1.0));
+    
+    StochasticNode<double>* extinctionPower = new StochasticNode<double>("ext_pow", new ExponentialDistribution(extinctionPower_pr));
+    StochasticNode<double>* dispersalPower = new StochasticNode<double>("disp_pow", new ExponentialDistribution(dispersalPower_pr));
+//    StochasticNode<double>* dispersalPower = new StochasticNode<double>("disp_pow", new BetaDistribution(areaStationaryFrequency_pr_a, areaStationaryFrequency_pr_b));
     StochasticNode<double>* areaStationaryFrequency = new StochasticNode<double>("area_freq", new BetaDistribution(areaStationaryFrequency_pr_a, areaStationaryFrequency_pr_b));
     
     RangeSizeRateModifier* grsrm = new RangeSizeRateModifier((unsigned int)numCharacters, 1);
     RangeSizeRateModifier* lrsrm = new RangeSizeRateModifier((unsigned int)numCharacters, 1);
 
-    
-    
     // area size rate modifiers    
-    ConstantNode<double>* areaPower_pr = new ConstantNode<double>("area_pow_pr", new double(1.0));
+    ConstantNode<double>* areaPower_pr = new ConstantNode<double>("area_pow_pr", new double(2.0));
     StochasticNode<double>* areaPower = new StochasticNode<double>("area_pow", new ExponentialDistribution(areaPower_pr));
     AreaSizeRateModifier* asrm = new AreaSizeRateModifier(areaSizes);
     
@@ -221,19 +218,32 @@ bool TestCharacterHistory::run( void ) {
     lrsrm = NULL;
     asrm = NULL;
     
-    branchRate->setValue(1.0);
     div->setValue(new double(pow(1.0,-2)));
-    extinctionPower->setValue(new double(2.0));
-    dispersalPower->setValue(new double(2.0));
     distancePower->setValue(new double(3.0));
     areaStationaryFrequency->setValue(new double(0.2));
     areaPower->setValue(new double(0.5));
 
-    rateGain->setValue(new double(.3));
-    rateLoss->setValue(new double(3));
+//    rateGain->setValue(new double(.3));
+//    rateLoss->setValue(new double(3.0));
+    rateGain->setValue(new double(.1));
+    rateLoss->setValue(new double(2.0));
+
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
     rates.push_back(rateGain);
+
+    //extinctionPower->setValue(new double(0.5 / numCharacters));
+//    dispersalPower->setValue(new double(0.2 / numCharacters));
+    //dispersalPower->setValue(new double(0.2));
+    
+//    double freq = 0.1;
+//    double a_plus_c = (rateGain->getValue() - rateLoss->getValue()) / (freq * (double)numCharacters);
+//    double extPow = a_plus_c * 0.7;
+//    extinctionPower->setValue(new double(extPow));
+//    dispersalPower->setValue(new double(a_plus_c - extPow));
+
+    extinctionPower->setValue(new double(1));
+    dispersalPower->setValue(new double(1));
     
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
@@ -250,6 +260,7 @@ bool TestCharacterHistory::run( void ) {
     
     // branch rates
     std::vector<const TypedDagNode<double>* > br_vector;
+    ConstantNode<double>* branchRate_pr = new ConstantNode<double>("br_pr", new double(1.0));
     for (size_t i = 0; i < numNodes; i++)
     {
         std::stringstream ss;
@@ -280,19 +291,19 @@ bool TestCharacterHistory::run( void ) {
     StochasticNode<BranchHistory>* tr_chm = new StochasticNode<BranchHistory>("tr_model", tch);
     tr_chm->redraw();
     
-    //rateGain->redraw();
-    //rateLoss->redraw();
+ //   rateGain->setValue(new double(rateGain->getValue()/10));
+ //   rateLoss->setValue(new double(rateLoss->getValue()/10));
     
     ///////////////
     
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
     moves.push_back( new ScaleMove(distancePower, 1.0, true, 5.0) );
-    moves.push_back( new ScaleMove(rateGain, 1.0, true, 5.0) );
+    moves.push_back( new ScaleMove(rateGain, 5.0, true, 5.0) );
     moves.push_back( new ScaleMove(rateLoss, 1.0, true, 5.0) );
     moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
     moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
-    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 10.0, true, 5.0));
+//    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 5.0, true, 5.0));
     moves.push_back( new ScaleMove(areaPower, 1.0, true, 5.0) );
     
     for (size_t i = 0; i < br_vector.size(); i++)
@@ -306,9 +317,9 @@ bool TestCharacterHistory::run( void ) {
     {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
         StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
-        moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.2, true, 2.0) );
+        moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.1, true, 2.0) );
         if (i >= numTaxa)
-            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.2, true, 5.0));
+            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.1, true, 5.0));
     }
     
     for (size_t i = numTaxa; i < bh_vector.size(); i++)
