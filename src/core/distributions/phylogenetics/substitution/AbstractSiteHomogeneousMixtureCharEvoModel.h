@@ -96,7 +96,7 @@ namespace RevBayesCore {
         std::vector<size_t>                                                 activeLikelihood;
         
         // the data
-        std::vector<std::vector<unsigned int> >                             charMatrix;
+        std::vector<std::vector<unsigned long> >                            charMatrix;
         std::vector<std::vector<bool> >                                     gapMatrix;
         std::vector<size_t>                                                 patternCounts;
         size_t                                                              numPatterns;
@@ -302,6 +302,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 {
                     charType &c = static_cast<charType &>( taxon.getCharacter(site) );
                     charMatrix[nodeIndex][patternIndex] = c.getState();
+                    if ( charMatrix[nodeIndex][patternIndex] > 15 )
+                        std::cerr << "Error after returning char state" << std::endl;
                     gapMatrix[nodeIndex][patternIndex] = c.isGapState();
                     
                     // increase the pattern index
@@ -412,6 +414,9 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     std::vector< size_t >::const_iterator patterns = patternCounts.begin();
     for (size_t site = 0; site < numPatterns; ++site, ++patterns)
     {
+        if ( per_mixture_Likelihoods[site] < 0.0 )
+            std::cerr << "Negative likelihood for site " << site << std::endl;
+    
         this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
     }
     this->lnProb -= log( numSiteRates ) * numSites;
@@ -465,13 +470,20 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 for (size_t c2 = 0; c2 < numChars; ++c2 ) 
                 {
                     sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
+                    if ( *p_site_left_d < 0.0 || *p_site_right_d < 0.0 || *tp_a_d < 0.0 )
+                        std::cerr << " pLeft = "  << *p_site_left_d
+                                  << " pRight = " << *p_site_right_d
+                                  << " tP = "     << *tp_a_d << std::endl;
                     
                     // increment the pointers to the next terminal state
                     ++tp_a_d; ++p_site_left_d; ++p_site_right_d;
                 }
                 // store the likelihood for this starting state
                 *p_a = sum;
-                
+
+                if ( sum < 0.0 )
+                    std::cerr << "Error in likelihood calculation: sum = " << sum << std::endl;
+
                 // increment the pointers to the next starting state
                 tp_a+=numChars; ++p_a;
             }
@@ -492,11 +504,10 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*activeLikelihoodOffset + nodeIndex*nodeOffset;
     
     const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    const std::vector<unsigned int> &char_node = this->charMatrix[nodeIndex];
+    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
     
     // compute the transition probabilities
     updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
-    
     
     // iterate over all mixture categories
     double*   p_mixture      = p_node;
@@ -508,8 +519,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         
         // pointers to the data per site
         std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
-        std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
-        
+        std::vector<unsigned long>::const_iterator  char_site   = char_node.begin();
+
         // get the pointer to the likelihoods for this site and mixture category
         double*     p_site_mixture      = p_mixture;
         
@@ -524,9 +535,11 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 
                 // get the pointer to the likelihood memory location for this site and mixture category
                 double*             p_a     = p_site_mixture;
+                
                 // get the pointer to the transition probability matrix
                 const double*       tp_a    = tp_begin;
-                // iterate over all initial state for the transitions
+
+                // iterate over all initial states for the transitions
                 for (size_t c1 = 0; c1 < numChars; ++c1) 
                 {
                     // temporary variable for starting the sum of the likelihoods to the different states
@@ -534,6 +547,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                     
                     // get the pointer to the transition probabilities starting from this state
                     const double* d   = tp_a;
+                    
                     // iterate over all possible terminal states
                     for (size_t c2 = 0; c2 < numChars; ++c2) 
                     {
@@ -545,6 +559,9 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                     // store the likelihood
                     *p_a = tmp;
                     
+                    if ( tmp < 0.0 )
+                        std::cerr << "Error: tip site likelihood (gap) tmp = " << tmp << std::endl;
+                    
                     // increment pointers to next starting state
                     tp_a+=numChars; ++p_a;
                 }
@@ -553,14 +570,29 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
             {
                 
                 // get the original character
-                unsigned int org_val = *char_site;
+                unsigned long org_val = *char_site;
                 
                 // get the pointer to the likelihood for this site and mixture category
+                
                 // this is were we want to store the partial likelihoods in
                 double*             p_a     = p_site_mixture;
+                
                 // get the pointer to the transition probabilities
                 const double*       tp_a    = tp_begin;
-                // iterate over all possible initial states 
+                
+                int index;
+                for ( index = 0; index<numChars*numChars; index++)
+                    if ( tp_a[index] < 0.0 )
+                        break;
+                
+                if ( index < numChars*numChars )
+                {
+                    for ( index = 0; index<numChars*numChars; index++)
+                        std::cerr << tp_a[index] << " ";
+                    std::cerr << std::endl;
+                }
+
+                // iterate over all possible initial states
                 for (size_t c1 = 0; c1 < numChars; ++c1) 
                 {
                     
@@ -568,8 +600,10 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                     
                     // compute the likelihood that we had a transition from state c1 to the observed state org_val
                     // note, the observed state could be ambiguous!
-                    unsigned int val = org_val;
+                    unsigned long val = org_val;
+                    
                     // get the pointer to the transition probabilities for the terminal states
+                    
                     const double* d  = tp_a;
                     while ( val != 0 ) // there are still observed states left
                     {
@@ -580,13 +614,17 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                             tmp += *d;
                         }
                         
-                        // removed this state from the observed states
+                        // remove this state from the observed states
                         val >>= 1;
+
                         // increment the pointer to the next transition probability
                         ++d;
                     }
                     // store the likelihood
                     *p_a = tmp;
+                    
+                    if ( tmp < 0.0 )
+                        std::cerr << "Error: tip site likelihood (observed state) tmp = " << tmp << std::endl;
                     
                     // increment pointers to next starting state
                     tp_a+=numChars; ++p_a;
@@ -852,7 +890,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         for ( size_t i = 0; i < numSites; ++i ) 
         {
             // get the ancestral character for this site
-            unsigned int parentState = parent.getCharacter( i ).getState();
+            unsigned long parentState = parent.getCharacter( i ).getState();
             size_t p = 0;
             while ( parentState != 1 ) 
             {

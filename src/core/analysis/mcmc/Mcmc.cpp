@@ -16,6 +16,7 @@
 #include "AdmixtureBipartitionMonitor.h"
 
 #include <cmath>
+#include <sstream>
 #include <typeinfo>
 
 using namespace RevBayesCore;
@@ -192,8 +193,9 @@ void Mcmc::initializeChain( void ) {
         }
     }
     
-    lnProbability = 0.0;
-    do
+    int numTries    = 0;
+    int maxNumTries = 100;
+    for ( ; numTries < maxNumTries; numTries ++ )
     {
         lnProbability = 0.0;
         for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
@@ -203,6 +205,12 @@ void Mcmc::initializeChain( void ) {
             
             double lnProb = node->getLnProbability();
             lnProbability += lnProb;
+
+//            if ( node->isStochastic() )
+//            {
+//                std::cerr << "Computing likelihood of node " << node->getName() << std::endl;
+//                std::cerr << node->getName() << "  -- " << lnProb << " -- " << ( node->isClamped() ? "(clamped)" : "") << "\n";
+//            }
         }
         
         // now we keep all nodes so that the likelihood is stored
@@ -211,7 +219,7 @@ void Mcmc::initializeChain( void ) {
             (*i)->keep();
         }
         
-        if (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan)
+        if ( !isAComputableNumber( lnProbability ) )
         {
             std::cerr << "Drawing new initial states ... " << std::endl;
             for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++) 
@@ -232,10 +240,20 @@ void Mcmc::initializeChain( void ) {
                 
             }
         }
-        
-    } while (lnProbability != lnProbability || lnProbability == RbConstants::Double::neginf || lnProbability == RbConstants::Double::nan);
+        else
+            break;
+    }
     
-
+    if ( numTries == maxNumTries )
+    {
+        std::stringstream msg;
+        msg << "Unable to find a starting state with computable probability";
+        if ( numTries > 1 )
+            msg << " after " << numTries << " tries";
+        throw RbException( msg.str() );
+        
+    }
+    
     schedule = RandomMoveSchedule(moves);
     //if (moveSchedule != NULL)
         
@@ -251,14 +269,34 @@ void Mcmc::initializeMonitors(void)
     }
 }
 
+bool Mcmc::isAComputableNumber(const double x)
+{
+    if ( x != x )
+        return false;
+    if ( x == RbConstants::Double::neginf )
+        return false;
+    if ( x == RbConstants::Double::nan )
+        return false;
+    if ( x == RbConstants::Double::inf )
+        return false;
+
+    return true;
+}
+
 void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor *> &mons)
 {
+
     // we need to replace the DAG nodes of the monitors and moves
     const std::vector<DagNode*>& modelNodes = model.getDagNodes();
     for (std::vector<Move*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
         Move *theMove = (*it)->clone();
         std::set<DagNode*> nodes = theMove->getDagNodes();
         for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
+            
+            // error checking
+            if ( (*j)->getName() == "" )
+                throw RbException( "Unable to connect move to DAG copy because variable name was lost");
+            
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
                 if ( (*k)->getName() == (*j)->getName() ) {
@@ -281,6 +319,11 @@ void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor 
         Monitor *theMonitor = (*it)->clone();
         std::vector<DagNode*> nodes = theMonitor->getDagNodes();
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
+            
+            // error checking
+            if ( (*j)->getName() == "" )
+                throw RbException( "Unable to connect monitor to DAG copy because variable name was lost");
+            
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
                 if ( (*k)->getName() == (*j)->getName() ) {

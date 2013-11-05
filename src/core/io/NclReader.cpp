@@ -211,7 +211,7 @@ std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
 	return rbTreesFromFile;
 }
 
-/** Create an object to hold amino acid data */
+/** Create an object to hold aligned amino acid data */
 DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
     
     // check that the character block is of the correct type
@@ -272,6 +272,7 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
     return cMat;
 }
 
+/* Create an object to hold unaligned aminoacid data */
 DiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock) {
     
     // check that the character block is of the correct type
@@ -361,7 +362,7 @@ CharacterData<ContinuousCharacterState>* NclReader::createContinuousMatrix(NxsCh
 }
 
 
-/** Create an object to hold DNA data */
+/** Create an object to hold aligned DNA data */
 DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
     
     // check that the character block is of the correct type
@@ -424,7 +425,7 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
     return cMat;
 }
 
-/** Create an object to hold DNA data */
+/** Create an object to hold unaligned DNA data */
 DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock) {
     
     // check that the character block is of the correct type
@@ -465,7 +466,7 @@ DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnaligne
     return cMat;
 }
 
-/** Create an object to hold RNA data */
+/** Create an object to hold aligned RNA data */
 DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
     
     // check that the character block is of the correct type
@@ -527,11 +528,11 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
     return cMat;
 }
 
-/** Create an object to hold DNA data */
+/** Create an object to hold unaligned RNA data */
 DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock) {
     
     // check that the character block is of the correct type
-	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
+	if ( charblock->GetDataType() != NxsCharactersBlock::rna )
         return NULL;
     
     // get the set of characters (and the number of taxa)
@@ -587,7 +588,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
     // get the number of states
     const NxsDiscreteDatatypeMapper* mapper = charblock->GetDatatypeMapperForChar(0);
     std::string sym = charblock->GetSymbols();
-    int nStates = mapper->GetNumStates();
+    size_t nStates = mapper->GetNumStates();
     if (nStates > 10)
         return NULL;
     
@@ -610,15 +611,21 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
         {	
             // add the character state to the matrix
             StandardState* stdState = new StandardState(sym);
+            if ( charblock->IsGapState(origTaxIndex, *cit) == true )
+            {
+                stdState->setGapState(true);
+                stdState->setState('-');
+            }
+            else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
+            {
+                stdState->setState('?');
+            }
+            else
             for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
             {
-                char c = charblock->GetState(origTaxIndex, *cit, s);
-                for (int i=0; i<nStates; i++)
-                {
-                    if ( sym[i] == c )
-                        stdState->addState(i);
-                    //cMat->setState(origTaxIndex, *cit, i);
-                }
+                stdState->setState( charblock->GetState(origTaxIndex, *cit, 0) );
+                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                    stdState->addState( charblock->GetState(origTaxIndex, *cit, s) );
             }
             dataVec.addCharacter( stdState );
         }

@@ -95,8 +95,8 @@ void AminoAcidState::operator--( int i ) {
 }
 
 
-void AminoAcidState::addState(size_t pos) {
-    state |= 1 << pos;
+void AminoAcidState::addState(char symbol) {
+    state |= computeState( symbol );
 }
 
 
@@ -107,10 +107,10 @@ AminoAcidState* AminoAcidState::clone(void) const {
 }
 
 
-unsigned int AminoAcidState::computeState(char val) const {
+unsigned int AminoAcidState::computeState(char symbol) const {
     /* A R N D C Q E G H I L K M F P S T W Y V */
-    val = toupper( val );
-    switch ( val ) {
+    symbol = toupper( symbol );
+    switch ( symbol ) {
         case '-':
             return 0x00000;
         case 'A':
@@ -175,7 +175,7 @@ size_t AminoAcidState::getNumberOfStates( void ) const {
 }
 
 
-unsigned int AminoAcidState::getState( void ) const {
+unsigned long AminoAcidState::getState( void ) const {
     return state;
 }
 
@@ -264,8 +264,8 @@ void AminoAcidState::setState(size_t pos, bool val) {
 }
 
 
-void AminoAcidState::setState(char s) {
-    state = computeState( s );
+void AminoAcidState::setState(char symbol) {
+    state = computeState( symbol );
 }
 
 

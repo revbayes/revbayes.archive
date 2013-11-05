@@ -295,6 +295,7 @@ void ConstantBirthDeathProcess::redrawValue( void ) {
 
 
 double ConstantBirthDeathProcess::simOrigin( void ) {
+
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
@@ -308,14 +309,20 @@ double ConstantBirthDeathProcess::simOrigin( void ) {
     
     // the expected number of taxa if we would have sampled all species
     double n = numTaxa / rho->getValue();
+
+    double uToOneOverN = std::pow( u, 1.0 / n );
+	double origin = std::log( (-lambda + mu * uToOneOverN) / (lambda * (-1 + uToOneOverN))) / div;
+
+    // TODO: The equation above is wrong unless you condition on mu being smaller than lambda
+    // Either we ensure that this condition is met or we change the simulation equation
+    origin = 1.0;
     
-	double origin = std::log( (-lambda + mu * std::pow(u, (1.0/n) )) / (lambda * (-1 + std::pow(u,(1.0/n))))) / div;
-	
     return origin;
 }
 
 
 double ConstantBirthDeathProcess::simSpeciation(double origin, double r) {
+
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
@@ -333,6 +340,7 @@ double ConstantBirthDeathProcess::simSpeciation(double origin, double r) {
 
 
 void ConstantBirthDeathProcess::simulateTree( void ) {
+
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
@@ -348,6 +356,7 @@ void ConstantBirthDeathProcess::simulateTree( void ) {
     TopologyNode* root = new TopologyNode();
     std::vector<TopologyNode* > nodes;
     nodes.push_back(root);
+
     // recursively build the tree
     buildRandomBinaryTree(nodes);
     
@@ -390,6 +399,7 @@ void ConstantBirthDeathProcess::simulateTree( void ) {
     }
     
     // draw a time for each speciation event condition on the time of the process
+    // TODO: simulating one more value than needed here, leads to bias in distribution
 	for (size_t i = 1; i < n; ++i) {
 		t[i] = t_or - simSpeciation(t_or, samplingProbability);
 	}

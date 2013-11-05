@@ -70,6 +70,7 @@ namespace RevBayesCore {
                                                                                      );
         void                                                initializeChain(void);                      //!< Initialize objects for mcmc sampling
         void                                                initializeMonitors(void);                   //!< Assign model and mcmc ptrs to monitors
+        bool                                                isAComputableNumber(double x);                                                  //!< Decide whether number is computable (not inf, neginf, or nan)
         void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
     
         // members

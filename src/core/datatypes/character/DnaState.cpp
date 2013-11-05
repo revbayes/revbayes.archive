@@ -15,6 +15,7 @@
 
 #include "DnaState.h"
 #include "RbException.h"
+#include <assert.h>
 #include <sstream>
 #include <iostream>
 
@@ -34,6 +35,8 @@ DnaState::DnaState(const DnaState& s) : DiscreteCharacterState(), state( s.state
 
 /** Constructor that sets the observation */
 DnaState::DnaState(char s) : DiscreteCharacterState() {
+    
+    assert( s <= 15 );
     
     setState(s);
 }
@@ -108,9 +111,9 @@ void DnaState::operator--( int i ) {
 }
 
 
-void DnaState::addState(size_t pos) {
+void DnaState::addState(char symbol) {
 
-    state |= 1 << pos;
+    state |= computeState( symbol );
 
 }
 
@@ -119,6 +122,55 @@ void DnaState::addState(size_t pos) {
 DnaState* DnaState::clone( void ) const {
     
     return new DnaState( *this );
+}
+
+
+unsigned int DnaState::computeState(char symbol) const {
+    
+    if ( symbol == '?')
+    {
+        throw RbException( "Unknown char" );
+    }
+    
+    symbol = toupper( symbol );
+    switch ( symbol )
+    {
+        case '-':
+            return 0x00;
+        case 'A':
+            return 0x01;
+        case 'C':
+            return 0x02;
+        case 'M':
+            return 0x03;
+        case 'G':
+            return 0x04;
+        case 'R':
+            return 0x05;
+        case 'S':
+            return 0x06;
+        case 'V':
+            return 0x07;
+        case 'T':
+            return 0x08;
+        case 'W':
+            return 0x09;
+        case 'Y':
+            return 0x0A;
+        case 'H':
+            return 0x0B;
+        case 'K':
+            return 0x0C;
+        case 'D':
+            return 0x0D;
+        case 'B':
+            return 0x0E;
+        case 'N':
+            return 0x0F;
+            
+        default:
+            return 0x0F;
+    }
 }
 
 
@@ -148,7 +200,7 @@ size_t DnaState::getNumberOfStates( void ) const {
 }
 
 
-unsigned int DnaState::getState( void ) const {
+unsigned long DnaState::getState( void ) const {
     
     return state;
 }
@@ -236,74 +288,13 @@ void DnaState::setState(size_t pos, bool val) {
     
 }
 
-void DnaState::setState(char val) {
-    
-    if ( val == '?') 
-    {
-        throw RbException( "Unknown char" );
-    }
-    
-    val = toupper( val );
-    switch ( val ) 
-    {
-        case '-':
-            state = 0x00;
-            break;
-        case 'A':
-            state = 0x01;
-            break;
-        case 'C':
-            state = 0x02;
-            break;
-        case 'M':
-            state = 0x03;
-            break;
-        case 'G':
-            state = 0x04;
-            break;
-        case 'R':
-            state = 0x05;
-            break;
-        case 'S':
-            state = 0x06;
-            break;
-        case 'V':
-            state = 0x07;
-            break;
-        case 'T':
-            state = 0x08;
-            break;
-        case 'W':
-            state = 0x09;
-            break;
-        case 'Y':
-            state = 0x0A;
-            break;
-        case 'H':
-            state = 0x0B;
-            break;
-        case 'K':
-            state = 0x0C;
-            break;
-        case 'D':
-            state = 0x0D;
-            break;
-        case 'B':
-            state = 0x0E;
-            break;
-        case 'N':
-            state = 0x0F;
-            break;
-            
-        default:
-            state = 0xFF;
-    }
+void DnaState::setState(char symbol) {
+    state = computeState( symbol );
 }
-
 
 void DnaState::setToFirstState( void ) {
     
-    state = 0x1;
+    state = 0x01;
 
 }
 

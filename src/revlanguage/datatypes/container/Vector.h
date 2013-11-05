@@ -105,7 +105,7 @@ namespace RevLanguage {
 /** Vector type of elements */
 template <typename rlType>
 RevLanguage::Vector<rlType>::Vector( void ) : TypedContainer<std::vector<typename rlType::valueType> >( rlType::getClassTypeSpec() ) {
-    
+
 }
 
 
@@ -120,7 +120,7 @@ RevLanguage::Vector<rlType>::Vector(const valueType &v) : TypedContainer<std::ve
 /** Constructor with dimension (n) and copys of x for every object */
 template <typename rlType>
 RevLanguage::Vector<rlType>::Vector(RevBayesCore::TypedDagNode<valueType> *v) : TypedContainer<std::vector<typename rlType::valueType> >( rlType::getClassTypeSpec(), v )  {
-    
+
 }
 
 

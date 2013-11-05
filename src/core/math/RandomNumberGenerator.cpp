@@ -27,8 +27,8 @@ RandomNumberGenerator::RandomNumberGenerator(void) {
 	unsigned int x  = (unsigned int)( time(0) );
 	unsigned int s1 = x & 0xFFFF;
 	unsigned int s2 = x >> 16;
-	seed.push_back(s1);
-	seed.push_back(s2);
+    seed.push_back(s1);
+    seed.push_back(s2);
 }
 
 

@@ -4,12 +4,12 @@
  * This abstract base class can be derived for any character evolution model with homogeneous sites. A
  * homogeneous model over sites is a model where all sites are drawn from the same distribution. 
  *
- * The pruning algorithm is implemented in this base class and calles some few pure virtual methods. 
+ * The pruning algorithm is implemented in this base class and calls a few pure virtual methods.
  * The important functions you have to override are:
  * - getRootFrequencies()
  * - updateTransitionProbabilities()
  *
- * The data is stored for convenience in this class in a matrix (std::vector<std::vector< unsigned > >) and can
+ * The data are stored for convenience in this class in a matrix (std::vector<std::vector< unsigned > >) and can
  * be compressed.
  *
  *
@@ -89,7 +89,7 @@ namespace RevBayesCore {
         std::vector<size_t>                                                 activeLikelihood;
         
         // the data
-        std::vector<std::vector<unsigned int> >                             charMatrix;
+        std::vector<std::vector<unsigned long> >                            charMatrix;
         std::vector<std::vector<bool> >                                     gapMatrix;
         std::vector<size_t>                                                 patternCounts;
         size_t                                                              numPatterns;

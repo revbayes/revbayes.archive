@@ -96,8 +96,8 @@ void RnaState::operator--( int i ) {
 }
 
 
-void RnaState::addState(size_t pos) {
-    state |= 1 << pos;
+void RnaState::addState(char symbol) {
+    state |= computeState( symbol );
 }
 
 
@@ -131,7 +131,7 @@ size_t RnaState::getNumberOfStates( void ) const {
 }
 
 
-unsigned int RnaState::getState( void ) const {
+unsigned long RnaState::getState( void ) const {
     return state;
 }
 
@@ -211,66 +211,54 @@ void RnaState::setState(size_t pos, bool val) {
     state &= val << pos;
 }
 
-void RnaState::setState(char val) {
-    
-    val = toupper( val );
-    switch ( val ) {
+void RnaState::setState(char symbol) {
+    state = computeState( symbol );
+}
+
+unsigned int RnaState::computeState(char symbol) const {
+
+    symbol = toupper( symbol );
+    switch ( symbol ) {
         case '-':
-            state = 0x00;
-            break;
+            return 0x00;
         case 'A':
-            state = 0x01;
-            break;
+            return 0x01;
         case 'C':
-            state = 0x02;
-            break;
+            return 0x02;
         case 'M':
-            state = 0x03;
-            break;
+            return 0x03;
         case 'G':
-            state = 0x04;
-            break;
+            return 0x04;
         case 'R':
-            state = 0x05;
-            break;
+            return 0x05;
         case 'S':
-            state = 0x06;
-            break;
+            return 0x06;
         case 'V':
-            state = 0x07;
-            break;
+            return 0x07;
         case 'U':
-            state = 0x08;
-            break;
+            return 0x08;
         case 'W':
-            state = 0x09;
-            break;
+            return 0x09;
         case 'Y':
-            state = 0x0A;
-            break;
+            return 0x0A;
         case 'H':
-            state = 0x0B;
-            break;
+            return 0x0B;
         case 'K':
-            state = 0x0C;
-            break;
+            return 0x0C;
         case 'D':
-            state = 0x0D;
-            break;
+            return 0x0D;
         case 'B':
-            state = 0x0E;
-            break;
+            return 0x0E;
         case 'N':
-            state = 0x0F;
-            break;
+            return 0x0F;
             
         default:
-            state = 0xFF;
+            return 0x0F;
     }
 }
 
 
 void RnaState::setToFirstState( void ) {
-    state = 0x1;
+    state = 0x01;
 }
 

@@ -65,6 +65,7 @@
 
 // tree priors
 #include "RlConstantBirthDeathProcess.h"
+#include "RlUniformTimeTreeDistribution.h"
 
 // sequence models
 #include "RlCharacterStateEvolutionAlongTree.h"
@@ -317,6 +318,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantBirthDeathProcess() );
+        
+        // uniform time tree distribution
+        addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );
         
         // character state evolution model (DNA|RNA|AA)
         addDistribution( "substModel", new CharacterStateEvolutionAlongTree<TimeTree>() );

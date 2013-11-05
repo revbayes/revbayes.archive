@@ -68,8 +68,8 @@ bool StandardState::operator<(const CharacterState &x) const {
     
     const StandardState* derivedX = static_cast<const StandardState*>(&x);
     if ( derivedX != NULL ) {
-        unsigned int myState = state;
-        unsigned int yourState = derivedX->state;
+        unsigned long myState = state;
+        unsigned long yourState = derivedX->state;
         
         while ( (myState & 1) == ( yourState & 1 )  ) {
             myState >>= 1;
@@ -103,8 +103,8 @@ void StandardState::operator--( int i ) {
 }
 
 
-void StandardState::addState(size_t pos) {
-    state |= 1 << pos;
+void StandardState::addState(char symbol) {
+    state |= computeState( symbol );
 }
 
 
@@ -119,6 +119,12 @@ StandardState* StandardState::clone( void ) const {
 }
 
 
+unsigned long StandardState::computeState(char symbol) const {
+    
+    size_t pos = labels.find(symbol);
+    return pos;
+}
+
 size_t StandardState::getNumberOfStates( void ) const {
     return labels.size();
 }
@@ -126,7 +132,7 @@ size_t StandardState::getNumberOfStates( void ) const {
 
 unsigned int StandardState::getNumberObservedStates(void) const  {
     
-    unsigned int v = state;     // count the number of bits set in v
+    unsigned long v = state;     // count the number of bits set in v
     unsigned int c;             // c accumulates the total bits set in v
     
     for (c = 0; v; v >>= 1)
@@ -138,7 +144,7 @@ unsigned int StandardState::getNumberObservedStates(void) const  {
 }
 
 
-unsigned int StandardState::getState( void ) const {
+unsigned long StandardState::getState( void ) const {
     return state;
 }
 
@@ -195,10 +201,10 @@ void StandardState::setState(size_t pos, bool val) {
 }
 
 
-void StandardState::setState(char s) {
+void StandardState::setState(char symbol) {
     
-    size_t pos = labels.find(s);
-    state = 1 << pos;
+    size_t pos = labels.find(symbol);
+    state = (unsigned int)( 1 ) << pos;
 }
 
 void StandardState::setState(std::string s) {
@@ -208,11 +214,11 @@ void StandardState::setState(std::string s) {
     for (size_t i = 0; i < s.size(); i++)
     {
         size_t pos = labels.find(tmp[i]);
-        state = 1 << pos;
+        state = (unsigned int)( 1 ) << pos;
     }
 }
 
 void StandardState::setToFirstState( void ) {
-    state = 0x1;
+    state = 0x01;
 }
 

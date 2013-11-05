@@ -42,24 +42,26 @@ namespace RevBayesCore {
         StandardState*                  clone(void) const;                                  //!< Get a copy of this object
     
         // Discrete character observation functions
-        void                            addState(size_t pos);                               //!< Add a character state to the set of character states
+        void                            addState(char symbol);                              //!< Add a character state to the set of character states
         std::string                     getDatatype(void) const;                            //!< Get the datatype as a common string.
         unsigned int                    getNumberObservedStates(void) const;                //!< How many states are observed for the character
         const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         size_t                          getNumberOfStates(void) const;                      //!< Get the number of discrete states for the character
-        unsigned int                    getState(void) const;                               //!< Get the discrete observation
+        unsigned long                   getState(void) const;                               //!< Get the discrete observation
         bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
         bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
         void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
-        void                            setState(char s);                                   //!< Set the discrete observation
-        void                            setState(std::string s);                                   //!< Set the discrete observation
-        void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
+        void                            setState(char symbol);                              //!< Set the discrete observation from symbol
+        void                            setState(std::string s);                            //!< Set the discrete observation from string of state symbols
+        void                            setState(size_t pos, bool val);                     //!< Set the discrete observation from position and boolean flag
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
     
     private:
+        unsigned long                   computeState(char symbol) const;                    //!< Compute the internal state value for this character.
+
         std::string                     labels;
-        unsigned int                    state;
+        unsigned long                   state;
     
     };
 
