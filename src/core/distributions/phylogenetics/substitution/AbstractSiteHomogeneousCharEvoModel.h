@@ -452,7 +452,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::comp
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*activeLikelihoodOffset + nodeIndex*nodeOffset;
     
     const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    const std::vector<unsigned int> &char_node = this->charMatrix[nodeIndex];
+    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
     
     // compute the transition probabilities
     updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
@@ -463,7 +463,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::comp
         
     // pointers to the data per site
     std::vector<bool>::const_iterator           gap_site    = gap_node.begin();
-    std::vector<unsigned int>::const_iterator   char_site   = char_node.begin();
+    std::vector<unsigned long>::const_iterator  char_site   = char_node.begin();
         
     // create the pointer to the likelihoods for this site
     double*     p_site      = p_node;

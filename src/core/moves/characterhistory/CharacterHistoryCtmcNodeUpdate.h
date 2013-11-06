@@ -65,9 +65,10 @@ class CharacterHistoryCtmcNodeUpdate : public Move {
         std::set<size_t>                storedIndexes;
         std::map<size_t,BranchHistory*>  storedValue;
     
-        // PLEASE do not uncomment this line until the storedSet is used. It will cause compile problems with Xcode 5 / clang otherwise.
+        // PLEASE do not uncomment this line. It will cause compile problems with Xcode 5 / clang.
         //std::set<BranchHistory>         storedSet;
-        
+    std::vector<BranchHistory>          x;
+    
     };
 
 }
