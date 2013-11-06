@@ -23,10 +23,9 @@
 #include "TimeTree.h"
 
 namespace RevBayesCore {
-    
- //   This code does not compile in Xcode 5.0 for me. /Fredrik
- 
- class CharacterHistoryCtmcNodeUpdate : public Move {
+
+
+class CharacterHistoryCtmcNodeUpdate : public Move {
         
     public:
         CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector<StochasticNode<BranchHistory>* > bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w);                                    //!<  constructor
@@ -65,10 +64,12 @@ namespace RevBayesCore {
         
         std::set<size_t>                storedIndexes;
         std::map<size_t,BranchHistory*>  storedValue;
-        std::set<BranchHistory>         storedSet;
+    
+        // PLEASE do not uncomment this line until the storedSet is used. It will cause compile problems with Xcode 5 / clang otherwise.
+        //std::set<BranchHistory>         storedSet;
         
     };
-    
+
 }
 
 #endif /* defined(__rb_mlandis__CharacterHistoryCtmcNodeUpdate__) */
