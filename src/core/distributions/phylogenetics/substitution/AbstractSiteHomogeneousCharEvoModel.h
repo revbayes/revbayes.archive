@@ -508,7 +508,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::comp
         {
                 
             // get the original character
-            unsigned int org_val = *char_site;
+            unsigned long org_val = *char_site;
                 
             // get the pointer to the likelihood for this site
             // this is were we want to store the partial likelihoods in
@@ -523,7 +523,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::comp
                     
                 // compute the likelihood that we had a transition from state c1 to the observed state org_val
                 // note, the observed state could be ambiguous!
-                unsigned int val = org_val;
+                unsigned long val = org_val;
                 // get the pointer to the transition probabilities for the terminal states
                 const double* d  = tp_a;
                 while ( val != 0 ) // there are still observed states left
@@ -767,7 +767,7 @@ void RevBayesCore::AbstractSiteHomogeneousCharEvoModel<charType, treeType>::simu
         for ( size_t i = 0; i < numSites; ++i ) 
         {
             // get the ancestral character for this site
-            unsigned int parentState = parent.getCharacter( i ).getState();
+            unsigned long parentState = parent.getCharacter( i ).getState();
             size_t p = 0;
             while ( parentState != 1 ) 
             {
