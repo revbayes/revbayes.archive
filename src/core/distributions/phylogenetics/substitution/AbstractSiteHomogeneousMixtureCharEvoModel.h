@@ -302,8 +302,6 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 {
                     charType &c = static_cast<charType &>( taxon.getCharacter(site) );
                     charMatrix[nodeIndex][patternIndex] = c.getState();
-                    if ( charMatrix[nodeIndex][patternIndex] > 15 )
-                        std::cerr << "Error after returning char state" << std::endl;
                     gapMatrix[nodeIndex][patternIndex] = c.isGapState();
                     
                     // increase the pattern index

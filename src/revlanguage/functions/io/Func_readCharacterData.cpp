@@ -215,14 +215,10 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
             if ( myWarnings.size() > 0 )
             {
                 std::stringstream o3;
-                o3 << "Error reading the file. Error ";
-                if (myWarnings.size() == 1)
-                    o3 << "message:";
-                else
-                    o3 << "messages:";
+                o3 << "Error reading the file";
                 RBOUT(o3.str());
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-                    RBOUT(" * "+(*it));
+                    RBOUT("Error:   " + (*it));
             }
         }
     }

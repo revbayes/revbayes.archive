@@ -67,7 +67,6 @@ class CharacterHistoryCtmcNodeUpdate : public Move {
     
         // PLEASE do not uncomment this line. It will cause compile problems with Xcode 5 / clang.
         //std::set<BranchHistory>         storedSet;
-    std::vector<BranchHistory>          x;
     
     };
 

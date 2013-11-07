@@ -540,17 +540,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         
         
-		// gtr function
-        addFunction( "F81",      new F81RateMatrixFunction() );
-        
-		// JC function
-        addFunction( "HKY",      new HkyRateMatrixFunction() );
-        
-		// gtr function
-        addFunction( "gtr",      new Func_gtr() );
-        
-		// JC function
+		// rate matrix functions
         addFunction( "JC",       new JcRateMatrixFunction() );
+        addFunction( "F81",      new F81RateMatrixFunction() );
+        addFunction( "HKY",      new HkyRateMatrixFunction() );
+        addFunction( "gtr",      new Func_gtr() );
         
         // pre-defined rate matrices
         addFunction( "Jones",    new JonesRateMatrixFunction()    );
@@ -588,6 +582,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_vector<RealPos>() );
         addFunction( "v",         new Func_vector<RlBoolean>() );
         addFunction( "v",         new Func_vector<Clade>() );
+        addFunction( "v",         new Func_vector<RlString>() );
+        addFunction( "v",         new Func_vector<TimeTree>() );
 
         /////////////////////////////////////////
         // Add RevLanguage only functions here //

@@ -466,7 +466,7 @@ const RevBayesCore::TaxonData<charType>& RevBayesCore::CharacterData<charType>::
     }
     else 
     {
-        throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
+        throw RbException("Cannot find taxon '" + name + "' in the CharacterData matrix.");
     }
     
 }
@@ -488,7 +488,7 @@ RevBayesCore::TaxonData<charType>& RevBayesCore::CharacterData<charType>::getTax
     }
     else 
     {
-        throw RbException("Cannot find the taxon with name '" + name + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
+        throw RbException("Cannot find taxon '" + name + "' in the CharacterData matrix.");
     }
     
 }
@@ -507,7 +507,7 @@ const RevBayesCore::TaxonData<charType>& RevBayesCore::CharacterData<charType>::
     }
     else 
     {
-        throw RbException("Cannot find the taxon with name '" + tn + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
+        throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
     }
     
 }
@@ -531,7 +531,7 @@ RevBayesCore::TaxonData<charType>& RevBayesCore::CharacterData<charType>::getTax
     else 
     {
         
-        throw RbException("Cannot find the taxon with name '" + tn + "' in the CharacterData matrix. This should actually never happen. Please report this bug!");
+        throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
     }
     
 }

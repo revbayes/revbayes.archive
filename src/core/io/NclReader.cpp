@@ -1276,16 +1276,18 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
     {
         std::string fns = fileName;
         
-        // Basic error message
-        addWarning("Nexus error in file \"" + StringUtilities::getLastPathComponent(fns) + "\"");
-
-        // NxsReader error message
-        addWarning(err.msg);
+        if ( err.msg.length() == 0 )
+            // Basic error message if ncl fails to give something back
+            addWarning("Nexus error in file \"" + StringUtilities::getLastPathComponent(fns) + "\"");
+        else
+            // NxsReader error message
+            addWarning(err.msg);
 
         // Position information
         std::stringstream errorMessage;
         errorMessage << "The error occurred while reading line ";
         errorMessage << err.line << " column " << err.col;
+        errorMessage << " in file \"" << StringUtilities::getLastPathComponent(fns) << "\"";
         addWarning(errorMessage.str());
 
         // Return empty character matrix vector
