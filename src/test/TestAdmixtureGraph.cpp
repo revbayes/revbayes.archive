@@ -151,10 +151,10 @@ bool TestAdmixtureGraph::run(void) {
     size_t numNodes = 2 * numTaxa - 1;
     size_t numBranches = numNodes - 1;
     //size_t numSites = snps->getNumSnps();
-    int blockSize = 50;
+    int blockSize = 10000;
     
-    int divGens = 10;
-    int delay = 100;
+    int divGens = 1;
+    int delay = 30;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 1;
@@ -162,7 +162,7 @@ bool TestAdmixtureGraph::run(void) {
     bool useWishart = true;             // if false, the composite likelihood function is used
     bool useBias = true;               // if false, no covariance bias correction for small sample size is used
     bool useAdmixtureEdges = true;      // if false, no admixture moves or edges are used
-    bool useBranchRates = !true;         // if false, all populations are of the same size
+    bool useBranchRates = true;         // if false, all populations are of the same size
     bool allowSisterAdmixture = true;   // if false, admixture events cannot be between internal lineages who share a divergence parent
     bool discardNonPosDefMtx = true;    // if false, round negative eigenvalues to positive eps
     bool useContrasts = false;          // nothing really, need to remove
@@ -174,8 +174,8 @@ bool TestAdmixtureGraph::run(void) {
     int numChains = 5;
     int numProcesses = numChains;
 //    numProcesses=80;
-    int swapInterval = 10;
-    double deltaTemp = 0.2;
+    int swapInterval = 5;
+    double deltaTemp = 0.1;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
@@ -184,7 +184,7 @@ bool TestAdmixtureGraph::run(void) {
     std::stringstream rndStr;
     rndStr << std::setw(9) << std::fixed << std::setprecision(0) << std::setfill('0') << std::floor(GLOBAL_RNG->uniform01()*1e9);
     // std::string outName = "papa." + rndStr.str();
-    std::string simName = "what";
+    std::string simName = "loristest";
     std::string outName = simName + "." + rndStr.str() + "." + snpFilename;
     
     // BM diffusion rate
@@ -197,7 +197,7 @@ bool TestAdmixtureGraph::run(void) {
     //              Consider implementing Conway-Maxewell-Poisson distn instead.
     
     // This prior requires admixture events to improve lnL by N units
-    double adm_th_lnL = 3;
+    double adm_th_lnL = 5;
     double rate_cpp_prior = exp(adm_th_lnL);
     
     ConstantNode<double>* c = new ConstantNode<double>( "c", new double(rate_cpp_prior)); // admixture rate prior
@@ -366,16 +366,16 @@ bool TestAdmixtureGraph::run(void) {
             monitoredNodes.push_back( branchRates_nonConst[i] );
         }
     }
-     
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true, true, true ) );
+    
+    monitors.push_back( new FileMonitor( monitoredNodes, 5, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true, true, true ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
  
-    monitors.push_back( new AdmixtureBipartitionMonitor(tau, br_vector, numTreeResults, numAdmixtureResults, 10, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true, true, true ) );
+    monitors.push_back( new AdmixtureBipartitionMonitor(tau, br_vector, numTreeResults, numAdmixtureResults, 5, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true, true, true ) );
     monitors.push_back( new AdmixtureResidualsMonitor(residuals, snps->getPopulationNames(), 10, "/Users/mlandis/data/admix/output/" + outName + ".residuals.txt", "\t", true, true, true, true ) );
 
-    monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, true, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".admixture_trees.txt", "\t", true, true, true, true ) );
-    monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".topology_trees.trees", "\t", true, true, true, true ) );
-    monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, false, 10, "/Users/mlandis/data/admix/output/" + outName + ".time_trees.trees", "\t", true, true, true, true ) );
+    //monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, true, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".admixture_trees.txt", "\t", true, true, true, true ) );
+    //monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".topology_trees.trees", "\t", true, true, true, true ) );
+    //monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, false, 10, "/Users/mlandis/data/admix/output/" + outName + ".time_trees.trees", "\t", true, true, true, true ) );
     
     
     

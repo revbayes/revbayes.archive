@@ -26,6 +26,8 @@ namespace RevBayesCore {
         BranchHistory(const BranchHistory& m);
         BranchHistory& operator=(const BranchHistory& bh);
         BranchHistory* clone(void) const;
+        //bool operator()(const BranchHistory&) const;
+        bool operator<(const BranchHistory&) const;
         
         const size_t getNumCharacters(void) const;
         const size_t getNumStates(void) const;

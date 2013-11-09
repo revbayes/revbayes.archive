@@ -66,6 +66,10 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
     return *this;
 }
 
+bool BranchHistory::operator<(const BranchHistory& m) const {
+    return (this < &m);
+}
+
 BranchHistory* BranchHistory::clone(void) const
 {
     return new BranchHistory(*this);

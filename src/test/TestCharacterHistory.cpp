@@ -95,11 +95,11 @@ bool TestCharacterHistory::run( void ) {
     
     //////////
     // test
-    int maxGen = (int)((double)mcmcGenerations / 5);
+    int maxGen = (int)((double)mcmcGenerations / 500);
     std::vector<unsigned int> seed;
     //seed.push_back(3); seed.push_back(3); GLOBAL_RNG->setSeed(seed);
     
-    size_t numTaxa = 20;
+    size_t numTaxa = 3;
     size_t numNodes = 2 * numTaxa - 1;
     std::vector<std::string> taxonNames;
     for (size_t i = 0; i < numTaxa; i++)
@@ -109,12 +109,12 @@ bool TestCharacterHistory::run( void ) {
         taxonNames.push_back("p" + ss.str());
     }
     
-    size_t numCharacters = pow(10,2);
+    size_t numCharacters = 1280; //pow(30,2);
     size_t numStates = 2;
     
     // assign area coordinates
     std::vector<std::vector<double> > geo_coords;
-    std::string geo_type = "square";
+    std::string geo_type = "line";
     if (geo_type == "square")
     {
         for (size_t i = 0; i < sqrt(numCharacters); i++)
@@ -168,8 +168,8 @@ bool TestCharacterHistory::run( void ) {
     //////////
     
     // substitution rates
-    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(10.0));
-    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(10.0));
+    ConstantNode<double>* rateGain_pr = new ConstantNode<double>("r1_pr", new double(5.0));
+    ConstantNode<double>* rateLoss_pr = new ConstantNode<double>("r0_pr", new double(5.0));
     StochasticNode<double>* rateGain = new StochasticNode<double>("r1", new ExponentialDistribution(rateGain_pr));
     StochasticNode<double>* rateLoss = new StochasticNode<double>("r0", new ExponentialDistribution(rateLoss_pr));
     
@@ -213,7 +213,7 @@ bool TestCharacterHistory::run( void ) {
     
     // simulation settings
     
-    //gdrm = NULL;
+    gdrm = NULL;
     grsrm = NULL;
     lrsrm = NULL;
     asrm = NULL;
@@ -225,25 +225,15 @@ bool TestCharacterHistory::run( void ) {
 
 //    rateGain->setValue(new double(.3));
 //    rateLoss->setValue(new double(3.0));
-    rateGain->setValue(new double(.1));
-    rateLoss->setValue(new double(2.0));
+    rateGain->setValue(new double(.10));
+    rateLoss->setValue(new double(.01));
 
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
     rates.push_back(rateGain);
-
-    //extinctionPower->setValue(new double(0.5 / numCharacters));
-//    dispersalPower->setValue(new double(0.2 / numCharacters));
-    //dispersalPower->setValue(new double(0.2));
-    
-//    double freq = 0.1;
-//    double a_plus_c = (rateGain->getValue() - rateLoss->getValue()) / (freq * (double)numCharacters);
-//    double extPow = a_plus_c * 0.7;
-//    extinctionPower->setValue(new double(extPow));
-//    dispersalPower->setValue(new double(a_plus_c - extPow));
-
-    extinctionPower->setValue(new double(1));
-    dispersalPower->setValue(new double(1));
+ 
+    extinctionPower->setValue(new double(5.0));
+    dispersalPower->setValue(new double(10.0));
     
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
@@ -303,7 +293,7 @@ bool TestCharacterHistory::run( void ) {
     moves.push_back( new ScaleMove(rateLoss, 1.0, true, 5.0) );
     moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
     moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
-//    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 5.0, true, 5.0));
+    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 5.0, true, 5.0));
     moves.push_back( new ScaleMove(areaPower, 1.0, true, 5.0) );
     
     for (size_t i = 0; i < br_vector.size(); i++)
@@ -333,12 +323,12 @@ bool TestCharacterHistory::run( void ) {
     std::vector<Monitor*> monitors;
 
     std::set<DagNode*> monitoredNodes;
-    monitoredNodes.insert( distancePower );
     monitoredNodes.insert( rateGain );
     monitoredNodes.insert( rateLoss );
     monitoredNodes.insert( dispersalPower );
     monitoredNodes.insert( extinctionPower );
     monitoredNodes.insert( areaStationaryFrequency );
+    monitoredNodes.insert( distancePower );
     monitoredNodes.insert( areaPower );
     
     

@@ -15,6 +15,8 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include <string>
+
+// Uncomment the next line to enable abundance-dependent dispersal-extinction rates
 //#define USE_DDBD
 
 using namespace RevBayesCore;
@@ -118,15 +120,25 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
     // adjust rate by diversity-dependent BD process
 #ifdef USE_DDBD
     //std::cout << s << " " << n1 << " " << rate << "\n";
-    double f1 = (double)n1 / numCharacters;
+    double f1 = (double)(n1-1) / (numCharacters-1);
+    
     if (s == 0)
     {
-        rate = rates[0]->getValue() * exp( -(1.0 - f1) * lossRangeSizePower->getValue() );
+        // rate = rates[0]->getValue() * exp( -(1.0 - f1) * lossRangeSizePower->getValue() );
+        // death = r0 * exp( -b0 * (n-pi1[i]) / ((1-f1) * n) )
+        //rate *= exp( -lossRangeSizePower->getValue() * (1.0 - f1) / (1.0 - rangeSizeFrequency->getValue()));
+        rate /= (1.0 + exp( -lossRangeSizePower->getValue() * (f1 - rangeSizeFrequency->getValue())));
     }
     else
     {
-        int n0 = numCharacters - n1;
-        rate = rates[1]->getValue() * exp( -f1 * gainRangeSizePower->getValue() ) * (double)n0 / (double)n1 ;
+        // rate = rates[1]->getValue() * exp( -f1 * gainRangeSizePower->getValue() );
+        // birth = r1 * exp( -b1 * pi1[i] / (f1 * n))
+        
+        //rate *= exp( -gainRangeSizePower->getValue() * f1 / rangeSizeFrequency->getValue() );
+        rate /= (1.0 + exp( gainRangeSizePower->getValue() * (f1 - rangeSizeFrequency->getValue())));
+
+        // redistribute rates over number of unoccupied areas
+        rate *= (double)n1 / (double)(numCharacters - n1);
     }
 #endif
     
@@ -178,9 +190,18 @@ double DispersalHistoryCtmc::sumOfRates(std::vector<CharacterEvent *> currState)
     
 #ifdef USE_DDBD
     // density-dependent BD process
-    double f1 = (double)(n1) / numCharacters;
-    r0 = n1 * rates[0]->getValue() * exp( -(1.0 - f1) * lossRangeSizePower->getValue() );
-    r1 = n1 * rates[1]->getValue() * exp( -f1 * gainRangeSizePower->getValue() );
+    double f1 = (double)(n1-1) / (numCharacters-1); // f1 offset due to forbidden extinction
+    
+//    r0 = n1 * rates[0]->getValue() * exp( -(1.0 - f1) * lossRangeSizePower->getValue() );
+//    r1 = n1 * rates[1]->getValue() * exp( -f1 * gainRangeSizePower->getValue() );
+//    birth = r1 * exp( -b1 * pi1[i] / (f1 * n))
+//    death = r0 * exp( -b0 * (n-pi1[i]) / ((1-f1) * n) )
+
+//    r0 = n1 * rates[0]->getValue() * exp( -lossRangeSizePower->getValue() * (1.0 - f1) / (1.0 - rangeSizeFrequency->getValue()));
+//    r1 = n1 * rates[1]->getValue() * exp( -gainRangeSizePower->getValue() * f1 / rangeSizeFrequency->getValue() );
+    r0 = n1 * rates[0]->getValue() / (1.0 + exp( -lossRangeSizePower->getValue() * (f1 - rangeSizeFrequency->getValue())));
+    r1 = n1 * rates[1]->getValue() / (1.0 + exp( gainRangeSizePower->getValue() * (f1 - rangeSizeFrequency->getValue())));
+    
 #else
     // density-independent (BayArea version)
     r0 = n1 * rates[0]->getValue();
@@ -226,6 +247,10 @@ void DispersalHistoryCtmc::swapParameter(const DagNode *oldP, const DagNode *new
     else if (oldP == lossRangeSizePower)
     {
         lossRangeSizePower = static_cast<const TypedDagNode<double>* >(newP);
+    }
+    else if (oldP == rangeSizeFrequency)
+    {
+        rangeSizeFrequency = static_cast<const TypedDagNode<double>* >(newP);
     }
 
 }
