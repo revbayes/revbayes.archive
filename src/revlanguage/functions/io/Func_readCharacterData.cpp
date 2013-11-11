@@ -80,11 +80,17 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
     else 
     {
-#       if defined (WIN32)
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
-#       else
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-#       endif
+        std::string filepath = myFileManager.getFilePath();
+        if ( filepath != "" )
+        {
+#           if defined (WIN32)
+            filepath += "\\";
+#           else
+            filepath += "/";
+#           endif
+        }
+        filepath += myFileManager.getFileName();
+        vectorOfFileNames.push_back( filepath );
     }
     if (readingDirectory == true)
     {
