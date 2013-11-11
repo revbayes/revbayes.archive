@@ -438,7 +438,7 @@ bool Test::performTests(void) {
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("MIM.treemix.new.input.all.txt",10000 "/Users/mlandis/data/admix/input/", "");
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("past_eg_1.data.txt", 100000, "/Users/mlandis/data/admix/input/", "");
         TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "simmy.data.txt", 10000, "/Users/mlandis/data/admix/input/", "");
-        testAG.run();
+        //testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -448,7 +448,7 @@ bool Test::performTests(void) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-        //testDdm.run();
+        testDdm.run();
     }
     catch (RbException &e)
     {
