@@ -69,6 +69,9 @@ namespace RevBayesCore {
         void setRedrawChildCharacters(bool tf);
         void setRedrawHistory(bool tf);
         
+        bool isClampedChildCharacters(void);
+        void setClampChildCharacters(bool tf);
+        
     protected:
         
         // container/element arguments
@@ -89,6 +92,7 @@ namespace RevBayesCore {
         bool redrawParentCharacters;
         bool redrawChildCharacters;
         bool redrawHistory;
+        bool clampChildCharacters;
         
         std::set<size_t>             dirtyCharacters;
         

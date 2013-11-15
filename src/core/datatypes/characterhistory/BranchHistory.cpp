@@ -18,7 +18,7 @@ using namespace RevBayesCore;
 
 //BranchHistory::BranchHistory(void) : numCharacters(0), numStates(0), isTip(false), isRoot(false) { }
 
-BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) : numCharacters(nc), numStates(ns), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true), index(idx)
+BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) : numCharacters(nc), numStates(ns), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true), index(idx), clampChildCharacters(false)
 {
     parentCharacters.resize(numCharacters);
     childCharacters.resize(numCharacters);
@@ -44,6 +44,7 @@ BranchHistory::BranchHistory(const BranchHistory& m)
         redrawParentCharacters = m.redrawParentCharacters;
         redrawHistory = m.redrawHistory;
         index = m.index;
+        clampChildCharacters = m.clampChildCharacters;
     }
     
 }
@@ -61,6 +62,7 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
         redrawParentCharacters = bh.redrawParentCharacters;
         redrawHistory = bh.redrawHistory;
         index = bh.index;
+        clampChildCharacters = bh.clampChildCharacters;
     }
     
     return *this;
@@ -317,6 +319,17 @@ const size_t BranchHistory::getIndex(void) const
 {
     return index;
 }
+
+bool BranchHistory::isClampedChildCharacters(void)
+{
+    return clampChildCharacters;
+}
+
+void BranchHistory::setClampChildCharacters(bool tf)
+{
+    clampChildCharacters = tf;
+}
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchHistory& x) {
     

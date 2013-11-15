@@ -154,7 +154,7 @@ bool TestAdmixtureGraph::run(void) {
     int blockSize = 10000;
     
     int divGens = 1;
-    int delay = 30;
+    int delay = 20;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 1;
@@ -171,10 +171,10 @@ bool TestAdmixtureGraph::run(void) {
     bool updateNodeAges = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 5;
+    int numChains = 4;
     int numProcesses = numChains;
 //    numProcesses=80;
-    int swapInterval = 5;
+    int swapInterval = 10;
     double deltaTemp = 0.1;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
@@ -184,7 +184,7 @@ bool TestAdmixtureGraph::run(void) {
     std::stringstream rndStr;
     rndStr << std::setw(9) << std::fixed << std::setprecision(0) << std::setfill('0') << std::floor(GLOBAL_RNG->uniform01()*1e9);
     // std::string outName = "papa." + rndStr.str();
-    std::string simName = "loristest";
+    std::string simName = "cordycepstest";
     std::string outName = simName + "." + rndStr.str() + "." + snpFilename;
     
     // BM diffusion rate
@@ -197,13 +197,14 @@ bool TestAdmixtureGraph::run(void) {
     //              Consider implementing Conway-Maxewell-Poisson distn instead.
     
     // This prior requires admixture events to improve lnL by N units
-    double adm_th_lnL = 5;
+    double adm_th_lnL = 4;
     double rate_cpp_prior = exp(adm_th_lnL);
     
-    ConstantNode<double>* c = new ConstantNode<double>( "c", new double(rate_cpp_prior)); // admixture rate prior
+    ConstantNode<double>* c = new ConstantNode<double>( "c", new double(1.0/rate_cpp_prior)); // admixture rate prior
     StochasticNode<double>* admixtureRate = new StochasticNode<double> ("rate_CPP", new ExponentialDistribution(c));
     StochasticNode<int>* admixtureCount = new StochasticNode<int> ("count_CPP", new PoissonDistribution(admixtureRate));
-    admixtureCount->setValue(new int(0));
+    admixtureCount->clamp(new int(0));
+    admixtureRate->clamp(new double(rate_cpp_prior));
     if (!useAdmixtureEdges)
     {
         admixtureRate->clamp(new double(1.0/rate_cpp_prior));
@@ -328,7 +329,7 @@ bool TestAdmixtureGraph::run(void) {
     if (useAdmixtureEdges)
     {
         
-        //moves.push_back( new AdmixtureEdgeAddResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
+        moves.push_back( new AdmixtureEdgeAddResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
         moves.push_back( new AdmixtureEdgeRemoveResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, 2.0) );
         moves.push_back( new AdmixtureEdgeReplaceResidualWeights( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 10.0) );
         //moves.push_back( new AdmixtureEdgeFNPR( tau, branchRates_nonConst, delay, allowSisterAdmixture, 1.0, 10.0) );
@@ -339,10 +340,10 @@ bool TestAdmixtureGraph::run(void) {
         if (updateTopology)
             moves.push_back( new AdmixtureEdgeDivergenceMerge( tau, admixtureRate, branchRates_nonConst, admixtureCount, residuals, delay, allowSisterAdmixture, 5.0 ));
 
-        moves.push_back( new AdmixtureEdgeReweight( tau, delay, 1.0, 5.0) );
-        moves.push_back( new AdmixtureEdgeReversePolarity( tau, delay, 1.0, 5.0) );
-        moves.push_back( new AdmixtureEdgeSlide( tau, branchRates_nonConst, delay, allowSisterAdmixture, 1.0, 10.0) );
-        moves.push_back( new ScaleMove(admixtureRate, 1.0, false, 5.0));
+        moves.push_back( new AdmixtureEdgeReweight( tau, delay, 5.0, 5.0) );
+        moves.push_back( new AdmixtureEdgeReversePolarity( tau, delay, 5.0, 5.0) );
+        moves.push_back( new AdmixtureEdgeSlide( tau, branchRates_nonConst, delay, allowSisterAdmixture, 20.0, 10.0) );
+        //moves.push_back( new ScaleMove(admixtureRate, 1.0, false, 5.0));
 
     }
     
@@ -370,7 +371,7 @@ bool TestAdmixtureGraph::run(void) {
     monitors.push_back( new FileMonitor( monitoredNodes, 5, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true, true, true ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
  
-    monitors.push_back( new AdmixtureBipartitionMonitor(tau, br_vector, numTreeResults, numAdmixtureResults, 5, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true, true, true ) );
+    monitors.push_back( new AdmixtureBipartitionMonitor(tau, br_vector, numTreeResults, numAdmixtureResults, 2, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true, true, true ) );
     monitors.push_back( new AdmixtureResidualsMonitor(residuals, snps->getPopulationNames(), 10, "/Users/mlandis/data/admix/output/" + outName + ".residuals.txt", "\t", true, true, true, true ) );
 
     //monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, true, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".admixture_trees.txt", "\t", true, true, true, true ) );

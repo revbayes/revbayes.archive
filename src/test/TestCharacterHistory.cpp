@@ -95,11 +95,11 @@ bool TestCharacterHistory::run( void ) {
     
     //////////
     // test
-    int maxGen = (int)((double)mcmcGenerations / 500);
+    int maxGen = (int)((double)mcmcGenerations / 10);
     std::vector<unsigned int> seed;
     //seed.push_back(3); seed.push_back(3); GLOBAL_RNG->setSeed(seed);
     
-    size_t numTaxa = 3;
+    size_t numTaxa = 10;
     size_t numNodes = 2 * numTaxa - 1;
     std::vector<std::string> taxonNames;
     for (size_t i = 0; i < numTaxa; i++)
@@ -109,12 +109,12 @@ bool TestCharacterHistory::run( void ) {
         taxonNames.push_back("p" + ss.str());
     }
     
-    size_t numCharacters = 1280; //pow(30,2);
+    size_t numCharacters = pow(10,2);
     size_t numStates = 2;
     
     // assign area coordinates
     std::vector<std::vector<double> > geo_coords;
-    std::string geo_type = "line";
+    std::string geo_type = "square";
     if (geo_type == "square")
     {
         for (size_t i = 0; i < sqrt(numCharacters); i++)
@@ -174,7 +174,7 @@ bool TestCharacterHistory::run( void ) {
     StochasticNode<double>* rateLoss = new StochasticNode<double>("r0", new ExponentialDistribution(rateLoss_pr));
     
     // tree
-    StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
+    ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(1.0));
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.5));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
@@ -213,27 +213,27 @@ bool TestCharacterHistory::run( void ) {
     
     // simulation settings
     
-    gdrm = NULL;
+    //gdrm = NULL;
     grsrm = NULL;
     lrsrm = NULL;
     asrm = NULL;
     
-    div->setValue(new double(pow(1.0,-2)));
+
     distancePower->setValue(new double(3.0));
     areaStationaryFrequency->setValue(new double(0.2));
     areaPower->setValue(new double(0.5));
 
 //    rateGain->setValue(new double(.3));
 //    rateLoss->setValue(new double(3.0));
-    rateGain->setValue(new double(.10));
-    rateLoss->setValue(new double(.01));
+    rateGain->setValue(new double(.5));
+    rateLoss->setValue(new double(5.0));
 
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
     rates.push_back(rateGain);
  
-    extinctionPower->setValue(new double(5.0));
-    dispersalPower->setValue(new double(10.0));
+    extinctionPower->setValue(new double(0.0));
+    dispersalPower->setValue(new double(0.0));
     
     std::cout << "--------------\n";
     std::cout << "rateGain       = " << rateGain->getValue() << "\n";
@@ -270,14 +270,21 @@ bool TestCharacterHistory::run( void ) {
         ss << i;
         DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(rates, tau, br_vector[i], distancePower, dispersalPower, extinctionPower, areaStationaryFrequency, areaPower, numCharacters, numStates, i, gdrm, grsrm, lrsrm, asrm);
         //DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, NULL);
+        
         StochasticNode<BranchHistory>* sn_bh = new StochasticNode<BranchHistory>("bh" + ss.str(), tmp_ahc);
         bh_vector.push_back(sn_bh);
         bh_vector_stochastic.push_back(sn_bh);
     }
+    // unclamp parentcharacters...
+    //bh_vector_stochastic[0]->getValue().setClampChildCharacters(false);
     
     // tree history
     TreeCharacterHistory* tch = new TreeCharacterHistory( bh_vector, tau, numCharacters, numStates );
     tch->simulate();
+    
+    // copy simulated history
+    TreeCharacterHistory* tch2 = new TreeCharacterHistory(*tch);
+    
     StochasticNode<BranchHistory>* tr_chm = new StochasticNode<BranchHistory>("tr_model", tch);
     tr_chm->redraw();
     
@@ -291,10 +298,10 @@ bool TestCharacterHistory::run( void ) {
     moves.push_back( new ScaleMove(distancePower, 1.0, true, 5.0) );
     moves.push_back( new ScaleMove(rateGain, 5.0, true, 5.0) );
     moves.push_back( new ScaleMove(rateLoss, 1.0, true, 5.0) );
-    moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
-    moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
-    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 5.0, true, 5.0));
-    moves.push_back( new ScaleMove(areaPower, 1.0, true, 5.0) );
+//    moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
+//    moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
+//    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 5.0, true, 5.0));
+//    moves.push_back( new ScaleMove(areaPower, 1.0, true, 5.0) );
     
     for (size_t i = 0; i < br_vector.size(); i++)
     {
@@ -308,7 +315,7 @@ bool TestCharacterHistory::run( void ) {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
         StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
         moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.1, true, 2.0) );
-        if (i >= numTaxa)
+        if (i >= numTaxa || i == 0)
             moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.1, true, 5.0));
     }
     
@@ -325,11 +332,11 @@ bool TestCharacterHistory::run( void ) {
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( rateGain );
     monitoredNodes.insert( rateLoss );
-    monitoredNodes.insert( dispersalPower );
-    monitoredNodes.insert( extinctionPower );
-    monitoredNodes.insert( areaStationaryFrequency );
     monitoredNodes.insert( distancePower );
-    monitoredNodes.insert( areaPower );
+//    monitoredNodes.insert( dispersalPower );
+//    monitoredNodes.insert( extinctionPower );
+//    monitoredNodes.insert( areaStationaryFrequency );
+//    monitoredNodes.insert( areaPower );
     
     
     for (size_t i = 0; i < br_vector.size(); i++)
