@@ -78,23 +78,27 @@ namespace RevBayesCore {
 #include "IsDerivedFrom.h"
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(), value( v ), dirty(true) {
+RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(), value( v ), dagNode( NULL ), dirty(true) {
     
 }
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value ) ), dirty(true) {
+RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value ) ), dagNode( NULL ), dirty(true) {
 
 }
 
 template <class valueType>
 RevBayesCore::TypedFunction<valueType>::~TypedFunction( void ) {
+    
     delete value;
+
 }
 
 template <class valueType>
 const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const {
-    if (dirty) {
+    
+    if (dirty) 
+    {
         const_cast<TypedFunction<valueType>* >( this )->update();
         this->dirty = false;
     }
@@ -104,7 +108,9 @@ const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const {
 
 template <class valueType>
 valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) {
-    if (dirty) {
+    
+    if ( dirty ) 
+    {
         update();
         this->dirty = false;
     }
