@@ -14,11 +14,11 @@
 
 using namespace RevBayesCore;
 
-PseudoGibbsMetaMove::PseudoGibbsMetaMove(const Move* m, AbstractCharacterData* d, const int numOfSubsets) {
+PseudoGibbsMetaMove::PseudoGibbsMetaMove(const Move* m, AbstractCharacterData* d, const size_t numOfSubsets) {
     
 	move = m;
 	data = d;
-	int numChars = data->getNumberOfCharacters();
+	size_t numChars = data->getNumberOfCharacters();
 	int subsetSize = (int)numChars/numberOfSubsets;
 	std::vector<int> temp (0, subsetSize);
 	for (size_t i = 0 ; i < numberOfSubsets ; i++) {
@@ -48,8 +48,8 @@ PseudoGibbsMetaMove* PseudoGibbsMetaMove::clone( void ) const {
 
 void PseudoGibbsMetaMove::buildSubsets() {
 	RandomNumberGenerator* rng = GLOBAL_RNG;
-	int numChars = data->getNumberOfCharacters();
-	int subsetSize = (int)numChars/numberOfSubsets;
+	size_t numChars = data->getNumberOfCharacters();
+	size_t subsetSize = (size_t)numChars/numberOfSubsets;
 	std::vector<int> charIndices (0, numChars);
 	for (size_t i = 0 ; i < numChars ; i++) {
 		charIndices[i]=i;
@@ -57,7 +57,7 @@ void PseudoGibbsMetaMove::buildSubsets() {
 	std::vector<int> randomizedCharIndices;
 	RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement(charIndices, randomizedCharIndices, subsetSize * numberOfSubsets, *rng);
 	for (size_t i = 0 ; i < numberOfSubsets ; i++) {
-		int offset = i * subsetSize;
+		size_t offset = i * subsetSize;
 		for (size_t j = 0 ; j < subsetSize ; j++) {
 			dataSubsets[i][j] = randomizedCharIndices[offset + j] ;
 		}

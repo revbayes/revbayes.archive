@@ -72,10 +72,18 @@
 
 /* Moves */
 #include "RlMove.h"
+
+/* Moves on eal values*/
 #include "RlScaleMove.h"
+#include "RlSlidingMove.h"
+
+/* Moves on Simplices */
 #include "RlSimplexMove.h"
 #include "RlSimplexSingleElementScale.h"
-#include "RlSlidingMove.h"
+
+/* Moves on real valued vectors */
+#include "RlSingleElementScale.h"
+#include "RlVectorScale.h"
 
 /* Tree Proposals */
 #include "RlFixedNodeheightPruneRegraft.h"
@@ -251,10 +259,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         ///////////////
         
         
-        addTypeWithConstructor("mScale",    new ScaleMove() );
-        addTypeWithConstructor("mSimplex",  new SimplexMove() );
+        /* Moves on real values */
+        addTypeWithConstructor("mScale",                new ScaleMove() );
+        addTypeWithConstructor("mSlide",                new SlidingMove() );
+
+        /* Moves on simplices */
+        addTypeWithConstructor("mSimplex",              new SimplexMove() );
         addTypeWithConstructor("mSimplexElementScale",  new SimplexSingleElementScale() );
-        addTypeWithConstructor("mSlide",    new SlidingMove() );
+        
+        /* Moves on vectors of real values */
+        addTypeWithConstructor("mSingleElementScale",   new SingleElementScale() );
+        addTypeWithConstructor("mVectorScale",          new VectorScale() );        
         
         /* Tree Proposals */
         addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );

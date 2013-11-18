@@ -31,7 +31,7 @@ GeometricDistribution* GeometricDistribution::clone( void ) const
 double GeometricDistribution::computeLnProbability( void ) 
 {
 
-    return RbStatistics::Geometric::lnPdf(p->getValue(), *value);
+    return RbStatistics::Geometric::lnPdf(*value, p->getValue());
 }
 
 

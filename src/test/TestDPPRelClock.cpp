@@ -31,7 +31,6 @@
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
-#include "SimpleBranchRateTimeCharEvoModel.h"
 #include "SubtreeScale.h"
 #include "TestDPPRelClock.h"
 #include "TimeTree.h"

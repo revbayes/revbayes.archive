@@ -1,4 +1,3 @@
-#include "BranchHeterogeneousCharEvoModel.h"
 #include "Clade.h"
 #include "CoalaFunction.h"
 #include "ConstantNode.h"
@@ -10,6 +9,7 @@
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "MatrixReal.h"
 #include "Mcmc.h"
@@ -132,7 +132,10 @@ bool TestCoala::run( void ) {
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(lambda, mu, met, mep, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
         
     // and the character model
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new BranchHeterogeneousCharEvoModel<AminoAcidState, TimeTree>(tau, qs_node, rf, true, data[0]->getNumberOfCharacters()) );
+    GeneralBranchHeterogeneousCharEvoModel<AminoAcidState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<AminoAcidState, TimeTree>(tau, 20, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setRootFrequencies( rf );
+    phyloCTMC->setRateMatrix( qs_node );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
     charactermodel->clamp( data[0] );
     
     

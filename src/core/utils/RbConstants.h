@@ -27,15 +27,15 @@ namespace RbConstants {
 	namespace Double {
         const double    inf         = std::numeric_limits<double>::infinity();
         const double    max         = std::numeric_limits<double>::max();
-//        const double    min         = std::numeric_limits<double>::min();
+// (unused)        const double    min         = std::numeric_limits<double>::min();
         const double    nan         = std::numeric_limits<double>::quiet_NaN();
         const double    neginf      = -std::numeric_limits<double>::infinity();
 	}
     
     namespace Integer {
-//        const int       inf         = std::numeric_limits<int>::infinity();
-//        const int       max         = std::numeric_limits<int>::max();
-//        const int       min         = std::numeric_limits<int>::min();
+// (unused)        const int       inf         = std::numeric_limits<int>::infinity();
+// (unused)        const int       max         = std::numeric_limits<int>::max();
+// (unused)        const int       min         = std::numeric_limits<int>::min();
         const int       nan         = std::numeric_limits<int>::quiet_NaN();
         const int       neginf      = -2147483647;
 	}
@@ -45,7 +45,7 @@ namespace RbConstants {
         const double    neginf      = 1E-37;
 	}
     
-//    namespace Size_t {
+// (unused)    namespace Size_t {
 //        const size_t    inf         = std::numeric_limits<std::size_t>::infinity();
 //        const size_t    max         = std::numeric_limits<std::size_t>::max();
 //        const size_t    min         = std::numeric_limits<std::size_t>::min();
@@ -69,9 +69,9 @@ namespace RbConstants {
     const double    TwoPI             = 6.283185307179586476925286766559;	/* 2*pi */
     const double    PI_2            = 1.570796326794896619231321691640;	/* pi/2 */
     const double    PI_4            = 0.785398163397448309615660845820;	/* pi/4 */
-    //    const double    1_PI            = 0.318309886183790671537767526745;	/* 1/pi */
-    //    const double    2_PI            = 0.636619772367581343075535053490;	/* 2/pi */
-    //    const double    2_SQRTPI        = 1.128379167095512573896158903122;	/* 2/sqrt(pi) */
+    // (unused)    const double    1_PI            = 0.318309886183790671537767526745;	/* 1/pi */
+    // (unused)    const double    2_PI            = 0.636619772367581343075535053490;	/* 2/pi */
+    // (unused)    const double    2_SQRTPI        = 1.128379167095512573896158903122;	/* 2/sqrt(pi) */
     const double    SQRT2           = 1.414213562373095048801688724210;	/* sqrt(2) */
     const double    SQRT1_2         = 0.707106781186547524400844362105;	/* 1/sqrt(2) */
     

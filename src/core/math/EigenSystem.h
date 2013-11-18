@@ -40,24 +40,24 @@ namespace RevBayesCore {
         const MatrixComplex&                    getComplexInverseEigenvectors() const { return complexInverseEigenvectors; }                                        //!< Return the inverse eigenvector matrix
         bool                                    isComplex(void) const { return complex; } 
         void                                    setRateMatrixPtr(MatrixReal* qp) { qPtr = qp; }
-        bool                                    update(void);                                                                                                       //!< Update the eigen system for the matrix q;
+        void                                    update(void);                                                                                                       //!< Update the eigen system for the matrix q;
 
     private:
         // functions used to calculate eigenvalues and eigenvectors 
         // @TODO Note, we should change most of these and move them to RbMath functions
-        void                                    balance(MatrixReal& A, std::vector<double>& scale, int* low, int* high);                                        //!< balances a matrix
-        void                                    balback(int low, int high, std::vector<double>& scale, MatrixReal& eivec);                                      //!< reverses the balancing
+        void                                    balance(MatrixReal& A, std::vector<double>& scale, int* low, int* high);                                      //!< balances a matrix
+        void                                    balback(int low, int high, std::vector<double>& scale, MatrixReal& eivec);                                    //!< reverses the balancing
         bool                                    checkForComplexEigenvalues(void);                                                                                   //!< returns 'true' if there are complex eigenvalues
-        void                                    complexLUBackSubstitution(MatrixComplex& a, int* indx, std::vector<std::complex<double> >& b);      //!< back-substitutes a complex LU-decomposed matrix
-        bool                                    complexLUDecompose(MatrixComplex& a, double* vv, int* indx, double* pd);                            //!< calculates the LU-decomposition of a complex matrix
-        void                                    elmhes(int low, int high, MatrixReal& a, std::vector<int>& perm);                                               //!< reduces matrix to upper Hessenberg form
-        void                                    elmtrans(int low, int high, MatrixReal& a, std::vector<int>& perm, MatrixReal& h);                          //!< copies the Hessenberg matrix
-        int                                     hqr2(int low, int high, MatrixReal& h, std::vector<double>& wr, std::vector<double>& wi, MatrixReal& eivec); //!< computes eigenvalues and eigenvectors
+        void                                    complexLUBackSubstitution(MatrixComplex& a, int* indx, std::vector<std::complex<double> >& b);                   //!< back-substitutes a complex LU-decomposed matrix
+        bool                                    complexLUDecompose(MatrixComplex& a, double* vv, int* indx, double* pd);                                         //!< calculates the LU-decomposition of a complex matrix
+        void                                    elmhes(int low, int high, MatrixReal& a, std::vector<int>& perm);                                          //!< reduces matrix to upper Hessenberg form
+        void                                    elmtrans(int low, int high, MatrixReal& a, std::vector<int>& perm, MatrixReal& h);                         //!< copies the Hessenberg matrix
+        int                                     hqr2(int low, int high, MatrixReal& h, std::vector<double>& wr, std::vector<double>& wi, MatrixReal& eivec);  //!< computes eigenvalues and eigenvectors
         void                                    initializeComplexEigenvectors(void);                                                                                //!< sets up the complex eigenvector matrix
-        int                                     invertMatrix(MatrixReal& a, MatrixReal& aInv);                                                              //!< inverts a matrix
-        int                                     invertComplexMatrix(MatrixComplex& a, MatrixComplex& aInv);                         //!< inverts a complex matrix
-        void                                    luBackSubstitution (MatrixReal& a, int *indx, double *b);                                                       //!< back-substitutes an LU-decomposed matrix
-        int                                     luDecompose(MatrixReal& a, double *vv, int *indx, double *pd);                                                  //!< calculates the LU-decomposition of a matrix
+        int                                     invertMatrix(MatrixReal& a, MatrixReal& aInv);                                                                      //!< inverts a matrix
+        int                                     invertComplexMatrix(MatrixComplex& a, MatrixComplex& aInv);                                                         //!< inverts a complex matrix
+        void                                    luBackSubstitution (MatrixReal& a, int *indx, double *b);                                                        //!< back-substitutes an LU-decomposed matrix
+        int                                     luDecompose(MatrixReal& a, double *vv, int *indx, double *pd);                                                   //!< calculates the LU-decomposition of a matrix
 
         size_t                                  n;                                                                                                                  //!< Row and column dimension (square matrix)
         MatrixReal*                             qPtr;                                                                                                               //!< A pointer to the rate matrix for this system of eigen values and vectors

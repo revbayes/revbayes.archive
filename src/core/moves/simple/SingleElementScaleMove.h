@@ -1,55 +1,58 @@
-/**
- * @file
- * This file contains the declaration of SingleElementScaleMove, which scales
- * a real value with a factor drawn from an appropriate distribution.
- *
- * @brief Declaration of SingleElementScaleMove
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-09-10 11:02:28 +0200 (Mon, 10 Sep 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-09-08, version 1.0
- *
- * $Id: SingleElementScaleMove.h 1817 2012-09-10 09:02:28Z hoehna $
- */
-
 #ifndef SingleElementScaleMove_H
 #define SingleElementScaleMove_H
+
+#include "Move.h"
+#include "StochasticNode.h"
 
 #include <ostream>
 #include <vector>
 #include <string>
 
-#include "SimpleMove.h"
-#include "StochasticNode.h"
-
 namespace RevBayesCore {
     
-    class SingleElementScaleMove : public SimpleMove {
+    /**
+     * @brief Scaling move of a single element randomly picked from a vector.
+     *
+     * 
+     * This move randomly picks an element of a vector of positive real numbers,
+     * proposes a scaling factor and then scales the value.
+     * The actual scaling factor is computed by sf = exp( lambda * ( u - 0.5 ) )
+     * where u ~ Uniform(0,1).
+     * It generally makes more sense to apply the scaling move on a vector of positive
+     * real numbers but technically it works on negative numbers too. However, 
+     * the move will never change the sign of the value and thus is incomplete if applied
+     * to variable defined on the whole real line.
+     *
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @copyright GPL version 3
+     *
+     */
+    class SingleElementScaleMove : public Move {
         
     public:
-        SingleElementScaleMove( StochasticNode< std::vector<double> > *n, double l, bool t, double w);                                    //!<  constructor
+        SingleElementScaleMove( const std::vector< StochasticNode< double > *> &n, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
-        SingleElementScaleMove*                     clone(void) const;                                                                  //!< Clone object
-        void                                        swapNode(DagNode *oldN, DagNode *newN);
+        SingleElementScaleMove*                     clone(void) const;                                                                  //!< Clone this object.
+        const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
+        void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         
     protected:
-        const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-        double                                      performSimpleMove(void);                                                            //!< Perform move
-        void                                        printParameterSummary(std::ostream &o) const;
-        void                                        rejectSimpleMove(void);
-        void                                        tune(void);
+        
+        void                                        acceptMove(void);
+        double                                      performMove(double& probRatio);                                                            //!< Perform move.
+        void                                        printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary.
+        void                                        rejectMove(void);                                                             //!< Reject the last move.
+        void                                        tune(void);                                                                         //!< Tune the parameter.
         
     private:
-        // parameters
-        double                                      lambda;
         
-        StochasticNode< std::vector<double> >*      variable;
-        size_t                                      index;
-		double                                      storedValue;
+        // parameters
+        bool                                        changed;
+        double                                      lambda;                                                                             //!< The scale parameter of the move (larger lambda -> larger proposals).
+        size_t                                      index;                                                                              //!< The index of the last modified element.
+		double                                      storedValue;                                                                        //!< The stored value of the last modified element.
+        std::vector< StochasticNode< double >* >    variable;                                                                           //!< The variable on which the move operates. Not owned here.
         
     };
     

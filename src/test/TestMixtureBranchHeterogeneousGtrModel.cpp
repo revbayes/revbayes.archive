@@ -1,4 +1,3 @@
-#include "BranchHeterogeneousCharEvoModel.h"
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "ConstantBirthDeathProcess.h"
@@ -6,6 +5,7 @@
 #include "DirichletDistribution.h"
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
 #include "MixtureAllocationMove.h"
@@ -126,8 +126,10 @@ bool TestMixtureBranchHeterogeneousGtrModel::run( void ) {
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // and the character model
-    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new BranchHeterogeneousCharEvoModel<DnaState,TimeTree>(tau, qs_node, rf, true, data[0]->getNumberOfCharacters()) );
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setRootFrequencies( rf );
+    phyloCTMC->setRateMatrix( qs_node );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
     charactermodel->clamp( data[0] );
     
     

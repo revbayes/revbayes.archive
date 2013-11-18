@@ -16,7 +16,6 @@
 #include "RbFileManager.h"
 #include "RootTimeSlide.h"
 #include "ScaleMove.h"
-#include "SimpleSiteHomogeneousCharEvoModel.h"
 #include "SimplexMove.h"
 #include "SlidingMove.h"
 #include "SubtreeScale.h"
@@ -118,10 +117,10 @@ bool TestGtrModelFixedTree::run( void ) {
     ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
     
     // and the character model
-    SimpleSiteHomogeneousCharEvoModel< DnaState, TimeTree > *charModel = new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tree, q, clockRate, true, data[0]->getNumberOfCharacters() );
-//    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tree, true, data[0]->getNumberOfCharacters() ); 
-//    charModel->setRateMatrix( q );
-//    charModel->setClockRate( clockRate );
+//    SimpleSiteHomogeneousCharEvoModel< DnaState, TimeTree > *charModel = new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tree, q, clockRate, true, data[0]->getNumberOfCharacters() );
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tree, 4, true, data[0]->getNumberOfCharacters() ); 
+    charModel->setRateMatrix( q );
+    charModel->setClockRate( clockRate );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
     charactermodel->clamp( data[0] );
     

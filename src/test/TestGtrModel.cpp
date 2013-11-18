@@ -5,6 +5,7 @@
 #include "DirichletDistribution.h"
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
 #include "Model.h"
@@ -19,7 +20,6 @@
 #include "RootTimeSlide.h"
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
-#include "SimpleSiteHomogeneousCharEvoModel.h"
 #include "SimplexMove.h"
 #include "SlidingMove.h"
 #include "SubtreeScale.h"
@@ -98,8 +98,11 @@ bool TestGtrModel::run( void ) {
 
     // and the character model
 //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-//    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleCharEvoModel<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tau, q, clockRate, true, data[0]->getNumberOfCharacters()) );
+    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleCharEvoModel<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setClockRate( clockRate );
+    phyloCTMC->setRateMatrix( q );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
     charactermodel->clamp( data[0] );
     
     

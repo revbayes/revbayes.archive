@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the MCMC class. 
- * An MCMC object manages the MCMC analysis by setting up the chain, calling the moves and the monitors etc.
- *
- *
- * @brief Declaration of MCMC class
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-06-17
- *
- * $Id$
- */
-
-
 #ifndef Mcmc_H
 #define Mcmc_H
 
@@ -32,6 +14,19 @@ namespace RevBayesCore {
     
     class Monitor;
     
+    /**
+     * @brief Declaration of MCMC class
+     * 
+     * This file contains the declaration of the MCMC class. 
+     * An MCMC object manages the MCMC analysis by setting up the chain, calling the moves and the monitors etc.
+     *
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since Version 1.0, 2012-06-17
+     *
+     */
     class Mcmc {
     
     public:
@@ -57,9 +52,9 @@ namespace RevBayesCore {
         void                                                redrawChainState(void);
         virtual void                                        run(int g);
         void                                                setChainActive(bool tf);
-        void                                                setChainHeat(double v);
-        void                                                setChainIdx(int);
-        void                                                startMonitors(void);                        //!< Start the monitors
+        void                                                setChainHeat(double v);                                                                 //!< Set the heating temparature of the chain
+        void                                                setChainIdx(int);                                                                       //!< Set the index of the chain
+        void                                                startMonitors(void);                                                                    //!< Start the monitors
 
     protected:
 
@@ -68,9 +63,9 @@ namespace RevBayesCore {
                                                                                         std::vector<DagNode*>&      orderedStochasticNodes,
                                                                                         std::set<const DagNode*>&   visitedNodes
                                                                                      );
-        void                                                initializeChain(void);                      //!< Initialize objects for mcmc sampling
-        void                                                initializeMonitors(void);                   //!< Assign model and mcmc ptrs to monitors
-        bool                                                isAComputableNumber(double x);                                                  //!< Decide whether number is computable (not inf, neginf, or nan)
+        void                                                initializeChain(void);                                                                  //!< Initialize objects for mcmc sampling
+        void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
+        bool                                                isAComputableNumber(double x);                                                          //!< Decide whether number is computable (not inf, neginf, or nan)
         void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
     
         // members
@@ -86,7 +81,6 @@ namespace RevBayesCore {
         std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
         std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
         RandomMoveSchedule                                  schedule;
-//      unsigned int                                        tuningInterval;
 
     };
 

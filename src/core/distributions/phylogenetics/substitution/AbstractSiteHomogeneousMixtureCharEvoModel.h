@@ -578,7 +578,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 // get the pointer to the transition probabilities
                 const double*       tp_a    = tp_begin;
                 
-                int index;
+                size_t index;
                 for ( index = 0; index<numChars*numChars; index++)
                     if ( tp_a[index] < 0.0 )
                         break;

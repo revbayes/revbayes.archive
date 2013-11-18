@@ -11,6 +11,7 @@
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
 #include "GammaDistribution.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "LnFunction.h"
 #include "LognormalDistribution.h"
@@ -28,7 +29,6 @@
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
-#include "SimpleBranchRateTimeCharEvoModel.h"
 #include "SubtreeScale.h"
 #include "TestUCLNRelaxedClock.h"
 #include "TimeTree.h"
@@ -126,8 +126,11 @@ bool TestUCLNRelaxedClock::run( void ) {
 	
 	tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
-
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, br_vector, true, data[0]->getNumberOfCharacters()) );
+    
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setClockRate( br_vector );
+    phyloCTMC->setRateMatrix( q );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
 	charactermodel->clamp( data[0] );
  
 	/* add the moves */

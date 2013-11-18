@@ -7,7 +7,6 @@
 #include "NormalizeVectorFunction.h"
 #include "QuantileFunction.h"
 #include "RbFileManager.h"
-#include "SimpleSiteHeterogeneousMixtureCharEvoModel.h"
 #include "StochasticNode.h"
 #include "TestGtrGammaLikelihood.h"
 #include "TimeTree.h"

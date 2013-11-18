@@ -7,6 +7,7 @@
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
 #include "GammaDistribution.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
 #include "Model.h"
@@ -24,7 +25,6 @@
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
-#include "SimpleSiteHeterogeneousMixtureCharEvoModel.h"
 #include "SlidingMove.h"
 #include "SubtreeScale.h"
 #include "TestGtrGammaModel.h"
@@ -131,9 +131,11 @@ bool TestGtrGammaModel::run( void ) {
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // and the character model
-    size_t numChar = data[0]->getNumberOfCharacters();
-    SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree>(tau, site_rates_norm, q, true, numChar ); 
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
+// (unused)    size_t numChar = data[0]->getNumberOfCharacters();
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setSiteRates( site_rates_norm );
+    phyloCTMC->setRateMatrix( q );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
     charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
     
     std::cout << "LnL:\t\t" << charactermodel->getLnProbability() << std::endl;

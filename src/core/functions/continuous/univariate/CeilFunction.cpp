@@ -26,7 +26,7 @@ void CeilFunction::swapParameterInternal(const DagNode *oldP, const DagNode *new
 }
 
 void CeilFunction::update( void ) {
-    *value = ceil( a->getValue() );
+    *value = int( ceil( a->getValue() ) );
 }
 
 
