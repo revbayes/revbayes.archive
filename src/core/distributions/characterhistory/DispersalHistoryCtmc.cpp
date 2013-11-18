@@ -587,7 +587,7 @@ double DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& i
     double br = branchRate->getValue();
     double bt = tree->getValue().getBranchLength(index) / tree->getValue().getRoot().getAge();
     if (bt == 0.0) // root bt
-        bt = 10.0;
+        bt = 100.0;
     double bs = br * bt;
 
     double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
@@ -632,8 +632,8 @@ double DispersalHistoryCtmc::sampleChildCharacterState(const std::set<size_t>& i
     // compute transition probabilities
     double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
     double expPart0 = exp( - (r[0] + r[1]) * bs);
-    double expPart1 = exp( - (r[0] + r[1]) * t1/rootAge);
-    double expPart2 = exp( - (r[0] + r[1]) * t2/rootAge);
+    double expPart1 = exp( - (r[0] + r[1]) * t1/rootAge); // needs *br1
+    double expPart2 = exp( - (r[0] + r[1]) * t2/rootAge); // needs *br2
     double pi0 = r[0] / (r[0] + r[1]);
     double pi1 = 1.0 - pi0;
     double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };

@@ -322,7 +322,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
         
         // sample weight
         double a = 1.0;
-        double b = 1.5;
+        double b = 20.0;
         double newWeight = RbStatistics::Beta::rv(a, b, *rng);
         //double lnW = RbStatistics::Beta::lnPdf(a, b, newWeight);
         newWeight /= 2;
@@ -355,7 +355,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
         // update branch rates
         storedBranchRates.clear();
         double lnBwdPropRates = 0.0;
-        double delta = 1.0;
+        double delta = 0.0;
         // ... have oldBranchIdx already
         int newChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
         int newParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();

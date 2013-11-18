@@ -210,7 +210,7 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         //std::cout << bwdProposal << "\n";
 
          admixtureCount->setValue(new int(numEvents));
-        
+        return 0.0;
         return lnP + lnW;// + log(bwdProposal); // + lnJ;
         //return lnP;
     }
@@ -331,9 +331,13 @@ double AdmixtureEdgeRemoveResidualWeights::performMove( double &probRatio ) {
     // touch the node
     variable->touch();
     //rate->touch();
-    admixtureCount->touch();
+    //admixtureCount->touch();
     
     probRatio = admixtureCount->getLnProbabilityRatio();
+    //std::cout << probRatio << "\n";
+    
+    ;
+    
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
         std::set<DagNode* > affectedNodes;

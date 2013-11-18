@@ -414,9 +414,6 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     std::vector< size_t >::const_iterator patterns = patternCounts.begin();
     for (size_t site = 0; site < numPatterns; ++site, ++patterns)
     {
-        if ( per_mixture_Likelihoods[site] < 0.0 )
-            std::cerr << "Negative likelihood for site " << site << std::endl;
-    
         this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
     }
     this->lnProb -= log( numSiteRates ) * numSites;
@@ -470,19 +467,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 for (size_t c2 = 0; c2 < numChars; ++c2 ) 
                 {
                     sum += *p_site_left_d * *p_site_right_d * *tp_a_d;
-                    if ( *p_site_left_d < 0.0 || *p_site_right_d < 0.0 || *tp_a_d < 0.0 )
-                        std::cerr << " pLeft = "  << *p_site_left_d
-                                  << " pRight = " << *p_site_right_d
-                                  << " tP = "     << *tp_a_d << std::endl;
                     
                     // increment the pointers to the next terminal state
                     ++tp_a_d; ++p_site_left_d; ++p_site_right_d;
                 }
                 // store the likelihood for this starting state
                 *p_a = sum;
-
-                if ( sum < 0.0 )
-                    std::cerr << "Error in likelihood calculation: sum = " << sum << std::endl;
 
                 // increment the pointers to the next starting state
                 tp_a+=numChars; ++p_a;
@@ -559,9 +549,6 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                     // store the likelihood
                     *p_a = tmp;
                     
-                    if ( tmp < 0.0 )
-                        std::cerr << "Error: tip site likelihood (gap) tmp = " << tmp << std::endl;
-                    
                     // increment pointers to next starting state
                     tp_a+=numChars; ++p_a;
                 }
@@ -579,18 +566,6 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 
                 // get the pointer to the transition probabilities
                 const double*       tp_a    = tp_begin;
-                
-                size_t index;
-                for ( index = 0; index<numChars*numChars; index++)
-                    if ( tp_a[index] < 0.0 )
-                        break;
-                
-                if ( index < numChars*numChars )
-                {
-                    for ( index = 0; index<numChars*numChars; index++)
-                        std::cerr << tp_a[index] << " ";
-                    std::cerr << std::endl;
-                }
 
                 // iterate over all possible initial states
                 for (size_t c1 = 0; c1 < numChars; ++c1) 
@@ -622,9 +597,6 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                     }
                     // store the likelihood
                     *p_a = tmp;
-                    
-                    if ( tmp < 0.0 )
-                        std::cerr << "Error: tip site likelihood (observed state) tmp = " << tmp << std::endl;
                     
                     // increment pointers to next starting state
                     tp_a+=numChars; ++p_a;

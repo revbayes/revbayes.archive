@@ -336,7 +336,8 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
 //        std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
         
         // bombs away
-        return -(lnP + lnW);
+        //return -(lnP + lnW);
+        return 0.0;
     }
 }
 
@@ -457,9 +458,9 @@ double AdmixtureEdgeAddCladeResiduals::performMove( double &probRatio ) {
     // touch the node
     variable->touch();
     //rate->touch();
-    admixtureCount->touch();
+    //admixtureCount->touch();
     probRatio = admixtureCount->getLnProbabilityRatio();
-  //  std::cout << "probRatio " << probRatio << "\n";
+    //std::cout << "probRatio " << probRatio << "\n";
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
