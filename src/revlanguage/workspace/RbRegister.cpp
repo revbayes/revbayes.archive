@@ -90,6 +90,7 @@
 #include "RlNearestNeighborInterchange.h"
 #include "RlNearestNeighborInterchange_nonClock.h"
 #include "RlNodeTimeSlideUniform.h"
+#include "RlRateAgeBetaShift.h"
 #include "RlRootTimeSlide.h"
 #include "RlSubtreeScale.h"
 #include "RlTreeScale.h"
@@ -273,12 +274,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Tree Proposals */
         addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );
+        addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange() );
+        addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange_nonClock() );
         addTypeWithConstructor("mNodeTimeSlideUniform", new NodeTimeSlideUniform() );
+        addTypeWithConstructor("mRateAgeBetaShift",     new RateAgeBetaShift() );
         addTypeWithConstructor("mRootTimeSlide",        new RootTimeSlide() );
         addTypeWithConstructor("mSubtreeScale",         new SubtreeScale() );
         addTypeWithConstructor("mTreeScale",            new TreeScale() );
-        addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange() );
-        addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange_nonClock() );
         
         
         

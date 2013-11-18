@@ -26,7 +26,7 @@ namespace RevBayesCore {
         RateAgeBetaShift( std::vector<DagNode*> n, double delta, bool t, double weight);                                                         //!<  constructor
         
         // Basic utility functions
-        RateAgeBetaShift*              clone(void) const;                                                                  //!< Clone object
+        RateAgeBetaShift*               clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
@@ -46,7 +46,7 @@ namespace RevBayesCore {
         // stored objects to undo proposal
         TopologyNode*                   storedNode;
         double                          storedAge;
-        std::map<int,double>             storedRates;
+        std::map<int,double>            storedRates;
         
     };
     

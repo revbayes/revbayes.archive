@@ -9,6 +9,7 @@
 #ifndef __rb_mlandis__CharacterEvent__
 #define __rb_mlandis__CharacterEvent__
 
+#include <stdlib.h>
 #include <vector>
 //#include "DiscreteCharacterState.h"
 

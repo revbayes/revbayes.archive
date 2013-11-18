@@ -11,8 +11,10 @@
 
 #include "CharacterEvent.h"
 #include "CharacterEventCompare.h"
-#include <vector>
+
+#include <ostream>
 #include <set>
+#include <vector>
 
 namespace RevBayesCore {
     
