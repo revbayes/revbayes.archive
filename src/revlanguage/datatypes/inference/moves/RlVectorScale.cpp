@@ -31,11 +31,17 @@ void VectorScale::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a new vector-scale move
     double l = static_cast<const RealPos &>( lambda->getValue() ).getValue();
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
     RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Vector<RealPos> &>( x->getValue() ).getValueNode();
-    RevBayesCore::StochasticNode<std::vector<double> > *n = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
+    const std::set<const RevBayesCore::DagNode*> &p = tmp->getParents();
+    std::vector< RevBayesCore::StochasticNode<double> *> n;
+    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it) 
+    {
+        const RevBayesCore::StochasticNode<double> *theNode = static_cast< const RevBayesCore::StochasticNode<double>* >( *it );
+        n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
+    }
     bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
     value = new RevBayesCore::VectorScaleMove(n, l, t, w);
 }

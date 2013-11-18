@@ -21,35 +21,38 @@ namespace RevBayesCore {
      * real numbers but technically it works on negative numbers too. However, 
      * the move will never change the sign of the value and thus is incomplete if applied
      * to variable defined on the whole real line.
+     * Note, we assume that the number of elements in the vector does not change!
      *
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
      *
      */
-    class VectorScaleMove : public SimpleMove {
+    class VectorScaleMove : public Move {
         
     public:
-        VectorScaleMove( StochasticNode< std::vector<double> > *n, double l, bool t, double w);                                  //!< Constructor
+        VectorScaleMove( const std::vector<StochasticNode< double > *> &n, double l, bool t, double w);                                  //!< Constructor
         
         // Basic utility functions
         VectorScaleMove*                            clone(void) const;                                                                  //!< Clone this object.
+        const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
         void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         
     protected:
         
-        const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
-        double                                      performSimpleMove(void);                                                            //!< Perform move.
+        void                                        acceptMove(void);
+        double                                      performMove(double& probRatio);                                                            //!< Perform move.
         void                                        printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary.
-        void                                        rejectSimpleMove(void);                                                             //!< Reject the last move.
+        void                                        rejectMove(void);                                                             //!< Reject the last move.
         void                                        tune(void);                                                                         //!< Tune the parameter.
         
     private:
         
         // parameters
+        bool                                        changed;
         double                                      lambda;                                                                             //!< The scale parameter of the move (larger lambda -> larger proposals).
         std::vector<double>                         storedValue;                                                                        //!< The stored value of the last modified element.
-        StochasticNode< std::vector<double> >*      variable;                                                                           //!< The variable on which the move operates. Not owned here.
-        
+        std::vector< StochasticNode< double >* >    variable;                                                                           //!< The variable on which the move operates. Not owned here.
+        size_t                                      length;                                                                             //!< The length of the variable vector.
     };
     
 }

@@ -102,6 +102,10 @@ namespace RevBayesCore {
         size_t                                                              numPatterns;
         bool                                                                compressed;
         
+        // convenience variables available for derived classes too
+        std::vector<bool>                                                   changedNodes;
+        std::vector<bool>                                                   dirtyNodes;
+
     private:
         // private methods
         void                                                                compress(void);
@@ -111,8 +115,6 @@ namespace RevBayesCore {
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                simulate(const TopologyNode& node, std::vector< TaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
 
-        std::vector<bool>                                                   changedNodes;
-        std::vector<bool>                                                   dirtyNodes;
     
         // offsets for nodes
         size_t                                                              activeLikelihoodOffset;
