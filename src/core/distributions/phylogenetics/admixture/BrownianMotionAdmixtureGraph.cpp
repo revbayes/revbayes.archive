@@ -235,11 +235,42 @@ void BrownianMotionAdmixtureGraph::restoreSpecialization(DagNode *restorer)
     
 }
 
+void BrownianMotionAdmixtureGraph::updateParameters(DagNode* toucher)
+{
+    if (toucher == tau || toucher == NULL)
+    {
+        initializeTipNodesByIndex();
+        
+        if (useContrasts == true)
+        {
+            updateAllNodePathsToRoot();
+            updateDagTraversal();
+            updateNodeToIndexContrastData();
+        }
+        else
+        {
+            updateTipPathsToRoot();
+        }
+    }
+    
+    // return;
+    if (toucher == diffusionRate || toucher == admixtureRate || toucher == branchRates || toucher == tau || toucher == NULL)
+    {
+        updateCovariance();
+        updateSampleCovariance();
+        if (useWishart == true)
+            updateRbCovarianceEigensystem();
+        updateResiduals();
+    }
+
+}
+
 void BrownianMotionAdmixtureGraph::touchSpecialization(DagNode *toucher)
 {
+  /*
     //std::cout << "BMAG: touched by " << toucher->getName() << "\n";
     // only need to update Mrca for topology changes (FPNR, NNI, admixture edge moves)
-    if (toucher == tau)
+    if (toucher == tau || toucher == NULL)
     {
         initializeTipNodesByIndex();
         
@@ -256,7 +287,7 @@ void BrownianMotionAdmixtureGraph::touchSpecialization(DagNode *toucher)
     }
     
    // return;
-    if (toucher == diffusionRate || toucher == admixtureRate || toucher == branchRates || toucher == tau)
+    if (toucher == diffusionRate || toucher == admixtureRate || toucher == branchRates || toucher == tau || toucher == NULL)
     {
         updateCovariance();
         updateSampleCovariance();
@@ -264,9 +295,9 @@ void BrownianMotionAdmixtureGraph::touchSpecialization(DagNode *toucher)
             updateRbCovarianceEigensystem();
         updateResiduals();
     }
-
-   
-    // touches all children -- WHY?
+*/
+    updateParameters(toucher);
+    
     std::set<DagNode*> s = this->dagNode->getChildren();
     for (std::set<DagNode*>::iterator it = s.begin(); it != s.end(); it++)
     {
@@ -793,8 +824,7 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
 {
     //std::cout << "computeLnProbWishart\n";
     //return 0.0;
-    
-    
+
     int n = (int)(numBlocks*blockSize);
     int p = (int)numTaxa;
     

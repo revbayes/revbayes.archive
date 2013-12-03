@@ -37,7 +37,9 @@
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
 #include "StochasticNode.h"
+#include "TimeAtlas.h"
 #include "TimeTree.h"
+#include "TimeAtlasDataReader.h"
 #include "TreeCharacterHistory.h"
 #include "TestCharacterHistory.h"
 #include "UniformDistribution.h"
@@ -85,13 +87,20 @@ TestCharacterHistory::~TestCharacterHistory() {
 bool TestCharacterHistory::run( void ) {
     
     //////////
-    // files
+    // io
     //////////
     
     filepath = "/Users/mlandis/data/bayarea/output/";
     geoFilename = "rb.geo.txt";
     areaFilename = "rb.areas.txt";
     treeFilename = "rb.tree.txt";
+    
+    
+    areaNodeFilename = "area_node.txt";
+    areaEdgeFilename = "area_edge.txt";
+    timeatlasFilename = "timeatlas.txt";
+    TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
+    TimeAtlas ta(&tsdr);
     
     //////////
     // test
@@ -109,7 +118,7 @@ bool TestCharacterHistory::run( void ) {
         taxonNames.push_back("p" + ss.str());
     }
     
-    size_t numCharacters = pow(10,2);
+    size_t numCharacters = pow(6,2);
     size_t numStates = 2;
     
     // assign area coordinates
@@ -225,8 +234,8 @@ bool TestCharacterHistory::run( void ) {
 
 //    rateGain->setValue(new double(.3));
 //    rateLoss->setValue(new double(3.0));
-    rateGain->setValue(new double(.5));
-    rateLoss->setValue(new double(5.0));
+    rateGain->setValue(new double(.2));
+    rateLoss->setValue(new double(1.5));
 
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
@@ -262,6 +271,15 @@ bool TestCharacterHistory::run( void ) {
     }
 
     // branch histories
+    
+    int maskMod = 2;
+    std::set<int> maskSet;
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        if (i % maskMod != 0)
+            maskSet.insert(i);
+    }
+    
     std::vector<const TypedDagNode<BranchHistory>* > bh_vector;
     std::vector<StochasticNode<BranchHistory>* > bh_vector_stochastic;
     for (size_t i = 0; i < numNodes; i++)
@@ -270,6 +288,9 @@ bool TestCharacterHistory::run( void ) {
         ss << i;
         DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(rates, tau, br_vector[i], distancePower, dispersalPower, extinctionPower, areaStationaryFrequency, areaPower, numCharacters, numStates, i, gdrm, grsrm, lrsrm, asrm);
         //DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, NULL);
+        
+        if (i == 1)
+            tmp_ahc->getValue().setSampleChildCharacters(maskSet);
         
         StochasticNode<BranchHistory>* sn_bh = new StochasticNode<BranchHistory>("bh" + ss.str(), tmp_ahc);
         bh_vector.push_back(sn_bh);
@@ -281,9 +302,9 @@ bool TestCharacterHistory::run( void ) {
     // tree history
     TreeCharacterHistory* tch = new TreeCharacterHistory( bh_vector, tau, numCharacters, numStates );
     tch->simulate();
-    
-    // copy simulated history
-    TreeCharacterHistory* tch2 = new TreeCharacterHistory(*tch);
+
+    // get true values under sim
+    std::vector<CharacterEvent*> bh_true = bh_vector[0]->getValue().getChildCharacters();
     
     StochasticNode<BranchHistory>* tr_chm = new StochasticNode<BranchHistory>("tr_model", tch);
     tr_chm->redraw();
@@ -315,7 +336,7 @@ bool TestCharacterHistory::run( void ) {
         TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
         StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
         moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.1, true, 2.0) );
-        if (i >= numTaxa || i == 0)
+        if (i >= numTaxa || i == 0 || i == 1)
             moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.1, true, 5.0));
     }
     
@@ -355,7 +376,8 @@ bool TestCharacterHistory::run( void ) {
     monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
     monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
     unsigned int burn = (unsigned int)(maxGen * .2);
-    monitors.push_back( new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 50, maxGen, burn, filepath + "rb.phylowood.txt", "\t" ));
+    PhylowoodNhxMonitor* phwnm = new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 50, maxGen, burn, filepath + "rb.phylowood.txt", "\t" );
+    monitors.push_back(phwnm);
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
 
     
@@ -379,15 +401,34 @@ bool TestCharacterHistory::run( void ) {
     myMcmc.printOperatorSummary();
 
     
-    /*
-    for (size_t i = 0; i < numNodes; i++)
+//    BranchHistory bh_inf(bh_vector[0]->getValue());
+    std::cout << "[";
+    for (size_t i = 0; i < bh_true.size(); i++)
     {
-        TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
-        bh_tdn->getValue().print();
+        if (i != 0)
+            std::cout << ",";
+        std::cout << bh_true[i]->getState();
     }
-    std::cout << "rateGain " << rateGain->getValue() << "\n";
-    std::cout << "rateLoss " << rateLoss->getValue() << "\n";
-    */
+    std::cout << "]\n";
+    
+//    std::vector<unsigned int> bh_inf = phwnm->getChildCharacterCounts(0);
+//    long ns = phwnm->getNumSamples();
+//    for (size_t i = 0; i < bh_inf.size(); i++)
+//    {
+//        std::cout << "true " << bh_true[i]->getState() << "\n";
+//        std::cout << "inf " << bh_inf[i] << "\n";
+//        std::cout << ns << "\n";
+//        double x = (double)bh_true[i]->getState() - (double)bh_inf[i] / ns;
+//        //std::cout << x << " ";
+//    }
+//    std::cout << "\n";
+    
+    
+//    for (size_t i = 0; i < numNodes; i++)
+//    {
+//        TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
+//        bh_tdn->getValue().print();
+//    }
     
     ///////////////
     
@@ -410,8 +451,6 @@ bool TestCharacterHistory::run( void ) {
     
     return true;
 }
-
-
 
 /*
 

@@ -322,7 +322,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
         
         // sample weight
         double a = 1.0;
-        double b = 20.0;
+        double b = 10.0;
         double newWeight = RbStatistics::Beta::rv(a, b, *rng);
         //double lnW = RbStatistics::Beta::lnPdf(a, b, newWeight);
         newWeight /= 2;

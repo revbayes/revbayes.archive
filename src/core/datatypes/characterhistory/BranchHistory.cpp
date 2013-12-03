@@ -30,6 +30,19 @@ BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) : numCharacters(n
     }
 }
 
+BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx, std::set<int> sc) : numCharacters(nc), numStates(ns), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true), index(idx), clampChildCharacters(false), sampleChildCharacters(sc)
+{
+    parentCharacters.resize(numCharacters);
+    childCharacters.resize(numCharacters);
+    
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        parentCharacters[i] = new CharacterEvent(i,0,0.0);
+        childCharacters[i] = new CharacterEvent(i,0,1.0);
+    }
+}
+
+
 
 BranchHistory::BranchHistory(const BranchHistory& m)
 {
@@ -45,6 +58,7 @@ BranchHistory::BranchHistory(const BranchHistory& m)
         redrawHistory = m.redrawHistory;
         index = m.index;
         clampChildCharacters = m.clampChildCharacters;
+        sampleChildCharacters = m.sampleChildCharacters;
     }
     
 }
@@ -63,6 +77,7 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
         redrawHistory = bh.redrawHistory;
         index = bh.index;
         clampChildCharacters = bh.clampChildCharacters;
+        sampleChildCharacters = bh.sampleChildCharacters;
     }
     
     return *this;
@@ -328,6 +343,16 @@ bool BranchHistory::isClampedChildCharacters(void)
 void BranchHistory::setClampChildCharacters(bool tf)
 {
     clampChildCharacters = tf;
+}
+
+const std::set<int>& BranchHistory::getSampleChildCharacters(void)
+{
+    return sampleChildCharacters;
+}
+
+void BranchHistory::setSampleChildCharacters(std::set<int> sc)
+{
+    sampleChildCharacters = sc;
 }
 
 

@@ -43,6 +43,9 @@ namespace RevBayesCore {
         void                                closeStream(void);                                                  //!< Close stream after finish writing
         void                                openStream(void);                                                   //!< Open the stream for writing
         void                                printHeader(void);                                                  //!< Print header
+        std::vector<unsigned int>           getChildCharacterCounts(int idx);
+        std::vector<unsigned int>           getParentCharacterCounts(int idx);
+        long                                getNumSamples(void);
         
     private:
         std::string                         buildExtendedNewick();
