@@ -53,8 +53,7 @@ namespace RevBayesCore {
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN);
 
     protected:
-                                                                Move(DagNode* n, double w, bool autoTune = false);
-        //!< Default constructor
+                                                                Move(DagNode* n, double w, bool autoTune = false);                                      //!< Constructor
                                                                 Move( std::vector<DagNode*> n, double w, bool autoTune = false);
     
         // function you have to implement

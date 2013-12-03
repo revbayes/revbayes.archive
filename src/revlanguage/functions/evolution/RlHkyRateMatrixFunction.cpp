@@ -9,7 +9,7 @@
 #include "DeterministicNode.h"
 #include "HkyRateMatrixFunction.h"
 #include "RlHkyRateMatrixFunction.h"
-#include "RateMatrix_Hky.h"
+#include "RateMatrix_HKY.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"

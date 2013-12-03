@@ -23,13 +23,16 @@ LinearStepFunction* LinearStepFunction::clone( void ) const {
 
 double LinearStepFunction::evaluate(double x) const {
     
-    if ( x >= to ) {
+    if ( x >= to ) 
+    {
         return values[values.size()-1];
     }
-    else if ( x < from) {
+    else if ( x < from) 
+    {
         return values[0];
     }
-    else {
+    else 
+    {
         double intervalSize = (to - from) / (values.size()-1);
         int index = (int)( ( x - from ) / intervalSize );
         
@@ -73,7 +76,7 @@ double LinearStepFunction::integrate(double l, double u, NumericalIntegration &i
         if ( startIndex == 0) {
             a = (u-l)*values[startIndex];
         }
-        else if ( endIndex == values.size()-1) {
+        else if ( endIndex == int(values.size())-1) {
             a = (u-l)*values[endIndex];
         }
         else {
@@ -87,13 +90,17 @@ double LinearStepFunction::integrate(double l, double u, NumericalIntegration &i
 }
 
 void LinearStepFunction::update( void ) {
-    if ( x->getValue() >= to ) {
+    
+    if ( x->getValue() >= to ) 
+    {
         *value = values[values.size()-1];
     }
-    else if ( x->getValue() < from) {
+    else if ( x->getValue() < from) 
+    {
         *value = values[0];
     }
-    else {
+    else 
+    {
         double intervalSize = (to - from) / (values.size()-1);
         int index = (int)( ( x->getValue() - from ) / intervalSize );
     

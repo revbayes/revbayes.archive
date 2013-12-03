@@ -23,8 +23,7 @@ namespace RevBayesCore {
      * The model object simply provides access to these DAG nodes.
      *
      * \copyright (c) Copyright 2009-2013 (GPL version 3)
-     * \date Last modified: $Date$
-     * \author The RevBayes Development Core Team ($Author$)
+     * \author The RevBayes Development Core Team (Sebastian Hoehna)
      * \since Version 1.0, 2012-06-21
      *
      */

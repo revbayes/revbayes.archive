@@ -1,6 +1,5 @@
 #include "AutocorrelatedBranchMatrixDistribution.h"
 #include "BetaDistribution.h"
-#include "BranchHeterogeneousCharEvoModel.h"
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "ConstantBirthDeathProcess.h"
@@ -9,6 +8,7 @@
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
 #include "GammaDistribution.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
 #include "Model.h"
@@ -126,7 +126,10 @@ bool TestAutocorrelatedBranchHeterogeneousGtrModel::run( void ) {
     
     
     // and the character model
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new BranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, perBranchQ, rf, true, data[0]->getNumberOfCharacters()) );
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setRootFrequencies( rf );
+    phyloCTMC->setRateMatrix( perBranchQ );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
     charactermodel->clamp( data[0] );
     
     

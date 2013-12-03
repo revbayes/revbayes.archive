@@ -1,4 +1,3 @@
-#include "BranchHeterogeneousCharEvoModel.h"
 #include "BetaDistribution.h"
 #include "BetaSimplexMove.h"
 #include "Clade.h"
@@ -10,6 +9,7 @@
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
 #include "Model.h"
@@ -134,8 +134,11 @@ bool TestBranchHeterogeneousTamura92Model::run( void ) {
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // and the character model
-   StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new BranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, qs_node, rf, true, data[0]->getNumberOfCharacters()) );
-   charactermodel->clamp( data[0] );
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setRootFrequencies( rf );
+    phyloCTMC->setRateMatrix( qs_node );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
+    charactermodel->clamp( data[0] );
     
     std::cout <<"Hehe "<<std::endl;
 

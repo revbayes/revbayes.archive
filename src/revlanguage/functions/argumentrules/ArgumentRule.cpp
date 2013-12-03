@@ -108,7 +108,8 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
             return true;
         }
 
-        // we can only change the required value type of the variable if we want a derived type of the current value type
+        // we can only change the REQUIRED value type of the variable if we want a derived type of the current value type
+        // the actual variable type may be different to the required type
         if ( it->isDerivedOf( var->getValueTypeSpec() ) ) 
         {
                           

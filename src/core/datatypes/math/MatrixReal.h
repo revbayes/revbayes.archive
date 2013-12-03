@@ -19,6 +19,7 @@
 #define MatrixReal_H
 
 #include <cstddef>
+#include <iostream>
 #include <vector>
 
 namespace RevBayesCore {

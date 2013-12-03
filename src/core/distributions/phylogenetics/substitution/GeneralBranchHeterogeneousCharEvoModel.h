@@ -52,8 +52,12 @@ namespace RevBayesCore {
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                    //!< Implementation of swaping parameters
         
     protected:
-        void                                                updateTransitionProbabilities(size_t nodeIdx, double brlen);
         const std::vector<double>&                          getRootFrequencies(void);
+// (not needed)        void                                                keepSpecialization(DagNode* affecter);
+// (not needed)        void                                                restoreSpecialization(DagNode *restorer);
+        void                                                touchSpecialization(DagNode *toucher);
+        void                                                updateTransitionProbabilities(size_t nodeIdx, double brlen);
+        
         
     private:        
         // members
@@ -430,6 +434,64 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     else 
     {
         AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::swapParameter(oldP,newP);
+    }
+    
+}
+
+template<class charType, class treeType>
+void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+    
+    // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
+    if ( affecter == heterogeneousClockRates ) 
+    {
+        const std::set<size_t> &indices = heterogeneousClockRates->getTouchedElementIndices();
+        
+        // maybe all of them have been touched or the flags haven't been set properly
+        if ( indices.size() == 0 ) 
+        {
+            // just delegate the call
+            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+        } 
+        else 
+        {
+            const std::vector<TopologyNode *> &nodes = this->tau->getValue().getNodes();
+            // flag recomputation only for the nodes
+            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) 
+            {
+                this->recursivelyFlagNodeDirty( *nodes[*it] );
+            } 
+        }
+    }
+    else if ( affecter == heterogeneousRateMatrices )
+    {
+        
+        const std::set<size_t> &indices = heterogeneousRateMatrices->getTouchedElementIndices();
+        
+        // maybe all of them have been touched or the flags haven't been set properly
+        if ( indices.size() == 0 ) 
+        {
+            // just delegate the call
+            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+        } 
+        else 
+        {
+            const std::vector<TopologyNode *> &nodes = this->tau->getValue().getNodes();
+            // flag recomputation only for the nodes
+            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) 
+            {
+                this->recursivelyFlagNodeDirty( *nodes[*it] );
+            } 
+        }
+    }
+    else if ( affecter == rootFrequencies )
+    {
+        
+        const TopologyNode &root = this->tau->getValue().getRoot();
+        this->recursivelyFlagNodeDirty( root );
+    }
+    else
+    {
+        AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
     }
     
 }

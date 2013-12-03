@@ -43,7 +43,7 @@ namespace RevBayesCore {
         PseudoGibbsMetaMove*                            clone(void) const ;
         
     protected:
-        PseudoGibbsMetaMove(const Move* m, AbstractCharacterData* d, const int numOfSubsets);                                                                                                                                         //!< Default constructor
+        PseudoGibbsMetaMove(const Move* m, AbstractCharacterData* d, const size_t numOfSubsets);                                                                                                                                         //!< Default constructor
 		PseudoGibbsMetaMove ( const PseudoGibbsMetaMove& p ) ;
 		void buildSubsets();
 		

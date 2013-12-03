@@ -12,7 +12,6 @@
 #include "RbFileManager.h"
 #include "ScreenMonitor.h"
 #include "SimplexSingleElementScale.h"
-#include "SimpleSiteHomogeneousCharEvoModel.h"
 #include "TestCharEvoModelImplementationPerformance.h"
 #include "TimeTree.h"
 

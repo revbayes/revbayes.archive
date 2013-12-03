@@ -1,5 +1,3 @@
-#include "BranchHeterogeneousCharEvoModel.h"
-#include "BranchRateTimeBHCharEvoModel.h"
 #include "BetaDistribution.h"
 #include "BetaSimplexMove.h"
 #include "Clade.h"
@@ -11,6 +9,7 @@
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "LognormalDistribution.h"
 #include "Mcmc.h"
@@ -154,8 +153,12 @@ bool TestUCLNRelaxedClockBHT92Model::run( void ) {
     
     // and the character model
 	//    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleGTRBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, br_vector, true, data[0]->getNumberOfCharacters()) );
-
-	StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new BranchRateTimeBHCharEvoModel<DnaState, TimeTree>(tau, qs_node, rf, br_vector, true, data[0]->getNumberOfCharacters()) );
+    
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setRootFrequencies( rf );
+    phyloCTMC->setRateMatrix( qs_node );
+    phyloCTMC->setClockRate( br_vector );
+	StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
 	charactermodel->clamp( data[0] );
     	
     

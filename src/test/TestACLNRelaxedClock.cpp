@@ -13,6 +13,7 @@
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
 #include "GammaDistribution.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "LnFunction.h"
 #include "LognormalDistribution.h"
@@ -33,7 +34,6 @@
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
-#include "SimpleBranchRateTimeCharEvoModel.h"
 #include "SingleElementScaleMove.h"
 #include "SlidingMove.h"
 #include "SubtreeScale.h"
@@ -112,8 +112,10 @@ bool TestACLNRelaxedClock::run( void ) {
     // the ACLN branch rates
 	StochasticNode< std::vector< double > > *branchRates = new StochasticNode< std::vector< double > >("branchRates", new AutocorrelatedLognormalRateDistribution(tau, sigma, expRootRate) );
 
-    
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, branchRates, true, data[0]->getNumberOfCharacters()) );
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    phyloCTMC->setClockRate( branchRates );
+    phyloCTMC->setRateMatrix( q );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
 	charactermodel->clamp( data[0] );
     
 	/* add the moves */

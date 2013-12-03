@@ -206,11 +206,6 @@ void Mcmc::initializeChain( void ) {
             double lnProb = node->getLnProbability();
             lnProbability += lnProb;
 
-//            if ( node->isStochastic() )
-//            {
-//                std::cerr << "Computing likelihood of node " << node->getName() << std::endl;
-//                std::cerr << node->getName() << "  -- " << lnProb << " -- " << ( node->isClamped() ? "(clamped)" : "") << "\n";
-//            }
         }
         
         // now we keep all nodes so that the likelihood is stored
@@ -227,7 +222,6 @@ void Mcmc::initializeChain( void ) {
                 //std::cout << (*i)->getName() << std::endl;
                 if ( !(*i)->isClamped() && (*i)->isStochastic() )
                 {
-//                    std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
                     (*i)->redraw();
 //                    (*i)->touch(); Not necessary. The distribution will automaticall call touch().
                 }
@@ -357,10 +351,6 @@ void Mcmc::run(int kIterations) {
         monitor(0);
     }
     
-#ifdef DEBUG_MCMC
-    std::vector<DagNode *>& dagNodes = model.getDagNodes();
-#endif
-    
     // reset the counters for the move schedules
     for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
     {
@@ -381,6 +371,10 @@ void Mcmc::run(int kIterations) {
 }
 
 int Mcmc::nextCycle(bool advanceCycle) {
+    
+#ifdef DEBUG_MCMC
+    std::vector<DagNode *>& dagNodes = model.getDagNodes();
+#endif
 
     size_t proposals = round( schedule.getNumberMovesPerIteration() );
     for (size_t i=0; i<proposals; i++) 

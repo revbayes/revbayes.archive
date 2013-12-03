@@ -1,10 +1,10 @@
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "FastaWriter.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "NclReader.h"
 #include "RateMatrix_JC.h"
 #include "RbFileManager.h"
-#include "SimpleSiteHomogeneousCharEvoModel.h"
 #include "StochasticNode.h"
 #include "TestSequenceSimulation.h"
 #include "TimeTree.h"
@@ -39,7 +39,10 @@ bool TestSequenceSimulation::run( void ) {
     ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
     
     // and the character model
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", new SimpleSiteHomogeneousCharEvoModel<DnaState, TimeTree>(tree, q, clockRate, true, 100) );
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tree, 4, true, 100);
+    phyloCTMC->setClockRate( clockRate );
+    phyloCTMC->setRateMatrix( q );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
     
     // write the simulated sequence
     FastaWriter writer;

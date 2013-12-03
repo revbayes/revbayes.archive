@@ -4,6 +4,8 @@
 #include "Monitor.h"
 #include "RbException.h"
 
+#include <algorithm>
+
 using namespace RevBayesCore;
 
 

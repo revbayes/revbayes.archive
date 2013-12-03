@@ -1,4 +1,4 @@
-#include "SingleElementScaleMove.h"
+#include "VectorScaleMove.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -13,12 +13,12 @@ using namespace RevBayesCore;
 /**
  * Simple constructor only setting the interval members from the given parameters.
  *
- * \param[in]    n    The stochastic node holding the vector of doubles.
+ * \param[in]    n    The vector of stochastic node holding the values (doubles).
  * \param[in]    l    The scaling parameter (lambda).
  * \param[in]    t    Should this move be tuned.
  * \param[in]    w    Weight of the proposal.
  */
-SingleElementScaleMove::SingleElementScaleMove( const std::vector< StochasticNode< double > *> &n, double l, bool t, double w ) : Move( n[0], w, t ), changed(false), variable( n ), storedValue( 0.0 ), lambda( l ) {
+VectorScaleMove::VectorScaleMove( const std::vector<StochasticNode< double > *> &n, double l, bool t, double w ) : Move( n[0], w, t ), changed(false), variable( n ), storedValue( variable.size() ), lambda( l ), length( variable.size() ) {
     
     for (std::vector< StochasticNode<double> *>::const_iterator it = n.begin(); it != n.end(); it++)
         nodes.insert( *it );
@@ -29,7 +29,7 @@ SingleElementScaleMove::SingleElementScaleMove( const std::vector< StochasticNod
  * Accept the move and reset internal flags.
  *
  */
-void SingleElementScaleMove::acceptMove( void ) {
+void VectorScaleMove::acceptMove( void ) {
     // nothing to do
     changed = false;
 }
@@ -40,9 +40,9 @@ void SingleElementScaleMove::acceptMove( void ) {
  *
  * \return A new copy of the move. 
  */
-SingleElementScaleMove* SingleElementScaleMove::clone( void ) const {
+VectorScaleMove* VectorScaleMove::clone( void ) const {
     
-    return new SingleElementScaleMove( *this );
+    return new VectorScaleMove( *this );
 }
 
 
@@ -51,8 +51,8 @@ SingleElementScaleMove* SingleElementScaleMove::clone( void ) const {
  *
  * \return The move's name. 
  */
-const std::string& SingleElementScaleMove::getMoveName( void ) const {
-    static std::string name = "SingleElementScale";
+const std::string& VectorScaleMove::getMoveName( void ) const {
+    static std::string name = "VectorScale";
     
     return name;
 }
@@ -67,7 +67,7 @@ const std::string& SingleElementScaleMove::getMoveName( void ) const {
  *
  * \return The Hastings ratio. 
  */
-double SingleElementScaleMove::performMove( double& probRatio ) {
+double VectorScaleMove::performMove( double &probRatio ) {
     
     // test wether a move has been performed without accept/reject in between
     if (changed) 
@@ -79,61 +79,70 @@ double SingleElementScaleMove::performMove( double& probRatio ) {
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    // choose an index
-    index = int(rng->uniform01() * variable.size());
+    // reset the probability ratio
+    probRatio = 0;
     
-    StochasticNode<double> *theNode = variable[index];
-    
-    // copy value
-    storedValue = theNode->getValue();
+    // allocate a set of all affected nodes
+    std::set<DagNode* > affectedNodes;
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
     double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    theNode->getValue() *= scalingFactor;
-    
-    // touch the node
-    theNode->touch();
-    
-    // calculate the probability ratio for the node we just changed
-    probRatio = theNode->getLnProbabilityRatio();
-    
-    if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) 
+    for (size_t index=0; index<length; ++index) 
     {
+        StochasticNode<double> *theNode = variable[index];
         
-        std::set<DagNode* > affectedNodes;
-        theNode->getAffectedNodes(affectedNodes);
-        for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) 
+        // copy value
+        storedValue[index] = theNode->getValue();
+        
+        // change the current value
+        theNode->getValue() *= scalingFactor;
+        
+        // touch the node
+        theNode->touch();
+        
+        // calculate the probability ratio for the node we just changed
+        probRatio += theNode->getLnProbabilityRatio();
+        
+        if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) 
         {
-            DagNode* theAffectedNode = *i;
-            //std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << "\n";
-            probRatio += theAffectedNode->getLnProbabilityRatio();
+            theNode->getAffectedNodes(affectedNodes);
         }
     }
     
+    
+    for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) 
+    {
+        DagNode* theAffectedNode = *i;
+        //std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << "\n";
+        probRatio += theAffectedNode->getLnProbabilityRatio();
+    }
+    
     // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
+    double lnHastingsratio = length * log( scalingFactor );
     
     return lnHastingsratio;
 }
 
 
-void SingleElementScaleMove::printParameterSummary(std::ostream &o) const {
+void VectorScaleMove::printParameterSummary(std::ostream &o) const {
     o << "lambda = " << lambda;
 }
 
 
-void SingleElementScaleMove::rejectMove( void ) {
-	
+void VectorScaleMove::rejectMove( void ) {
+    
     changed = false;
     
-    // swap current value and stored value
-    variable[index]->getValue() = storedValue;
+    for (size_t i = 0; i < length; ++i) 
+    {
+        variable[i]->getValue() = storedValue[i];
+    }
 	
 }
 
 
-void SingleElementScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
+void VectorScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     Move::swapNode(oldN, newN);
     
@@ -146,18 +155,21 @@ void SingleElementScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
             break;
         }
     }
-    
 }
 
 
-void SingleElementScaleMove::tune( void ) {
+void VectorScaleMove::tune( void ) {
+    
     double rate = numAccepted / double(numTried);
     
-    if ( rate > 0.44 ) {
+    if ( rate > 0.44 ) 
+    {
         lambda *= (1.0 + ((rate-0.44)/0.56) );
     }
-    else {
+    else 
+    {
         lambda /= (2.0 - rate/0.44 );
     }
+    
 }
 
