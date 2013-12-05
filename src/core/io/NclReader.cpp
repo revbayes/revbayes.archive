@@ -1383,14 +1383,17 @@ std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
     else 
     {
-#       if defined (WIN32)
-        // @Fredrik: This generates errors under windows!
-        //        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
-        // working version?!
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "" + myFileManager.getFileName() );
-#       else
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-#       endif
+        std::string filepath = myFileManager.getFilePath();
+        if ( filepath != "" )
+        {
+#           if defined (WIN32)
+            filepath += "\\";
+#           else
+            filepath += "/";
+#           endif
+        }
+        filepath += myFileManager.getFileName();
+        vectorOfFileNames.push_back( filepath );
     }
     if (readingDirectory == true)
     {

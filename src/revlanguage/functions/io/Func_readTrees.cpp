@@ -53,53 +53,15 @@ RbLanguageObject* Func_readTrees::execute( void ) {
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
     
-    // check that the file/path name has been correctly specified
-    RevBayesCore::RbFileManager myFileManager( fn.getValue() );
-    if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
-    {
-        std::string errorStr = "";
-        formatError(myFileManager, errorStr);
-        throw RbException("Could not find file or path with name \"" + fn.getValue() + "\"");
-    }
-    
-    // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = false;
-    if ( myFileManager.getFilePath() != "" && myFileManager.getFileName() == "")
-        readingDirectory = true;
-    if (readingDirectory == true)
-        RBOUT("Recursively reading the contents of a directory");
-    else
-        RBOUT("Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"");
-    
-    // set up a vector of strings containing the name or names of the files to be read
-    std::vector<std::string> vectorOfFileNames;
-    if (readingDirectory == true)
-        myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    else 
-    {
-#       if defined (WIN32)
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
-#       else
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-#       endif
-    }
-    if (readingDirectory == true)
-    {
-        std::stringstream o1;
-        o1 << "Found " << vectorOfFileNames.size() << " files in directory";
-        RBOUT(o1.str());
-    }
-    
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();
     reader.clearWarnings();
     
     Vector<TimeTree> *trees = new Vector<TimeTree>();
-    for (std::vector<std::string>::iterator it = vectorOfFileNames.begin(); it != vectorOfFileNames.end(); ++it) {
-        std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( *it );
-        for (std::vector<RevBayesCore::TimeTree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) {
-            trees->push_back( TimeTree(*t) );
-        }
+    std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( fn.getValue() );
+    for (std::vector<RevBayesCore::TimeTree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) 
+    {
+        trees->push_back( TimeTree(*t) );
     }
     
     return trees;
