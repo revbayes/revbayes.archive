@@ -84,6 +84,8 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
     updateSet.insert(GLOBAL_RNG->uniform01() * numCharacters); // at least one is inserted
     
     //std::cout << "updateSet ";
+    
+    //
     for (size_t i = 0; i < numCharacters; i++)
     {
         if (GLOBAL_RNG->uniform01() < lambda)
@@ -103,7 +105,19 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
         lnBwdProposal += p->sampleRootCharacterState(updateSet);
         //lnBwdProposal += p->sampleParentCharacterState(updateSet);
     
-
+    
+    std::set<int> maskChildCharacters = bh_vector[index]->getValue().getSampleChildCharacters();
+    std::set<size_t> maskedUpdateSet = updateSet;
+    for (std::set<int>::iterator it = maskChildCharacters.begin(); it != maskChildCharacters.end(); it++)
+    {
+        std::set<size_t>::iterator found_it = maskedUpdateSet.find( *it );
+        if (found_it != maskedUpdateSet.end())
+        {
+            //std::cout << "ok!!\n";
+            maskedUpdateSet.erase(found_it);
+        }
+    }
+    
     if (!nd->isTip())
     {
         size_t ch_idx0 = nd->getChild(0).getIndex();
@@ -112,7 +126,8 @@ double CharacterHistoryCtmcNodeUpdate::performSimpleMove(void)
     }
     else
     {
-        lnBwdProposal += p->sampleChildCharacterState(updateSet);
+//        lnBwdProposal += p->sampleChildCharacterState(updateSet);
+        lnBwdProposal += p->sampleChildCharacterState(maskedUpdateSet);
     }
     
     // propose new state

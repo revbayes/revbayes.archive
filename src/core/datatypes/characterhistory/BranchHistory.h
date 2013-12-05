@@ -25,6 +25,7 @@ namespace RevBayesCore {
     public:
         //BranchHistory(void);
         BranchHistory(size_t nc, size_t ns, size_t idx);
+        BranchHistory(size_t nc, size_t ns, size_t idx, std::set<int> sc);
         BranchHistory(const BranchHistory& m);
         BranchHistory& operator=(const BranchHistory& bh);
         BranchHistory* clone(void) const;
@@ -41,6 +42,7 @@ namespace RevBayesCore {
         const std::vector<CharacterEvent*>& getParentCharacters(void) const;
         const std::vector<CharacterEvent*>& getChildCharacters(void) const;
         const std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void);
+
         
         void addEvent(CharacterEvent* evt);
         void removeEvent(CharacterEvent* evt);
@@ -59,6 +61,7 @@ namespace RevBayesCore {
         void setChildCharacters(const std::vector<CharacterEvent*>& s);
         void setHistory(const std::set<CharacterEvent*,CharacterEventCompare>& s);
         void setHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& s);
+
         
         void print(void);
         const std::set<size_t>& getDirtyCharacters(void);
@@ -73,6 +76,10 @@ namespace RevBayesCore {
         
         bool isClampedChildCharacters(void);
         void setClampChildCharacters(bool tf);
+
+        const std::set<int>& getSampleChildCharacters(void);
+        void setSampleChildCharacters(std::set<int> sc);
+
         
     protected:
         
@@ -96,6 +103,7 @@ namespace RevBayesCore {
         bool redrawHistory;
         bool clampChildCharacters;
         
+        std::set<int>               sampleChildCharacters;
         std::set<size_t>             dirtyCharacters;
         
     private:

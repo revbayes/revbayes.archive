@@ -115,7 +115,9 @@ bool TestAdmixtureGraph::run(void) {
     
     // MODEL GRAPH
     std::vector<unsigned int> seed;
-    //seed.push_back(2); seed.push_back(2); GLOBAL_RNG->setSeed(seed);
+    seed = GLOBAL_RNG->getSeed();
+    std::cout << "seed " << seed[0] << " " << seed[1] << "\n";
+//    seed.push_back(12); seed.push_back(2); GLOBAL_RNG->setSeed(seed);
     
     // read in data
     std::string fn = snpFilepath + snpFilename;
@@ -151,10 +153,10 @@ bool TestAdmixtureGraph::run(void) {
     size_t numNodes = 2 * numTaxa - 1;
     size_t numBranches = numNodes - 1;
     //size_t numSites = snps->getNumSnps();
-    int blockSize = 10000;
+    int blockSize = 100000;
     
     int divGens = 1;
-    int delay = 20;
+    int delay = 50;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 1;
@@ -171,7 +173,7 @@ bool TestAdmixtureGraph::run(void) {
     bool updateNodeAges = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 4;
+    int numChains = 5;
     int numProcesses = numChains;
 //    numProcesses=80;
     int swapInterval = 10;
@@ -333,12 +335,12 @@ bool TestAdmixtureGraph::run(void) {
         moves.push_back( new AdmixtureEdgeRemoveResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, 2.0) );
         moves.push_back( new AdmixtureEdgeReplaceResidualWeights( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 10.0) );
         //moves.push_back( new AdmixtureEdgeFNPR( tau, branchRates_nonConst, delay, allowSisterAdmixture, 1.0, 10.0) );
-        moves.push_back( new AdmixtureEdgeAddCladeResiduals( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
+        //moves.push_back( new AdmixtureEdgeAddCladeResiduals( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
         moves.push_back( new AdmixtureEdgeReplaceCladeResiduals( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 10.0) );
         
         
         if (updateTopology)
-            moves.push_back( new AdmixtureEdgeDivergenceMerge( tau, admixtureRate, branchRates_nonConst, admixtureCount, residuals, delay, allowSisterAdmixture, 5.0 ));
+            ;//moves.push_back( new AdmixtureEdgeDivergenceMerge( tau, admixtureRate, branchRates_nonConst, admixtureCount, residuals, delay, allowSisterAdmixture, 5.0 ));
 
         moves.push_back( new AdmixtureEdgeReweight( tau, delay, 5.0, 5.0) );
         moves.push_back( new AdmixtureEdgeReversePolarity( tau, delay, 5.0, 5.0) );

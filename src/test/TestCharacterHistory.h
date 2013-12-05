@@ -27,7 +27,7 @@ namespace RevBayesCore {
         TestCharacterHistory(int ac, const char* av[], const std::string &afn, const std::string &tfn, const std::string &gfn, int gen, const std::string &fp="");
         virtual                                ~TestCharacterHistory(void);                                                            //!< Virtual destructor
         
-        bool                                    run();
+        bool                                    run(void);
         
     private:
         void tokenizeArgv(void);
@@ -36,6 +36,9 @@ namespace RevBayesCore {
         std::string                             areaFilename;
         std::string                             treeFilename;
         std::string                             geoFilename;
+        std::string                             areaNodeFilename;
+        std::string                             areaEdgeFilename;
+        std::string                             timeatlasFilename;
         std::string                             filepath;
         int                                     mcmcGenerations;
         int                                     argc;

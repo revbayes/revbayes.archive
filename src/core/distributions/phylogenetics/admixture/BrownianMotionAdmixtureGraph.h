@@ -46,6 +46,7 @@ namespace RevBayesCore {
         void                                        keepSpecialization(DagNode* affecter);
         void                                        restoreSpecialization(DagNode* restorer);
         void                                        touchSpecialization(DagNode* toucher);
+        void                                        updateParameters(DagNode* toucher);
         std::vector<std::vector<double> >           getResiduals(void) const;
         double                                      getResiduals(int i, int j) const;
  		
@@ -83,6 +84,7 @@ namespace RevBayesCore {
         void                                        updateAllNodePathsToRoot(void);
         void                                        updateTipPathsToRoot(void);
         void                                        updateRbCovarianceEigensystem(void);
+
         
         void                                        findAllDagPathsToRoot(AdmixtureNode* node, std::list<AdmixtureNode*> path, std::set<std::list<AdmixtureNode*> >& pathSet);
         double                                      findCovariance(AdmixtureNode* p, AdmixtureNode* q);

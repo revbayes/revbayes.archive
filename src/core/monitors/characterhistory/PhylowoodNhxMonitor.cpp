@@ -198,7 +198,7 @@ std::string PhylowoodNhxMonitor::buildNhxString(void)
     nhxStrm << "\tpieslicestyle even\n";
     nhxStrm << "\tpiefillstyle outwards\n";
     nhxStrm << "\ttimestart -" << tree->getValue().getRoot().getAge() << "\n";
-    nhxStrm << "\tmarkerradius " << 300 << "\n";
+    nhxStrm << "\tmarkerradius " << 200 << "\n";
     nhxStrm << "\tminareaval " << 0.1 << "\n";
     nhxStrm << "End;\n\n";
     
@@ -271,6 +271,15 @@ std::string PhylowoodNhxMonitor::buildNhxString(void)
     nhxStrm << "tree TREE1 = " << treeStr << ";\n";
     nhxStrm << "End;\n";
     
+    std::cout << "[";
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        if (i != 0)
+            std::cout << ",";
+        std::cout << (double)childCharacterCounts[0][i] / numSamples;
+    }
+    std::cout << "]\n";
+    
     return nhxStrm.str();
 }
 
@@ -292,6 +301,20 @@ void PhylowoodNhxMonitor::printHeader() {
     ;
 }
 
+std::vector<unsigned int> PhylowoodNhxMonitor::getChildCharacterCounts(int idx)
+{
+    return childCharacterCounts[idx];
+}
+
+std::vector<unsigned int> PhylowoodNhxMonitor::getParentCharacterCounts(int idx)
+{
+    return parentCharacterCounts[idx];
+}
+
+long PhylowoodNhxMonitor::getNumSamples(void)
+{
+    return numSamples;
+}
 
 void PhylowoodNhxMonitor::swapNode(DagNode *oldN, DagNode *newN) {
     

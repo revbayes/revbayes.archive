@@ -146,7 +146,7 @@ AdmixtureConstantBirthDeathProcess* AdmixtureConstantBirthDeathProcess::clone( v
 double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     
     // uncomment for uniform prior
-    //return 0.0;
+    return 0.0;
     
     // retrieved the speciation times
     std::vector<double> times;

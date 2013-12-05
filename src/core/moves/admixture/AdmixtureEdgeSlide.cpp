@@ -105,8 +105,10 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         AdmixtureNode* nd_a = storedAdmixtureParent;
         while (nd_a->getNumberOfChildren() != 0)
         {
-            nd_a = &nd_a->getChild(rng->uniform01()*nd_a->getNumberOfChildren());
-            fwdProposal *= 0.5;
+        // MJL 111713: not sure if right
+//          if (nd_a->getNumberOfChildren() == 2) fwdProposal *= 0.5;
+            nd_a = &nd_a->getChild(rng->uniform01() * nd_a->getNumberOfChildren());
+
         }
         AdmixtureNode* nodeSrc = nd_a;
         
@@ -114,8 +116,9 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         AdmixtureNode* nd_b = storedAdmixtureChild;
         while (nd_b->getNumberOfChildren() != 0)
         {
-            nd_b = &nd_b->getChild(rng->uniform01()*nd_b->getNumberOfChildren());
-            fwdProposal *= 0.5;
+            // MJL 111713: not sure if right
+//          if (nd_b->getNumberOfChildren() == 2) fwdProposal *= 0.5;
+            nd_b = &nd_b->getChild(rng->uniform01() * nd_b->getNumberOfChildren());
         }
         AdmixtureNode* nodeDst = nd_b;
         
@@ -160,6 +163,7 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         // find the node where the paths diverge by traversing both paths from root to tip
         AdmixtureNode* mrca = nd_a;
         //std::cout << "mrca : root -> tip\n";
+        int numSplits = 0;
         while (nd_a == nd_b && !path_a.empty() && !path_b.empty())
         {
             mrca = nd_a;
@@ -170,9 +174,9 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
             path_b.pop_back();
         }
         
+        // MJL 111713: not sure if right
         // reverse move, prob of selecting the slide rails
-        bwdProposal *= pow(0.5,path_a.size()+path_b.size());
-        //std::cout << "bwdProposal1 " << bwdProposal << "\n";
+        // bwdProposal *= pow(0.5,path_a.size()+path_b.size());
         
         // sample time from beta, scaled between mrca and min tip time
         //double minAge = storedAdmixtureParent->getAge();

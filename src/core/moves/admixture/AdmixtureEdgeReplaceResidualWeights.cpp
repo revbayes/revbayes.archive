@@ -72,6 +72,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
     
     AdmixtureTree& tau = variable->getValue();
     AdmixtureNode* root = &tau.getRoot();
+    size_t numTaxa = tau.getNumberOfTips()-2;
 
     std::vector<AdmixtureNode*> admixtureParents = tau.getAdmixtureParents();
     
@@ -87,6 +88,17 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
     else
     {
         
+//        std::cout << "BEFORE\n";
+//        storedResiduals = residuals->getValue();
+//        for (size_t i = 0; i < numTaxa; i++)
+//        {
+//            for (size_t j = 0; j < numTaxa; j++)
+//            {
+//                double r = storedResiduals[i * numTaxa + j];
+//                std::cout << r << " ";
+//            }
+//            std::cout << "\n";
+//        }
         
         // proposal densities
         double fwdProposal = 1.0;
@@ -146,7 +158,18 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         newAdmixtureParentParent = storedAdmixtureParentParent;
         
         variable->touch();
+
+//        std::cout << "AFTER\n";
         storedResiduals = residuals->getValue();
+//        for (size_t i = 0; i < numTaxa; i++)
+//        {
+//            for (size_t j = 0; j < numTaxa; j++)
+//            {
+//                double r = storedResiduals[i * numTaxa + j];
+//                std::cout << r << " ";
+//            }
+//            std::cout << "\n";
+//        }
         
         //tau.checkAllEdgesRecursively(root);
         
@@ -154,8 +177,13 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         // add event ...
         //std::cout << "\n\treplace, add\n";
         
+        double maxStoredResidual = 0.0;
+        for (size_t i = 0; i < storedResiduals.size(); i++)
+            if (storedResiduals[i] > maxStoredResidual)
+                maxStoredResidual = storedResiduals[i];
+        double lambda = 1.0 / maxStoredResidual;
         
-        size_t numTaxa = tau.getNumberOfTips()-2;
+       
         AdmixtureNode* nodeSrc = NULL;
         AdmixtureNode* nodeDst = NULL;
         size_t k_a = 0;
@@ -165,6 +193,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         double v = rng->uniform01();
         
         if (v < 0.5)
+//        if (v < 0.0)
         {
             
             // get sum of positive residuals for each taxon against all other taxa
@@ -177,8 +206,10 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
                 {
                     double r = storedResiduals[i * numTaxa + j];
                     if (r > 0.0 && i != j)
+                    //if (i != j)
                     {
                         residualWeights_a[i] += r;
+                        //residualWeights_a[i] += exp(lambda*r);
                         sumResidualWeights_a += r;
                     }
                 }
@@ -214,7 +245,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
                     break;
                 }
             }
-            fwdProposal *= (residualWeights_a[k_a] / sumResidualWeights_a);
+            //fwdProposal *= (residualWeights_a[k_a] / sumResidualWeights_a);
             
             // get sum of positive residuals for each taxon wrt taxon A
             std::vector<double> residualWeights_b(numTaxa,0.0);
@@ -223,8 +254,10 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
             {
                 double r = storedResiduals[k_a * numTaxa + i];
                 if (r > 0.0 && k_a != i)
+                //if (k_a != i)
                 {
                     residualWeights_b[i] += r;
+                    //residualWeights_b[i] += exp(lambda*r);
                     sumResidualWeights_b += r;
                 }
             }
@@ -251,7 +284,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
                     break;
                 }
             }
-            fwdProposal *= (residualWeights_b[k_b] / sumResidualWeights_b);
+            //fwdProposal *= (residualWeights_b[k_b] / sumResidualWeights_b);
         }
         else
         {
@@ -335,7 +368,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         
         
         double a = 1.0;
-        double b = 20.0;
+        double b = 10.0;
         double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
         admixtureWeight /= 2;
             
@@ -456,6 +489,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
 //        std::cout << "a " << storedAdmixtureAge << " -> " << newAge << "\n";
 //        std::cout << "w " << newWeight << "\n";
         
+        return 0.0;
        return lnBwdProposal - lnFwdProposal + lnBwdPropRates;
         
        /*
@@ -685,7 +719,7 @@ double AdmixtureEdgeReplaceResidualWeights::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-      //      std::cout << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
+            //std::cout << probRatio << " " << theNode->getName() << "\t" << theNode->getLnProbability() << " " << theNode->getLnProbabilityRatio() << "\n";
         }
     }
     
