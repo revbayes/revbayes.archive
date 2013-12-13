@@ -116,11 +116,11 @@ void WangLandauMcmc::updateBias(void)
 
 int WangLandauMcmc::nextCycle(bool advanceCycle) {
     
-    size_t proposals = round( schedule.getNumberMovesPerIteration() );
+    size_t proposals = round( schedule->getNumberMovesPerIteration() );
     for (size_t i=0; i<proposals; i++)
     {
         // Get the move
-        Move* theMove = schedule.nextMove( generation );
+        Move* theMove = schedule->nextMove( generation );
         
         if ( theMove->isGibbs() )
         {

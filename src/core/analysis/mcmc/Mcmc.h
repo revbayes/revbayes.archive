@@ -76,11 +76,10 @@ namespace RevBayesCore {
         double                                              lnProbability;
         Model                                               model;
         std::vector<Move*>                                  moves;
-        MoveSchedule*                                       moveSchedule;
+        MoveSchedule*                                       schedule;
         std::vector<Monitor*>                               monitors;
         std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
         std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
-        RandomMoveSchedule                                  schedule;
 
     };
 
