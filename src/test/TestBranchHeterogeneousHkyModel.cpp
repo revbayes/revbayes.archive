@@ -3,7 +3,7 @@
 #include "BinarySubtraction.h"
 #include "Clade.h"
 #include "ConstantNode.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
 #include "ExponentialDistribution.h"
@@ -167,9 +167,8 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     // we use a birth-death process prior and thus a time-tree
     // we could use as well an unrooted tree
     std::vector<std::string> names = data[0]->getTaxonNames();
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( 2.0 ) );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     
 	
 //	//rescale the tree so that its root age is 1

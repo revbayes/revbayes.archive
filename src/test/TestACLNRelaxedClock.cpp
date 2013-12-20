@@ -4,7 +4,7 @@
 #include "BinarySubtraction.h"
 #include "Clade.h"
 #include "ConstantNode.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "ContinuousStochasticNode.h"
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
@@ -94,9 +94,8 @@ bool TestACLNRelaxedClock::run( void ) {
     std::cout << "Q:\t" << q->getValue() << std::endl;
     
     std::vector<std::string> names = data[0]->getTaxonNames();
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
 	
 	tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;

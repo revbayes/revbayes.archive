@@ -1,7 +1,7 @@
 #include "Clade.h"
 #include "CoalaFunction.h"
 #include "ConstantNode.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "CorrespondenceAnalysis.h"
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
@@ -127,9 +127,8 @@ bool TestCoala::run( void ) {
     
     
     std::vector<std::string> names = data[0]->getTaxonNames();
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(lambda, mu, met, mep, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( 2.0 ) );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, lambda, mu, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
         
     // and the character model
     GeneralBranchHeterogeneousCharEvoModel<AminoAcidState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<AminoAcidState, TimeTree>(tau, 20, true, data[0]->getNumberOfCharacters());

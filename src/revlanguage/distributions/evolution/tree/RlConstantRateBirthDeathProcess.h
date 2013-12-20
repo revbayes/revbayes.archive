@@ -15,23 +15,22 @@
  * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlConstantBirthDeathProcess_H
-#define RlConstantBirthDeathProcess_H
+#ifndef RlConstantRateBirthDeathProcess_H
+#define RlConstantRateBirthDeathProcess_H
 
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "RlTimeTree.h"
 #include "RlTypedDistribution.h"
 
 namespace RevLanguage {
     
-    class ConstantBirthDeathProcess :  public TypedDistribution<TimeTree> {
+    class ConstantRateBirthDeathProcess :  public TypedDistribution<TimeTree> {
         
     public:
-        ConstantBirthDeathProcess( void );
-        virtual ~ConstantBirthDeathProcess();
+        ConstantRateBirthDeathProcess( void );
         
         // Basic utility functions
-        ConstantBirthDeathProcess*                      clone(void) const;                                                              //!< Clone the object
+        ConstantRateBirthDeathProcess*                  clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -40,7 +39,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::ConstantBirthDeathProcess*        createDistribution(void) const;
+        RevBayesCore::ConstantRateBirthDeathProcess*    createDistribution(void) const;
         
     protected:
         
@@ -49,11 +48,10 @@ namespace RevLanguage {
         
     private:
 
+        RbPtr<const Variable>                           origin;
         RbPtr<const Variable>                           lambda;
         RbPtr<const Variable>                           mu;
         RbPtr<const Variable>                           rho;
-        RbPtr<const Variable>                           massExtinctionTimes;
-        RbPtr<const Variable>                           massExtinctionSurvivalProbabilities;
         RbPtr<const Variable>                           samplingStrategy;
         RbPtr<const Variable>                           condition;
         RbPtr<const Variable>                           numTaxa;

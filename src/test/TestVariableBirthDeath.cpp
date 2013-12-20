@@ -3,7 +3,7 @@
 #include "BrownianMotion.h"
 #include "Clade.h"
 #include "CompletePathRescaleMove.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "ConstantFunction.h"
 #include "ConstantNode.h"
 #include "ConstantStepFunction.h"

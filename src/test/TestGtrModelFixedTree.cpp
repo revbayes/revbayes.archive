@@ -1,6 +1,6 @@
 #include "Clade.h"
 #include "ConstantNode.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
 #include "FileMonitor.h"
@@ -57,9 +57,8 @@ bool TestGtrModelFixedTree::run( void ) {
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     std::vector<std::string> names = data[0]->getTaxonNames();
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree> *tree = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+    StochasticNode<TimeTree> *tree = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     
     tree->setValue( trees[0] );
 
