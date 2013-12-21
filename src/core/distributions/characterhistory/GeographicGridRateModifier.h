@@ -12,6 +12,7 @@
 #include "AbstractCharacterHistoryRateModifier.h"
 #include "GeographicArea.h"
 #include "StochasticNode.h"
+#include "TimeAtlas.h"
 #include <string>
 
 namespace RevBayesCore
@@ -19,18 +20,22 @@ namespace RevBayesCore
     class GeographicGridRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographicGridRateModifier(void);
+        GeographicGridRateModifier(TimeAtlas* ta, int index);
         GeographicGridRateModifier(const GeographicGridRateModifier& p);
         double computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value to computeRateModifier
         GeographicGridRateModifier* clone(void) const;
         void update(void);
         
     private:
+        
+        TimeAtlas* atlas;
+        
         std::string distanceType;
         std::vector<GeographicArea*> gridAreas;
         
         // helper variables
         int numAreas;
+        int index;
     };
 }
 

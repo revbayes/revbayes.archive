@@ -153,13 +153,13 @@ bool TestAdmixtureGraph::run(void) {
     size_t numNodes = 2 * numTaxa - 1;
     size_t numBranches = numNodes - 1;
     //size_t numSites = snps->getNumSnps();
-    int blockSize = 100000;
+    int blockSize = 1000;
     
     int divGens = 1;
-    int delay = 50;
+    int delay = 400;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
-    int maxNumberOfAdmixtureEvents = 1;
+    int maxNumberOfAdmixtureEvents = 5;
     
     bool useWishart = true;             // if false, the composite likelihood function is used
     bool useBias = true;               // if false, no covariance bias correction for small sample size is used
@@ -173,11 +173,11 @@ bool TestAdmixtureGraph::run(void) {
     bool updateNodeAges = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 5;
+    int numChains = 100;
     int numProcesses = numChains;
 //    numProcesses=80;
     int swapInterval = 10;
-    double deltaTemp = 0.1;
+    double deltaTemp = 0.01;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
@@ -186,20 +186,23 @@ bool TestAdmixtureGraph::run(void) {
     std::stringstream rndStr;
     rndStr << std::setw(9) << std::fixed << std::setprecision(0) << std::setfill('0') << std::floor(GLOBAL_RNG->uniform01()*1e9);
     // std::string outName = "papa." + rndStr.str();
-    std::string simName = "cordycepstest";
+    std::string simName = "human";
     std::string outName = simName + "." + rndStr.str() + "." + snpFilename;
     
     // BM diffusion rate
     ConstantNode<double>* a_bm = new ConstantNode<double>( "bm_a", new double(3));
     ConstantNode<double>* b_bm = new ConstantNode<double>( "bm_b", new double(20));
-    StochasticNode<double>* diffusionRate = new StochasticNode<double> ("rate_BM", new ExponentialDistribution(b_bm));
+    ConstantNode<double>* c_bm = new ConstantNode<double>( "bm_c", new double(0));
+    ConstantNode<double>* d_bm = new ConstantNode<double>( "bm_d", new double(100));
+    //StochasticNode<double>* diffusionRate = new StochasticNode<double> ("rate_BM", new ExponentialDistribution(b_bm));
+    StochasticNode<double>* diffusionRate = new StochasticNode<double> ("rate_BM", new UniformDistribution(c_bm, d_bm));
 
     // CPP rate
     // MJL 071713:  Flat Poisson prior cannot overpower model overfitting when lnL is large.
     //              Consider implementing Conway-Maxewell-Poisson distn instead.
     
     // This prior requires admixture events to improve lnL by N units
-    double adm_th_lnL = 4;
+    double adm_th_lnL = -25;
     double rate_cpp_prior = exp(adm_th_lnL);
     
     ConstantNode<double>* c = new ConstantNode<double>( "c", new double(1.0/rate_cpp_prior)); // admixture rate prior
@@ -232,6 +235,7 @@ bool TestAdmixtureGraph::run(void) {
     ConstantNode<double>* branchRateB = new ConstantNode<double>( "branchRateB", new double(2));
     ConstantNode<double>* branchRateC = new ConstantNode<double>( "branchRateC", new double(0));
     ConstantNode<double>* branchRateD = new ConstantNode<double>( "branchRateD", new double(1));
+    ConstantNode<double>* branchRateE = new ConstantNode<double>( "branchRateE", new double(100));
 	for( int i=0; i<numBranches; i++){
 
         std::ostringstream br_name;
@@ -240,6 +244,7 @@ bool TestAdmixtureGraph::run(void) {
         //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new InverseGammaDistribution(branchRateA, branchRateB));
         //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new GammaDistribution(branchRateA, branchRateB));
         ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode(br_name.str(), new LognormalDistribution(branchRateC, branchRateD));
+        //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode(br_name.str(), new UniformDistribution(branchRateC, branchRateE));
         
 		if (!useBranchRates)
         {
@@ -273,9 +278,9 @@ bool TestAdmixtureGraph::run(void) {
     // model parameters
     if (updateParameters)
     {
-        moves.push_back( new ScaleMove(diffusionRate, 1.0, true, 4.0) );
-        moves.push_back( new ScaleMove(diversificationRate, 1.0, true, 2.0) );
-        moves.push_back( new ScaleMove(turnover, 1.0, true, 2.0) );
+        moves.push_back( new ScaleMove(diffusionRate, 0.5, true, 10.0) );
+        moves.push_back( new ScaleMove(diversificationRate, 1.0, true, 10.0) );
+        moves.push_back( new ScaleMove(turnover, 1.0, true, 10.0) );
     }
     
     
@@ -290,7 +295,7 @@ bool TestAdmixtureGraph::run(void) {
     if (updateNodeAges)
     {
         for (size_t i = numTaxa; i < numNodes - 1; i++)
-            moves.push_back( new AdmixtureNodeTimeSlideBeta( tau, (int)i, 0.5, false, 1.0 ) );
+            moves.push_back( new AdmixtureNodeTimeSlideBeta( tau, (int)i, 0.3, false, 5.0 ) );
     }
     
     // branch rate updates
@@ -298,16 +303,16 @@ bool TestAdmixtureGraph::run(void) {
     {
         // branch rate multipliers
         for( int i=0; i < numBranches; i++)
-            moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, false, 1.0) );
+            moves.push_back( new ScaleMove(branchRates_nonConst[i], 0.3, false, 5.0) );
         
         // tree rate shift
-        moves.push_back( new AdmixtureShiftTreeRates(diffusionRate, branchRates_nonConst, 1.0, false, 2));
+        // moves.push_back( new AdmixtureShiftTreeRates(diffusionRate, branchRates_nonConst, 0.3, false, 10));
         
         // shift node age for branch rate
         for (size_t i = numTaxa; i < numNodes - 1; i++)
         {
             if (updateNodeAges)
-                moves.push_back( new AdmixtureShiftNodeAgeAndRate(tau, branchRates_nonConst, (int)i, 1.0, false, 1.0) );
+                ;//moves.push_back( new AdmixtureShiftNodeAgeAndRate(tau, branchRates_nonConst, (int)i, 0.3, false, 5.0) );
             
             // MJL 081513: not working, I think...
             if (updateTopology)
@@ -322,7 +327,7 @@ bool TestAdmixtureGraph::run(void) {
         
         // NNI with branch rate modifier (not working quite right, disabled)
         if (updateTopology)
-            moves.push_back( new AdmixtureNearestNeighborInterchangeAndRateShift( tau, branchRates_nonConst, 1.0, false, numTaxa));
+            ;//moves.push_back( new AdmixtureNearestNeighborInterchangeAndRateShift( tau, branchRates_nonConst, 1.0, false, numTaxa));
         
         
     }
@@ -334,7 +339,7 @@ bool TestAdmixtureGraph::run(void) {
         moves.push_back( new AdmixtureEdgeAddResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
         moves.push_back( new AdmixtureEdgeRemoveResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, 2.0) );
         moves.push_back( new AdmixtureEdgeReplaceResidualWeights( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 10.0) );
-        //moves.push_back( new AdmixtureEdgeFNPR( tau, branchRates_nonConst, delay, allowSisterAdmixture, 1.0, 10.0) );
+        //moves.push_back( new AdmixtureEdgeFNPR( tau, branchRates_nonConst, delay, allowSisterAdmixture, 0.5, 10.0) );
         //moves.push_back( new AdmixtureEdgeAddCladeResiduals( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
         moves.push_back( new AdmixtureEdgeReplaceCladeResiduals( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 10.0) );
         
@@ -342,10 +347,10 @@ bool TestAdmixtureGraph::run(void) {
         if (updateTopology)
             ;//moves.push_back( new AdmixtureEdgeDivergenceMerge( tau, admixtureRate, branchRates_nonConst, admixtureCount, residuals, delay, allowSisterAdmixture, 5.0 ));
 
-        moves.push_back( new AdmixtureEdgeReweight( tau, delay, 5.0, 5.0) );
-        moves.push_back( new AdmixtureEdgeReversePolarity( tau, delay, 5.0, 5.0) );
+        moves.push_back( new AdmixtureEdgeReweight( tau, delay, 10.0, 20.0) );
+        moves.push_back( new AdmixtureEdgeReversePolarity( tau, delay, 10.0, 20.0) );
         moves.push_back( new AdmixtureEdgeSlide( tau, branchRates_nonConst, delay, allowSisterAdmixture, 20.0, 10.0) );
-        //moves.push_back( new ScaleMove(admixtureRate, 1.0, false, 5.0));
+        moves.push_back( new ScaleMove(admixtureRate, 0.5, true, 5.0));
 
     }
     
@@ -373,12 +378,12 @@ bool TestAdmixtureGraph::run(void) {
     monitors.push_back( new FileMonitor( monitoredNodes, 5, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true, true, true ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
  
-    monitors.push_back( new AdmixtureBipartitionMonitor(tau, br_vector, numTreeResults, numAdmixtureResults, 2, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true, true, true ) );
+    monitors.push_back( new AdmixtureBipartitionMonitor(tau, br_vector, numTreeResults, numAdmixtureResults, 5, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true, true, true ) );
     monitors.push_back( new AdmixtureResidualsMonitor(residuals, snps->getPopulationNames(), 10, "/Users/mlandis/data/admix/output/" + outName + ".residuals.txt", "\t", true, true, true, true ) );
 
     //monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, true, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".admixture_trees.txt", "\t", true, true, true, true ) );
     //monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, true, 10, "/Users/mlandis/data/admix/output/" + outName + ".topology_trees.trees", "\t", true, true, true, true ) );
-    //monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, false, 10, "/Users/mlandis/data/admix/output/" + outName + ".time_trees.trees", "\t", true, true, true, true ) );
+    monitors.push_back( new ExtendedNewickAdmixtureTreeMonitor( tau, br_vector, false, false, 10, "/Users/mlandis/data/admix/output/" + outName + ".time_trees.trees", "\t", true, true, true, true ) );
     
     
     

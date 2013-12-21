@@ -16,9 +16,14 @@
 
 using namespace RevBayesCore;
 
-GeographicGridRateModifier::GeographicGridRateModifier(void)
+GeographicGridRateModifier::GeographicGridRateModifier(TimeAtlas* ta, int idx) : atlas(ta), index(idx)
 {
-    ;
+    // assign areas for timeslice
+    gridAreas.clear();
+    std::vector<GeographicArea*> tmpAreas = atlas->getAreas()[index];
+    for (size_t i = 0; i < tmpAreas.size(); i++)
+        gridAreas.push_back(new GeographicArea(*tmpAreas[i]));
+
 }
 
 GeographicGridRateModifier::GeographicGridRateModifier(const GeographicGridRateModifier& p)
@@ -26,6 +31,8 @@ GeographicGridRateModifier::GeographicGridRateModifier(const GeographicGridRateM
     if (&p != this)
     {
         numAreas = p.numAreas;
+        index = p.index;
+        *atlas = *p.atlas;
         gridAreas.clear();
         for (size_t i = 0; i < p.gridAreas.size(); i++)
             gridAreas.push_back(new GeographicArea(*p.gridAreas[i]));

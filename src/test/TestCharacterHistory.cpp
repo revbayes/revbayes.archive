@@ -27,6 +27,7 @@
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "GeographicDistanceRateModifier.h"
+#include "GeographicGridRateModifier.h"
 #include "Mcmc.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -101,6 +102,7 @@ bool TestCharacterHistory::run( void ) {
     timeatlasFilename = "timeatlas.txt";
     TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
     TimeAtlas ta(&tsdr);
+    int numTimes = (int)ta.getTimes().size();
     
     //////////
     // test
@@ -200,7 +202,16 @@ bool TestCharacterHistory::run( void ) {
     // geographic distances
     GeographicDistanceRateModifier* gdrm = new GeographicDistanceRateModifier(geo_coords);
     gdrm->update();
-   
+    
+    // geographic grid timeatlas
+    std::vector<GeographicGridRateModifier*> ggrmv;
+    for (size_t i = 0; i < numTimes; i++)
+    {
+        ggrmv.push_back(new GeographicGridRateModifier(&ta, i));
+    }
+    // For this to work, must provide DisperalHistoryCtmc the age of the event to query the proper atlas slice
+    
+    
     // range size bd rates
     ConstantNode<double>* extinctionPower_pr = new ConstantNode<double>("ext_pow_pr", new double(5.0));
     ConstantNode<double>* dispersalPower_pr = new ConstantNode<double>("disp_pow_pr", new double(5.0));
@@ -235,7 +246,7 @@ bool TestCharacterHistory::run( void ) {
 //    rateGain->setValue(new double(.3));
 //    rateLoss->setValue(new double(3.0));
     rateGain->setValue(new double(.2));
-    rateLoss->setValue(new double(1.5));
+    rateLoss->setValue(new double(2.0));
 
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
@@ -286,7 +297,7 @@ bool TestCharacterHistory::run( void ) {
     {
         std::stringstream ss;
         ss << i;
-        DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(rates, tau, br_vector[i], distancePower, dispersalPower, extinctionPower, areaStationaryFrequency, areaPower, numCharacters, numStates, i, gdrm, grsrm, lrsrm, asrm);
+        DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(rates, tau, br_vector[i], distancePower, dispersalPower, extinctionPower, areaStationaryFrequency, areaPower, numCharacters, numStates, i, gdrm, grsrm, lrsrm, asrm, ggrmv);
         //DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, NULL);
         
         if (i == 1)

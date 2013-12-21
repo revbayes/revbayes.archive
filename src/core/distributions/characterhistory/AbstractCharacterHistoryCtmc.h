@@ -38,8 +38,8 @@ namespace RevBayesCore
         
         virtual void                                            simulatePath(const std::set<size_t>& indexSet) = 0;
         virtual void                                            samplePath(const std::set<size_t>& indexSet);
-        virtual double                                            sampleChildCharacterState(const std::set<size_t>& indexSet);
-        virtual double                                            sampleParentCharacterState(const std::set<size_t>& indexSet);
+        virtual double                                          sampleChildCharacterState(const std::set<size_t>& indexSet);
+        virtual double                                          sampleParentCharacterState(const std::set<size_t>& indexSet);
         virtual double                                          sampleRootCharacterState(const std::set<size_t>& indexSet) = 0;
         virtual double                                          sampleChildCharacterState(const std::set<size_t>& indexSet, const std::vector<CharacterEvent*>& state1, const std::vector<CharacterEvent*>& state2, double t1, double t2) = 0;
 
@@ -53,7 +53,7 @@ namespace RevBayesCore
         
     protected:
         //virtual std::set<CharacterEvent*>                       simulateCharacterState(double t);
-        virtual double                       sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t) = 0;
+        virtual double                                          sampleCharacterState(const std::set<size_t>& indexSet, std::vector<CharacterEvent*>& states, double t) = 0;
         
         TypedDagNode<RateMatrix>*                               rateMatrix;
         std::vector<const TypedDagNode<double>* >               rates;

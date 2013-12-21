@@ -51,7 +51,7 @@ DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::ve
     }
 }
 
-DispersalHistoryCtmc::DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp,  const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs, AreaSizeRateModifier* asrm) : AbstractCharacterHistoryCtmc(r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs), lossRangeSizePower(lrsp), gainRangeSizePower(grsp), rangeSizeFrequency(rsf), areaSizePower(asp), areaSizeRateModifier(asrm)
+DispersalHistoryCtmc::DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp,  const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs, AreaSizeRateModifier* asrm, std::vector<GeographicGridRateModifier*> ggrmv) : AbstractCharacterHistoryCtmc(r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs), lossRangeSizePower(lrsp), gainRangeSizePower(grsp), rangeSizeFrequency(rsf), areaSizePower(asp), areaSizeRateModifier(asrm), geographicGrids(ggrmv)
 
 {
     addParameter(distancePower);
@@ -168,6 +168,15 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
         double arm = areaSizeRateModifier->computeRateModifier(currState, nextState);
         //std::cout << rate*arm << " = " << rate << " * " << arm << "; " << nextState->getIndex() << " " << nextState->getState() << "\n";
         rate *= arm;
+    }
+    
+    if (!geographicGrids.empty() && nextState->getState() == 1)
+    {
+        double parentAge = tree->getValue().getNode(index).getParent().getAge();
+        double eventAge = parentAge + tree->getValue().getNode(index).getBranchLength() * nextState->getTime();
+        int t_idx = (int)eventAge;
+        double grm = geographicGrids[t_idx]->computeRateModifier(currState, nextState);
+        rate *= grm;
     }
     
     //std::cout << rate <<"\n";

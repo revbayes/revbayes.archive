@@ -106,7 +106,7 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         while (nd_a->getNumberOfChildren() != 0)
         {
         // MJL 111713: not sure if right
-//          if (nd_a->getNumberOfChildren() == 2) fwdProposal *= 0.5;
+            //if (nd_a->getNumberOfChildren() == 2) fwdProposal *= 0.5;
             nd_a = &nd_a->getChild(rng->uniform01() * nd_a->getNumberOfChildren());
 
         }
@@ -117,7 +117,7 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         while (nd_b->getNumberOfChildren() != 0)
         {
             // MJL 111713: not sure if right
-//          if (nd_b->getNumberOfChildren() == 2) fwdProposal *= 0.5;
+            //if (nd_b->getNumberOfChildren() == 2) fwdProposal *= 0.5;
             nd_b = &nd_b->getChild(rng->uniform01() * nd_b->getNumberOfChildren());
         }
         AdmixtureNode* nodeDst = nd_b;
@@ -145,6 +145,7 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
           //  std::cout << "\t" << nd_a << "\t" << nd_a->getAge() << "\n";
             path_a.push_back(nd_a);
             nd_a = &nd_a->getParent();
+            //if (nd_a != NULL && nd_a->getNumberOfChildren() == 2) bwdProposal *= 0.5;
         }
         nd_a = path_a.back();
         
@@ -156,6 +157,7 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
           //  std::cout << "\t" << nd_b << "\t" << nd_b->getAge() << "\n";
             path_b.push_back(nd_b);
             nd_b = &nd_b->getParent();
+            //if (nd_b != NULL && nd_b->getNumberOfChildren() == 2) bwdProposal *= 0.5;
         }
         nd_b = path_b.back();
         
@@ -209,15 +211,15 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         
         // get age range between nodes
         double ageRange = maxAge - minAge;
-        // crashes ehre where ageRange==0.0
-       // std::cout << "ageRange " << ageRange << "\n";
         
         // sample beta rv and compute proposal factors
         double unitAge = (storedAge - minAge) / ageRange;
         double a = lambda * unitAge + 1.0;
         double b = lambda * (1.0 - unitAge) + 1.0;
+        
+        
         double newUnitAge = RbStatistics::Beta::rv(a, b, *rng);
-        //std::cout << "A3\n";
+        
         fwdProposal *= RbStatistics::Beta::pdf(a, b, newUnitAge);
           //      std::cout << "A4\n";
         double newAge = newUnitAge * ageRange + minAge;
@@ -226,7 +228,6 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
 //        std::cout << unitAge << " " << new_a << " " << new_b << "\n";
         bwdProposal *= RbStatistics::Beta::pdf(new_a, new_b, unitAge);
   //      std::cout << "bwdProposal2 " << bwdProposal << "\n";
-    
         
         //std::cout << "a_path : find admixtureAge\n";
         while (nd_a->getAge() > newAge && !path_a.empty())
@@ -307,15 +308,16 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         double new_b2 = lambda * (1.0 - newUnitWeight) + 1.0;
         double bwdWeightLnProb = RbStatistics::Beta::lnPdf(new_a2, new_b2, unitWeight);
         //std::cout << bwdWeightLnProb << "\n";
-
+        
         storedAdmixtureChild->setWeight(newWeight);
         
         // update branch rates
         
-        double lnBwdPropRates = 0.0;
 
+        double lnBwdPropRates = 0.0;
+/*
         storedBranchRates.clear();
-        double delta = 1.0;
+        double delta = 10.0;
         // ... have old branch idx already
         int newChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
         int newParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
@@ -334,13 +336,14 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
             branchRates[idx]->setValue(new double(u * v));
             lnBwdPropRates += log(u);
         }
+        */
 
         
         // ln hastings ratio
         double lnFwdProposal = log(fwdProposal) + fwdWeightLnProb;
         double lnBwdProposal = log(bwdProposal) + bwdWeightLnProb;
         
-    //    std::cout << "slide lnPropRat\t" << lnBwdProposal - lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << ";\t";
+       // std::cout << "slide lnPropRat\t" << lnBwdProposal - lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << ";\t";
       //  std::cout << storedAge << " -> " << newAge << "\n";
       
         return lnBwdProposal - lnFwdProposal + lnBwdPropRates;
@@ -488,12 +491,14 @@ double AdmixtureEdgeSlide::performMove( double &probRatio ) {
     variable->touch();
     probRatio = 0.0;
     
+    /*
     for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
     {
         branchRates[it->first]->touch();
         probRatio += branchRates[it->first]->getLnProbabilityRatio();
         //std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
     }
+     */
 
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
@@ -502,10 +507,10 @@ double AdmixtureEdgeSlide::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();
-          //  std::cout << theNode->getName() << "  " << theNode->getLnProbability() << "  " << theNode->getLnProbabilityRatio() << "\n";
+            //std::cout << theNode->getName() << "  " << theNode->getLnProbability() << "  " << theNode->getLnProbabilityRatio() << "\n";
         }
     }
-//    std::cout << probRatio << "\n";
+    //std::cout << hr << "\t" << probRatio << "\n";
     
     return hr;
 }

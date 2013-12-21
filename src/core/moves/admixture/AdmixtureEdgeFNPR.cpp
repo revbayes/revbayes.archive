@@ -332,7 +332,7 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
         double new_a2 = lambda * newUnitWeight + 1.0;
         double new_b2 = lambda * (1.0 - newUnitWeight) + 1.0;
         double bwdWeightLnProb = RbStatistics::Beta::lnPdf(new_a2, new_b2, unitWeight);
-        std::cout << bwdWeightLnProb << "\n";
+        //std::cout << bwdWeightLnProb << "\n";
         
         storedAdmixtureChild->setWeight(newWeight);
         

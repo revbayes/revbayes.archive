@@ -68,7 +68,7 @@ namespace RevBayesCore {
         void                                        initializeSampleCovarianceBias(void);           // B', fixed
         void                                        initializeSampleCovarianceEstimator(void);      // W^ (per block), fixed
         void                                        initializeMeanSampleCovarianceEstimator(void);  // W^ (averaged), fixed
-        void                                        initializeCompositiveCovariance(void);          // Sigma, fixed
+        void                                        initializeCompositeCovariance(void);          // Sigma, fixed
         void                                        initializeSampleCovariance(void);               // V
         void                                        initializeCovariance(void);                     // W
         void                                        initializeResiduals(void);

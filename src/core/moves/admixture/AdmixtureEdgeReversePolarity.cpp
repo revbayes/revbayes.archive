@@ -88,10 +88,10 @@ double AdmixtureEdgeReversePolarity::performSimpleMove( void ) {
         double bwdLnProb = RbStatistics::Beta::lnPdf(new_a, new_b, unitWeight);
         
         // prior
-        double prior_a = 1.0;
-        double prior_b = 1.0;
-        bwdLnProb += RbStatistics::Beta::lnPdf(prior_a, prior_b, newUnitWeight); // bwd move and fwd prior
-        fwdLnProb += RbStatistics::Beta::lnPdf(prior_a, prior_b, unitWeight); // fwd move and bwd prior
+//        double prior_a = 1.0;
+//        double prior_b = 1.0;
+//        bwdLnProb += RbStatistics::Beta::lnPdf(prior_a, prior_b, newUnitWeight); // bwd move and fwd prior
+//        fwdLnProb += RbStatistics::Beta::lnPdf(prior_a, prior_b, unitWeight); // fwd move and bwd prior
         
         // set new edge
         storedAdmixtureParent->setAdmixtureChild(NULL);

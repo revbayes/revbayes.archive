@@ -134,7 +134,7 @@ likelihoodScaler(n.likelihoodScaler)
         initializeSampleCovarianceBias();
         initializeSampleCovarianceEstimator();
         initializeMeanSampleCovarianceEstimator();
-        initializeCompositiveCovariance();
+        initializeCompositeCovariance();
         initializeCovariance();
         initializeSampleCovariance();
         initializeResiduals();
@@ -575,7 +575,7 @@ void BrownianMotionAdmixtureGraph::initializeMeanSampleCovarianceEstimator(void)
 
 
 // sigma^
-void BrownianMotionAdmixtureGraph::initializeCompositiveCovariance(void)
+void BrownianMotionAdmixtureGraph::initializeCompositeCovariance(void)
 {
     compositeCovariance.clear();
     compositeCovariance.resize(numTaxa);
@@ -595,8 +595,8 @@ void BrownianMotionAdmixtureGraph::initializeCompositiveCovariance(void)
         }
     }
     
-    //std::cout << "compositeCovariance\n";
-    //print(compositeCovariance);
+    std::cout << "compositeCovariance\n";
+    print(compositeCovariance);
 }
 
 void BrownianMotionAdmixtureGraph::initializeSampleCovariance(void)

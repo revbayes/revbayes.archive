@@ -13,6 +13,7 @@
 #include "AbstractCharacterHistoryCtmc.h"
 #include "AreaSizeRateModifier.h"
 #include "GeographicDistanceRateModifier.h"
+#include "GeographicGridRateModifier.h"
 #include "RangeSizeRateModifier.h"
 
 namespace RevBayesCore
@@ -23,7 +24,7 @@ namespace RevBayesCore
     public:
         DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd=NULL, RangeSizeRateModifier* grs=NULL, RangeSizeRateModifier* lrs=NULL, AreaSizeRateModifier* asrm=NULL);
        
-        DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd=NULL, RangeSizeRateModifier* grs=NULL, RangeSizeRateModifier* lrs=NULL, AreaSizeRateModifier* asrm=NULL);
+        DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp, const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd=NULL, RangeSizeRateModifier* grs=NULL, RangeSizeRateModifier* lrs=NULL, AreaSizeRateModifier* asrm=NULL, std::vector<GeographicGridRateModifier*> ggrmv=std::vector<GeographicGridRateModifier*>());
         
         DispersalHistoryCtmc(const DispersalHistoryCtmc& m);
                 
@@ -65,6 +66,7 @@ namespace RevBayesCore
         RangeSizeRateModifier*              gainRangeSizeRateModifier;
         RangeSizeRateModifier*              lossRangeSizeRateModifier;
         AreaSizeRateModifier*               areaSizeRateModifier;
+        std::vector<GeographicGridRateModifier*> geographicGrids;
         
     private:
         
