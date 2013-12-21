@@ -1,6 +1,6 @@
 
 #include "Clade.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "ConstantNode.h"
 #include "ContinuousStochasticNode.h"
 #include "ExponentialDistribution.h"
@@ -53,9 +53,8 @@ bool TestBirthDeath::run( void ) {
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     
     TimeTree* t = trees[0];
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(lambda, mu, met, mep, rho, "uniform", "survival",int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, lambda, mu, rho, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // attach the data

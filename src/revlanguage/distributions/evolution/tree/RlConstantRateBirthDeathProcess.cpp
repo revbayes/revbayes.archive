@@ -10,8 +10,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "RlConstantBirthDeathProcess.h"
-#include "ConstantBirthDeathProcess.h"
+#include "RlConstantRateBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
@@ -24,35 +24,29 @@
 
 using namespace RevLanguage;
 
-ConstantBirthDeathProcess::ConstantBirthDeathProcess() : TypedDistribution<TimeTree>() {
+ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess() : TypedDistribution<TimeTree>() {
     
 }
 
 
-ConstantBirthDeathProcess::~ConstantBirthDeathProcess() {
+ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const {
+    return new ConstantRateBirthDeathProcess(*this);
+}
+
+
+RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::createDistribution( void ) const {
     
-}
-
-
-
-ConstantBirthDeathProcess* ConstantBirthDeathProcess::clone( void ) const {
-    return new ConstantBirthDeathProcess(*this);
-}
-
-
-RevBayesCore::ConstantBirthDeathProcess* ConstantBirthDeathProcess::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( mu->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* o = static_cast<const RealPos &>( origin->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* e = static_cast<const RealPos &>( mu->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<double>* r = static_cast<const Probability &>( rho->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode< std::vector<double> > *met = static_cast<const Vector<RealPos> &>( massExtinctionTimes->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode< std::vector<double> > *mep = static_cast<const Vector<RealPos> &>( massExtinctionSurvivalProbabilities->getValue() ).getValueNode();
     const std::string &strategy = static_cast<const RlString &>( samplingStrategy->getValue() ).getValue();
     const std::string& cond = static_cast<const RlString &>( condition->getValue() ).getValue();
     int n = static_cast<const Natural &>( numTaxa->getValue() ).getValue();
     const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
     const std::vector<RevBayesCore::Clade> &c = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
-    RevBayesCore::ConstantBirthDeathProcess*   d = new RevBayesCore::ConstantBirthDeathProcess(m, s, met, mep, r, strategy, cond, n, names, c);
+    RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, s, e, r, strategy, cond, n, names, c);
     
     return d;
 }
@@ -60,15 +54,15 @@ RevBayesCore::ConstantBirthDeathProcess* ConstantBirthDeathProcess::createDistri
 
 
 /* Get class name of object */
-const std::string& ConstantBirthDeathProcess::getClassName(void) { 
+const std::string& ConstantRateBirthDeathProcess::getClassName(void) { 
     
-    static std::string rbClassName = "constant Birth-Death Process";
+    static std::string rbClassName = "constant-rate Birth-Death Process";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& ConstantBirthDeathProcess::getClassTypeSpec(void) { 
+const TypeSpec& ConstantRateBirthDeathProcess::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -79,17 +73,17 @@ const TypeSpec& ConstantBirthDeathProcess::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& ConstantBirthDeathProcess::getMemberRules(void) const {
+const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const {
     
     static MemberRules distcBirthDeathMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet ) 
+    {
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"  , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"  , true, Probability::getClassTypeSpec(), new Probability(1.0) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "massExtinctionTimes"  , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "massExtinctionSurvivalProbabilities"  , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
         Vector<RlString> optionsStrategy;
         optionsStrategy.push_back( RlString("uniform") );
         optionsStrategy.push_back( RlString("diversified") );
@@ -109,7 +103,7 @@ const MemberRules& ConstantBirthDeathProcess::getMemberRules(void) const {
 }
 
 
-const TypeSpec& ConstantBirthDeathProcess::getTypeSpec( void ) const {
+const TypeSpec& ConstantRateBirthDeathProcess::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -118,7 +112,7 @@ const TypeSpec& ConstantBirthDeathProcess::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void ConstantBirthDeathProcess::printValue(std::ostream& o) const {
+void ConstantRateBirthDeathProcess::printValue(std::ostream& o) const {
     
     o << " const BDP (lambda=";
     if ( lambda != NULL ) {
@@ -173,36 +167,42 @@ void ConstantBirthDeathProcess::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void ConstantBirthDeathProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void ConstantRateBirthDeathProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "lambda" ) {
+    if ( name == "origin" ) 
+    {
+        origin = var;
+    }
+    else if ( name == "lambda" ) 
+    {
         lambda = var;
     }
-    else if ( name == "mu" ) {
+    else if ( name == "mu" ) 
+    {
         mu = var;
     }
-    else if ( name == "rho" ) {
+    else if ( name == "rho" ) 
+    {
         rho = var;
     }
-    else if ( name == "samplingStrategy" ) {
+    else if ( name == "samplingStrategy" ) 
+    {
         samplingStrategy = var;
     }
-    else if ( name == "massExtinctionTimes" ) {
-        massExtinctionTimes = var;
-    }
-    else if ( name == "massExtinctionSurvivalProbabilities" ) {
-        massExtinctionSurvivalProbabilities = var;
-    }
-    else if ( name == "nTaxa" ) {
+    else if ( name == "nTaxa" ) 
+    {
         numTaxa = var;
     }
-    else if ( name == "names" ) {
+    else if ( name == "names" ) 
+    {
         taxonNames = var;
     }
-    else if ( name == "constraints" ) {
+    else if ( name == "constraints" ) 
+    {
         constraints = var;
     }
-    else if ( name == "condition" ) {
+    else if ( name == "condition" ) 
+    {
         condition = var;
     }
     else {

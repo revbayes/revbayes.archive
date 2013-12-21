@@ -1,6 +1,6 @@
 #include "BranchLengthTree.h"
 #include "Clade.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "ConstantNode.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -68,9 +68,9 @@ bool TestNNI::run( void ) {
     names.push_back("C");
     names.push_back("D");
     
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", 4, names, std::vector<Clade>()) );
+    
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( 2.0 ) );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", 4, names, std::vector<Clade>()) );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     

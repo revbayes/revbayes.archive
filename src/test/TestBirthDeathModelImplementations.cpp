@@ -1,8 +1,7 @@
 
-#include "TimeDependentBirthDeathProcess.h"
 #include "Clade.h"
 #include "CompletePathRescaleMove.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "ConstantFunction.h"
 #include "ConstantNode.h"
 #include "GeometricBrownianMotion.h"
@@ -61,9 +60,8 @@ bool TestBirthDeathModelImplementations::run( void ) {
     div->setValue( new double(1.0) );
     turnover->setValue( new double(1.0) );
     TimeTree* t = trees[0];
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree> *tauCBD = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess( div, turnover, met, mep, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
+    StochasticNode<TimeTree> *tauCBD = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess( origin, div, turnover, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
     //    std::cout << "tau:\t" << tauCBD->getValue() << std::endl;
     
     // attach the data
@@ -83,13 +81,13 @@ bool TestBirthDeathModelImplementations::run( void ) {
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0) );
 
 
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new TimeDependentBirthDeathProcess(lambda, mu, rho, int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>() ) );
+//    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new TimeDependentBirthDeathProcess(lambda, mu, rho, int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>() ) );
 //    std::cout << "tau:\t" << tau->getValue() << std::endl;
     // attach the data
-    tau->clamp( t->clone() );
+//    tau->clamp( t->clone() );
     
 //    std::cout << "tau-clamped:\t" << tau->getValue() << std::endl;
-    std::cout << tau->getLnProbability() << std::endl;
+//    std::cout << tau->getLnProbability() << std::endl;
 //    
 //    
 //    /* add the moves */

@@ -64,7 +64,7 @@
 #include "RlUniformTopologyDistribution.h"
 
 // tree priors
-#include "RlConstantBirthDeathProcess.h"
+#include "RlConstantRateBirthDeathProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
 
 // sequence models
@@ -334,7 +334,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // Phylogenetic distributions
         
         // constant rate birth-death process distribution
-        addDistribution( "cBDP", new ConstantBirthDeathProcess() );
+        addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
         
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );

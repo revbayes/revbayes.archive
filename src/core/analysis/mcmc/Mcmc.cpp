@@ -21,7 +21,7 @@
 
 using namespace RevBayesCore;
 
-Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, bool ca, double ch, int ci) : model( m ), moves(), monitors(), schedule(std::vector<Move*>()), chainActive(ca), chainHeat(ch), chainIdx(ci) {
+Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, bool ca, double ch, int ci) : model( m ), moves(), monitors(), schedule( new RandomMoveSchedule(std::vector<Move*>()) ), chainActive(ca), chainHeat(ch), chainIdx(ci) {
     
     replaceDag(mvs,mons);
     
@@ -30,7 +30,7 @@ Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Moni
 }
 
 
-Mcmc::Mcmc(const Mcmc &m) : model( m.model ), schedule(std::vector<Move*>()), chainActive(m.chainActive), chainHeat(m.chainHeat), chainIdx(m.chainIdx) {
+Mcmc::Mcmc(const Mcmc &m) : model( m.model ), schedule( new RandomMoveSchedule(std::vector<Move*>()) ), chainActive(m.chainActive), chainHeat(m.chainHeat), chainIdx(m.chainIdx) {
    
     const std::vector<Monitor*>& mons = m.monitors;
     const std::vector<Move*>& mvs = m.moves;
@@ -53,6 +53,9 @@ Mcmc::~Mcmc(void) {
         Monitor *theMonitor = (*it);
         delete theMonitor;
     }
+    
+    // delete the move schedule
+    delete schedule;
 }
 
 
@@ -248,7 +251,8 @@ void Mcmc::initializeChain( void ) {
         
     }
     
-    schedule = RandomMoveSchedule(moves);
+    delete schedule;
+    schedule = new RandomMoveSchedule(moves);
     //if (moveSchedule != NULL)
         
     generation = 0;
@@ -376,11 +380,11 @@ int Mcmc::nextCycle(bool advanceCycle) {
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
 #endif
 
-    size_t proposals = round( schedule.getNumberMovesPerIteration() );
+    size_t proposals = round( schedule->getNumberMovesPerIteration() );
     for (size_t i=0; i<proposals; i++) 
     {
         // Get the move
-        Move* theMove = schedule.nextMove( generation );
+        Move* theMove = schedule->nextMove( generation );
         
         if ( theMove->isGibbs() ) 
         {

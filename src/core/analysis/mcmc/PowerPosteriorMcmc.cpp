@@ -396,10 +396,11 @@ double PowerPosteriorMcmc::steppingStoneSampling( void ) {
             }
         }
         
-        // mean( exp(samples-max)^(beta[k-1]-beta[k]) )
+        // mean( exp(samples-max)^(beta[k-1]-beta[k]) )     or
+        // mean( exp( (samples-max)*(beta[k-1]-beta[k]) ) )
         double mean = 0.0;
         for (size_t j = 0; j < samplesPerPath; ++j) {
-            mean += pow(exp(samples[i*samplesPerPath + j]-max),beta[i-1]-beta[i]);
+            mean += exp( (samples[i*samplesPerPath + j]-max)*(beta[i-1]-beta[i]) );
         }
         mean /= samplesPerPath;
         

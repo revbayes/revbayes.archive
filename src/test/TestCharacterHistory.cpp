@@ -18,7 +18,7 @@
 #include "CharacterHistoryCtmcNodeUpdate.h"
 #include "CharacterHistoryCtmcPathUpdate.h"
 #include "Clade.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "ConstantNode.h"
 #include "ContinuousStochasticNode.h"
 #include "DeterministicNode.h"
@@ -188,9 +188,8 @@ bool TestCharacterHistory::run( void ) {
     ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(1.0));
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.5));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>( "tau", new ConstantBirthDeathProcess(div, turn, met, mep, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( 2.0 ) );
+    StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(taxonNames.size()), taxonNames, std::vector<Clade>()) );
     tau->clamp(new TimeTree(tau->getValue()));
     std::cout << tau->getValue().getNewickRepresentation() << "\n";
 

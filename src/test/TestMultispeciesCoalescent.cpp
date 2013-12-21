@@ -1,6 +1,6 @@
 #include "BinaryDivision.h"
 #include "Clade.h"
-#include "ConstantBirthDeathProcess.h"
+#include "ConstantRateBirthDeathProcess.h"
 #include "DeterministicNode.h"
 #include "ConstantNode.h"
 #include "ExponentialDistribution.h"
@@ -152,9 +152,8 @@ bool TestMultispeciesCoalescent::run( void ) {
     ConstantNode<double> *speciationRate = new ConstantNode<double>("speciationRate", new double(10.0) );
     ConstantNode<double> *extinctionRate = new ConstantNode<double>("extinctionRate", new double(2.5) );
     ConstantNode<double> *sampling = new ConstantNode<double>("rho", new double(1.0) );
-    ConstantNode<std::vector<double> > *met = new ConstantNode<std::vector<double> >("MET",new std::vector<double>() );
-    ConstantNode<std::vector<double> > *mep = new ConstantNode<std::vector<double> >("MESP",new std::vector<double>() );
-    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "S", new ConstantBirthDeathProcess( speciationRate, extinctionRate, met, mep, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
+    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "S", new ConstantRateBirthDeathProcess( origin, speciationRate, extinctionRate, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
 	
     // If we want to initialize the species tree to the true tree
     TimeTree *startingTree = spTree_inf->getValue().clone();
