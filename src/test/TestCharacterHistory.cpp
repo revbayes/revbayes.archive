@@ -120,7 +120,7 @@ bool TestCharacterHistory::run( void ) {
         taxonNames.push_back("p" + ss.str());
     }
     
-    size_t numCharacters = pow(6,2);
+    size_t numCharacters = pow(10,2);
     size_t numStates = 2;
     
     // assign area coordinates
