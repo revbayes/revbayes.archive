@@ -10,7 +10,8 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "DistributionInverseGamma.h"
+#include "RbStatisticsHelper.h"
+#include "DistributionBeta.h"
 #include "Topology.h"
 
 #include <algorithm>
@@ -146,14 +147,19 @@ AdmixtureConstantBirthDeathProcess* AdmixtureConstantBirthDeathProcess::clone( v
 double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     
     // uncomment for uniform prior
-    return 0.0;
+//    return 0.0;
     
     // retrieved the speciation times
+    double lnPrior = 0.0;
     std::vector<double> times;
     for (int i = numTaxa; i < value->getNumberOfNodes(); ++i) {
         AdmixtureNode* p = &value->getNode(i);
         if (p->getNumberOfChildren() == 2)
             times.push_back(p->getTime());
+        if (&p->getAdmixtureParent() != NULL)
+        {
+            lnPrior += RbStatistics::Beta::lnPdf(1, 3, p->getWeight()*2);
+        }
     }
     // sort the vector of times in ascending order
     std::sort(times.begin(), times.end());
@@ -187,7 +193,7 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
         lnProbTimes += log(diversification->getValue() + turnover->getValue()) + p1(times[i],T);
     }
 
-    return lnProbTimes; // + logTreeTopologyProb;
+    return lnProbTimes + lnPrior; // + logTreeTopologyProb;
     
 }
 
