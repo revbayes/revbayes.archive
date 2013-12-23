@@ -232,6 +232,7 @@ bool TestCharacterHistory::run( void ) {
     
     // simulation settings
     
+    ggrmv.clear();
     //gdrm = NULL;
     grsrm = NULL;
     lrsrm = NULL;
