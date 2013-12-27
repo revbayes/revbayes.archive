@@ -176,8 +176,8 @@ bool TestAdmixtureGraph::run(void) {
     int numChains = 100;
     int numProcesses = numChains;
 //    numProcesses=80;
-    int swapInterval = 10;
-    double deltaTemp = 0.01;
+    int swapInterval = 5;
+    double deltaTemp = 0.05;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
@@ -202,7 +202,7 @@ bool TestAdmixtureGraph::run(void) {
     //              Consider implementing Conway-Maxewell-Poisson distn instead.
     
     // This prior requires admixture events to improve lnL by N units
-    double adm_th_lnL = -25;
+    double adm_th_lnL = -15;
     double rate_cpp_prior = exp(adm_th_lnL);
     
     ConstantNode<double>* c = new ConstantNode<double>( "c", new double(1.0/rate_cpp_prior)); // admixture rate prior
@@ -306,13 +306,13 @@ bool TestAdmixtureGraph::run(void) {
             moves.push_back( new ScaleMove(branchRates_nonConst[i], 0.3, false, 5.0) );
         
         // tree rate shift
-        // moves.push_back( new AdmixtureShiftTreeRates(diffusionRate, branchRates_nonConst, 0.3, false, 10));
+        moves.push_back( new AdmixtureShiftTreeRates(diffusionRate, branchRates_nonConst, 0.3, false, 10));
         
         // shift node age for branch rate
         for (size_t i = numTaxa; i < numNodes - 1; i++)
         {
             if (updateNodeAges)
-                ;//moves.push_back( new AdmixtureShiftNodeAgeAndRate(tau, branchRates_nonConst, (int)i, 0.3, false, 5.0) );
+                moves.push_back( new AdmixtureShiftNodeAgeAndRate(tau, branchRates_nonConst, (int)i, 0.3, false, 5.0) );
             
             // MJL 081513: not working, I think...
             if (updateTopology)
