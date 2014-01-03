@@ -111,6 +111,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         // sample a random admixture parent node
         double u = rng->uniform01();
         size_t index = std::floor(admixtureParents.size() * u);
+        size_t numAdmixtureEdges = admixtureParents.size();
         
        // std::cout << "\n\treplace, before all\n";
        // tau.checkAllEdgesRecursively(root);
@@ -127,6 +128,10 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
        
         int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
         int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
+        
+//        std::set<AdmixtureNode*> old_cs,old_ps,new_cs,new_ps;
+//        findDescendantTips(old_cs, storedAdmixtureChild);
+//        findDescendantTips(old_ps, storedAdmixtureParent);
         
         /*
         std::cout << "\n";
@@ -182,7 +187,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         for (size_t i = 0; i < storedResiduals.size(); i++)
             if (storedResiduals[i] > maxStoredResidual)
                 maxStoredResidual = storedResiduals[i];
-        double lambda = 1.0 / maxStoredResidual;
+        double lambda = 5.0 / maxStoredResidual;
         
        
         AdmixtureNode* nodeSrc = NULL;
@@ -193,10 +198,10 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         
         double v = rng->uniform01();
         
-        if (v < 0.5)
-//        if (v < 0.0)
-        {
-            
+//        if (v < 0.5)
+//        if (true)
+//        {
+        
             // get sum of positive residuals for each taxon against all other taxa
             std::vector<double> residualWeights_a(numTaxa,0.0);
             
@@ -225,10 +230,6 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
             }
 
             
-//            std::cout << "rw_a\t";
-//            for (size_t i = 0; i < numTaxa; i++)
-//                std::cout << residualWeights_a[i] / sumResidualWeights_a << "\t";
-//            std::cout << "\n";
             
             
             // sample taxon A from weights
@@ -246,6 +247,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
                     break;
                 }
             }
+            
             //fwdProposal *= (residualWeights_a[k_a] / sumResidualWeights_a);
             
             // get sum of positive residuals for each taxon wrt taxon A
@@ -263,13 +265,6 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
                 }
             }
             
-            
-//            std::cout << "rw_b\t";
-//            for (size_t i = 0; i < numTaxa; i++)
-//                std::cout << residualWeights_b[i] / sumResidualWeights_b << "\t";
-//            std::cout << "\n";
-            
-            
             // sample taxon B from weights
             double u_b = rng->uniform01() * sumResidualWeights_b;
             double m_b = 0.0;
@@ -285,20 +280,37 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
                     break;
                 }
             }
-            //fwdProposal *= (residualWeights_b[k_b] / sumResidualWeights_b);
-        }
-        else
-        {
-            //std::cout << "random\n";
-            k_a = rng->uniform01() * numTaxa;
-            do
-            {
-                k_b = rng->uniform01() * numTaxa;
-            } while(k_a == k_b);
-            nodeDst = &tau.getNode(k_a);
-            nodeSrc = &tau.getNode(k_b);
-        }
+//            
+//            std::cout << "rw_a\t";
+//            for (size_t i = 0; i < numTaxa; i++)
+//                std::cout << residualWeights_a[i] / sumResidualWeights_a << "\t";
+//            std::cout << "\n";
+//            std::cout << "pick " << k_a << " " << (residualWeights_a[k_a] / sumResidualWeights_a) << "\n";
+//
+//            
+//            
+//            std::cout << "rw_b\t";
+//            for (size_t i = 0; i < numTaxa; i++)
+//                std::cout << residualWeights_b[i] / sumResidualWeights_b << "\t";
+//            std::cout << "\n";
+//            std::cout << "pick " << k_b << " " <<  (residualWeights_b[k_b] / sumResidualWeights_b) << "\n";
+//            
         
+            
+            //fwdProposal *= (residualWeights_b[k_b] / sumResidualWeights_b);
+//        }
+//        else
+//        {
+//            //std::cout << "random\n";
+//            k_a = rng->uniform01() * numTaxa;
+//            do
+//            {
+//                k_b = rng->uniform01() * numTaxa;
+//            } while(k_a == k_b);
+//            nodeDst = &tau.getNode(k_a);
+//            nodeSrc = &tau.getNode(k_b);
+//        }
+//        
 //        std::cout << "taxa pair\t" << k_a << "\t" << k_b << "\n";
         //std::cout << "fwdProposal\t" << fwdProposal << "\tlnFwdProposal\t" << log(fwdProposal) << "\n";
         
@@ -364,12 +376,12 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         }
         //maxAge = mrca->getAge();
         //double admixtureAge = rng->uniform01() * (maxAge - minAge) + minAge;
-        double exp_lambda = 10.0;
+        double exp_lambda = 3.0;
         double admixtureAge = RbStatistics::Beta::rv(1.0,exp_lambda, *rng) * (maxAge - minAge) + minAge;
         
         
         double a = 1.0;
-        double b = 10.0;
+        double b = 5.0;
         double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
         admixtureWeight /= 2;
             
@@ -413,6 +425,9 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         // nd_b = storedAdmixtureChildChild;
         double newAge = admixtureAge;
         double newWeight = admixtureWeight;
+//        if (storedAdmixtureAge < maxAge && storedAdmixtureAge > minAge)
+//            newAge = storedAdmixtureAge;
+//        double newWeight = storedAdmixtureWeight;
        // std::cout << "age\t" << newAge << "\n";
       //  std::cout << "wt \t" << newWeight << "\n";
 
@@ -481,6 +496,9 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
      //   tau.checkAllEdgesRecursively(root);
         
         // ln hastings ratio
+        //bwdProposal = 1.0 / numAdmixtureEdges;
+        //fwdProposal = (residualWeights_a[k_a] / sumResidualWeights_a) * (residualWeights_b[k_b] / sumResidualWeights_b);
+        
         double lnFwdProposal = log(fwdProposal);
         double lnBwdProposal = log(bwdProposal);
         
@@ -490,8 +508,31 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
 //        std::cout << "a " << storedAdmixtureAge << " -> " << newAge << "\n";
 //        std::cout << "w " << newWeight << "\n";
         
-        return 0.0;
-       return lnBwdProposal - lnFwdProposal + lnBwdPropRates;
+        
+        
+//
+//        findDescendantTips(new_cs, storedAdmixtureChild);
+//        findDescendantTips(new_ps, storedAdmixtureParent);
+//        
+//        std::set<AdmixtureNode*>::iterator it;
+//        std::cout << "OLD: ";
+//        for (it = old_cs.begin(); it != old_cs.end(); it++)
+//            std::cout << (*it)->getName() << " ";
+//        std::cout << "-> ";
+//        for (it = old_ps.begin(); it != old_ps.end(); it++)
+//            std::cout << (*it)->getName() << " ";
+//        std::cout << "\tt" << storedAdmixtureAge << "\tw" << storedAdmixtureWeight << "\n";
+//
+//        std::cout << "NEW: ";
+//        for (it = new_cs.begin(); it != new_cs.end(); it++)
+//            std::cout << (*it)->getName() << " ";
+//        std::cout << "-> ";
+//        for (it = new_ps.begin(); it != new_ps.end(); it++)
+//            std::cout << (*it)->getName() << " ";
+//        std::cout << "\tt" << newAge << "\tw" << newWeight << "\n";
+
+       return 0.0;
+       //return lnBwdProposal - lnFwdProposal + lnBwdPropRates;
         
        /*
         std::cout << "\n";
@@ -704,11 +745,12 @@ double AdmixtureEdgeReplaceResidualWeights::performMove( double &probRatio ) {
     
     // touch the node
     variable->touch(); // if previously touched, this will overwrite lnProb??
-    probRatio = 0.0;
+    probRatio += variable->getLnProbabilityRatio();
+    //probRatio = 0.0;
     
     for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
     {
-        //branchRates[it->first]->touch();
+        branchRates[it->first]->touch();
         probRatio += branchRates[it->first]->getLnProbabilityRatio();
         //std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
     }

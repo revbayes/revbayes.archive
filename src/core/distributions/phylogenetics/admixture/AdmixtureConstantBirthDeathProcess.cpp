@@ -158,7 +158,7 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
             times.push_back(p->getTime());
         if (&p->getAdmixtureParent() != NULL)
         {
-            lnPrior += RbStatistics::Beta::lnPdf(1, 3, p->getWeight()*2);
+            lnPrior += RbStatistics::Beta::lnPdf(1.0, 5.0, p->getWeight()*2);
         }
     }
     // sort the vector of times in ascending order

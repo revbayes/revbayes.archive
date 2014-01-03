@@ -156,7 +156,7 @@ bool TestAdmixtureGraph::run(void) {
     int blockSize = 1000;
     
     int divGens = 1;
-    int delay = 400;
+    int delay = 100;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 5;
@@ -173,12 +173,12 @@ bool TestAdmixtureGraph::run(void) {
     bool updateNodeAges = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 100;
+    int numChains = 10;
     int numProcesses = numChains;
 //    numProcesses=80;
     int swapInterval = 5;
-    double deltaTemp = 0.05;
-    double startingHeat = 1.0; // 0.01;
+    double deltaTemp = 0.1;
+    double startingHeat = 0.2; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
     
