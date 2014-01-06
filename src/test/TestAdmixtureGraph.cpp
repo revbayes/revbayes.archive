@@ -173,12 +173,12 @@ bool TestAdmixtureGraph::run(void) {
     bool updateNodeAges = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 10;
+    int numChains = 20;
     int numProcesses = numChains;
 //    numProcesses=80;
     int swapInterval = 5;
     double deltaTemp = 0.1;
-    double startingHeat = 0.2; // 0.01;
+    double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
     
