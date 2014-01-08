@@ -745,7 +745,7 @@ double AdmixtureEdgeReplaceResidualWeights::performMove( double &probRatio ) {
     
     // touch the node
     variable->touch(); // if previously touched, this will overwrite lnProb??
-    probRatio += variable->getLnProbabilityRatio();
+    probRatio = variable->getLnProbabilityRatio();
     //probRatio = 0.0;
     
     for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)

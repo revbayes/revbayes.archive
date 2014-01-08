@@ -540,7 +540,9 @@ double AdmixtureEdgeReplaceCladeResiduals::performMove( double &probRatio ) {
     
     // touch the node
     variable->touch();
-    probRatio = 0.0;
+    probRatio = variable->getLnProbabilityRatio();
+//    probRatio += admixtureCount->getLnProbabilityRatio();
+//    probRatio = 0.0;
     
     for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
     {

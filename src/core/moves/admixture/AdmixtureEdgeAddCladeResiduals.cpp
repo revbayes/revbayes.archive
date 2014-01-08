@@ -459,7 +459,8 @@ double AdmixtureEdgeAddCladeResiduals::performMove( double &probRatio ) {
     variable->touch();
     //rate->touch();
     //admixtureCount->touch();
-    probRatio = admixtureCount->getLnProbabilityRatio();
+    probRatio = variable->getLnProbabilityRatio();
+    probRatio += admixtureCount->getLnProbabilityRatio();
     //std::cout << "probRatio " << probRatio << "\n";
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {

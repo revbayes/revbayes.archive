@@ -489,7 +489,7 @@ double AdmixtureEdgeSlide::performMove( double &probRatio ) {
     
     // touch the node
     variable->touch();
-    probRatio = 0.0;
+    probRatio = variable->getLnProbabilityRatio();
     
     /*
     for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)

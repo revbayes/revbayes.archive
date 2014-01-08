@@ -497,8 +497,9 @@ double AdmixtureEdgeAddResidualWeights::performMove( double &probRatio ) {
     // touch the node
     variable->touch();
     //rate->touch();
-    //admixtureCount->touch();
-    probRatio = admixtureCount->getLnProbabilityRatio();
+    admixtureCount->touch();
+    probRatio = variable->getLnProbabilityRatio();
+    probRatio += admixtureCount->getLnProbabilityRatio();
     //std::cout << "probRatio " << probRatio << "\n";
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {

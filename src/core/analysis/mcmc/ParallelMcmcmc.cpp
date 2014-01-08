@@ -208,10 +208,10 @@ void ParallelMcmcmc::swapChains(void)
         
         // test override
         //accept = true;
-        //std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
-        //std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
-        //std::cout << "swapChains()\t" << j << " <--> " << k << "  " << lnR << "\n";
-        //std::cout << u << "  " << exp(lnR) << "  " << (accept ? "accept\n" : "reject\n");
+        std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
+        std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
+        std::cout << "swapChains()\t" << j << " <--> " << k << "  " << lnR << "\n";
+        std::cout << u << "  " << exp(lnR) << "  " << (accept ? "accept\n" : "reject\n");
               
         // on accept, swap beta values and active chains
         if (accept)
@@ -241,15 +241,16 @@ void ParallelMcmcmc::swapChains(void)
         //std::cout << "activeIndex " << activeIndex << "\n";
     }
    
-    /*
-    for (int j = 0; j < numChains; j++)
+    int nc = (numChains < 10 ? numChains : 10);
+    for (int j = 0; j < nc; j++)
     {
         int i = chainIdxByHeat[j];
-        std::cout << i << " " << chains[i]->getChainHeat() << " " << chains[i]->getLnPosterior() << " == " << chains[i]->getModelLnProbability() << " " << (chains[i]->isChainActive() ? "*" : "") << (i == activeIndex ? "#" : "") << "\n";
+        std::cout << i << " " << chains[i]->getChainHeat() << " * " << chains[i]->getLnPosterior() << " = " << chains[i]->getChainHeat() * chains[i]->getLnPosterior() << "\n";
+        //chains[i]->getModelLnProbability() << " " << (chains[i]->isChainActive() ? "*" : "") << (i == activeIndex ? "#" : "") << "\n";
     }
     std::cout << "freq accepted: " << (double)numAccepted/(numChains-1) << "\n";
     
     std::cout << "\n";
-    */
+    
     
 }

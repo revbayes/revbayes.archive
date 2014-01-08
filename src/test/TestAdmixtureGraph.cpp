@@ -156,7 +156,7 @@ bool TestAdmixtureGraph::run(void) {
     int blockSize = 1000;
     
     int divGens = 1;
-    int delay = 100;
+    int delay = 200;
     int numTreeResults = 500;
     int numAdmixtureResults = 500;
     int maxNumberOfAdmixtureEvents = 5;
@@ -173,11 +173,11 @@ bool TestAdmixtureGraph::run(void) {
     bool updateNodeAges = true;
     
     bool useParallelMcmcmc = true;
-    int numChains = 20;
+    int numChains = 100;
     int numProcesses = numChains;
 //    numProcesses=80;
-    int swapInterval = 5;
-    double deltaTemp = 0.1;
+    int swapInterval = 1;
+    double deltaTemp = 0.05;
     double startingHeat = 1.0; // 0.01;
     double likelihoodScaler = 1.0; // 0.2;
 
@@ -202,19 +202,20 @@ bool TestAdmixtureGraph::run(void) {
     //              Consider implementing Conway-Maxewell-Poisson distn instead.
     
     // This prior requires admixture events to improve lnL by N units
-    double adm_th_lnL = -15;
+    double adm_th_lnL = -25;
     double rate_cpp_prior = exp(adm_th_lnL);
     
     ConstantNode<double>* c = new ConstantNode<double>( "c", new double(1.0/rate_cpp_prior)); // admixture rate prior
     StochasticNode<double>* admixtureRate = new StochasticNode<double> ("rate_CPP", new ExponentialDistribution(c));
     StochasticNode<int>* admixtureCount = new StochasticNode<int> ("count_CPP", new PoissonDistribution(admixtureRate));
-    admixtureCount->clamp(new int(0));
-    admixtureRate->clamp(new double(rate_cpp_prior));
+    //admixtureCount->clamp(new int(0));
+    //admixtureRate->clamp(new double(rate_cpp_prior));
     if (!useAdmixtureEdges)
     {
-        admixtureRate->clamp(new double(1.0/rate_cpp_prior));
+        admixtureRate->clamp(new double(rate_cpp_prior));
         admixtureCount->clamp(new int(0));
     }
+    
     
     // birth-death process for ultrametric tree
     StochasticNode<double>* diversificationRate = new StochasticNode<double>("div", new UniformDistribution(new ConstantNode<double>("div_lower", new double(0.0)), new ConstantNode<double>("div_upper", new double(50.0)) ));
@@ -336,12 +337,12 @@ bool TestAdmixtureGraph::run(void) {
     if (useAdmixtureEdges)
     {
         
-        moves.push_back( new AdmixtureEdgeAddResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
-        moves.push_back( new AdmixtureEdgeRemoveResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, 2.0) );
-        moves.push_back( new AdmixtureEdgeReplaceResidualWeights( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 10.0) );
+        moves.push_back( new AdmixtureEdgeAddResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 20.0) );
+        moves.push_back( new AdmixtureEdgeRemoveResidualWeights( tau, admixtureRate, admixtureCount, residuals, delay, 20.0) );
+        moves.push_back( new AdmixtureEdgeReplaceResidualWeights( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 15.0) );
         //moves.push_back( new AdmixtureEdgeFNPR( tau, branchRates_nonConst, delay, allowSisterAdmixture, 0.5, 10.0) );
         //moves.push_back( new AdmixtureEdgeAddCladeResiduals( tau, admixtureRate, admixtureCount, residuals, delay, maxNumberOfAdmixtureEvents, allowSisterAdmixture, 2.0) );
-        moves.push_back( new AdmixtureEdgeReplaceCladeResiduals( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 10.0) );
+        moves.push_back( new AdmixtureEdgeReplaceCladeResiduals( tau, admixtureRate, branchRates_nonConst, residuals, delay, allowSisterAdmixture, 15.0) );
         
         
         if (updateTopology)

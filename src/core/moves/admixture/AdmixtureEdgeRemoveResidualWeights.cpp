@@ -333,7 +333,8 @@ double AdmixtureEdgeRemoveResidualWeights::performMove( double &probRatio ) {
     //rate->touch();
     //admixtureCount->touch();
     
-    probRatio = admixtureCount->getLnProbabilityRatio();
+    probRatio = variable->getLnProbabilityRatio();
+    probRatio += admixtureCount->getLnProbabilityRatio();
     //std::cout << probRatio << "\n";
     
     ;
