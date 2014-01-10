@@ -432,7 +432,15 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
       //  std::cout << "wt \t" << newWeight << "\n";
 
         // add into graph
-                
+        
+        
+        if (rng->uniform01() < 0.5)
+        {
+            AdmixtureNode* tmp = nd_a;
+            nd_b = nd_a;
+            nd_a = nd_b;
+        }
+        
         // store adjacent nodes to new parent node
         newAdmixtureParentChild = nd_a;
         newAdmixtureParentParent = &nd_a->getParent();

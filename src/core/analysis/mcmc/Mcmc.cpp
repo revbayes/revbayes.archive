@@ -183,7 +183,7 @@ void Mcmc::initializeChain( void ) {
             //std::cout << (*i)->getName() << std::endl;
             if ( !(*i)->isClamped() && (*i)->isStochastic() )
             {
-                std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
+                // std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
                 (*i)->redraw();
                 //                    (*i)->touch(); Not necessary. The distribution will automaticall call touch().
             }

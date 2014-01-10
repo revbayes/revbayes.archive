@@ -200,8 +200,10 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         numEvents = (int)tau.getNumberOfAdmixtureChildren();
         double unitTreeLength = tau.getUnitTreeLength();
 //        double lnP = log( (numEvents+1) / (rate->getValue() * unitTreeLength));
-        double lnP = -log(unitTreeLength);
+        //double lnP = -log(unitTreeLength);
         //double lnJ = -2 * log(1 - w); // inverse of admixture edge add jacobian
+        
+        double lnP = 0.0;
         
         // quick fix -- should inherit from Move instead of SimpleMove
         // lnP -= variable->getLnProbabilityRatio();

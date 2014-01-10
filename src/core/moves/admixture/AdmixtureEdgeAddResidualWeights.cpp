@@ -313,13 +313,13 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     std::cout << "nd_b    " << nd_b << "\t" << nd_b->getAge() << "\n";
     std::cout << "nd_b->p " << &nd_b->getParent() << "\t" << nd_b->getParent().getAge() << "\n";
     */
-     
+
+/*
     // store adjacent nodes to new parent node
     storedAdmixtureParentChild = nd_a;
     storedAdmixtureParentParent = &nd_a->getParent();
 //    storedAdmixtureParentChild = path_a.back();
 //    storedAdmixtureParentParent = nd_a;
-
     
     // insert admixtureParent into graph
     storedAdmixtureParent = new AdmixtureNode((int)tau.getNumberOfNodes());
@@ -350,18 +350,38 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     storedAdmixtureChildChild->setParent(storedAdmixtureChild);
     storedAdmixtureChild->setWeight(admixtureWeight);
     tau.pushAdmixtureNode(storedAdmixtureChild);
-    
+ 
     // create admixture edge
     storedAdmixtureChild->setAdmixtureParent(storedAdmixtureParent);
     storedAdmixtureParent->setAdmixtureChild(storedAdmixtureChild);
+ 
+ */
+
+    storedAdmixtureParent = new AdmixtureNode((int)tau.getNumberOfNodes());
+    tau.pushAdmixtureNode(storedAdmixtureParent);
+
+    storedAdmixtureChild = new AdmixtureNode((int)tau.getNumberOfNodes());
+    tau.pushAdmixtureNode(storedAdmixtureChild);
+   
+    if (rng->uniform01() < 0.5)
+    {
+        AdmixtureNode* tmp = nd_a;
+        nd_b = nd_a;
+        nd_a = nd_b;
+    }
+    storedAdmixtureParent->setOutgroup(nd_a->isOutgroup());
+    storedAdmixtureChild->setOutgroup(nd_b->isOutgroup());
+    
+    tau.addAdmixtureEdge(storedAdmixtureParent, storedAdmixtureChild, nd_a, nd_b, admixtureAge, admixtureWeight, false);
+    
     
     //std::cout << "\nafter AEA proposal\n";
     //tau.checkAllEdgesRecursively(&tau.getRoot());
     
     // prior * proposal ratio
     numEvents = (int)tau.getNumberOfAdmixtureChildren();
-    double unitTreeLength = tau.getUnitTreeLength();
-    double lnP = log(unitTreeLength);
+   // double unitTreeLength = tau.getUnitTreeLength();
+    //double lnP = log(unitTreeLength);
    // double lnP = log( (rate->getValue() * unitTreeLength) / (numEvents) );
     //  double lnJ = 2 * log(1 - w);
     //    double lnP = log( (rate->getValue() * treeLength) / (numEvents) );
@@ -375,7 +395,8 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     //std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
     
     // bombs away
-    return lnP - lnW;// - log(fwdProposal);
+    return 0.0;
+    //return lnP - lnW;// - log(fwdProposal);
     
 }
 
@@ -386,17 +407,20 @@ void AdmixtureEdgeAddResidualWeights::rejectSimpleMove( void ) {
     {
         //std::cout << "add_RW reject\n";
         
+        // remove nodes from graph structure
+        AdmixtureTree& tau = variable->getValue();
+        
         // revert edges
+        /*
         storedAdmixtureChildChild->setParent(storedAdmixtureChildParent);
         storedAdmixtureChildParent->removeChild(storedAdmixtureChild);
         storedAdmixtureChildParent->addChild(storedAdmixtureChildChild);
         storedAdmixtureParentChild->setParent(storedAdmixtureParentParent);
         storedAdmixtureParentParent->removeChild(storedAdmixtureParent);
         storedAdmixtureParentParent->addChild(storedAdmixtureParentChild);
+        */
         
-        // remove nodes from graph structure
-        AdmixtureTree& tau = variable->getValue();
-        
+        tau.removeAdmixtureEdge(storedAdmixtureParent,false);
         tau.eraseAdmixtureNode(storedAdmixtureParent);
         tau.eraseAdmixtureNode(storedAdmixtureChild);
         

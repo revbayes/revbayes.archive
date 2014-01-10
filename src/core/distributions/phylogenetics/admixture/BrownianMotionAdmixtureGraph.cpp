@@ -321,10 +321,8 @@ void BrownianMotionAdmixtureGraph::initializeData(void)
     // std::vector<TopologyNode*> nodesByIndex = tau->getValue().getNodesByIndex();
     
     
-    for (int i = 0; i < numTaxa; i++)
-    {
-        std::cout << "check match " << snps->getPopulationNames(i) << " " << tau->getValue().getNode(i).getName() << "\n";
-    }
+//    for (int i = 0; i < numTaxa; i++)
+//        std::cout << "check match " << snps->getPopulationNames(i) << " " << tau->getValue().getNode(i).getName() << "\n";
     
     for (int i = 0; i < blockSize*numBlocks; i++)
     {
@@ -337,7 +335,7 @@ void BrownianMotionAdmixtureGraph::initializeData(void)
     }
     
     //std::cout << tau->getValue().getNewickRepresentation() << "\n";
-    std::cout << "dims\t" << data.size() << "\t" << data[0].size() << "\n";
+    // std::cout << "dims\t" << data.size() << "\t" << data[0].size() << "\n";
     //std::cout << "data\n";
     //printR(data);
 }
@@ -483,8 +481,8 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
         }
     }
     
-    std::cout << "sampleCovarianceBias\n";
-    print(sampleCovarianceBias);
+//    std::cout << "sampleCovarianceBias\n";
+//    print(sampleCovarianceBias);
     ;
 }
 
@@ -548,9 +546,8 @@ void BrownianMotionAdmixtureGraph::initializeMeanSampleCovarianceEstimator(void)
         }
     }
 
-    std::cout << "pre-bias meanSampleCovarianceEstimator\n";
-    print(meanSampleCovarianceEstimator);
-    
+//    std::cout << "pre-bias meanSampleCovarianceEstimator\n";
+//    print(meanSampleCovarianceEstimator);    
     
     /*
     if (useBias)
@@ -567,8 +564,8 @@ void BrownianMotionAdmixtureGraph::initializeMeanSampleCovarianceEstimator(void)
 
     rbMeanSampleCovariance *= (numBlocks * blockSize);
 
-    std::cout << "meanSampleCovarianceEstimator\n";
-    print(meanSampleCovarianceEstimator);
+//    std::cout << "meanSampleCovarianceEstimator\n";
+//    print(meanSampleCovarianceEstimator);
 
 }
 
@@ -595,8 +592,8 @@ void BrownianMotionAdmixtureGraph::initializeCompositeCovariance(void)
         }
     }
     
-    std::cout << "compositeCovariance\n";
-    print(compositeCovariance);
+//    std::cout << "compositeCovariance\n";
+//    print(compositeCovariance);
 }
 
 void BrownianMotionAdmixtureGraph::initializeSampleCovariance(void)

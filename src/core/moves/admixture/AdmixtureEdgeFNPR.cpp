@@ -94,36 +94,10 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
         storedAdmixtureChildChild = &storedAdmixtureChild->getChild(0);
         storedAdmixtureParentParent = &storedAdmixtureParent->getParent();
         storedAdmixtureParentChild = &storedAdmixtureParent->getChild(0);
-    
         
         // get old branch idx
         int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
         int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
-        
-        /*
-        std::cout << "nd_a\n";
-    
-        // sample tips for "slide" railings
-        AdmixtureNode* nd_a = storedAdmixtureParent;
-        while (nd_a->getNumberOfChildren() != 0)
-        {
-            nd_a = &nd_a->getChild(rng->uniform01()*nd_a->getNumberOfChildren());
-            fwdProposal *= 0.5;
-        }
-        AdmixtureNode* nodeSrc = nd_a;
-        
-        std::cout << "nd_b\n";
-        AdmixtureNode* nd_b = storedAdmixtureChild;
-        while (nd_b->getNumberOfChildren() != 0)
-        {
-            nd_b = &nd_b->getChild(rng->uniform01()*nd_b->getNumberOfChildren());
-            fwdProposal *= 0.5;
-        }
-        AdmixtureNode* nodeDst = nd_b;
-        
-        std::cout << "rem edge\n";
-        */
-        
         
         // find new attach point
         std::vector<AdmixtureNode*> brothers;
@@ -144,177 +118,50 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
         }
         
         // remove admixture edge from graph
-        storedAdmixtureChild->removeChild(storedAdmixtureChildChild, false);
-        storedAdmixtureChildChild->setParent(storedAdmixtureChildParent, false);
-        storedAdmixtureChildParent->removeChild(storedAdmixtureChild, false);
-        storedAdmixtureChildParent->addChild(storedAdmixtureChildChild, false);
         
-        storedAdmixtureParent->removeChild(storedAdmixtureParentChild, false);
-        storedAdmixtureParentChild->setParent(storedAdmixtureParentParent, false);
-        storedAdmixtureParentParent->removeChild(storedAdmixtureParent, false);
-        storedAdmixtureParentParent->addChild(storedAdmixtureParentChild, true);
+        tau.removeAdmixtureEdge(storedAdmixtureParent);
+        
+//        storedAdmixtureChild->removeChild(storedAdmixtureChildChild, false);
+//        storedAdmixtureChildChild->setParent(storedAdmixtureChildParent, false);
+//        storedAdmixtureChildParent->removeChild(storedAdmixtureChild, false);
+//        storedAdmixtureChildParent->addChild(storedAdmixtureChildChild, false);
+//        
+//        storedAdmixtureParent->removeChild(storedAdmixtureParentChild, false);
+//        storedAdmixtureParentChild->setParent(storedAdmixtureParentParent, false);
+//        storedAdmixtureParentParent->removeChild(storedAdmixtureParent, false);
+//        storedAdmixtureParentParent->addChild(storedAdmixtureParentChild, false);
         
         
         // get age for admixture event
         storedAge = storedAdmixtureChild->getAge();
         
-        
-        /*
-         
-        // find parent range
-        std::list<AdmixtureNode*> path_a;
-        std::cout << "path_a : tip -> root\n";
-        while (nd_a != NULL)
-        {
-            std::cout << "\t" << nd_a << "\t" << nd_a->getAge() << "\n";
-            path_a.push_back(nd_a);
-            nd_a = &nd_a->getParent();
-        }
-        nd_a = path_a.back();
-        
-        // get admixtureChild path
-        std::list<AdmixtureNode*> path_b;
-        std::cout << "path_b : tip -> root\n";
-        while (nd_b != NULL)
-        {
-            std::cout << "\t" << nd_b << "\t" << nd_b->getAge() << "\n";
-            path_b.push_back(nd_b);
-            nd_b = &nd_b->getParent();
-        }
-        nd_b = path_b.back();
-        
-        
-        // find the node where the paths diverge by traversing both paths from root to tip
-        AdmixtureNode* mrca = nd_a;
-        std::cout << "mrca : root -> tip\n";
-        while (nd_a == nd_b && !path_a.empty() && !path_b.empty())
-        {
-            mrca = nd_a;
-            //std::cout << "\t" << mrca << "\t" << mrca->getAge() << "\n";
-            nd_a = path_a.back();
-            nd_b = path_b.back();
-            path_a.pop_back();
-            path_b.pop_back();
-        }
-        
-        // reverse move, prob of selecting the slide rails
-        bwdProposal *= pow(0.5,path_a.size()+path_b.size());
-        std::cout << "bwdProposal1 " << bwdProposal << "\n";
-        
-        // sample time from beta, scaled between mrca and min tip time
-        //double minAge = storedAdmixtureParent->getAge();
-        double minAge = nodeSrc->getAge();
-        if (minAge < nodeDst->getAge())
-            minAge = nodeDst->getAge();
-        double maxAge = mrca->getAge();
-        
-        std::cout << "A1\n";
-        int mrcaChIdx = 0;
-        
-        //        if (allowSisterAdmixture == false && mrca->getTopologyChild(0).isTip() == false && mrca->getTopologyChild(1).isTip() == false)
-        
-        // confused, because there should never exist such an edge..., so why is this a problem? add or replace must allow this state to occur
-        if (allowSisterAdmixture == false && mrca->getTopologyChild(0).isTip() == false && mrca->getTopologyChild(1).isTip() == false)
-        {
-            maxAge = mrca->getTopologyChild(0).getAge();
-            if (maxAge < mrca->getTopologyChild(1).getAge())
-            {
-                maxAge = mrca->getTopologyChild(1).getAge();
-                mrcaChIdx = 1;
-            }
-        }
-        std::cout << mrca->getTopologyChild(0).getAge() << " " << mrca->getTopologyChild(1).getAge() << "\n";
-        std::cout << "A2\n";
-        
-        //maxAge = mrca->getAge();
-        
-        std::cout << minAge << " " << maxAge << "\n";
-        
-        // get age range between nodes
-        double ageRange = maxAge - minAge;
-        // crashes ehre where ageRange==0.0
-        std::cout << "ageRange " << ageRange << "\n";
-        
-        // sample beta rv and compute proposal factors
-        double unitAge = (storedAge - minAge) / ageRange;
-        double a = lambda * unitAge + 1.0;
-        double b = lambda * (1.0 - unitAge) + 1.0;
-        double newUnitAge = RbStatistics::Beta::rv(a, b, *rng);
-        std::cout << "A3\n";
-        fwdProposal *= RbStatistics::Beta::pdf(a, b, newUnitAge);
-        std::cout << "A4\n";
-        double newAge = newUnitAge * ageRange + minAge;
-        double new_a = lambda * newUnitAge + 1.0;
-        double new_b = lambda * (1.0 - newUnitAge) + 1.0;
-        std::cout << unitAge << " " << new_a << " " << new_b << "\n";
-        bwdProposal *= RbStatistics::Beta::pdf(new_a, new_b, unitAge);
-        std::cout << "bwdProposal2 " << bwdProposal << "\n";
-        
-        
-        //std::cout << "a_path : find admixtureAge\n";
-        while (nd_a->getAge() > newAge && !path_a.empty())
-        {
-            nd_a = path_a.back();
-            //std::cout << "\t" << nd_a << "\t" << nd_a->getAge() << "\n";
-            path_a.pop_back();
-            
-            if (nd_a->getParent().getAge() > newAge && nd_a->getAge() < newAge)
-                break;
-        }
-        
-        //std::cout << "b_path : find admixtureAge\n";
-        while (nd_b->getAge() > newAge && !path_b.empty())
-        {
-            nd_b = path_b.back();
-            //std::cout << "\t" << nd_b << "\t" << nd_b->getAge() << "\n";
-            path_b.pop_back();
-            
-            if (nd_b->getParent().getAge() > newAge && nd_b->getAge() < newAge)
-                break;
-        }
-        
-         */
-        
-        /*
-         std::cout << "sampled nodes for\n";
-         std::cout << "t_old   " << storedAge << "\n";
-         std::cout << "t_new   " << newAge << "\n";
-         std::cout << "nd_a    " << nd_a << "\t" << nd_a->getAge() << "\n";
-         std::cout << "nd_a->p " << &nd_a->getParent() << "\t" << nd_a->getParent().getAge() << "\n";
-         std::cout << "nd_b    " << nd_b << "\t" << nd_b->getAge() << "\n";
-         std::cout << "nd_b->p " << &nd_b->getParent() << "\t" << nd_b->getParent().getAge() << "\n";
-         */
-        
-        
         AdmixtureNode* root = &tau.getRoot();
         
-        // store adjacent nodes to new parent node
-        newAdmixtureParentChild = nd_a;
-        newAdmixtureParentParent = &nd_a->getParent();
-        
-        // insert admixtureParent into graph
-        //storedAdmixtureParent->setAge(newAge);
-        storedAdmixtureParent->setParent(root, false);
-        newAdmixtureParentChild->setParent(storedAdmixtureParent, false);
-        newAdmixtureParentParent->addChild(storedAdmixtureParent, false);
-        newAdmixtureParentParent->removeChild(newAdmixtureParentChild, false);
-        storedAdmixtureParent->addChild(newAdmixtureParentChild, false);
-        storedAdmixtureParent->setParent(newAdmixtureParentParent, false);
-        
-        // store adjacent nodes to new child node
-        newAdmixtureChildChild = nd_b;
-        newAdmixtureChildParent = &nd_b->getParent();
-        
-        // insert admixtureChild into graph
-        //storedAdmixtureChild->setAge(newAge);
-        storedAdmixtureChild->setParent(root, false);
-        newAdmixtureChildChild->setParent(storedAdmixtureChild, false);
-        newAdmixtureChildParent->addChild(storedAdmixtureChild, false);
-        newAdmixtureChildParent->removeChild(newAdmixtureChildChild, false);
-        storedAdmixtureChild->addChild(newAdmixtureChildChild, false);
-        storedAdmixtureChild->setParent(newAdmixtureChildParent, true);
-        
-        
+//        // store adjacent nodes to new parent node
+//        newAdmixtureParentChild = nd_a;
+//        newAdmixtureParentParent = &nd_a->getParent();
+//        
+//        // insert admixtureParent into graph
+//        //storedAdmixtureParent->setAge(newAge);
+//        storedAdmixtureParent->setParent(root, false);
+//        newAdmixtureParentChild->setParent(storedAdmixtureParent, false);
+//        newAdmixtureParentParent->addChild(storedAdmixtureParent, false);
+//        newAdmixtureParentParent->removeChild(newAdmixtureParentChild, false);
+//        storedAdmixtureParent->addChild(newAdmixtureParentChild, false);
+//        storedAdmixtureParent->setParent(newAdmixtureParentParent, false);
+//        
+//        // store adjacent nodes to new child node
+//        newAdmixtureChildChild = nd_b;
+//        newAdmixtureChildParent = &nd_b->getParent();
+//        
+//        // insert admixtureChild into graph
+//        //storedAdmixtureChild->setAge(newAge);
+//        storedAdmixtureChild->setParent(root, false);
+//        newAdmixtureChildChild->setParent(storedAdmixtureChild, false);
+//        newAdmixtureChildParent->addChild(storedAdmixtureChild, false);
+//        newAdmixtureChildParent->removeChild(newAdmixtureChildChild, false);
+//        storedAdmixtureChild->addChild(newAdmixtureChildChild, false);
+//        storedAdmixtureChild->setParent(newAdmixtureChildParent, true);
         
         // get weight for admixture event
         storedWeight = storedAdmixtureChild->getWeight();

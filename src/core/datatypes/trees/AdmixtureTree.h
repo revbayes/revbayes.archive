@@ -74,6 +74,12 @@ namespace RevBayesCore {
         void                                        checkAllEdges(void);
         void                                        checkAllEdgesRecursively(AdmixtureNode* p) const;
         
+        void                                        addAdmixtureEdge(AdmixtureNode* p, AdmixtureNode* c, AdmixtureNode* pc, AdmixtureNode* cc, double t, double w, bool enforceNewickRecomp = true);
+        void                                        addAdmixtureEdge(AdmixtureNode* p, AdmixtureNode* c, AdmixtureNode* pc, AdmixtureNode* cc, bool enforceNewickRecomp = true);
+        void                                        removeAdmixtureEdge(AdmixtureNode* p, bool enforceNewickRecomp = true);
+        void                                        subtreePruneRegraft(AdmixtureNode* p,  AdmixtureNode* old_pc, AdmixtureNode* new_pc, bool enforceNewickRecomp = true);
+        void                                        subtreePruneRegraft(AdmixtureNode* p,  AdmixtureNode* old_pc, AdmixtureNode* new_pc, double t, bool enforceNewickRecomp = true);
+        
         void                                        freeMemory(void);
         void                                        updateTipOrderByNames(std::vector<std::string> names);
 
