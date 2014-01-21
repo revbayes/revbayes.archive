@@ -32,6 +32,7 @@ namespace RevBayesCore {
         bool                        compDefinitelyGreaterThan(double a, double b, double epsilon);                      //!< Tests whether one number is greater than another
         bool                        compDefinitelyLessThan(double a, double b);                                         //!< Tests whether one number is less than another
         bool                        compDefinitelyLessThan(double a, double b, double epsilon);                         //!< Tests whether one number is less than another
+        bool                        isAComputableNumber(double x);
         bool                        isFinite(double x);                                                                 //!< Tests whether a double is finite
         bool                        isInt(double x);                                                                    //!< Tests whether a double is actually an interger
         bool                        isNan(double x);                                                                    //!< Tests whether a double is NAN (not a number)

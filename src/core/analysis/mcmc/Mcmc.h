@@ -17,8 +17,8 @@ namespace RevBayesCore {
     /**
      * @brief Declaration of MCMC class
      * 
-     * This file contains the declaration of the MCMC class. 
-     * An MCMC object manages the MCMC analysis by setting up the chain, calling the moves and the monitors etc.
+     * This file contains the declaration of the Markov chain Monte Carlo (MCMC) algorithm class. 
+     * An MCMC object manages the MCMC analysis by setting up the chain, calling the moves, the monitors and etc.
      *
      *
      *
@@ -32,7 +32,7 @@ namespace RevBayesCore {
     public:
         Mcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca=true, double ch=1.0, int ci=0);
         Mcmc(const Mcmc &m);
-        virtual                                            ~Mcmc(void);                                                          //!< Virtual destructor
+        virtual                                            ~Mcmc(void);                                                                             //!< Virtual destructor
        
         // overloaded operators
         Mcmc&                                               operator=(const Mcmc &m);
@@ -61,11 +61,10 @@ namespace RevBayesCore {
         void                                                assignMoveSchedule(void);
         void                                                getOrderedStochasticNodes(  const DagNode*              dagNode,
                                                                                         std::vector<DagNode*>&      orderedStochasticNodes,
-                                                                                        std::set<const DagNode*>&   visitedNodes
-                                                                                     );
+                                                                                        std::set<const DagNode*>&   visitedNodes);
         void                                                initializeChain(void);                                                                  //!< Initialize objects for mcmc sampling
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
-        bool                                                isAComputableNumber(double x);                                                          //!< Decide whether number is computable (not inf, neginf, or nan)
+//        bool                                                isAComputableNumber(double x);                                                          //!< Decide whether number is computable (not inf, neginf, or nan)
         void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
     
         // members

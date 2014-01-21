@@ -36,13 +36,14 @@
 #ifndef TopologyNode_H
 #define TopologyNode_H
 
+#include "Clade.h"
+
 #include <vector>
 #include <string>
 
 namespace RevBayesCore {
     
     class Tree;
-    class Clade;
     
     class TopologyNode  {
         
