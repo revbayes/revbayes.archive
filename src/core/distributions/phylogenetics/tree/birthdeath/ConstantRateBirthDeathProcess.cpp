@@ -39,7 +39,8 @@ double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const {
 }
 
 
-double ConstantRateBirthDeathProcess::pSurvival(double start, double end, double T, double r) const {
+double ConstantRateBirthDeathProcess::pSurvival(double start, double end, double r) const 
+{
     
     // compute the rate
     double mu = extinction->getValue();
@@ -51,44 +52,53 @@ double ConstantRateBirthDeathProcess::pSurvival(double start, double end, double
     
     double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start));
     
-    
     return (1.0 / den);
-    
 }
 
 
 
 double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) const {
     
-    double b = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
+    double rate = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
     
     // subtract the probability that we might not have sampled this species (or any descendant)
     if ( origin->getValue() >= t_high && samplingStrategy == "uniform" ) 
     {
-        b -= log( rho->getValue() );
+        rate -= log( rho->getValue() );
     }
     
-    return b;
+    return rate;
     
 }
 
 
 
-double ConstantRateBirthDeathProcess::simSpeciation(double origin, double r) {
+std::vector<double> ConstantRateBirthDeathProcess::simSpeciations(size_t n, double origin, double r) const
+{
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-	double u = rng->uniform01();
+    std::vector<double> times = std::vector<double>(n, 0.0);
     
-    // get the parameters
-    double lambda = speciation->getValue()*r;
-    double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
-    double div = lambda - mu;
+    for (size_t i = 0; i < n; ++i) 
+    {
+        double u = rng->uniform01();
     
-    double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );  
+        // get the parameters
+        double lambda = speciation->getValue()*r;
+        double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
+        double div = lambda - mu;
+    
+        double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );  
 	
-    return t;
+        times[i] = t;
+    }
+    
+    // finally sort the times
+    std::sort(times.begin(), times.end());
+    
+    return times;
 }
 
 

@@ -21,6 +21,8 @@
 
 #include "BirthDeathProcess.h"
 
+#include <vector>
+
 namespace RevBayesCore {
     
     class Clade;
@@ -41,8 +43,8 @@ namespace RevBayesCore {
         // helper functions
         double                                              lnSpeciationRate(double t) const;
         double                                              rateIntegral(double t_low, double t_high) const;
-        double                                              pSurvival(double start, double end, double T, double r) const;
-        double                                              simSpeciation(double origin, double r);
+        double                                              pSurvival(double start, double end, double r) const;
+        std::vector<double>                                 simSpeciations(size_t n, double origin, double r) const;
         
         // members
         const TypedDagNode<double>*                         speciation;
