@@ -199,6 +199,29 @@ std::vector<double> BirthDeathProcess::divergenceTimes( void ) const
 }
 
 
+/**
+ * Compute the diversity of the tree at time t.
+ *
+ * \param[in]    t      time at which we want to know the diversity.
+ *
+ * \return The diversity (number of species in the reconstructed tree).
+ */
+int BirthDeathProcess::diversity(double t) const
+{
+    std::vector<double> times = divergenceTimes();
+    
+    for (size_t i = 0; i < times.size(); ++i) 
+    {
+        if ( times[i] > t ) 
+        {
+            return int( i + 2 );
+        }
+    }
+    
+    return int(times.size() + 2);
+}
+
+
 double BirthDeathProcess::lnP1(double t, double T, double r) const {
     
     // get the survival probability
