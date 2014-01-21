@@ -172,9 +172,14 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
     
     if (!geographicGrids.empty() && nextState->getState() == 1)
     {
-        double parentAge = tree->getValue().getNode(index).getParent().getAge();
-        double eventAge = parentAge + tree->getValue().getNode(index).getBranchLength() * nextState->getTime();
-        int t_idx = (int)eventAge;
+        TopologyNode p = tree->getValue().getNode(index);
+        int t_idx = 0;
+        if (!p.isRoot())
+        {
+            double parentAge = tree->getValue().getNode(index).getParent().getAge();
+            double eventAge = parentAge + tree->getValue().getNode(index).getBranchLength() * nextState->getTime();
+            t_idx = (int)eventAge;
+        }
         double grm = geographicGrids[t_idx]->computeRateModifier(currState, nextState);
         rate *= grm;
     }
