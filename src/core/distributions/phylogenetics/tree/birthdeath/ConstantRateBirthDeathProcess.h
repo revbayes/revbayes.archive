@@ -43,7 +43,7 @@ namespace RevBayesCore {
         // helper functions
         double                                              lnSpeciationRate(double t) const;
         double                                              rateIntegral(double t_low, double t_high) const;
-        double                                              pSurvival(double start, double end, double r) const;
+        double                                              pSurvival(double start, double end) const;
         std::vector<double>                                 simSpeciations(size_t n, double origin, double r) const;
         
         // members

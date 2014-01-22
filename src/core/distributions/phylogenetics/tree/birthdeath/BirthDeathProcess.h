@@ -49,7 +49,7 @@ namespace RevBayesCore {
         virtual double                                      lnSpeciationRate(double t) const = 0;                                                               //!< Get the log-transformed speciation rate at time t.
         virtual double                                      rateIntegral(double t_low, double t_high) const = 0;                                                //!< Compute the rate integral.
         virtual std::vector<double>                         simSpeciations(size_t n, double origin, double r) const = 0;                                        //!< Simulate n speciation events.
-        virtual double                                      pSurvival(double start, double end, double r) const = 0;                                            //!< Compute the probability of survival of the process.
+        virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 
         
         // helper functions
@@ -60,6 +60,7 @@ namespace RevBayesCore {
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
         double                                              lnP1(double t, double T, double r) const;
         bool                                                matchesConstraints(void);
+        double                                              pSurvival(double start, double end, double r) const;                                                //!< Compute the probability of survival of the process including uniform taxon sampling.
         void                                                simulateTree(void);
         
         // members

@@ -70,28 +70,21 @@ double DiversityDependentPureBirthProcess::lnSpeciationRate(double t) const
 
 /**
  * Compute the probability of survival if the process starts with one species at time start and ends at time end.
- * At the present time each species has the survival probability r.
  * The general equation for the homogeneous birth-death process is
- *    P(N(T)>0|N(t)=1) = (1+\int{mu*exp[rateIntegral(t,s)]ds} - (r-1)/r exp[rateIntegral(t,T)])^{-1}
+ *    P(N(T)>0|N(t)=1) = (1+\int{mu*exp[rateIntegral(t,s)]ds})^{-1}
  * Because this process has no extinction, the survival probability is simplified to
- *    P(N(T)>0|N(t)=1) = (1 - (r-1)/r exp[rateIntegral(t,T)])^{-1}
+ *    P(N(T)>0|N(t)=1) = 1
  * 
  *
  * \param[in]    start      Start time of the process.
  * \param[in]    end        End/stopping time of the process.
- * \param[in]    r          Sampling probability.
  *
  * \return Speciation rate at time t. 
  */
-double DiversityDependentPureBirthProcess::pSurvival(double start, double end, double r) const 
+double DiversityDependentPureBirthProcess::pSurvival(double start, double end) const 
 {
     
-    // compute the rate
-    double rate = rateIntegral(start, end);    
-    double den = 1.0 - ( (r-1.0)/r ) * exp(rate);
-    
-    
-    return (1.0 / den);
+    return 1.0;
 }
 
 

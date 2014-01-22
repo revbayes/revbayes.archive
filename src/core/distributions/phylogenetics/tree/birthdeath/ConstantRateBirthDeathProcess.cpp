@@ -39,7 +39,7 @@ double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const {
 }
 
 
-double ConstantRateBirthDeathProcess::pSurvival(double start, double end, double r) const 
+double ConstantRateBirthDeathProcess::pSurvival(double start, double end) const 
 {
     
     // compute the rate

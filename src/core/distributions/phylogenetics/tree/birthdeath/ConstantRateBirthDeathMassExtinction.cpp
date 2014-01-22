@@ -44,7 +44,7 @@ double ConstantRateBirthDeathMassExtinction::lnSpeciationRate(double t) const {
 }
 
 
-double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end, double r) const {
+double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end) const {
     
     // compute the rate
     double mu = extinction->getValue();
@@ -80,13 +80,6 @@ double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end,
     
     // add the integral of the final epoch until the present time
     den += exp(-rate*start) * mu / (rate * accumulatedMassExtinction ) * ( exp(rate*end) - exp(rate*prev_time));
-    
-//    // add sampling
-//    if ( (start < T) && (end >= T) )
-//    {
-//        accumulatedMassExtinction *= r;
-//        den -= (r-1)*exp( rate*(T-start) ) / accumulatedMassExtinction;
-//    }
     
     return (1.0 / den);
     

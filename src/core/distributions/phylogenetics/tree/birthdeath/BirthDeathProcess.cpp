@@ -179,7 +179,7 @@ double BirthDeathProcess::computeLnProbability( void ) {
         lnProbTimes += (m-numTaxa) * log(F_t) + log(RbMath::choose(m,numTaxa));
     }
     
-    return lnProbTimes + logTreeTopologyProb;
+    return lnProbTimes ;//+ logTreeTopologyProb;
     
 }
 
@@ -229,7 +229,7 @@ double BirthDeathProcess::lnP1(double t, double T, double r) const {
     
     // get the survival probability
     double a = log( pSurvival(t,T,r) );
-    double b = rateIntegral(t, T);
+    double b = rateIntegral(t, T) - log(r);
     
     // compute the probability of observing/sampling exactly one lineage
     double p = 2.0 * a + b;
@@ -252,6 +252,32 @@ bool BirthDeathProcess::matchesConstraints( void ) {
     }
     
     return true;
+}
+
+
+/**
+ * Compute the probabililty of survival (no extinction) of the process including uniform taxon sampling at the present time.
+ * The probability of survival is given by
+ * [1 + int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds ) ]^{-1}
+ * and can be simplified to
+ * [1 + int_{t_low}^{t_high} ( mu'(s) exp(rate'(t,s)) ds ) - (r-1)/r*exp(rate'(t_low,t_high)) ]^{-1}
+ * where mu' and rate' are the diversification rate function without incomplete taxon sampling.
+ * Therefore we can just call pSurvival without incomplete taxon sampling that will be computed in the derived classes,
+ * and add the sampling here so that sampling will be available for all models :)
+ * For more information please read Hoehna, S. 2014. The time-dependent reconstructed evolutionary process with a key-role for mass-extinction events.
+ *
+ * \param[in]    start      Start time of the process.
+ * \param[in]    end        End/stopping time of the process.
+ * \param[in]    r          Sampling probability.
+ *
+ * \return The probability of survival of the process.
+ */
+double BirthDeathProcess::pSurvival(double start, double end, double r) const
+{
+    double rate = rateIntegral(start, end);
+    double ps = 1.0 / pSurvival(start, end);
+    
+    return 1.0 / (ps - (r-1.0)/r * exp(rate) );
 }
 
 

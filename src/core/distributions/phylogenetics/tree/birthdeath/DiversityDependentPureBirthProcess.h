@@ -37,7 +37,7 @@ namespace RevBayesCore {
         // helper functions
         double                                              lnSpeciationRate(double t) const;                                                                   //!< log-transformed speciation rate at time t.
         double                                              rateIntegral(double t_low, double t_high) const;                                                    //!< rate integral in the inveral t_low to t_high
-        double                                              pSurvival(double start, double end, double r) const;                                      //!< Probability of survival (non-extinction) if started at time start with one species
+        double                                              pSurvival(double start, double end) const;                                      //!< Probability of survival (non-extinction) if started at time start with one species
         std::vector<double>                                 simSpeciations(size_t n, double origin, double r) const;                                                             //!< Simulate a speciation event.
         
         // members
