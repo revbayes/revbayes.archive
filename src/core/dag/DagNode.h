@@ -31,6 +31,8 @@ namespace RevBayesCore {
     class DagNode {
     
     public:
+        
+        enum DagNodeTypes { CONSTANT, DETERMINISTIC, STOCHASTIC };
     
         virtual                                            ~DagNode(void);                                                                  //!< Virtual destructor
 
@@ -39,8 +41,9 @@ namespace RevBayesCore {
         virtual DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const = 0;               //!< Clone the entire DAG which is connected to this node
         virtual double                                              getLnProbability(void) = 0;
         virtual double                                              getLnProbabilityRatio(void) = 0;
-        virtual void                                                printName(std::ostream &o, const std::string &sep) const = 0;                                          //!< Monitor/Print this variable 
-        virtual void                                                printValue(std::ostream &o, const std::string &sep) const = 0;                                          //!< Monitor/Print this variable 
+        virtual void                                                printName(std::ostream &o, const std::string &sep) const = 0;                   //!< Monitor/Print this variable 
+        virtual void                                                printStructureInfo(std::ostream &o) const = 0;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
+        virtual void                                                printValue(std::ostream &o, const std::string &sep) const = 0;                  //!< Monitor/Print this variable 
         virtual void                                                printValue(std::ostream &o,size_t i) const = 0;                                 //!< Monitor/Print the i-th element of this variable 
         virtual void                                                redraw(void) = 0;                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         
@@ -54,6 +57,7 @@ namespace RevBayesCore {
         void                                                        getAffectedNodes(std::set<DagNode *>& affected);                                //!< get affected nodes
         //    DagNode*                                            getChild(size_t index);                                                         //!< Get the child at the index
         const std::set<DagNode*>&                                   getChildren(void) const;                                                        //!< Get the set of parents
+        std::string                                                 getDagNodeType(void) const;
         DagNode*                                                    getFirstChild(void) const;                                                      //!< Get the first child from a our set
         const std::string&                                          getName(void) const;                                                            //!< Get the of the node
         size_t                                                      getNumberOfChildren(void) const;                                                //!< Get the number of children for this node
@@ -85,11 +89,16 @@ namespace RevBayesCore {
         virtual void                                                swapParameter(const DagNode *oldP, const DagNode *newP) = 0;                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
         virtual void                                                touchMe(DagNode *toucher) = 0;                                                  //!< Touch myself (flag for recalculation)
     
+        // helper functions
+        void                                                        printChildren(std::ostream& o) const;                                   //!< Print children DAG nodes
+        void                                                        printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
+        
         // members
         mutable std::set<DagNode*>                                  children;                                                                      //!< The children in the model graph of this node
         std::string                                                 name;
         std::set<const DagNode*>                                    parents;                                                                        //!< The parents in the DAG of this node
         std::set<size_t>                                            touchedElements;
+        DagNodeTypes                                                type;
     };
 
 }

@@ -129,6 +129,7 @@
 #include "Func_simplex.h"
 #include "Func_type.h"
 #include "Func_Source.h"
+#include "Func_structure.h"
 #include "Func_write.h"
 
 /* Builtin templated functions */
@@ -406,6 +407,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "simplex",                  new Func_simplex()                  );
+        addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
         
         

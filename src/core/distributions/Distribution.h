@@ -42,7 +42,7 @@ namespace RevBayesCore {
     class Distribution : public Cloneable {
         
     public:
-        // constructors and destructor
+        // destructor
         virtual                            ~Distribution(void) {}
         
         // public methods
@@ -61,11 +61,8 @@ namespace RevBayesCore {
         virtual void                        swapParameter(const DagNode *oldP, const DagNode *newP) = 0;    //!< Exchange the parameter
         
     protected:
+        // hidden constructor
         Distribution(void);
-        //Distribution(const Distribution& d);
-        
-        // overloaded operators
-//        Distribution&                       operator=(const Distribution& d);
         
         // inheritable methods
         void                                addParameter(const DagNode* p);                                 //!< add a parameter to the distribution

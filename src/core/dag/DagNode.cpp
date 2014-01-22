@@ -121,6 +121,24 @@ const std::set<DagNode*>& DagNode::getChildren( void ) const {
 }
 
 
+std::string DagNode::getDagNodeType( void ) const
+{
+    
+    if ( type == CONSTANT ) 
+    {
+        return "constant";
+    } 
+    else if ( type == DETERMINISTIC )
+    {
+        return "deterministic";
+    }
+    else
+    {
+        return "stochastic";
+    }
+    
+}
+
 DagNode* DagNode::getFirstChild( void ) const {
     return *children.begin();
 }
@@ -182,6 +200,40 @@ void DagNode::keepAffected() {
     // keep all my children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->keepMe( this );
+}
+
+
+/** Print children */
+void DagNode::printChildren( std::ostream& o ) const {
+    
+    o << "[ ";
+    
+    for ( std::set<DagNode*>::const_iterator i = children.begin(); i != children.end(); i++) {
+        if ( i != children.begin() )
+            o << ", ";
+        if ( getName() == "" )
+            o << "<" << (*i)->getName() << ">";
+        else
+            o << (*i)->getName();
+    }
+    o << " ]";
+}
+
+
+/** Print parents */
+void DagNode::printParents( std::ostream& o ) const {
+    
+    o << "[ ";
+    
+    for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
+        if ( i != parents.begin() )
+            o << ", ";
+        if ( getName() == "" )
+            o << "<" << (*i)->getName() << ">";
+        else
+            o << (*i)->getName();
+    }
+    o << " ]";
 }
 
 

@@ -39,6 +39,7 @@ namespace RevBayesCore {
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
+        void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);
         void                                                setValue(const valueType &v);
         
@@ -65,11 +66,15 @@ namespace RevBayesCore {
 template<class valueType>
 RevBayesCore::ConstantNode<valueType>::ConstantNode(const std::string &n, valueType *v) : TypedDagNode<valueType>( n ), value( v ) {
     
+    this->type = DagNode::CONSTANT;
+    
 }
 
 
 template<class valueType>
 RevBayesCore::ConstantNode<valueType>::ConstantNode(const ConstantNode<valueType> &c) : TypedDagNode<valueType>( c ), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *c.value ) ) {
+    
+    this->type = DagNode::CONSTANT;
     
 }
 
@@ -170,6 +175,27 @@ bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const {
 template<class valueType>
 void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter ) {
     // nothing to do
+}
+
+
+template<class valueType>
+/** Print struct for user */
+void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o) const 
+{
+    
+    o << "_DAGClass     = constant" << std::endl;
+    o << "_valueType    = ???" << std::endl;
+    o << "_value        = " << value << std::endl;
+    
+    o << "_parents      = ";
+    this->printParents(o);
+    o << std::endl;
+    
+    o << "_children     = ";
+    this->printChildren(o);
+    o << std::endl;
+    
+    o << std::endl;
 }
 
 

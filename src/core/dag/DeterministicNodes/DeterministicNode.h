@@ -44,6 +44,7 @@ namespace RevBayesCore {
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
+        void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                update(void);                                                               //!< Update the current value by recomputation
         void                                                redraw(void);
 
@@ -64,6 +65,8 @@ namespace RevBayesCore {
 template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string &n, TypedFunction<valueType> *f ) : DynamicNode<valueType>( n ), function( f ) {
     
+    this->type = DagNode::DETERMINISTIC;
+    
     // get the parameters from the distribution and add them as my parents in the DAG
     const std::set<const DagNode*> funcParents = function->getParameters();
     
@@ -80,6 +83,7 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string
 template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const DeterministicNode<valueType> &n ) : DynamicNode<valueType>( n ), function( n.function->clone() ) {
     
+    this->type = DagNode::DETERMINISTIC;
     
     // set myself as the DAG node of the function
     function->setDeterministicNode( this );
@@ -186,6 +190,29 @@ void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter ) {
     // clear the list of touched element indices
     this->touchedElements.clear();
     
+}
+
+
+/** Print struct for user */
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
+{
+    
+    o << "_DAGClass    = deterministic" << std::endl;
+    o << "_valueType   = ???" << std::endl;
+    o << "_function    = " << function << std::endl;
+    o << "_touched     = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
+    o << "_value       = " << function->getValue() << std::endl;
+    
+    o << "_parents     = ";
+    this->printParents(o);
+    o << std::endl;
+    
+    o << "_children    = ";
+    this->printChildren(o);
+    o << std::endl;
+    
+    o << std::endl;
 }
 
 
