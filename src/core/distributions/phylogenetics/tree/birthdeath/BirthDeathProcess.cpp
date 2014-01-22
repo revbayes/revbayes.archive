@@ -20,12 +20,15 @@ origin( o ), rho( r ), samplingStrategy( ss ), condition( cdt ), numTaxa( nTaxa 
     addParameter( origin );
     addParameter( rho );
     
+    // the combinatorial factor for the probability of a labelled history is
+    // 2^{n-1} / ( n! * (n-1)! )
+    // but since the probability of the divergence times contains the factor n! we simply stor
+    // 2^{n-1} / (n-1)!
     double lnFact = 0.0;
     for (size_t i = 2; i < numTaxa; i++) {
         lnFact += std::log(i);
     }
-    
-    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
+    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - lnFact ;
         
 }
 
@@ -134,7 +137,7 @@ double BirthDeathProcess::computeLnProbability( void ) {
     // did we condition on survival?
     if ( condition == "survival" )    
     {
-        lnProbTimes = - pSurvival(0,T,samplingProbability);
+        lnProbTimes = - log( pSurvival(0,T,samplingProbability) );
     }
     
     // multiply the probability of a descendant of the initial species
@@ -157,7 +160,7 @@ double BirthDeathProcess::computeLnProbability( void ) {
         {
             return RbConstants::Double::nan;
         }
-        
+         
         lnProbTimes += lnSpeciationRate(times[i]) + lnP1(times[i],T,samplingProbability);
     }
     
@@ -172,11 +175,11 @@ double BirthDeathProcess::computeLnProbability( void ) {
         double F_t = p_0_t / p_0_T;
         
         // get an estimate of the actual number of taxa
-        double m = round(numTaxa / rho->getValue());
+        double m = round(numTaxa / rho->getValue());     
         lnProbTimes += (m-numTaxa) * log(F_t) + log(RbMath::choose(m,numTaxa));
     }
     
-    return lnProbTimes; // + logTreeTopologyProb;
+    return lnProbTimes + logTreeTopologyProb;
     
 }
 

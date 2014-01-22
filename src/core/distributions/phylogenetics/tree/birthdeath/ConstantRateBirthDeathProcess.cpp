@@ -35,7 +35,7 @@ ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) cons
 
 double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const {
     
-    return speciation->getValue();
+    return log( speciation->getValue() );
 }
 
 
@@ -50,7 +50,7 @@ double ConstantRateBirthDeathProcess::pSurvival(double start, double end, double
     // do the integration of int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds )
     // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx ) 
     
-    double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start));
+    double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start) );
     
     return (1.0 / den);
 }
@@ -60,15 +60,8 @@ double ConstantRateBirthDeathProcess::pSurvival(double start, double end, double
 double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) const {
     
     double rate = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
-    
-    // subtract the probability that we might not have sampled this species (or any descendant)
-    if ( origin->getValue() >= t_high && samplingStrategy == "uniform" ) 
-    {
-        rate -= log( rho->getValue() );
-    }
-    
+        
     return rate;
-    
 }
 
 
