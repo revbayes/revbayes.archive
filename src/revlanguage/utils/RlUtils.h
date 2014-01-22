@@ -17,9 +17,24 @@
 #ifndef RlUtil_H
 #define RlUtil_H
 
+#include "RbLanguageObject.h"
+
 #include <string>
 
-// Empty return type
-const std::string RbVoid_name                                   = "void";
+namespace RevLanguage {
+    
+    namespace RlUtils {
+
+        // Empty return type
+        const std::string Void                                   = "void";
+
+        class RlTypeConverter {
+            public:
+            static RbLanguageObject*                toReal(double x);
+            static RbLanguageObject*                toString(const std::string &x);
+        };
+    }
+
+}
 
 #endif

@@ -320,22 +320,22 @@ const RevLanguage::MethodTable&  RevLanguage::TypedContainer<rbType>::getMethods
         
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RbVoid_name, clampArgRules) );
+        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RbVoid_name, setValueArgRules) );
+        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
         
         ArgumentRules* redrawArgRules = new ArgumentRules();
-        methods.addFunction("redraw", new MemberFunction( RbVoid_name, redrawArgRules) );
+        methods.addFunction("redraw", new MemberFunction( RlUtils::Void, redrawArgRules) );
         
         // add method for call "x.sort()" as a function
         ArgumentRules* sortArgRules = new ArgumentRules();
-        methods.addFunction("sort",  new MemberFunction( RbVoid_name, sortArgRules) );
+        methods.addFunction("sort",  new MemberFunction( RlUtils::Void, sortArgRules) );
         
         // add method for call "x.unique()" as a function
         ArgumentRules* uniqueArgRules = new ArgumentRules();
-        methods.addFunction("unique",  new MemberFunction( RbVoid_name, uniqueArgRules) );
+        methods.addFunction("unique",  new MemberFunction( RlUtils::Void, uniqueArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &Container::getMethods() );

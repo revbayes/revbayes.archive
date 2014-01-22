@@ -39,8 +39,10 @@ namespace RevLanguage {
     
         // function you might want to overwrite
         virtual RbLanguageObject*               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RbLanguageObject*               getMember(const std::string& name) const;                                   //!< Get member variable 
         virtual const MethodTable&              getMethods(void) const;                                                     //!< Get member methods (const)
-    
+        virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
+
         // Basic utility functions you should not have to override
         RevBayesCore::TypedDagNode<rbType>*     getValueNode(void) const;
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
@@ -63,6 +65,7 @@ namespace RevLanguage {
     };
     
 }
+
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
@@ -196,6 +199,40 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::exec
 }
 
 
+/* Map calls to member methods */
+template <typename rbType>
+RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::getMember(std::string const &name) const
+{
+    
+    // check whether the variable is actually a stochastic node
+    if ( value->isStochastic() ) 
+    {
+        if ( name == "prob" || name == "probability" ) 
+        {
+            // convert the node
+            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+            double lnProb = stochNode->getLnProbability();
+            RbLanguageObject *p = RlUtils::RlTypeConverter::toReal( exp(lnProb) );
+            
+            return p;
+        } 
+        else if ( name == "lnProb" || name == "lnProbability" ) 
+        {
+            // convert the node
+            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+            double lnProb = stochNode->getLnProbability();
+            RbLanguageObject *p = RlUtils::RlTypeConverter::toReal( lnProb );
+            
+            return p;
+            
+        }
+    }
+
+    
+    return RbLanguageObject::getMember( name );
+}
+
+
 /* Get method specifications */
 template <typename rbType>
 const RevLanguage::MethodTable&  RevLanguage::RlModelVariableWrapper<rbType>::getMethods(void) const {
@@ -207,14 +244,14 @@ const RevLanguage::MethodTable&  RevLanguage::RlModelVariableWrapper<rbType>::ge
     {
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RbVoid_name, clampArgRules) );
+        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RbVoid_name, setValueArgRules) );
+        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
         
         ArgumentRules* redrawArgRules = new ArgumentRules();
-        methods.addFunction("redraw", new MemberFunction( RbVoid_name, redrawArgRules) );
+        methods.addFunction("redraw", new MemberFunction( RlUtils::Void, redrawArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RbLanguageObject::getMethods() );
@@ -238,6 +275,38 @@ template <typename rbType>
 RevBayesCore::TypedDagNode<rbType>* RevLanguage::RlModelVariableWrapper<rbType>::getValueNode( void ) const {
     
     return value;
+}
+
+
+
+/**
+ * Has this object a member with the given name?
+ *
+ */
+template<typename rbType>
+bool RevLanguage::RlModelVariableWrapper<rbType>::hasMember(std::string const &name) const 
+{
+    // first the general members ...
+    // if ( name == )
+    
+    // members that all stochastic variables have
+    if ( value->isStochastic() )  
+    {
+        if ( name == "prob" || name == "probability" ) 
+        {
+            return true;
+        } 
+        else if ( name == "lnProb" || name == "lnProbability" ) 
+        {
+            return true;
+        }
+    } 
+//    else 
+//    {
+//        <#statements-if-false#>
+//    }
+    
+    return false;
 }
 
 

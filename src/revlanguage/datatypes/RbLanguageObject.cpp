@@ -159,10 +159,10 @@ const MethodTable& RbLanguageObject::getMethods(void) const {
         ArgumentRules* getArgRules = new ArgumentRules();
         
         // add the 'members()' method
-        methods.addFunction("members", new MemberFunction(RbVoid_name, getMembersArgRules) );
+        methods.addFunction("members", new MemberFunction(RlUtils::Void, getMembersArgRules) );
         
         // add the 'members()' method
-        methods.addFunction("methods", new MemberFunction(RbVoid_name, getMethodsArgRules) );
+        methods.addFunction("methods", new MemberFunction(RlUtils::Void, getMethodsArgRules) );
         
         // add the 'memberNames()' method
         getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );

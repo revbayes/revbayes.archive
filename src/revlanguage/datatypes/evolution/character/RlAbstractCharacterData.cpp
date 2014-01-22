@@ -299,9 +299,9 @@ void AbstractCharacterData::initMethods(void) {
     methods.addFunction("includedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
     methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
     methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
-    methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules        ) );
-    methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules2       ) );
-    methods.addFunction("show",                new MemberFunction(RbVoid_name,        showdataArgRules           ) );
+    methods.addFunction("excludechar",         new MemberFunction(RlUtils::Void,        excludecharArgRules        ) );
+    methods.addFunction("excludechar",         new MemberFunction(RlUtils::Void,        excludecharArgRules2       ) );
+    methods.addFunction("show",                new MemberFunction(RlUtils::Void,        showdataArgRules           ) );
     methods.addFunction("ishomologous",        new MemberFunction(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     
         

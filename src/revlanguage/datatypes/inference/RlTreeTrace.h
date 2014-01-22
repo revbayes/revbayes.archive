@@ -164,7 +164,7 @@ const RevLanguage::MethodTable& RevLanguage::TreeTrace<treeType>::getMethods(voi
         
         ArgumentRules* summarizeArgRules = new ArgumentRules();
         summarizeArgRules->push_back( new ArgumentRule("burnin", true, Natural::getClassTypeSpec(), new Natural(0)) );
-        methods.addFunction("summarize", new MemberFunction( RbVoid_name, summarizeArgRules) );
+        methods.addFunction("summarize", new MemberFunction( RlUtils::Void, summarizeArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RbLanguageObject::getMethods() );

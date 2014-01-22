@@ -487,11 +487,11 @@ const RevLanguage::MethodTable& RevLanguage::Vector<rlType>::getMethods(void) co
         
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RbVoid_name, clampArgRules) );
+        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RbVoid_name, setValueArgRules) );
+        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &TypedContainer<std::vector<elementType> >::getMethods() );

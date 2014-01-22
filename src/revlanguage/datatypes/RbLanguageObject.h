@@ -67,7 +67,7 @@ public:
     virtual void                        replaceVariable(RbLanguageObject *newVar);                                                      //!< Replace the internal DAG node
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
   
-    // Member variable functions you have to override
+    // Member variable functions you may want to override
     virtual RbLanguageObject*           getMember(const std::string& name) const;                                                       //!< Get member variable 
     virtual bool                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
 
