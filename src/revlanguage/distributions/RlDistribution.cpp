@@ -1,11 +1,3 @@
-//
-//  Distribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlDistribution.h"
 #include "TypeSpec.h"
 
@@ -13,28 +5,50 @@
 
 using namespace RevLanguage;
 
-Distribution::Distribution() : RbLanguageObject() {
+
+/**
+ * Default constructor.
+ * 
+ * The default constructor does nothing except allocating the object.
+ */
+Distribution::Distribution() : RbLanguageObject() 
+{
     
 }
 
 
-
-Distribution::~Distribution() {
+/**
+ * Default destructor.
+ * 
+ * The default destructor does nothing except deleting the object.
+ */
+Distribution::~Distribution() 
+{
     
 }
 
 
-
-/* Get class name of object */
-const std::string& Distribution::getClassName(void) { 
+/**
+ * Get class name of object 
+ *
+ * \return The class' name.
+ */
+const std::string& Distribution::getClassName(void) 
+{ 
     
     static std::string rbClassName = "Distribution";
     
 	return rbClassName; 
 }
 
-/* Get class type spec describing type of object */
-const TypeSpec& Distribution::getClassTypeSpec(void) { 
+
+/**
+ * Get class type spec describing type of an object from this class (static).
+ *
+ * \return TypeSpec of this class.
+ */
+const TypeSpec& Distribution::getClassTypeSpec(void) 
+{ 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
     
@@ -42,6 +56,14 @@ const TypeSpec& Distribution::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Print the value of this object for the user.
+ *
+ * There is not much of a value to print for a distribution. 
+ * Thus, we simply print the name of the distribution.
+ *
+ * \param[in]    the stream to which to print.
+ */
 void Distribution::printValue(std::ostream &o) const 
 {
     o << getClassName() << "(...)" << std::endl;

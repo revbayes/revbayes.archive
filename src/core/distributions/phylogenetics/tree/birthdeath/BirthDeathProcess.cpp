@@ -120,33 +120,43 @@ double BirthDeathProcess::computeLnProbability( void ) {
         return RbConstants::Double::neginf;
     }
     
+    // present time 
+    double tipTime = value->getTipNode(0).getTime();
+    double org = origin->getValue();
+    
+    // test that the time of the process is larger or equal to the present time
+    if ( tipTime > org ) 
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    double presentTime = org;
+    
+    // retrieved the speciation times
+    std::vector<double> times = divergenceTimesSinceOrigin();
+    
     double samplingProbability = 1.0;
     if ( samplingStrategy == "uniform" ) 
     {
         samplingProbability = rho->getValue();
     }
     
-    // retrieved the speciation times
-    std::vector<double> times = divergenceTimes();
-    
-    // present time 
-    double T = value->getTipNode(0).getTime();
-    
-    
     // what do we condition on?
     // did we condition on survival?
     if ( condition == "survival" )    
     {
-        lnProbTimes = - log( pSurvival(0,T,samplingProbability) );
+        lnProbTimes = - log( pSurvival(0,presentTime,samplingProbability) );
     }
     
     // multiply the probability of a descendant of the initial species
-    lnProbTimes += lnP1(0,T,samplingProbability);
+    lnProbTimes += lnP1(0,presentTime,samplingProbability);
     
     // add the survival of a second species if we condition on the MRCA
     int numInitialSpecies = 1;
+    
     // check if we condition on the root or origin
-    if ( times[0] == 0.0 ) 
+    bool conditionOnMRCA = false;
+    if ( conditionOnMRCA == true ) 
     {
         ++numInitialSpecies;
         lnProbTimes *= 2.0;
@@ -161,7 +171,7 @@ double BirthDeathProcess::computeLnProbability( void ) {
             return RbConstants::Double::nan;
         }
          
-        lnProbTimes += lnSpeciationRate(times[i]) + lnP1(times[i],T,samplingProbability);
+        lnProbTimes += lnSpeciationRate(times[i]) + lnP1(times[i],presentTime,samplingProbability);
     }
     
     // if we assume diversified sampling, we need to multiply with the probability that all missing species happened after the last speciation event
@@ -170,8 +180,8 @@ double BirthDeathProcess::computeLnProbability( void ) {
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
         double lastEvent = times[times.size()-2];
         
-        double p_0_T = 1.0 - pSurvival(0,T,1.0) * exp( rateIntegral(0,T) );
-        double p_0_t = (1.0 - pSurvival(lastEvent,T,1.0) * exp( rateIntegral(lastEvent,T) ));
+        double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
+        double p_0_t = (1.0 - pSurvival(lastEvent,presentTime,1.0) * exp( rateIntegral(lastEvent,presentTime) ));
         double F_t = p_0_t / p_0_T;
         
         // get an estimate of the actual number of taxa
@@ -184,15 +194,20 @@ double BirthDeathProcess::computeLnProbability( void ) {
 }
 
 
-std::vector<double> BirthDeathProcess::divergenceTimes( void ) const
+std::vector<double> BirthDeathProcess::divergenceTimesSinceOrigin( void ) const
 {
+    
+    // get the time of the process
+    double org = origin->getValue();
+    double tipTime = value->getTipNode(0).getTime();
+    double offset = org - tipTime;
     
     // retrieved the speciation times
     std::vector<double> times;
     for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i) 
     {
         const TopologyNode& n = value->getInteriorNode( i );
-        double t = n.getTime();
+        double t = n.getTime() + offset;
         times.push_back(t);
     }
     // sort the vector of times in ascending order
@@ -211,7 +226,7 @@ std::vector<double> BirthDeathProcess::divergenceTimes( void ) const
  */
 int BirthDeathProcess::diversity(double t) const
 {
-    std::vector<double> times = divergenceTimes();
+    std::vector<double> times = divergenceTimesSinceOrigin();
     
     for (size_t i = 0; i < times.size(); ++i) 
     {

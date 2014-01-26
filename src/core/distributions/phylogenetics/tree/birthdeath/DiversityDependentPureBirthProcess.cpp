@@ -65,7 +65,9 @@ double DiversityDependentPureBirthProcess::lnSpeciationRate(double t) const
     double b = initialSpeciation->getValue();
     int k = capacity->getValue();
     
-    return (1.0 - double(n)/k) * b ;
+    double speciationRate = (1.0 - double(n)/k) * b ;
+    
+    return log(speciationRate);
 }
 
 /**
@@ -105,7 +107,7 @@ double DiversityDependentPureBirthProcess::rateIntegral(double t_low, double t_h
 {
     
     // get the divergence times (speciation events)
-    std::vector<double> times = divergenceTimes();
+    std::vector<double> times = divergenceTimesSinceOrigin();
     
     // get the current parameter values
     double lambda = initialSpeciation->getValue();
@@ -113,21 +115,41 @@ double DiversityDependentPureBirthProcess::rateIntegral(double t_low, double t_h
     
     // compute the rate integral by piecewise computation of the linear parts of the speciation rate
     double rate = 0.0;
-    for (size_t i = 1; i < numTaxa; ++i) 
+    
+    double min = t_low;
+    double max = (times[0] > t_high) ? t_high : times[0];
+    double diff = (min > max) ? 0.0 : (max-min);
+    
+    // compute the speciation rate for this interval
+    double b = (1.0 - 1.0/k) * lambda;
+    
+    // add the integral for this interval
+    rate -= b*diff;
+    for (size_t i = 1; i < numTaxa-1; ++i) 
     {
         // get the interval boundaries:
         // either these are the speciation events t[i-1] and t[i]
         // or adjusted by the actual time we want to compute
-        double min = (times[i-1] < t_low)  ? t_low  : times[i-1];
-        double max = (times[i]   > t_high) ? t_high : times[i];
-        double diff = (min > max) ? 0.0 : (max-min);
+        min = (times[i-1] < t_low)  ? t_low  : times[i-1];
+        max = (times[i]   > t_high) ? t_high : times[i];
+        diff = (min > max) ? 0.0 : (max-min);
         
         // compute the speciation rate for this interval
-        double b = (1.0 - i/k) * lambda;
+        b = (1.0 - (i+1.0)/k) * lambda;
         
         // add the integral for this interval
         rate -= b*diff;
     }
+    
+    min = (times[numTaxa-2] < t_low)  ? t_low  : times[numTaxa-2];
+    max = t_high;
+    diff = (min > max) ? 0.0 : (max-min);
+    
+    // compute the speciation rate for this interval
+    b = (1.0 - numTaxa/k) * lambda;
+    
+    // add the integral for this interval
+    rate -= b*diff;
      
     // return the rate integral
     return rate;
@@ -179,7 +201,8 @@ std::vector<double> DiversityDependentPureBirthProcess::simSpeciations(size_t n,
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void DiversityDependentPureBirthProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void DiversityDependentPureBirthProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+{
     
     if (oldP == initialSpeciation) 
     {

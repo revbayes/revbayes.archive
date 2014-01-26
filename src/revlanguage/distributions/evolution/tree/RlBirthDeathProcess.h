@@ -1,5 +1,5 @@
 #ifndef RlBirthDeathProcess_H
-#define RlBirthDeathProcess_h
+#define RlBirthDeathProcess_H
 
 #include "BirthDeathProcess.h"
 #include "RlTimeTree.h"
@@ -19,7 +19,7 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class BirthDeathProcess :  public TypedDistribution<TimeTree> {
+    class BirthDeathProcess : public TypedDistribution<TimeTree> {
         
     public:
         BirthDeathProcess( void );
