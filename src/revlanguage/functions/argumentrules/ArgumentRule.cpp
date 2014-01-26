@@ -177,17 +177,3 @@ void RevLanguage::ArgumentRule::printValue(std::ostream &o) const {
     o << " \"" << label << "\"";
 }
 
-
-/** Provide complete information about object */
-std::string RevLanguage::ArgumentRule::debugInfo(void) const {
-
-    std::ostringstream o;
-
-    o << "ArgumentRule:" << std::endl;
-    o << "label             = " << label << std::endl;
-    o << "hasDefaultVal     = " << hasDefaultVal << std::endl;
-    o << std::endl;
-
-    return o.str();
-}
-

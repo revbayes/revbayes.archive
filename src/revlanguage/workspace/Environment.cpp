@@ -171,7 +171,7 @@ const VariableSlot& Environment::operator[]( const size_t index ) const {
 bool Environment::addFunction(const std::string& name, Function* func) {
     
 #ifdef DEBUG_WORKSPACE
-    printf( "Adding function %s = %s to workspace\n", name.c_str(), func->debugInfo().c_str() );
+    printf( "Adding function %s = %s to workspace\n", name.c_str(), func->callSignature().c_str() );
 #endif
     
     if ( existsVariable(name) )

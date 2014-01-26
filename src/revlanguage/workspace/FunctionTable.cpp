@@ -422,17 +422,3 @@ void FunctionTable::printValue(std::ostream& o) const {
         o << std::endl;
     }
 }
-
-
-/** Complete info about object */
-std::string FunctionTable::debugInfo(void) const {
-
-    std::ostringstream o;
-    if (table.size() == 0)
-        o << "FunctionTable with no entries" << std::endl;
-    else
-        o << "FunctionTable with " << table.size() << " entries:" << std::endl;
-    printValue(o);
-
-    return o.str();
-}

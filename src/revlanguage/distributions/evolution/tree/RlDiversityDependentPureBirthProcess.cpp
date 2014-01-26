@@ -1,13 +1,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "RlConstantRateBirthDeathProcess.h"
-#include "ConstantRateBirthDeathProcess.h"
+#include "DiversityDependentPureBirthProcess.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
+#include "RlDiversityDependentPureBirthProcess.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
@@ -20,7 +20,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess() : BirthDeathProcess() 
+DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess() : BirthDeathProcess() 
 {
     
 }
@@ -32,9 +32,9 @@ ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess() : BirthDeathProce
  *
  * \return A new copy of the model. 
  */
-ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const 
+DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( void ) const 
 {
-    return new ConstantRateBirthDeathProcess(*this);
+    return new DiversityDependentPureBirthProcess(*this);
 }
 
 
@@ -48,7 +48,7 @@ ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) cons
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::createDistribution( void ) const 
+RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::createDistribution( void ) const 
 {
     
     // get the parameters
@@ -56,9 +56,9 @@ RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::crea
     // the origin
     RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getValue() ).getValueNode();
     // speciation rate
-    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( initialLambda->getValue() ).getValueNode();
     // extinction rate
-    RevBayesCore::TypedDagNode<double>* e       = static_cast<const RealPos &>( mu->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<int>* k          = static_cast<const Natural &>( capacity->getValue() ).getValueNode();
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getValue() ).getValueNode();
     // sampling strategy
@@ -73,7 +73,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::crea
     const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
     
     // create the internal distribution object
-    RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, s, e, r, strategy, cond, n, names, c);
+    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, s, k, r, strategy, cond, n, names, c);
     
     return d;
 }
@@ -85,10 +85,10 @@ RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::crea
  *
  * \return The class' name.
  */
-const std::string& ConstantRateBirthDeathProcess::getClassName( void ) 
+const std::string& DiversityDependentPureBirthProcess::getClassName( void ) 
 { 
     
-    static std::string rbClassName = "constant-rate Birth-Death Process";
+    static std::string rbClassName = "diversity-depdenent pure-birth Process";
     
 	return rbClassName; 
 }
@@ -98,7 +98,7 @@ const std::string& ConstantRateBirthDeathProcess::getClassName( void )
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& ConstantRateBirthDeathProcess::getClassTypeSpec( void ) 
+const TypeSpec& DiversityDependentPureBirthProcess::getClassTypeSpec( void ) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
@@ -110,14 +110,14 @@ const TypeSpec& ConstantRateBirthDeathProcess::getClassTypeSpec( void )
 /** 
  * Get the member rules used to create the constructor of this object.
  *
- * The member rules of the constant-rate birth-death process are:
- * (1) the speciation rate lambda which must be a positive real.
- * (2) the extinction rate mu that must be a positive real.
+ * The member rules of the diversity-dependent pure-birth process are:
+ * (1) the initial speciation rate lambda which must be a positive real.
+ * (2) the carrying capacity that must be a natural number.
  * (3) all member rules specified by BirthDeathProcess.
  *
  * \return The member rules.
  */
-const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const 
+const MemberRules& DiversityDependentPureBirthProcess::getMemberRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -125,9 +125,9 @@ const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"  , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
-
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"  , true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "capacity", true, Natural::getClassTypeSpec() ) );
+        
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getMemberRules();
         distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
@@ -144,7 +144,7 @@ const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& ConstantRateBirthDeathProcess::getTypeSpec( void ) const 
+const TypeSpec& DiversityDependentPureBirthProcess::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -163,16 +163,16 @@ const TypeSpec& ConstantRateBirthDeathProcess::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ConstantRateBirthDeathProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void DiversityDependentPureBirthProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 
     {
-        lambda = var;
+        initialLambda = var;
     }
-    else if ( name == "mu" ) 
+    else if ( name == "capacity" ) 
     {
-        mu = var;
+        capacity = var;
     }
     else {
         BirthDeathProcess::setConstMemberVariable(name, var);

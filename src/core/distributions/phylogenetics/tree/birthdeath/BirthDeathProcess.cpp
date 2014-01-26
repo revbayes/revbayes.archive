@@ -179,7 +179,7 @@ double BirthDeathProcess::computeLnProbability( void ) {
         lnProbTimes += (m-numTaxa) * log(F_t) + log(RbMath::choose(m,numTaxa));
     }
     
-    return lnProbTimes ;//+ logTreeTopologyProb;
+    return lnProbTimes + logTreeTopologyProb;
     
 }
 

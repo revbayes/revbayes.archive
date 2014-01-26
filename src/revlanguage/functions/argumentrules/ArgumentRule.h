@@ -40,7 +40,6 @@ class ArgumentRule {
         // Basic utility functions
         virtual ArgumentRule*               clone(void) const;                                                                                  //!< Clone object
         virtual void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
-        virtual std::string                 debugInfo(void) const;                                                                              //!< General info on object
 
         // ArgumentRule functions
         const std::string&                  getArgumentLabel(void) const;                                                                       //!< Get label of argument

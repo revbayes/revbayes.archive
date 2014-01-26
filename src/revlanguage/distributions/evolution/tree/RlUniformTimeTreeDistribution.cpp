@@ -1,13 +1,3 @@
-/**
- * @file
- * This file contains the implementation of the Rev uniform time tree distribution
- *
- * @brief Implementation of the Rev uniform time tree distribution
- *
- * @author Fredrik Ronquist
- */
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
@@ -97,25 +87,6 @@ const TypeSpec& UniformTimeTreeDistribution::getTypeSpec( void ) const {
     static TypeSpec ts = getClassTypeSpec();
     
     return ts;
-}
-
-
-/** Print value for user */
-void UniformTimeTreeDistribution::printValue(std::ostream& o) const {
-    
-    o << " UniformTimeTreeDistribution( originTime=";
-    if ( originTime != NULL ) {
-        o << originTime->getName();
-    } else {
-        o << "?";
-    }
-    o << ", taxonNames=";
-    if ( taxonNames != NULL ) {
-        o << taxonNames->getName();
-    } else {
-        o << "?";
-    }
-    o << " )";
 }
 
 

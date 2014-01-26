@@ -54,17 +54,3 @@ void MethodTable::addFunction( const std::string name, Function *func ) {
 //        static_cast<DagNodeFunction*>( (Function*)func )->setMethodName( name );
 }
 
-
-/** Complete info about object */
-std::string MethodTable::debugInfo(void) const {
-
-    std::ostringstream o;
-    if (table.size() == 0)
-        o << "MethodTable with no entries" << std::endl;
-    else
-        o << "MethodTable with " << table.size() << " entries:" << std::endl;
-    printValue(o);
-
-    return o.str();
-}
-

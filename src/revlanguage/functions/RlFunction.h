@@ -61,7 +61,7 @@ class Function :  public RbLanguageObject {
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
 
         // Basic utility functions you may want to override
-        virtual std::string                             debugInfo(void) const;                                                              //!< Brief info about object
+        virtual std::string                             callSignature(void) const;                                                              //!< Brief info about object
 
         // Basic utility functions you should not have to override
     	void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')

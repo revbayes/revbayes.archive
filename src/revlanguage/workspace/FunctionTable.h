@@ -45,7 +45,6 @@ class FunctionTable {
         FunctionTable&                          operator=(const FunctionTable& x);                                                      //!< Assignment operator 
 
         // Basic utility functions
-        virtual std::string                     debugInfo(void) const;                                                                  //!< Brief info to string
         virtual FunctionTable*                  clone(void) const;                                                                      //!< Clone object
         void                                    printValue(std::ostream& o) const;                                                      //!< Print table for user
 

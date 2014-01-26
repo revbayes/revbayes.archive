@@ -161,7 +161,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
             if ( functions.size() != 0 ) {
                 RBOUT( "Usage:" );
                 for ( std::vector<Function*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
-                    RBOUT( (*i)->debugInfo() );
+                    RBOUT( (*i)->callSignature() );
                 }
                 return 0;
             }
@@ -254,7 +254,7 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
         if ( functions.size() != 0 ) {
             RBOUT( "Usage:" );
             for ( std::vector<Function *>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
-                RBOUT( (*i)->debugInfo() );
+                RBOUT( (*i)->callSignature() );
                 delete *i;
             }
         }

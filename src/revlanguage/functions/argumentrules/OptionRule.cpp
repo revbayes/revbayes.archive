@@ -56,19 +56,6 @@ bool OptionRule::areOptionsUnique( const Vector<RlString>& optVals ) const {
 }
 
 
-/** Provide complete information about object */
-std::string OptionRule::debugInfo(void) const {
-    
-    std::ostringstream o;
-    
-    o << "OptionRule:" << std::endl;
-    o << "label         = " << label << std::endl;
-    o << "hasDefaultVal = " << hasDefaultVal << std::endl;
-//    o << "options       = " << options << std::endl;
-    
-    return o.str();
-}
-
 
 /** Print value for user */
 void OptionRule::printValue(std::ostream& o) const {

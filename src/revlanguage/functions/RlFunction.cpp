@@ -311,7 +311,7 @@ int Function::computeMatchScore(const Variable *var, const ArgumentRule &rule) {
 
 
 /** Debug info about object */
-std::string Function::debugInfo(void) const {
+std::string Function::callSignature(void) const {
     
     std::ostringstream o;
     o << getTypeSpec() << ": " << std::endl;

@@ -40,7 +40,6 @@ class MethodTable : public FunctionTable {
 
         // Basic utility functions
         MethodTable*                clone(void) const { return new MethodTable(*this); }                        //!< Clone object
-        std::string                 debugInfo(void) const;                                                      //!< Complete info to string
 
         // MethodTable function (we just set the name of MemberFunction objects here)
         void                        addFunction(const std::string name, Function *func);         //!< Add function; set name if appropriate

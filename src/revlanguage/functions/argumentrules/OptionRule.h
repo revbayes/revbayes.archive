@@ -33,7 +33,6 @@ class OptionRule : public ArgumentRule {
 
         // Basic utility functions
         OptionRule*                 clone(void) const { return new OptionRule(*this); }                                                 //!< Clone object
-        std::string                 debugInfo(void) const;                                                                              //!< General info on object
         void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
 
     protected:

@@ -33,7 +33,6 @@ class RangeRule : public ArgumentRule {
         // Basic utility functions
         RangeRule*                  clone(void) const { return new RangeRule(*this); }                                  //!< Clone object
         void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
-        std::string                 debugInfo(void) const;                                                              //!< General info on object
 
         // MinmaxRule functions
         bool                        isArgumentValid(const RbPtr<const Variable>& var, bool convert = false) const;              //!< Is var valid argument?
@@ -95,29 +94,5 @@ void RangeRule<valType>::printValue(std::ostream& o) const {
     ArgumentRule::printValue(o);
 
     o << "range = [ " << minVal << ", " << maxVal << " ]" << std::endl;
-}
-
-
-/** Provide complete information about object */
-template <typename valType>
-std::string RangeRule<valType>::debugInfo(void) const {
-
-    std::ostringstream o;
-
-    o << "RangeRule:" << std::endl;
-    o << "label         = " << label << std::endl;
-    o << "hasDefaultVal = " << hasDefaultVal << std::endl;
-    o << "defaultVaribale   = ";
-    if ( defaultVar.getDagNode() != NULL ) {
-        defaultVar.getValue().printValue(o);
-    } 
-    else {
-        o << "NULL";
-    }
-    o << std::endl;
-    o << "min           = " << minVal << std::endl;
-    o << "max           = " << maxVal << std::endl;
-
-    return o.str();
 }
 

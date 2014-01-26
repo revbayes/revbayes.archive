@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the uniform topology distribution, which is used create
- * random variables of (unrooted) topologies.
- *
- * @brief Declaration and implementation of uniform topology distribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
 #ifndef RlUniformTopologyDistribution_H
 #define RlUniformTopologyDistribution_H
 
@@ -24,23 +7,34 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the uniform topology distribution
+     *
+     * The RevLanguage wrapper of the uniform topology distribution connects
+     * the variables/parameters of the distribution and creates the internal UniformTopologyDistribution object.
+     * Please read the UniformTopologyDistribution.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-01-26, version 1.0
+     *
+     */
     class UniformTopologyDistribution :  public TypedDistribution<Topology> {
         
     public:
-        UniformTopologyDistribution( void );
-        virtual ~UniformTopologyDistribution();
+        UniformTopologyDistribution( void );                                                                                                            //!< Default constructor
         
         // Basic utility functions
-        UniformTopologyDistribution*                    clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
-        void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
+        UniformTopologyDistribution*                    clone(void) const;                                                                              //!< Clone the object
+        static const std::string&                       getClassName(void);                                                                             //!< Get class name
+        static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
+        const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
+        const MemberRules&                              getMemberRules(void) const;                                                                     //!< Get member rules (const)
         
         
         // Distribution functions you have to override
-        RevBayesCore::UniformTopologyDistribution*      createDistribution(void) const;
+        RevBayesCore::UniformTopologyDistribution*      createDistribution(void) const;                                                                 //!< Create the internal distribution object
         
     protected:
         
@@ -49,8 +43,8 @@ namespace RevLanguage {
         
     private:
         
-        RbPtr<const Variable>                           numTaxa;
-        RbPtr<const Variable>                           taxonNames;
+        RbPtr<const Variable>                           numTaxa;                                                                                        //!< Number of taxa of the topology
+        RbPtr<const Variable>                           taxonNames;                                                                                     //!< Taxon names
         
     };
     
