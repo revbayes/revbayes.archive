@@ -65,6 +65,7 @@ namespace RevBayesCore {
     
         // method you might want to override
         virtual void                                            tune(void);                                                                             //!< Specific tuning of the move
+        
         // parameters
         double                                                  weight;
     

@@ -1,19 +1,20 @@
-#ifndef RlExponentialDistribution_H
-#define RlExponentialDistribution_H
+#ifndef RlGeometricDistribution_H
+#define RlDeometricDistribution_H
 
-#include "ExponentialDistribution.h"
-#include "RlPositiveContinuousDistribution.h"
+#include "GeometricDistribution.h"
+#include "Natural.h"
+#include "RlTypedDistribution.h"
 
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the exponential distribution.
+     * The RevLanguage wrapper of the geometric distribution.
      *
-     * The RevLanguage wrapper of the exponential distribution simply
+     * The RevLanguage wrapper of the geometric distribution simply
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the ExponentialDistribution.h for more details.
+     * See the GeometricDistribution.h for more details.
      *
      *
      * @copyright Copyright 2009-
@@ -21,13 +22,13 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class ExponentialDistribution :  public PositiveContinuousDistribution {
+    class GeometricDistribution :  public TypedDistribution<Natural> {
         
     public:
-        ExponentialDistribution( void );                                                                                                                //!< Default constructor
+        GeometricDistribution( void );                                                                                                                //!< Default constructor
         
         // Basic utility functions
-        ExponentialDistribution*                        clone(void) const;                                                                              //!< Clone the object
+        GeometricDistribution*                          clone(void) const;                                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
@@ -35,7 +36,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::ExponentialDistribution*          createDistribution(void) const;                                                                 //!< Create the internal distribution object
+        RevBayesCore::GeometricDistribution*            createDistribution(void) const;                                                                 //!< Create the internal distribution object
         
     protected:
         
@@ -43,7 +44,7 @@ namespace RevLanguage {
         
         
     private:
-        RbPtr<const Variable>                           lambda;                                                                                         //!< The rate of the distribution
+        RbPtr<const Variable>                           p;                                                                                         //!< The rate of the distribution
         
     };
     

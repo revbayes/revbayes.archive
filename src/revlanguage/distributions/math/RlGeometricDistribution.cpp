@@ -1,10 +1,10 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ExponentialDistribution.h"
-#include "RlExponentialDistribution.h"
-#include "Real.h"
-#include "RealPos.h"
-#include "ContinuousStochasticNode.h"
+#include "GeometricDistribution.h"
+#include "RlGeometricDistribution.h"
+#include "Natural.h"
+#include "Probability.h"
+#include "StochasticNode.h"
 
 using namespace RevLanguage;
 
@@ -14,7 +14,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-ExponentialDistribution::ExponentialDistribution() : PositiveContinuousDistribution() 
+GeometricDistribution::GeometricDistribution() : TypedDistribution<Natural>() 
 {
     
 }
@@ -26,10 +26,10 @@ ExponentialDistribution::ExponentialDistribution() : PositiveContinuousDistribut
  *
  * \return A new copy of the model. 
  */
-ExponentialDistribution* ExponentialDistribution::clone( void ) const 
+GeometricDistribution* GeometricDistribution::clone( void ) const 
 {
-
-    return new ExponentialDistribution(*this);
+    
+    return new GeometricDistribution(*this);
 }
 
 
@@ -43,11 +43,11 @@ ExponentialDistribution* ExponentialDistribution::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::ExponentialDistribution* ExponentialDistribution::createDistribution( void ) const 
+RevBayesCore::GeometricDistribution* GeometricDistribution::createDistribution( void ) const 
 {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* l       = static_cast<const Real &>( lambda->getValue() ).getValueNode();
-    RevBayesCore::ExponentialDistribution* d    = new RevBayesCore::ExponentialDistribution( l );
+    RevBayesCore::TypedDagNode<double>* prob    = static_cast<const Probability &>( p->getValue() ).getValueNode();
+    RevBayesCore::GeometricDistribution* d      = new RevBayesCore::GeometricDistribution( prob );
     
     return d;
 }
@@ -59,10 +59,10 @@ RevBayesCore::ExponentialDistribution* ExponentialDistribution::createDistributi
  *
  * \return The class' name.
  */
-const std::string& ExponentialDistribution::getClassName(void) 
+const std::string& GeometricDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Exponential distribution";
+    static std::string rbClassName = "Geometric distribution";
     
 	return rbClassName; 
 }
@@ -73,10 +73,10 @@ const std::string& ExponentialDistribution::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& ExponentialDistribution::getClassTypeSpec(void) 
+const TypeSpec& GeometricDistribution::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -86,25 +86,25 @@ const TypeSpec& ExponentialDistribution::getClassTypeSpec(void)
 /** 
  * Get the member rules used to create the constructor of this object.
  *
- * The member rules of the exponential distribution are:
- * (1) the rate lambda which must be a positive real.
+ * The member rules of the geometric distribution are:
+ * (1) the rate lambda which must be a positive real between 0 and 1 (= a probability).
  *
  * \return The member rules.
  */
-const MemberRules& ExponentialDistribution::getMemberRules(void) const 
+const MemberRules& GeometricDistribution::getMemberRules(void) const 
 {
     
-    static MemberRules distExpMemberRules;
+    static MemberRules distGeomMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distExpMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec()   , new Real(1.0) ) );
+        distGeomMemberRules.push_back( new ArgumentRule( "p", true, Probability::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
     
-    return distExpMemberRules;
+    return distGeomMemberRules;
 }
 
 
@@ -113,7 +113,7 @@ const MemberRules& ExponentialDistribution::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& ExponentialDistribution::getTypeSpec( void ) const 
+const TypeSpec& GeometricDistribution::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -133,16 +133,16 @@ const TypeSpec& ExponentialDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ExponentialDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void GeometricDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
 {
     
-    if ( name == "lambda" ) 
+    if ( name == "p" ) 
     {
-        lambda = var;
+        p = var;
     }
     else 
     {
-        PositiveContinuousDistribution::setConstMemberVariable(name, var);
+        TypedDistribution<Natural>::setConstMemberVariable(name, var);
     }
     
 }

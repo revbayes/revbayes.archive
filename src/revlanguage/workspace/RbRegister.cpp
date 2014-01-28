@@ -54,7 +54,7 @@
 #include "RlDirichletDistribution.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
-#include "RlGeometricBrownianMotion.h"
+#include "RlGeometricDistribution.h"
 #include "RlLognormalDistribution.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
@@ -74,9 +74,12 @@
 /* Moves */
 #include "RlMove.h"
 
-/* Moves on eal values*/
+/* Moves on real values*/
 #include "RlScaleMove.h"
 #include "RlSlidingMove.h"
+
+/* Moves on integer values*/
+#include "RlRandomIntegerWalkMove.h"
 
 /* Moves on Simplices */
 #include "RlSimplexMove.h"
@@ -265,6 +268,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Moves on real values */
         addTypeWithConstructor("mScale",                new ScaleMove() );
         addTypeWithConstructor("mSlide",                new SlidingMove() );
+        
+        /* Moves on integer values */
+        addTypeWithConstructor("mRandomIntegerWalk",    new RandomIntegerWalkMove() );
 
         /* Moves on simplices */
         addTypeWithConstructor("mSimplex",              new SimplexMove() );
@@ -308,8 +314,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "gamma", new GammaDistribution() );
         
         
-        // geometric Brownian motion (BM)
-        addDistribution( "geomBM", new GeometricBrownianMotion() );
+        // geometric distribution
+        addDistribution( "geom", new GeometricDistribution() );
         
         
         // exponential distribution

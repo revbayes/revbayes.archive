@@ -12,20 +12,43 @@
 
 using namespace RevBayesCore;
 
-BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, 
-                                                     const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, unsigned int nTaxa, 
-                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
-origin( o ), rho( r ), samplingStrategy( ss ), condition( cdt ), numTaxa( nTaxa ), taxonNames( tn ), constraints( c ) {
+
+/**
+ * Constructor.
+ *
+ * The constructor connects the parameters of the birth-death process (DAG structure)
+ * and initializes the probability density by computing the combinatorial constant of the tree structure.
+ *
+ * \param[in]    o         Origin or time of the process.
+ * \param[in]    r         Sampling probability of a species at present.
+ * \param[in]    ss        The sampling strategy (uniform/diversified).
+ * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
+ * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
+ * \param[in]    tn        Taxon names used during initialization.
+ * \param[in]    c         Clade constraints.
+ */
+BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *r, 
+                                     const std::string& ss, const std::string &cdt, unsigned int nTaxa, 
+                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
+        origin( o ), 
+        rho( r ), 
+        samplingStrategy( ss ), 
+        condition( cdt ), 
+        numTaxa( nTaxa ), 
+        taxonNames( tn ), 
+        constraints( c ) 
+{
     
     addParameter( origin );
     addParameter( rho );
     
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
-    // but since the probability of the divergence times contains the factor n! we simply stor
-    // 2^{n-1} / (n-1)!
+    // but since the probability of the divergence times contains the factor (n-1)! we simply stor
+    // 2^{n-1} / n!
     double lnFact = 0.0;
-    for (size_t i = 2; i < numTaxa; i++) {
+    for (size_t i = 2; i <= numTaxa; i++) 
+    {
         lnFact += std::log(i);
     }
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - lnFact ;
@@ -34,7 +57,21 @@ origin( o ), rho( r ), samplingStrategy( ss ), condition( cdt ), numTaxa( nTaxa 
 
 
 
-void BirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T) {
+/**
+ * Randomly attach the times to a tree topology.
+ * This function works by randomly picking a node from the set of tips,
+ * setting its time to times[index], increment the index,
+ * adding the two children (if they are not actual tips) to the set of tips,
+ * and recursively calling this function again.
+ *
+ * \param[in]     psi        The tree topology (needed to call setAge).
+ * \param[in]     tips       The vector of tips
+ * \param[in]     index   
+ * \param[in]     times         
+ * \param[in]     T      
+ */
+void BirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T) 
+{
     
     if (index < numTaxa-1) 
     {
@@ -68,6 +105,8 @@ void BirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &
         // recursive call to this function
         attachTimes(psi, tips, index+1, times, T);
     }
+    
+    // no return value
 }
 
 
