@@ -80,6 +80,7 @@
 
 /* Moves on integer values*/
 #include "RlRandomIntegerWalkMove.h"
+#include "RlRandomGeometricWalkMove.h"
 
 /* Moves on Simplices */
 #include "RlSimplexMove.h"
@@ -271,6 +272,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Moves on integer values */
         addTypeWithConstructor("mRandomIntegerWalk",    new RandomIntegerWalkMove() );
+        addTypeWithConstructor("mRandomGeometricWalk",  new RandomGeometricWalkMove() );
 
         /* Moves on simplices */
         addTypeWithConstructor("mSimplex",              new SimplexMove() );

@@ -1,10 +1,12 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Integer.h"
+#include "Probability.h"
 #include "RbLanguageObject.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlRandomIntegerWalkMove.h"
+#include "RlBoolean.h"
+#include "RlRandomGeometricWalkMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -16,7 +18,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-RandomIntegerWalkMove::RandomIntegerWalkMove() : Move() 
+RandomGeometricWalkMove::RandomGeometricWalkMove() : Move() 
 {
     
 }
@@ -28,10 +30,10 @@ RandomIntegerWalkMove::RandomIntegerWalkMove() : Move()
  *
  * \return A new copy of the model. 
  */
-RandomIntegerWalkMove* RandomIntegerWalkMove::clone(void) const 
+RandomGeometricWalkMove* RandomGeometricWalkMove::clone(void) const 
 {
     
-	return new RandomIntegerWalkMove(*this);
+	return new RandomGeometricWalkMove(*this);
 }
 
 
@@ -45,18 +47,20 @@ RandomIntegerWalkMove* RandomIntegerWalkMove::clone(void) const
  *
  * \return A new internal distribution object.
  */
-void RandomIntegerWalkMove::constructInternalObject( void ) 
+void RandomGeometricWalkMove::constructInternalObject( void ) 
 {
     // we free the memory first
     delete value;
     
-    // now allocate a new random-integer-walk move
+    // now allocate a new random-geometric-walk move
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
     RevBayesCore::TypedDagNode<int>* tmp = static_cast<const Integer &>( x->getValue() ).getValueNode();
     RevBayesCore::StochasticNode<int> *n = static_cast<RevBayesCore::StochasticNode<int> *>( tmp );
-    
+    double q = static_cast<const Probability &>( p->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+
     // finally create the internal move object
-    value = new RevBayesCore::RandomIntegerWalkMove(n, w);
+    value = new RevBayesCore::RandomGeometricWalkMove(n, q, t, w);
     
 }
 
@@ -66,10 +70,10 @@ void RandomIntegerWalkMove::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& RandomIntegerWalkMove::getClassName(void) 
+const std::string& RandomGeometricWalkMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Random-Integer-Walk move";
+    static std::string rbClassName = "Random-Geometric-Walk move";
     
 	return rbClassName; 
 }
@@ -80,7 +84,7 @@ const std::string& RandomIntegerWalkMove::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& RandomIntegerWalkMove::getClassTypeSpec(void) 
+const TypeSpec& RandomGeometricWalkMove::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -97,7 +101,7 @@ const TypeSpec& RandomIntegerWalkMove::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& RandomIntegerWalkMove::getMemberRules(void) const 
+const MemberRules& RandomGeometricWalkMove::getMemberRules(void) const 
 {
     
     static MemberRules scalingMoveMemberRules;
@@ -106,6 +110,8 @@ const MemberRules& RandomIntegerWalkMove::getMemberRules(void) const
     if ( !rulesSet ) 
     {
         scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Integer::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "p", true, Probability::getClassTypeSpec(), new Real(0.5) ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "tune", true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
@@ -123,7 +129,7 @@ const MemberRules& RandomIntegerWalkMove::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& RandomIntegerWalkMove::getTypeSpec( void ) const 
+const TypeSpec& RandomGeometricWalkMove::getTypeSpec( void ) const 
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -133,9 +139,9 @@ const TypeSpec& RandomIntegerWalkMove::getTypeSpec( void ) const
 
 
 
-void RandomIntegerWalkMove::printValue(std::ostream &o) const {
+void RandomGeometricWalkMove::printValue(std::ostream &o) const {
     
-    o << "RandomIntegerWalkMove(";
+    o << "RandomGeometricWalkMove(";
     if (x != NULL) 
     {
         o << x->getName();
@@ -159,12 +165,20 @@ void RandomIntegerWalkMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void RandomIntegerWalkMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void RandomGeometricWalkMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 
     {
         x = var;
+    }
+    else if ( name == "p" ) 
+    {
+        p = var;
+    }
+    else if ( name == "tune" ) 
+    {
+        tune = var;
     }
     else 
     {

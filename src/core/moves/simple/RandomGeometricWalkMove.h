@@ -1,5 +1,5 @@
-#ifndef RandomIntegerWalkMove_H
-#define RandomIntegerWalkMove_H
+#ifndef RandomGeometricWalkMove_H
+#define RandomGeometricWalkMove_H
 
 #include <ostream>
 #include <set>
@@ -15,33 +15,36 @@ namespace RevBayesCore {
      *
      *
      * This is a very simple move on integer numbers that proposes with probability p = 0.5
-     * to increase the current value by 1 and with probability p = 0.5 to decrease the 
-     * current value by 1. Thus, it is a random walk but guided by the acceptance ratio.
+     * to increase the current value and with probability p = 0.5 to decrease the 
+     * current value. The number of steps taken by this move (value by which the current value is increased or decrease)
+     * is geometrically distributed. 
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2009-09-08, version 1.0
      *
      */
-    class RandomIntegerWalkMove : public SimpleMove {
+    class RandomGeometricWalkMove : public SimpleMove {
         
     public:
-        RandomIntegerWalkMove( StochasticNode<int> *n, double w);                                                           //!<  constructor
+        RandomGeometricWalkMove( StochasticNode<int> *n, double q, bool tuning, double w);                                                           //!<  constructor
         
         // Basic utility functions
-        RandomIntegerWalkMove*          clone(void) const;                                                                  //!< Clone object
+        RandomGeometricWalkMove*        clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the DAG nodes on which the move is working on
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         double                          performSimpleMove(void);                                                            //!< Perform move
+        void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                            rejectSimpleMove(void);                                                             //!< Reject the move
+        void                            tune(void);                                                                         //!< Tune the move to achieve a better acceptance/rejection ratio
         
     private:
         
         StochasticNode<int>*            variable;                                                                           //!< The variable the move is working on
         int                             storedValue;                                                                        //!< The stored value of the move used for rejections.
-        
+        double                          p;                                                                                  //!< The parameter of the geometric distribution that influence the proposal size.
     };
     
 }

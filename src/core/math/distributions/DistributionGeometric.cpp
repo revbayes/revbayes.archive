@@ -128,10 +128,10 @@ double RbStatistics::Geometric::pdf(int n, double p, bool asLog) {
         }
     
     if (n < 0 || !RbMath::isFinite(n) || p == 0) 
-        return 0.0;
+        return ((asLog) ? RbConstants::Double::neginf : 0.0);
     
     /* prob = (1-p)^x, stable for small p */
-    prob = RbStatistics::Binomial::pdf(0.,n, p,1-p, asLog);
+    prob = RbStatistics::Binomial::pdf(n, p,1-p, 0.0, asLog);
     
     return ((asLog) ? log(p) + prob : p*prob);
 }
