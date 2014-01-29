@@ -1,4 +1,5 @@
-#include "ScaleMove.h"
+#include "DistributionGeometric.h"
+#include "RandomGeometricWalkMove.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -14,10 +15,10 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the move object.
  */
-ScaleMove::ScaleMove( StochasticNode<double> *n, double l, bool t, double w ) : SimpleMove( n, w, t ), 
-        variable( n ), 
-        storedValue( 0.0 ), 
-        lambda( l ) 
+RandomGeometricWalkMove::RandomGeometricWalkMove( StochasticNode<int> *n, double q, bool t, double w ) : SimpleMove( n, w, t ), 
+variable( n ), 
+storedValue( 0 ), 
+p( q ) 
 {
     // we need to allocate memory for the stored value
     
@@ -30,10 +31,10 @@ ScaleMove::ScaleMove( StochasticNode<double> *n, double l, bool t, double w ) : 
  *
  * \return A new copy of the model. 
  */
-ScaleMove* ScaleMove::clone( void ) const 
+RandomGeometricWalkMove* RandomGeometricWalkMove::clone( void ) const 
 {
-
-    return new ScaleMove( *this );
+    
+    return new RandomGeometricWalkMove( *this );
 }
 
 
@@ -42,9 +43,9 @@ ScaleMove* ScaleMove::clone( void ) const
  *
  * \return The moves' name.
  */
-const std::string& ScaleMove::getMoveName( void ) const 
+const std::string& RandomGeometricWalkMove::getMoveName( void ) const 
 {
-    static std::string name = "Scaling";
+    static std::string name = "RandomGeometricWalkMove";
     
     return name;
 }
@@ -60,26 +61,29 @@ const std::string& ScaleMove::getMoveName( void ) const
  *
  * \return The hastings ratio.
  */
-double ScaleMove::performSimpleMove( void ) 
+double RandomGeometricWalkMove::performSimpleMove( void ) 
 {
-        
+    
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    double &val = variable->getValue();
+    int &val = variable->getValue();
     
     // copy value
     storedValue = val;
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    val *= scalingFactor;
+    if ( u >= 0.5 ) 
+    {
+        val += RbStatistics::Geometric::rv(p, *rng);
+    }
+    else
+    {
+        val -= RbStatistics::Geometric::rv(p, *rng);
+    }
     
-    // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
-    
-    return lnHastingsratio;
+    return 0.0;
 }
 
 
@@ -91,11 +95,11 @@ double ScaleMove::performSimpleMove( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ScaleMove::printParameterSummary(std::ostream &o) const 
+void RandomGeometricWalkMove::printParameterSummary(std::ostream &o) const 
 {
     
-    o << "lambda = " << lambda;
-
+    o << "p = " << p;
+    
 }
 
 
@@ -106,10 +110,10 @@ void ScaleMove::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void ScaleMove::rejectSimpleMove( void ) 
+void RandomGeometricWalkMove::rejectSimpleMove( void ) 
 {
     // swap current value and stored value
-    variable->setValue( new double(storedValue) );
+    variable->getValue() = storedValue;
     
 }
 
@@ -120,12 +124,12 @@ void ScaleMove::rejectSimpleMove( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new variable.
  */
-void ScaleMove::swapNode(DagNode *oldN, DagNode *newN) 
+void RandomGeometricWalkMove::swapNode(DagNode *oldN, DagNode *newN) 
 {
     // call the parent method
     SimpleMove::swapNode(oldN, newN);
     
-    variable = static_cast<StochasticNode<double>* >(newN) ;
+    variable = static_cast<StochasticNode<int>* >(newN) ;
     
 }
 
@@ -137,17 +141,17 @@ void ScaleMove::swapNode(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void ScaleMove::tune( void ) {
+void RandomGeometricWalkMove::tune( void ) {
     
     double rate = numAccepted / double(numTried);
     
     if ( rate > 0.44 ) 
     {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        p -= ( p/2.0 * ((rate-0.44)/0.56) );
     }
     else 
     {
-        lambda /= (2.0 - rate/0.44 );
+        p += ( (1.0-p)/2.0 * rate/0.45 );
     }
     
 }

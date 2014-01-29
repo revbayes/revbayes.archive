@@ -1,12 +1,10 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlBoolean.h"
-#include "ContinuousStochasticNode.h"
+#include "Integer.h"
 #include "RbLanguageObject.h"
 #include "RbException.h"
-#include "Real.h"
 #include "RealPos.h"
-#include "RlScaleMove.h"
+#include "RlRandomIntegerWalkMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -18,7 +16,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-ScaleMove::ScaleMove() : Move() 
+RandomIntegerWalkMove::RandomIntegerWalkMove() : Move() 
 {
     
 }
@@ -30,10 +28,10 @@ ScaleMove::ScaleMove() : Move()
  *
  * \return A new copy of the model. 
  */
-ScaleMove* ScaleMove::clone(void) const 
+RandomIntegerWalkMove* RandomIntegerWalkMove::clone(void) const 
 {
     
-	return new ScaleMove(*this);
+	return new RandomIntegerWalkMove(*this);
 }
 
 
@@ -47,20 +45,18 @@ ScaleMove* ScaleMove::clone(void) const
  *
  * \return A new internal distribution object.
  */
-void ScaleMove::constructInternalObject( void ) 
+void RandomIntegerWalkMove::constructInternalObject( void ) 
 {
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
-    double d = static_cast<const RealPos &>( lambda->getValue() ).getValue();
+    // now allocate a new random-integer-walk move
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getValue() ).getValueNode();
-    RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<int>* tmp = static_cast<const Integer &>( x->getValue() ).getValueNode();
+    RevBayesCore::StochasticNode<int> *n = static_cast<RevBayesCore::StochasticNode<int> *>( tmp );
     
     // finally create the internal move object
-    value = new RevBayesCore::ScaleMove(n, d, t, w);
+    value = new RevBayesCore::RandomIntegerWalkMove(n, w);
     
 }
 
@@ -70,10 +66,10 @@ void ScaleMove::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& ScaleMove::getClassName(void) 
+const std::string& RandomIntegerWalkMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Scaling move";
+    static std::string rbClassName = "Random-Integer-Walk move";
     
 	return rbClassName; 
 }
@@ -84,7 +80,7 @@ const std::string& ScaleMove::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& ScaleMove::getClassTypeSpec(void) 
+const TypeSpec& RandomIntegerWalkMove::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -97,13 +93,11 @@ const TypeSpec& ScaleMove::getClassTypeSpec(void)
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the scale move are:
- * (1) the variable which must be a positive real.
- * (2) the tuning parameter lambda that defines the size of the proposal (positive real)
- * (3) a flag whether auto-tuning should be used. 
+ * (1) the variable which must be an integer.
  *
  * \return The member rules.
  */
-const MemberRules& ScaleMove::getMemberRules(void) const 
+const MemberRules& RandomIntegerWalkMove::getMemberRules(void) const 
 {
     
     static MemberRules scalingMoveMemberRules;
@@ -111,9 +105,7 @@ const MemberRules& ScaleMove::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, RealPos::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Integer::getClassTypeSpec() ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
@@ -131,7 +123,7 @@ const MemberRules& ScaleMove::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& ScaleMove::getTypeSpec( void ) const 
+const TypeSpec& RandomIntegerWalkMove::getTypeSpec( void ) const 
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -141,9 +133,9 @@ const TypeSpec& ScaleMove::getTypeSpec( void ) const
 
 
 
-void ScaleMove::printValue(std::ostream &o) const {
+void RandomIntegerWalkMove::printValue(std::ostream &o) const {
     
-    o << "Scale(";
+    o << "RandomIntegerWalkMove(";
     if (x != NULL) 
     {
         o << x->getName();
@@ -167,20 +159,12 @@ void ScaleMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ScaleMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void RandomIntegerWalkMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 
     {
         x = var;
-    }
-    else if ( name == "lambda" ) 
-    {
-        lambda = var;
-    }
-    else if ( name == "tune" ) 
-    {
-        tune = var;
     }
     else 
     {
