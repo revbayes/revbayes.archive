@@ -24,6 +24,7 @@
 #include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "NewickConverter.h"
+#include "NewickTreeReader.h"
 #include "NclReader.h"
 #include "RbErrorStream.h"
 #include "RbFileManager.h"
@@ -1305,7 +1306,6 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
 std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::string fn, const std::string fileFormat) {
 	nexusReader.ClearContent();
     
-    std::cerr << "Trying to read file:\t\t" << fn << std::endl;	
 	// check that the file exist
     if ( !fileExists(fn.c_str()) ) 
     {
@@ -1339,6 +1339,13 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const char* fil
 		else if (fileFormat == "phylip") {
 			// phylip file format with long taxon names
 			nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_TREE_FORMAT);
+        }
+        else if (fileFormat == "newick")
+        {
+            std::string fn(fileName);
+            NewickTreeReader ntr;
+            std::vector<BranchLengthTree*>* trees = ntr.readBranchLengthTrees(fn);
+            return trees;
         }
     }
 	catch(NxsException err) {
@@ -1409,16 +1416,31 @@ std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
     std::vector<TimeTree*> trees;
-    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
+    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) 
+    {
         // we should check here the file type first and make sure it is valid
         
         // read the files in the map containing the file names with the output being a vector of pointers to
         // the character matrices that have been read
-        //        std::vector<TreePlate*>* m = reader.readTrees( *p, "nexus" );
         std::vector<BranchLengthTree*>* m = readBranchLengthTrees( *p, "nexus" );
-        if ( m != NULL && m->size() == 0 ) {
+        if ( m != NULL && m->size() == 0 ) 
+        {
             delete m;
-            m = readBranchLengthTrees( *p, "phylip" );
+            m = NULL;
+            try 
+            {
+                m = readBranchLengthTrees( *p, "phylip" );
+            } 
+            catch (RbException e) 
+            {
+                ;
+            }
+        }
+        
+        if ( m == NULL || m->size() == 0 ) 
+        {
+            delete m;
+            m = readBranchLengthTrees( *p, "newick" );
         }
         
         if (m != NULL) {
