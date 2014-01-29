@@ -28,7 +28,8 @@ int RevLanguageMain::startRevLanguageEnvironment(const int argc, const char* arg
     RevLanguage::UserInterface::userInterface().output(version.getHeader(), false);
     RevLanguage::UserInterface::userInterface().output("", false);
 
-    Help::getHelp().initializeHelp("~/help/");
+    // Initialize help singleton
+    Help::getHelp().initializeHelp();
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 
 #	if defined DEBUG_PARSER
