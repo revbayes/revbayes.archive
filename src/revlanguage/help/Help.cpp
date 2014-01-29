@@ -104,7 +104,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
 std::string Help::formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks){
     
     // remove any pre-formatting that may come from the xml-file
-    s = replaceString(s, "\t", "");
+    s = replaceString(s, "\t", " ");
     s = replaceString(s, "\n", " ");
     s = replaceString(s, "  ", " ");
     
