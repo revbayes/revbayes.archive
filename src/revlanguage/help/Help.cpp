@@ -10,7 +10,10 @@
  * located in <repos_root>/help directory. The name of these files should each
  * correspond to the command to query for help, for example:
  * if the user want help for mcmc function and types ?mcmc in terminal, a file 
- * called mcmc.xml is looked for in the help directory. 
+ * called mcmc.xml is looked for in the help directory. Note that the file name 
+ * is expected to be alla lowercase, the command queried for help is always 
+ * converted to lowercase so requesting help for mcmc, McMc both matches the 
+ * mcmc.xml file.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
