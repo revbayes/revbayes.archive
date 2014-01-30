@@ -1,11 +1,3 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
@@ -14,6 +6,7 @@
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlBoolean.h"
 #include "RlSlidingMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -40,9 +33,10 @@ void SlidingMove::constructInternalObject( void ) {
     // now allocate a new sliding move
     double d = static_cast<const Real &>( delta->getValue() ).getValue();
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
     RevBayesCore::TypedDagNode<double>* tmp = static_cast<const Real &>( x->getValue() ).getValueNode();
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
-    value = new RevBayesCore::SlidingMove(n, d, false, w);
+    value = new RevBayesCore::SlidingMove(n, d, t, w);
     
 }
 
@@ -75,7 +69,8 @@ const MemberRules& SlidingMove::getMemberRules(void) const {
     {
         slidingMoveMemberRules.push_back( new ArgumentRule( "x", false, Real::getClassTypeSpec() ) );
         slidingMoveMemberRules.push_back( new ArgumentRule( "delta", true, Real::getClassTypeSpec() , new Real(1.0) ) );
-
+        slidingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
+        
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
         slidingMoveMemberRules.insert( slidingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
@@ -115,6 +110,10 @@ void SlidingMove::setConstMemberVariable(const std::string& name, const RbPtr<co
     else if ( name == "delta" ) 
     {
         delta = var;
+    }
+    else if ( name == "tune" ) 
+    {
+        tune = var;
     }
     else 
     {
