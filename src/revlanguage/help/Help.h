@@ -49,14 +49,20 @@ private:
     Help(void); //!< Default constructor
     Help(const Help&); //!< Copy constructor (hidden away as this is a singleton class)
     Help& operator=(const Help&); //!< Assignment operator (hidden away as this is a singleton class)
-    std::string formatStringWithBreaks(const std::string s, std::string padding, size_t w); //!< Used for formatting a string for printing to the screen
+    std::string wrapText(const std::string s, std::string padding, size_t w); //!< Used for formatting a string for printing to the screen
     pugi::xml_parse_result loadHelpFile(const std::string& qs); //!< loads the help xml file, name of file is expected to be <query>.xml
     std::string formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks);
+    std::string formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks, bool stripLineBreaks);
     std::string replaceString(std::string subject, const std::string& search, const std::string& replace);
+    template <typename T> std::string to_string(T value);
+    std::string stripConsecutiveSpace(std::string subject);
+
+ 
     
     bool isHelpInitialized; //!< Flag indicating whether the help has been initialized
     std::string pathToHelpDir; //!< Where the help xml files are located
     pugi::xml_document doc; //!< the (parsed) xml help file
+    
 };
 
 #endif

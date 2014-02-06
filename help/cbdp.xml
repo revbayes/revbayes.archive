@@ -1,0 +1,164 @@
+<help_entry>
+
+    <name>cBDP</name>
+
+    <title>Constant-rate birth-death process</title>
+
+    <description>
+        <p>
+            The constant-rate birth-death process specifies a prior distribution on time trees, that is a uniform distribution on labelled histories and a distribtion on the divergence times.
+            The trees are ultrametric (i.e. all tips were sampled at the same time). The speciation and extinction rates of the process are constant.
+            We do not constraint the parameter values so that the speciation rate must be larger than the extinction rate.
+        </p>
+    </description>
+    
+
+    <usage>
+        cBDP( lambda=2, mu=1.0, origin=100, rho=0.25, samplingStrategy="uniform", condition="time", nTaxa=4, names={"a","b","c","d"}, constraints=Clade("a","b") )
+    </usage>    
+    
+    <details>todo</details>
+
+    <argument>
+        <label>lambda</label>
+        <type>dynamic</type>
+        <description>The speciation rate.</description>
+        <valueType>Positive real number</valueType>
+    </argument>
+    <argument>
+        <label>mu</label>
+        <type>dynamic</type>
+        <description>The extinction rate.</description>
+        <valueType>Positive real number</valueType>
+    </argument>
+    <argument>
+        <label>origin</label>
+        <type>dynamic</type>
+        <description>The time of the process since the origin, i.e., the length of the stem branch plus the crown age.</description>
+        <valueType>Positive real number</valueType>
+    </argument>
+    <argument>
+        <label>rho</label>
+        <type>dynamic</type>
+        <description>The taxon sampling probability/fraction.</description>
+        <valueType>Positive real number between 0.0 and 1.0</valueType>
+        <defaultValue>1.0</defaultValue>
+    </argument>
+    <argument>
+        <label>samplingStrategy</label>
+        <type>fixed</type>
+        <description>The sampling strategy of incomplete taxon sampling.</description>
+        <valueType>String</valueType>
+        <option>uniform</option>
+        <option>diversified</option>
+        <defaultValue>uniform</defaultValue>
+    </argument>
+    <argument>
+        <label>condition</label>
+        <type>fixed</type>
+        <description>The condition of the process, e.g., if we condition only on the time of the process, survival (non-extinction), obtaining a tree or the number of observed. For the latter choices we always condition additionally on the time.</description>
+        <valueType>String</valueType>
+        <option>time</option>
+        <option>survival</option>
+        <option>tree</option>
+        <option>nTaxa</option>
+        <defaultValue>time</defaultValue>
+    </argument>
+    <argument>
+        <label>nTaxa</label>
+        <type>fixed</type>
+        <description>The number of taxa. This is only needed for simulation/initialization purposes when a tree with exactly n taxa is needed in the model.</description>
+        <valueType>Natural number</valueType>
+    </argument>
+    <argument>
+        <label>names</label>
+        <type>fixed</type>
+        <description>The taxon labels that will be applied to the simulated tree.</description>
+        <valueType>Vector of strings</valueType>
+    </argument>
+    <argument>
+        <label>constraints</label>
+        <type>fixed</type>
+        <description>The topological constraints applied to the tree, i.e., conditioning on the occurence of the split between the clade and the remaining tree.</description>
+        <valueType>Vector of clades</valueType>
+        <defaultValue>NULL</defaultValue>
+    </argument>
+
+     <value>TimeTree</value>
+
+    <author>Sebastian Hoehna</author>
+
+    <reference>
+        <info> 
+            For the use of the constant-rate birth-death process please cite:
+        </info>
+        <citation>
+            Nee, S., May, R.M., and Harvey, P.H. 1994. The Reconstructed Evolutionary Process. Philosophical Transactions: Biological Sciences, 344, 305-311
+        </citation>
+        <url>http://rstb.royalsocietypublishing.org/content/344/1309/305.short</url>
+        <doi>10.1098/rstb.1994.0068</doi>
+    </reference>
+    <reference>
+        <info> 
+            For the use of incomplete taxon sampling please cite:
+        </info>
+        <citation>
+            Höhna, S., Stadler, T., Ronquist, F, and Britton, T. 2011. Inferring speciation and extinction rates under different species sampling scheme.s Molecular Biology and Evolution, 28, 2577-2589.
+        </citation>
+        <url>http://mbe.oxfordjournals.org/content/28/9/2577.short</url>
+        <doi>10.1093/molbev/msr095</doi>
+    </reference>
+
+    <example>
+        <p>
+            trueTree &lt;- readTrees("data/primate.tree")[1]
+        </p>
+        <p>
+            names &lt;- trueTree.names()
+            taxaCount &lt;- names.size()
+        </p>
+        <p>
+            # Birth-Death process priors
+            speciation ~ exponential(0.1)
+            extinction ~ exponential(0.1)
+            org ~ unif(0.0,50.0)
+        </p>
+        <p>
+            # moves for the birth-death parameters
+            moves[1] &lt;- mScale(speciation, lambda=1, tune=true, weight=2)
+            moves[2] &lt;- mScale(extinction, lambda=1, tune=true, weight=2)
+            moves[3] &lt;- mSlide(org, delta=1.0, weight=2.0)
+        </p>
+        <p>
+            # tree from birth-death process
+            tau ~ cBDP(origin=org, lambda=speciation, mu=extinction, nTaxa=taxaCount, names=names)
+        </p>
+        <p>
+            tau.clamp( trueTree )
+        </p>
+        <p>
+            monitors[1] &lt;- modelmonitor(filename="testBirthDeath.log",printgen=10, separator = "	")
+            monitors[2] &lt;- screenmonitor(printgen=1000, separator = "	", speciation)
+        </p>
+        <p>
+            mymodel &lt;- model(tau)
+        </p>
+        <p>
+            mymcmc &lt;- mcmc(mymodel, monitors, moves)
+        </p>
+        <p>
+            mymcmc.burnin(generations=20000,tuningInterval=100)
+            mymcmc.run(generations=200000)
+            mymcmc.operatorSummary()
+        </p>
+        <p>
+            # quit RevBayes. DANGER!!! ;)
+            q()
+        </p>
+    </example>
+
+</help_entry>
+
+
+
+

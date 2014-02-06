@@ -13,7 +13,7 @@
  * called mcmc.xml is looked for in the help directory. Note that the file name 
  * is expected to be alla lowercase, the command queried for help is always 
  * converted to lowercase so requesting help for mcmc, McMc both matches the 
- * mcmc.xml file.
+ * mcmc.xml file if present.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -35,168 +35,314 @@
 #include "../libs/pugixml_1.2/src/pugixml.hpp"
 #include <algorithm>
 #include <string> 
+#include <vector>
 
 /** Default constructor */
-Help::Help(void) {    
-    
+Help::Help(void)
+{
+
     isHelpInitialized = false;
 }
 
 /** Destructor */
-Help::~Help(void) {
-    
+Help::~Help(void)
+{
+
 }
 
 /** This is what turn up in terminal window */
-std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
-    
+std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
+{
+
     this->loadHelpFile(qs);
-   
+
+    pugi::xpath_node_set nodeSet, subSet;
+
     // the output to display in terminal
     std::string help = "\n";
-    
+
+    // name
     help += formatOutString(doc.child("help_entry").child("name").child_value(), columnWidth, 0, 2);
-    help += formatOutString(doc.child("help_entry").child("succinct").child_value(), columnWidth, 0, 2);
-    help += formatOutString(doc.child("help_entry").child("foo").child_value(), columnWidth, 0, 2); // No such tag, shouldn't affect output
-    help += formatOutString(doc.child("help_entry").child("verbose").child_value(), columnWidth, 0, 2);      
-    
+    // title
+    help += formatOutString(doc.child("help_entry").child("title").child_value(), columnWidth, 0, 2);
+    // description
+    nodeSet = doc.select_nodes("/help_entry/description/p");
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+        help += formatOutString(node.node().child_value(), columnWidth, 0, 1);
+    }
+    help += "\n\n";
+
+    // usage
+    help += formatOutString("Usage:", columnWidth, 0, 1);
+    help += formatOutString(doc.child("help_entry").child("usage").child_value(), columnWidth, 1, 1);
+    help += "\n";
     // arguments
-    help += formatOutString("Arguments:", columnWidth, 0, 2);
-    
-    pugi::xpath_node_set args = doc.select_nodes("/help_entry/argument");
-    for (pugi::xpath_node_set::const_iterator it = args.begin(); it != args.end(); ++it) {
-        pugi::xpath_node node = *it;        
-       
-        help += formatOutString(node.node().child_value("arg_name"), columnWidth, 1, 1);
-        help += formatOutString(node.node().child_value("arg_description"), columnWidth, 2, 2);
-    }
-    help += "\n\n";
-    
-    
-    // usage   
-    args = doc.select_nodes("/help_entry/usage");
-    help += formatOutString("Usages:", columnWidth, 0, 2);
-    
-    for (pugi::xpath_node_set::const_iterator it = args.begin(); it != args.end(); ++it) {
-        pugi::xpath_node node = *it;   
+    help += formatOutString("Arguments:", columnWidth, 0, 1);
+    nodeSet = doc.select_nodes("/help_entry/argument");
+    int loop = 0;
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+
+        help += formatOutString(node.node().child_value("label"), columnWidth, 1, 1);
+        help += formatOutString(node.node().child_value("description"), columnWidth, 2, 1);
+
+        help += formatOutString("Type: ", columnWidth, 2, -1);
+        help += formatOutString(node.node().child_value("type"), columnWidth, -1, 1);
+
+        help += formatOutString("Value type: ", columnWidth, 2, 0);
+        help += formatOutString(node.node().child_value("valueType"), columnWidth, -1, 1);
+
+        // loop through the "options" within this "argument" clause
+        std::string s = "/help_entry/argument[" + to_string(loop) + "]/option"; // xpath search expression
+        subSet = node.node().select_nodes(s.c_str());
+        if (subSet.size() > 0)
+        {
+            help += formatOutString("Options: ", columnWidth, 2, 1);
+        }
+        for (pugi::xpath_node_set::const_iterator it = subSet.begin(); it != subSet.end(); ++it)
+        {
+            pugi::xpath_node subNode = *it;
+            help += formatOutString(subNode.node().child_value(), columnWidth, 3, 1);
+        }
+
+        if (!node.node().child("defaultValue").empty())
+        {
+            help += formatOutString("Default Value: ", columnWidth, 2, -1);
+            help += formatOutString(node.node().child_value("defaultValue"), columnWidth, -1, 1);
+        }
         
-        help += formatOutString(node.node().child_value("theory"), columnWidth, 1, 2);
-        help += formatOutString("Example:", columnWidth, 1, 1);
-        help += formatOutString(node.node().child_value("example"), columnWidth, 1, 2);
+        help += "\n";
+        loop++;
+
     }
     help += "\n\n";
-    
+
+    // return value
+    help += formatOutString("Return Value:", columnWidth, 0, 2);
+    help += formatOutString(doc.child("help_entry").child("value").child_value(), columnWidth, 1, 3);
+
     // author
-    help += formatOutString("Author:", columnWidth, 0, 2);    
-    help += formatOutString(doc.child("help_entry").child("author").child_value(), columnWidth, 1, 4);
-    
+    help += formatOutString("Author:", columnWidth, 0, 2);
+    help += formatOutString(doc.child("help_entry").child("author").child_value(), columnWidth, 1, 3);
+
     // reference   
-    help += formatOutString("References:", columnWidth, 0, 2);    
-    args = doc.select_nodes("/help_entry/reference");
-    for (pugi::xpath_node_set::const_iterator it = args.begin(); it != args.end(); ++it) {
-        pugi::xpath_node node = *it;        
-       
-        help += formatOutString(node.node().child_value(), columnWidth, 1, 2);
+    help += formatOutString("References:", columnWidth, 0, 2);
+    nodeSet = doc.select_nodes("/help_entry/reference");
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+
+        help += formatOutString(node.node().child_value("info"), columnWidth, 1, 1);
+        help += formatOutString(node.node().child_value("citation"), columnWidth, 2, 2);
+        help += formatOutString(node.node().child_value("url"), columnWidth, 2, 2);
+        if (!node.node().child("doi").empty())
+        {
+            help += formatOutString("Doi: ", columnWidth, 2, 0);
+            help += formatOutString(node.node().child_value("doi"), columnWidth, -1, 2);
+        }
     }
-    help += "\n\n";
-    
-    return help;   
+    help += "\n";
+
+    // examples
+    // preserve line breaks from xml for examples clause
+    help += formatOutString("Examples:", columnWidth, 0, 2);
+    nodeSet = doc.select_nodes("/help_entry/example/p");
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+        help += formatOutString(node.node().child_value(), columnWidth, 1, 2, false);
+    }
+    help += "\n";
+
+    return help;
 }
 
 /** format a string to output*/
-std::string Help::formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks){
-    
-    // remove any pre-formatting that may come from the xml-file
-    s = replaceString(s, "\t", " ");
-    s = replaceString(s, "\n", " ");
-    s = replaceString(s, "  ", " ");
-    
-    // do nothing if string is empty
-    if(s.length() <= 0){
-        return "";
-    }
-    
-    // apply the formatting style we want
-    std::string indent = RevBayesCore::RbUtils::PAD;
-    for(int i=0; i<indentLevel; i++){
+std::string Help::formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks)
+{
+    return formatOutString(s, columnWidth, indentLevel, numLineBreaks, true);
+}
+
+/** format a string to output*/
+std::string Help::formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks, bool stripLineBreaks)
+{
+    //std::cout << s + "<break>\n";
+    std::string indent = "";
+    for (int i = -1; i < indentLevel; i++)
+    {
         indent += RevBayesCore::RbUtils::PAD;
     }
-    
-    s = formatStringWithBreaks(s, indent, columnWidth);
-    
-    for(int i=0; i<numLineBreaks; i++){
-        s += "\n";
+
+    // -- remove any pre-formatting that may come from the xml-file
+    s = replaceString(s, "\t", " ");
+    if (stripLineBreaks)
+    {
+        s = replaceString(s, "\n", " ");
     }
+
+    s = stripConsecutiveSpace(s);
+
+    // do nothing if string is empty
+    if (s.length() <= 0)
+    {
+        return "";
+    }
+
+    // remove space at beginning
+    if (std::isspace(s.at(0)))
+    {
+        s.erase(0, 1);
+    }
+
+    //-- apply the formatting style we want
+    // wrap text
+    s = wrapText(s, indent, columnWidth);
+    // apply line breaks
+    for (int i = 0; i < numLineBreaks; i++)
+    {
+       s += "\n";
+    }
+    
+    //std::cout << s + "<break>\n";
+    
     return s;
+
 }
 
 /** Used for formatting a string for printing to the screen */
-std::string Help::formatStringWithBreaks(const std::string s, std::string padding, size_t w) {
-    
-    std::vector<std::string> stringList;
-    StringUtilities::stringSplit(s, " ", stringList);
-    
-    std::string nStr = padding;
-    size_t cnt = 0;
-    for (std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++)
+std::string Help::wrapText(const std::string s, std::string padding, size_t w)
+{
+    std::string wrappedText("");
+    int cc = 0; // character count
+    int ww = w - padding.size(); // available width with regards to eventual padding
+
+    // loop through every char in string
+    for (unsigned i = 0; i < s.size(); i++)
     {
-        if (cnt + (*it).size() > w && cnt != 0)
+        wrappedText += s[i];
+        if (s[i] == ' ')
         {
-            cnt = 0;
-            nStr += "\n" + padding;
+            // we now have a possible point where to wrap the line.
+            // peek ahead and see where next possible wrap point is:
+            int next = s.substr(i).find_first_of(" ", 1);
+
+            // if next wrap point is beyond the width, then wrap line now
+            if (cc + next > ww && next != -1)
+            {
+                wrappedText += "\n";
+                // reset char count for next line
+                cc = 0;
+            }
         }
-        cnt += (*it).size();
-        nStr += (*it) + " ";
+
+        // increment char counter
+        cc++;
+
+        // special case: if were at a '\n' char, then reset char count as we 
+        // already skipped on to a new line.
+        if (s[i] == '\n')
+        {
+            cc = 0;
+        }
     }
     
-    return nStr;
+    // remove '\n' at beginning of line
+    if(wrappedText.substr(0, 1) == "\n"){
+        wrappedText = wrappedText.substr(1);
+    }
+
+    // pad new lines    
+    std::vector<std::string> lines;
+    StringUtilities::stringSplit(wrappedText, "\n", lines);
+    std::string result = "";
+    for (std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); it++)
+    {
+        result += padding + (*it) + "\n";
+
+    }
+    
+    // remove last line break
+    result = result.substr(0, result.size() -1);
+
+    return result;
 }
 
-
 /** Initialize the help from an XML file */
-void Help::initializeHelp() {
+void Help::initializeHelp()
+{
 
     // find the path to the directory containing the help files
     RevBayesCore::RbFileManager fMngr = RevBayesCore::RbFileManager();
     pathToHelpDir = fMngr.getCurDirectory();
-        
-    pathToHelpDir +=  + "/../../help/";
-    fMngr.setFilePath( pathToHelpDir );
-    if ( fMngr.testDirectory() == false )
+
+    pathToHelpDir += +"/../../help/";
+    fMngr.setFilePath(pathToHelpDir);
+    if (fMngr.testDirectory() == false)
     {
         RBOUT("Warning: Cannot find directory containing help files. User help is unavailable. Path = " + pathToHelpDir);
         return;
-    }    
-    
+    }
+
     isHelpInitialized = true;
 }
 
-
 /** Returns whether there is help available for a query */
-bool Help::isHelpAvailableForQuery(const std::string& qs) {    
+bool Help::isHelpAvailableForQuery(const std::string& qs)
+{
     pugi::xml_parse_result result = loadHelpFile(qs);
     return pugi::status_ok == result.status;
 }
 
 /** Loads (parses) the xml help file into the pugi::doc*/
-pugi::xml_parse_result Help::loadHelpFile(const std::string& qs){
+pugi::xml_parse_result Help::loadHelpFile(const std::string& qs)
+{
     // the help file should be all lowercase if to be found
     std::string command = qs;
     std::transform(command.begin(), command.end(), command.begin(), ::tolower);
     std::string helpfile = pathToHelpDir + command + ".xml";
-    
+
     // try to load the corresponding xml file
-    pugi::xml_parse_result result = doc.load_file(helpfile.c_str(), pugi::parse_default);   
+    pugi::xml_parse_result result = doc.load_file(helpfile.c_str(), pugi::parse_default);
+    if (result.status != pugi::status_ok)
+    {
+        RBOUT(result.description());
+    }
     return result;
 }
 
 /** simple find and replace*/
-std::string Help::replaceString(std::string subject, const std::string& search, const std::string& replace) {
+std::string Help::replaceString(std::string subject, const std::string& search, const std::string& replace)
+{
     size_t pos = 0;
-    while ((pos = subject.find(search, pos)) != std::string::npos) {
-         subject.replace(pos, search.length(), replace);
-         pos += replace.length();
+    while ((pos = subject.find(search, pos)) != std::string::npos)
+    {
+        subject.replace(pos, search.length(), replace);
+        pos += replace.length();
     }
     return subject;
 }
 
+std::string Help::stripConsecutiveSpace(std::string subject)
+{
+    std::string search = "  "; // this is 2 spaces
+    size_t index;
+
+    while ((index = subject.find(search)) != std::string::npos)
+    { // remove 1 character from the string at index
+        subject.erase(index, 1);
+    }
+
+    return subject;
+}
+
+/** home brewed to_string. */
+template <typename T>
+std::string Help::to_string(T value)
+{
+    std::ostringstream os;
+    os << value;
+    return os.str();
+}
