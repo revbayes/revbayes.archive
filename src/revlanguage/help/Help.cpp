@@ -78,6 +78,12 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
     help += formatOutString("Usage:", columnWidth, 0, 1);
     help += formatOutString(doc.child("help_entry").child("usage").child_value(), columnWidth, 1, 1);
     help += "\n";
+    
+    // details
+    help += formatOutString("Details:", columnWidth, 0, 1);
+    help += formatOutString(doc.child("help_entry").child("details").child_value(), columnWidth, 1, 1);
+    help += "\n";
+    
     // arguments
     help += formatOutString("Arguments:", columnWidth, 0, 1);
     nodeSet = doc.select_nodes("/help_entry/argument");
@@ -149,7 +155,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
     // examples
     // preserve line breaks from xml for examples clause
     help += formatOutString("Examples:", columnWidth, 0, 2);
-    nodeSet = doc.select_nodes("/help_entry/example/p");
+    nodeSet = doc.select_nodes("/help_entry/example");
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
         pugi::xpath_node node = *it;
@@ -215,7 +221,7 @@ std::string Help::formatOutString(std::string s, size_t columnWidth, int indentL
 /** Used for formatting a string for printing to the screen */
 std::string Help::wrapText(const std::string s, std::string padding, size_t w)
 {
-    std::string wrappedText("");
+    std::string wrappedText(padding);
     int cc = 0; // character count
     int ww = w - padding.size(); // available width with regards to eventual padding
 
@@ -232,7 +238,7 @@ std::string Help::wrapText(const std::string s, std::string padding, size_t w)
             // if next wrap point is beyond the width, then wrap line now
             if (cc + next > ww && next != -1)
             {
-                wrappedText += "\n";
+                wrappedText += "\n" + padding;
                 // reset char count for next line
                 cc = 0;
             }
@@ -245,29 +251,12 @@ std::string Help::wrapText(const std::string s, std::string padding, size_t w)
         // already skipped on to a new line.
         if (s[i] == '\n')
         {
+            wrappedText += padding;
             cc = 0;
         }
     }
+    return wrappedText;
     
-    // remove '\n' at beginning of line
-    if(wrappedText.substr(0, 1) == "\n"){
-        wrappedText = wrappedText.substr(1);
-    }
-
-    // pad new lines    
-    std::vector<std::string> lines;
-    StringUtilities::stringSplit(wrappedText, "\n", lines);
-    std::string result = "";
-    for (std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); it++)
-    {
-        result += padding + (*it) + "\n";
-
-    }
-    
-    // remove last line break
-    result = result.substr(0, result.size() -1);
-
-    return result;
 }
 
 /** Initialize the help from an XML file */

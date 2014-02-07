@@ -1,3 +1,6 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="help.xsl" type="text/xsl"?>
+
 <help_entry>
 
     <name>cBDP</name>
@@ -9,6 +12,9 @@
             The constant-rate birth-death process specifies a prior distribution on time trees, that is a uniform distribution on labelled histories and a distribtion on the divergence times.
             The trees are ultrametric (i.e. all tips were sampled at the same time). The speciation and extinction rates of the process are constant.
             We do not constraint the parameter values so that the speciation rate must be larger than the extinction rate.
+        </p>
+        <p>
+            Another paragraph.
         </p>
     </description>
     
@@ -110,51 +116,40 @@
     </reference>
 
     <example>
-        <p>
             trueTree &lt;- readTrees("data/primate.tree")[1]
-        </p>
-        <p>
+        
             names &lt;- trueTree.names()
             taxaCount &lt;- names.size()
-        </p>
-        <p>
+        
             # Birth-Death process priors
             speciation ~ exponential(0.1)
             extinction ~ exponential(0.1)
             org ~ unif(0.0,50.0)
-        </p>
-        <p>
+        
             # moves for the birth-death parameters
             moves[1] &lt;- mScale(speciation, lambda=1, tune=true, weight=2)
             moves[2] &lt;- mScale(extinction, lambda=1, tune=true, weight=2)
             moves[3] &lt;- mSlide(org, delta=1.0, weight=2.0)
-        </p>
-        <p>
+       
             # tree from birth-death process
             tau ~ cBDP(origin=org, lambda=speciation, mu=extinction, nTaxa=taxaCount, names=names)
-        </p>
-        <p>
+       
             tau.clamp( trueTree )
-        </p>
-        <p>
+        
             monitors[1] &lt;- modelmonitor(filename="testBirthDeath.log",printgen=10, separator = "	")
             monitors[2] &lt;- screenmonitor(printgen=1000, separator = "	", speciation)
-        </p>
-        <p>
+        
             mymodel &lt;- model(tau)
-        </p>
-        <p>
+        
             mymcmc &lt;- mcmc(mymodel, monitors, moves)
-        </p>
-        <p>
+        
             mymcmc.burnin(generations=20000,tuningInterval=100)
             mymcmc.run(generations=200000)
             mymcmc.operatorSummary()
-        </p>
-        <p>
+        
             # quit RevBayes. DANGER!!! ;)
             q()
-        </p>
+       
     </example>
 
 </help_entry>
