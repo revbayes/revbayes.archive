@@ -114,7 +114,9 @@
         <url>http://mbe.oxfordjournals.org/content/28/9/2577.short</url>
         <doi>10.1093/molbev/msr095</doi>
     </reference>
-
+    
+    <seeAlso>Todo (auto generate link when displayed in web browser).</seeAlso>
+    
     <example>
             trueTree &lt;- readTrees("data/primate.tree")[1]
         
