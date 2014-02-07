@@ -58,14 +58,18 @@ hr.end_man_text {
     width:100%;
 }
 
-p{
+.indent{
     font-family: monospace, courier; 
     margin-left: 40px;
+    //padding-left : 40px;
 }
 
 pre  { 
     font-family: monospace, courier; 
     white-space: pre-line;
+    background: #dddddd;
+    border-style: dashed;
+    border-width: 1px;
 }
 
 a:link    { text-decoration: none; color: blue; }

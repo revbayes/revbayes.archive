@@ -16,7 +16,7 @@
                 <h2>
                     Name
                 </h2>
-                <p>
+                <p class="indent">
                     <xsl:value-of select="//name" />
                 </p>
                 
@@ -24,7 +24,7 @@
                     Description
                 </h2>   
                 <xsl:for-each select="//description/p">                        
-                    <p>
+                    <p class="indent">
                         <xsl:value-of select="." />
                     </p>            
                 </xsl:for-each>
@@ -33,14 +33,14 @@
                 <h2>
                     Usage
                 </h2>
-                <p>
+                <p class="indent">
                     <xsl:value-of select="//usage" />   
                 </p>
                 
                 <h2>
                     Details
                 </h2>
-                <p>
+                <p class="indent">
                     <xsl:value-of select="//details" />   
                 </p>
                 
@@ -49,12 +49,10 @@
                     Arguments
                 </h2>   
                 <xsl:for-each select="//argument">                        
-                    <p>
-                        <b>
-                            <xsl:value-of select="label" />  
-                            <br />
-                        </b>
-                        <p>
+                    <p class="indent">
+                        <b><xsl:value-of select="label" /></b>
+                        
+                        <div class="indent">
                             <xsl:value-of select="description" /> 
                             <br />
                             Type : <xsl:value-of select="type" /> 
@@ -63,32 +61,32 @@
                             <br />
                             <xsl:if test="option">
                                 Options :
-                                <p>
+                                <div  class="indent">
                                     <xsl:for-each select="option">  
                                         - <xsl:value-of select="." /> 
                                         <br />
                                     </xsl:for-each>  
-                                </p>
+                                </div>
                             </xsl:if>
                             <xsl:if test="defaultValue">
                                 Default Value : <xsl:value-of select="defaultValue" /> 
                                 <br />
                             </xsl:if>
-                        </p>
+                        </div>
                     </p>            
                 </xsl:for-each>
                 
                 <h2>
                     Return Value
                 </h2>
-                <p>
+                <p class="indent">
                     <xsl:value-of select="//value" />   
                 </p>
                 
                 <h2>
                     Author
                 </h2>
-                <p>
+                <p class="indent">
                     <xsl:value-of select="//author" />   
                 </p>
                 
@@ -96,12 +94,12 @@
                     References
                 </h2>   
                 <xsl:for-each select="//reference">                        
-                    <p>                       
+                    <p class="indent">                       
                         <b>
                             <xsl:value-of select="info" /> 
                         </b> 
                         <br />                        
-                        <p>
+                        <div class="indent">
                             <xsl:value-of select="citation" /> 
                             <br />
                             Link : <a href="{url}">
@@ -110,7 +108,7 @@
                             <br />
                             DOI : <xsl:value-of select="doi" /> 
                             <br />                            
-                        </p>
+                        </div>
                     </p>
                 </xsl:for-each>
                 <h2>
