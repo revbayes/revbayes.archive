@@ -80,3 +80,6 @@ a:active  { text-decoration: underline; background-color: #FFD0D0; }
 .footer {
     text-align: center;
 }
+.header {
+    text-align: center;
+}

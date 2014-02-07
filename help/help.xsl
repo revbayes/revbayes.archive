@@ -11,6 +11,10 @@
             </head>
             <body>
                 
+                <div class="header">
+                    <a href="index.html">[Index]</a>
+                </div>
+                
                 <h1>RevBayes Man Pages :: <xsl:value-of select="//name" /></h1>
                 
                 <h2>

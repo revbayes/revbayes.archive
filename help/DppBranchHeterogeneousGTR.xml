@@ -1,3 +1,6 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="help.xsl" type="text/xsl"?>
+
 <help_entry>
 	<name>dppBranchHeterogeneousGTR</name>
 	<succinct>Builds a phylogenetic model assuming branch-specific GTR matrices for aligned nucleotide sequences, the number and parameters of which are described by one or two Dirichlet Process Priors.</succinct>
@@ -31,11 +34,11 @@
 	</usage>
 	<author>Fredrik Ronquist and Bastien Boussau</author>
 	<reference></reference>
-</help_entry>
 
 
 
-<help_entry>
+
+
 	<name>dppBranchHeterogeneousGTRCommonExchangeabilities</name>
 		<succinct>Builds a phylogenetic model assuming branch-specific GTR equilibrium frequencies for aligned nucleotide sequences, the number and values of which are described by one Dirichlet Process Prior.</succinct>
 	<verbose>This function builds a phylogenetic model with one GTR matrix per branch. Exchangeability parameters are shared by all branches. Equilibrium frequencies of the GTR matrices are branch-specific. The number of sets of equilibrium frequencies and their values are specified through a Dirichlet Process Prior. An extra vector specifies base frequencies at the root. The model overall is non-stationary and therefore non-reversible.
@@ -56,11 +59,11 @@
 	</usage>
 	<author>Fredrik Ronquist and Bastien Boussau</author>
 	<reference></reference>
-</help_entry>
+
 
 	
 	
-<help_entry>
+
 	<name>dppBranchHeterogeneousGTRCommonEquilibriumFrequencies</name>
 	<succinct>Builds a phylogenetic model assuming branch-specific GTR exchangeability parameters for aligned nucleotide sequences, the number and values of which are described by one Dirichlet Process Prior.</succinct>
 	<verbose>This function builds a phylogenetic model with one GTR matrix per branch. Equilibrium frequencies are shared by all branches. Exchangeability parameters of the GTR matrices are branch-specific. The number of sets of exchangeability parameters and their values are specified through a Dirichlet Process Prior. An extra vector specifies base frequencies at the root. The model overall is non-stationary and therefore non-reversible.
