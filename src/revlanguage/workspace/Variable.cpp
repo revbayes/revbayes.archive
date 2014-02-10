@@ -29,12 +29,19 @@
 using namespace RevLanguage;
 
 /** Constructor of filled variable. */
-Variable::Variable(const TypeSpec& ts) : valueTypeSpec( ts ), value( NULL ) {
+Variable::Variable(const TypeSpec& ts) : 
+    value( NULL ), 
+    valueTypeSpec( ts )
+{
     
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(RbLanguageObject *v, const std::string &n) : valueTypeSpec( RbLanguageObject::getClassTypeSpec() ), name( n ), value( NULL ) {
+Variable::Variable(RbLanguageObject *v, const std::string &n) : 
+name( n ), 
+value( NULL ),
+valueTypeSpec( RbLanguageObject::getClassTypeSpec() )
+{
     
     setValue( v );
     

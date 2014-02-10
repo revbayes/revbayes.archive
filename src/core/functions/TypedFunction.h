@@ -78,12 +78,20 @@ namespace RevBayesCore {
 #include "IsDerivedFrom.h"
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(), value( v ), dagNode( NULL ), dirty(true) {
+RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(), 
+    dagNode( NULL ), 
+    value( v ), 
+    dirty(true) 
+{
     
 }
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value ) ), dagNode( NULL ), dirty(true) {
+RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), 
+    dagNode( NULL ), 
+    value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value ) ), 
+    dirty(true) 
+{
 
 }
 
@@ -95,7 +103,8 @@ RevBayesCore::TypedFunction<valueType>::~TypedFunction( void ) {
 }
 
 template <class valueType>
-const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const {
+const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const 
+{
     
     if (dirty) 
     {
@@ -107,7 +116,8 @@ const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const {
 }
 
 template <class valueType>
-valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) {
+valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) 
+{
     
     if ( dirty ) 
     {
@@ -121,14 +131,16 @@ valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) {
 
 
 template <class valueType>
-void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicNode<valueType> *n) {
+void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicNode<valueType> *n) 
+{
     
     dagNode = n;
 }
 
 
 template <class valueType>
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedFunction<valueType>& f) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedFunction<valueType>& f) 
+{
     
     o << "f(x) = " << f.getValue();
     
