@@ -966,13 +966,13 @@ void NxsToken::GetNextToken()
 					break;
 				}
 			}
-		else if (ch == '_')
+		else if (ch == '_' || ch == '-')
 			{
-			// If underscores are discovered in unquoted tokens, they should be
-			// automatically converted to spaces.
-			//
-			if (!(labileFlags & preserveUnderscores))
-				ch = ' ';
+//			// If underscores are discovered in unquoted tokens, they should be
+//			// automatically converted to spaces.
+//			//
+//			if (!(labileFlags & preserveUnderscores))
+//				ch = ' ';
 			AppendToToken(ch);
 			}
 
@@ -1002,7 +1002,7 @@ void NxsToken::GetNextToken()
 				GetDoubleQuotedToken();
 			else if (ch == '\'' && token.empty())
 				GetQuoted();
-			else
+            else
 				{
 				//save if we have started a token, consider the punctuation to
 				// be the full token.
