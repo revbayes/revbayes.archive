@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-BrownianMotionAdmixtureGraphResiduals::BrownianMotionAdmixtureGraphResiduals(const StochasticNode<CharacterData<ContinuousCharacterState> >* n) : TypedFunction<std::vector<double> >( new std::vector<double>() ), bmag( n ) {
+BrownianMotionAdmixtureGraphResiduals::BrownianMotionAdmixtureGraphResiduals(const StochasticNode<ContinuousCharacterData >* n) : TypedFunction<std::vector<double> >( new std::vector<double>() ), bmag( n ) {
     // add the tree parameter as a parent
     addParameter( bmag );
     //addParent(bmag);
@@ -72,6 +72,6 @@ void BrownianMotionAdmixtureGraphResiduals::update( void ) {
 
 void BrownianMotionAdmixtureGraphResiduals::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     if (oldP == bmag) {
-        bmag = static_cast<const StochasticNode<CharacterData<ContinuousCharacterState> >* >( newP );
+        bmag = static_cast<const StochasticNode<ContinuousCharacterData >* >( newP );
     }
 }

@@ -21,7 +21,7 @@
 
 #include "AminoAcidState.h"
 #include "AbstractCharacterData.h"
-#include "CharacterData.h"
+#include "ContinuousCharacterData.h"
 #include "ContinuousCharacterState.h"
 #include "DiscreteCharacterData.h"
 #include "DnaState.h"
@@ -80,7 +80,7 @@ namespace RevBayesCore {
         virtual                                    ~NclReader(void) { }                                                             //!< Destructor
         
         DiscreteCharacterData<AminoAcidState>*      createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
-        CharacterData<ContinuousCharacterState>*    createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
+        ContinuousCharacterData*                    createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
         DiscreteCharacterData<DnaState>*            createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
         DiscreteCharacterData<RnaState>*            createRnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold RNA data
         DiscreteCharacterData<StandardState>*       createStandardMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold standard data

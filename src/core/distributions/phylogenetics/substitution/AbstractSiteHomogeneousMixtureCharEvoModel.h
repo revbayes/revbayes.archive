@@ -1,41 +1,8 @@
-/**
- * @file
- * This file contains the distribution class for a character state evolving along a tree.
- * This abstract base class can be derived for any character evolution model with homogeneous mixture sites. A
- * homogeneous mixture model over sites is a model where all sites are drawn from the same distribution and the
- * specific instance of the per site parameter is integrated over. The per site parameter could be a rate scaler (e.g. the + gamma models)
- * or different rate matrices or anything else.
- *
- * The pruning algorithm is implemented in this base class and calles some few pure virtual methods. 
- * The important functions you have to override are:
- * - getRootFrequencies()
- * - updateTransitionProbabilities()
- *
- * The data is stored for convenience in this class in a matrix (std::vector<std::vector< unsigned > >) and can
- * be compressed.
- *
- * The current implementation assumes that all mixture categories have the same a priori probability.
- *
- * @brief Declaration of the character state evolution along a tree class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
-
-
 #ifndef AbstractSiteHomogeneousMixtureCharEvoModel_H
 #define AbstractSiteHomogeneousMixtureCharEvoModel_H
 
 #include "AbstractCharacterData.h"
-#include "CharacterData.h"
+#include "DiscreteTaxonData.h"
 #include "DnaState.h"
 #include "RateMatrix.h"
 #include "TopologyNode.h"
@@ -46,6 +13,30 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Declaration of the character state evolution along a tree class.
+     *
+     * This file contains the distribution class for a character state evolving along a tree.
+     * This abstract base class can be derived for any character evolution model with homogeneous mixture sites. A
+     * homogeneous mixture model over sites is a model where all sites are drawn from the same distribution and the
+     * specific instance of the per site parameter is integrated over. The per site parameter could be a rate scaler (e.g. the + gamma models)
+     * or different rate matrices or anything else.
+     *
+     * The pruning algorithm is implemented in this base class and calles some few pure virtual methods. 
+     * The important functions you have to override are:
+     * - getRootFrequencies()
+     * - updateTransitionProbabilities()
+     *
+     * The data is stored for convenience in this class in a matrix (std::vector<std::vector< unsigned > >) and can
+     * be compressed.
+     *
+     * The current implementation assumes that all mixture categories have the same a priori probability.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2012-06-17, version 1.0
+     */
     template<class charType, class treeType>
     class AbstractSiteHomogeneousMixtureCharEvoModel : public TypedDistribution< AbstractCharacterData >, public TreeChangeEventListener {
         
@@ -113,7 +104,7 @@ namespace RevBayesCore {
         void                                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
         void                                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
-        void                                                                simulate(const TopologyNode& node, std::vector< TaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
+        void                                                                simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
 
     
         // offsets for nodes
@@ -127,6 +118,7 @@ namespace RevBayesCore {
 
 
 #include "DiscreteCharacterState.h"
+#include "DiscreteCharacterData.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "TopologyNode.h"
@@ -135,7 +127,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template<class charType, class treeType>
-RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new CharacterData<charType>() ), 
+RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ), 
 numSites( nSites ), 
 numChars( nChars ),
 numSiteRates( nMix ),
@@ -715,10 +707,10 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     delete this->value;
     
     // create a new character data object
-    this->value = new CharacterData<charType>();
+    this->value = new DiscreteCharacterData<charType>();
     
     // create a vector of taxon data 
-    std::vector< TaxonData<charType> > taxa = std::vector< TaxonData< charType > >( tau->getValue().getNumberOfNodes(), TaxonData<charType>() );
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>() );
     
     // first, simulate the per site rates
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -733,12 +725,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     
     // simulate the root sequence
     const std::vector< double > &stationaryFreqs = getRootFrequencies();
-    TaxonData< charType > &root = taxa[ tau->getValue().getRoot().getIndex() ];
+    DiscreteTaxonData< charType > &root = taxa[ tau->getValue().getRoot().getIndex() ];
     for ( size_t i = 0; i < numSites; ++i ) 
     {
         // create the character
-        charType *c = new charType();
-        c->setToFirstState();
+        charType c;
+        c.setToFirstState();
         // draw the state
         double u = rng->uniform01();
         std::vector< double >::const_iterator freq = stationaryFreqs.begin();
@@ -748,7 +740,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
             
             if ( u > 0.0 )
             {
-                ++(*c);
+                ++c;
                 ++freq;
             }
             else 
@@ -840,14 +832,14 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::simulate( const TopologyNode &node, std::vector< TaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates) {
     
     // get the children of the node
     const std::vector<TopologyNode*>& children = node.getChildren();
     
     // get the sequence of this node
     size_t nodeIndex = node.getIndex();
-    const TaxonData< charType > &parent = taxa[ nodeIndex ];
+    const DiscreteTaxonData< charType > &parent = taxa[ nodeIndex ];
     
     // simulate the sequence for each child
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -858,7 +850,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         // update the transition probability matrix
         updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
         
-        TaxonData< charType > &taxon = taxa[ child.getIndex() ];
+        DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
         for ( size_t i = 0; i < numSites; ++i ) 
         {
             // get the ancestral character for this site
@@ -875,8 +867,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
             double *freqs = transitionProbMatrices[ perSiteRates[i] ][ p ];
             
             // create the character
-            charType *c = new charType();
-            c->setToFirstState();
+            charType c;
+            c.setToFirstState();
             // draw the state
             double u = rng->uniform01();
             while ( true ) 
@@ -885,7 +877,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 
                 if ( u > 0.0 )
                 {
-                    ++(*c);
+                    ++c;
                     ++freqs;
                 }
                 else

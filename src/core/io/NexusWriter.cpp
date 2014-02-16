@@ -56,10 +56,10 @@ void NexusWriter::writeNexusBlock(const AbstractCharacterData &data)
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
     outStream << "Dimensions ntax=" << data.getNumberOfTaxa() << " nchar=" << data.getNumberOfCharacters() << ";" << std::endl;
-    outStream << "Format datatype=" << data.getDatatype();
+    outStream << "Format datatype=" << data.getDatatype() << " ";
 //    if ( data.getDatatype() == "Standard" )
 //    {
-//        outStream << " symbols=\"" << data.getTaxonData(0).getCharacter(0).getStateLabels() << "\"";
+//        outStream << "symbols=\"" << data.getTaxonData(0).getCharacter(0).getStateLabels() << "\" ";
 //    }
     outStream << "missing=? gap=-;" << std::endl;
     outStream << "Matrix" << std::endl;

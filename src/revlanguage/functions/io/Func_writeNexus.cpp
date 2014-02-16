@@ -3,7 +3,6 @@
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RlAbstractCharacterData.h"
-#include "RlCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
 #include "NexusWriter.h"

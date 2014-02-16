@@ -60,7 +60,9 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
         if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
         {
             int n = static_cast<const Natural&>( argument ).getValue();
-            value->getValue().excludeCharacter( n );
+            // remember that we internally store the character indeces from 0 to n-1
+            // but externally represent it as 1 to n
+            value->getValue().excludeCharacter( n-1 );
         }
         else if ( argument.isTypeSpec( Vector<Natural>::getClassTypeSpec() ) ) 
         {
@@ -68,7 +70,9 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
             RevBayesCore::AbstractCharacterData &v = value->getValue();
             for ( size_t i=0; i<x.size(); i++ )
             {
-                v.excludeCharacter( x[i] );
+                // remember that we internally store the character indeces from 0 to n-1
+                // but externally represent it as 1 to n
+                v.excludeCharacter( x[i]-1 );
             }
         }
         return NULL;
@@ -93,7 +97,7 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
             if ( this->value->getValue().isTaxonExcluded(i) == false ) 
             {
                 
-                if (this->value->getValue().getIsHomologyEstablished() == true)
+                if (this->value->getValue().isHomologyEstablished() == true)
                     numChar->push_back( Natural( this->value->getValue().getNumberOfCharacters() ) );
                 else
                     numChar->push_back( Natural( this->value->getValue().getTaxonData(i).getNumberOfCharacters() ) );
@@ -213,7 +217,7 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
     }
     else if (name == "ishomologous")
     {
-        bool ih = this->value->getValue().getIsHomologyEstablished();
+        bool ih = this->value->getValue().isHomologyEstablished();
     
         return new RlBoolean(ih);
     } 

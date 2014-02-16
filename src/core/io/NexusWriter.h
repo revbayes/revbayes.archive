@@ -19,7 +19,7 @@ namespace RevBayesCore {
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2013-04-15, version 1.0
+     * @since 2014-02-15, version 1.0
      */
     class NexusWriter {
         

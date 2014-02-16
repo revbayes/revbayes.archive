@@ -1,25 +1,8 @@
-/**
- * @file
- * This file contains the declaration of the character state evolution along a tree class.
- *
- * @brief Declaration and implementation of NormalDistribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
 #ifndef RlCharacterStateEvolutionAlongTree_H
 #define RlCharacterStateEvolutionAlongTree_H
 
 #include "AbstractCharacterData.h"
 #include "RlAbstractCharacterData.h"
-#include "RlCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
 
@@ -64,7 +47,6 @@ namespace RevLanguage {
 }
 
 
-#include "CharacterData.h"
 #include "OptionRule.h"
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "RbNullObject.h"

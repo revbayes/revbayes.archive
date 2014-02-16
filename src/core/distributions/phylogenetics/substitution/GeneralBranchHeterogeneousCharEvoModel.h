@@ -1,28 +1,7 @@
-/**
- * @file
- * This file contains the declaration of the random variable class for a character state evolving along a tree.
- * This class is derived from the stochastic node and each instance will represent a random variable.
- *
- * @brief Declaration of the character state evolution along a tree class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
-
-
 #ifndef GeneralBranchHeterogeneousCharEvoModel_H
 #define GeneralBranchHeterogeneousCharEvoModel_H
 
 #include "AbstractSiteHomogeneousMixtureCharEvoModel.h"
-#include "CharacterData.h"
 #include "DnaState.h"
 #include "RateMatrix.h"
 #include "RbVector.h"

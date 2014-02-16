@@ -1,23 +1,6 @@
-/**
- * @file
- * This file contains the implementation of Func_readAlignment.
- *
- * @brief Implementation of Func_readAlingment
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-08-22 11:45:25 +0200 (Wed, 22 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @package functions
- * @since Version 1.0, 2009-09-03
- *
- * $Id: Func_readCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
- */
-
 #include "ArgumentRule.h"
-#include "CharacterData.h"
 #include "ConstantNode.h"
+#include "DiscreteCharacterData.h"
 #include "Ellipsis.h"
 #include "Func_readCharacterData.h"
 #include "NclReader.h"
@@ -25,8 +8,8 @@
 #include "RbFileManager.h"
 #include "RbNullObject.h"
 #include "RlBoolean.h"
-#include "RlCharacterData.h"
 #include "RlAminoAcidState.h"
+#include "RlDiscreteCharacterData.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
@@ -146,23 +129,23 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
                 numMatricesReadForThisFile++;
                 
                 if ( dType == "DNA" ) {
-                    RevBayesCore::CharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::DnaState> *>( *it );
-                    CharacterData<DnaState> *mDNA = new CharacterData<DnaState>( coreM );
+                    RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
+                    DiscreteCharacterData<DnaState> *mDNA = new DiscreteCharacterData<DnaState>( coreM );
                     m->push_back( mDNA );
                 }
                 else if ( dType == "RNA" ) {
-                    RevBayesCore::CharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::RnaState> *>( *it );
-                    CharacterData<RnaState> *mRNA = new CharacterData<RnaState>( coreM );
+                    RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
+                    DiscreteCharacterData<RnaState> *mRNA = new DiscreteCharacterData<RnaState>( coreM );
                     m->push_back( mRNA );
                 }
                 else if ( dType == "Protein" ) {
-                    RevBayesCore::CharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::AminoAcidState> *>( *it );
-                    CharacterData<AminoAcidState> *mAA = new CharacterData<AminoAcidState>( coreM );
+                    RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
+                    DiscreteCharacterData<AminoAcidState> *mAA = new DiscreteCharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
                 }
                 else if ( dType == "Standard" ) {
-                    RevBayesCore::CharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::StandardState> *>( *it );
-                    CharacterData<StandardState> *mSS = new CharacterData<StandardState>( coreM );
+                    RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
+                    DiscreteCharacterData<StandardState> *mSS = new DiscreteCharacterData<StandardState>( coreM );
                     m->push_back( mSS );
                 }
                 else {
