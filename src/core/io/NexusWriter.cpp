@@ -49,18 +49,18 @@ void NexusWriter::openStream( void )
  *
  * \param[in]   data        The character data object which is written out.
  */
-void NexusWriter::writeNexusBlock(const AbstractCharacterData &data) 
+void NexusWriter::writeNexusBlock(const AbstractDiscreteCharacterData &data) 
 {
     
     // write initial lines of the character block
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
-    outStream << "Dimensions ntax=" << data.getNumberOfTaxa() << " nchar=" << data.getNumberOfCharacters() << ";" << std::endl;
+    outStream << "Dimensions ntax=" << data.getNumberOfTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
     outStream << "Format datatype=" << data.getDatatype() << " ";
-//    if ( data.getDatatype() == "Standard" )
-//    {
-//        outStream << "symbols=\"" << data.getTaxonData(0).getCharacter(0).getStateLabels() << "\" ";
-//    }
+    if ( data.getDatatype() == "Standard" )
+    {
+        outStream << "symbols=\"" << data.getTaxonData(0).getCharacter(0).getStateLabels() << "\" ";
+    }
     outStream << "missing=? gap=-;" << std::endl;
     outStream << "Matrix" << std::endl;
 

@@ -31,13 +31,6 @@ AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBaye
 }
 
 
-AbstractCharacterData::AbstractCharacterData( const AbstractCharacterData &v) : RlModelVariableWrapper<RevBayesCore::AbstractCharacterData>( v ), methods() {
-    
-    initMethods();
-    
-}
-
-
 
 AbstractCharacterData* AbstractCharacterData::clone() const {
     

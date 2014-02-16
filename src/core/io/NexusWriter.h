@@ -1,13 +1,10 @@
 #ifndef NexusWriter_H
 #define NexusWriter_H
 
-#include "AbstractCharacterData.h"
+#include "AbstractDiscreteCharacterData.h"
 
-#include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
-#include <vector>
 
 namespace RevBayesCore {
     
@@ -29,7 +26,7 @@ namespace RevBayesCore {
         // public methods
         void                    closeStream(void);                                                         //!< Close the file stream
         void                    openStream(void);                                                          //!< Open the file stream
-        void                    writeNexusBlock(const AbstractCharacterData &d);                           //!< Write a nexus block with a character data
+        void                    writeNexusBlock(const AbstractDiscreteCharacterData &d);                   //!< Write a nexus block with a character data
         
     private:
     

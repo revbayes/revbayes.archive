@@ -2,7 +2,7 @@
 #include "Func_writeNexus.h"
 #include "RbException.h"
 #include "RbNullObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
 #include "NexusWriter.h"
@@ -38,7 +38,7 @@ RbLanguageObject* Func_writeNexus::execute( void )
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
-    const RevBayesCore::AbstractCharacterData &data = static_cast< const AbstractCharacterData & >( args[1].getVariable()->getValue() ).getValue();
+    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getValue() ).getValue();
     
     RevBayesCore::NexusWriter fw( fn.getValue() );
     fw.openStream();
