@@ -312,7 +312,7 @@ RevBayesCore::CharacterData<charType>* RevBayesCore::CharacterData<charType>::cl
 template<class charType>
 void RevBayesCore::CharacterData<charType>::excludeCharacter(size_t i) {
     
-    if (i >= getNumberOfCharacters() ) 
+    if (i < 1 || i > getTaxonData( 0 ).size() ) 
     {
         std::stringstream o;
         o << "Only " << getNumberOfCharacters() << " characters in matrix";
@@ -320,7 +320,8 @@ void RevBayesCore::CharacterData<charType>::excludeCharacter(size_t i) {
     }
     
     
-    deletedCharacters.insert( i );
+    deletedCharacters.insert( i-1 );
+    
 }
 
 
@@ -360,10 +361,10 @@ void RevBayesCore::CharacterData<charType>::excludeTaxon(std::string& s) {
 template<class charType>
 const charType& RevBayesCore::CharacterData<charType>::getCharacter( size_t tn, size_t cn ) const {
     
-    if ( cn >= getNumberOfCharacters() )
+    if ( cn < 1 || cn > getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
     
-    return getTaxonData( tn )[cn];
+    return getTaxonData( tn )[cn-1];
 }
 
 
@@ -406,7 +407,7 @@ size_t RevBayesCore::CharacterData<charType>::getNumberOfCharacters(void) const 
     
     if (getNumberOfTaxa() > 0) 
     {
-        return getTaxonData(0).getNumberOfCharacters();
+        return getTaxonData(0).getNumberOfCharacters() - deletedCharacters.size();
     }
     return 0;
 }
@@ -418,7 +419,7 @@ size_t RevBayesCore::CharacterData<charType>::getNumberOfCharacters(size_t idx) 
     
     if (getNumberOfTaxa() > 0) 
     {
-        return getTaxonData(idx).getNumberOfCharacters();
+        return getTaxonData(idx).getNumberOfCharacters() - deletedCharacters.size();
     }
     
     return 0;

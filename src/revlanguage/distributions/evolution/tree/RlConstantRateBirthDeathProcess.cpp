@@ -79,7 +79,6 @@ RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::crea
 }
 
 
-
 /**
  * Get class name of object 
  *
@@ -92,6 +91,7 @@ const std::string& ConstantRateBirthDeathProcess::getClassName( void )
     
 	return rbClassName; 
 }
+
 
 /**
  * Get class type spec describing type of an object from this class (static).

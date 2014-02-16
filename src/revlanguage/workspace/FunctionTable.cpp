@@ -412,13 +412,28 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
 
 
 /** Print function table for user */
-void FunctionTable::printValue(std::ostream& o) const {
-
-    o << "<name> = <returnType> function (<formal arguments>)" << std::endl;
+void FunctionTable::printTableWithoutHeader(std::ostream& o) const 
+{
+    
     for (std::multimap<std::string, Function *>::const_iterator i=table.begin(); i!=table.end(); i++) 
     {
         o << i->first << " = ";
         i->second->printValue(o);
         o << std::endl;
     }
+    
+    if (parentTable != NULL) 
+    {
+        parentTable->printTableWithoutHeader( o );
+    }
+}
+
+
+/** Print function table for user */
+void FunctionTable::printValue(std::ostream& o) const {
+
+    o << "<name> = <returnType> function (<formal arguments>)" << std::endl;
+    o << "---------------------------------------------------" << std::endl;
+    
+    printTableWithoutHeader( o );
 }

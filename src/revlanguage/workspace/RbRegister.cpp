@@ -46,7 +46,6 @@
 #include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlPowerPosterior.h"
-//#include "Simulate.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
@@ -151,6 +150,7 @@
 #include "Func_readTrees.h"
 #include "Func_readTreeTrace.h"
 #include "Func_writeFasta.h"
+#include "Func_writeNexus.h"
 #include "RlTmrcaStatistic.h"
 #include "RlTreeHeightStatistic.h"
 #include "RlTreeAssemblyFunction.h"
@@ -598,6 +598,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "readTrees",                   new Func_readTrees()                   );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()               );
         addFunction( "writeFasta",                  new Func_writeFasta()                  );
+        addFunction( "writeNexus",                  new Func_writeNexus()                  );
         
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
