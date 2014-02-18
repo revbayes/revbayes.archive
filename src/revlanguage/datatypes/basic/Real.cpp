@@ -146,6 +146,61 @@ RbLanguageObject* Real::convertTo( const TypeSpec& type ) const {
 }
 
 
+/**
+ * Generic division operator.
+ * We test if the rhs is of a type that we use for a specialized division operation.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the ratio.
+ */
+RbLanguageObject* Real::divide( const RbLanguageObject& rhs ) const 
+{
+    
+    if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+        return divide( static_cast<const Real&>( rhs ) );
+    
+    if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+        return divide( static_cast<const Integer&>( rhs ) );
+    
+    return RlModelVariableWrapper<double>::divide( rhs );
+}
+
+
+/**
+ * Specialized division operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the division operation.
+ *
+ * \return              A new object holding the ratio.
+ */
+Real* Real::divide(const Real &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() / rhs.getValue() );
+    
+    return n;
+}
+
+
+/**
+ * Specialized division operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the division operation.
+ *
+ * \return              A new object holding the ratio.
+ */
+Real* Real::divide(const Integer &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() / rhs.getValue() );
+    
+    return n;
+}
+
+
 /** Get class name of object */
 const std::string& Real::getClassName(void) { 
     
@@ -191,6 +246,61 @@ bool Real::isConvertibleTo(const TypeSpec& type) const {
 }
 
 
+/**
+ * Generic multiplication operator.
+ * We test if the rhs is of a type that we use for a specialized multiplication operation.
+ *
+ * \param[in]   rhs     The right hand side operand of the multiplication operation.
+ *
+ * \return              A new object holding the product.
+ */
+RbLanguageObject* Real::multiply( const RbLanguageObject& rhs ) const 
+{
+    
+    if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+        return multiply( static_cast<const Real&>( rhs ) );
+    
+    if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+        return multiply( static_cast<const Integer&>( rhs ) );
+    
+    return RlModelVariableWrapper<double>::multiply( rhs );
+}
+
+
+/**
+ * Specialized multiplication operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the multiplication operation.
+ *
+ * \return              A new object holding the product.
+ */
+Real* Real::multiply(const Real &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() * rhs.getValue() );
+    
+    return n;
+}
+
+
+/**
+ * Specialized multiplication operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the multiplication operation.
+ *
+ * \return              A new object holding the product.
+ */
+Real* Real::multiply(const Integer &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() * rhs.getValue() );
+    
+    return n;
+}
+
+
 
 /** Print value for user */
 void Real::printValue(std::ostream &o) const {
@@ -204,6 +314,61 @@ void Real::printValue(std::ostream &o) const {
 
     o.setf( previousFlags );
     o.precision( previousPrecision );
+}
+
+
+/**
+ * Generic subtraction operator.
+ * We test if the rhs is of a type that we use for a specialized subtraction operation.
+ *
+ * \param[in]   rhs     The right hand side operand of the subtraction operation.
+ *
+ * \return              A new object holding the difference.
+ */
+RbLanguageObject* Real::subtract( const RbLanguageObject& rhs ) const 
+{
+    
+    if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+        return subtract( static_cast<const Real&>( rhs ) );
+    
+    if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+        return subtract( static_cast<const Integer&>( rhs ) );
+    
+    return RlModelVariableWrapper<double>::subtract( rhs );
+}
+
+
+/**
+ * Specialized subtraction operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the subtraction operation.
+ *
+ * \return              A new object holding the difference.
+ */
+Real* Real::subtract(const Real &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() - rhs.getValue() );
+    
+    return n;
+}
+
+
+/**
+ * Specialized subtraction operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the subtraction operation.
+ *
+ * \return              A new object holding the difference.
+ */
+Real* Real::subtract(const Integer &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() - rhs.getValue() );
+    
+    return n;
 }
 
 

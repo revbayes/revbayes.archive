@@ -32,6 +32,22 @@
 using namespace RevLanguage;
 
 
+
+
+/** Constructor: we set member variables here from member rules */
+RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
+    
+}
+
+
+/**
+ * Addition operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ *
+ * \param[in]   rhs     The right hand side value of the division operation.
+ *
+ * \return              NULL
+ */
 RbLanguageObject* RbLanguageObject::add(const RbLanguageObject &rhs) const
 {
     throw RbException("Cannot add a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
@@ -48,35 +64,32 @@ void RbLanguageObject::constructInternalObject( void ) {
 
 /** Convert to type and dim. The caller manages the returned object. */
 RbLanguageObject* RbLanguageObject::convertTo(const TypeSpec& typeSpec) const {
-    
-//    if ( typeSpec.getBaseType() == Container::getClassName() ) {
-//        Container *v = new Container( typeSpec.getElementType() );
-//        v->push_back( this->clone() );
-//        
-//        // we rely on the implemented conversion functions inside the vector class
-//        RbLanguageObject* returnVector = v->convertTo( typeSpec );
-//        
-//        // we need to free the temporary vector object
-//        delete v;
-//        
-//        return returnVector;
-//    }
-    
+        
     throw RbException("Failed conversion from " + getTypeSpec() + " to " + typeSpec);
     
     return NULL;
 }
 
 
-/** Constructor: we set member variables here from member rules */
-RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
-
+/**
+ * Division operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ *
+ * \param[in]   rhs     The right hand side value of the division operation.
+ *
+ * \return              NULL
+ */
+RbLanguageObject* RbLanguageObject::divide(const RbLanguageObject &rhs) const
+{
+    throw RbException("Cannot divide a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
+    
+    return NULL;
 }
 
 
-/* 
-  * Execute simple method. 
-  */
+/** 
+ * Execute simple method. 
+ */
 RbLanguageObject* RbLanguageObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "get") 
@@ -220,10 +233,6 @@ bool RbLanguageObject::isConstant( void ) const {
 /** Is convertible to type? */
 bool RbLanguageObject::isConvertibleTo(const TypeSpec& type) const {
     
-//    if (type.getBaseType() == Vector::getClassName() && isTypeSpec(type.getElementType())) {
-//        return true;
-//    }
-    
     return false;
 }
 
@@ -242,6 +251,22 @@ bool RbLanguageObject::isTypeSpec(const TypeSpec& typeSpec) const {
   */
 void RbLanguageObject::makeConstantValue( void ) {
     // do nothing
+}
+
+
+/**
+ * Multiplication operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ *
+ * \param[in]   rhs     The right hand side value of the division operation.
+ *
+ * \return              NULL
+ */
+RbLanguageObject* RbLanguageObject::multiply(const RbLanguageObject &rhs) const
+{
+    throw RbException("Cannot multiply a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
+    
+    return NULL;
 }
 
 
@@ -308,6 +333,22 @@ void RbLanguageObject::setMemberVariable(const std::string& name, const RbPtr<Va
  */
 void RbLanguageObject::setName(std::string const &n) {
     // do nothing
+}
+
+
+/**
+ * Subtraction operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ *
+ * \param[in]   rhs     The right hand side value of the division operation.
+ *
+ * \return              NULL
+ */
+RbLanguageObject* RbLanguageObject::subtract(const RbLanguageObject &rhs) const
+{
+    throw RbException("Cannot subtract a value of type '" + rhs.getType() + "' from a value of type '" + this->getType() + "'.");
+    
+    return NULL;
 }
 
 

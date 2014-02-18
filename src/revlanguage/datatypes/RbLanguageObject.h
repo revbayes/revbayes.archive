@@ -50,6 +50,9 @@ public:
     
     // Basic operator functions
     virtual RbLanguageObject*           add(const RbLanguageObject &rhs) const;                                                         //!< Addition operator used for example in '+=' statements
+    virtual RbLanguageObject*           divide(const RbLanguageObject &rhs) const;                                                      //!< Division operator used for example in '/=' statements
+    virtual RbLanguageObject*           multiply(const RbLanguageObject &rhs) const;                                                    //!< Multiplication operator used for example in '-=' statements
+    virtual RbLanguageObject*           subtract(const RbLanguageObject &rhs) const;                                                    //!< Subtraction operator used for example in '*=' statements
     
     // Basic utility functions you have to override (also getClassTypeSpec()!)
     virtual RbLanguageObject*           clone(void) const = 0;                                                                          //!< Clone object

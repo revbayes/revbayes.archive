@@ -125,55 +125,27 @@ RbPtr<Variable> SyntaxSubtractionAssignment::evaluateContent( Environment& env )
 {
     
 #ifdef DEBUG_PARSER
-    printf( "Evaluating Subtraction assign expression\n" );
+    printf( "Evaluating subtraction assign expression\n" );
 #endif
     
     // Get variable info from lhs
     RbPtr<Variable> theVariable = variable->createVariable( env );
     
     if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by lhs expression in Subtraction assignment" );
+        throw RbException( "Invalid NULL variable returned by lhs expression in subtraction assignment" );
     
-#ifdef DEBUG_PARSER
-    printf( "Subtraction assignment\n" );
-#endif
+    const RbLanguageObject& lhs_value = theVariable->getValue();
     
-    RbLanguageObject *newValue;
     
     // Calculate the value of the rhs expression
     const RbPtr<Variable>& rhs = expression->evaluateContent( env );
     if ( rhs == NULL )
-        throw RbException( "Invalid NULL variable returned by rhs expression in Subtraction assignment" );
+        throw RbException( "Invalid NULL variable returned by rhs expression in subtraction assignment" );
     
     // fill the slot with the new variable
-    const RbLanguageObject& value = theVariable->getValue();
+    const RbLanguageObject& rhs_value = rhs->getValue();
     
-    
-    // check if the type is valid. This is necessary for reassignments
-    if ( !value.getTypeSpec().isDerivedOf( theVariable->getValueTypeSpec() ) ) 
-    {
-        // We are not of a derived type (or the same type)
-        // since this will create a constant node we are allowed to type cast
-        if (value.isConvertibleTo( theVariable->getValueTypeSpec() ) ) 
-        {
-            newValue = value.convertTo( theVariable->getValueTypeSpec() );
-            
-        }
-        else 
-        {
-            std::ostringstream msg;
-            msg << "Cannot reassign variable '" << theVariable->getName() << "' with type " << value.getTypeSpec() << " with value ";
-            value.printValue(msg);
-            msg << " because the variable requires type " << theVariable->getValueTypeSpec() << "." << std::endl;
-            throw RbException( msg );
-        }
-    }
-    else 
-    {
-        newValue = value.clone();
-        newValue->makeConstantValue();
-        
-    }
+    RbLanguageObject *newValue = lhs_value.subtract( rhs_value );
     
     // set the value of the variable
     theVariable->setValue( newValue );
