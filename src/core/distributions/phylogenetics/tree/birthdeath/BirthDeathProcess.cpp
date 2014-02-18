@@ -428,6 +428,7 @@ void BirthDeathProcess::simulateTree( void ) {
     }
     
     // finally store the new value
+    delete value;
     value = psi;
     
 }

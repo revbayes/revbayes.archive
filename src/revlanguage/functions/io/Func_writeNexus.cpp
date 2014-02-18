@@ -1,11 +1,11 @@
 #include "ArgumentRule.h"
-#include "Func_writeFasta.h"
+#include "Func_writeNexus.h"
 #include "RbException.h"
 #include "RbNullObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
-#include "FastaWriter.h"
+#include "NexusWriter.h"
 
 
 
@@ -18,30 +18,32 @@ using namespace RevLanguage;
  *
  * \return A new copy of the model. 
  */
-Func_writeFasta* Func_writeFasta::clone( void ) const 
+Func_writeNexus* Func_writeNexus::clone( void ) const 
 {
     
-    return new Func_writeFasta( *this );
+    return new Func_writeNexus( *this );
 }
 
 
 /** 
  * Execute the function. 
  * Here we will extract the character data object from the arguments and get the file name
- * into which we shall write the character data. Then we simply create a FastaWriter
+ * into which we shall write the character data. Then we simply create a NexusWriter
  * instance and delegate the work
  *
  * \return NULL because the output is going into a file
  */
-RbLanguageObject* Func_writeFasta::execute( void ) 
+RbLanguageObject* Func_writeNexus::execute( void ) 
 {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
-    const RevBayesCore::AbstractCharacterData &data = static_cast< const AbstractCharacterData & >( args[1].getVariable()->getValue() ).getValue();
+    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getValue() ).getValue();
     
-    RevBayesCore::FastaWriter fw;
-    fw.writeData(fn.getValue(), data);
+    RevBayesCore::NexusWriter fw( fn.getValue() );
+    fw.openStream();
+    fw.writeNexusBlock( data );
+    fw.closeStream();
     
     return NULL;
 }
@@ -50,13 +52,13 @@ RbLanguageObject* Func_writeFasta::execute( void )
 /** 
  * Get the argument rules for this function.
  *
- * The argument rules of the writeFasta function are:
+ * The argument rules of the writeNexus function are:
  * (1) the filename which must be a string.
  * (2) the data object that must be some character matrix.
  *
  * \return The argument rules.
  */
-const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const 
+const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const 
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -78,10 +80,10 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const
  *
  * \return The class' name.
  */
-const std::string& Func_writeFasta::getClassName(void) 
+const std::string& Func_writeNexus::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Write fasta function";
+    static std::string rbClassName = "Write Nexus function";
     
 	return rbClassName; 
 }
@@ -92,7 +94,7 @@ const std::string& Func_writeFasta::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Func_writeFasta::getClassTypeSpec(void) 
+const TypeSpec& Func_writeNexus::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -106,7 +108,7 @@ const TypeSpec& Func_writeFasta::getClassTypeSpec(void)
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Func_writeFasta::getTypeSpec( void ) const 
+const TypeSpec& Func_writeNexus::getTypeSpec( void ) const 
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -121,7 +123,7 @@ const TypeSpec& Func_writeFasta::getTypeSpec( void ) const
  *
  * \return NULL
  */
-const TypeSpec& Func_writeFasta::getReturnType( void ) const 
+const TypeSpec& Func_writeNexus::getReturnType( void ) const 
 {
     
     static TypeSpec returnTypeSpec = RbNullObject::getClassTypeSpec();

@@ -1,11 +1,3 @@
-//
-//  RlAbstractCharacterData.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 4/15/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlAbstractCharacterData.h"
 #include "ArgumentRule.h"
 #include "MemberFunction.h"
@@ -39,13 +31,6 @@ AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBaye
 }
 
 
-AbstractCharacterData::AbstractCharacterData( const AbstractCharacterData &v) : RlModelVariableWrapper<RevBayesCore::AbstractCharacterData>( v ), methods() {
-    
-    initMethods();
-    
-}
-
-
 
 AbstractCharacterData* AbstractCharacterData::clone() const {
     
@@ -56,7 +41,36 @@ AbstractCharacterData* AbstractCharacterData::clone() const {
 /* Map calls to member methods */
 RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "names") 
+    
+    if (name == "chartype") 
+    {
+        
+        return new RlString( this->value->getValue().getDatatype() );
+    }
+    else if (name == "excludeCharacter")
+    {
+        const RbLanguageObject& argument = args[0].getVariable()->getValue();
+        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
+        {
+            int n = static_cast<const Natural&>( argument ).getValue();
+            // remember that we internally store the character indeces from 0 to n-1
+            // but externally represent it as 1 to n
+            value->getValue().excludeCharacter( n-1 );
+        }
+        else if ( argument.isTypeSpec( Vector<Natural>::getClassTypeSpec() ) ) 
+        {
+            const Vector<Natural>& x = static_cast<const Vector<Natural>&>( argument );
+            RevBayesCore::AbstractCharacterData &v = value->getValue();
+            for ( size_t i=0; i<x.size(); i++ )
+            {
+                // remember that we internally store the character indeces from 0 to n-1
+                // but externally represent it as 1 to n
+                v.excludeCharacter( x[i]-1 );
+            }
+        }
+        return NULL;
+    }
+    else if (name == "names") 
     {
         Vector<RlString> *n = new Vector<RlString>();
         for (size_t i = 0; i < this->value->getValue().getNumberOfTaxa(); ++i) 
@@ -65,18 +79,6 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
         }
         
         return n;
-    }
-    else if (name == "size") 
-    {
-        int n = (int)this->value->getValue().getNumberOfTaxa();
-        
-        return new Natural(n);
-    }
-    else if (name == "ntaxa") 
-    {
-        int n = (int)this->value->getValue().getNumberOfTaxa();
-        
-        return new Natural(n);
     }
     else if (name == "nchar") 
     {
@@ -88,7 +90,7 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
             if ( this->value->getValue().isTaxonExcluded(i) == false ) 
             {
                 
-                if (this->value->getValue().getIsHomologyEstablished() == true)
+                if (this->value->getValue().isHomologyEstablished() == true)
                     numChar->push_back( Natural( this->value->getValue().getNumberOfCharacters() ) );
                 else
                     numChar->push_back( Natural( this->value->getValue().getTaxonData(i).getNumberOfCharacters() ) );
@@ -98,10 +100,17 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
         }
         return numChar;
     }
-    else if (name == "chartype") 
+    else if (name == "ntaxa") 
     {
+        int n = (int)this->value->getValue().getNumberOfTaxa();
         
-        return new RlString( this->value->getValue().getDatatype() );
+        return new Natural(n);
+    }
+    else if (name == "size") 
+    {
+        int n = (int)this->value->getValue().getNumberOfTaxa();
+        
+        return new Natural(n);
     }
     //    else if (name == "nexcludedtaxa")
     //    {
@@ -170,22 +179,6 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
     //        int n = (int)numMissAmbig();
     //        return RbPtr<RbLanguageObject>( new Natural(n) );
     //    }
-    //    else if (name == "excludechar")
-    //    {
-    //        const RbObject& argument = *args[0];
-    //        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
-    //        {
-    //            int n = static_cast<const Natural&>( argument ).getValue();
-    //            deletedCharacters.insert( n );
-    //        }
-    //        else if ( argument.isTypeSpec( RlVector::getClassTypeSpec() ) ) 
-    //        {
-    //            const RlVector& x = static_cast<const RlVector&>( argument );
-    //            for ( size_t i=0; i<x.size(); i++ )
-    //                deletedCharacters.insert( static_cast<const Natural &>( x[i] ).getValue() );
-    //        }
-    //        return NULL;
-    //    }
     else if (name == "show") 
     {
         
@@ -217,7 +210,7 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
     }
     else if (name == "ishomologous")
     {
-        bool ih = this->value->getValue().getIsHomologyEstablished();
+        bool ih = this->value->getValue().isHomologyEstablished();
     
         return new RlBoolean(ih);
     } 
@@ -266,16 +259,16 @@ void AbstractCharacterData::initMethods(void) {
     ArgumentRules* namesArgRules               = new ArgumentRules();
     ArgumentRules* ntaxaArgRules               = new ArgumentRules();
     ArgumentRules* chartypeArgRules            = new ArgumentRules();    
-    ArgumentRules* nexcludedtaxaArgRules       = new ArgumentRules();    
-    ArgumentRules* nexcludedcharsArgRules      = new ArgumentRules();    
-    ArgumentRules* nincludedtaxaArgRules       = new ArgumentRules();    
-    ArgumentRules* nincludedcharsArgRules      = new ArgumentRules();    
-    ArgumentRules* excludedtaxaArgRules        = new ArgumentRules();    
-    ArgumentRules* excludedcharsArgRules       = new ArgumentRules();    
-    ArgumentRules* includedtaxaArgRules        = new ArgumentRules();    
-    ArgumentRules* includedcharsArgRules       = new ArgumentRules();    
-    ArgumentRules* nconstantpatternsArgRules   = new ArgumentRules();    
-    ArgumentRules* ncharswithambiguityArgRules = new ArgumentRules();
+//    ArgumentRules* nexcludedtaxaArgRules       = new ArgumentRules();    
+//    ArgumentRules* nexcludedcharsArgRules      = new ArgumentRules();    
+//    ArgumentRules* nincludedtaxaArgRules       = new ArgumentRules();    
+//    ArgumentRules* nincludedcharsArgRules      = new ArgumentRules();    
+//    ArgumentRules* excludedtaxaArgRules        = new ArgumentRules();    
+//    ArgumentRules* excludedcharsArgRules       = new ArgumentRules();    
+//    ArgumentRules* includedtaxaArgRules        = new ArgumentRules();    
+//    ArgumentRules* includedcharsArgRules       = new ArgumentRules();    
+//    ArgumentRules* nconstantpatternsArgRules   = new ArgumentRules();    
+//    ArgumentRules* ncharswithambiguityArgRules = new ArgumentRules();
     ArgumentRules* excludecharArgRules         = new ArgumentRules();
     ArgumentRules* excludecharArgRules2        = new ArgumentRules();
     ArgumentRules* showdataArgRules            = new ArgumentRules();
@@ -289,18 +282,18 @@ void AbstractCharacterData::initMethods(void) {
     methods.addFunction("nchar",               new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
     methods.addFunction("ntaxa",               new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
     methods.addFunction("chartype",            new MemberFunction(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
-    methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
-    methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
-    methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
-    methods.addFunction("excludedtaxa",        new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
-    methods.addFunction("excludedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
-    methods.addFunction("includedtaxa",        new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
-    methods.addFunction("includedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
-    methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
-    methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
-    methods.addFunction("excludechar",         new MemberFunction(RlUtils::Void,        excludecharArgRules        ) );
-    methods.addFunction("excludechar",         new MemberFunction(RlUtils::Void,        excludecharArgRules2       ) );
+//    methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
+//    methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
+//    methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
+//    methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
+//    methods.addFunction("excludedtaxa",        new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
+//    methods.addFunction("excludedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
+//    methods.addFunction("includedtaxa",        new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
+//    methods.addFunction("includedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
+//    methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
+//    methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
+    methods.addFunction("excludeCharacter",    new MemberFunction(RlUtils::Void,        excludecharArgRules        ) );
+    methods.addFunction("excludeCharacter",    new MemberFunction(RlUtils::Void,        excludecharArgRules2       ) );
     methods.addFunction("show",                new MemberFunction(RlUtils::Void,        showdataArgRules           ) );
     methods.addFunction("ishomologous",        new MemberFunction(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     

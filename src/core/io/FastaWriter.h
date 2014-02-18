@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of NewickConvert, which is our simple class to
- * convert trees written in Newick format into our own tree format.
- *
- * @brief Declaration of NclReader
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-07-12 11:08:07 +0200 (Thu, 12 Jul 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-08-16, version 1.0
- * @extends DAGNode
- *
- * $Id: NclReader.h 1674 2012-07-12 09:08:07Z hoehna $
- */
-
 #ifndef FastaWriter_H
 #define FastaWriter_H
 
@@ -29,11 +11,22 @@
 
 namespace RevBayesCore {
     
+    /**
+     * This class represents the writer object of character data objects into files in Fasta format.
+     *
+     * This class currently has only one functionality,
+     * to write character data objects into a file in Fasta format.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2013-04-15, version 1.0
+     */
     class FastaWriter {
         
     public:
         FastaWriter();
-        void writeData(const std::string& fn, const AbstractCharacterData &d);
+        
+        void                    writeData(const std::string& fn, const AbstractCharacterData &d);
         
         
     };
@@ -41,4 +34,4 @@ namespace RevBayesCore {
 }
 
 
-#endif /* defined(__revbayes_mlandis__PopulationDataReader__) */
+#endif

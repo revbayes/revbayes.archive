@@ -38,7 +38,7 @@
 using namespace RevBayesCore;
 
 BrownianMotionAdmixtureGraph::BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< std::vector< double > >* br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs, double ls) :
-TypedDistribution<CharacterData<ContinuousCharacterState> >( new CharacterData<ContinuousCharacterState>() ),
+TypedDistribution<ContinuousCharacterData >( new ContinuousCharacterData() ),
 tau(t),
 diffusionRate(dr),
 admixtureRate(ar),
@@ -91,7 +91,7 @@ likelihoodScaler(ls)
 
 
 BrownianMotionAdmixtureGraph::BrownianMotionAdmixtureGraph(const BrownianMotionAdmixtureGraph &n) :
-TypedDistribution<CharacterData<ContinuousCharacterState> > ( new CharacterData<ContinuousCharacterState>() ),
+TypedDistribution<ContinuousCharacterData > ( new ContinuousCharacterData() ),
 tau(n.tau),
 diffusionRate(n.diffusionRate),
 admixtureRate(n.admixtureRate),
@@ -197,7 +197,7 @@ void BrownianMotionAdmixtureGraph::swapParameter(const DagNode *oldP, const DagN
     }
 }
 
-void BrownianMotionAdmixtureGraph::setValue(CharacterData<ContinuousCharacterState> *v)
+void BrownianMotionAdmixtureGraph::setValue(ContinuousCharacterData *v)
 {
     
 }

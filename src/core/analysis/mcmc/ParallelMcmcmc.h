@@ -30,17 +30,17 @@ namespace RevBayesCore {
         void                                                burnin(int g, int ti);
         ParallelMcmcmc*                                     clone(void) const;
         void                                                printOperatorSummary(void) const;
-        void                                                run(int g);        
+        void                                                run(size_t g);        
         
     private:
         void                                                initialize(void);
         void                                                swapChains(void);
         double                                              computeBeta(double d, int i);   // incremental temperature schedule
         
-        int                                                 numChains;
-        int                                                 numProcesses;
-        std::vector<int>                                    chainIdxByHeat;
-        std::vector<std::vector<int> >                      chainsPerProcess;
+        size_t                                              numChains;
+        size_t                                              numProcesses;
+        std::vector<size_t>                                    chainIdxByHeat;
+        std::vector<std::vector<size_t> >                      chainsPerProcess;
         std::vector<Mcmc*>                                  chains;
         unsigned int                                        gen;
         unsigned int                                        swapInterval;

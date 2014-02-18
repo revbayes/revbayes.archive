@@ -52,7 +52,7 @@ namespace RevLanguage {
         void                                    replaceVariable(RbLanguageObject *newVar);                                  //!< Replace the internal DAG node
     
         // getters and setters
-        const rbType&                           getValue(void) const;
+        virtual const rbType&                   getValue(void) const;
         void                                    setValue(rbType *x);
         
     protected:

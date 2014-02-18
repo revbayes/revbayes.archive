@@ -165,8 +165,6 @@ std::vector<double> DiversityDependentPureBirthProcess::simSpeciations(size_t n,
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-	double u = rng->uniform01();
-    
     // get the parameters
     double lambda = initialSpeciation->getValue();
     double k = capacity->getValue();
@@ -186,7 +184,7 @@ std::vector<double> DiversityDependentPureBirthProcess::simSpeciations(size_t n,
         double rate = ( 1.0 - ((m-i+2)/k) ) * lambda;
         double t = lastEvent + RbStatistics::Exponential::rv(rate, *rng);
         lastEvent = t;
-        times[m-i] = t;
+        times[m-i-1] = t;
     }
 	
     return times;

@@ -47,6 +47,7 @@ class FunctionTable {
         // Basic utility functions
         virtual FunctionTable*                  clone(void) const;                                                                      //!< Clone object
         void                                    printValue(std::ostream& o) const;                                                      //!< Print table for user
+        void                                    printTableWithoutHeader(std::ostream& o) const;                                         //!< Print table table entries user without header
 
         // FunctionTable functions
         virtual void                            addFunction(const std::string name, Function *func);                                    //!< Add function

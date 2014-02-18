@@ -23,7 +23,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
 {
     activeIndex = 0;
     
-    for (int i = 0; i < numChains; i++)
+    for (size_t i = 0; i < numChains; i++)
     {
         // get chain heat
         double b = computeBeta(delta,i) * startingHeat;
@@ -50,14 +50,14 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         numProcesses = numChains;
     
     chainsPerProcess.resize(numProcesses);
-    for (int i = 0, j = 0; i < numChains; i++, j++)
+    for (size_t i = 0, j = 0; i < numChains; i++, j++)
     {
         if (j >= numProcesses)
             j = 0;
         chainsPerProcess[j].push_back(i);
     }
     
-    for (int i = 0; i < numChains; i++)
+    for (size_t i = 0; i < numChains; i++)
     {
         
         ;//std::cout << i << ": " << chains[i]->getChainHeat() << " ";
@@ -107,17 +107,17 @@ void ParallelMcmcmc::printOperatorSummary(void) const
     }
 }
 
-void ParallelMcmcmc::run(int generations)
+void ParallelMcmcmc::run(size_t generations)
 {
     // print file header
     if (gen == 0)
         chains[0]->monitor(0);
     
     // run chain
-    for (int i = 1; i <= generations; i += swapInterval)
+    for (size_t i = 1; i <= generations; i += swapInterval)
     {
         // start parallel job per block of swapInterval cycles
-        int np = numProcesses; // in fact, used by the macro below
+        size_t np = numProcesses; // in fact, used by the macro below
         int pid = 1;
         
         #pragma omp parallel default(shared) private(np, pid)
@@ -127,13 +127,13 @@ void ParallelMcmcmc::run(int generations)
             #endif
             
             // Create process per chain
-            for (int j = 0; j < chainsPerProcess[pid].size(); j++)
+            for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
             {
                 // get chain index from job vector
-                int chainIdx = chainsPerProcess[pid][j];
+                size_t chainIdx = chainsPerProcess[pid][j];
                 
                 // Advance cycles in blocks of size swapInterval
-                for (int k = 0; k < swapInterval && (i+k) <= generations; k++)
+                for (size_t k = 0; k < swapInterval && (i+k) <= generations; k++)
                 {
                     // advance chain j by a single cycle
                     chains[chainIdx]->nextCycle(true);
