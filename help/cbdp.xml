@@ -8,6 +8,7 @@
     <title>Constant-rate birth-death process</title>
 
     <description>
+        <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
         <p>
             The constant-rate birth-death process specifies a prior distribution on time trees, that is a uniform distribution on labelled histories and a distribtion on the divergence times.
             The trees are ultrametric (i.e. all tips were sampled at the same time). The speciation and extinction rates of the process are constant.
@@ -23,7 +24,10 @@
         cBDP( lambda=2, mu=1.0, origin=100, rho=0.25, samplingStrategy="uniform", condition="time", nTaxa=4, names={"a","b","c","d"}, constraints=Clade("a","b") )
     </usage>    
     
-    <details>todo</details>
+    <details>
+        <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+        <p>todo</p>
+    </details>
 
     <argument>
         <label>lambda</label>
@@ -90,7 +94,7 @@
         <defaultValue>NULL</defaultValue>
     </argument>
 
-     <value>TimeTree</value>
+    <value>TimeTree</value>
 
     <author>Sebastian Hoehna</author>
 
@@ -115,42 +119,48 @@
         <doi>10.1093/molbev/msr095</doi>
     </reference>
     
-    <seeAlso>Todo (auto generate link when displayed in web browser).</seeAlso>
+    <seeAlso>
+        <!-- The xslt page will try to auto generate links to the referred functions, therefore
+        only exact function names should be listed here (case insensitive) -->
+        <function>mcmc</function>
+        <function>foobar</function>        
+    </seeAlso>
     
     <example>
-            trueTree &lt;- readTrees("data/primate.tree")[1]
+        <!-- Line breaks will be preserved when displaying the example section  -->
+        trueTree &lt;- readTrees("data/primate.tree")[1]
         
-            names &lt;- trueTree.names()
-            taxaCount &lt;- names.size()
+        names &lt;- trueTree.names()
+        taxaCount &lt;- names.size()
         
-            # Birth-Death process priors
-            speciation ~ exponential(0.1)
-            extinction ~ exponential(0.1)
-            org ~ unif(0.0,50.0)
+        # Birth-Death process priors
+        speciation ~ exponential(0.1)
+        extinction ~ exponential(0.1)
+        org ~ unif(0.0,50.0)
         
-            # moves for the birth-death parameters
-            moves[1] &lt;- mScale(speciation, lambda=1, tune=true, weight=2)
-            moves[2] &lt;- mScale(extinction, lambda=1, tune=true, weight=2)
-            moves[3] &lt;- mSlide(org, delta=1.0, weight=2.0)
+        # moves for the birth-death parameters
+        moves[1] &lt;- mScale(speciation, lambda=1, tune=true, weight=2)
+        moves[2] &lt;- mScale(extinction, lambda=1, tune=true, weight=2)
+        moves[3] &lt;- mSlide(org, delta=1.0, weight=2.0)
        
-            # tree from birth-death process
-            tau ~ cBDP(origin=org, lambda=speciation, mu=extinction, nTaxa=taxaCount, names=names)
+        # tree from birth-death process
+        tau ~ cBDP(origin=org, lambda=speciation, mu=extinction, nTaxa=taxaCount, names=names)
        
-            tau.clamp( trueTree )
+        tau.clamp( trueTree )
         
-            monitors[1] &lt;- modelmonitor(filename="testBirthDeath.log",printgen=10, separator = "	")
-            monitors[2] &lt;- screenmonitor(printgen=1000, separator = "	", speciation)
+        monitors[1] &lt;- modelmonitor(filename="testBirthDeath.log",printgen=10, separator = "	")
+        monitors[2] &lt;- screenmonitor(printgen=1000, separator = "	", speciation)
         
-            mymodel &lt;- model(tau)
+        mymodel &lt;- model(tau)
         
-            mymcmc &lt;- mcmc(mymodel, monitors, moves)
+        mymcmc &lt;- mcmc(mymodel, monitors, moves)
         
-            mymcmc.burnin(generations=20000,tuningInterval=100)
-            mymcmc.run(generations=200000)
-            mymcmc.operatorSummary()
+        mymcmc.burnin(generations=20000,tuningInterval=100)
+        mymcmc.run(generations=200000)
+        mymcmc.operatorSummary()
         
-            # quit RevBayes. DANGER!!! ;)
-            q()
+        # quit RevBayes. DANGER!!! ;)
+        q()
        
     </example>
 

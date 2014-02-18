@@ -25,7 +25,8 @@
 
 #include <string>
 #include <vector>
-#include "../libs/pugixml_1.2/src/pugixml.hpp"
+#include "pugixml.hpp"
+//
 
 
 class Help {
@@ -54,7 +55,7 @@ private:
     std::string formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks);
     std::string formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks, bool stripLineBreaks);
     std::string replaceString(std::string subject, const std::string& search, const std::string& replace);
-    template <typename T> std::string to_string(T value);
+    template <typename T>std::string to_string(T value);
     std::string stripConsecutiveSpace(std::string subject);
 
  
