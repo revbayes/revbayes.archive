@@ -63,22 +63,24 @@
      SUBTRACTION_ASSIGN = 279,
      MULTIPLICATION_ASSIGN = 280,
      DIVISION_ASSIGN = 281,
-     EQUAL = 282,
-     AND = 283,
-     OR = 284,
-     AND2 = 285,
-     OR2 = 286,
-     GT = 287,
-     GE = 288,
-     LT = 289,
-     LE = 290,
-     EQ = 291,
-     NE = 292,
-     END_OF_INPUT = 293,
-     UNOT = 294,
-     UPLUS = 295,
-     UMINUS = 296,
-     UAND = 297
+     DECREMENT = 282,
+     INCREMENT = 283,
+     EQUAL = 284,
+     AND = 285,
+     OR = 286,
+     AND2 = 287,
+     OR2 = 288,
+     GT = 289,
+     GE = 290,
+     LT = 291,
+     LE = 292,
+     EQ = 293,
+     NE = 294,
+     END_OF_INPUT = 295,
+     UNOT = 296,
+     UPLUS = 297,
+     UMINUS = 298,
+     UAND = 299
    };
 #endif
 /* Tokens.  */
@@ -106,29 +108,31 @@
 #define SUBTRACTION_ASSIGN 279
 #define MULTIPLICATION_ASSIGN 280
 #define DIVISION_ASSIGN 281
-#define EQUAL 282
-#define AND 283
-#define OR 284
-#define AND2 285
-#define OR2 286
-#define GT 287
-#define GE 288
-#define LT 289
-#define LE 290
-#define EQ 291
-#define NE 292
-#define END_OF_INPUT 293
-#define UNOT 294
-#define UPLUS 295
-#define UMINUS 296
-#define UAND 297
+#define DECREMENT 282
+#define INCREMENT 283
+#define EQUAL 284
+#define AND 285
+#define OR 286
+#define AND2 287
+#define OR2 288
+#define GT 289
+#define GE 290
+#define LT 291
+#define LE 292
+#define EQ 293
+#define NE 294
+#define END_OF_INPUT 295
+#define UNOT 296
+#define UPLUS 297
+#define UMINUS 298
+#define UAND 299
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 77 "./grammar.y"
+#line 79 "./grammar.y"
 {
     char*                                           c_string;
     std::string*                                    string;
@@ -145,7 +149,7 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 149 "./grammar.tab.h"
+#line 153 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

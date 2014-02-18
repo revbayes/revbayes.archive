@@ -72,6 +72,17 @@ RbLanguageObject* RbLanguageObject::convertTo(const TypeSpec& typeSpec) const {
 
 
 /**
+ * Decrement operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ */
+void RbLanguageObject::decrement( void ) 
+{
+    throw RbException("Cannot decrement a value of type '" + this->getType() + "'.");
+
+}
+
+
+/**
  * Division operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.
  *
@@ -218,6 +229,17 @@ RevBayesCore::DagNode* RbLanguageObject::getValueNode( void ) const {
 /** Does this object have a member called "name" */
 bool RbLanguageObject::hasMember(std::string const &name) const {
     return false;
+}
+
+
+/**
+ * Increment operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ */
+void RbLanguageObject::increment( void ) 
+{
+    throw RbException("Cannot increment a value of type '" + this->getType() + "'.");
+    
 }
 
 

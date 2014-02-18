@@ -126,6 +126,17 @@ RbLanguageObject* Integer::convertTo( const TypeSpec& type ) const {
 
 
 /**
+  * Specialized decrement operation.
+  */
+void Integer::decrement( void ) 
+{
+    
+    value->getValue()--;
+
+}
+
+
+/**
  * Generic division operator.
  * We test if the rhs is of a type that we use for a specialized division operation.
  *
@@ -206,6 +217,17 @@ const TypeSpec& Integer::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+
+/**
+ * Specialized increment operation.
+ */
+void Integer::increment( void ) 
+{
+    
+    value->getValue()++;
+    
 }
 
 

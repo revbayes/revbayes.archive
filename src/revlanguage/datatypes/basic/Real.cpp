@@ -147,6 +147,17 @@ RbLanguageObject* Real::convertTo( const TypeSpec& type ) const {
 
 
 /**
+ * Specialized decrement operation.
+ */
+void Real::decrement( void ) 
+{
+    
+    value->getValue()--;
+    
+}
+
+
+/**
  * Generic division operator.
  * We test if the rhs is of a type that we use for a specialized division operation.
  *
@@ -223,6 +234,17 @@ const TypeSpec& Real::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+
+/**
+ * Specialized increment operation.
+ */
+void Real::increment( void ) 
+{
+    
+    value->getValue()++;
+    
 }
 
 

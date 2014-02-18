@@ -36,12 +36,14 @@
 #include "SyntaxClassDef.h"
 #include "SyntaxConstant.h"
 #include "SyntaxConstantAssignment.h"
+#include "SyntaxDecrement.h"
 #include "SyntaxDeterministicAssignment.h"
 #include "SyntaxDivisionAssignment.h"
 #include "SyntaxForLoop.h"
 #include "SyntaxFormal.h"
 #include "SyntaxFunctionCall.h"
 #include "SyntaxFunctionDef.h"
+#include "SyntaxIncrement.h"
 #include "SyntaxLabeledExpr.h"
 #include "SyntaxMultiplicationAssignment.h"
 #include "SyntaxStatement.h"
@@ -118,7 +120,10 @@ Parser& parser = Parser::getParser();
 /* Tokens returned by the lexer and handled by the parser */
 %token REAL INT NAME STRING RBNULL FALSE TRUE 
 %token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
-%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN ADDITION_ASSIGN SUBTRACTION_ASSIGN MULTIPLICATION_ASSIGN DIVISION_ASSIGN EQUAL 
+%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN 
+%token ADDITION_ASSIGN SUBTRACTION_ASSIGN MULTIPLICATION_ASSIGN DIVISION_ASSIGN 
+%token DECREMENT INCREMENT
+%token EQUAL 
 %token AND OR AND2 OR2 GT GE LT LE EQ NE
 %token END_OF_INPUT
 
@@ -162,6 +167,7 @@ Parser& parser = Parser::getParser();
 %left       '+' '-'
 %left       '*' '/'
 %left       ':'
+%right      DECREMENT INCREMENT
 %left       UMINUS UPLUS
 %right      '^'
 %left       '.' UAND
@@ -315,6 +321,11 @@ expression  :   constant                    { $$ = $1; }
             |   '+' expression %prec UPLUS  { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UPlus, $2); }
             |   '!' expression %prec UNOT   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, $2); }
             |   AND expression %prec UAND   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UAnd, $2); }
+
+            |   DECREMENT variable          { $$ = new SyntaxDecrement( $2 ); }
+            |   variable DECREMENT          { $$ = new SyntaxDecrement( $1 ); }
+            |   INCREMENT variable          { $$ = new SyntaxIncrement( $2 ); }
+            |   variable INCREMENT          { $$ = new SyntaxIncrement( $1 ); }
 
             |   expression ':' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, $1, $3); }
 
