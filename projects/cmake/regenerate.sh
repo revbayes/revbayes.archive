@@ -28,15 +28,26 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../src)
 
 # TODO Split these up based on sub-package dependency
 include_directories(' > "$HERE/CMakeLists.txt"
-find core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+find libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ')
 
-add_subdirectory(core)   # Split into much smaller libraries
+# Split into much smaller libraries
+add_subdirectory(libs)
+add_subdirectory(core)   
 add_subdirectory(revlanguage)
 
+
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
-target_link_libraries(rb rb-parser rb-core)
+target_link_libraries(rb rb-libs rb-parser rb-core)
 ' >> $HERE/CMakeLists.txt
+
+if [ ! -d "$HERE/libs" ]; then
+mkdir "$HERE/libs"
+fi
+echo 'set(LIBS_FILES' > "$HERE/libs/CMakeLists.txt"
+find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/libs/CMakeLists.txt"
+echo ')
+add_library(rb-libs ${LIBS_FILES})'  >> "$HERE/libs/CMakeLists.txt"
 
 if [ ! -d "$HERE/core" ]; then
 mkdir "$HERE/core"
@@ -53,4 +64,5 @@ echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
 find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
+
 

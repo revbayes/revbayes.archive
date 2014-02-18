@@ -44,9 +44,11 @@
                 <h2>
                     Details
                 </h2>
-                <p class="indent">
-                    <xsl:value-of select="//details" />   
-                </p>
+                <xsl:for-each select="//details/p">                        
+                    <p class="indent">
+                        <xsl:value-of select="." />
+                    </p>            
+                </xsl:for-each>
                 
                 
                 <h2>
@@ -54,7 +56,9 @@
                 </h2>   
                 <xsl:for-each select="//argument">                        
                     <p class="indent">
-                        <b><xsl:value-of select="label" /></b>
+                        <b>
+                            <xsl:value-of select="label" />
+                        </b>
                         
                         <div class="indent">
                             <xsl:value-of select="description" /> 
@@ -115,6 +119,18 @@
                         </div>
                     </p>
                 </xsl:for-each>
+                
+                <h2>
+                    See Also
+                </h2>   
+                <xsl:for-each select="//seeAlso/function">                        
+                    <p class="indent">                        
+                        <a href="{.}.xml">
+                            <xsl:value-of select="." />
+                        </a>
+                    </p>            
+                </xsl:for-each>
+                
                 <h2>
                     Example
                 </h2>

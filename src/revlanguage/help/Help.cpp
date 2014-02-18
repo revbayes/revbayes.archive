@@ -32,10 +32,12 @@
 #include "RlUserInterface.h"
 #include <iostream>
 #include <sstream>
-#include "../libs/pugixml_1.2/src/pugixml.hpp"
+#include "pugixml.cpp"
 #include <algorithm>
 #include <string> 
 #include <vector>
+#include <iterator>
+#include <list>
 
 /** Default constructor */
 Help::Help(void)
@@ -55,7 +57,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
 {
 
     this->loadHelpFile(qs);
-
+    
     pugi::xpath_node_set nodeSet, subSet;
 
     // the output to display in terminal
@@ -63,8 +65,10 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
 
     // name
     help += formatOutString(doc.child("help_entry").child("name").child_value(), columnWidth, 0, 2);
+
     // title
     help += formatOutString(doc.child("help_entry").child("title").child_value(), columnWidth, 0, 2);
+
     // description
     nodeSet = doc.select_nodes("/help_entry/description/p");
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
@@ -78,12 +82,16 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
     help += formatOutString("Usage:", columnWidth, 0, 1);
     help += formatOutString(doc.child("help_entry").child("usage").child_value(), columnWidth, 1, 1);
     help += "\n";
-    
+
     // details
-    help += formatOutString("Details:", columnWidth, 0, 1);
-    help += formatOutString(doc.child("help_entry").child("details").child_value(), columnWidth, 1, 1);
-    help += "\n";
-    
+    nodeSet = doc.select_nodes("/help_entry/details/p");
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+        help += formatOutString(node.node().child_value(), columnWidth, 0, 1);
+    }
+    help += "\n\n";
+
     // arguments
     help += formatOutString("Arguments:", columnWidth, 0, 1);
     nodeSet = doc.select_nodes("/help_entry/argument");
@@ -119,7 +127,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
             help += formatOutString("Default Value: ", columnWidth, 2, -1);
             help += formatOutString(node.node().child_value("defaultValue"), columnWidth, -1, 1);
         }
-        
+
         help += "\n";
         loop++;
 
@@ -152,6 +160,27 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
     }
     help += "\n";
 
+    // see also
+    help += formatOutString("See Also:", columnWidth, 0, 2);
+    //help += formatOutString("", columnWidth, 1, 0);
+    nodeSet = doc.select_nodes("/help_entry/seeAlso/function");
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+        help += formatOutString(node.node().child_value(), columnWidth, 1, 0);
+        if(it+1 != nodeSet.end()){
+            help += ", ";
+        }
+        
+
+
+    }
+//    if (!nodeSet.empty())
+//    {
+//        help = help.substr(0, -3);
+//    }
+    help += "\n\n";
+    
     // examples
     // preserve line breaks from xml for examples clause
     help += formatOutString("Examples:", columnWidth, 0, 2);
@@ -206,14 +235,14 @@ std::string Help::formatOutString(std::string s, size_t columnWidth, int indentL
     //-- apply the formatting style we want
     // wrap text
     s = wrapText(s, indent, columnWidth);
-    // apply line breaks
+    // apply line breaks at end
     for (int i = 0; i < numLineBreaks; i++)
     {
-       s += "\n";
+        s += "\n";
     }
-    
+
     //std::cout << s + "<break>\n";
-    
+
     return s;
 
 }
@@ -256,7 +285,7 @@ std::string Help::wrapText(const std::string s, std::string padding, size_t w)
         }
     }
     return wrappedText;
-    
+
 }
 
 /** Initialize the help from an XML file */
