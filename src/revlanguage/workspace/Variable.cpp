@@ -154,7 +154,6 @@ void Variable::replaceValue( RbLanguageObject *newValue ) {
         value->replaceVariable( newValue );
         
         delete value;
-        value = newValue;
 
     }
     

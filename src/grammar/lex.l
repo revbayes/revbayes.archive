@@ -6,7 +6,6 @@
  * @brief Lexicographical analysis using flex
  *
  * @author Fredrik Ronquist and Sebastian Hoehna
- * @date Last modified: $Date$
  *
  * $Id$
  */
@@ -248,6 +247,30 @@ TRUE                                    {
                                             printf("Flex found '~'\n");
 #endif
                                             return TILDE_ASSIGN;
+                                        }
+"+="                                    {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found '+='\n");
+#endif
+                                            return ADDITION_ASSIGN;
+                                        }
+"-="                                    {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found '-='\n");
+#endif
+                                            return SUBTRACTION_ASSIGN;
+                                        }
+"*="                                    {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found '*='\n");
+#endif
+                                            return MULTIPLICATION_ASSIGN;
+                                        }
+"/="                                    {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found '/='\n");
+#endif
+                                            return DIVISION_ASSIGN;
                                         }
 "="                                     {
 #ifdef DEBUG_BISON_FLEX

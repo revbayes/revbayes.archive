@@ -32,6 +32,13 @@
 using namespace RevLanguage;
 
 
+RbLanguageObject* RbLanguageObject::add(const RbLanguageObject &rhs) const
+{
+    throw RbException("Cannot add a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
+    
+    return NULL;
+}
+
 /** The default implementation does nothing because we don't have an internal object */
 void RbLanguageObject::constructInternalObject( void ) {
     // nothing to do

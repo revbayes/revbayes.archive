@@ -42,6 +42,9 @@ class Natural : public Integer {
         Natural(unsigned long x);                                                                           //!< Constructor from size_t
 
         // Overloaded operators
+        // Basic operator functions
+        virtual RbLanguageObject*   add(const RbLanguageObject &rhs) const;                                 //!< Addition operator used for example in '+=' statements
+        virtual Natural*            add(const Natural &rhs) const;                                          //!< Addition operator used for example in '+=' statements
 
         // Basic utility functions
         Natural*                    clone(void) const;                                                      //!< Clone object

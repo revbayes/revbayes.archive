@@ -306,8 +306,11 @@ void DagNode::restoreAffected(void) {
 }
 
 
-void DagNode::setName(std::string const &n) {
+void DagNode::setName(std::string const &n) 
+{
+
     name = n;
+
 }
 
 

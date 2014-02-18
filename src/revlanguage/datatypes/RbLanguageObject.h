@@ -48,6 +48,9 @@ public:
     bool                                operator!=(const RbLanguageObject& x) const { return !operator==(x); }
     bool                                operator<(const RbLanguageObject& x) const { return false; }
     
+    // Basic operator functions
+    virtual RbLanguageObject*           add(const RbLanguageObject &rhs) const;                                                         //!< Addition operator used for example in '+=' statements
+    
     // Basic utility functions you have to override (also getClassTypeSpec()!)
     virtual RbLanguageObject*           clone(void) const = 0;                                                                          //!< Clone object
     static const std::string&           getClassName(void);                                                                             //!< Get class name

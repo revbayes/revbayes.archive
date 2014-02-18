@@ -63,6 +63,25 @@ Natural::Natural( unsigned long x) : Integer( int(x) ) {
 }
 
 
+RbLanguageObject* Natural::add( const RbLanguageObject& rhs ) const 
+{
+    
+    if ( rhs.getTypeSpec() == Natural::getClassTypeSpec() )
+        return add( static_cast<const Natural&>( rhs ) );
+    
+    return Integer::add( rhs );
+}
+
+
+Natural* Natural::add(const RevLanguage::Natural &rhs) const
+{
+    
+    Natural *n = new Natural( value->getValue() + rhs.getValue() );
+    
+    return n;
+}
+
+
 /** Clone object */
 Natural* Natural::clone( void ) const {
 
