@@ -59,6 +59,61 @@ Real::Real(const Real& x) : RlModelVariableWrapper<double>( x ) {
 }
 
 
+/**
+ * Generic addition operator.
+ * We test if the rhs is of a type that we use for a specialized addition operation.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+RbLanguageObject* Real::add( const RbLanguageObject& rhs ) const 
+{
+    
+    if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+        return add( static_cast<const Real&>( rhs ) );
+    
+    if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+        return add( static_cast<const Integer&>( rhs ) );
+    
+    return RlModelVariableWrapper<double>::add( rhs );
+}
+
+
+/**
+ * Specialized addition operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+Real* Real::add(const Real &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() + rhs.getValue() );
+    
+    return n;
+}
+
+
+/**
+ * Specialized addition operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+Real* Real::add(const Integer &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() + rhs.getValue() );
+    
+    return n;
+}
+
+
 /** Clone object */
 Real* Real::clone(void) const {
 

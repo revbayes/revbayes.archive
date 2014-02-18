@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Natural, which is
- * the primitive RevBayes type for natural numbers (including 0).
- *
- * @brief Implementation of Natural
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
-
 #include "ConstantNode.h"
 #include "RlBoolean.h"
 #include "Natural.h"
@@ -63,20 +47,48 @@ Natural::Natural( unsigned long x) : Integer( int(x) ) {
 }
 
 
+/**
+ * Generic addition operator.
+ * We test if the rhs is of a type that we use for a specialized addition operation.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
 RbLanguageObject* Natural::add( const RbLanguageObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec() == Natural::getClassTypeSpec() )
         return add( static_cast<const Natural&>( rhs ) );
     
+    if ( rhs.getTypeSpec() == RealPos::getClassTypeSpec() )
+        return add( static_cast<const RealPos&>( rhs ) );
+    
     return Integer::add( rhs );
 }
 
 
+/**
+ * Specialized addition operation between two natural numbers.
+ * The return value is also of type natural number.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
 Natural* Natural::add(const RevLanguage::Natural &rhs) const
 {
     
     Natural *n = new Natural( value->getValue() + rhs.getValue() );
+    
+    return n;
+}
+
+
+RealPos* Natural::add(const RevLanguage::RealPos &rhs) const
+{
+    
+    RealPos *n = new RealPos( value->getValue() + rhs.getValue() );
     
     return n;
 }

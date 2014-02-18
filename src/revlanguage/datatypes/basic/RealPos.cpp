@@ -1,20 +1,4 @@
-/**
- * @file
- * This file contains the implementation of RealPos, which
- * is the primitive RevBayes type for positive real numbers.
- *
- *
- * @brief Implementation of RealPos
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
-
+#include "Natural.h"
 #include "RealPos.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -50,6 +34,61 @@ RealPos::RealPos( int x ) : Real( x ) {
 
     if ( x < 0 )
         throw RbException( "Nonpositive value for " + getClassName() );
+}
+
+
+/**
+ * Generic addition operator.
+ * We test if the rhs is of a type that we use for a specialized addition operation.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+RbLanguageObject* RealPos::add( const RbLanguageObject& rhs ) const 
+{
+    
+    if ( rhs.getTypeSpec() == RealPos::getClassTypeSpec() )
+        return add( static_cast<const RealPos&>( rhs ) );
+    
+    if ( rhs.getTypeSpec() == Natural::getClassTypeSpec() )
+        return add( static_cast<const Natural&>( rhs ) );
+    
+    return Real::add( rhs );
+}
+
+
+/**
+ * Specialized addition operation between two positive real numbers.
+ * The return value is also of type positive real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+RealPos* RealPos::add(const RevLanguage::Natural &rhs) const
+{
+    
+    RealPos *n = new RealPos( value->getValue() + rhs.getValue() );
+    
+    return n;
+}
+
+
+/**
+ * Specialized addition operation between two positive real numbers.
+ * The return value is also of type positive real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+RealPos* RealPos::add(const RevLanguage::RealPos &rhs) const
+{
+    
+    RealPos *n = new RealPos( value->getValue() + rhs.getValue() );
+    
+    return n;
 }
 
 

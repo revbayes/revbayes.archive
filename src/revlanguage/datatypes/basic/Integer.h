@@ -26,6 +26,8 @@
 #include <string>
 
 namespace RevLanguage {
+    
+    class Real;
 
     class Integer : public RlModelVariableWrapper<int> {
 
@@ -34,6 +36,11 @@ namespace RevLanguage {
         Integer(RevBayesCore::TypedDagNode<int> *v);                                                            //!< Constructor from DAG node
         Integer(int v);                                                                                         //!< Constructor from int
         Integer(unsigned int v);                                                                                //!< Constructor from unsigned int
+
+        // Basic operator functions
+        virtual RbLanguageObject*       add(const RbLanguageObject &rhs) const;                                 //!< Addition operator used for example in '+=' statements
+        Integer*                        add(const Integer &rhs) const;                                             //!< Addition operator used for example in '+=' statements
+        Real*                           add(const Real &rhs) const;                                             //!< Addition operator used for example in '+=' statements
 
         // Basic utility functions
         virtual Integer*                clone(void) const;                                                      //!< Clone object

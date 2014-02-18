@@ -32,7 +32,7 @@
 #include "RlUserInterface.h"
 #include <iostream>
 #include <sstream>
-#include "pugixml.cpp"
+#include "pugixml.hpp"
 #include <algorithm>
 #include <string> 
 #include <vector>

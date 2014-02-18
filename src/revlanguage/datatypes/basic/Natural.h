@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Natural, which is
- * the primitive RevBayes type for natural numbers (including 0).
- *
- * @brief Declaration of Natural
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef Natural_H
 #define Natural_H
 
@@ -22,29 +7,31 @@
 #include <string>
 
 
-/**
- * Primitive type for Natural numbers (including 0).
- *
- * Note that we derive this from Integer. To make
- * sure inheritance is safe, we restrict the range
- * of natural numbers from 0 to to INT_MAX
- */
 
 namespace RevLanguage {
 
-class Natural : public Integer {
+    class RealPos;
 
-    public:
+    /**
+     * Primitive type for Natural numbers (including 0).
+     *
+     * Note that we derive this from Integer. To make
+     * sure inheritance is safe, we restrict the range
+     * of natural numbers from 0 to to INT_MAX
+     */
+    class Natural : public Integer {
+
+        public:
         Natural(void);                                                                                      //!< Default constructor (value is 0)
         Natural(RevBayesCore::TypedDagNode<int> *v);                                                        //!< Constructor with DAG node
         Natural(int x);                                                                                     //!< Constructor from int
         Natural(unsigned int x);                                                                            //!< Constructor from int
         Natural(unsigned long x);                                                                           //!< Constructor from size_t
 
-        // Overloaded operators
         // Basic operator functions
-        virtual RbLanguageObject*   add(const RbLanguageObject &rhs) const;                                 //!< Addition operator used for example in '+=' statements
-        virtual Natural*            add(const Natural &rhs) const;                                          //!< Addition operator used for example in '+=' statements
+        RbLanguageObject*           add(const RbLanguageObject &rhs) const;                                 //!< Addition operator used for example in '+=' statements
+        Natural*                    add(const Natural &rhs) const;                                          //!< Addition operator used for example in '+=' statements
+        RealPos*                    add(const RealPos &rhs) const;                                          //!< Addition operator used for example in '+=' statements
 
         // Basic utility functions
         Natural*                    clone(void) const;                                                      //!< Clone object

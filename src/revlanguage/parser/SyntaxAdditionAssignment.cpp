@@ -1,6 +1,5 @@
 #include "ArgumentRule.h"
 #include "RbException.h"
-#include "RbLanguageObjectAddition.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "SyntaxFunctionCall.h"

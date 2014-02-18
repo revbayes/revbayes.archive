@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Integer, which is
- * a RevBayes wrapper around a regular int.
- *
- * @brief Implementation of Integer
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id$
- */
-
-
 #include "ConstantNode.h"
 #include "RlBoolean.h"
 #include "Integer.h"
@@ -53,6 +34,61 @@ Integer::Integer(int v) : RlModelVariableWrapper<int>( new int(v) ) {
 /* Construct from unsigned int (ambiguous between int and bool otherwise) */
 Integer::Integer(unsigned int v) : RlModelVariableWrapper<int>( new int(v) ) {
     
+}
+
+
+/**
+ * Generic addition operator.
+ * We test if the rhs is of a type that we use for a specialized addition operation.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+RbLanguageObject* Integer::add( const RbLanguageObject& rhs ) const 
+{
+    
+    if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+        return add( static_cast<const Real&>( rhs ) );
+    
+    if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+        return add( static_cast<const Integer&>( rhs ) );
+    
+    return RlModelVariableWrapper<int>::add( rhs );
+}
+
+
+/**
+ * Specialized addition operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+Real* Integer::add(const Real &rhs) const
+{
+    
+    Real *n = new Real( value->getValue() + rhs.getValue() );
+    
+    return n;
+}
+
+
+/**
+ * Specialized addition operation between two real numbers.
+ * The return value is also of type real number.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+Integer* Integer::add(const Integer &rhs) const
+{
+    
+    Integer *n = new Integer( value->getValue() + rhs.getValue() );
+    
+    return n;
 }
 
 
