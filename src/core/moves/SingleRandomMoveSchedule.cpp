@@ -36,7 +36,7 @@ double SingleRandomMoveSchedule::getNumberMovesPerIteration( void ) const {
 }
 
 
-Move* SingleRandomMoveSchedule::nextMove( int gen ) {
+Move* SingleRandomMoveSchedule::nextMove( size_t gen ) {
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
     double u = sumOfWeights * rng->uniform01();

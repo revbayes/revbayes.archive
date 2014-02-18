@@ -114,7 +114,7 @@ void WangLandauMcmc::updateBias(void)
 }
 
 
-int WangLandauMcmc::nextCycle(bool advanceCycle) {
+size_t WangLandauMcmc::nextCycle(bool advanceCycle) {
     
     size_t proposals = round( schedule->getNumberMovesPerIteration() );
     for (size_t i=0; i<proposals; i++)

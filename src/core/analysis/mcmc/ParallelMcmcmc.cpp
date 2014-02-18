@@ -1,11 +1,3 @@
-//
-//  ParallelMcmcmc.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/20/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include "ParallelMcmcmc.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -26,12 +18,12 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
     for (size_t i = 0; i < numChains; i++)
     {
         // get chain heat
-        double b = computeBeta(delta,i) * startingHeat;
+        double b = computeBeta(delta,int(i)) * startingHeat;
         
         // create chains
         bool a = (i == 0 ? true : false);
         Mcmc* oneChain = new Mcmc(m, moves, mons, a, b);
-        oneChain->setChainIdx(i);
+        oneChain->setChainIndex(i);
         oneChain->startMonitors();
         
         // add chain to team
@@ -84,7 +76,7 @@ void ParallelMcmcmc::initialize(void)
 double ParallelMcmcmc::computeBeta(double delta, int idx)
 {
     // MJL: May want other distributions of beta in the future
-    return pow(1 + delta, -idx);
+    return pow(1.0 + delta, -idx);
 }
 
 void ParallelMcmcmc::burnin(int g, int ti)

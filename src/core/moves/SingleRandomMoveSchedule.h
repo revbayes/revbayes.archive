@@ -27,7 +27,7 @@ namespace RevBayesCore {
         SingleRandomMoveSchedule*                             clone(void) const;
         double                                          getNumberMovesPerIteration(void) const;
         void                                            setNumberMovesPerIteration(double);
-        Move*                                           nextMove(int);
+        Move*                                           nextMove(size_t g);
         
     private:
         

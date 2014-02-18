@@ -171,7 +171,7 @@ double Mcmc::getChainHeat(void)
     return chainHeat;
 }
 
-int Mcmc::getChainIdx(void)
+size_t Mcmc::getChainIndex(void)
 {
     return chainIdx;
 }
@@ -360,18 +360,20 @@ bool Mcmc::isChainActive(void)
     return chainActive;
 }
 
-void Mcmc::monitor(int g)
+void Mcmc::monitor(unsigned long g)
 {
+    
     // Monitor
     for (size_t i = 0; i < monitors.size(); i++) 
     {
-        monitors[i]->monitor(g);
+        monitors[i]->monitor( g );
     }
+    
 }
 
 
 
-int Mcmc::nextCycle(bool advanceCycle) {
+unsigned long Mcmc::nextCycle(bool advanceCycle) {
     
 #ifdef DEBUG_MCMC
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
@@ -581,7 +583,7 @@ void Mcmc::setChainHeat(double v)
     chainHeat = v;
 }
 
-void Mcmc::setChainIdx(int x)
+void Mcmc::setChainIndex(size_t x)
 {
     chainIdx = x;
 }

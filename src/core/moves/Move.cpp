@@ -1,4 +1,3 @@
-
 #include "Move.h"
 #include "DagNode.h"
 #include "RbException.h"
@@ -59,7 +58,9 @@ double Move::getAcceptanceRatio( void ) const {
 }
 
 
-const std::set<DagNode *>& Move::getDagNodes( void ) const {
+const std::set<DagNode *>& Move::getDagNodes( void ) const 
+{
+
     return nodes;
 }
 
@@ -69,18 +70,22 @@ double Move::getUpdateWeight( void ) const {
 }
 
 
-bool Move::isActive( int g ) const {
+bool Move::isActive( unsigned long g ) const 
+{
 
     return true;
 }
 
 
-bool Move::isGibbs( void ) const {
+bool Move::isGibbs( void ) const 
+{
+
     return false;
 }
 
 
-double Move::perform(double &probRatio) {
+double Move::perform(double &probRatio) 
+{
     // increment the counter for tried
     numTried++;
     
@@ -89,7 +94,8 @@ double Move::perform(double &probRatio) {
 }
 
 
-void Move::performGibbs(void) {
+void Move::performGibbs(void) 
+{
     // increment the counter for tried
     numTried++;
     
