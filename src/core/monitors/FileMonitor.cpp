@@ -119,7 +119,7 @@ void FileMonitor::monitor(long gen) {
         if ( chainIdx ) {
             // add a separator before every new element
             outStream << separator;
-            outStream << mcmc->getChainIdx();
+            outStream << mcmc->getChainIndex();
             
         }
         

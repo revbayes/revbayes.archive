@@ -215,7 +215,7 @@ void AdmixtureBipartitionMonitor::monitor(long gen) {
         if (chainIdx)
         {
             outStream << separator;
-            outStream << mcmc->getChainIdx();
+            outStream << mcmc->getChainIndex();
         }
 
         if (chainHeat)
