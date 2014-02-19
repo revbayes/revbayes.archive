@@ -181,7 +181,7 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     
     // and the character model
     //GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, true, data[0]->getNumberOfCharacters() );
-    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, data[0]->getNumberOfStates(), true, data[0]->getNumberOfCharacters() );
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters() );
     // set the branch heterogeneous substitution matrices
     // if you set instead of a vector a single matrix, then you get a homogeneous model
     charModel->setRateMatrix( qs_node );

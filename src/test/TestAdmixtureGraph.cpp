@@ -42,7 +42,6 @@
 #include "AdmixtureRateAgeBetaShift.h"
 #include "BrownianMotionAdmixtureGraph.h"
 #include "BrownianMotionAdmixtureGraphResiduals.h"
-#include "CharacterData.h"
 #include "ConstantNode.h"
 #include "ContinuousStochasticNode.h"
 #include "ContinuousCharacterState.h"
@@ -260,11 +259,11 @@ bool TestAdmixtureGraph::run(void) {
     
     // model node
     BrownianMotionAdmixtureGraph* bmag = new BrownianMotionAdmixtureGraph( tau, diffusionRate, admixtureRate, br_vector, snps, useWishart, useContrasts, useBias, discardNonPosDefMtx, blockSize, likelihoodScaler );
-    StochasticNode<CharacterData<ContinuousCharacterState> >* admixtureModel;
-    admixtureModel = new StochasticNode<CharacterData<ContinuousCharacterState> >("AdmixtureGraph", bmag);
+    StochasticNode<ContinuousCharacterData >* admixtureModel;
+    admixtureModel = new StochasticNode<ContinuousCharacterData >("AdmixtureGraph", bmag);
     
     // have to clamp to distinguish likelihood from prior (incidentally calls setValue(), but this is handled otherwise)
-    admixtureModel->clamp( new CharacterData<ContinuousCharacterState>() ); // does it event matter how it's clamped?
+    admixtureModel->clamp( new ContinuousCharacterData() ); // does it event matter how it's clamped?
     
     // residuals
     DeterministicNode<std::vector<double> >* residuals = new DeterministicNode<std::vector<double> >("residuals", new BrownianMotionAdmixtureGraphResiduals(admixtureModel));

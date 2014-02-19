@@ -246,7 +246,7 @@ bool Test::performTests(void) {
     /* A GTR+Gamma model test */
     try {
         TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
-//        testGtrGamma.run();
+        testGtrGamma.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

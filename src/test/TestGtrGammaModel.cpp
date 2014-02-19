@@ -135,7 +135,7 @@ bool TestGtrGammaModel::run( void ) {
     phyloCTMC->setSiteRates( site_rates_norm );
     phyloCTMC->setRateMatrix( q );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
-    charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+    charactermodel->clamp( static_cast<DiscreteCharacterData<DnaState> *>( data[0] ) );
     
     std::cout << "LnL:\t\t" << charactermodel->getLnProbability() << std::endl;
     
