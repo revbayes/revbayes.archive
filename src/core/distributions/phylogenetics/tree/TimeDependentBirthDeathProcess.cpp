@@ -263,7 +263,7 @@ bool TimeDependentBirthDeathProcess::matchesConstraints( void ) {
     const TopologyNode &root = value->getRoot();
     
     for (std::vector<Clade>::iterator it = constraints.begin(); it != constraints.end(); ++it) {
-        if ( !root.containsClade( *it ) ) {
+        if ( !root.containsClade( *it, true ) ) {
             return false;
         }
     }

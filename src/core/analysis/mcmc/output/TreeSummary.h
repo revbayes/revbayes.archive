@@ -96,7 +96,7 @@ namespace RevBayesCore {
             BranchLengthTree& tree = trace.objectAt( i );
             const TopologyNode& root = tree.getRoot();
             for (size_t j = numTaxa; j < nodes.size(); ++j) {
-                if ( root.containsClade(nodes[j]) ) {
+                if ( root.containsClade(nodes[j], true) ) {
                     pp[j] += weight;
                     double tmrca = tree.getTmrca(*nodes[j]);
                     //                double tmrca = 1.0;
@@ -173,7 +173,7 @@ namespace RevBayesCore {
             TimeTree& tree = trace.objectAt( i );
             const TopologyNode& root = tree.getRoot();
             for (size_t j = numTaxa; j < nodes.size(); ++j) {
-                if ( root.containsClade(nodes[j]) ) {
+                if ( root.containsClade(nodes[j],true) ) {
                     pp[j] += weight;
                     double tmrca = tree.getTmrca(*nodes[j]);
                     //                double tmrca = 1.0;

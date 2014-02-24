@@ -337,7 +337,7 @@ std::string TopologyNode::computePlainNewick( void ) const {
 }
 
 
-bool TopologyNode::containsClade(const TopologyNode *c) const {
+bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const {
     
     std::vector<std::string> myTaxa   = getTaxaStringVector();
     std::vector<std::string> yourTaxa = c->getTaxaStringVector();
@@ -347,6 +347,7 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
         return false;
     }
     
+    // check that every taxon of the clade is present in this subtree
     for (std::vector<std::string>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it) 
     {
         bool found = false;
@@ -365,7 +366,7 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
         }
     }
     
-    if ( myTaxa.size() == yourTaxa.size() ) 
+    if ( !strict || myTaxa.size() == yourTaxa.size() ) 
     {
         return true;
     } 
@@ -374,7 +375,7 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
         bool contains = false;
         for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) 
         {
-            contains |= (*it)->containsClade(c);
+            contains |= (*it)->containsClade(c,strict);
             if ( contains ) 
             {
                 break;
@@ -385,7 +386,8 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
 }
 
 
-bool TopologyNode::containsClade(const Clade &c) const {
+bool TopologyNode::containsClade(const Clade &c, bool strict) const 
+{
     
     std::vector<std::string> myTaxa   = getTaxaStringVector();
     
@@ -394,6 +396,7 @@ bool TopologyNode::containsClade(const Clade &c) const {
         return false;
     }
     
+    // check that every taxon of the clade is in this subtree
     for (std::vector<std::string>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it) 
     {
         bool found = false;
@@ -412,7 +415,7 @@ bool TopologyNode::containsClade(const Clade &c) const {
         }
     }
     
-    if ( myTaxa.size() == c.size() ) 
+    if ( !strict || myTaxa.size() == c.size() ) 
     {
         return true;
     } 
@@ -421,7 +424,7 @@ bool TopologyNode::containsClade(const Clade &c) const {
         bool contains = false;
         for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) 
         {
-            contains |= (*it)->containsClade(c);
+            contains |= (*it)->containsClade(c,strict);
             if ( contains ) 
             {
                 break;

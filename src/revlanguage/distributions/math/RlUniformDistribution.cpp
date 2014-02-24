@@ -117,6 +117,6 @@ void UniformDistribution::setConstMemberVariable(const std::string& name, const 
         upper = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        ContinuousDistribution::setConstMemberVariable(name, var);
     }
 }

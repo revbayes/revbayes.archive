@@ -449,7 +449,7 @@ bool Test::performTests(void) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-        testDdm.run();
+//        testDdm.run();
     }
     catch (RbException &e)
     {

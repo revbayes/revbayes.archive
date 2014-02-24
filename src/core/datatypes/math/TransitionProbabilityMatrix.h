@@ -47,7 +47,7 @@ namespace RevBayesCore {
         const double*                       getElements(void) const;
         size_t                              size(void) const;
  
-    private:
+//    private:
         
         size_t                              numStates;                                                          //!< The number of character states
         size_t                              nElements;

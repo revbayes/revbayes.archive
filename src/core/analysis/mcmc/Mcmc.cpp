@@ -291,6 +291,13 @@ void Mcmc::initializeChain( void ) {
             (*i)->touch();
             
             double lnProb = node->getLnProbability();
+            
+            if ( !RbMath::isAComputableNumber(lnProb) ) 
+            {
+                std::cerr << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
+                node->printValue(std::cerr,"");
+                std::cerr << std::endl;
+            }
             lnProbability += lnProb;
 
         }

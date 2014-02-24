@@ -136,7 +136,7 @@ void RateMatrix_GTR::tiProbsEigens(double t, TransitionProbabilityMatrix& P) con
     
     // calculate the transition probabilities
 	const double* ptr = &c_ijk[0];
-    double*         p = P.getElements();
+    double*         p = P.theMatrix;
 	for (size_t i=0; i<numStates; i++) 
     {
 		for (size_t j=0; j<numStates; j++, ++p) 

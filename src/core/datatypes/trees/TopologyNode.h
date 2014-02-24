@@ -75,8 +75,8 @@ namespace RevBayesCore {
    
         // public TopologyNode functions
         void                                        addChild(TopologyNode* c, bool enforceNewickRecomp = true);              //!< Adds a child node
-        bool                                        containsClade(const TopologyNode* c) const;
-        bool                                        containsClade(const Clade &c) const;
+        bool                                        containsClade(const TopologyNode* c, bool strict) const;
+        bool                                        containsClade(const Clade &c, bool strict) const;
         void                                        flagNewickRecomputation(void);                                          //!< Flag the newick string for recomputation
         double                                      getAge(void) const;                                                     //!< Get the age (time ago from present) for this node
         double                                      getBranchLength(void) const;                                            //!< Get the branch length leading towards this node

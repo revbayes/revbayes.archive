@@ -25,6 +25,8 @@
 //#define DEBUG_BISON_FLEX
 //#define DEBUG_MCMC
 //#define DEBUG_HELP_SYSTEM
+#define SSE_ENABLED
+//#define AVX_ENABLED
 //#define TESTING
 
 
@@ -52,7 +54,7 @@
 #endif
 
 // switch debuggin g MCMC on
-≥#ifndef DEBUG_MCMC÷
+#ifndef DEBUG_MCMC
 #define DEBUG_MCMC
 #endif
 
@@ -97,4 +99,6 @@
 #ifdef USE_LIB_OPENMP
 #endif
 
+
+#endif
 

@@ -94,7 +94,6 @@ bool TestGtrGammaLikelihood::run( void ) {
     
     // and the character model
     size_t numChar = data[0]->getNumberOfCharacters();
-//    SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree> *charModel = new SimpleSiteHeterogeneousMixtureCharEvoModel<DnaState, TimeTree>(tau, site_rates_norm, q, true, numChar ); 
     GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, numChar );
     charModel->setRateMatrix( q );
     charModel->setSiteRates( site_rates_norm );

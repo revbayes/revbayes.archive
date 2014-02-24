@@ -44,12 +44,15 @@ void TmrcaStatistic::update( void ) {
     if ( index < 0 ) 
     {
         const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
+        size_t minCaldeSize = n.size() + 2;
         for (std::vector<TopologyNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
         {
-            if ( (*it)->containsClade( clade ) ) 
+            size_t cladeSize = (*it)->getTaxaStringVector().size();
+            if ( cladeSize < minCaldeSize && (*it)->containsClade( clade, false ) ) 
             {
                 index = int( (*it)->getIndex() );
-                break;
+                minCaldeSize = cladeSize;
+//                break;
             }
         }
         if ( index < 0 ) 

@@ -1,15 +1,15 @@
 #ifndef RlCharacterStateEvolutionAlongTree_H
 #define RlCharacterStateEvolutionAlongTree_H
 
-#include "AbstractCharacterData.h"
-#include "RlAbstractCharacterData.h"
+#include "AbstractDiscreteCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
 
 namespace RevLanguage {
     
     template <class treeType>
-    class CharacterStateEvolutionAlongTree :  public TypedDistribution< AbstractCharacterData > {
+    class CharacterStateEvolutionAlongTree :  public TypedDistribution< AbstractDiscreteCharacterData > {
         
     public:
         CharacterStateEvolutionAlongTree( void );
@@ -49,6 +49,7 @@ namespace RevLanguage {
 
 #include "OptionRule.h"
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
+#include "NucleotideBranchHeterogeneousCharEvoModel.h"
 #include "RbNullObject.h"
 #include "RlRateMatrix.h"
 #include "RlString.h"
@@ -58,7 +59,7 @@ namespace RevLanguage {
 
 
 template <class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution< AbstractCharacterData >() {
+RevLanguage::CharacterStateEvolutionAlongTree<treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution< AbstractDiscreteCharacterData >() {
     
 }
 
@@ -98,7 +99,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     if ( dt == "DNA" ) 
     {
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, 4, true, n);
+        RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -151,7 +152,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     } 
     else if ( dt == "RNA" )
     {
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType>(tau, 4, true, n);
+        RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );

@@ -18,6 +18,7 @@
 #ifndef RlModelVariableWrapper_H
 #define RlModelVariableWrapper_H
 
+#include "MethodTable.h"
 #include "RbLanguageObject.h"
 #include "TypedDagNode.h"
 
@@ -62,6 +63,11 @@ namespace RevLanguage {
         RlModelVariableWrapper(const RlModelVariableWrapper &v);
         
         RevBayesCore::TypedDagNode<rbType>*     value;
+        mutable MethodTable                     methods;
+    
+    private:
+        
+        void                                    initMethods(void);
     };
     
 }
@@ -72,38 +78,45 @@ namespace RevLanguage {
 #include "Cloner.h"
 #include "ConstantNode.h"
 #include "MemberFunction.h"
-#include "MethodTable.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLanguageObject(), value( NULL ) {
+RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLanguageObject(), value( NULL ), methods() {
+    
+//    initMethods();
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(rbType *v) : RbLanguageObject(), value( new RevBayesCore::ConstantNode<rbType>("",v) ) {
+RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(rbType *v) : RbLanguageObject(), value( new RevBayesCore::ConstantNode<rbType>("",v) ), methods() {
+    
+//    initMethods();
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(RevBayesCore::TypedDagNode<rbType> *v) : RbLanguageObject(), value( v ) {
+RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(RevBayesCore::TypedDagNode<rbType> *v) : RbLanguageObject(), value( v ), methods() {
+    
+//    initMethods();
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(const RlModelVariableWrapper &v) : RbLanguageObject(), value( NULL ) {
+RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(const RlModelVariableWrapper &v) : RbLanguageObject(), value( NULL ), methods() {
     
     if ( v.value != NULL ) 
     {
         value = v.value->clone();
     }
+    
+//    initMethods();
     
 }
 
@@ -237,11 +250,15 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::getM
 template <typename rbType>
 const RevLanguage::MethodTable&  RevLanguage::RlModelVariableWrapper<rbType>::getMethods(void) const {
     
-    static MethodTable methods      = MethodTable();
-    static bool        methodsSet   = false;
+//    static MethodTable methods      = MethodTable();
+    // Sebastian: Static variables don't work because derived classes, e.g. PosReal from Real
+    // require different types but only one static variable will be set for both classes!!!
+//    static bool        methodsSet   = false;
     
-    if ( methodsSet == false ) 
-    {
+//    if ( methodsSet == false ) 
+//    {
+    
+    methods = MethodTable();
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
         methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
@@ -255,8 +272,8 @@ const RevLanguage::MethodTable&  RevLanguage::RlModelVariableWrapper<rbType>::ge
         
         // necessary call for proper inheritance
         methods.setParentTable( &RbLanguageObject::getMethods() );
-        methodsSet = true;
-    }
+//        methodsSet = true;
+//    }
     
     return methods;
 }
@@ -307,6 +324,27 @@ bool RevLanguage::RlModelVariableWrapper<rbType>::hasMember(std::string const &n
 //    }
     
     return false;
+}
+
+
+template <typename rbType>
+void RevLanguage::RlModelVariableWrapper<rbType>::initMethods( void )
+{
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
+    methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
+    
+    ArgumentRules* setValueArgRules = new ArgumentRules();
+    setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
+    methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
+    
+    ArgumentRules* redrawArgRules = new ArgumentRules();
+    methods.addFunction("redraw", new MemberFunction( RlUtils::Void, redrawArgRules) );
+    
+    // necessary call for proper inheritance
+    methods.setParentTable( &RbLanguageObject::getMethods() );
+
 }
 
 
