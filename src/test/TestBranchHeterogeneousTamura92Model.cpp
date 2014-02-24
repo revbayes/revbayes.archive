@@ -190,7 +190,7 @@ bool TestBranchHeterogeneousTamura92Model::run( void ) {
     /* instantiate the model */
     Model myModel = Model(qs[0]);
     
-    monitors.push_back( new ModelMonitor( 10, "TestBranchHeterogeneousTamura92Model.p", "\t", true, true, true ) );
+    monitors.push_back( new ModelMonitor( 10, "TestBranchHeterogeneousTamura92Model.p", "\t" ) );
     
     
     /* instiate and run the MCMC */
