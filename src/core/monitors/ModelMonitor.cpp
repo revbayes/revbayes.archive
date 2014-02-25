@@ -244,14 +244,10 @@ void ModelMonitor::resetDagNodes( void )
         const std::vector<DagNode*> &n = model->getDagNodes();
         for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
         {
-            if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" ) || ( (*it)->isStochastic() && !(*it)->isClamped() ) )
+            // only simple numeric variable can be monitored (i.e. only integer and real numbers)
+            if ( (*it)->isSimpleNumeric() )
             {
-                bool tree = dynamic_cast< StochasticNode<BranchLengthTree>* >(*it) != NULL || dynamic_cast< StochasticNode<TimeTree>* >(*it) != NULL;
-                if ( tree ) 
-                {
-                    // nothing to do (at least not yet)
-                }
-                else 
+                if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" ) || ( (*it)->isStochastic() && !(*it)->isClamped() ) )
                 {
                     nodes.push_back( *it );
                 }

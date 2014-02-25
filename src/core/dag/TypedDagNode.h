@@ -41,23 +41,30 @@ namespace RevBayesCore {
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
     
         // member functions
-        virtual void                                        printName(std::ostream &o, const std::string &sep) const;                                          //!< Monitor/Print this variable 
-        virtual void                                        printValue(std::ostream &o, const std::string &sep) const;                                          //!< Monitor/Print this variable 
+        virtual bool                                        isSimpleNumeric(void) const;                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
+        virtual void                                        printName(std::ostream &o, const std::string &sep) const;                   //!< Monitor/Print this variable 
+        virtual void                                        printValue(std::ostream &o, const std::string &sep) const;                  //!< Monitor/Print this variable 
         virtual void                                        printValue(std::ostream &o, size_t i) const;                                //!< Monitor/Print the i-th element of this variable 
 
         // getters and setters
         virtual valueType&                                  getValue(void) = 0;
         virtual const valueType&                            getValue(void) const = 0;
 
-        // @deprecated:
-//        virtual valueType*                                  getValuePtr(void);
-
+        
     };
+    
+    
+    template<>
+    inline bool                                  TypedDagNode<int>::isSimpleNumeric(void) const { return true; } 
+    
+    template<>
+    inline bool                                  TypedDagNode<double>::isSimpleNumeric(void) const { return true; }
     
 }
 
 #include "RbUtil.h"
 #include <vector>
+
 
 template<class valueType>
 RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const std::string &n) : DagNode( n ) {
@@ -74,6 +81,26 @@ RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const TypedDagNode<valueType
 template<class valueType>
 RevBayesCore::TypedDagNode<valueType>::~TypedDagNode( void ) {
 }
+
+
+
+template<class valueType>
+bool RevBayesCore::TypedDagNode<valueType>::isSimpleNumeric( void ) const
+{
+    return false;
+}
+
+//template<>
+//bool RevBayesCore::TypedDagNode<int>::isSimpleNumeric( void ) const
+//{
+//    return true;
+//}
+//
+//template<>
+//bool RevBayesCore::TypedDagNode<double>::isSimpleNumeric( void ) const
+//{
+//    return true;
+//}
 
 
 template<class valueType>

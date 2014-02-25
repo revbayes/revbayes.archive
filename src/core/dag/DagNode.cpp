@@ -175,6 +175,18 @@ bool DagNode::isConstant( void ) const {
 }
 
 
+/**
+ * Is this variable a simple numeric variable?
+ * This is asked for example by the model monitor that only wants to monitor simple
+ * numeric variable because all others (e.g. trees and vectors/matrices) cannot be read
+ * by Tracer. 
+ */
+bool DagNode::isSimpleNumeric( void ) const 
+{
+    return false;
+}
+
+
 bool DagNode::isStochastic( void ) const {
     return false;
 }

@@ -109,7 +109,8 @@ namespace RevBayesCore {
         // flags
         bool                                                                usingAmbiguousCharacters;
         bool                                                                treatUnknownAsGap;
-
+        bool                                                                treatAmbiguousAsGaps;
+        
     private:
         // private methods
         void                                                                compress(void);
@@ -148,7 +149,8 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
     dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
     usingAmbiguousCharacters( true ),
-    treatUnknownAsGap( true )
+    treatUnknownAsGap( true ),
+    treatAmbiguousAsGaps( true )
 {
     
     // add the paramoms to the parents list
@@ -181,7 +183,8 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     changedNodes( n.changedNodes ),
     dirtyNodes( n.dirtyNodes ),
     usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
-    treatUnknownAsGap( n.treatUnknownAsGap )
+    treatUnknownAsGap( n.treatUnknownAsGap ),
+    treatAmbiguousAsGaps( n.treatAmbiguousAsGaps )
 {
     // parameters are automatically copied
     
@@ -227,8 +230,6 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 {
     
 //    compressed = false;
-    
-    bool treatAmbiguousAsGaps = false;
     
     charMatrix.clear();
     gapMatrix.clear();

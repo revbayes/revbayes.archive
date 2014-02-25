@@ -65,6 +65,7 @@ namespace RevBayesCore {
         const std::set<size_t>&                                     getTouchedElementIndices(void) const;                                           //!< Get the indices of the touches elements. If the set is empty, then all elements might have changed.
         virtual bool                                                isClamped(void) const;                                                          //!< Is this node clamped? Only stochastic nodes might be clamped.
         virtual bool                                                isConstant(void) const;                                                         //!< Is this DAG node constant?
+        virtual bool                                                isSimpleNumeric(void) const;                                                    //!< Is this variable a simple numeric variable? Currently only integer and real number are.
         virtual bool                                                isStochastic(void) const;                                                       //!< Is this DAG node stochastic?
         void                                                        keep(void);
         virtual void                                                keepAffected(void);                                                             //!< Keep value of affected nodes
