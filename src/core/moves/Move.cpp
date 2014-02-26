@@ -2,6 +2,7 @@
 #include "DagNode.h"
 #include "RbException.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
@@ -131,7 +132,7 @@ void Move::printSummary( std::ostream &o ) const {
     
     // print the name
     const std::string &n = getMoveName();
-    size_t spaces = 40 - n.length();
+    size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
     o << n;
     for (size_t i = 0; i < spaces; ++i) {
         o << " ";
@@ -140,7 +141,7 @@ void Move::printSummary( std::ostream &o ) const {
    
     // print the DagNode name
     const std::string &dn_name = (*nodes.begin())->getName();
-    spaces = 10 - dn_name.length();
+    spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
     o << dn_name;
     for (size_t i = 0; i < spaces; ++i) {
         o << " ";

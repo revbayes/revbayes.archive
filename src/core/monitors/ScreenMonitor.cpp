@@ -124,30 +124,38 @@ void ScreenMonitor::monitor(long gen) {
 
 
 /** Print header for monitored values */
-void ScreenMonitor::printHeader() {
+void ScreenMonitor::printHeader() 
+{
+    
+    // print empty line first
+    std::cout << std::endl;
     
     // print one column for the iteration number
     std::cout << "Iteration";
     
-    if ( posterior ) {
+    if ( posterior ) 
+    {
         // add a separator before every new element
         std::cout << separator;
         std::cout << "Posterior";
     }
     
-    if ( likelihood ) {
+    if ( likelihood ) 
+    {
         // add a separator before every new element
         std::cout << separator;
         std::cout << "Likelihood";
     }
     
-    if ( prior ) {
+    if ( prior ) 
+    {
         // add a separator before every new element
         std::cout << separator;
         std::cout << "Prior";
     }
     
-    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) 
+    {
         // add a separator before every new element
         std::cout << separator;
         
@@ -155,9 +163,13 @@ void ScreenMonitor::printHeader() {
         
         // print the header
         if (theNode->getName() != "")
+        {
             theNode->printName(std::cout,separator);
+        }
         else
+        {
             std::cout << "Unnamed";
+        }
     }
     
     std::cout << std::endl;

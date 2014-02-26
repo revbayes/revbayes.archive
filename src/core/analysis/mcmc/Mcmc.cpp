@@ -466,9 +466,9 @@ void Mcmc::printOperatorSummary(void) const {
     
     
     // printing the moves summary
-    
-    std::cerr << "                  Name                  | Param    |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
-    std::cerr << "=====================================================================================================================" << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
+    std::cerr << "===============================================================================================================================" << std::endl;
     for (std::vector<Move*>::const_iterator it = moves.begin(); it != moves.end(); ++it) 
     {
         (*it)->printSummary(std::cerr);

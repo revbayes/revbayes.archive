@@ -18,7 +18,13 @@ using namespace RevBayesCore;
  * \param[in]    t    Should this move be tuned.
  * \param[in]    w    Weight of the proposal.
  */
-VectorScaleMove::VectorScaleMove( const std::vector<StochasticNode< double > *> &n, double l, bool t, double w ) : Move( n[0], w, t ), changed(false), variable( n ), storedValue( variable.size() ), lambda( l ), length( variable.size() ) {
+VectorScaleMove::VectorScaleMove( const std::vector<StochasticNode< double > *> &n, double l, bool t, double w ) : Move( n[0], w, t ), 
+    changed( false ), 
+    lambda( l ), 
+    storedValue( std::vector<double>( n.size(), 0.0) ), 
+    variable( n ), 
+    length( n.size() ) 
+{
     
     for (std::vector< StochasticNode<double> *>::const_iterator it = n.begin(); it != n.end(); it++)
         nodes.insert( *it );
