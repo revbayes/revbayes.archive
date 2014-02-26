@@ -21,12 +21,6 @@ LognormalDistribution::LognormalDistribution() : PositiveContinuousDistribution(
 }
 
 
-LognormalDistribution::~LognormalDistribution() {
-    
-}
-
-
-
 LognormalDistribution* LognormalDistribution::clone( void ) const {
     return new LognormalDistribution(*this);
 }
@@ -36,7 +30,8 @@ RevBayesCore::LognormalDistribution* LognormalDistribution::createDistribution( 
     // get the parameters
     RevBayesCore::TypedDagNode<double>* m   = static_cast<const Real &>( mean->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<double>* s   = static_cast<const RealPos &>( sd->getValue() ).getValueNode();
-    RevBayesCore::LognormalDistribution* d  = new RevBayesCore::LognormalDistribution(m, s);
+    RevBayesCore::TypedDagNode<double>* o   = static_cast<const RealPos &>( offset->getValue() ).getValueNode();
+    RevBayesCore::LognormalDistribution* d  = new RevBayesCore::LognormalDistribution(m, s, o);
     
     return d;
 }
@@ -65,17 +60,19 @@ const TypeSpec& LognormalDistribution::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& LognormalDistribution::getMemberRules(void) const {
     
-    static MemberRules distUnifMemberRules;
+    static MemberRules distLnormMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        distUnifMemberRules.push_back( new ArgumentRule( "mean", true, Real::getClassTypeSpec(), new Real(0.0) ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "sd"  , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+    if ( !rulesSet ) 
+    {
+        distLnormMemberRules.push_back( new ArgumentRule( "mean",   true, Real::getClassTypeSpec(),    new Real(0.0) ) );
+        distLnormMemberRules.push_back( new ArgumentRule( "sd"  ,   true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        distLnormMemberRules.push_back( new ArgumentRule( "offset", true, RealPos::getClassTypeSpec(), new Real(0.0) ) );
         
         rulesSet = true;
     }
     
-    return distUnifMemberRules;
+    return distLnormMemberRules;
 }
 
 
@@ -102,6 +99,12 @@ void LognormalDistribution::printValue(std::ostream& o) const {
     } else {
         o << "?";
     }
+    o << ", offset=";
+    if ( offset != NULL ) {
+        o << offset->getName();
+    } else {
+        o << "?";
+    }
     o << ")";
 }
 
@@ -109,13 +112,20 @@ void LognormalDistribution::printValue(std::ostream& o) const {
 /** Set a member variable */
 void LognormalDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "mean" ) {
+    if ( name == "mean" ) 
+    {
         mean = var;
     }
-    else if ( name == "sd" ) {
+    else if ( name == "sd" ) 
+    {
         sd = var;
     }
-    else {
-        Distribution::setConstMemberVariable(name, var);
+    else if ( name == "offset" )
+    {
+        offset = var;
+    }
+    else 
+    {
+        PositiveContinuousDistribution::setConstMemberVariable(name, var);
     }
 }

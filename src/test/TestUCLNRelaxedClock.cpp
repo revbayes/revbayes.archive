@@ -109,7 +109,7 @@ bool TestUCLNRelaxedClock::run( void ) {
         br_name << "br(" << i << ")";
 //		ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new LognormalDistribution(muValLN, sigLN));
 //		ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new GammaDistribution(a, b));
-		ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new LognormalDistribution(a, b));
+		ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new LognormalDistribution(a, b, new ConstantNode<double>("offset", new double(0.0) )));
 		branchRates.push_back( tmp_branch_rate );
 		branchRates_nonConst.push_back( tmp_branch_rate );
 	}

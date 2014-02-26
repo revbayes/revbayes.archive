@@ -27,7 +27,6 @@ namespace RevLanguage {
         
     public:
         LognormalDistribution( void );
-        virtual ~LognormalDistribution();
         
         // Basic utility functions
         LognormalDistribution*                          clone(void) const;                                                              //!< Clone the object
@@ -47,8 +46,10 @@ namespace RevLanguage {
         
         
     private:
+        
         RbPtr<const Variable>                           mean;
         RbPtr<const Variable>                           sd;
+        RbPtr<const Variable>                           offset;
         
     };
     

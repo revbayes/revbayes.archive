@@ -57,6 +57,7 @@
 #include "RlLognormalDistribution.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
+#include "RlOffsetLognormalDistribution.h"
 #include "RlOneOverXDistribution.h"
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
@@ -91,6 +92,7 @@
 
 /* Tree Proposals */
 #include "RlFixedNodeheightPruneRegraft.h"
+#include "RlNarrowExchange.h"
 #include "RlNearestNeighborInterchange.h"
 #include "RlNearestNeighborInterchange_nonClock.h"
 #include "RlNodeTimeSlideUniform.h"
@@ -284,6 +286,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Tree Proposals */
         addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );
+        addTypeWithConstructor("mNarrow",               new NarrowExchange() );
         addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange() );
         addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange_nonClock() );
         addTypeWithConstructor("mNodeTimeSlideUniform", new NodeTimeSlideUniform() );
@@ -323,8 +326,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // exponential distribution
         addDistribution( "exponential", new ExponentialDistribution() );
         
-        // normal distribution
+        // lognormal distribution
         addDistribution( "lnorm", new LognormalDistribution() );
+        addDistribution( "lnorm", new OffsetLognormalDistribution() );
         
         // normal distribution
         addDistribution( "norm", new NormalDistribution() );
@@ -454,6 +458,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("plnorm", new DistributionFunctionCdf( new LognormalDistribution() ) );
         addFunction("qlnorm", new DistributionFunctionQuantile( new LognormalDistribution() ) );
         addFunction("rlnorm", new DistributionFunctionRv<RealPos>( new LognormalDistribution() ) );
+        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new OffsetLognormalDistribution() ) );
+        addFunction("plnorm", new DistributionFunctionCdf( new OffsetLognormalDistribution() ) );
+        addFunction("qlnorm", new DistributionFunctionQuantile( new OffsetLognormalDistribution() ) );
+        addFunction("rlnorm", new DistributionFunctionRv<Real>( new OffsetLognormalDistribution() ) );
         
         // normal distribution
         addFunction("dnorm", new DistributionFunctionPdf<Real>( new NormalDistribution() ) );

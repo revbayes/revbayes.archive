@@ -242,7 +242,7 @@ bool TestAdmixtureGraph::run(void) {
         //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new ExponentialDistribution(branchRateA) );
         //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new InverseGammaDistribution(branchRateA, branchRateB));
         //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode( br_name.str(), new GammaDistribution(branchRateA, branchRateB));
-        ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode(br_name.str(), new LognormalDistribution(branchRateC, branchRateD));
+        ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode(br_name.str(), new LognormalDistribution(branchRateC, branchRateD, new ConstantNode<double>("offset", new double(0.0) ) ) );
         //ContinuousStochasticNode* tmp_branch_rate = new ContinuousStochasticNode(br_name.str(), new UniformDistribution(branchRateC, branchRateE));
         
 		if (!useBranchRates)
