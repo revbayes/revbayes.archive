@@ -88,3 +88,63 @@ void NexusWriter::writeNexusBlock(const AbstractDiscreteCharacterData &data)
     outStream << std::endl;
     
 }
+
+
+/**
+ * This method simply writes a taxon-block into a file in Nexus format.
+ *
+ * \param[in]   clade        The clade object from which the taxa are taken.
+ */
+void NexusWriter::writeNexusBlock(const Clade &c) 
+{
+    
+    const std::vector<std::string>& labels = c.getTaxonNames();
+    
+    outStream << std::endl;
+    outStream << "\tBegin taxa;" << std::endl;
+    outStream << "\tDimensions ntax=" << c.size() << ";" << std::endl;;
+    outStream << "\tTaxlabels" << std::endl;
+    for (std::vector<std::string>::const_iterator it = labels.begin(); it != labels.end(); ++it) {
+        outStream << "\t\t" << *it << std::endl;
+    }
+    outStream << "\t\t;" << std::endl;
+    outStream << "End;" << std::endl;
+    
+}
+
+
+/**
+ * This method simply writes a tree into a file in Nexus format.
+ *
+ * \param[in]   tree        The tree object which is written out.
+ */
+void NexusWriter::writeNexusBlock(const Tree &tree) 
+{
+    
+    outStream << std::endl; 
+    outStream << "Begin trees;" << std::endl;
+    outStream << "tree TREE1 = [&R]" << tree << ";" << std::endl;
+    outStream << "End;" << std::endl;
+    
+    
+}
+
+
+/**
+ * This method simply writes a tree or multiple trees into a file in Nexus format.
+ *
+ * \param[in]   trees        The trees which are written out.
+ */
+void NexusWriter::writeNexusBlock(const std::vector<TimeTree> &trees) 
+{
+    
+    outStream << std::endl; 
+    outStream << "Begin trees;" << std::endl;
+    for (size_t i = 0; i < trees.size(); ++i)
+    {
+        outStream << "tree TREE" << (i+1) << " = [&R]" << trees[i] << ";" << std::endl;
+    }
+    outStream << "End;" << std::endl;
+
+    
+}

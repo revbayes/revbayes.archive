@@ -2,6 +2,7 @@
 #define NexusWriter_H
 
 #include "AbstractDiscreteCharacterData.h"
+#include "TimeTree.h"
 
 #include <fstream>
 #include <string>
@@ -24,9 +25,12 @@ namespace RevBayesCore {
         NexusWriter(const std::string& fn);
         
         // public methods
-        void                    closeStream(void);                                                         //!< Close the file stream
-        void                    openStream(void);                                                          //!< Open the file stream
-        void                    writeNexusBlock(const AbstractDiscreteCharacterData &d);                   //!< Write a nexus block with a character data
+        void                    closeStream(void);                                                          //!< Close the file stream
+        void                    openStream(void);                                                           //!< Open the file stream
+        void                    writeNexusBlock(const AbstractDiscreteCharacterData &d);                    //!< Write a nexus block with a character data
+        void                    writeNexusBlock(const Clade &c);                                             //!< Write a nexus block with tree(s)
+        void                    writeNexusBlock(const Tree &t);                                             //!< Write a nexus block with tree(s)
+        void                    writeNexusBlock(const std::vector<TimeTree> &t);                                             //!< Write a nexus block with tree(s)
         
     private:
     
