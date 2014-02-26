@@ -73,7 +73,7 @@ void Clade::constructInternalObject( void ) {
     {
         n.push_back( static_cast<const RlString &>( (*it)->getValue() ).getValue() );
     }
-    value = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n));
+    value = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n,0.0));
     
 }
 

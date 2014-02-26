@@ -30,19 +30,41 @@
 using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-TopologyNode::TopologyNode(int indx) : name(""), index(indx), rootNode( true ), tipNode( true ), interiorNode( false ), newick(""), newickNeedsRefreshing( true ), parent( NULL ), topology( NULL ) {
+TopologyNode::TopologyNode(int indx) : 
+    name(""), 
+    index(indx), 
+    rootNode( true ), 
+    tipNode( true ), 
+    interiorNode( false ), 
+    newick(""), 
+    newickNeedsRefreshing( true ), 
+    parent( NULL ), 
+    topology( NULL ) 
+{
     
 }
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx), rootNode( true ), tipNode( true ), interiorNode( false ), newick(""), newickNeedsRefreshing( true ), parent( NULL ), topology( NULL ) {
+TopologyNode::TopologyNode(const std::string& n, int indx) : 
+    name(n), 
+    index(indx), 
+    rootNode( true ), 
+    tipNode( true ), 
+    interiorNode( false ), 
+    newick(""), 
+    newickNeedsRefreshing( true ), 
+    parent( NULL ), 
+    topology( NULL ) 
+{
     
 }
 
 
 /** Copy constructor. We use a shallow copy. */
-TopologyNode::TopologyNode(const TopologyNode &n) : topology( NULL ) {
+TopologyNode::TopologyNode(const TopologyNode &n) : 
+    topology( NULL ) 
+{
     
     // copy the members
     name                    = n.name;
@@ -57,7 +79,8 @@ TopologyNode::TopologyNode(const TopologyNode &n) : topology( NULL ) {
     branchComments          = n.branchComments;
     
     // copy the children
-    for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
+    for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) 
+    {
         TopologyNode* theNode = *it;
         TopologyNode* theClone = theNode->clone();
         children.push_back( theClone );
@@ -69,7 +92,8 @@ TopologyNode::TopologyNode(const TopologyNode &n) : topology( NULL ) {
 
 
 /** Destructor */
-TopologyNode::~TopologyNode(void) {
+TopologyNode::~TopologyNode(void) 
+{
     
     // we do not own the parent so we do not delete it
     
@@ -79,12 +103,14 @@ TopologyNode::~TopologyNode(void) {
     // make sure that I was removed from my parent
     if (parent != NULL)
         parent->removeChild(this);
+    
 }
 
 
 TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
     
-    if (this == &n) {
+    if (this == &n) 
+    {
         
         removeAllChildren();
         
@@ -103,7 +129,8 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
         parent          = n.parent;
         
         // copy the children
-        for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
+        for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) 
+        {
             children.push_back( (*it)->clone() );
         }
         
@@ -113,6 +140,26 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
     }
     
     return *this;
+}
+
+
+
+void TopologyNode::addBranchParameter(std::string const &n, const std::vector<double> &p, bool internalOnly) {
+    
+    if ( !internalOnly || !isTip()  ) 
+    {
+        std::stringstream o;
+        o << n << "=" << p[index];
+        std::string comment = o.str();
+        branchComments.push_back( comment );
+        
+        newickNeedsRefreshing = true;
+        
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it) 
+        {
+            (*it)->addBranchParameter(n, p, internalOnly);
+        }
+    }
 }
 
 
@@ -137,6 +184,19 @@ void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp) {
 }
 
 
+void TopologyNode::addNodeParameter(std::string const &n, double p) 
+{
+    
+    std::stringstream o;
+    o << n << "=" << p;
+    std::string comment = o.str();
+    nodeComments.push_back( comment );
+        
+    newickNeedsRefreshing = true;
+        
+}
+
+
 void TopologyNode::addParameter(std::string const &n, const std::vector<double> &p, bool internalOnly) {
 
     if ( !internalOnly || !isTip()  ) {
@@ -154,27 +214,9 @@ void TopologyNode::addParameter(std::string const &n, const std::vector<double> 
 }
 
 
-void TopologyNode::addBranchParameter(std::string const &n, const std::vector<double> &p, bool internalOnly) {
-    
-    if ( !internalOnly || !isTip()  ) 
-    {
-        std::stringstream o;
-        o << n << "=" << p[index];
-        std::string comment = o.str();
-        branchComments.push_back( comment );
-        
-        newickNeedsRefreshing = true;
-        
-        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it) 
-        {
-            (*it)->addBranchParameter(n, p, internalOnly);
-        }
-    }
-}
-
-
 /* Build newick string */
 std::string TopologyNode::buildNewickString( void ) {
+    
     // create the newick string
     std::stringstream o;
     
@@ -548,7 +590,8 @@ size_t TopologyNode::getIndex( void ) const {
 }
 
 
-const std::string& TopologyNode::getName( void ) const {
+const std::string& TopologyNode::getName( void ) const 
+{
     
     return name;
 }

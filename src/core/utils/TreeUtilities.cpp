@@ -181,24 +181,32 @@ void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, doub
 
 
 
-std::string RevBayesCore::TreeUtilities::uniqueNewickTopology(const Tree &t) {
+std::string RevBayesCore::TreeUtilities::uniqueNewickTopology(const Tree &t) 
+{
     return uniqueNewickTopologyRecursive( t.getRoot() );
 }
 
 
-std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const TopologyNode &n) {
+std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const TopologyNode &n) 
+{
     // check whether this is an internal node
-    if ( n.isTip() ) {
+    if ( n.isTip() ) 
+    {
         return n.getName();
-    } else {
+    } 
+    else 
+    {
         std::string newick = "(";
         std::vector<std::string> children;
-        for (size_t i = 0; i < n.getNumberOfChildren(); ++i) {
+        for (size_t i = 0; i < n.getNumberOfChildren(); ++i) 
+        {
             children.push_back( uniqueNewickTopologyRecursive(n.getChild( i ) ) );
         }
         sort(children.begin(), children.end());
-        for (std::vector<std::string>::iterator it = children.begin(); it != children.end(); ++it) {
-            if ( it != children.begin() ) {
+        for (std::vector<std::string>::iterator it = children.begin(); it != children.end(); ++it) 
+        {
+            if ( it != children.begin() ) 
+            {
                 newick += ",";
             }
             newick += *it;
