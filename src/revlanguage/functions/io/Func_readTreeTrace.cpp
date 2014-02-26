@@ -37,39 +37,28 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const {
 RbLanguageObject* Func_readTreeTrace::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getValue() );
+    const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getValue() ).getValue();
     const std::string&  treetype = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
     
     // check that the file/path name has been correctly specified
-    RevBayesCore::RbFileManager myFileManager( fn.getValue() );
-    if ( (myFileManager.isFileNamePresent() == false && myFileManager.testDirectory() == false) ||
-        (myFileManager.isFileNamePresent() == true  && (myFileManager.testFile() == false || myFileManager.testDirectory() == false)) ){
+    RevBayesCore::RbFileManager myFileManager( fn );
+    
+    if ( !myFileManager.testFile() || !myFileManager.testDirectory() )
+    {
         std::string errorStr = "";
         myFileManager.formatError(errorStr);
         throw RbException(errorStr);
     }
-    
-    // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = myFileManager.isDirectory( fn.getValue() );
-    if (readingDirectory == true)
-        std::cerr << "Recursively reading the contents of a directory" << std::endl;
-    else
-        std::cerr << "Attempting to read the contents of file \"" << myFileManager.getFileName() << "\"" << std::endl;
-    
+        
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
-    if (readingDirectory == true) {
-        myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    }
-    else {
-#       if defined (WIN32)
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
-#       else
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-#       endif
-    }
-    if (readingDirectory == true) {
-        std::cerr << "Found " << vectorOfFileNames.size() << " files in directory" << std::endl;
+    if ( myFileManager.isFile() ) 
+    {
+        vectorOfFileNames.push_back( myFileManager.getFileName() );
+    } 
+    else 
+    {
+        myFileManager.setStringWithNamesOfFilesInDirectory( vectorOfFileNames );
     }
     
     RbLanguageObject *rv;

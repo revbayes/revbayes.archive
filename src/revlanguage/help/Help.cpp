@@ -294,7 +294,7 @@ void Help::initializeHelp()
 
     // find the path to the directory containing the help files
     RevBayesCore::RbFileManager fMngr = RevBayesCore::RbFileManager();
-    pathToHelpDir = fMngr.getCurDirectory();
+    pathToHelpDir = fMngr.getCurrentDirectory();
 
     pathToHelpDir += +"/../../help/";
     fMngr.setFilePath(pathToHelpDir);

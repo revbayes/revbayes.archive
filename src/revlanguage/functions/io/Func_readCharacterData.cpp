@@ -41,45 +41,22 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
-    if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
+    if ( !myFileManager.testFile() || !myFileManager.testDirectory() )
     {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
         throw RbException("Could not find file or path with name \"" + fn.getValue() + "\"");
     }
-    
-    // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = false;
-    if ( myFileManager.getFilePath() != "" && myFileManager.getFileName() == "")
-        readingDirectory = true;
-    if (readingDirectory == true)
-        RBOUT("Recursively reading the contents of a directory");
-    else
-        RBOUT("Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"");
-    
+        
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
-    if (readingDirectory == true)
+    if ( myFileManager.isDirectory() )
+    {
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
+    }
     else 
     {
-        std::string filepath = myFileManager.getFilePath();
-        if ( filepath != "" )
-        {
-#           if defined (WIN32)
-            filepath += "\\";
-#           else
-            filepath += "/";
-#           endif
-        }
-        filepath += myFileManager.getFileName();
-        vectorOfFileNames.push_back( filepath );
-    }
-    if (readingDirectory == true)
-    {
-        std::stringstream o1;
-        o1 << "Found " << vectorOfFileNames.size() << " files in directory";
-        RBOUT(o1.str());
+        vectorOfFileNames.push_back( myFileManager.getFullFileName() );
     }
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
@@ -163,7 +140,7 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     
     
     // print summary of results of file reading to the user
-    if (readingDirectory == true)
+    if (myFileManager.isDirectory() == true)
     {
         std::stringstream o2;
         if ( numFilesRead == 0 )

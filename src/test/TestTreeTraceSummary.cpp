@@ -31,7 +31,7 @@ TreeTrace<BranchLengthTree> TestTreeTraceSummary::readTreeTrace(const std::strin
     }
     
     // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = myFileManager.isDirectory(fname);
+    bool readingDirectory = myFileManager.isDirectory();
     if (readingDirectory == true)
         std::cerr << "Recursively reading the contents of a directory" << std::endl;
     else
