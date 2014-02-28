@@ -246,11 +246,8 @@ void ModelMonitor::resetDagNodes( void )
         std::set<std::string> varNames;
         
         const std::vector<DagNode*> &n = model->getDagNodes();
-        size_t i = 0;
         for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
         {
-            std::cerr << "Trying to add variable with name '" << (*it)->getName() << "' from position " << i << " ." << std::endl;
-            i++;
             // only simple numeric variable can be monitored (i.e. only integer and real numbers)
             if ( (*it)->isSimpleNumeric() && !(*it)->isClamped())
             {
