@@ -241,15 +241,30 @@ void ModelMonitor::resetDagNodes( void )
     
     if ( model != NULL )
     {
+        // we only want to have each nodes once
+        // this should by default happen by here we check again
+        std::set<std::string> varNames;
+        
         const std::vector<DagNode*> &n = model->getDagNodes();
+        size_t i = 0;
         for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
         {
+            std::cerr << "Trying to add variable with name '" << (*it)->getName() << "' from position " << i << " ." << std::endl;
+            i++;
             // only simple numeric variable can be monitored (i.e. only integer and real numbers)
-            if ( (*it)->isSimpleNumeric() )
+            if ( (*it)->isSimpleNumeric() && !(*it)->isClamped())
             {
                 if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" ) || ( (*it)->isStochastic() && !(*it)->isClamped() ) )
                 {
-                    nodes.push_back( *it );
+                    if ( varNames.find( (*it)->getName() ) == varNames.end() )
+                    {
+                        nodes.push_back( *it );
+                        varNames.insert( (*it)->getName() );
+                    }
+                    else
+                    {
+                        std::cerr << "Trying to add variable with name '" << (*it)->getName() << "' twice." << std::endl;
+                    }
                 }
             }
         

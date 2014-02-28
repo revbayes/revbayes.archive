@@ -257,9 +257,10 @@ namespace RevBayesCore {
                 {
                     Clade parent( n->getParent().getTaxaStringVector(), 0.0 );
                     std::map<std::string, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent.toString()];
+                    double parentCladeFreq = cladeFrequencies[parent.toString()];
                     const std::vector<double>& condCladeSamples = condCladeFreqs[c.toString()];
                     size_t condCladeSampleSize = condCladeSamples.size();
-                    ccp = condCladeSampleSize / cladeFreq;
+                    ccp = condCladeSampleSize / parentCladeFreq;
                     
                     // finally, we compute the mean conditional age
                     for (size_t i = 0; i<condCladeSampleSize; ++i) 

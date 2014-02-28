@@ -44,6 +44,7 @@ DagNode::~DagNode( void ) {
 }
 
 void DagNode::addChild(DagNode *child) const {
+
     children.insert( child );
 }
 
@@ -68,7 +69,8 @@ void DagNode::clearTouchedElementIndices( void ) {
 
 
 /** Clone the graph downstream from this node: clone children */
-DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNodes ) const {
+DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNodes ) const 
+{
     
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );

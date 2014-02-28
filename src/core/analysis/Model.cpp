@@ -14,7 +14,8 @@ using namespace RevBayesCore;
  *
  * \param[in]    source    The DAG node from which the model graph is extracted.
  */
-Model::Model(const DagNode *source) {
+Model::Model(const DagNode *source) 
+{
     
     // add this node to the source nodes and build model graph
     addSourceNode( source );
@@ -30,7 +31,9 @@ Model::Model(const DagNode *source) {
  *
  * \param[in]    sources    The set of DAG nodes from which the model graph is extracted.
  */
-Model::Model(const std::set<const DagNode*> s) : sources() {
+Model::Model(const std::set<const DagNode*> s) : 
+    sources() 
+{
     
     // iterate over all sources
     for (std::set<const DagNode*>::const_iterator it = s.begin(); it != s.end(); ++it) 
@@ -47,7 +50,8 @@ Model::Model(const std::set<const DagNode*> s) : sources() {
  *
  * \param[in]    m    The model object to copy.
  */
-Model::Model(const Model &m) : sources() {
+Model::Model(const Model &m) : sources() 
+{
     
     // delegate to assignment operator
     *this = m;
@@ -58,7 +62,8 @@ Model::Model(const Model &m) : sources() {
  * Destructor.
  * We have created new copied of the DAG nodes so we need to delete these here again.
  */
-Model::~Model( void ) {
+Model::~Model( void ) 
+{
     
     // delete each DAG node from the copied model graph.
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
@@ -83,7 +88,8 @@ Model::~Model( void ) {
  *
  * \param[in]    m    The model object to copy.
  */
-Model& Model::operator=(const Model &x) {
+Model& Model::operator=(const Model &x) 
+{
     
     if ( this != &x )
     {
@@ -120,7 +126,8 @@ Model& Model::operator=(const Model &x) {
  *
  * \param[in]    sourceNode    The new source node.
  */
-void Model::addSourceNode(const DagNode *sourceNode) {
+void Model::addSourceNode(const DagNode *sourceNode) 
+{
     
     // check that the source node is a valid pointer
     if (sourceNode == NULL)
@@ -159,7 +166,8 @@ void Model::addSourceNode(const DagNode *sourceNode) {
  *
  * \return A new copy of the model. 
  */
-Model* Model::clone( void ) const {
+Model* Model::clone( void ) const 
+{
     
     return new Model( *this );
 }
@@ -170,7 +178,8 @@ Model* Model::clone( void ) const {
  *
  * \return Vector of DAG nodes constituting to this model.
  */
-const std::vector<DagNode *>& Model::getDagNodes( void ) const {
+const std::vector<DagNode *>& Model::getDagNodes( void ) const 
+{
     
     return nodes;
 }
@@ -181,7 +190,8 @@ const std::vector<DagNode *>& Model::getDagNodes( void ) const {
  *
  * \return Vector of DAG nodes constituting to this model.
  */
-std::vector<DagNode *>& Model::getDagNodes( void ) {
+std::vector<DagNode *>& Model::getDagNodes( void ) 
+{
     
     return nodes;
 }
@@ -193,7 +203,8 @@ std::vector<DagNode *>& Model::getDagNodes( void ) {
  *
  * \return Map between pointers from original to copied DAG nodes.
  */
-const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const {
+const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const 
+{
     
     return nodesMap;
 }
