@@ -602,6 +602,29 @@ size_t TopologyNode::getNumberOfChildren( void ) const {
     return children.size();
 }
 
+
+/**
+ * Get the number of nodes contained in the subtree starting with this node as the root.
+ * This either returns 1 if this is a tip node (or 0 if we do not count tipes) 
+ * or computes recursively the number of nodes in both children plus one for this node.
+ *
+ * \param[in]   tips       Shall we count tips?
+ * \return                 Subtree size.
+ */
+size_t TopologyNode::getNumberOfNodesInSubtree( bool countTips ) const
+{
+    
+    if ( tipNode ) 
+    {
+        return (countTips ? 1 : 0);
+    }
+    else
+    {
+        return children[0]->getNumberOfNodesInSubtree(countTips) + children[1]->getNumberOfNodesInSubtree(countTips) + 1; 
+    }
+    
+}
+
 TopologyNode& TopologyNode::getParent(void) { 
     
     return *parent; 

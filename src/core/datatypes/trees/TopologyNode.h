@@ -79,6 +79,7 @@ namespace RevBayesCore {
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         const std::string&                          getName() const;                                                                    //!< Get name of node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
+        size_t                                      getNumberOfNodesInSubtree(bool tips) const;                                         //!< Get the number of nodes contained in this subtree.
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::vector<std::string>                    getTaxaStringVector(void) const;

@@ -54,17 +54,14 @@ double TreeScale::performSimpleMove( void ) {
     storedAge = my_age;
     
     // draw new ages and compute the hastings ratio at the same time
-    // Note: the Hastings ratio needs to be there because one of the nodes might be a tip and hence not scaled!
     double u = rng->uniform01();
     double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
     
     // rescale the subtrees
     TreeUtilities::rescaleSubtree(&tau, &node, scalingFactor );
     
-    
-    size_t nNodes = tau.getNumberOfInteriorNodes();
     // compute the Hastings ratio
-    double lnHastingsratio = (log( scalingFactor )) * nNodes;
+    double lnHastingsratio = log( scalingFactor );
     
     return lnHastingsratio;
 }

@@ -153,6 +153,13 @@ double UniformTimeTreeDistribution::computeLnProbability( void ) {
     double lnProb = 0.0;
     double originT = originTime->getValue();
     
+    // we need to check as well that all ages are smaller than the origin
+    // this can simply be checked if the root age is smaller than the origin
+    if ( originT < value->getRoot().getAge() ) 
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     // Take the uniform draws into account
     lnProb = (numTaxa - 2) * log( 1.0 / originT );
 
