@@ -349,9 +349,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
-        
-        // diversity-dependent pure-birth process
-        addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
+
+        // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
+        addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );
         
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );

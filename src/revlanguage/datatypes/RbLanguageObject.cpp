@@ -125,9 +125,9 @@ RbLanguageObject* RbLanguageObject::executeMethod(std::string const &name, const
     }
     else if ( name == "methods" ) 
     {
-        // just print the method names
+        // just print the method names (including inherited methods)
         const MethodTable &m = getMethods();
-        m.printValue(std::cout);
+        m.printValue(std::cout, true);
         
         return NULL;
     }

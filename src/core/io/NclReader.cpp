@@ -965,9 +965,9 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
     if ( myFileManager.getFilePath() != "" && myFileManager.getFileName() == "")
         readingDirectory = true;
     if (readingDirectory == true)
-        std::cout << "Recursively reading the contents of a directory" << std::endl;
+        RBOUT( "Recursively reading the contents of a directory\n" );
     else
-        std::cout << "Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"" << std::endl;
+        RBOUT( "Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"\n" );
     
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
@@ -1202,7 +1202,9 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::vector<st
 /** Reads a single file using NCL */
 std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
-	// check that the file exists
+    RBOUT( "Attempting to read the contents of file \"" + std::string(fileName) + "\"\n" );
+	
+    // check that the file exists
 	if ( !fileExists(fileName) )	
     {
         addWarning("Data file not found");
