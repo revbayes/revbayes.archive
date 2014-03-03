@@ -133,7 +133,7 @@ void Model::addSourceNode(const DagNode *sourceNode)
     if (sourceNode == NULL)
         throw RbException("Cannot instantiate a model with a NULL DAG node.");
     
-    // copy the entire graph connect to the source node
+    // copy the entire graph connected to the source node
     // only if the node is not contained already in the nodesMap will it be copied.
     sourceNode->cloneDAG(nodesMap);
     
