@@ -325,6 +325,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // exponential distribution
         addDistribution( "exponential", new ExponentialDistribution() );
+        addDistribution( "exponential", new OffsetExponentialDistribution() );
         
         // lognormal distribution
         addDistribution( "lnorm", new LognormalDistribution() );
@@ -332,10 +333,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // normal distribution
         addDistribution( "norm", new NormalDistribution() );
-        
-        // offset-exponential distribution
-        addDistribution( "offsetExponential", new OffsetExponentialDistribution() );
-        
+                
         // 1/x distribution
         addDistribution( "oneOverX", new OneOverXDistribution() );
         
