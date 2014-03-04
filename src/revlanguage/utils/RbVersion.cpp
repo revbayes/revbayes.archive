@@ -22,11 +22,11 @@ RbVersion::RbVersion( void ) {
 }
 
 std::string RbVersion::getDate( void ) const {
-    return "3/11/2013";
+    return "2014";
 }
 
 std::string RbVersion::getVersion( void ) const {
-    return "Version 1.0.0 beta";
+    return "1.0.0 beta";
 }
 
 
@@ -34,13 +34,20 @@ std::string RbVersion::getHeader( void ) const {
     
     std::string header = "";
     header += "\n\n";
-    header += "                             RevBayes\n";
-    header += "                        " + getVersion() + "\n";
-    header += "                            " + getDate() + "\n";
-    header += "                        Revision: 1953\n\n";
-    header += "          An R-like environment for phylogenetic analysis\n";
-    header += "                     using Bayesian inference\n\n";
-    header += "             Released under the GPL license, version 3\n\n";
+    header += "RevBayes version " + getVersion() + " (" + getDate() + ")\n";
+    header += "\n";
+    header += "RevBayes is an R-like environment for statistical computation,\n";
+    header += "primarily intended for Bayesian phylogenetic inference.\n";
+    header += "\n";
+    header += "RevBayes is free software released under the GPL license,\n";
+    header += "version 3. Type 'license()' for details.\n";
+    header += "\n";
+    header += "RevBayes is a collaborative project with many contributors.\n";
+    header += "Type 'contributors()' for more information. Type 'citation()'\n";
+    header += "for information on how to cite RevBayes.\n";
+    header += "\n";
+    header += "For help on using RevBayes, type 'help()'. To quit RevBayes\n";
+    header += "type 'q()'.\n";
     
     return header;
     

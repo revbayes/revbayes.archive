@@ -186,31 +186,42 @@ bool Workspace::existsType( const TypeSpec& name ) const {
 
 
 
-/** Print workspace */
+/** Print the frame content, not the entire environment. */
 void Workspace::printValue(std::ostream& o) const {
 
-    o << "Variable table:" << std::endl;
-    VariableTable::const_iterator it;
-    for ( it = variableTable.begin(); it != variableTable.end(); it++) 
+    if ( variableTable.size() > 0 )
     {
-        o << (*it).first << " = ";
-        (*it).second->printValue( o );
+        o << "Variable table:" << std::endl;
+        VariableTable::const_iterator it;
+        for ( it = variableTable.begin(); it != variableTable.end(); it++)
+        {
+            o << (*it).first << " = ";
+            (*it).second->printValue( o );
+            o << std::endl;
+        }
         o << std::endl;
     }
-    o << std::endl;
 
-    o << "Function table:" << std::endl;
-    functionTable.printValue(o);
-    o << std::endl;
+    std::stringstream s;
+    functionTable.printValue(s, false);
 
-    o << "Type table:" << std::endl;
-    std::map<std::string, RbLanguageObject *>::const_iterator i;
-    for (i=typeTable.begin(); i!=typeTable.end(); i++) 
+    if (s.str().size() > 0 )
     {
-        if ( (*i).second != NULL )
-            o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;
-        else
-            o << (*i).first << " = " << "unknown class vector" << std::endl;
+        o << "Function table:" << std::endl;
+        o << s.str() << std::endl;
+    }
+
+    if ( typeTable.size() > 0 )
+    {
+        o << "Type table:" << std::endl;
+        std::map<std::string, RbLanguageObject *>::const_iterator i;
+        for (i=typeTable.begin(); i!=typeTable.end(); i++)
+        {
+            if ( (*i).second != NULL )
+                o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;
+            else
+                o << (*i).first << " = " << "unknown class vector" << std::endl;
+        }
     }
 }
 

@@ -51,21 +51,21 @@ RbLanguageObject* Func_ls::execute( void ) {
     
     RBOUT( "User workspace:" );
     RBOUT( "===============" );
-    RBOUT( "" );
+    RBOUT( "\n" );
     
     Workspace::userWorkspace().printValue( std::cout );
-    RBOUT( "" );
+    RBOUT( "\n" );
     
     if ( printAll == true ) {
         
         RBOUT( "Global workspace:" );
-        RBOUT( "===============" );
-        RBOUT( "" );
+        RBOUT( "=================" );
+        RBOUT( "\n" );
         
         Workspace::globalWorkspace().printValue( std::cout );
-        RBOUT( "" );
+        RBOUT( "\n" );
     }
-    
+
     return NULL;
 }
 
