@@ -18,12 +18,12 @@
 #ifndef RlOffsetExponentialDistribution_H
 #define RlOffsetExponentialDistribution_H
 
-#include "OffsetExponentialDistribution.h"
-#include "RlPositiveContinuousDistribution.h"
+#include "ExponentialDistribution.h"
+#include "RlContinuousDistribution.h"
 
 namespace RevLanguage {
     
-    class OffsetExponentialDistribution :  public PositiveContinuousDistribution {
+    class OffsetExponentialDistribution :  public ContinuousDistribution {
         
     public:
         OffsetExponentialDistribution( void );
@@ -39,7 +39,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::OffsetExponentialDistribution*    createDistribution(void) const;
+        RevBayesCore::ExponentialDistribution*          createDistribution(void) const;
         
     protected:
         

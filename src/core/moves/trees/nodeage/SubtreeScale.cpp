@@ -74,7 +74,7 @@ double SubtreeScale::performSimpleMove( void ) {
     TreeUtilities::rescaleSubtree(&tau, node, scalingFactor );
     
     // compute the Hastings ratio
-    double lnHastingsratio = (nNodes > 1 ? log( scalingFactor ) * (nNodes-1) : 0.0 ); // * nNodes;
+    double lnHastingsratio = (nNodes > 1 ? log( scalingFactor ) * (nNodes-1) : 0.0 );
     
     return lnHastingsratio;
 }

@@ -44,7 +44,8 @@ namespace RevLanguage {
         
     private:
         RbPtr<const Variable>                           lambda;                                                                                         //!< The rate of the distribution
-        
+        RbPtr<const Variable>                           offset;
+
     };
     
 }
