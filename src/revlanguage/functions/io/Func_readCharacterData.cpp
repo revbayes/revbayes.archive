@@ -144,24 +144,24 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     {
         std::stringstream o2;
         if ( numFilesRead == 0 )
-            o2 << "Failed to read any files";
+            o2 << "Failed to read any files from directory '" << fn.getValue() << "'";
         else if ( numFilesRead == 1 ) {
             if ( m->size() == 1 )
-                o2 << "Successfully read one file with one character matrix";
+                o2 << "Successfully read one file with one character matrix from directory '" << fn.getValue() << "'";
             else
-                o2 << "Successfully read one file with " << m->size() << " character matrices";
+                o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn.getValue() << "'";
         }
         else
-            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices";
+            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices from directory '" << fn.getValue() << "'";
         RBOUT(o2.str());
         std::set<std::string> myWarnings = reader.getWarnings();
-        if ( vectorOfFileNames.size() - m->size() > 0 && myWarnings.size() > 0 )
+        if ( vectorOfFileNames.size() - numFilesRead > 0 && myWarnings.size() > 0 )
         {
             std::stringstream o3;
-            if (vectorOfFileNames.size() - m->size() == 1)
+            if (vectorOfFileNames.size() - numFilesRead == 1)
                 o3 << "Did not read a file for the following ";
             else
-                o3 << "Did not read " << vectorOfFileNames.size() - m->size() << " files for the following ";
+                o3 << "Did not read " << vectorOfFileNames.size() - numFilesRead << " files for the following ";
             if (myWarnings.size() == 1)
                 o3 << "reason:";
             else
@@ -173,15 +173,21 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     }
     else
     {
-        if (m->size() > 0)
-            RBOUT("Successfully read file");
+        if (m->size() == 1)
+            RBOUT("Successfully read one character matrix from file '" + fn.getValue() + "'");
+        else if (m->size() > 1)
+        {
+            std::stringstream o3;
+            o3 << "Successfully read " << m->size() << " character matrices from file '" << fn.getValue() << "'";
+            RBOUT(o3.str());
+        }
         else
         {
             std::set<std::string> myWarnings = reader.getWarnings();
             if ( myWarnings.size() > 0 )
             {
                 std::stringstream o3;
-                o3 << "Error reading the file";
+                o3 << "Error reading file '" << fn.getValue() << "'";
                 RBOUT(o3.str());
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
                     RBOUT("Error:   " + (*it));

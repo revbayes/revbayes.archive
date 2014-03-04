@@ -21,6 +21,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbOptions.h"
 #include <ctime>
 #include <climits>
 #include <climits>
@@ -72,8 +73,10 @@ RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(void) {
 /** Return a pointer to a random number object with a specific set of seeds */
 RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(std::vector<unsigned int> s) {
 
-    if (s.size() != 2)
+    if (s.size() < 2)
         throw(RbException("Problem returning random number generator: Too few seeds."));
+    if (s.size() > 2)
+        throw(RbException("Problem returning random number generator: Too many seeds."));
     RandomNumberGenerator* r = new RandomNumberGenerator( s );
     allocatedRandomNumbers.insert( r );
     return r;
@@ -82,6 +85,12 @@ RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(std::vector
 
 /** Set the seeds for the factory using the current time */
 void RandomNumberFactory::setSeed(void) {
+
+// Define DEBUG_RANDOM to cause deterministic behavior
+#if defined DEBUG_RANDOM
+    setSeed(1);
+    return;
+#endif
 
     unsigned int x = (unsigned int)( time( 0 ) );
     I1 = x & 0xFFFF;

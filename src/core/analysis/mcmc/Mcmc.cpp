@@ -405,6 +405,16 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
             // Propose a new value
             double lnProbabilityRatio;
             double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
+
+#ifdef DEBUG_MCMC
+            // TODO: In non-debug version, we need to make sure we abandon the move if one of these values
+            // is positive infinite so that the lnR-based branch below would otherwise result in acceptance.
+            // Possibly, we should throw an error rather than trying to pass through -- to be discussed.
+            if (!RbMath::isAComputableNumber(lnHastingsRatio))
+                throw RbException("Hastings ratio not computable after move '" + theMove->getMoveName() + "'");
+            if (!RbMath::isAComputableNumber(lnProbabilityRatio))
+                throw RbException("Probability ratio not computable after move '" + theMove->getMoveName() + "'");
+#endif
             
             // Calculate acceptance ratio
             double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;

@@ -38,7 +38,7 @@ double SimpleMove::performMove( double &probRatio ) {
     
     if (changed) 
     {
-        throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
+        throw RbException("Trying to execute a simple move twice without accept/reject in the meantime.");
     }
     changed = true;
     
