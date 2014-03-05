@@ -244,6 +244,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "model",            new Model() );
         addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
         
+        /* Add MemberObject types without auto-generated constructors (alphabetic order) */
+        addType( "Simplex", new Simplex() );
+        
         
         //////////////////
         /* Add monitors */

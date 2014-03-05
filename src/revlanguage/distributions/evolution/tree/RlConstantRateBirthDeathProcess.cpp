@@ -87,7 +87,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::crea
 const std::string& ConstantRateBirthDeathProcess::getClassName( void ) 
 { 
     
-    static std::string rbClassName = "constant-rate Birth-Death Process";
+    static std::string rbClassName = "ConstBDProcess";
     
 	return rbClassName; 
 }
