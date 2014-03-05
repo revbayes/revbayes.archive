@@ -11,7 +11,7 @@
 namespace RevLanguage {
     
     /**
-     * @brief Decrement operator ('a++' and '++a')
+     * @brief Decrement operator ('a--' and '--a')
      *
      * The Decrement operator adds one to the value of the variable.
      * Currently we do not distinguish between post- and pre-decrements.

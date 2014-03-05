@@ -353,6 +353,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
         addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );
+        addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
         
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );

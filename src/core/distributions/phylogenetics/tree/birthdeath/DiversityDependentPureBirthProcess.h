@@ -1,7 +1,7 @@
 #ifndef DiversityDependentPureProcess_H
 #define DiversityDependentPureProcess_H
 
-#include "BirthDeathProcess.h"
+#include "AbstractBirthDeathProcess.h"
 
 namespace RevBayesCore {
     
@@ -21,12 +21,11 @@ namespace RevBayesCore {
      * @since 2014-01-17, version 1.0
      *
      */
-    class DiversityDependentPureBirthProcess : public BirthDeathProcess {
+    class DiversityDependentPureBirthProcess : public AbstractBirthDeathProcess {
         
     public:
         DiversityDependentPureBirthProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *s, const TypedDagNode<int> *k, 
-                                           const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, 
-                                           unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);                                //!< Constructor
+                                           const std::string &cdt, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);                                //!< Constructor
         
         // public member functions
         DiversityDependentPureBirthProcess*                 clone(void) const;                                                                                  //!< Create an independent clone
@@ -35,10 +34,9 @@ namespace RevBayesCore {
     private:
         
         // helper functions
-        double                                              lnSpeciationRate(double t) const;                                                                   //!< log-transformed speciation rate at time t.
-        double                                              rateIntegral(double t_low, double t_high) const;                                                    //!< rate integral in the inveral t_low to t_high
-        double                                              pSurvival(double start, double end) const;                                      //!< Probability of survival (non-extinction) if started at time start with one species
-        std::vector<double>                                 simSpeciations(size_t n, double origin, double r) const;                                                             //!< Simulate a speciation event.
+        double                                              computeLnProbabilityTimes(void) const;                                                                         //!< Compute the log-transformed probability of the current value.
+        std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                        //!< Simulate n speciation events.
+        double                                              pSurvival(double start, double end) const;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         
         // members
         const TypedDagNode<double>*                         initialSpeciation;                                                                                  //!< The initial speciation rate (lambda_0).

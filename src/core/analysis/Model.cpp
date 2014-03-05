@@ -40,6 +40,7 @@ Model::Model(const std::set<const DagNode*> s) :
     {
         // add this node and build model graph
         addSourceNode( *it );
+        (*it)->incrementReferenceCount();
     }
     
 }
@@ -69,7 +70,10 @@ Model::~Model( void )
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
     {
         DagNode *theNode = *it;
-        delete theNode;
+        if ( theNode->decrementReferenceCount() == 0 )
+        {
+            delete theNode;
+        }
     }
     
 }
@@ -97,7 +101,10 @@ Model& Model::operator=(const Model &x)
         for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
         {
             DagNode *theNode = *it;
-            delete theNode;
+            if ( theNode->decrementReferenceCount() == 0 )
+            {
+                delete theNode;
+            }
         }
         
         // iterate over all sources
@@ -105,6 +112,7 @@ Model& Model::operator=(const Model &x)
         {
             // add this node and build model graph
             addSourceNode( *it );
+            (*it)->incrementReferenceCount();
         }
     }
     

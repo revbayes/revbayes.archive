@@ -93,6 +93,8 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const Determinist
 template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
     // nothing to do here
+    
+    delete function;
 }
 
 

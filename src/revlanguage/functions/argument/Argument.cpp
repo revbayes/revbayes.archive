@@ -22,28 +22,30 @@
 #include "RbException.h"
 #include "RbUtil.h"
 
+using namespace RevLanguage;
+
 
 /** Construct from argument label and DAG node */
-RevLanguage::Argument::Argument(const RbPtr<Variable> &v, const std::string& argLabel, bool c) {
-    
-    isConst = c;
-    var = v;
-    label   = argLabel;
+Argument::Argument(const RbPtr<Variable> &v, const std::string& argLabel, bool c) :
+    var( v ),
+    isConst( c ),
+    label( argLabel )
+{
     
 }
 
 
-const std::string& RevLanguage::Argument::getLabel( void ) const {
+const std::string& Argument::getLabel( void ) const {
     return label;
 }
 
 
-RevLanguage::Argument* RevLanguage::Argument::clone( void ) const {
+Argument* Argument::clone( void ) const {
     return new Argument( *this );
 }
 
 
-const RevLanguage::RbPtr<RevLanguage::Variable>& RevLanguage::Argument::getReferenceVariable(void) const {
+const RbPtr<Variable>& Argument::getReferenceVariable(void) const {
     if ( isConst ) {
         throw RbException("You naughty boy! You cannot get a non-const reference to a constant variable.");
     }
@@ -51,24 +53,24 @@ const RevLanguage::RbPtr<RevLanguage::Variable>& RevLanguage::Argument::getRefer
 }
 
 
-RevLanguage::RbPtr<RevLanguage::Variable>& RevLanguage::Argument::getVariable(void) {
+RbPtr<Variable>& Argument::getVariable(void) {
     return var;
 }
 
 
-RevLanguage::RbPtr<const RevLanguage::Variable> RevLanguage::Argument::getVariable(void) const {
+RbPtr<const Variable> Argument::getVariable(void) const {
     return RbPtr<const Variable>( var );
 }
 
 
-bool RevLanguage::Argument::isConstant( void ) const {
+bool Argument::isConstant( void ) const {
     return isConst;
 }
 
 
 
 /** Complete info about object */
-void RevLanguage::Argument::printValue(std::ostream &o) const {
+void Argument::printValue(std::ostream &o) const {
     
     o << label << " = ";
     var->printValue(o);

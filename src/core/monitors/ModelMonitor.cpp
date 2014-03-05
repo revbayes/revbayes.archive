@@ -248,6 +248,7 @@ void ModelMonitor::resetDagNodes( void )
         const std::vector<DagNode*> &n = model->getDagNodes();
         for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
         {
+            
             // only simple numeric variable can be monitored (i.e. only integer and real numbers)
             if ( (*it)->isSimpleNumeric() && !(*it)->isClamped())
             {

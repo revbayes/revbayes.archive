@@ -2,7 +2,7 @@
 #define RlDiversityDependentPureBirthProcess_h
 
 #include "DiversityDependentPureBirthProcess.h"
-#include "RlBirthDeathProcess.h"
+#include "RlTypedDistribution.h"
 #include "RlTimeTree.h"
 
 namespace RevLanguage {
@@ -20,7 +20,7 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class DiversityDependentPureBirthProcess :  public BirthDeathProcess {
+    class DiversityDependentPureBirthProcess :  public TypedDistribution<TimeTree> {
         
     public:
         DiversityDependentPureBirthProcess( void );
@@ -43,6 +43,12 @@ namespace RevLanguage {
         
     private:
         
+        // members        
+        RbPtr<const Variable>                               origin;                                                                             //!< The time of the process since the origin
+        RbPtr<const Variable>                               condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
+        RbPtr<const Variable>                               numTaxa;                                                                            //!< The number of taxa (only needed for simulation)
+        RbPtr<const Variable>                               taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
+        RbPtr<const Variable>                               constraints;                                                                        //!< Topological constraints that will be used for calibrations
         RbPtr<const Variable>                               initialLambda;
         RbPtr<const Variable>                               capacity;
         

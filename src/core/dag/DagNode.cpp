@@ -11,7 +11,9 @@ DagNode::DagNode( const std::string &n ) :
         children(),
         name( n ), 
         parents(),
-        touchedElements() {
+        touchedElements(),
+        refCount( 0 )
+{
 
 }
 
@@ -20,22 +22,34 @@ DagNode::DagNode( const DagNode &n ) :
         children(),
         name( n.name ),  
         parents( n.parents ),
-        touchedElements( n.touchedElements ) {
+        touchedElements( n.touchedElements ),
+        refCount( 0 )
+{
 
     // add myself as a new child of all my parents
-    for (std::set<const DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it) {
+    for (std::set<const DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it) 
+    {
         (*it)->addChild( this );
     }
 }
 
 
-DagNode::~DagNode( void ) {
+DagNode::~DagNode( void ) 
+{
+    // sanity check
+    if ( refCount != 0 )
+    {
+        std::cerr << "Deleting DAG Node with persisting references to it." << std::endl;
+    }
     // we do not release anything here
     // children and parents need to be clean somewhere else!
-    while ( !children.empty() ) {
+    while ( !children.empty() ) 
+    {
         ( *children.begin() )->removeParent( this );
     }
-    while ( !parents.empty() ) {
+    
+    while ( !parents.empty() ) 
+    {
         const DagNode *theParent = ( *parents.begin() );
         theParent->removeChild( this );
         parents.erase( theParent );
@@ -54,6 +68,10 @@ void DagNode::addParent( const DagNode *newParent ) {
     
     parents.insert( newParent );
     newParent->addChild( this );
+    
+    // increment the reference count
+    // we don't want that this parent get's deleted while we are still alive
+    newParent->incrementReferenceCount();
 }
 
 
@@ -103,6 +121,18 @@ void DagNode::collectDownstreamGraph(std::set<RevBayesCore::DagNode *> &nodes) {
             (*it)->collectDownstreamGraph( nodes );
         }
     }
+}
+
+
+/** 
+ * Decrement the reference count and return it. 
+ */
+size_t DagNode::decrementReferenceCount( void ) const 
+{
+    
+    refCount--;
+    
+    return refCount;
 }
 
 
@@ -161,9 +191,30 @@ const std::set<const DagNode*>& DagNode::getParents( void ) const {
 }
 
 
+/** 
+ * Get the reference count. 
+ */
+size_t DagNode::getReferenceCount( void ) const 
+{
+    
+    return refCount;
+}
+
+
 /* Get the indices of all touched elements */
 const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const {
     return touchedElements;
+}
+
+
+/** 
+ * Increment the reference count. 
+ */
+void DagNode::incrementReferenceCount( void ) const 
+{
+    
+    refCount++;
+
 }
 
 
@@ -277,11 +328,17 @@ void DagNode::removeParent( const DagNode *p ) {
     
     parents.erase( p );
     p->removeChild( this );
+    
+    // decrement the reference count
+    // we didn't want that this parent get's deleted while we are still alive
+    // but now it's not our parent anymore ...
+    p->decrementReferenceCount();
 }
 
 
 /** 
- * Replace the DAG node. We call replace for all children so that they get a new parent. We do not change the parents.
+ * Replace the DAG node. 
+ * We call replace for all children so that they get a new parent. We do not change the parents.
  */
 void DagNode::replace( DagNode *n ) {
     

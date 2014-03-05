@@ -59,7 +59,13 @@ namespace RevBayesCore {
     
     template<>
     inline bool                                  TypedDagNode<double>::isSimpleNumeric(void) const { return true; }
+
+    template<>
+    inline bool                                  TypedDagNode<std::vector<int> >::isSimpleNumeric(void) const { return true; } 
     
+    template<>
+    inline bool                                  TypedDagNode<std::vector<double> >::isSimpleNumeric(void) const { return true; }
+
 }
 
 #include "RbUtil.h"

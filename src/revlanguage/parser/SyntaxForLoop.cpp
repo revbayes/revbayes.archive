@@ -48,6 +48,8 @@ SyntaxForLoop::SyntaxForLoop(const SyntaxForLoop& x) : SyntaxElement(x) {
 /** Destructor deletes members */
 SyntaxForLoop::~SyntaxForLoop() {
     
+    delete inExpression;
+    delete stateSpace;
 }
 
 

@@ -58,7 +58,11 @@ namespace RevBayesCore {
     protected:
         TypedFunction(valueType *v);
         TypedFunction(const TypedFunction &f);
+       
+        // overloaded operators
+        TypedFunction&                      operator=(const TypedFunction &d); 
         
+
         // members 
         DeterministicNode<valueType>*       dagNode;                                                                    //!< The deterministic node holding this function. This is needed for delegated calls to the DAG, such as getAffected(), addTouchedElementIndex()...
         valueType*                          value;
@@ -101,6 +105,24 @@ RevBayesCore::TypedFunction<valueType>::~TypedFunction( void ) {
     delete value;
 
 }
+
+
+template <class valueType>
+RevBayesCore::TypedFunction<valueType>& RevBayesCore::TypedFunction<valueType>::operator=(const TypedFunction &f) {
+    
+    if ( this != &f ) 
+    {
+        // call base class
+        Function::operator=( f );
+        
+        // make my own copy of the value (we rely on proper implementation of assignment operators)
+        delete value;
+        value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value );
+    }
+    
+    return *this;
+}
+
 
 template <class valueType>
 const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const 

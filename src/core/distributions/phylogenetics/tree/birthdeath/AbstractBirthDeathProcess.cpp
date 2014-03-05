@@ -1,5 +1,5 @@
 #include "Clade.h"
-#include "BirthDeathProcess.h"
+#include "AbstractBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -27,20 +27,16 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *r, 
-                                     const std::string& ss, const std::string &cdt, unsigned int nTaxa, 
-                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
-        origin( o ), 
-        rho( r ), 
-        samplingStrategy( ss ), 
-        condition( cdt ), 
-        numTaxa( nTaxa ), 
-        taxonNames( tn ), 
-        constraints( c ) 
+AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const std::string &cdt, unsigned int nTaxa, 
+                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
+    origin( o ),
+    condition( cdt ), 
+    numTaxa( nTaxa ), 
+    taxonNames( tn ), 
+    constraints( c ) 
 {
     
     addParameter( origin );
-    addParameter( rho );
     
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
@@ -52,7 +48,7 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedD
         lnFact += std::log(i);
     }
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - lnFact ;
-        
+    
 }
 
 
@@ -70,7 +66,7 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedD
  * \param[in]     times         
  * \param[in]     T      
  */
-void BirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T) 
+void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T) 
 {
     
     if (index < numTaxa-1) 
@@ -83,7 +79,7 @@ void BirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &
         
         // get the node from the list
         TopologyNode* parent = tips.at(tip_index);
-        psi->setAge( parent->getIndex(), T - times[index] );
+        psi->setAge( parent->getIndex(), T - (*times)[index] );
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+tip_index);
@@ -110,7 +106,7 @@ void BirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &
 }
 
 
-void BirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
+void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
     
     if (tips.size() < numTaxa) 
     {
@@ -148,7 +144,7 @@ void BirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) 
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double BirthDeathProcess::computeLnProbability( void ) {
+double AbstractBirthDeathProcess::computeLnProbability( void ) {
     
     // variable declarations and initialization
     double lnProbTimes = 0;
@@ -171,69 +167,28 @@ double BirthDeathProcess::computeLnProbability( void ) {
     
     double presentTime = org;
     
-    // retrieved the speciation times
-    std::vector<double> times = divergenceTimesSinceOrigin();
-    
-    double samplingProbability = 1.0;
-    if ( samplingStrategy == "uniform" ) 
-    {
-        samplingProbability = rho->getValue();
-    }
-    
     // what do we condition on?
     // did we condition on survival?
     if ( condition == "survival" )    
     {
-        lnProbTimes = - log( pSurvival(0,presentTime,samplingProbability) );
+        lnProbTimes = - log( pSurvival(0,presentTime) );
     }
     
     // multiply the probability of a descendant of the initial species
-    lnProbTimes += lnP1(0,presentTime,samplingProbability);
-    
-    // add the survival of a second species if we condition on the MRCA
-    int numInitialSpecies = 1;
-    
-    // check if we condition on the root or origin
-    bool conditionOnMRCA = false;
-    if ( conditionOnMRCA == true ) 
-    {
-        ++numInitialSpecies;
-        lnProbTimes *= 2.0;
-    }
-    
-    for (size_t i = (numInitialSpecies-1); i < numTaxa-1; ++i) 
-    {
-        if ( lnProbTimes == RbConstants::Double::nan || 
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
-        {
-            return RbConstants::Double::nan;
-        }
-         
-        lnProbTimes += lnSpeciationRate(times[i]) + lnP1(times[i],presentTime,samplingProbability);
-    }
-    
-    // if we assume diversified sampling, we need to multiply with the probability that all missing species happened after the last speciation event
-    if ( samplingStrategy == "diversified" ) 
-    {
-        // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-        double lastEvent = times[times.size()-2];
-        
-        double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
-        double p_0_t = (1.0 - pSurvival(lastEvent,presentTime,1.0) * exp( rateIntegral(lastEvent,presentTime) ));
-        double F_t = p_0_t / p_0_T;
-        
-        // get an estimate of the actual number of taxa
-        double m = round(numTaxa / rho->getValue());     
-        lnProbTimes += (m-numTaxa) * log(F_t) + log(RbMath::choose(m,numTaxa));
-    }
+    lnProbTimes += computeLnProbabilityTimes();
     
     return lnProbTimes + logTreeTopologyProb;
     
 }
 
 
-std::vector<double> BirthDeathProcess::divergenceTimesSinceOrigin( void ) const
+/**
+ * Get the divergence times meassured since the time of the origin.
+ * We get the ages from the nodes and simply subtruct these from the time of the origin.
+ *
+ * \return     A vector of times. The caller needs to deallocate this vector.
+ */
+std::vector<double>* AbstractBirthDeathProcess::divergenceTimesSinceOrigin( void ) const
 {
     
     // get the time of the process
@@ -242,15 +197,15 @@ std::vector<double> BirthDeathProcess::divergenceTimesSinceOrigin( void ) const
     double offset = org - tipTime;
     
     // retrieved the speciation times
-    std::vector<double> times;
+    std::vector<double> *times = new std::vector<double>();
     for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i) 
     {
         const TopologyNode& n = value->getInteriorNode( i );
         double t = n.getTime() + offset;
-        times.push_back(t);
+        times->push_back(t);
     }
     // sort the vector of times in ascending order
-    std::sort(times.begin(), times.end());
+    std::sort(times->begin(), times->end());
     
     return times;
 }
@@ -263,37 +218,35 @@ std::vector<double> BirthDeathProcess::divergenceTimesSinceOrigin( void ) const
  *
  * \return The diversity (number of species in the reconstructed tree).
  */
-int BirthDeathProcess::diversity(double t) const
+int AbstractBirthDeathProcess::diversity(double t) const
 {
-    std::vector<double> times = divergenceTimesSinceOrigin();
+    std::vector<double>* times = divergenceTimesSinceOrigin();
     
-    for (size_t i = 0; i < times.size(); ++i) 
+    for (size_t i = 0; i < times->size(); ++i) 
     {
-        if ( times[i] > t ) 
+        if ( (*times)[i] > t ) 
         {
+            delete times;
             return int( i + 2 );
         }
     }
     
-    return int(times.size() + 2);
+    int rv = int(times->size() + 2);
+    delete times;
+
+    return rv;
 }
 
 
-double BirthDeathProcess::lnP1(double t, double T, double r) const {
-    
-    // get the survival probability
-    double a = log( pSurvival(t,T,r) );
-    double b = rateIntegral(t, T) - log(r);
-    
-    // compute the probability of observing/sampling exactly one lineage
-    double p = 2.0 * a + b;
-    
-    return p;
-    
-}
 
-
-bool BirthDeathProcess::matchesConstraints( void ) {
+/**
+ * We check here if all the constraints are satisfied.
+ * These are hard constraints, that is, the clades must be monophyletic.
+ *
+ * \return     True if the constraints are matched, false otherwise.
+ */
+bool AbstractBirthDeathProcess::matchesConstraints( void ) 
+{
     
     const TopologyNode &root = value->getRoot();
     
@@ -310,40 +263,21 @@ bool BirthDeathProcess::matchesConstraints( void ) {
 
 
 /**
- * Compute the probabililty of survival (no extinction) of the process including uniform taxon sampling at the present time.
- * The probability of survival is given by
- * [1 + int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds ) ]^{-1}
- * and can be simplified to
- * [1 + int_{t_low}^{t_high} ( mu'(s) exp(rate'(t,s)) ds ) - (r-1)/r*exp(rate'(t_low,t_high)) ]^{-1}
- * where mu' and rate' are the diversification rate function without incomplete taxon sampling.
- * Therefore we can just call pSurvival without incomplete taxon sampling that will be computed in the derived classes,
- * and add the sampling here so that sampling will be available for all models :)
- * For more information please read Hoehna, S. 2014. The time-dependent reconstructed evolutionary process with a key-role for mass-extinction events.
- *
- * \param[in]    start      Start time of the process.
- * \param[in]    end        End/stopping time of the process.
- * \param[in]    r          Sampling probability.
- *
- * \return The probability of survival of the process.
+ * Redraw the current value. We delegate this to the simulate method.
  */
-double BirthDeathProcess::pSurvival(double start, double end, double r) const
+void AbstractBirthDeathProcess::redrawValue( void ) 
 {
-    double rate = rateIntegral(start, end);
-    double ps = 1.0 / pSurvival(start, end);
-    
-    return 1.0 / (ps - (r-1.0)/r * exp(rate) );
-}
-
-
-
-void BirthDeathProcess::redrawValue( void ) {
     
     simulateTree();
-
+    
 }
 
 
-void BirthDeathProcess::simulateTree( void ) {
+/**
+ *
+ */
+void AbstractBirthDeathProcess::simulateTree( void ) 
+{
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -390,33 +324,9 @@ void BirthDeathProcess::simulateTree( void ) {
     // first, get the time of the origin
 	double t_or = origin->getValue();
     
-    
-    double samplingProbability = 1.0;
-    if ( samplingStrategy == "uniform" )
-    {
-        samplingProbability = rho->getValue();
-    }
-    
-    size_t n = numTaxa;
-    if ( samplingStrategy == "diversified" ) 
-    {
-        n = size_t( ceil(numTaxa / rho->getValue()) );
-    }
-    
     // draw a time for each speciation event condition on the time of the process
-    std::vector<double> t = simSpeciations(n, t_or, samplingProbability);
-    std::vector<double> times;
+    std::vector<double> *times = simSpeciations(numTaxa-1, t_or);
     
-    // under diversified sampling we only use the first numTaxa simulated events
-    if ( samplingStrategy == "diversified" ) 
-    {
-        times = std::vector<double>(t.begin(), t.begin()+(numTaxa-1));
-    }
-    else
-    {
-        times = t;
-    }
-        
     nodes.clear();
     nodes.push_back( root );
     attachTimes(psi, nodes, 0, times, t_or);
@@ -427,6 +337,8 @@ void BirthDeathProcess::simulateTree( void ) {
         psi->setAge( node.getIndex(), 0.0 );
     }
     
+    delete times;
+    
     // finally store the new value
     delete value;
     value = psi;
@@ -435,16 +347,19 @@ void BirthDeathProcess::simulateTree( void ) {
 
 
 
-void BirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+/**
+ * Swap the parameters held by this distribution.
+ *
+ * 
+ * \param[in]    oldP      Pointer to the old parameter.
+ * \param[in]    newP      Pointer to the new parameter.
+ */
+void AbstractBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
 {
     
-    if ( oldP == rho ) 
-    {
-        rho = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    else if ( oldP == origin ) 
+    if ( oldP == origin ) 
     {
         origin = static_cast<const TypedDagNode<double>* >( newP );
     }
-
+    
 }

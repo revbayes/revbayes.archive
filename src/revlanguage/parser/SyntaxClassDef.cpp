@@ -43,6 +43,10 @@ SyntaxClassDef::SyntaxClassDef(const SyntaxClassDef& x) : SyntaxElement(x) {
 /** Destructor deletes members */
 SyntaxClassDef::~SyntaxClassDef() {
     
+    for (std::list<SyntaxElement*>::const_iterator i=definitions->begin(); i!=definitions->end(); i++)
+        delete (*i);
+    
+    delete definitions;
 }
 
 

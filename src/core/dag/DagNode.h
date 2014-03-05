@@ -54,6 +54,7 @@ namespace RevBayesCore {
         void                                                        clearTouchedElementIndices(void);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;         //!< Clone the DAG which is downstream to this node (all children)
         void                                                        collectDownstreamGraph(std::set<DagNode*> &nodes);                              //!< Collect all nodes downstream from this node (incl the node)
+        size_t                                                      decrementReferenceCount(void) const;                                            //!< Decrement the reference count for reference counting in smart pointers
         void                                                        getAffectedNodes(std::set<DagNode *>& affected);                                //!< get affected nodes
         //    DagNode*                                            getChild(size_t index);                                                         //!< Get the child at the index
         const std::set<DagNode*>&                                   getChildren(void) const;                                                        //!< Get the set of parents
@@ -62,7 +63,9 @@ namespace RevBayesCore {
         const std::string&                                          getName(void) const;                                                            //!< Get the of the node
         size_t                                                      getNumberOfChildren(void) const;                                                //!< Get the number of children for this node
         const std::set<const DagNode*>&                             getParents(void) const;                                                         //!< Get the set of parents
+        size_t                                                      getReferenceCount(void) const;                                                  //!< Get the reference count for reference counting in smart pointers
         const std::set<size_t>&                                     getTouchedElementIndices(void) const;                                           //!< Get the indices of the touches elements. If the set is empty, then all elements might have changed.
+        void                                                        incrementReferenceCount(void) const;                                            //!< Increment the reference count for reference counting in smart pointers
         virtual bool                                                isClamped(void) const;                                                          //!< Is this node clamped? Only stochastic nodes might be clamped.
         virtual bool                                                isConstant(void) const;                                                         //!< Is this DAG node constant?
         virtual bool                                                isSimpleNumeric(void) const;                                                    //!< Is this variable a simple numeric variable? Currently only integer and real number are.
@@ -100,6 +103,11 @@ namespace RevBayesCore {
         std::set<const DagNode*>                                    parents;                                                                        //!< The parents in the DAG of this node
         std::set<size_t>                                            touchedElements;
         DagNodeTypes                                                type;
+
+    
+    private:
+        
+        mutable size_t                                              refCount;
     };
 
 }
