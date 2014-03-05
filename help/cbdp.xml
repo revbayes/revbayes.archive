@@ -116,10 +116,10 @@
     </reference>
     
     <seeAlso>
-        <!-- The xslt page will try to auto generate links to the referred help items, therefore
+        <!-- The xslt page will try to auto generate links to the referred help entries, therefore
         only exact names of help items should be listed here (case sensitive) -->
-        <item>mcmc</item>
-        <item>foobar</item>
+        <entry>mcmc</entry>
+        <entry>foobar</entry>
     </seeAlso>
     
     <example>
