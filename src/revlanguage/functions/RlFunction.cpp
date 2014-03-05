@@ -36,7 +36,11 @@ Function::Function(void) : RbLanguageObject(), args( ) {
 }
 
 /** Copy constructor. */
-Function::Function(const Function &x) : RbLanguageObject(x), args(  ) {
+Function::Function(const Function &x) : RbLanguageObject( x ), 
+    argsProcessed( x.argsProcessed ),
+    args( x.args ),
+    env( x.env )
+{
     
     // here we only get a shallow copy of the vector of arguments
     args = x.args;
@@ -48,6 +52,7 @@ Function::Function(const Function &x) : RbLanguageObject(x), args(  ) {
 /** Destructor. We need to free the arguments here. */
 Function::~Function(void) {
     
+    // we don't own the enclosing environment -> we don't delete it.
 }
 
 
@@ -603,9 +608,6 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 
 /** Set a member variable */
 void Function::setArgument(const std::string& name, Argument& arg, const bool c) {
-    // calling the internal method to set the DAG node
-    // the derived classes should know how to set their members
-//    setArgumentVariable(name, arg.getVariablePtr() );
     
     // make sure that the argument has the correct label
     Argument myArg = Argument( arg.getVariable(), name, c );

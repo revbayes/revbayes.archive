@@ -10,19 +10,6 @@ NormalizeVectorFunction::NormalizeVectorFunction(const TypedDagNode<std::vector<
 }
 
 
-NormalizeVectorFunction::NormalizeVectorFunction(const NormalizeVectorFunction &n) : TypedFunction< std::vector<double> >( n ), vals( n.vals ) {
-    // no need to add parameters, happens automatically
-    
-    update();
-}
-
-
-NormalizeVectorFunction::~NormalizeVectorFunction( void ) {
-    // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
-}
-
-
-
 NormalizeVectorFunction* NormalizeVectorFunction::clone( void ) const {
     
     return new NormalizeVectorFunction( *this );

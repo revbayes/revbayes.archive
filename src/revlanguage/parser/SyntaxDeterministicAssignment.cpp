@@ -104,47 +104,22 @@ RbPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& env
     // Declare variable storing the return value of the assignment expression
     RbPtr<Variable> theVariable = NULL;
     
-        
+    
 #ifdef DEBUG_PARSER
     printf( "Equation assignment\n" );
 #endif
-        
-    // Get DAG node representation of expression
-    // We allow direct references without lookup nodes
-    // We also allow constant expressions
-    theVariable = expression->evaluateContent( env );
-#ifdef DEBUG_PARSER
-    printf( "Created %s with function \"%s\" and value %s \n", theVariable->getValue().getType().c_str(), theVariable->getValue().getTypeSpec().toString().c_str());
-#endif
-        
-    // if the right-hand-side was a lookup to a variable (e.g. b := a)
-    // we therefore create a new reference function which will lookup the value of the original node each time. Hence, the new node (left-hand-side) is just a reference of the original node (right-hand-side).
-    //        SyntaxVariable* rhs = dynamic_cast<SyntaxVariable*>( expression );
-    //        if ( !theVariable->getDagNode()->isTypeSpec( DeterministicNode::getClassTypeSpec() ) || rhs != NULL && !rhs->hasFunctionCall() ) {
-    //            
-    //            Function* func = new Func_reference();
-    //            std::vector<Argument> args;
-    //            args.push_back( Argument( theVariable ) );
-    //            func->processArguments(args);
-    //            theVariable = RbPtr<Variable>( new Variable( new DeterministicNode( func, NULL ) ) );
-    //        }
-        
-    const RbLanguageObject &value = theVariable->getValue();
-    // check if the type is valid. This is necessary for reassignments
-    //        if ( !theFunction.getReturnType().isDerivedOf( theSlot->getValueTypeSpec() ) ) {
-    //            std::ostringstream msg;
-    //            msg << "Cannot reassign variable '" << theSlot->getName() << "' with a function with return type " << theFunction.getReturnType() << " because the variable requires type " << theSlot->getValueTypeSpec() << "." << std::endl;
-    //            throw RbException( msg );
-    //        }
+    
+    // get the rhs expression wrapped and executed into a variable
+    theVariable = expression->evaluateContent(env);
+    
+    // Create new stochastic node
+    RbLanguageObject* rv = theVariable->getValue().clone();
     
     // fill the slot with the new variable
-    theSlot->setValue( value.clone() );
-        
+    theSlot->setValue( rv );
+    
     // set the name of the DAG node. This will ensure nicer outputs about the DAG.
     theVariable->getValue().setName( theSlot->getName() );
-    
-    //    theSlot->getDagNode()->touch();
-    //    theSlot->getDagNode()->keep();
     
     
 #ifdef DEBUG_PARSER

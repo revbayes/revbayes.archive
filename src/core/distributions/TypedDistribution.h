@@ -117,7 +117,8 @@ RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valu
         Distribution::operator=( d );
         
         // make my own copy of the value (we rely on proper implementation of assignment operators)
-        *value = *d.value;
+        delete value;
+        value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *d.value );
     }
     
     return *this;

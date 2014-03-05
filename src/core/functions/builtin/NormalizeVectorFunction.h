@@ -33,8 +33,8 @@ namespace RevBayesCore {
         
     public:
         NormalizeVectorFunction(const TypedDagNode<std::vector<double> > * v);
-        NormalizeVectorFunction(const NormalizeVectorFunction &n);                                                                                        //!< Copy constructor
-        virtual                                            ~NormalizeVectorFunction(void);                                                       //!< Virtual destructor
+//        NormalizeVectorFunction(const NormalizeVectorFunction &n);                                                                                        //!< Copy constructor
+//        virtual                                            ~NormalizeVectorFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
         NormalizeVectorFunction*                            clone(void) const;                                                          //!< Create an independent clone

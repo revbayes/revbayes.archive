@@ -82,7 +82,10 @@ namespace RevLanguage {
 #include "StochasticNode.h"
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLanguageObject(), value( NULL ), methods() {
+RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLanguageObject(), 
+    value( NULL ), 
+    methods() 
+{
     
 //    initMethods();
     
@@ -91,7 +94,12 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLangua
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(rbType *v) : RbLanguageObject(), value( new RevBayesCore::ConstantNode<rbType>("",v) ), methods() {
+RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(rbType *v) : RbLanguageObject(), 
+    value( new RevBayesCore::ConstantNode<rbType>("",v) ), 
+    methods() 
+{
+    // increment the reference count to the value
+    value->incrementReferenceCount();
     
 //    initMethods();
     
@@ -100,7 +108,14 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(rbType *v) :
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(RevBayesCore::TypedDagNode<rbType> *v) : RbLanguageObject(), value( v ), methods() {
+RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(RevBayesCore::TypedDagNode<rbType> *v) : RbLanguageObject(), 
+    value( v ), 
+    methods() 
+{
+    
+    // increment the reference count to the value
+    value->incrementReferenceCount();
+    
     
 //    initMethods();
     
@@ -109,11 +124,18 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(RevBayesCore
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(const RlModelVariableWrapper &v) : RbLanguageObject(), value( NULL ), methods() {
+RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(const RlModelVariableWrapper &v) : RbLanguageObject(), 
+    value( NULL ), 
+    methods() 
+{
     
     if ( v.value != NULL ) 
     {
+        
         value = v.value->clone();
+        
+        // increment the reference count to the value
+        value->incrementReferenceCount();
     }
     
 //    initMethods();
@@ -123,9 +145,17 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(const RlMode
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::~RlModelVariableWrapper() {
+RevLanguage::RlModelVariableWrapper<rbType>::~RlModelVariableWrapper() 
+{
     
-    delete value;
+    // free the old value
+    if ( value != NULL ) 
+    {
+        if ( value->decrementReferenceCount() == 0 ) 
+        {
+            delete value;
+        }
+    }
 }
 
 
@@ -135,13 +165,24 @@ RevLanguage::RlModelVariableWrapper<rbType>& RevLanguage::RlModelVariableWrapper
     if ( this != &v ) 
     {
         // free the memory
-        delete value;
-        value = NULL;
+        // free the old value
+        if ( value != NULL ) 
+        {
+            if ( value->decrementReferenceCount() == 0 ) 
+            {
+                delete value;
+            }
+            
+            value = NULL;
+        }
         
         // create own copy
         if ( v.value != NULL ) 
         {
             value = v.value->clone();
+            
+            // increment the reference count to the value
+            value->incrementReferenceCount();
         }
     }
     
@@ -367,28 +408,20 @@ void RevLanguage::RlModelVariableWrapper<rbType>::makeConstantValue( void ) {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<rbType>* newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( value->getValue() ) );
         value->replace(newVal);
-        delete value;
+        
+        // delete the value if there are no other references to it.
+        if ( value->decrementReferenceCount() == 0 ) 
+        {
+            delete value;
+        }
+        
         value = newVal;
+        
+        // increment the reference counter
+        value->incrementReferenceCount();
     }
     
 }
-
-
-template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::setName(std::string const &n) {
-    
-    if ( value == NULL ) 
-    {
-        throw RbException("Null-pointer-exception: Cannot set name of value.");
-    } 
-    else 
-    {
-        value->setName( n );
-    }
-    
-}
-
-
 
 
 /** Print value for user */
@@ -412,6 +445,21 @@ void RevLanguage::RlModelVariableWrapper<rbType>::replaceVariable(RbLanguageObje
 }
 
 
+template <typename rbType>
+void RevLanguage::RlModelVariableWrapper<rbType>::setName(std::string const &n) {
+    
+    if ( value == NULL ) 
+    {
+        throw RbException("Null-pointer-exception: Cannot set name of value.");
+    } 
+    else 
+    {
+        value->setName( n );
+    }
+    
+}
+
+
 
 template <typename rbType>
 void RevLanguage::RlModelVariableWrapper<rbType>::setValue(rbType *x) {
@@ -426,10 +474,18 @@ void RevLanguage::RlModelVariableWrapper<rbType>::setValue(rbType *x) {
     {
         newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(),x);
         value->replace(newVal);
-        delete value;
+
+        if ( value->decrementReferenceCount() == 0 ) 
+        {
+            delete value;
+        }
+        
     }
     
     value = newVal;
+    
+    // increment the reference count to the value
+    value->incrementReferenceCount();
     
 }
 

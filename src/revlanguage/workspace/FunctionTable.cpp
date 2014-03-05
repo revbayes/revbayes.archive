@@ -272,6 +272,9 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
             }
         }
         
+        // free the memory
+        delete matchScore;
+        
         /* Delete all processed arguments except those of the best matching function, if it is ambiguous */
         for ( it = retVal.first; it != retVal.second; it++ ) 
         {

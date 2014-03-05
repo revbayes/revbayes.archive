@@ -97,32 +97,43 @@ namespace RevLanguage {
 #include "StochasticNode.h"
 
 template <typename rbType>
-RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType) : Container(elemType), value( new RevBayesCore::ConstantNode<rbType>( "", new rbType() ) ) {
+RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType) : Container(elemType), 
+    value( new RevBayesCore::ConstantNode<rbType>( "", new rbType() ) ) 
+{
+    value->incrementReferenceCount();
+}
+
+
+
+template <typename rbType>
+RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, const rbType &v) : Container(elemType), 
+    value( new RevBayesCore::ConstantNode<rbType>( "", new rbType(v) ) ) 
+{
+    value->incrementReferenceCount ();
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, const rbType &v) : Container(elemType), value( new RevBayesCore::ConstantNode<rbType>( "", new rbType(v) ) ) {
+RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, RevBayesCore::TypedDagNode<rbType> *v) : Container(elemType), 
+    value( v ) 
+{
+    value->incrementReferenceCount();
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, RevBayesCore::TypedDagNode<rbType> *v) : Container(elemType), value( v ) {
-    
-}
-
-
-
-template <typename rbType>
-RevLanguage::TypedContainer<rbType>::TypedContainer(const TypedContainer &v) : Container( v ), value( NULL ) {
+RevLanguage::TypedContainer<rbType>::TypedContainer(const TypedContainer &v) : Container( v ), 
+    value( NULL ) 
+{
     
     if ( v.value != NULL ) 
     {
         value = v.value->clone();
+        value->incrementReferenceCount();
     }
     
 }
@@ -132,7 +143,11 @@ RevLanguage::TypedContainer<rbType>::TypedContainer(const TypedContainer &v) : C
 template <typename rbType>
 RevLanguage::TypedContainer<rbType>::~TypedContainer() {
     
-    delete value;
+    if ( value->decrementReferenceCount() == 0 ) 
+    {
+        delete value;
+    }
+
 }
 
 
@@ -142,13 +157,17 @@ RevLanguage::TypedContainer<rbType>& RevLanguage::TypedContainer<rbType>::operat
     if ( this != &v ) 
     {
         // free the memory
-        delete value;
+        if ( value->decrementReferenceCount() == 0 ) 
+        {
+            delete value;
+        }
         value = NULL;
         
         // create own copy
         if ( v.value != NULL ) 
         {
             value = v.value->clone();
+            value->incrementReferenceCount();
         }
     }
     
@@ -379,8 +398,13 @@ void RevLanguage::TypedContainer<rbType>::makeConstantValue( void ) {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<rbType>* newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(), new rbType(value->getValue()) );
         value->replace(newVal);
-        delete value;
+        
+        if ( value->decrementReferenceCount() == 0) {
+            delete value;
+        }
+        
         value = newVal;
+        value->incrementReferenceCount();
     }
 }
 

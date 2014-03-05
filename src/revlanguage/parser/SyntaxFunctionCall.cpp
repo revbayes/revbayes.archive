@@ -170,7 +170,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         Function* theFunction = mt.getFunction( functionName, args ).clone();
         theFunction->processArguments(args);
         MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
-        theMemberFunction->setMemberObject( &theMemberObject );
+        theMemberFunction->setMemberObject( theVar );
         func = theMemberFunction;
         successful = true;
     }

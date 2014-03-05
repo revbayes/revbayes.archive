@@ -2,6 +2,7 @@
 #include "DiversityDependentPureBirthProcess.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 
 
 using namespace RevBayesCore;
@@ -14,16 +15,14 @@ using namespace RevBayesCore;
  * \param[in]    o      Time of the origin/present/length of the process.
  * \param[in]    s      Initial speciation rate (lambda_0).
  * \param[in]    k      Carrying capacity.
- * \param[in]    r      Sampling probability (rho).
- * \param[in]    ss     Sampling strategy (uniform/diversified).
  * \param[in]    cdt    Condition of the process (none/survival/#Taxa).
  * \param[in]    nTaxa  Number of observed taxa.
  * \param[in]    tn     Taxon names.
  * \param[in]    c      Clades conditioned to be present.
  */
 DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
-                                                             const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, unsigned int nTaxa, 
-                                                             const std::vector<std::string> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, r, ss, cdt, nTaxa, tn, c ), 
+                                                                       const std::string &cdt, unsigned int nTaxa, 
+                                                                       const std::vector<std::string> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, cdt, nTaxa, tn, c ), 
         initialSpeciation( s ), 
         capacity( k ) 
 {
@@ -50,25 +49,59 @@ DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( v
 
 
 /**
- * Compute the log-transformed speciation rate at time t.
- * The speciation rate is diversity-dependent and computed by the function:
- * lambda = (1.0 - n/K)*lambda_0
+ * Compute the log-transformed probability of the current value under the current parameter values.
  *
- * \param[in]    t      Time.
- *
- * \return Speciation rate at time t. 
  */
-double DiversityDependentPureBirthProcess::lnSpeciationRate(double t) const 
+double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) const
 {
     
-    int n = diversity( t );
+    // variable declarations and initialization
+    double lnProbTimes = 0;
+    
+    // present time 
+    double tipTime = value->getTipNode(0).getTime();
+    double org = origin->getValue();
+    
+    // test that the time of the process is larger or equal to the present time
+    if ( tipTime > org ) 
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    double presentTime = org;
+    
+    // retrieved the speciation times
+    std::vector<double>* times = divergenceTimesSinceOrigin();
+    
+    int n = 1;
     double b = initialSpeciation->getValue();
     int k = capacity->getValue();
+    double lastTime = 0.0;
+    double speciationRate, timeInterval;
+    for (size_t i = 0; i < numTaxa-1; ++i) 
+    {
+        if ( lnProbTimes == RbConstants::Double::nan || 
+            lnProbTimes == RbConstants::Double::inf || 
+            lnProbTimes == RbConstants::Double::neginf ) 
+        {
+            return RbConstants::Double::nan;
+        }
+        
+        speciationRate = (1.0 - double(n)/k) * b ;
+        timeInterval = (*times)[i] - lastTime;
+        lastTime = (*times)[i];
+        
+        lnProbTimes += log(speciationRate) - double(n) * speciationRate * timeInterval;
+        ++n;
+    }
+    speciationRate = double(n) * (1.0 - double(n)/k) * b ;
+    timeInterval = presentTime - lastTime;
+    lnProbTimes -= speciationRate * timeInterval;
     
-    double speciationRate = (1.0 - double(n)/k) * b ;
+    return lnProbTimes;
     
-    return log(speciationRate);
 }
+
 
 /**
  * Compute the probability of survival if the process starts with one species at time start and ends at time end.
@@ -91,75 +124,9 @@ double DiversityDependentPureBirthProcess::pSurvival(double start, double end) c
 
 
 /**
- * Compute the speciation rate integral.
- * The integral is defined as
- *    rate = \int( mu(s) - lambda(s) ds )
- * Because this process is a pure-birth process with diversity-dependent speciation rate,
- * the integral simplifies to
- *    rate = \int( -lambda(s) ds )
- *
- * \param[in]    t_low       Lower boundary of the interval.
- * \param[in]    t_high      Upper boundary of the interval.
- *
- * \return Diversification rate integrated from t_low to t_high.
- **/
-double DiversityDependentPureBirthProcess::rateIntegral(double t_low, double t_high) const 
-{
-    
-    // get the divergence times (speciation events)
-    std::vector<double> times = divergenceTimesSinceOrigin();
-    
-    // get the current parameter values
-    double lambda = initialSpeciation->getValue();
-    double k = capacity->getValue();
-    
-    // compute the rate integral by piecewise computation of the linear parts of the speciation rate
-    double rate = 0.0;
-    
-    double min = t_low;
-    double max = (times[0] > t_high) ? t_high : times[0];
-    double diff = (min > max) ? 0.0 : (max-min);
-    
-    // compute the speciation rate for this interval
-    double b = (1.0 - 1.0/k) * lambda;
-    
-    // add the integral for this interval
-    rate -= b*diff;
-    for (size_t i = 1; i < numTaxa-1; ++i) 
-    {
-        // get the interval boundaries:
-        // either these are the speciation events t[i-1] and t[i]
-        // or adjusted by the actual time we want to compute
-        min = (times[i-1] < t_low)  ? t_low  : times[i-1];
-        max = (times[i]   > t_high) ? t_high : times[i];
-        diff = (min > max) ? 0.0 : (max-min);
-        
-        // compute the speciation rate for this interval
-        b = (1.0 - (i+1.0)/k) * lambda;
-        
-        // add the integral for this interval
-        rate -= b*diff;
-    }
-    
-    min = (times[numTaxa-2] < t_low)  ? t_low  : times[numTaxa-2];
-    max = t_high;
-    diff = (min > max) ? 0.0 : (max-min);
-    
-    // compute the speciation rate for this interval
-    b = (1.0 - numTaxa/k) * lambda;
-    
-    // add the integral for this interval
-    rate -= b*diff;
-     
-    // return the rate integral
-    return rate;
-}
-
-
-/**
  * Simulate new speciation times.
  */
-std::vector<double> DiversityDependentPureBirthProcess::simSpeciations(size_t n, double origin, double r) const
+std::vector<double>* DiversityDependentPureBirthProcess::simSpeciations(size_t n, double origin) const
 {
     
     // Get the rng
@@ -175,16 +142,13 @@ std::vector<double> DiversityDependentPureBirthProcess::simSpeciations(size_t n,
     
     double lastEvent = 0.0;
     
-    // draw the number of speciation events (sampled + not-sampled)
-    size_t m = size_t( ceil( n/r ) );
-    // 
-    std::vector<double> times = std::vector<double>(m,0.0);
-    for (size_t i = 0; i < m; i++ )
+    std::vector<double> *times = new std::vector<double>(n,0.0);
+    for (size_t i = 0; i < n; i++ )
     {
-        double rate = ( 1.0 - ((m-i+2)/k) ) * lambda;
+        double rate = ( 1.0 - ((n-i+2)/k) ) * lambda;
         double t = lastEvent + RbStatistics::Exponential::rv(rate, *rng);
         lastEvent = t;
-        times[m-i-1] = t;
+        (*times)[n-i-1] = t;
     }
 	
     return times;
@@ -213,7 +177,7 @@ void DiversityDependentPureBirthProcess::swapParameter(const DagNode *oldP, cons
     else 
     {
         // delegate the super-class
-        BirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameter(oldP, newP);
     }
     
 }

@@ -20,7 +20,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess() : BirthDeathProcess() 
+DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess() : TypedDistribution<TimeTree>() 
 {
     
 }
@@ -59,10 +59,6 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( initialLambda->getValue() ).getValueNode();
     // extinction rate
     RevBayesCore::TypedDagNode<int>* k          = static_cast<const Natural &>( capacity->getValue() ).getValueNode();
-    // sampling probability
-    RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getValue() ).getValueNode();
-    // sampling strategy
-    const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getValue() ).getValue();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getValue() ).getValue();
     // number of taxa
@@ -73,7 +69,7 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
     const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
     
     // create the internal distribution object
-    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, s, k, r, strategy, cond, n, names, c);
+    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, s, k, cond, n, names, c);
     
     return d;
 }
@@ -102,7 +98,7 @@ const std::string& DiversityDependentPureBirthProcess::getClassName( void )
 const TypeSpec& DiversityDependentPureBirthProcess::getClassTypeSpec( void ) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -128,9 +124,18 @@ const MemberRules& DiversityDependentPureBirthProcess::getMemberRules(void) cons
     {
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"  , true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "capacity", true, Natural::getClassTypeSpec() ) );
-        
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
+        Vector<RlString> optionsCondition;
+        optionsCondition.push_back( RlString("time") );
+        optionsCondition.push_back( RlString("survival") );
+        optionsCondition.push_back( RlString("nTaxa") );
+        distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, Vector<Clade>::getClassTypeSpec(), new Vector<Clade>() ) );
+
         // add the rules from the base class
-        const MemberRules &parentRules = BirthDeathProcess::getMemberRules();
+        const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();
         distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
@@ -175,8 +180,28 @@ void DiversityDependentPureBirthProcess::setConstMemberVariable(const std::strin
     {
         capacity = var;
     }
+    else if ( name == "origin" ) 
+    {
+        origin = var;
+    }
+    else if ( name == "nTaxa" ) 
+    {
+        numTaxa = var;
+    }
+    else if ( name == "names" ) 
+    {
+        taxonNames = var;
+    }
+    else if ( name == "constraints" ) 
+    {
+        constraints = var;
+    }
+    else if ( name == "condition" ) 
+    {
+        condition = var;
+    }
     else {
-        BirthDeathProcess::setConstMemberVariable(name, var);
+        TypedDistribution<TimeTree>::setConstMemberVariable(name, var);
     }
     
 }

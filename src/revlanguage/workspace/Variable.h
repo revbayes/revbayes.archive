@@ -46,6 +46,10 @@ class Variable {
 public:
     Variable(const TypeSpec& ts);                                                               //!< Constructor of filled variable
     Variable(RbLanguageObject *val, const std::string &n = "");                                 //!< Constructor of filled, unnamed variable
+    Variable(const Variable &v);                                                                //!< Copy constructor
+    virtual ~Variable(void);
+    
+    Variable&                               operator=(const Variable &v);                       //!< Assignment operator
     
     // Regular functions
     Variable*                               clone(void) const;                                  //!< Clone variable

@@ -403,7 +403,7 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             // We need to clone because otherwise we overwrite all methods for this object
             
             // set the member object for the member function
-            theMemberFunction->setMemberObject( &mObject );
+            theMemberFunction->setMemberObject( theVar );
 //            RbPtr<Function> func( theMemberFunction );
             
             RbLanguageObject* subElement = theMemberFunction->execute();

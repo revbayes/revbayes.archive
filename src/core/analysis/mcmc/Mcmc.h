@@ -38,6 +38,7 @@ namespace RevBayesCore {
         Mcmc&                                               operator=(const Mcmc &m);
         
         // public methods
+//        void                                                automaticBurnin(int ti);
         void                                                burnin(int g, int ti);
         Mcmc*                                               clone(void) const;
         double                                              getChainHeat(void);

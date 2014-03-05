@@ -63,6 +63,13 @@ DistributionFunctionQuantile::DistributionFunctionQuantile(const DistributionFun
 }
 
 
+
+DistributionFunctionQuantile::~DistributionFunctionQuantile( void )
+{
+    delete templateObject;
+    delete templateObjectPositive;
+}
+
 DistributionFunctionQuantile& DistributionFunctionQuantile::operator=(const DistributionFunctionQuantile &c) {
     
     if (this != &c) {
