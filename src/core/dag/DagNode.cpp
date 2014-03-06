@@ -36,14 +36,9 @@ DagNode::DagNode( const DagNode &n ) :
 
 DagNode::~DagNode( void ) 
 {
-    // sanity check
-    if ( refCount != 0 )
-    {
-        std::cerr << "Deleting DAG Node with persisting references to it." << std::endl;
-    }
     // we do not release anything here
     // children and parents need to be clean somewhere else!
-    while ( !children.empty() ) 
+    while ( !children.empty() )
     {
         ( *children.begin() )->removeParent( this );
     }
@@ -54,7 +49,11 @@ DagNode::~DagNode( void )
         theParent->removeChild( this );
         parents.erase( theParent );
     }
-
+    // sanity check
+    if ( refCount != 0 )
+    {
+        std::cerr << "Deleting DAG Node with persisting references to it." << std::endl;
+    }
 }
 
 void DagNode::addChild(DagNode *child) const {
@@ -276,8 +275,8 @@ void DagNode::printChildren( std::ostream& o ) const {
     for ( std::set<DagNode*>::const_iterator i = children.begin(); i != children.end(); i++) {
         if ( i != children.begin() )
             o << ", ";
-        if ( getName() == "" )
-            o << "<" << (*i)->getName() << ">";
+        if ( (*i)->getName() == "" )
+            o << "<" << (*i) << ">";
         else
             o << (*i)->getName();
     }
@@ -293,8 +292,8 @@ void DagNode::printParents( std::ostream& o ) const {
     for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( i != parents.begin() )
             o << ", ";
-        if ( getName() == "" )
-            o << "<" << (*i)->getName() << ">";
+        if ( (*i)->getName() == "" )
+            o << "<" << (*i) << ">";
         else
             o << (*i)->getName();
     }

@@ -183,10 +183,9 @@ template<class valueType>
 void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o) const 
 {
     
-    o << this->name << ":" << std::endl;
     o << "_DAGClass     = constant" << std::endl;
     o << "_valueType    = ???" << std::endl;
-    o << "_value        = " << value << std::endl;
+    o << "_value        = " << *value << std::endl;
     
     o << "_parents      = ";
     this->printParents(o);
