@@ -273,9 +273,9 @@ void Simplex::setName(std::string const &n) {
 /** Print value for user */
 void Simplex::printValue(std::ostream &o) const {
     
-    o << "(";
+    o << "[ ";
     value->printValue(o,", ");
-    o << ")";
+    o << " ]";
 }
 
 

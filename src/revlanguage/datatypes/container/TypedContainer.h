@@ -430,8 +430,9 @@ void RevLanguage::TypedContainer<rbType>::setName(std::string const &n) {
 template <typename rbType>
 void RevLanguage::TypedContainer<rbType>::printValue(std::ostream &o) const {
     
+    o << "[ ";
     value->printValue(o,", ");
-    
+    o << " ]";
 }
 
 
