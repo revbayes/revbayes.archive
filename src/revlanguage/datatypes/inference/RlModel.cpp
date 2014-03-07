@@ -90,10 +90,15 @@ void Model::printValue(std::ostream &o) const {
 
     o << "Model with " << theNodes.size() << " nodes\n\n";
     
-    o << "List of nodes:\n\n";
+    o << "List of nodes:\n";
+    o << "==============\n\n";
 
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
+        if ( (*it)->getName() != "" )
+            o << (*it)->getName() << ":" << std::endl;
+        else
+            o << "<" << (*it) << ">:" << std::endl;
         (*it)->printStructureInfo(o);
         o << std::endl;
     }

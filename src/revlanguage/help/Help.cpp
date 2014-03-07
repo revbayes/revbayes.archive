@@ -32,7 +32,7 @@
 #include "RlUserInterface.h"
 #include <iostream>
 #include <sstream>
-#include "pugixml.hpp"
+#include "../../libs/pugixml_1.2/pugixml.hpp"
 #include <algorithm>
 #include <string> 
 #include <vector>
@@ -321,7 +321,7 @@ pugi::xml_parse_result Help::loadHelpFile(const std::string& qs)
     std::string command = qs;
     std::transform(command.begin(), command.end(), command.begin(), ::tolower);
     std::string helpfile = pathToHelpDir + command + ".xml";
-
+    
     // try to load the corresponding xml file
     pugi::xml_parse_result result = doc.load_file(helpfile.c_str(), pugi::parse_default);
     if (result.status != pugi::status_ok)
