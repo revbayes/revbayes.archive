@@ -181,7 +181,7 @@ const std::string& Simplex::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( RealPos::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
