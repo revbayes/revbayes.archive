@@ -129,8 +129,12 @@ void DagNode::collectDownstreamGraph(std::set<RevBayesCore::DagNode *> &nodes) {
 size_t DagNode::decrementReferenceCount( void ) const 
 {
     // Sanity check...
-    if ( refCount == 0)
-        std::cerr << "Decrementing reference count below 0" << std::endl;
+    if ( refCount == 0) {
+        if ( getName() != "" )
+            std::cerr << "Decrementing reference count of node " << getName() << " below 0" << std::endl;
+        else
+            std::cerr << "Decrementing reference count of node <" << this << "> below 0" << std::endl;
+    }
     refCount--;
     return refCount;
 }
