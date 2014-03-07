@@ -35,6 +35,7 @@ namespace RevBayesCore {
         // virtual asic utility functions
         virtual Topology*                                   clone(void) const;                                                      //!< Clone object
         
+        
         std::vector<std::string>                            getNames() const;
         TopologyNode&                                       getNode(size_t idx);                                                    //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                              //!< Get the node at index

@@ -36,6 +36,11 @@ DagNode::DagNode( const DagNode &n ) :
 
 DagNode::~DagNode( void ) 
 {
+    // sanity check
+    if ( refCount != 0 )
+    {
+        std::cerr << "Deleting DAG Node with persisting references to it." << std::endl;
+    }
     // we do not release anything here
     // children and parents need to be clean somewhere else!
     while ( !children.empty() )
@@ -48,11 +53,6 @@ DagNode::~DagNode( void )
         const DagNode *theParent = ( *parents.begin() );
         theParent->removeChild( this );
         parents.erase( theParent );
-    }
-    // sanity check
-    if ( refCount != 0 )
-    {
-        std::cerr << "Deleting DAG Node with persisting references to it." << std::endl;
     }
 }
 
