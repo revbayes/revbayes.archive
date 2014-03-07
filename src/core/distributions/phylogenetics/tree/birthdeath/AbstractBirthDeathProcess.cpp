@@ -318,7 +318,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
     tau->setRoot(root);
     
     // connect the tree with the topology
-    psi->setTopology( tau );
+    psi->setTopology( tau, true );
     
     // now simulate the speciation times
     // first, get the time of the origin

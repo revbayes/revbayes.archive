@@ -39,7 +39,7 @@ TopologyNode::TopologyNode(int indx) :
     newick(""), 
     newickNeedsRefreshing( true ), 
     parent( NULL ), 
-    topology( NULL ) 
+    tree( NULL ) 
 {
     
 }
@@ -55,7 +55,7 @@ TopologyNode::TopologyNode(const std::string& n, int indx) :
     newick(""), 
     newickNeedsRefreshing( true ), 
     parent( NULL ), 
-    topology( NULL ) 
+    tree( NULL ) 
 {
     
 }
@@ -63,7 +63,7 @@ TopologyNode::TopologyNode(const std::string& n, int indx) :
 
 /** Copy constructor. We use a shallow copy. */
 TopologyNode::TopologyNode(const TopologyNode &n) : 
-    topology( NULL ) 
+    tree( NULL ) 
 {
     
     // copy the members
@@ -174,9 +174,9 @@ void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp) {
         flagNewickRecomputation();
     
     // fire tree change event
-    if ( topology != NULL ) {
-        //        topology->getTreeChangeEventHandler().fire( *this );
-        topology->getTreeChangeEventHandler().fire( *c );
+    if ( tree != NULL ) {
+        //        tree->getTreeChangeEventHandler().fire( *this );
+        tree->getTreeChangeEventHandler().fire( *c );
     }
     
     tipNode = false;
@@ -249,7 +249,7 @@ std::string TopologyNode::buildNewickString( void ) {
             o << "]";
         }
         
-        if ( topology != NULL ) 
+        if ( tree != NULL ) 
         {
             o << ":" << getBranchLength();
         }
@@ -296,7 +296,7 @@ std::string TopologyNode::buildNewickString( void ) {
             }
             o << "]";
         }
-        if ( topology != NULL ) 
+        if ( tree != NULL ) 
         {
             o << ":" << getBranchLength();
         }
@@ -540,7 +540,7 @@ void TopologyNode::flagNewickRecomputation( void ) {
  * then we need to compute the age from the time.
  */
 double TopologyNode::getAge( void ) const {
-    return topology->getAge(index);
+    return tree->getAge(index);
 }
 
 
@@ -549,7 +549,7 @@ double TopologyNode::getAge( void ) const {
  * We comput the difference of my time and my parents time.
  */
 double TopologyNode::getBranchLength( void ) const {
-    return topology->getBranchLength(index);
+    return tree->getBranchLength(index);
 }
 
 
@@ -658,7 +658,7 @@ std::vector<std::string> TopologyNode::getTaxaStringVector( void ) const {
 
 double TopologyNode::getTime( void ) const {
     
-    return topology->getTime( index );
+    return tree->getTime( index );
 }
 
 
@@ -775,10 +775,10 @@ void TopologyNode::removeChild(TopologyNode* c, bool forceNewickRecomp) {
     interiorNode = children.size() > 0;
     
     // fire tree change event
-    if ( topology != NULL ) 
+    if ( tree != NULL ) 
     {
-        topology->getTreeChangeEventHandler().fire( *c );
-        topology->getTreeChangeEventHandler().fire( *this );
+        tree->getTreeChangeEventHandler().fire( *c );
+        tree->getTreeChangeEventHandler().fire( *this );
     }
     
     // mark for newick recomputation
@@ -815,10 +815,10 @@ void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp) {
             flagNewickRecomputation();
         
         // fire tree change event
-        if ( topology != NULL ) 
+        if ( tree != NULL ) 
         {
-            //            topology->getTreeChangeEventHandler().fire( *p );
-            topology->getTreeChangeEventHandler().fire( *this );
+            //            tree->getTreeChangeEventHandler().fire( *p );
+            tree->getTreeChangeEventHandler().fire( *this );
         }
         
     }
@@ -827,12 +827,12 @@ void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp) {
 }
 
 
-void TopologyNode::setTopology(Tree *t) {
+void TopologyNode::setTree(Tree *t) {
     
-    topology = t;
+    tree = t;
     for (std::vector<TopologyNode *>::iterator i = children.begin(); i != children.end(); ++i) 
     {
-        (*i)->setTopology( t );
+        (*i)->setTree( t );
     }
     
 }

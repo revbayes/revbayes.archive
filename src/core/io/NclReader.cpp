@@ -1554,7 +1554,7 @@ BranchLengthTree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleT
     tau->setRoot(root);
     
     // connect the tree with the topology
-    myTreeFromNcl->setTopology( tau );
+    myTreeFromNcl->setTopology( tau, true );
     
     // finally set the branch lengths
     for ( size_t i = 0; i < nodes.size(); ++i ) {

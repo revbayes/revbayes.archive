@@ -89,11 +89,11 @@ namespace RevBayesCore {
         bool                                        isRoot(void) const;                                                                 //!< Is node root?
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
-        void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                                           //!< Removes a specific child
+        void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                      //!< Removes a specific child
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node   
-        void                                        setParent(TopologyNode* p, bool enforceNewickRecomp = true);                                             //!< Sets the node's parent
-        void                                        setTopology(Tree *t);
+        void                                        setParent(TopologyNode* p, bool enforceNewickRecomp = true);                        //!< Sets the node's parent
+        void                                        setTree(Tree *t);
 
     protected:    
 
@@ -103,7 +103,7 @@ namespace RevBayesCore {
         // protected members
         std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around. 
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
-        Tree*                                       topology;                                                                           //!< A pointer to the tree for convinience access
+        Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
 
         std::string                                 name;                                                                               //!< Name of the node, i.e. identifier/taxon name
         size_t                                      index;                                                                              //!< Node index
