@@ -1,5 +1,5 @@
 #include "Clade.h"
-
+#include <algorithm>
 #include <iostream>
 
 
@@ -18,7 +18,7 @@ Clade::Clade(const std::vector<std::string> &n, double a) :
 {
     
     // for identifiability we always keep the taxon names sorted
-    sort(taxonNames.begin(), taxonNames.end());
+    std::sort(taxonNames.begin(), taxonNames.end());    
 }
 
 
