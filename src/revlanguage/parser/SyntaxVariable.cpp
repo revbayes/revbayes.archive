@@ -379,13 +379,17 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
         for (size_t i = 0; i < usedIndices; ++i) {
             ++it;
         }
-        for (; it!=index->end(); it++) {
+        for (; it!=index->end(); it++) 
+        {
             SyntaxElement*         indexSyntaxElement     = *it;
             RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
             
             
             //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
-                
+            
+            // create the new variable name
+            std::string varName = theVar->getName() + "[" + indexVar->getValue().toString() + "]";
+            
             // convert the value into a member object
             RbLanguageObject &mObject = theVar->getValue();
             
@@ -409,7 +413,7 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             RbLanguageObject* subElement = theMemberFunction->execute();
             delete theMemberFunction;
             
-            theVar = RbPtr<Variable>( new Variable( subElement ) );
+            theVar = RbPtr<Variable>( new Variable( subElement, varName ) );
         }
     }
         

@@ -125,16 +125,16 @@ RbLanguageObject* Simplex::executeMethod(std::string const &name, const std::vec
             throw RbException("Index out of bounds in []");
         }
         
-        RbLanguageObject* element = getElement(index.getValue() - 1);
-        RealPos * v = static_cast<RealPos*>( element );
-        return v;
-
-//        RevBayesCore::VectorIndexOperator<double>* f = new RevBayesCore::VectorIndexOperator<double>( this->value, index.getValueNode() );
-//        RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
-            
-//        RealPos* v = new RealPos( detNode );
-        
+//        RbLanguageObject* element = getElement(index.getValue() - 1);
+//        RealPos * v = static_cast<RealPos*>( element );
 //        return v;
+
+        RevBayesCore::VectorIndexOperator<double>* f = new RevBayesCore::VectorIndexOperator<double>( this->value, index.getValueNode() );
+        RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+            
+        RealPos* v = new RealPos( detNode );
+        
+        return v;
     } 
     
     return TypedContainer<std::vector<double> >::executeMethod( name, args );
