@@ -374,6 +374,19 @@ RbLanguageObject* RbLanguageObject::subtract(const RbLanguageObject &rhs) const
 }
 
 
+/**
+ * Get the info about this object as a string.
+ * By default we simply call the overloaded operator<<.
+ *
+ */
+std::string RbLanguageObject::toString( void ) const
+{
+    std::stringstream o;
+    printValue(o);
+    
+    return o.str();
+}
+
 /** Make sure we can print the value of the object easily */
 std::ostream& operator<<(std::ostream& o, const RbLanguageObject& x) {
     

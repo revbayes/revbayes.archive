@@ -76,18 +76,14 @@ public:
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
   
     // Member variable functions you may want to override
+    virtual RbLanguageObject*           executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
     virtual RbLanguageObject*           getMember(const std::string& name) const;                                                       //!< Get member variable 
-    virtual bool                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
-
-    
-    // Member variable functions you may want to override
     virtual const MemberRules&          getMemberRules(void) const;                                                                     //!< Get member rules
+    virtual const MethodTable&          getMethods(void) const;                                                                         //!< Get member methods (const)
+    virtual bool                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
     virtual void                        setConstMember(const std::string& name, const RbPtr<const Variable> &var);                      //!< Set member variable
     virtual void                        setMember(const std::string& name, const RbPtr<Variable> &var);                                 //!< Set member variable
-    
-    // Member method functions
-    virtual RbLanguageObject*           executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
-    virtual const MethodTable&          getMethods(void) const;                                                                         //!< Get member methods (const)
+    virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
 
     
     // Basic utility functions you should not have to override
