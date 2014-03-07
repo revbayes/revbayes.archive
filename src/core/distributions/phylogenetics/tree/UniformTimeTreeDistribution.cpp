@@ -218,7 +218,7 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
     tau->setRoot(root);
     
     // Connect the tree with the topology
-    psi->setTopology( tau );
+    psi->setTopology( tau, true );
     
     // Now simulate the speciation times counted from originTime
     std::vector<double> intNodeTimes;

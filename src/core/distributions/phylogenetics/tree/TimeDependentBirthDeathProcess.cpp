@@ -408,7 +408,7 @@ void TimeDependentBirthDeathProcess::simulateTree( void ) {
     tau->setRoot(root);
     
     // set the topology of the tree
-    psi.setTopology(tau);
+    psi.setTopology(tau,true);
     
     // now simulate the speciation times
     // draw a sample for the origin

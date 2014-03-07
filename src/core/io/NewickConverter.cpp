@@ -38,7 +38,7 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     tau->setRoot( root );
     
     // connect the topology to the tree
-    t->setTopology( tau );
+    t->setTopology( tau, true );
     
     // set the branch lengths
     for (size_t i = 0; i < nodes.size(); ++i) {

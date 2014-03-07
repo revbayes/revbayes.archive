@@ -66,7 +66,7 @@ RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t) 
     tau->setRoot( root );
     
     // connect the topology to the tree
-    tt->setTopology( tau );
+    tt->setTopology( tau, true );
     
     // set the ages
     for (size_t i = 0; i < nodes.size(); ++i) {

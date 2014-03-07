@@ -221,7 +221,7 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
     tau->setRoot(root);
     
     // connect the tree with the topology
-    psi->setTopology( tau );
+    psi->setTopology( tau, true );
     
     // now simulate the ages
     
