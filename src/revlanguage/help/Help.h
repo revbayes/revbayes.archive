@@ -25,9 +25,7 @@
 
 #include <string>
 #include <vector>
-#include "pugixml.hpp"
-//
-
+#include "../../libs/pugixml_1.2/pugixml.hpp"
 
 class Help {
 public:
@@ -58,12 +56,12 @@ private:
     template <typename T>std::string to_string(T value);
     std::string stripConsecutiveSpace(std::string subject);
 
- 
-    
+
+
     bool isHelpInitialized; //!< Flag indicating whether the help has been initialized
     std::string pathToHelpDir; //!< Where the help xml files are located
     pugi::xml_document doc; //!< the (parsed) xml help file
-    
+
 };
 
 #endif
