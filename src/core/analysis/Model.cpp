@@ -40,7 +40,6 @@ Model::Model(const std::set<const DagNode*> s) :
     {
         // add this node and build model graph
         addSourceNode( *it );
-        (*it)->incrementReferenceCount();
     }
     
 }
@@ -123,7 +122,6 @@ Model& Model::operator=(const Model &x)
         {
             // add this node and build model graph
             addSourceNode( *it );
-            (*it)->incrementReferenceCount();
         }
     }
     
@@ -157,7 +155,9 @@ void Model::addSourceNode(const DagNode *sourceNode)
     sourceNode->cloneDAG(nodesMap);
     
     // add the source node to our set of sources
-    sources.insert( nodesMap[sourceNode] );
+    DagNode *theNewSource = nodesMap[sourceNode];
+    theNewSource->incrementReferenceCount();
+    sources.insert( theNewSource );
         
     /* insert new nodes into direct access vector */
     std::map<const DagNode*, DagNode* >::iterator i = nodesMap.begin();
