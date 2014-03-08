@@ -94,7 +94,7 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
 /** Destructor */
 TopologyNode::~TopologyNode(void) 
 {
-    std::cerr << "Deleting TopologyNode with Address: " << this << std::endl;
+    
     // we do not own the parent so we do not delete it
     
     // free memory of children

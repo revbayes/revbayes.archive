@@ -48,14 +48,13 @@ Topology::Topology(const Topology& t) :
         setRoot(newRoot);
     }
     
-    std::cerr << "Created new topology at address '" << this << "' with root node '" << root << "'" << std::endl;
 }
 
 
 /* Destructor */
 Topology::~Topology(void) 
 {
-    std::cerr << "Deleting topology with address '" << this << "' with root node '" << root << "'" << std::endl;
+
     nodes.clear();
     
     delete root;
