@@ -209,7 +209,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::~A
     if ( tau != NULL ) 
     {
         // TODO: this needs to be implemented (Sebastian)
-        //        tau->getValue().getTreeChangeEventHandler().removeListener( this );
+        tau->getValue().getTreeChangeEventHandler().removeListener( this );
     }
     
     // free the partial likelihoods

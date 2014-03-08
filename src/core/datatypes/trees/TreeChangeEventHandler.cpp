@@ -22,22 +22,28 @@ TreeChangeEventHandler::~TreeChangeEventHandler(void) {
 }
 
 
-void TreeChangeEventHandler::addListener(TreeChangeEventListener *l) {
+void TreeChangeEventHandler::addListener(TreeChangeEventListener *l) 
+{
     listeners.insert( l );
     
 }
 
 
 
-void TreeChangeEventHandler::fire(const TopologyNode &n) {
-    for (std::set<TreeChangeEventListener*>::iterator it = listeners.begin(); it != listeners.end(); ++it) {
+void TreeChangeEventHandler::fire(const TopologyNode &n) 
+{
+
+    for (std::set<TreeChangeEventListener*>::iterator it = listeners.begin(); it != listeners.end(); ++it) 
+    {
         TreeChangeEventListener *l = *it;
         l->fireTreeChangeEvent( n );
     }
 }
 
 
-const std::set<TreeChangeEventListener*>& TreeChangeEventHandler::getListeners( void ) const {
+const std::set<TreeChangeEventListener*>& TreeChangeEventHandler::getListeners( void ) const 
+{
+
     return listeners;
 }
 
