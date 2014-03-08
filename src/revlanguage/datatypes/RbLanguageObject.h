@@ -41,7 +41,7 @@ typedef ArgumentRules MemberRules;                                              
 class RbLanguageObject {
     
 public:
-    virtual                            ~RbLanguageObject(void) {}                                                                       //!< Virtual destructor
+    virtual                            ~RbLanguageObject(void);                                                                         //!< Virtual destructor
     
     // overloaded operators
     bool                                operator==(const RbLanguageObject& x) const { return &x == this; }

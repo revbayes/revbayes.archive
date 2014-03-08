@@ -42,20 +42,20 @@ Topology::Topology(const Topology& t) :
     // need to perform a deep copy of the BranchLengthTree nodes
     if (t.root != NULL) 
     {
-        root = t.getRoot().clone();
+        TopologyNode * newRoot = t.getRoot().clone();
         
-        // fill the nodes vector
-        //    fillNodesByPreorderTraversal(root);
-        fillNodesByPhylogeneticTraversal(root);
+        // set the root. This will also set the nodes vector.
+        setRoot(newRoot);
     }
     
+    std::cerr << "Created new topology at address '" << this << "' with root node '" << root << "'" << std::endl;
 }
 
 
 /* Destructor */
 Topology::~Topology(void) 
 {
-    
+    std::cerr << "Deleting topology with address '" << this << "' with root node '" << root << "'" << std::endl;
     nodes.clear();
     
     delete root;

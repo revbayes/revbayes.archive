@@ -76,6 +76,17 @@ Model::~Model( void )
         }
     }
     
+    while ( !sources.empty() ) 
+    {
+        std::set<const DagNode*>::iterator theNode = sources.begin();
+        sources.erase( theNode );
+        
+        if ( (*theNode)->decrementReferenceCount() == 0)
+        {
+            delete *theNode;
+        }
+    }
+    
 }
 
 
@@ -161,6 +172,9 @@ void Model::addSourceNode(const DagNode *sourceNode)
         
         // increment the iterator;
         ++i;
+        
+        // increment the reference count to the new node
+        theNewNode->incrementReferenceCount();
             
         // insert in direct access vector
         nodes.push_back( theNewNode );

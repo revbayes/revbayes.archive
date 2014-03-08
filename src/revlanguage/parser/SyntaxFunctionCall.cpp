@@ -159,8 +159,6 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
     {
 
         RbPtr<Variable> theVar = variable->evaluateContent( env );
-
-        bool successful = false;
             
         RbLanguageObject &theMemberObject = theVar->getValue();
             
@@ -172,7 +170,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
         theMemberFunction->setMemberObject( theVar );
         func = theMemberFunction;
-        successful = true;
+
     }
     
     RbLanguageObject* funcReturnValue = func->execute();
