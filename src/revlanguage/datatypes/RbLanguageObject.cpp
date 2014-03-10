@@ -40,6 +40,16 @@ RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
 }
 
 
+/** 
+ * Destructor. 
+ * Nothing to do here because we don't own anything.
+ */
+RbLanguageObject::~RbLanguageObject( void )
+{
+    
+}
+
+
 /**
  * Addition operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.

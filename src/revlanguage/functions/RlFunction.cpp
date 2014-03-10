@@ -42,10 +42,6 @@ Function::Function(const Function &x) : RbLanguageObject( x ),
     env( x.env )
 {
     
-    // here we only get a shallow copy of the vector of arguments
-    args = x.args;
-    
-    argsProcessed = x.argsProcessed;
 }
 
 

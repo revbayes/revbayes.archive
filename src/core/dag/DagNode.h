@@ -87,6 +87,8 @@ namespace RevBayesCore {
                                                                     DagNode(const std::string &n);                                                  //!< Constructor
                                                                     DagNode(const DagNode &n);                                                      //!< Constructor
     
+        DagNode&                                                    operator=(const DagNode &d);                                                    //!< Overloaded assignment operator
+        
         virtual void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter) = 0;              //!< get affected nodes
         virtual void                                                keepMe(DagNode* affecter) = 0;                                                  //!< Keep value of myself
         virtual void                                                restoreMe(DagNode *restorer) = 0;                                               //!< Restore value of this nodes
