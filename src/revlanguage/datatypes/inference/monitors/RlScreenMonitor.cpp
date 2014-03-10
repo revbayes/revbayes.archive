@@ -29,7 +29,7 @@ void ScreenMonitor::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate space for a new ScreenMonitor object
     const std::string& sep = static_cast<const RlString &>( separator->getValue() ).getValue();
     int g = static_cast<const Natural &>( printgen->getValue() ).getValue();
     std::set<RevBayesCore::DagNode *> n;

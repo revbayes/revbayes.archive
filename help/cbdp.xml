@@ -25,32 +25,32 @@
     
     <argument>
         <label>lambda</label>
-        <callMethod>dynamic</callMethod>
+        <argumentType>dynamic</argumentType>
         <description>The speciation rate.</description>
         <valueType>Positive real number</valueType>
     </argument>
     <argument>
         <label>mu</label>
-        <callMethod>dynamic</callMethod>
+        <argumentType>dynamic</argumentType>
         <description>The extinction rate.</description>
         <valueType>Positive real number</valueType>
     </argument>
     <argument>
         <label>origin</label>
-        <callMethod>dynamic</callMethod>
+        <argumentType>dynamic</argumentType>
         <description>The time of the process since the origin, i.e., the length of the stem branch plus the crown age.</description>
         <valueType>Positive real number</valueType>
     </argument>
     <argument>
         <label>rho</label>
-        <callMethod>dynamic</callMethod>
+        <argumentType>dynamic</argumentType>
         <description>The taxon sampling probability/fraction.</description>
         <valueType>Positive real number between 0.0 and 1.0</valueType>
         <defaultValue>1.0</defaultValue>
     </argument>
     <argument>
         <label>samplingStrategy</label>
-        <callMethod>fixed</callMethod>
+        <argumentType>fixed</argumentType>
         <description>The sampling strategy of incomplete taxon sampling.</description>
         <valueType>String</valueType>
         <option>uniform</option>
@@ -59,7 +59,7 @@
     </argument>
     <argument>
         <label>condition</label>
-        <callMethod>fixed</callMethod>
+        <argumentType>fixed</argumentType>
         <description>The condition of the process, e.g., if we condition only on the time of the process, survival (non-extinction), obtaining a tree or the number of observed. For the latter choices we always condition additionally on the time.</description>
         <valueType>String</valueType>
         <option>time</option>
@@ -70,19 +70,19 @@
     </argument>
     <argument>
         <label>nTaxa</label>
-        <callMethod>fixed</callMethod>
+        <argumentType>fixed</argumentType>
         <description>The number of taxa. This is only needed for simulation/initialization purposes when a tree with exactly n taxa is needed in the model.</description>
         <valueType>Natural number</valueType>
     </argument>
     <argument>
         <label>names</label>
-        <callMethod>fixed</callMethod>
+        <argumentType>fixed</argumentType>
         <description>The taxon labels that will be applied to the simulated tree.</description>
         <valueType>Vector of strings</valueType>
     </argument>
     <argument>
         <label>constraints</label>
-        <callMethod>fixed</callMethod>
+        <argumentType>fixed</argumentType>
         <description>The topological constraints applied to the tree, i.e., conditioning on the occurence of the split between the clade and the remaining tree.</description>
         <valueType>Vector of clades</valueType>
         <defaultValue>NULL</defaultValue>
