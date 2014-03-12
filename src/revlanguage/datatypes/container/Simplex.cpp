@@ -124,17 +124,13 @@ RbLanguageObject* Simplex::executeMethod(std::string const &name, const std::vec
         {
             throw RbException("Index out of bounds in []");
         }
-        
-        RbLanguageObject* element = getElement(index.getValue() - 1);
-        RealPos * v = static_cast<RealPos*>( element );
-        return v;
 
-//        RevBayesCore::VectorIndexOperator<double>* f = new RevBayesCore::VectorIndexOperator<double>( this->value, index.getValueNode() );
-//        RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+        RevBayesCore::VectorIndexOperator<double>* f = new RevBayesCore::VectorIndexOperator<double>( this->value, index.getValueNode() );
+        RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
             
-//        RealPos* v = new RealPos( detNode );
+        RealPos* v = new RealPos( detNode );
         
-//        return v;
+        return v;
     } 
     
     return TypedContainer<std::vector<double> >::executeMethod( name, args );
@@ -181,7 +177,7 @@ const std::string& Simplex::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( RealPos::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -259,9 +255,13 @@ void Simplex::makeConstantValue( void ) {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<std::vector<double> >* newVal = new RevBayesCore::ConstantNode<std::vector<double> >(value->getName(), new std::vector<double>(value->getValue()) );
         value->replace(newVal);
-        value->decrementReferenceCount();       // We will not be referencing the value any longer
-        delete value;
+        // We will not be referencing the value any longer
+        if ( value->decrementReferenceCount() == 0) 
+        {
+            delete value;
+        }
         value = newVal;
+        value->incrementReferenceCount();
     }
 }
 

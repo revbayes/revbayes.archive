@@ -40,22 +40,25 @@ Model::Model(const std::set<const DagNode*> s) :
     {
         // add this node and build model graph
         addSourceNode( *it );
-        (*it)->incrementReferenceCount();
     }
     
 }
 
 
 /**
- * Copy constructor. We simply call delegate to the assignment operator. 
+ * Copy constructor. We instantiate the model from the previously stored source nodes. 
  *
  * \param[in]    m    The model object to copy.
  */
 Model::Model(const Model &m) : sources() 
 {
     
-    // delegate to assignment operator
-    *this = m;
+    // iterate over all sources
+    for (std::set<const DagNode*>::const_iterator it = m.sources.begin(); it != m.sources.end(); ++it) 
+    {
+        // add this node and build model graph
+        addSourceNode( *it );
+    }
     
 }
 
@@ -73,6 +76,17 @@ Model::~Model( void )
         if ( theNode->decrementReferenceCount() == 0 )
         {
             delete theNode;
+        }
+    }
+    
+    while ( !sources.empty() ) 
+    {
+        std::set<const DagNode*>::iterator theNode = sources.begin();
+        sources.erase( theNode );
+        
+        if ( (*theNode)->decrementReferenceCount() == 0)
+        {
+            delete *theNode;
         }
     }
     
@@ -107,12 +121,23 @@ Model& Model::operator=(const Model &x)
             }
         }
         
+        // empty the source nodes
+        while ( !sources.empty() ) 
+        {
+            std::set<const DagNode*>::iterator theNode = sources.begin();
+            sources.erase( theNode );
+            
+            if ( (*theNode)->decrementReferenceCount() == 0)
+            {
+                delete *theNode;
+            }
+        }
+        
         // iterate over all sources
         for (std::set<const DagNode*>::const_iterator it = x.sources.begin(); it != x.sources.end(); ++it) 
         {
             // add this node and build model graph
             addSourceNode( *it );
-            (*it)->incrementReferenceCount();
         }
     }
     
@@ -146,13 +171,22 @@ void Model::addSourceNode(const DagNode *sourceNode)
     sourceNode->cloneDAG(nodesMap);
     
     // add the source node to our set of sources
-    sources.insert( nodesMap[sourceNode] );
+    DagNode *theNewSource = nodesMap[sourceNode];
+    theNewSource->incrementReferenceCount();
+    sources.insert( theNewSource );
         
     /* insert new nodes into direct access vector */
     std::map<const DagNode*, DagNode* >::iterator i = nodesMap.begin();
     
     // we don't really know which nodes are new in our nodes map.
     // therefore we empty the nodes map and fill it again.
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    {
+        
+        DagNode *theNode = *it;
+        theNode->decrementReferenceCount();
+        
+    }
     nodes.clear();
     while ( i != nodesMap.end() ) 
     {
@@ -161,6 +195,9 @@ void Model::addSourceNode(const DagNode *sourceNode)
         
         // increment the iterator;
         ++i;
+        
+        // increment the reference count to the new node
+        theNewNode->incrementReferenceCount();
             
         // insert in direct access vector
         nodes.push_back( theNewNode );

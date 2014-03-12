@@ -209,7 +209,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::~A
     if ( tau != NULL ) 
     {
         // TODO: this needs to be implemented (Sebastian)
-        //        tau->getValue().getTreeChangeEventHandler().removeListener( this );
+        tau->getValue().getTreeChangeEventHandler().removeListener( this );
     }
     
     // free the partial likelihoods
@@ -735,6 +735,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // we only have the topology here as the parameter
     if (oldP == tau) 
     {
+        tau->getValue().getTreeChangeEventHandler().removeListener( this );
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
     }
