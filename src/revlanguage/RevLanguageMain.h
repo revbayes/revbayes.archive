@@ -20,12 +20,11 @@
 
 
 class RevLanguageMain {
-    
 public:
     RevLanguageMain();
+    int startRevLanguageEnvironment(const int argc, const char* argv[]);
     
-    int                        startRevLanguageEnvironment(const int argc, const char* argv[]);
-    
+
 };
 
 #endif
