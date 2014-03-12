@@ -204,6 +204,7 @@
 #include "Func_log.h"
 #include "Func_mean.h"
 #include "Func_power.h"
+#include "Func_powermix.h"
 #include "Func_round.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
@@ -563,6 +564,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		
 		
         addFunction( "power",     new Func_power() );
+        addFunction( "powermix",  new Func_powermix() );
         
         
         // sin function

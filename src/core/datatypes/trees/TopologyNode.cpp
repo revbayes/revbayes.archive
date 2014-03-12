@@ -174,8 +174,8 @@ void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp) {
         flagNewickRecomputation();
     
     // fire tree change event
-    if ( tree != NULL ) {
-        //        tree->getTreeChangeEventHandler().fire( *this );
+    if ( tree != NULL ) 
+    {
         tree->getTreeChangeEventHandler().fire( *c );
     }
     
@@ -817,7 +817,6 @@ void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp) {
         // fire tree change event
         if ( tree != NULL ) 
         {
-            //            tree->getTreeChangeEventHandler().fire( *p );
             tree->getTreeChangeEventHandler().fire( *this );
         }
         

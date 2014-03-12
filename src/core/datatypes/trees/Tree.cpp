@@ -36,7 +36,7 @@ Tree::Tree(void) :
 /* Copy constructor */
 Tree::Tree(const Tree& t) : 
     topology( NULL ),
-    changeEventHandler( t.changeEventHandler ),
+    changeEventHandler( ),
     ownsTopology( t.ownsTopology )
 {
     
@@ -68,7 +68,8 @@ Tree::~Tree(void)
 
 Tree& Tree::operator=(const Tree &t) {
     
-    if (this != &t) {
+    if (this != &t) 
+    {
         // nothing really to do here, should be done in the derived classes
         // @TODO: Find a better solution - Sebastian
         // Problem: If we redraw the tree because the initial states are invalid, 
@@ -206,26 +207,6 @@ double Tree::getTmrca(const TopologyNode &n) {
     return topology->getRoot().getTmrca( n );
 }
 
-//TreeChangeEventHandler& Tree::getTreeChangeEventHandler(void) const;//!< Get the change-event handler for this tree
-
-bool Tree::isBinary(void) const {
-    
-    return topology->isBinary();
-}
-
-bool Tree::isRooted(void) const {
-    
-    return topology->isRooted();
-}
-
-//void Tree::setRooted(bool tf) {
-//    throw RbException("Cannot set rootedness of tree. This needs to be done in the topology!!!");
-//}
-//
-//void Tree::setRoot(TopologyNode* r) {
-//    throw RbException("Cannot set root of tree. This needs to be done in the topology!!!");
-//}
-
 
 TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const {
     
@@ -248,6 +229,20 @@ bool Tree::hasSameTopology(const RevBayesCore::Tree &t) const {
 bool Tree::hasSameTopology(const RevBayesCore::Topology &t) const {
     
     return topology->getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
+}
+
+
+bool Tree::isBinary(void) const 
+{
+    
+    return topology->isBinary();
+}
+
+
+bool Tree::isRooted(void) const 
+{
+    
+    return topology->isRooted();
 }
 
 

@@ -40,6 +40,16 @@ RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
 }
 
 
+/** 
+ * Destructor. 
+ * Nothing to do here because we don't own anything.
+ */
+RbLanguageObject::~RbLanguageObject( void )
+{
+    
+}
+
+
 /**
  * Addition operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.
@@ -373,6 +383,19 @@ RbLanguageObject* RbLanguageObject::subtract(const RbLanguageObject &rhs) const
     return NULL;
 }
 
+
+/**
+ * Get the info about this object as a string.
+ * By default we simply call the overloaded operator<<.
+ *
+ */
+std::string RbLanguageObject::toString( void ) const
+{
+    std::stringstream o;
+    printValue(o);
+    
+    return o.str();
+}
 
 /** Make sure we can print the value of the object easily */
 std::ostream& operator<<(std::ostream& o, const RbLanguageObject& x) {
