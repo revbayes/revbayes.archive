@@ -15,45 +15,80 @@
 #include "Workspace.h"
 #include "workspace/FunctionTable.h"
 #include "functions/RlFunction.h"
+#include "WorkspaceUtils.h"
+#include "CommandLineUtils.h"
 extern "C" {
-#include "linenoise/linenoise.h" //https://github.com/tadmarshall/linenoise
+#include "linenoise/linenoise.h" //http://github.com/msteveb/linenoise
 }
 
-/* @return 
- *      all functions the user have access to */
-std::vector<std::string> getFunctionTable(bool print) {
-    typedef std::multimap<std::string, RevLanguage::Function*> FunctionMap;
-    typedef std::vector<std::string> StringVector;    
- 
-    FunctionMap functionsMap = RevLanguage::Workspace::userWorkspace().getFunctionTable().getTableCopy(true);
-    
-    StringVector functions;
-    for (FunctionMap::iterator it = functionsMap.begin(); it != functionsMap.end(); ++it) {
-        functions.push_back(it->first);
-    }
-    
-    StringVector result;
-    for (StringVector::iterator it = functions.begin(); it < std::unique(functions.begin(), functions.end()); it++) {
-        if (print) {
-            std::cout << *it << std::endl;
-        }
-        result.push_back(*it);
-    }
-    return result;
+typedef std::vector<std::string> StringVector;
+
+WorkspaceUtils workspaceUtils;
+CommandLineUtils commandLineUtils;
+
+StringVector completions;
+StringVector currentFunction;
+
+/* callback for '.' */
+int dotCallback(const char *buf, size_t len, char c) {
+
+    return 0;
 }
 
-// tab completion callback
-// todo: add more sophisticated options, for now only function names are listed
+/* callback for '(' */
+int openingParCallback(const char *buf, size_t len, char c) {
+    std::string func = commandLineUtils.getFunctionName(buf);
+    StringVector s = workspaceUtils.getFunctionSignatures(func);
+    for (unsigned int i = 0; i < s.size(); i++) {
+        printf("\n\r%s\n\r", s[i].c_str());
+    }
+    return 0;
+}
+
+/* tab completion callback */
+// todo: list object members
+// todo: parameter values: make a guess if parameter value is a file... and display that somehow 
+
 void completion(const char *buf, linenoiseCompletions *lc) {
-    std::vector<std::string> functions = getFunctionTable(false);
-    int startpos = 0;
-    int matchlen = std::strlen(buf + startpos);
+    unsigned int separatorPos = commandLineUtils.getLastSeparatorPosition(buf);
+    unsigned int startPos = separatorPos;
     
-    for (unsigned int i = 0; i < functions.size(); i++) {
-        if (strncasecmp(buf + startpos, functions[i].c_str(), matchlen) == 0) {
-            linenoiseAddCompletion(lc, functions[i].c_str());
-        }
+    StringVector functions = workspaceUtils.getFunctions();
+    StringVector objects = workspaceUtils.getObjects();
+    StringVector everything = functions;
+    everything.insert(everything.end(), objects.begin(), objects.end());
+    
+    char lastChar = buf[strlen(buf)-1];
+
+    if((std::strlen(buf) > 0) && !commandLineUtils.lastEffectiveSeparatorIsBlank(buf)){
+        if (lastChar == '(') {
+            completions = workspaceUtils.getFunctionParameters(commandLineUtils.getFunctionName(buf));
+        } else if (lastChar == '.') { 
+            // completions = workspaceUtils.getObjectMembers(commandLineUtils.getObjectName(buf));
+        }        
+    }else{        
+        if(lastChar != ' '){
+            startPos = commandLineUtils.getLastSeparatorPosition(buf, true);
+        }    
+        completions.clear();
+        int matchlen = std::strlen(buf + startPos);
+        for (unsigned int i = 0; i < everything.size(); i++) {
+            if (strncasecmp(buf + startPos, everything[i].c_str(), matchlen) == 0) {
+                completions.push_back(everything[i]);
+            }
+        }        
     }
+    
+    //pad previous complete commands    
+    std::string newBuffer;
+    for (unsigned int i = 0; i < startPos; i++) {
+        newBuffer += buf[i];
+    }   
+    
+    for (unsigned int i = 0; i < completions.size(); i++) {        
+        linenoiseAddCompletion(lc, (newBuffer + completions[i]).c_str());
+    }
+
 }
 
 int main(int argc, const char * argv[]) {
@@ -62,10 +97,12 @@ int main(int argc, const char * argv[]) {
     RevLanguageMain rl;
     rl.startRevLanguageEnvironment(argc, argv);
 
-    /* Set the tab completion callback.*/
+    /* Set callback functions*/
     linenoiseSetCompletionCallback(completion);
+    linenoiseSetCharacterCallback(dotCallback, '.');
+    linenoiseSetCharacterCallback(openingParCallback, '(');
 
-     /* Load the history at startup */
+    /* Load the history at startup */
     linenoiseHistoryLoad("history.txt");
 
     /* The call to linenoise() will block as long as the user types something
@@ -75,7 +112,7 @@ int main(int argc, const char * argv[]) {
 
     char *default_prompt = (char *) "RevBayes > ";
     char *incomplete_prompt = (char *) "RevBayes + ";
-    char *prompt = default_prompt;
+    char* prompt = default_prompt;
     int result = 0;
     char *line;
     std::string commandLine;
@@ -101,7 +138,6 @@ int main(int argc, const char * argv[]) {
         free(line);
     }
     return 0;
-
 
 }
 
