@@ -11,12 +11,14 @@
 #include "RbMathLogic.h"
 #include "RbOptions.h"
 #include "SequenctialMoveSchedule.h"
+#include "SingleRandomMoveSchedule.h"
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
 #include "ExtendedNewickAdmixtureTreeMonitor.h"
 #include "AdmixtureBipartitionMonitor.h"
 
 #include <cmath>
+#include <iomanip>
 #include <sstream>
 #include <typeinfo>
 
@@ -34,15 +36,17 @@ using namespace RevBayesCore;
  * \param[in]    ca   Is the chain active?
  * \param[in]    ch   The chain heat (temperature).
  * \param[in]    ci   The chain index (for multiple chain, e.g. in MCMCMC).
+ * \param[in]    sT   Move schedule type (one of "random", "single", or "sequential").
  */
-Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, bool ca, double ch, int ci) : 
-    model( m ), 
-    moves(), 
-    monitors(), 
-    schedule( new RandomMoveSchedule(std::vector<Move*>()) ), 
-    chainActive(ca), 
-    chainHeat(ch), 
-    chainIdx(ci) 
+Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, std::string sT, bool ca, double ch, int ci) :
+    chainActive(ca),
+    chainHeat(ch),
+    chainIdx(ci),
+    model( m ),
+    monitors(),
+    moves(),
+    schedule(NULL),
+    scheduleType(sT)
 {
     
     // create an independent copy of the model, monitors and moves
@@ -59,13 +63,14 @@ Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Moni
  * \param[in]    m    The MCMC object to copy.
  */
 Mcmc::Mcmc(const Mcmc &m) : 
-        model( m.model ), 
-        moves(), 
-        monitors(), 
-        schedule( new RandomMoveSchedule(std::vector<Move*>()) ), 
-        chainActive(m.chainActive), 
-        chainHeat(m.chainHeat), 
-        chainIdx(m.chainIdx) 
+        chainActive(m.chainActive),
+        chainHeat(m.chainHeat),
+        chainIdx(m.chainIdx),
+        model( m.model ),
+        monitors(),
+        moves(),
+        schedule(NULL),
+        scheduleType( m.scheduleType )
 {
    
     // temporary references
@@ -250,6 +255,11 @@ void Mcmc::initializeChain( void ) {
     std::set< const DagNode *> visited;
     getOrderedStochasticNodes(dagNodes[0],orderedStochNodes, visited );
     
+    /* Get rid of previous move schedule, if any */
+    if ( schedule )
+        delete schedule;
+    schedule = NULL;
+    
     /* Get initial lnProbability of model */
 
     // first we touch all nodes so that the likelihood is dirty
@@ -342,10 +352,14 @@ void Mcmc::initializeChain( void ) {
         
     }
     
-    delete schedule;
-    schedule = new RandomMoveSchedule(moves);
-    //if (moveSchedule != NULL)
-        
+    /* Create the move scheduler */
+    if ( scheduleType == "sequential" )
+        schedule = new SequentialMoveSchedule( moves );
+    else if ( scheduleType == "single" )
+        schedule = new SingleRandomMoveSchedule( moves );
+    else
+        schedule = new RandomMoveSchedule( moves );
+    
     generation = 0;
 }
 
@@ -557,6 +571,28 @@ void Mcmc::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor 
 
 void Mcmc::run(int kIterations) {
     
+    /* Let user know what we are doing */
+    if ( generation == 0 )
+        std::cout << "Running MCMC simulation for " << kIterations << " iterations" << std::endl;
+    else
+        std::cout << "Appending " << kIterations << " iterations to previous MCMC simulation of " << generation << " iterations" << std::endl;
+    
+    if ( scheduleType == "single" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
+        std::cout << "single move picked randomly per iteration" << std::endl;
+    }
+    else if ( scheduleType == "random" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+    }
+    else if ( scheduleType == "sequential" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+    }
+    
     // Initialize objects used in run
     initializeChain();
     initializeMonitors();
@@ -567,6 +603,8 @@ void Mcmc::run(int kIterations) {
         startMonitors();
         monitor(0);
     }
+    
+    std::cout << std::endl;
     
     // reset the counters for the move schedules
     for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
