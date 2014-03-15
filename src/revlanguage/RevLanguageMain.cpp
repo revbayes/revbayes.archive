@@ -15,10 +15,8 @@
 #include <string>
 #include <cstdlib>
 
-
-
 RevLanguageMain::RevLanguageMain() {
-    
+
 }
 
 int RevLanguageMain::startRevLanguageEnvironment(const int argc, const char* argv[]) {
@@ -32,51 +30,34 @@ int RevLanguageMain::startRevLanguageEnvironment(const int argc, const char* arg
     Help::getHelp().initializeHelp();
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 
-#	if defined DEBUG_PARSER
-    std::cerr << "Global workspace after initialization:" << std::endl;
-    RevLanguage::Workspace::globalWorkspace().printValue(std::cerr);
-    std::cerr << std::endl;
-#	endif
-
     // Print an extra line to separate prompt from possible output from help call
     RevLanguage::UserInterface::userInterface().output("\n");
 
-    // Create command line variable
-    std::string commandLine;
+#if defined DEBUG_PARSER
+    std::cerr << "Global workspace after initialization:" << std::endl;
+    RevLanguage::Workspace::globalWorkspace().printValue(std::cerr);
+    std::cerr << std::endl;
+#endif
 
-    // Process input; exit is managed by Parser
+    // process the command line arguments as source file names
     int argIndex = 1;
+    std::string line;
+    std::string commandLine;
     int result = 0;
-    for (;;) {
 
-        std::string line;
-
-        // Read the command; we first process the command line arguments as source file names
-        if (argIndex < argc) {
-            line = "source(\"" + std::string(argv[argIndex++]) + "\")";
-            std::cout << "RevBayes > " << line << std::endl;
-        }
-        else {
-            if (result == 0)
-                std::cout << "RevBayes > ";
-            else /* if (result == 1) */
-                std::cout << "RevBayes + ";
-            std::istream& retstream = getline(std::cin, line);
-            if (!retstream) {
-                // line = "q()";
-                exit(0);
-            }
-        }
+    while (argIndex < argc) {
+        line = "source(\"" + std::string(argv[argIndex++]) + "\")";
+        std::cout << "RevBayes > " << line << std::endl;
 
         // Process the command line
-        if ( result == 1 )
+        if (result == 1)
             commandLine += line;
         else
             commandLine = line;
         result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
 
         // We just hope for better input next time
-        if ( result == 2 ) {
+        if (result == 2) {
             result = 0;
         }
     }

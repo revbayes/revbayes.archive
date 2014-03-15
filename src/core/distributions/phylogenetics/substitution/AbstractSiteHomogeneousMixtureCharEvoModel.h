@@ -735,6 +735,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // we only have the topology here as the parameter
     if (oldP == tau) 
     {
+        tau->getValue().getTreeChangeEventHandler().removeListener( this );
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
     }

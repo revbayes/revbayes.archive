@@ -34,7 +34,10 @@ namespace RevBayesCore {
     public:
         // constructors and destructors
         TreeChangeEventHandler(void);
+        TreeChangeEventHandler(const TreeChangeEventHandler &h);
         virtual                                    ~TreeChangeEventHandler(void);
+        
+        TreeChangeEventHandler&                     operator=(const TreeChangeEventHandler &h);
         
         // public methods
         void                                        addListener(TreeChangeEventListener* l);                        //!< Add a new listener

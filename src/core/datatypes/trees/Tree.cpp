@@ -68,7 +68,8 @@ Tree::~Tree(void)
 
 Tree& Tree::operator=(const Tree &t) {
     
-    if (this != &t) {
+    if (this != &t) 
+    {
         // nothing really to do here, should be done in the derived classes
         // @TODO: Find a better solution - Sebastian
         // Problem: If we redraw the tree because the initial states are invalid, 

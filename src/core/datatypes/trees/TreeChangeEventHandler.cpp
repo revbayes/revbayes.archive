@@ -13,19 +13,45 @@
 
 using namespace RevBayesCore;
 
-TreeChangeEventHandler::TreeChangeEventHandler(void) {
+TreeChangeEventHandler::TreeChangeEventHandler(void) :
+    listeners()
+{
+
+}
+
+TreeChangeEventHandler::TreeChangeEventHandler(const TreeChangeEventHandler &h)  :
+    listeners()
+{
+    
 }
 
 
-TreeChangeEventHandler::~TreeChangeEventHandler(void) {
+TreeChangeEventHandler::~TreeChangeEventHandler(void) 
+{
+    if ( listeners.empty() == false )
+    {
+        std::cerr << "Deleting handler while " << listeners.size() << " listener are still listening." << std::endl;
+    }
+}
+
+
+TreeChangeEventHandler& TreeChangeEventHandler::operator=(const TreeChangeEventHandler &h)
+{
     
+    if ( this != &h )
+    {
+        listeners.clear();
+    }
+    
+    return *this;
 }
 
 
 void TreeChangeEventHandler::addListener(TreeChangeEventListener *l) 
 {
+
     listeners.insert( l );
-    
+
 }
 
 
@@ -48,9 +74,13 @@ const std::set<TreeChangeEventListener*>& TreeChangeEventHandler::getListeners( 
 }
 
 
-void TreeChangeEventHandler::removeListener(TreeChangeEventListener *l) {
+void TreeChangeEventHandler::removeListener(TreeChangeEventListener *l) 
+{
+
     std::set<TreeChangeEventListener*>::iterator pos = listeners.find( l );
-    if ( pos != listeners.end() ) {
+    if ( pos != listeners.end() ) 
+    {
         listeners.erase( l );
     }
+    
 }

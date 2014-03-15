@@ -25,7 +25,7 @@
 
 #include <string>
 #include <vector>
-#include "../../libs/pugixml_1.2/pugixml.hpp"
+#include "pugixml.hpp"
 
 class Help {
 public:
