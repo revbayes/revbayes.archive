@@ -42,7 +42,7 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
         
         
-        // Distribution functions you have to override
+        // Class-specific functions you have to override
         virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                                                 //!< Create a random variable from this distribution
         
         

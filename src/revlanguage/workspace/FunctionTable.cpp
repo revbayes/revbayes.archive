@@ -93,7 +93,10 @@ void FunctionTable::addFunction(const std::string name, Function *func) {
         }
     }
     table.insert(std::pair<std::string, Function* >(name, func));
-    
+
+    /* Name the function so that it is aware of what it is called */
+    func->setName( name );
+    std::cerr << func << " -- " << name << std::endl;
 }
 
 

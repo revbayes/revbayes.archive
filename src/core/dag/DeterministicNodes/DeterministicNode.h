@@ -67,7 +67,7 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string
     
     this->type = DagNode::DETERMINISTIC;
     
-    // get the parameters from the distribution and add them as my parents in the DAG
+    // get the parameters from the function and add them as my parents in the DAG
     const std::set<const DagNode*> funcParents = function->getParameters();
     
     for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it) {
@@ -77,7 +77,6 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string
     // set myself as the DAG node of the function
     function->setDeterministicNode( this );
 }
-
 
 
 template<class valueType>
@@ -201,8 +200,12 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
 {
     
     o << "_DAGClass    = deterministic" << std::endl;
-    o << "_valueType   = ???" << std::endl;
-    o << "_function    = " << function << std::endl;
+
+    if ( function->getRevDeclaration().size() == 0)
+        o << "_function    = Unknown function <" << function << ">" << std::endl;
+    else
+        o << "_function    = " << function->getRevDeclaration() << std::endl;
+
     o << "_touched     = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     o << "_value       = " << function->getValue() << std::endl;
     
