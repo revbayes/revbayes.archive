@@ -199,7 +199,7 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
 {
     
-    o << "_variableType = deterministic" << std::endl;
+    o << "_variableType = Deterministic DAG node" << std::endl;
 
     if ( function->getRevDeclaration().size() == 0)
         o << "_function     = Unknown function <" << function << ">" << std::endl;
