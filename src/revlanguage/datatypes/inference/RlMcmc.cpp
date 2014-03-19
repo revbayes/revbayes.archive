@@ -113,7 +113,7 @@ const MemberRules& Mcmc::getMemberRules(void) const {
         options.push_back( RlString("random") );
         options.push_back( RlString("single") );
         
-        memberRules.push_back( new OptionRule( "moveschedule", new RlString( "sequential" ), options ) );
+        memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options ) );
         
         rulesSet = true;
     }
