@@ -604,8 +604,6 @@ void Mcmc::run(int kIterations) {
         monitor(0);
     }
     
-    std::cout << std::endl;
-    
     // reset the counters for the move schedules
     for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
     {
