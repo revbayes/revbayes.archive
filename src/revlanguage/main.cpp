@@ -47,7 +47,7 @@ std::vector<std::string> getFunctionTable(bool print) {
 void completion(const char *buf, linenoiseCompletions *lc) {
     std::vector<std::string> functions = getFunctionTable(false);
     int startpos = 0;
-    int matchlen = std::strlen(buf + startpos);
+    size_t matchlen = std::strlen(buf + startpos);
     
     for (unsigned int i = 0; i < functions.size(); i++) {
         if (strncasecmp(buf + startpos, functions[i].c_str(), matchlen) == 0) {

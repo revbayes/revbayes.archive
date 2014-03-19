@@ -17,12 +17,12 @@ namespace RevBayesCore {
     class GeographicArea : public Cloneable
     {
     public:
-        GeographicArea(unsigned int idx, double lat, double lon, std::string n="", double alt=1.0, std::set<GeographicArea*> aa=std::set<GeographicArea*>(), std::set<GeographicArea*> ra=std::set<GeographicArea*>());
+        GeographicArea(size_t idx, double lat, double lon, std::string n="", double alt=1.0, std::set<GeographicArea*> aa=std::set<GeographicArea*>(), std::set<GeographicArea*> ra=std::set<GeographicArea*>());
         GeographicArea(const GeographicArea& g);
         GeographicArea& operator=(const GeographicArea& g);
         virtual GeographicArea* clone(void) const;
         std::string getName(void);
-        unsigned int getIndex(void);
+        size_t getIndex(void);
         double getLatitude(void);
         double getLongitude(void);
         double getAltitude(void);
@@ -35,7 +35,7 @@ namespace RevBayesCore {
         std::string getStr(void);
         
     protected:
-        unsigned int index;
+        size_t index;
         std::string name;
         double latitude;
         double longitude;

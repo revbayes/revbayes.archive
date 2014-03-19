@@ -107,7 +107,7 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
     
     // randomly draw a new age (using the cdf of the weight function)
     double u = rng->uniform01();
-    double proposedAge;
+    double proposedAge = 0.0;
     size_t index = 1;
     while ( u > 0 ) {
         double block = (lnl[index]+lnl[index-1])/2.0 * (interval[index] - interval[index-1]);
@@ -127,7 +127,7 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
     tau.setAge( node->getIndex(), proposedAge );
     
     // compute Hastings ratio (ratio of the weights)
-    double weight_old, weight_new;
+    double weight_old, weight_new = 1.0;
     prev_x = 0.0;
     pre_lnl = 0.0;
     bool foundForward = false, foundBackward = false;
@@ -149,7 +149,7 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
         pre_lnl = lnl[i+1];
     }
     
-    
+    // where is weight_old from??
     return log( weight_old / weight_new );
 }
 
