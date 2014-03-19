@@ -1,5 +1,5 @@
 #ifndef RlDiversityDependentPureBirthProcess_H
-#define RlDiversityDependentPureBirthProcess_h
+#define RlDiversityDependentPureBirthProcess_H
 
 #include "DiversityDependentPureBirthProcess.h"
 #include "RlTypedDistribution.h"

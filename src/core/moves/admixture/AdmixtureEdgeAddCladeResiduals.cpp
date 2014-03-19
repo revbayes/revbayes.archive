@@ -287,7 +287,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         double a = 1.0;
         double b = 1.5;
         double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
-        double lnW = RbStatistics::Beta::lnPdf(a, b, admixtureWeight);
+        // double lnW = RbStatistics::Beta::lnPdf(a, b, admixtureWeight);
         admixtureWeight /= 2;
         
         // insert admixtureParent into graph
@@ -330,13 +330,13 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         admixtureCount->setValue(new int(numEvents));
         
         // stats
-//        std::cout << "add_CR\t" << lnP << "\t" << lnW << ";\n";
-//        std::cout << "a " << storedAdmixtureChild->getAge() << "\n";
-//        std::cout << "w " << storedAdmixtureChild->getWeight() << "\n";
-//        std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
+        // std::cout << "add_CR\t" << lnP << "\t" << lnW << ";\n";
+        // std::cout << "a " << storedAdmixtureChild->getAge() << "\n";
+        // std::cout << "w " << storedAdmixtureChild->getWeight() << "\n";
+        // std::cout << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
         
         // bombs away
-        //return -(lnP + lnW);
+        // return -(lnP + lnW);
         return 0.0;
     }
 }
@@ -364,9 +364,9 @@ void AdmixtureEdgeAddCladeResiduals::rejectSimpleMove( void ) {
         tau.getRoot().flagNewickRecomputation();
         
         admixtureCount->setValue(new int(numEvents-1));
-  //      std::cout << "reject add clade residuals\n";
+        // std::cout << "reject add clade residuals\n";
     }
-    true;
+    // true;
 }
 
 void AdmixtureEdgeAddCladeResiduals::acceptSimpleMove(void)
