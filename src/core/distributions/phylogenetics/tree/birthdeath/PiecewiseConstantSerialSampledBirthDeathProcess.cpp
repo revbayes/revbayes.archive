@@ -3,7 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-
+#include <algorithm>
 
 using namespace RevBayesCore;
 
