@@ -1,11 +1,3 @@
-//
-//  DelimitedDataReader.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 12/2/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include "RbFileManager.h"
 #include "DelimitedDataReader.h"
 #include <iostream>
@@ -15,9 +7,14 @@
 
 using namespace RevBayesCore;
 
-DelimitedDataReader::DelimitedDataReader(std::string fn, char d) : filename(fn), delimiter(d)
+DelimitedDataReader::DelimitedDataReader(const std::string &fn, char d) : 
+    filename(fn), 
+    delimiter(d),
+    chars()
 {
+    
     readData();
+    
 }
 
 void DelimitedDataReader::readData(void)
@@ -34,7 +31,6 @@ void DelimitedDataReader::readData(void)
     chars.clear();
     
     // read file
-    bool firstLine = true;
     std::string readLine = "";
     while (std::getline(readStream,readLine))
     {
@@ -50,9 +46,10 @@ void DelimitedDataReader::readData(void)
         chars.push_back(tmpChars);
         tmpChars.clear();
     };
+    
 }
 
-std::vector<std::vector<std::string> > DelimitedDataReader::getChars(void)
+const std::vector<std::vector<std::string> >& DelimitedDataReader::getChars(void)
 {
     return chars;
 }

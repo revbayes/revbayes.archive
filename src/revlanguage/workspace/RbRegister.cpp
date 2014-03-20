@@ -65,6 +65,7 @@
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
+#include "RlConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlDiversityDependentPureBirthProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
 
@@ -351,6 +352,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
+        
+        // constant rate birth-death process distribution
+        addDistribution( "BirthDeathConstantSerial", new ConstantRateSerialSampledBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
         addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );

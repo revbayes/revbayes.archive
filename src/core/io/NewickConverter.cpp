@@ -31,8 +31,22 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     std::vector<TopologyNode*> nodes;
     std::vector<double> brlens;
     
+    
+    // create a string-stream and throw the string into it
+    std::stringstream ss (std::stringstream::in | std::stringstream::out);
+    ss << n;
+    
+    // ignore white spaces
+    std::string trimmed = "";
+    char c;
+    while ( ss.good() ) {
+        c = ss.get();
+        if ( c != ' ')
+            trimmed += c;
+    }
+    
     // construct the tree starting from the root
-    TopologyNode *root = createNode( n, nodes, brlens );
+    TopologyNode *root = createNode( trimmed, nodes, brlens );
     
     // set up the tree
     tau->setRoot( root );

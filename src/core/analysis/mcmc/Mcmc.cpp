@@ -110,6 +110,22 @@ void Mcmc::burnin(int generations, int tuningInterval) {
     initializeChain();
     initializeMonitors();
     
+#ifdef DEBUG_MCMC
+    std::vector<DagNode *>& dagNodes = model.getDagNodes();
+#endif
+    
+    // reset the counters for the move schedules
+    double movesPerIteration = 0.0;
+    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
+    {
+        (*it)->resetCounters();
+        movesPerIteration += (*it)->getUpdateWeight();
+    }
+    
+    std::cout << "Running MCMC while performing " << movesPerIteration << " proposals per iteration." << std::endl;
+    
+    int printInterval = int(fmax(1,generations/20.0));
+    
     if (chainActive)
     {
         std::cout << "burning in the chain ..." << std::endl;
@@ -117,18 +133,6 @@ void Mcmc::burnin(int generations, int tuningInterval) {
         std::cout << "*";
         std::cout.flush();
     }
-    
-#ifdef DEBUG_MCMC
-    std::vector<DagNode *>& dagNodes = model.getDagNodes();
-#endif
-    
-    // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
-    {
-        (*it)->resetCounters();
-    }
-    
-    int printInterval = int(fmax(1,generations/20.0));
     
     // Run the chain
     for (int k=1; k<=generations; k++) 

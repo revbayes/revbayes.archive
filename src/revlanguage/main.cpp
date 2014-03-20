@@ -16,7 +16,7 @@
 #include "workspace/FunctionTable.h"
 #include "functions/RlFunction.h"
 extern "C" {
-#include "linenoise/linenoise.h" //https://github.com/tadmarshall/linenoise
+#include "../libs/linenoise/linenoise.h" //https://github.com/tadmarshall/linenoise
 }
 
 /* @return 
