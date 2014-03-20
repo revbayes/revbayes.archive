@@ -42,7 +42,7 @@ namespace RevBayesCore {
         virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                                         //!< Compute the log-transformed probability of the current value.
         virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const = 0;                                        //!< Simulate n speciation events.
         virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-
+        virtual void                                        prepareProbComputation(void);
         
         // helper functions
         void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, 

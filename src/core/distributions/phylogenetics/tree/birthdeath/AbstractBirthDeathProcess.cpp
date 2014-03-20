@@ -143,7 +143,10 @@ void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*>
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double AbstractBirthDeathProcess::computeLnProbability( void ) {
+double AbstractBirthDeathProcess::computeLnProbability( void ) 
+{
+    // prepare probability computation
+    prepareProbComputation();
     
     // variable declarations and initialization
     double lnProbTimes = 0;
@@ -156,7 +159,6 @@ double AbstractBirthDeathProcess::computeLnProbability( void ) {
     
     // present time 
     double rootAge = value->getRoot().getAge();
-    std::cerr << value->getRoot().getChildren().size() << std::endl;
     double org = origin->getValue();
     
     // test that the time of the process is larger or equal to the present time
@@ -331,6 +333,16 @@ bool AbstractBirthDeathProcess::matchesConstraints( void )
     }
     
     return true;
+}
+
+
+/**
+ * Prepare the probability computation. Here we can pre-calculate some values for more
+ * efficient probability calculation. The derived classes may want to do something ...
+ */
+void AbstractBirthDeathProcess::prepareProbComputation( void )
+{
+    
 }
 
 

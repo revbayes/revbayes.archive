@@ -81,104 +81,6 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-    // clean all the sets
-    rateChangeTimes.clear();
-    birth.clear();
-    death.clear();
-    fossil.clear();
-    sampling.clear();
-    
-    std::set<double> eventTimes;
-    
-    const std::vector<double>& birthTimes = lambdaTimes->getValue();
-    for (std::vector<double>::const_iterator it = birthTimes.begin(); it != birthTimes.end(); ++it) 
-    {
-        eventTimes.insert( *it );
-    }
-    
-    const std::vector<double>& deathTimes = muTimes->getValue();
-    for (std::vector<double>::const_iterator it = deathTimes.begin(); it != deathTimes.end(); ++it) 
-    {
-        eventTimes.insert( *it );
-    }
-    
-    const std::vector<double>& fossilTimes = psiTimes->getValue();
-    for (std::vector<double>::const_iterator it = fossilTimes.begin(); it != fossilTimes.end(); ++it) 
-    {
-        eventTimes.insert( *it );
-    }
-    
-    const std::vector<double>& samplingTimes = rhoTimes->getValue();
-    for (std::vector<double>::const_iterator it = samplingTimes.begin(); it != samplingTimes.end(); ++it) 
-    {
-        eventTimes.insert( *it );
-    }
-    
-//    sort(birthTimes.begin(), birthTimes.end());
-//    sort(deathTimes.begin(), deathTimes.end());
-//    sort(fossilTimes.begin(), fossilTimes.end());
-//    sort(samplingTimes.begin(), samplingTimes.end());
-    
-    size_t indexBirth = 0;
-    size_t indexDeath = 0;
-    size_t indexFossil = 0;
-    size_t indexSampling = 0;
-    
-    const std::vector<double> &b = lambda->getValue();
-    const std::vector<double> &d = mu->getValue();
-    const std::vector<double> &f = psi->getValue();
-    const std::vector<double> &s = rho->getValue();
-    
-    birth[0] = b[0];
-    death[0] = d[0];
-    fossil[0] = f[0];
-    sampling[0] = s[0];
-    
-    size_t pos = 0;
-    size_t index = 1;
-    for (std::set<double>::const_iterator it = eventTimes.begin(); it != eventTimes.end(); ++it) 
-    {
-        double t = *it;
-        
-        // add the time to our vector
-        rateChangeTimes.push_back( t );
-        
-        // add the speciation rate at the rate-change event t
-        pos = find(birthTimes.begin(), birthTimes.end(), t) - birthTimes.begin();
-        if ( pos != birthTimes.size() ) 
-        {
-            indexBirth = pos;
-        }
-        birth.push_back( b[indexBirth] );
-        
-        // add the extinction rate at the rate-change event t
-        pos = find(deathTimes.begin(), deathTimes.end(), t) - deathTimes.begin();
-        if ( pos != deathTimes.size() ) 
-        {
-            indexDeath = pos;
-        }
-        death.push_back( b[indexDeath] );
-        
-        // add the fossilization rate at the rate-change event t
-        pos = find(fossilTimes.begin(), fossilTimes.end(), t) - fossilTimes.begin();
-        if ( pos != fossilTimes.size() ) 
-        {
-            indexFossil = pos;
-        }
-        fossil.push_back( b[indexFossil] );
-        
-        // add the sampling probability at the rate-change event t
-        pos = find(samplingTimes.begin(), samplingTimes.end(), t) - samplingTimes.begin();
-        if ( pos != samplingTimes.size() ) 
-        {
-            indexSampling = pos;
-        }
-        sampling.push_back( b[indexSampling] );
-        
-        index++;
-    }
-    
-    
     // present time 
     double org = origin->getValue();
     
@@ -197,14 +99,13 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         }
         
         double t = (*agesTips)[i];
-        if ( t == 0.0 || find(rateChangeTimes.begin(), rateChangeTimes.end(), t) != rateChangeTimes.end() ) 
+        size_t index = l(t);
+        if ( (t == 0.0 || find(rateChangeTimes.begin(), rateChangeTimes.end(), t) != rateChangeTimes.end()) && sampling[index] != 0.0 ) 
         {
-            size_t index = l(t);
             lnProbTimes += log( sampling[index] );
         }
         else
         {
-            size_t index = l(t);
             lnProbTimes += log( fossil[index] / q(index, t + timeSinceLastSample) );
         }
         
@@ -233,12 +134,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
             return RbConstants::Double::nan;
         }
         
-        if ( sampling[i] != 1.0 ) 
-        {
-            double t = rateChangeTimes[i];
-            int div = survivors(t);
-            lnProbTimes += div * log( (1.0 - sampling[i]) * q(i-1, t) );
-        }
+        double t = rateChangeTimes[i];
+        int div = survivors(t);
+        lnProbTimes += div * log( (1.0 - sampling[i+1]) * q(i, t) );
+        
     }
 
     
@@ -258,7 +157,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
  */
 size_t PiecewiseConstantSerialSampledBirthDeathProcess::l(double t) const
 {
-    return l(t,0,rateChangeTimes.size()-1);
+    return l(t,0,rateChangeTimes.size());
 }
 
 
@@ -270,13 +169,13 @@ size_t PiecewiseConstantSerialSampledBirthDeathProcess::l(double t) const
  */
 size_t PiecewiseConstantSerialSampledBirthDeathProcess::l(double t, size_t min, size_t max) const
 {
-    size_t middle = (max - min) / 2; 
+    size_t middle = min + (max - min) / 2; 
     if ( min == middle ) 
     {
-        return min;
+        return ( rateChangeTimes.size() > 0 && rateChangeTimes[max-1] < t ) ? max : min;
     }
     
-    if ( rateChangeTimes[middle] > t ) 
+    if ( rateChangeTimes[middle-1] > t ) 
     {
         return l(t,min,middle);
     }
@@ -322,19 +221,125 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::p( size_t i, double t ) 
     double d = death[i];
     double f = fossil[i];
     double r = sampling[i];
-    double ti = rateChangeTimes[i];
+    double ti = 0.0;
+    if (i > 0) {
+        ti = rateChangeTimes[i-1];
+    }
     
     double diff = b - d - f;
     double bp   = b*f;
     double dt   = ti - t;
     
     double A = sqrt( diff*diff + 4.0*bp);
-    double B = ( (1.0 - 2.0*(1.0-r)*p(i-1,ti) )*b + d + f ) / A;
+    double p0 = p(i-1,ti);
+    double B = ( (1.0 - 2.0*(1.0-r)*p0 )*b + d + f ) / A;
     
-    double e = exp(-A*dt);
-    double tmp = b + d + f - A * (e*(1.0+B)-(1.0-B))/(e*(1.0+B)+(1.0-B));
+    double e = exp(A*dt);
+    double tmp = b + d + f - A * ((1.0+B)-e*(1.0-B))/((1.0+B)+e*(1.0-B));
     
-    return 4.0*e / (tmp*tmp);    
+    return tmp / (2.0*b);    
+}
+
+
+
+/**
+ *
+ *
+ */
+void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( void )
+{
+    
+    // clean all the sets
+    rateChangeTimes.clear();
+    birth.clear();
+    death.clear();
+    fossil.clear();
+    sampling.clear();
+    
+    std::set<double> eventTimes;
+    
+    const std::vector<double>& birthTimes = lambdaTimes->getValue();
+    for (std::vector<double>::const_iterator it = birthTimes.begin(); it != birthTimes.end(); ++it) 
+    {
+        eventTimes.insert( *it );
+    }
+    
+    const std::vector<double>& deathTimes = muTimes->getValue();
+    for (std::vector<double>::const_iterator it = deathTimes.begin(); it != deathTimes.end(); ++it) 
+    {
+        eventTimes.insert( *it );
+    }
+    
+    const std::vector<double>& fossilTimes = psiTimes->getValue();
+    for (std::vector<double>::const_iterator it = fossilTimes.begin(); it != fossilTimes.end(); ++it) 
+    {
+        eventTimes.insert( *it );
+    }
+    
+    const std::vector<double>& samplingTimes = rhoTimes->getValue();
+    for (std::vector<double>::const_iterator it = samplingTimes.begin(); it != samplingTimes.end(); ++it) 
+    {
+        eventTimes.insert( *it );
+    }
+    
+    size_t indexBirth = 0;
+    size_t indexDeath = 0;
+    size_t indexFossil = 0;
+    
+    const std::vector<double> &b = lambda->getValue();
+    const std::vector<double> &d = mu->getValue();
+    const std::vector<double> &f = psi->getValue();
+    const std::vector<double> &s = rho->getValue();
+    
+    birth.push_back(    b[0] );
+    death.push_back(    d[0] );
+    fossil.push_back(   f[0] );
+    sampling.push_back( s[0] );
+    
+    size_t pos = 0;
+    for (std::set<double>::const_iterator it = eventTimes.begin(); it != eventTimes.end(); ++it) 
+    {
+        double t = *it;
+        
+        // add the time to our vector
+        rateChangeTimes.push_back( t );
+        
+        // add the speciation rate at the rate-change event t
+        pos = find(birthTimes.begin(), birthTimes.end(), t) - birthTimes.begin();
+        if ( pos != birthTimes.size() ) 
+        {
+            indexBirth = pos;
+        }
+        birth.push_back( b[indexBirth+1] );
+        
+        // add the extinction rate at the rate-change event t
+        pos = find(deathTimes.begin(), deathTimes.end(), t) - deathTimes.begin();
+        if ( pos != deathTimes.size() ) 
+        {
+            indexDeath = pos;
+        }
+        death.push_back( d[indexDeath+1] );
+        
+        // add the fossilization rate at the rate-change event t
+        pos = find(fossilTimes.begin(), fossilTimes.end(), t) - fossilTimes.begin();
+        if ( pos != fossilTimes.size() ) 
+        {
+            indexFossil = pos;
+        }
+        fossil.push_back( f[indexFossil+1] );
+        
+        // add the sampling probability at the rate-change event t
+        pos = find(samplingTimes.begin(), samplingTimes.end(), t) - samplingTimes.begin();
+        if ( pos != samplingTimes.size() ) 
+        {
+            sampling.push_back( s[pos+1] );
+        }
+        else
+        {
+            sampling.push_back( 0.0 );
+        }
+    }
+    
 }
 
 
@@ -345,12 +350,20 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::p( size_t i, double t ) 
 double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) const
 {
     
+    if ( t == 0.0 ) 
+    {
+        return 1.0;
+    }
+    
     // get the parameters
     double b = birth[i];
     double d = death[i];
     double f = fossil[i];
     double r = sampling[i];
-    double ti = rateChangeTimes[i];
+    double ti = 0.0;
+    if (i > 0) {
+        ti = rateChangeTimes[i-1];
+    }
     
     double diff = b - d - f;
     double bp   = b*f;
@@ -359,8 +372,8 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double A = sqrt( diff*diff + 4.0*bp);
     double B = ( (1.0 - 2.0*(1.0-r)*p(i-1,ti) )*b + d + f ) / A;
     
-    double e = exp(-A*dt);
-    double tmp = (e*(1.0+B)+(1.0-B));
+    double e = exp(A*dt);
+    double tmp = ((1.0+B)+e*(1.0-B));
     
     return 4.0*e / (tmp*tmp);    
 }
@@ -404,21 +417,23 @@ std::vector<double>* PiecewiseConstantSerialSampledBirthDeathProcess::simSpeciat
  */
 int PiecewiseConstantSerialSampledBirthDeathProcess::survivors(double t) const
 {
-    std::vector<double>* times = divergenceTimesSinceOrigin();
+
+    const std::vector<TopologyNode*>& nodes = value->getNodes();
     
-    for (size_t i = 0; i < times->size(); ++i) 
+    int survivors = 0;
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) 
     {
-        if ( (*times)[i] > t ) 
+        TopologyNode* n = *it;
+        if ( n->getAge() < t ) 
         {
-            delete times;
-            return int( i + 2 );
-        }
+            if ( n->isRoot() || n->getParent().getAge() > t ) 
+            {
+                survivors++;
+            } 
+        } 
     }
     
-    int rv = int(times->size() + 2);
-    delete times;
-    
-    return rv;
+    return survivors;
 }
 
 

@@ -52,6 +52,7 @@ namespace RevBayesCore {
         std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
         double                                              pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                              p(size_t i, double t) const;
+        void                                                prepareProbComputation(void);
         double                                              q(size_t i, double t) const;
         int                                                 survivors(double t) const;                                                                          //!< Number of species alive at time t.
         
