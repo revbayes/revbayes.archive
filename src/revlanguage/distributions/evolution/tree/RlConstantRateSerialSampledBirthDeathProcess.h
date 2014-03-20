@@ -1,5 +1,5 @@
 #ifndef RlConstantRateSerialSampledBirthDeathProcess_H
-#define RlConstantRateSerialSampledBirthDeathProcess_h
+#define RlConstantRateSerialSampledBirthDeathProcess_H
 
 #include "ConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlTypedDistribution.h"
