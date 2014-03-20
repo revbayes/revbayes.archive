@@ -544,7 +544,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, std::vector<double>& wr,
     
 	/* search for next eigenvalues */
 	int en=high, na, numIterations = (int)n * 30;
-	double p = 0.0, q = 0.0, r = 0.0, s = 0.0, t=0.0, w, x, y, z = 0.0;
+	double p = 0.0, q = 0.0, r = 0.0, s = 0.0, t=0.0, w = 0.0, x, y = 0.0, z = 0.0;
 	while ( en >= low )
     {
 		int iter = 0;

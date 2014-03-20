@@ -31,6 +31,7 @@ void DelimitedDataReader::readData(void)
     chars.clear();
     
     // read file
+    // bool firstLine = true;
     std::string readLine = "";
     while (std::getline(readStream,readLine))
     {

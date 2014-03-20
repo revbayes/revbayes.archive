@@ -39,7 +39,8 @@ Function::Function(void) : RbLanguageObject(), args( ) {
 Function::Function(const Function &x) : RbLanguageObject( x ), 
     argsProcessed( x.argsProcessed ),
     args( x.args ),
-    env( x.env )
+    env( x.env ),
+    name( x.name )
 {
     
 }
@@ -359,6 +360,38 @@ const TypeSpec& Function::getClassTypeSpec(void) {
 }
 
 
+/** Get name of function */
+const std::string& Function::getName(void) const {
+    
+    return name;
+}
+
+/** Get Rev declaration of the function, formatted for output to the user */
+std::string Function::getRevDeclaration(void) const {
+    
+    std::ostringstream o;
+    
+    /* It is unclear whether the 'function' specifier is needed. We leave it out for now. */
+    // o << "function ";
+ 
+    o << getReturnType();
+    if ( name == "" )
+        o << " <unnamed> (";
+    else
+        o << " " << name << " (";
+
+    const ArgumentRules& argRules = getArgumentRules();
+    for (size_t i=0; i<argRules.size(); i++) {
+        if (i != 0)
+            o << ", ";
+        argRules[i].printValue(o);
+    }
+    o << ")";
+    
+    return o.str();
+}
+
+
 /** Print value for user */
 void Function::printValue(std::ostream& o) const {
 
@@ -621,6 +654,11 @@ void Function::setExecutionEnviroment(Environment *e) {
 
 }
 
+/** Set name of function */
+void Function::setName(const std::string& nm) {
+    
+    name = nm;
+}
 
 
 

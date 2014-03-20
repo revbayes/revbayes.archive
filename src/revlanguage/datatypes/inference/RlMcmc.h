@@ -54,6 +54,7 @@ namespace RevLanguage {
         RbPtr<const Variable>                       model;
         RbPtr<const Variable>                       moves;
         RbPtr<const Variable>                       monitors;
+        RbPtr<const Variable>                       moveSchedule;
         
     };
     

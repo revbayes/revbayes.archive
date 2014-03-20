@@ -361,7 +361,7 @@ void RbLanguageObject::setMemberVariable(const std::string& name, const RbPtr<Va
 
 /** 
  * Setting the name of the internal variable. The default implementation does nothing because we don't have a DAG node as our internal variable.
- * Note, RevLanguage types which can be used as types in the DAG should overwrite this method.
+ * Note, RevLanguage types which can be used as types in the DAG should override this method.
  */
 void RbLanguageObject::setName(std::string const &n) {
     // do nothing

@@ -174,6 +174,6 @@ void RevLanguage::ArgumentRule::printValue(std::ostream &o) const {
             o << "|";
         o << *it;
     }
-    o << " \"" << label << "\"";
+    o << " " << label;
 }
 

@@ -192,8 +192,8 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
 double DispersalHistoryCtmc::sumOfRates(std::vector<CharacterEvent *> currState)
 {
     // get rate away away from currState
-    int n1 = numOn(currState);
-    int n0 = numCharacters - n1;
+    size_t n1 = numOn(currState);
+    size_t n0 = numCharacters - n1;
     
     // forbid extinction events
     if (n1 == 1)

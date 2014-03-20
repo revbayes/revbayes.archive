@@ -54,6 +54,7 @@
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
 #include "RlGeometricDistribution.h"
+#include "RlPoissonDistribution.h"
 #include "RlLognormalDistribution.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
@@ -326,6 +327,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // geometric distribution
         addDistribution( "geom", new GeometricDistribution() );
+        
+        // geometric distribution
+        addDistribution( "poisson", new PoissonDistribution() );
         
         
         // exponential distribution

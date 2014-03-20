@@ -20,13 +20,11 @@ PseudoGibbsMetaMove::PseudoGibbsMetaMove(const Move* m, AbstractCharacterData* d
 	data = d;
 	size_t numChars = data->getNumberOfCharacters();
 	int subsetSize = (int)numChars/numberOfSubsets;
-	std::vector<int> temp (0, subsetSize);
+	std::vector<size_t> temp (0, subsetSize);
 	for (size_t i = 0 ; i < numberOfSubsets ; i++) {
 		dataSubsets.push_back( temp );
 	}
-	return;
-
-	
+	return;	
 }
 
 PseudoGibbsMetaMove::PseudoGibbsMetaMove ( const PseudoGibbsMetaMove& p ) {
@@ -50,11 +48,11 @@ void PseudoGibbsMetaMove::buildSubsets() {
 	RandomNumberGenerator* rng = GLOBAL_RNG;
 	size_t numChars = data->getNumberOfCharacters();
 	size_t subsetSize = (size_t)numChars/numberOfSubsets;
-	std::vector<int> charIndices (0, numChars);
+	std::vector<size_t> charIndices (0, numChars);
 	for (size_t i = 0 ; i < numChars ; i++) {
 		charIndices[i]=i;
 	}
-	std::vector<int> randomizedCharIndices;
+	std::vector<size_t> randomizedCharIndices;
 	RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement(charIndices, randomizedCharIndices, subsetSize * numberOfSubsets, *rng);
 	for (size_t i = 0 ; i < numberOfSubsets ; i++) {
 		size_t offset = i * subsetSize;

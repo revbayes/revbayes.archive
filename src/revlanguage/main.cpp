@@ -20,7 +20,7 @@ extern "C" {
 }
 
 /* @return 
- *      all functions the user have access to */
+ *      all functions the user has access to */
 std::vector<std::string> getFunctionTable(bool print) {
     typedef std::multimap<std::string, RevLanguage::Function*> FunctionMap;
     typedef std::vector<std::string> StringVector;    
@@ -47,7 +47,7 @@ std::vector<std::string> getFunctionTable(bool print) {
 void completion(const char *buf, linenoiseCompletions *lc) {
     std::vector<std::string> functions = getFunctionTable(false);
     int startpos = 0;
-    int matchlen = std::strlen(buf + startpos);
+    size_t matchlen = std::strlen(buf + startpos);
     
     for (unsigned int i = 0; i < functions.size(); i++) {
         if (strncasecmp(buf + startpos, functions[i].c_str(), matchlen) == 0) {
@@ -62,6 +62,17 @@ int main(int argc, const char * argv[]) {
     RevLanguageMain rl;
     rl.startRevLanguageEnvironment(argc, argv);
 
+    /* Declare things we need */
+    char *default_prompt = (char *) "RevBayes > ";
+    char *incomplete_prompt = (char *) "RevBayes + ";
+    char *prompt = default_prompt;
+    int result = 0;
+    std::string commandLine;
+
+#if defined (USE_LIB_LINENOISE)
+
+    char *line;
+
     /* Set the tab completion callback.*/
     linenoiseSetCompletionCallback(completion);
 
@@ -73,12 +84,6 @@ int main(int argc, const char * argv[]) {
      * The typed string is returned as a malloc() allocated string by
      * linenoise, so the user needs to free() it. */
 
-    char *default_prompt = (char *) "RevBayes > ";
-    char *incomplete_prompt = (char *) "RevBayes + ";
-    char *prompt = default_prompt;
-    int result = 0;
-    char *line;
-    std::string commandLine;
 
     while ((line = linenoise(prompt)) != NULL) {
 
@@ -100,6 +105,31 @@ int main(int argc, const char * argv[]) {
 
         free(line);
     }
+#else
+
+    std::string line;
+
+    for (;;) {
+        
+        std::cout << prompt;
+        std::istream& retStream = getline( std::cin, line );
+
+        if ( !retStream )
+            exit( 0 );
+ 
+        if (result == 0 || result == 2) {
+            prompt = default_prompt;
+            commandLine = line;
+        } else if (result == 1) {
+            prompt = incomplete_prompt;
+            commandLine += line;
+        }
+        
+        result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
+    }
+    
+#endif
+
     return 0;
 
 
